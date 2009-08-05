@@ -1608,13 +1608,13 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     {
         return new String[] { "BiologicalObjectTypeId", "BiologicalObjectAttributesID", "SexId",
                 "StageId", "Text8", "Number34", "Number35", "Number36", "Text8", "Version",
-                "CreatedByAgentID", "ModifiedByAgentID", "CollectionMemberID", "Text10", "Text11",
+                "CreatedByAgentID", "ModifiedByAgentID", "CollectionMemberID", "Text11",
                 "Text12", "Text13", "Text14", "CollectionObjectAttributeID"};
     }
 
     protected String[] getCollectionObjectAttributeMappings()
     {
-        String oldBiologicalObjectAttribute_Condition_FieldName = "Condition";
+        //String oldBiologicalObjectAttribute_Condition_FieldName = "Condition";
         //if (BasicSQLUtils.mySourceServerType == BasicSQLUtils.SERVERTYPE.MySQL)
         //{
         //    oldBiologicalObjectAttribute_Condition_FieldName = "Condition1";// TODO change when get
@@ -1625,20 +1625,45 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "CollectionObjectAttributeID",
                 "BiologicalObjectAttributesID",
                 // "biologicalObjectTypeId", ??? "Number36"
-                "Number10", "Sex", "Number11", "Age", "Number12", "Stage", "Number37", "Weight",
-                "Number38", "Length", "Number8", "GosnerStage", "Number9", "SnoutVentLength",
-                "Text8", "Sctivity", "Number10", "LengthTail", "Text13", "ReproductiveCondition",
-                "Text14", "ObjCondition", "Number11", "LengthTarsus", "Number12", "LengthWing",
-                "Number13", "LengthHead", "Number14", "LengthBody", "Number15", "LengthMiddleToe",
-                "Number16", "LengthBill", "Number17", "TotalExposedCulmen", "Number39",
-                "MaxLength", "Number40", "MinLength", "Number18", "LengthHindFoot", "Number19",
-                "LengthForeArm", "Number20", "LengthTragus", "Number21", "LengthEar", "Number22",
-                "EarFromNotch", "Number23", "Wingspan", "Number24", "LengthGonad", "Number25",
-                "WidthGonad", "Number26", "LengthHeadBody", "Number41", "Width", "Number27",
-                "HeightFinalWhorl", "Number28", "InsideHeightAperture", "Number29",
-                "InsideWidthAperture", "Number30", "NumberWhorls", "Number31", "OuterLipThickness",
-                "Number32", "Mantle", "Number42", "Height", "Number33", "Diameter", "Text9",
-                "BranchingAt",
+                "Text10", "Sex", 
+                "Number11", "Age", 
+                "Number12", "Stage", 
+                "Number37", "Weight",
+                "Number38", "Length", 
+                "Number8",  "GosnerStage", 
+                "Number9",  "SnoutVentLength",
+                "Text8",    "Activity", 
+                "Number10", "LengthTail", 
+                "Text13",   "ReproductiveCondition",
+                "Text14",   "ObjCondition", 
+                "Number11", "LengthTarsus", 
+                "Number12", "LengthWing",
+                "Number13", "LengthHead", 
+                "Number14", "LengthBody", 
+                "Number15", "LengthMiddleToe",
+                "Number16", "LengthBill", 
+                "Number17", "TotalExposedCulmen", 
+                "Number39", "MaxLength", 
+                "Number40", "MinLength", 
+                "Number18", "LengthHindFoot", 
+                "Number19", "LengthForeArm", 
+                "Number20", "LengthTragus", 
+                "Number21", "LengthEar", 
+                "Number22", "EarFromNotch", 
+                "Number23", "Wingspan", 
+                "Number24", "LengthGonad", 
+                "Number25", "WidthGonad", 
+                "Number26", "LengthHeadBody", 
+                "Number41", "Width", 
+                "Number27", "HeightFinalWhorl", 
+                "Number28", "InsideHeightAperture", 
+                "Number29", "InsideWidthAperture", 
+                "Number30", "NumberWhorls", 
+                "Number31", "OuterLipThickness",
+                "Number32", "Mantle", 
+                "Number42", "Height", 
+                "Number33", "Diameter", 
+                "Text9",    "BranchingAt",
         // "Text1",
         // "Text2",
         // "Text3",
@@ -3686,6 +3711,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                 try
                 {
+                    log.debug(str.toString());
                     Statement updateStatement = newDBConn.createStatement();
                     // updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
                     updateStatement.executeUpdate(str.toString());
@@ -6610,6 +6636,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      */
     protected void convertLocalityExtraInfo(final String tableName)
     {
+        String capName = StringUtils.capitalize(tableName);
+        ConversionLogger.TableWriter tblWriter = convLogger.getWriter(capName + ".html", capName + " Conversion");
+        BasicSQLUtils.setTblWriter(tblWriter);
+        IdHashMapper.setTblWriter(tblWriter);
+        
         List<String> localityDetailNamesTmp = new ArrayList<String>();
         getFieldNamesFromSchema(newDBConn, tableName, localityDetailNamesTmp, BasicSQLUtils.myDestinationServerType);
 
@@ -6622,7 +6653,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             nameHash.put(fieldName, true);
         }
 
-        String fieldList = buildSelectFieldList(localityDetailNames, tableName);
+        String fieldList = buildSelectFieldList(localityDetailNames, null);
         log.info(fieldList);
 
         IdMapperIFace locIdMapper = idMapperMgr.get("locality", "LocalityID");
@@ -6631,15 +6662,14 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         {
             Hashtable<String, Boolean> usedFieldHash = new Hashtable<String, Boolean>();
 
-            Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            ResultSet rs = stmt.executeQuery("select count(LocalityID) from locality,geography where locality.GeographyID = geography.GeographyID");
-            if (rs.next())
+            Statement stmt      = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            Integer   countRows = BasicSQLUtils.getCount("select count(LocalityID) from locality,geography where locality.GeographyID = geography.GeographyID");
+            if (countRows != null)
             {
-                frame.setProcess(0, rs.getInt(1));
+                frame.setProcess(0, countRows);
             }
-            rs.close();
 
-            rs = stmt.executeQuery("select locality.*,geography.*  from locality LEFT JOIN geography on locality.GeographyID = geography.GeographyID ");
+            ResultSet rs = stmt.executeQuery("select locality.*,geography.* from locality LEFT JOIN geography on locality.GeographyID = geography.GeographyID ");
 
             StringBuilder colSQL    = new StringBuilder();
             StringBuilder valuesSQL = new StringBuilder();
@@ -6656,9 +6686,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 for (int i = 1; i <= cols; i++)
                 {
                     String colName = metaData.getColumnName(i);
+                    
                     if (nameHash.get(colName) == null || 
                         usedFieldHash.get(colName) != null ||
-                        !colName.equals("RangeDesc"))
+                        colName.equals("RangeDesc"))
                     {
                         if (rows == 0)
                         {
@@ -6688,7 +6719,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             value = Integer.toString(newId);
                         } else
                         {
-                            log.error("Couldn't map LocalityId oldId[" + rs.getInt(i) + "]");
+                            String msg = "Couldn't map LocalityId oldId[" + rs.getInt(i) + "]";
+                            log.error(msg);
+                            tblWriter.logError(msg);
                             value = "NULL";
                         }
 
@@ -6734,8 +6767,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             + ")";
 
                     Statement updateStatement = newDBConn.createStatement();
-                    BasicSQLUtils.removeForeignKeyConstraints(newDBConn,
-                            BasicSQLUtils.myDestinationServerType);
+                    BasicSQLUtils.removeForeignKeyConstraints(newDBConn, BasicSQLUtils.myDestinationServerType);
                     if (true)
                     {
                         log.info(insertSQL);
@@ -6758,6 +6790,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             rs.close();
             stmt.close();
+            
         } catch (Exception ex)
         {
             ex.printStackTrace();
@@ -6807,6 +6840,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
         errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for LocalityID
         BasicSQLUtils.setShowErrors(errorsToShow);
+        
+        ConversionLogger.TableWriter tblWriter = convLogger.getWriter("Locality.html", "Locality Conversion");
+        BasicSQLUtils.setTblWriter(tblWriter);
+        IdHashMapper.setTblWriter(tblWriter);
 
         if (copyTable(oldDBConn, newDBConn, sql, "locality", "locality", null, null, BasicSQLUtils.mySourceServerType, BasicSQLUtils.myDestinationServerType))
         {
@@ -6819,6 +6856,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(fieldsToIgnore);
         
         sql = "SELECT * FROM locality WHERE locality.GeographyID IS NULL";
+        
         if (copyTable(oldDBConn, newDBConn, sql, "locality", "locality", null, null, BasicSQLUtils.mySourceServerType, BasicSQLUtils.myDestinationServerType))
         {
             log.info("Locality/Geography copied ok.");
@@ -6832,6 +6870,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
         BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "locality", BasicSQLUtils.myDestinationServerType);
+        
+        BasicSQLUtils.setTblWriter(null);
+        IdHashMapper.setTblWriter(null);
     }
 
     /**
@@ -6840,6 +6881,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      */
     public void convertGeography(GeographyTreeDef treeDef) throws SQLException
     {
+        ConversionLogger.TableWriter tblWriter = convLogger.getWriter("Geography.html", "Geography Conversion");
+        BasicSQLUtils.setTblWriter(tblWriter);
+        
+        IdHashMapper.setTblWriter(tblWriter);
+
         // empty out any pre-existing records
         BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "geography", BasicSQLUtils.myDestinationServerType);
 
@@ -6903,15 +6949,30 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 }
             }
 
-            // if (oldGeoRecords.isBeforeFirst())
-            // {
             // grab the important data fields from the old record
-            int oldId = oldGeoRecords.getInt(1);
-            String cont = oldGeoRecords.getString(2);
+            int    oldId   = oldGeoRecords.getInt(1);
+            String cont    = oldGeoRecords.getString(2);
             String country = oldGeoRecords.getString(3);
-            String state = oldGeoRecords.getString(4);
-            String county = oldGeoRecords.getString(5);
-
+            String state   = oldGeoRecords.getString(4);
+            String county  = oldGeoRecords.getString(5);
+            
+            if (StringUtils.isEmpty(cont) || StringUtils.isEmpty(country) || StringUtils.isEmpty(state))
+            {
+                String msg = "For Record Id["+oldId+"] Continent, Country, State and County are all null.";
+                log.error(msg);
+                tblWriter.logError(msg);
+                
+                cont    = "Undefined";
+                country = "Undefined";
+                
+            } else if (StringUtils.isEmpty(country))
+            {
+                String msg = "For Record Id["+oldId+"] Country is null.";
+                log.error(msg);
+                tblWriter.logError(msg);
+                
+                country = "Undefined"; 
+            }
 
             // create a new Geography object from the old data
             List<Geography> newGeos = convertOldGeoRecord(cont, country, state, county, planetEarth);
@@ -6921,8 +6982,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                 oldIdToGeoMap.put(oldId, lowestLevel);
             }
-            // }
+            
             counter++;
+            
         } while (oldGeoRecords.next());
 
         if (hasFrame)
@@ -7061,17 +7123,20 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             rs   = stmt.executeQuery(sql);
     
+            boolean isOK = false;
             if (hasFrame)
             {
                 if (rs.last())
                 {
                     setProcess(0, rs.getRow());
-                    rs.first();
+                    isOK = rs.first();
                 }
             } else
             {
-                rs.first();
+                isOK = rs.first();
             }
+            
+            if (!isOK) return;
     
             // create an ID mapper for the geography table (mainly for use in converting localities)
             IdHashMapper  lithoStratIdMapper = IdMapperMgr.getInstance().addHashMapper("stratigraphy_stratigraphyid");
@@ -7714,7 +7779,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      * @param treeDef
      * @throws SQLException
      */
-    public void convertGTP(GeologicTimePeriodTreeDef treeDef) throws SQLException
+    public void convertGTP(final ConversionLogger.TableWriter tblWriter, final GeologicTimePeriodTreeDef treeDef) throws SQLException
     {
         BasicSQLUtils.deleteAllRecordsFromTable("geologictimeperiod", BasicSQLUtils.myDestinationServerType);
 
@@ -7748,6 +7813,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         allTime.setTimestampCreated(now);
         ++count;
         newItems.add(allTime);
+        
+        boolean needsTbl = true;
 
         while (rs.next())
         {
@@ -7764,6 +7831,19 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             Float     uError   = (Float)rs.getObject(9);
             Float     lower    = rs.getFloat(10);
             Float     lError   = (Float)rs.getObject(11);
+            
+            if (StringUtils.isEmpty(name))
+            {
+                if (needsTbl)
+                {
+                    tblWriter.startTable();
+                    tblWriter.logHdr("ID", "Rank Name", "Name", "Reason");
+                    needsTbl = false;
+                }
+                tblWriter.log(id.toString(), rank.toString(), name, "Name is null, Name set to 'XXXX'");
+                log.error("The Name is empty (or null) for GTP ID["+id+"]  Rank["+rank+"]");
+                name = "XXXX";
+            }
 
             if (modT == null && creT == null)
             {
@@ -7844,6 +7924,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                                 "GeologicTimePeriod", "GeologicTimePeriodID");
 
         log.info(count + " geologic time period records converted");
+        
+        if (!needsTbl)
+        {
+            tblWriter.endTable();
+        }
     }
     
     /**

@@ -1015,7 +1015,7 @@ public class BasicSQLUtils
                 else if (newFieldType.equalsIgnoreCase("bit(1)") || newFieldType.equalsIgnoreCase("tinyint(1)"))
                 {
                     int val = ((Integer)obj).intValue();
-                    return Integer.toString(val == 0? 0 : 1);
+                    return Integer.toString(val == 0 ? 0 : 1);
                 }
                 return ((Integer)obj).toString();
             }

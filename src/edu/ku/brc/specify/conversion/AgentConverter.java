@@ -63,6 +63,11 @@ import edu.ku.brc.util.Triple;
  */
 public class AgentConverter
 {
+    
+    private enum ParseAgentType {LastNameOnlyLF,  // Last Name Field only with names in Last Name then First Name order
+                                 LastNameOnlyFL,  // Last Name Field only with names in First Name then Last Name order
+                                 LastThenFirstLF, // The first Last Name is in the First Name Field the rest of the data is in the Last Name field and the order is Last Name, Comma first Name
+    }
     protected static final Logger                           log                    = Logger.getLogger(AgentConverter.class);
     protected static Integer nextAddressId = 0;
 
@@ -121,7 +126,7 @@ public class AgentConverter
      * The AgentAdress, Agent and Address (triple) can have a NULL Address but it cannot have a NULL
      * Agent. If there is a NULL Agent then this method will throw a RuntimeException.
      */
-    public boolean convertAgents()
+    public boolean convertAgents(final boolean doFixAgents)
     {
         boolean debugAgents = false;
 
@@ -235,7 +240,7 @@ public class AgentConverter
             log.info("Hashing Agent Ids");
             stmtX    = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             agentCnt = BasicSQLUtils.getCount(oldDBConn, "select count(*) from agent order by AgentID");
-            rsX      = stmtX.executeQuery("select AgentID, AgentType, LastName, Name from agent order by AgentID");
+            rsX      = stmtX.executeQuery("select AgentID, AgentType, LastName, Name, FirstName from agent order by AgentID");
 
             conv.setProcess(0, agentCnt);
             
@@ -243,7 +248,7 @@ public class AgentConverter
             while (rsX.next())
             {
                 int agentId = rsX.getInt(1);
-                agentHash.put(agentId, new AgentInfo(agentId, agentIDMapper.get(agentId), rsX.getByte(2), rsX.getString(3), rsX.getString(4)));
+                agentHash.put(agentId, new AgentInfo(agentId, agentIDMapper.get(agentId), rsX.getByte(2), rsX.getString(3), rsX.getString(4), rsX.getString(5)));
                 if (cnt % 100 == 0)
                 {
                     conv.setProcess(0, cnt);
@@ -853,7 +858,10 @@ public class AgentConverter
             }
             conv.setProcess(recordCnt);
             
-            fixAgentsLFirstLastName();
+            if (doFixAgents)
+            {
+                fixAgentsLFirstLastName();
+            }
             
             BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "agent", BasicSQLUtils.myDestinationServerType);
             /*
@@ -1375,6 +1383,9 @@ public class AgentConverter
     protected void fixupForCollectors(final Division    divisionArg,
                                       final Discipline  disciplineArg)
     {
+        ParseAgentType parseType = ParseAgentType.LastNameOnlyLF;
+
+        
         Session     session = HibernateUtil.getNewSession();
         Transaction trans   = null;
         try
@@ -1394,9 +1405,10 @@ public class AgentConverter
             
             for (AgentInfo agentInfo : agentHash.values())
             {
-                String text = agentInfo.getAgentType() != Agent.PERSON ? agentInfo.getName() : agentInfo.getLastName();
+                String lastNameText  = agentInfo.getAgentType() != Agent.PERSON ? agentInfo.getName() : agentInfo.getLastName();
+                String firstNameText = agentInfo.getFirstName();
 
-                if ((StringUtils.contains(text, ",") || StringUtils.contains(text, ";")) && !StringUtils.contains(text, "'"))
+                if ((StringUtils.contains(lastNameText, ",") || StringUtils.contains(lastNameText, ";")) && !StringUtils.contains(lastNameText, "'"))
                 {
                     String    sql = "SELECT c.CollectorID, c.CollectingEventID FROM collector c INNER JOIN agent ON c.AgentID = agent.AgentID WHERE agent.AgentID = " + agentInfo.getNewAgentId();
                     ResultSet rs  = gStmt.executeQuery(sql);
@@ -1406,7 +1418,7 @@ public class AgentConverter
                         Integer  colID        = rs.getInt(1);
                         Integer  ceId         = rs.getInt(2);
                         
-                        tblWriter.log(ceId +" / " + colID +" / " + agentInfo.getNewAgentId().toString(), text, "&nbsp;");
+                        tblWriter.log(ceId +" / " + colID +" / " + agentInfo.getNewAgentId().toString(), lastNameText, "&nbsp;");
                         
                         sql = "SELECT ce.CollectingEventID, c.CollectorID, c.OrderNumber, c.IsPrimary FROM collector c INNER JOIN collectingevent ce ON c.CollectingEventID = ce.CollectingEventID " + 
                               "WHERE c.CollectorID = " + colID + " ORDER BY c.OrderNumber DESC";
@@ -1421,10 +1433,11 @@ public class AgentConverter
                         Agent           origAgent = (Agent)session.createQuery("FROM Agent WHERE id = " + agentInfo.getNewAgentId()).list().get(0);
                         
                         // Now process the multiple Collectors
-                        String[] names = StringUtils.split(text, ",;");
-                        for (int i=0;i<names.length;i++)
+                        String[] lastNames  = StringUtils.split(lastNameText, ",;");
+                        String[] firstNames = StringUtils.split(firstNameText, ",;");
+                        for (int i=0;i<lastNames.length;i++)
                         {
-                            if (parseName(names[i], nameTriple))
+                            if (parseName(lastNames[i], nameTriple))
                             {
                                 String firstName = nameTriple.first;
                                 String middle    = nameTriple.second;
@@ -1762,12 +1775,14 @@ public class AgentConverter
         boolean                     isUsed   = false;
         boolean                     wasAdded = false;
         String                      lastName;
+        String                      firstName;
         String                      name;
 
         public AgentInfo(Integer oldAgentId, 
                          Integer newAgentId,
                          byte    agentType,
                          String  lastName,
+                         String  firstName,
                          String  name)
         {
             super();
@@ -1775,6 +1790,7 @@ public class AgentConverter
             this.newAgentId = newAgentId;
             this.agentType  = agentType;
             this.lastName   = lastName;
+            this.firstName  = firstName;
             this.name       = name;
         }
 
@@ -1827,6 +1843,14 @@ public class AgentConverter
         public String getLastName()
         {
             return lastName;
+        }
+
+        /**
+         * @return the firstName
+         */
+        public String getFirstName()
+        {
+            return firstName;
         }
 
         /**

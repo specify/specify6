@@ -765,7 +765,7 @@ public class SpecifyDBConverter
                 {
                     log.info("Calling - convertAgents");
                     
-                    agentConverter.convertAgents();
+                    agentConverter.convertAgents(doFixCollectors);
                     
                 } else
                 {
@@ -798,8 +798,9 @@ public class SpecifyDBConverter
                 boolean doGTP = true;
                 if (doGTP || doAll )
                 {
+                    ConversionLogger.TableWriter tblWriter = convLogger.getWriter("GTP.html", "Geologic Time Period");
                     GeologicTimePeriodTreeDef treeDef = conversion.convertGTPDefAndItems();
-                    conversion.convertGTP(treeDef);
+                    conversion.convertGTP(tblWriter, treeDef);
                 } else
                 {
                     idMapperMgr.addTableMapper("geologictimeperiod", "GeologicTimePeriodID");
