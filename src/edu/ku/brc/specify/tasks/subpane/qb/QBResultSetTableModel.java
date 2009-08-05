@@ -317,9 +317,13 @@ public class QBResultSetTableModel extends ResultSetTableModel
 			}
 		} catch (Exception e) 
 		{
-            UsageTracker.incrHandledUsageCount();
-			edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(
+            if (!((QBQueryForIdResultsHQL) results).getCancelled())
+            {
+            	UsageTracker.incrHandledUsageCount();
+            	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(
 					QBResultSetTableModel.class, e);
+            }
+            //else ignore
 		}
    }
 

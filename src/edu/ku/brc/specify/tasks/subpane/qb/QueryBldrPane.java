@@ -575,7 +575,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         {
                            	UsageTracker.incrUsageCount("QB.DistinctOff");
                         }
-                        if (isTreeLevelSelected() && countOnly && distinctChk.isSelected())
+                        if ((isTreeLevelSelected() || isAggFieldSelected()) && countOnly && distinctChk.isSelected())
                         {
                            	countOnlyChk.setSelected(false);
                            	countOnly = false;
@@ -614,7 +614,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                             {
                                 UsageTracker.incrUsageCount("QB.CountOnlyOff");
                             }
-                            if (isTreeLevelSelected() && countOnly && distinctChk.isSelected())
+                            if ((isTreeLevelSelected() || isAggFieldSelected()) && countOnly && distinctChk.isSelected())
                             {
                             	distinctChk.setSelected(false);
                             }
@@ -4186,16 +4186,41 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return addBtn;
     }    
     
+    protected boolean isQRIClassSelected(Class<?> qriClass)
+    {
+    	for (QueryFieldPanel qfp : this.queryFieldItems)
+    	{
+    		if (qriClass.isAssignableFrom(qfp.getFieldQRI().getClass()))
+    		{
+    			return true;
+    		}
+    	}
+    	return false;
+    }
     /**
      * @return true if the query's fields list contains a TreeLevel field. 
      */
     protected boolean isTreeLevelSelected()
     {
+    	return isQRIClassSelected(TreeLevelQRI.class);
+    }
+    
+    /**
+     * @return true if the query's fields list contains an aggregated ( field. 
+     */
+    protected boolean isAggFieldSelected()
+    {
     	for (QueryFieldPanel qfp : this.queryFieldItems)
     	{
-    		if (qfp.getFieldQRI() instanceof TreeLevelQRI)
+    		if (qfp.getFieldQRI() instanceof RelQRI)
     		{
-    			return true;
+    			DBRelationshipInfo info = ((RelQRI)qfp.getFieldQRI()).getRelationshipInfo();
+    			
+    			if (info != null && 
+    					(info.getType().equals(RelationshipType.ManyToMany) || info.getType().equals(RelationshipType.OneToMany)))
+    			{
+    				return true;
+    			}
     		}
     	}
     	return false;
