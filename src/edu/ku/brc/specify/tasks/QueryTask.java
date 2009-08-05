@@ -910,12 +910,20 @@ public class QueryTask extends BaseTask
             navBoxes.add(actionNavBox);
             navBoxes.add(navBox);
  
-            ContextMgr.registerService(new ReportServiceInfo());
+            registerServices();
 
         }
         isShowDefault = true;
     }
 
+    /**
+     * register services at initialization.
+     */
+    protected void registerServices()
+    {
+    	ContextMgr.registerService(new ReportServiceInfo());    
+    }
+    
     /**
      * @return title for the query nav box.
      */

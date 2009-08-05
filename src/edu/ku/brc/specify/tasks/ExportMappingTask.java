@@ -414,6 +414,18 @@ public class ExportMappingTask extends QueryTask
 		//importSchemaDefinition(new File("C:/darwincoreWithDiGIRv1.3.xsd"));
 	}
 
+	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.QueryTask#registerServices()
+	 */
+	@Override
+	protected void registerServices()
+	{
+		//if the query task is present there is no need to do anything here
+	}
+
+
+
 	/*
 	 * (non-Javadoc)
 	 * 

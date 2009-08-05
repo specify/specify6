@@ -27,6 +27,7 @@ import edu.ku.brc.util.Pair;
  * @code_status Alpha
  *
  */
+@SuppressWarnings("serial")
 public class SearchResultReportServiceInfo extends Pair<String, String>
 {
     /**
