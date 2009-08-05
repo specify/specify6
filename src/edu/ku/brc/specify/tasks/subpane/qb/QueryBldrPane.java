@@ -2406,16 +2406,28 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         qri.setCaptions((List<ERTICaptionInfo> )captions);
         qri.setExpanded(true);
         qri.setHasIds(!distinct);
-        boolean hasTreeLevels = false;
-        for (ERTICaptionInfo caption : captions)
+        boolean filterDups = false;
+        if (distinct)
         {
-        	if (caption instanceof ERTICaptionInfoTreeLevel)
+        	for (ERTICaptionInfo caption : captions)
         	{
-        		hasTreeLevels = true;
-        		break;
+        		if (caption instanceof ERTICaptionInfoTreeLevel)
+        		{
+        			filterDups = true;
+        			break;
+        		}
+        		else if (caption instanceof ERTICaptionInfoRel)
+        		{
+        			RelationshipType relType = ((ERTICaptionInfoRel)caption).getRelationship().getType();
+        			if (relType.equals(RelationshipType.OneToMany) || relType.equals(RelationshipType.ManyToMany))
+        			{
+        				filterDups = true;
+        				break;
+        			}
+        		}
         	}
         }
-        qri.setFilterDups(distinct && hasTreeLevels);
+        qri.setFilterDups(filterDups);
         if (schemaMapping != null)
         {
         	qri.setMaxTableRows(ExportSchemaPreviewSize);
