@@ -154,7 +154,8 @@ public class QBResultSetTableModel extends ResultSetTableModel
 				isPostProcessed.set(((QBQueryForIdResultsHQL) results)
 						.isPostSorted() || ((QBQueryForIdResultsHQL) results)
 						.isFilterDups());
-
+				boolean filterDups = ((QBQueryForIdResultsHQL) results).isFilterDups();
+				
 				int maxTableRows = results.getMaxTableRows();
 				int rowNum = 0;
 				for (Object rowObj : list) 
@@ -203,7 +204,8 @@ public class QBResultSetTableModel extends ResultSetTableModel
 								continue;
 							}
 							
-							if (col == 0 && hasIds) {
+							if (col == 0 && hasIds) 
+							{
 								if (hasIds) // Does this mean
 								{
 									id = (Integer) colObj;
@@ -216,6 +218,7 @@ public class QBResultSetTableModel extends ResultSetTableModel
 							{
 								ERTICaptionInfo erti = cols.next();
 								if (colObj != null
+										&& !filterDups
 										&& erti instanceof ERTICaptionInfoRel
 										&& ((ERTICaptionInfoRel) erti)
 												.getRelationship().getType() == RelationshipType.OneToMany) 
