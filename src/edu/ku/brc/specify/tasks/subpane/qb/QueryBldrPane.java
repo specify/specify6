@@ -1304,7 +1304,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
             }
         }
-        //XXX if isSchemaExport -- add root ID and DISTINCT to enable updates???
         sqlStr.append(fieldsStr);
 
         sqlStr.append(" from ");
@@ -1312,7 +1311,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
         if (keysToRetrieve != null)
         {
-            if (!StringUtils.isEmpty(criteriaStr.toString()))
+        	if (!StringUtils.isEmpty(criteriaStr.toString()))
             {
                 criteriaStr.append(" and ");
             }
@@ -1363,7 +1362,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             //get only records modified/added since last export of the schema...
             if (isSchemaExport && lastExportTime != null)
             {
-                //XXX deletes via audit stuff- wait - don't need audit stuff?? - during db-export phase (
                 if (criteriaStr.length() > 0)
                 {
                     criteriaStr.append(" AND (");
