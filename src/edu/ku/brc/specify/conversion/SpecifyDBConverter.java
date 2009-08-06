@@ -548,7 +548,7 @@ public class SpecifyDBConverter
         
         convLogger.initialize(dbNameDest);
         
-        final GenericDBConversion conversion = new GenericDBConversion(oldDBConn, newDBConn, dbNameSource, dbNameDest, convLogger);
+        final GenericDBConversion conversion = new GenericDBConversion(oldDBConn, newDBConn, dbNameSource, convLogger);
         if (!conversion.initialize())
         {
             oldDBConn.close();

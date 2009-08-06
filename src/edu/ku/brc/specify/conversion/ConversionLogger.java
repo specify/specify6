@@ -49,6 +49,9 @@ public class ConversionLogger
     
     protected File dir;
     
+    /**
+     * 
+     */
     public ConversionLogger()
     {
     }
@@ -98,17 +101,31 @@ public class ConversionLogger
             String path = dir.getAbsolutePath() + File.separator + "index.html";
             TableWriter indexWriter = new TableWriter(path, "Index");
             indexWriter.startTable();
-            for (TableWriter tw : printWritersHash.values())
+            
+            for (TableWriter tblWriter : printWritersHash.values())
             {
                 try
                 {
-                    indexWriter.log("<A href=\""+ FilenameUtils.getName(tw.getFileName())+"\">"+tw.getTitle()+"</A>");
-                    
-                    tw.close();
-                    
+                    if (tblWriter.hasLines())
+                    {
+                        indexWriter.log("<A href=\""+ FilenameUtils.getName(tblWriter.getFileName())+"\">"+tblWriter.getTitle()+"</A>");
+                        tblWriter.close();
+                        
+                    } else
+                    {
+                        tblWriter.flush();
+                        tblWriter.close();
+                        
+                        File f = new File(tblWriter.getFileName());
+                        if (f.exists())
+                        {
+                            f.delete();
+                        }
+                    }
+                   
                 } catch (Exception ex)
                 {
-                    
+                    ex.printStackTrace();
                 }
             }
             indexWriter.endTable();
@@ -127,6 +144,9 @@ public class ConversionLogger
     {
         private String fName;
         private String title;
+        
+        private int errCount = 0;
+        private int lineCnt  = 0;
         
         public TableWriter(final String fileName, final String title) throws FileNotFoundException
         {
@@ -173,6 +193,7 @@ public class ConversionLogger
 
         public void log(final String msg)
         {
+            lineCnt++;
             print(msg);
             println("<BR>");
             flush();
@@ -180,6 +201,9 @@ public class ConversionLogger
         
         public void logError(final String msg)
         {
+            errCount++;
+            lineCnt++;
+            
             println("<SPAN class=\"err\">");
             print(msg);
             println("</SPAN><BR>");
@@ -200,6 +224,7 @@ public class ConversionLogger
         
         public void log(final String...cols)
         {
+            lineCnt++;
             print(TR);
             for (String c : cols)
             {
@@ -237,6 +262,14 @@ public class ConversionLogger
         {
             println("</BODY></HTML>");
             super.close();
+        }
+        
+        /**
+         * @return
+         */
+        public boolean hasLines()
+        {
+            return lineCnt > 0;
         }
     }
 }
