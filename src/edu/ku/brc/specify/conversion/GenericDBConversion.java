@@ -115,6 +115,7 @@ import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -8178,7 +8179,18 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      */
     public void cleanUp()
     {
-    	convLogger.closeAll();
+    	File indexFile = convLogger.closeAll();
+    	if (indexFile != null && indexFile.exists())
+    	{
+    	    try
+    	    {
+    	        AttachmentUtils.openURI(indexFile.toURI());
+    	        
+    	    } catch (Exception ex)
+    	    {
+    	        ex.printStackTrace();
+    	    }
+    	}
     }
     
     /**

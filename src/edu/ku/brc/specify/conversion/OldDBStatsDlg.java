@@ -87,13 +87,14 @@ public class OldDBStatsDlg extends CustomDialog
                             "SELECT COUNT(*) FROM agent WHERE LENGTH(Name) > 50",
                             "SELECT COUNT(*) FROM agent WHERE LENGTH(LastName) > 50",
                             "SELECT COUNT(*) FROM agent WHERE LastName LIKE '%;%'",
-                            "SELECT COUNT(c.AgentID) FROM collectingevent ce INNER JOIN collectors c ON ce.CollectingEventID = c.CollectingEventID " + 
+                             "SELECT COUNT(c.AgentID) FROM collectingevent ce INNER JOIN collectors c ON ce.CollectingEventID = c.CollectingEventID " + 
                                 "INNER JOIN agent a ON c.AgentID = a.AgentID WHERE a.LastName LIKE '%;%'",
                             "SELECT COUNT(*) FROM authors au INNER JOIN agent a ON au.AgentID = a.AgentID WHERE a.LastName LIKE '%;%'",
                             "SELECT COUNT(*) FROM accessionagents aagt INNER JOIN agentaddress aa ON aagt.AgentAddressID = aa.AgentAddressID " +
                                 "INNER JOIN agent a ON aa.AgentID = a.AgentID WHERE a.LastName LIKE '%;%'", 
                             "SELECT COUNT(*) FROM borrowagents ba INNER JOIN agentaddress aa ON ba.AgentAddressID = aa.AgentAddressID INNER JOIN agent a ON aa.AgentID = a.AgentID WHERE a.LastName LIKE '%;%'",
                             "SELECT COUNT(*) FROM loanagents la INNER JOIN agentaddress aa ON la.AgentAddressID = aa.AgentAddressID INNER JOIN agent a ON aa.AgentID = a.AgentID WHERE a.LastName LIKE '%;%'",
+                            "SELECT COUNT(ID) FROM (SELECT DISTINCT ce.LocalityID as ID FROM collectingevent ce LEFT JOIN locality loc ON loc.localityid = ce.LocalityID  WHERE loc.LocalityID IS NULL) AS T1", 
                             null,
                             };
         
@@ -113,7 +114,9 @@ public class OldDBStatsDlg extends CustomDialog
                           "Borrow Agent Last Names with ';'",
                           "Loan Agent Last Names with ';'",
                           "Stranded Agents Last Names with ';'",
+                          "Collecting Events with NULL Localities",
                           null};
+        
         Integer[] errors = {0, 
                             Integer.MAX_VALUE, 
                             Integer.MAX_VALUE, 
@@ -130,6 +133,7 @@ public class OldDBStatsDlg extends CustomDialog
                             0, // Stranded
                             0, // Borrow
                             0, // Loan
+                            0, // CE no Locality
                             };
         
         for (int i=0;i<queries.length;i++)
@@ -151,7 +155,7 @@ public class OldDBStatsDlg extends CustomDialog
 
         
         CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p:g,10px,p,2px,f:p:g,4px,p"));
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "f:p:g,10px,p,2px,f:p:g,4px,p"));
         pb.add(UIHelper.createScrollPane(table, true), cc.xyw(1, 1, 3));
         
         String sql = "SELECT DISTINCT(CNAME), L, F, M FROM (SELECT a.LastName AS L, a.FirstName AS F, a.MiddleInitial AS M, " +

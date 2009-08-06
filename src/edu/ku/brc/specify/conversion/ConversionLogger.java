@@ -94,7 +94,7 @@ public class ConversionLogger
     /**
      * 
      */
-    public void closeAll()
+    public File closeAll()
     {
         try 
         {
@@ -131,12 +131,14 @@ public class ConversionLogger
             indexWriter.endTable();
             indexWriter.close();
             
+            return new File(path);
+            
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
         
-
+        return null;
     }
     
     //-------------------------------------------------------------
