@@ -206,9 +206,15 @@ public class CustomStatQueries implements CustomQueryIFace
         // XXX (need try block)
         Session  session  = HibernateUtil.getNewSession();
         
+        Calendar startCal = Calendar.getInstance();
+        startCal.setTime(startDate.getTime());
+        
+        Calendar endCal = Calendar.getInstance();
+        endCal.setTime(endDate.getTime());
+        
         Criteria criteria = session.createCriteria(CollectionObject.class);
-        criteria.add(Expression.ge("timestampCreated", startDate.getTime()));
-        criteria.add(Expression.le("timestampCreated", endDate.getTime()));
+        criteria.add(Expression.ge("catalogedDate", startCal));
+        criteria.add(Expression.le("catalogedDate", endCal));
         criteria.add(Expression.eq("collectionMemberId", AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId()));
 
         criteria.setProjection(Projections.rowCount());
