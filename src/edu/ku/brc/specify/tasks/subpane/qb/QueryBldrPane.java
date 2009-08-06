@@ -162,7 +162,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 {
     protected static final Logger                            log            = Logger.getLogger(QueryBldrPane.class);
     protected static final Color                             TITLEBAR_COLOR = new Color(82, 160, 52);
-    protected static final int                               ExportSchemaPreviewSize = 120;
+    protected static final int                               ExportSchemaPreviewSize = 5000;
     
     protected JList                                          tableList;
     protected Vector<QueryFieldPanel>                        queryFieldItems  = new Vector<QueryFieldPanel>();

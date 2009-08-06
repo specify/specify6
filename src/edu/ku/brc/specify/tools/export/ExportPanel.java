@@ -689,10 +689,10 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 				}
 				else
 				{
-					String msg = getResourceString("QB_EXPORT_TO_DB_FAIL");
+					String msg = getResourceString("ExportPanel.UpdateFailMsg");
 					if (killer != null)
 					{
-						msg += ": " + killer.getClass().getSimpleName();
+						msg += " Error: " + killer.getClass().getSimpleName();
 						if (StringUtils.isNotBlank(killer.getLocalizedMessage()))
 						{
 							msg += " (" + killer.getLocalizedMessage() + ")";
@@ -755,7 +755,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	@Override
 	public void done(long rows)
 	{
-		if (stupid == 0 && mapUpdating != -1)
+		if (rows == -1 || (stupid == 0 && mapUpdating != -1))
 		{
 			final long frows = rows;
 			
@@ -772,25 +772,24 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						if (frows != -1)
 						{
 							UIRegistry.displayInfoMsgDlgLocalized("ExportPanel.UpdateSuccess");
-							//status.setText(String.format(UIRegistry.getResourceString("ExportLabel.UpdateDone"), rowCount));
 							status.setText(UIRegistry.getResourceString("ExportPanel.CacheUpdated"));
 						}
 						else
 						{
 							UIRegistry.displayInfoMsgDlgLocalized("ExportPanel.UpdateFailMsg");
-							status.setText(UIRegistry.getResourceString("ExportLabel.UpdateFail"));
+							status.setText(UIRegistry.getResourceString("ExportPanel.UpdateFail"));
 						}
 					}
 					else
 					{
 						if (frows != -1)
 						{
-							status.setText(String.format(UIRegistry.getResourceString("ExportLabel.ExportDone"), rowCount));
+							status.setText(String.format(UIRegistry.getResourceString("ExportPanel.ExportDone"), rowCount));
 						}
 						else
 						{
 							UIRegistry.displayInfoMsgDlgLocalized("ExportPanel.ExportFailMsg");
-							status.setText(UIRegistry.getResourceString("ExportLabel.ExportFail"));
+							status.setText(UIRegistry.getResourceString("ExportPanel.ExportFail"));
 						}
 					}
 					if (updater != null && frows != -1)

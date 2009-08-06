@@ -247,7 +247,7 @@ public class ExportToMySQLDB
 	    	deleteDeletedRecs(toConnection, tblName, tblName + "Id", tbl.getName(), tbl.getIdColumnName(), AppContextMgr.getInstance().getClassObject(Collection.class).getId());
 	    }
 	    
-	    System.out.println("deleted deleted recs");
+	    //System.out.println("deleted deleted recs");
 	    
 		if (rows.hasResultSize())
 		{
@@ -256,7 +256,7 @@ public class ExportToMySQLDB
 				listener.loaded();
 				listener.rowCount(rows.size());
 			}
-			System.out.println("listeners notified: loaded()");
+			//System.out.println("listeners notified: loaded()");
 		}
 		
 		Statement stmt = toConnection.createStatement();
