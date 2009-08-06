@@ -346,8 +346,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     public static void checkForSpecifyAppsRunning()
     {
-        List<Integer> ids = ProcessListUtil.getProcessIdWithText("specify");
-        if (ids.size() > 0)
+        List<Integer> ids = ProcessListUtil.getProcessIdWithText("exe4j.moduleName", "specify");
+        if (ids.size() > 1)
         {
             UIRegistry.showLocalizedMsg("WARNING", "Specify.TOO_MANY_SP");
             System.exit(0);
@@ -2535,7 +2535,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 @Override
                 public void run()
                 {
-                    CollectingEventsAndAttrsMaint.performMaint();
+                    CollectingEventsAndAttrsMaint dbMaint = new CollectingEventsAndAttrsMaint();
+                    dbMaint.performMaint();
                 }
             });
             
