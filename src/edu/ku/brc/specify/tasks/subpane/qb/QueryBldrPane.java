@@ -347,6 +347,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				"County", "1,10,2,3", false));
 		autoMaps.put("CollectionCode", new AutoMap("1,23.collection.code",
 				"code", "1,23", false));
+		autoMaps.put("InstitutionCode", new AutoMap("1,23,26,96,94.institution.code",
+				"code", "1,23,26,96,94", false));
 		autoMaps.put("Locality", new AutoMap("1,10,2.locality.localityName",
 				"localityName", "1,10,2", false));
 		autoMaps.put("DecimalLatitude", new AutoMap(

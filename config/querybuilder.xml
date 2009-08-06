@@ -111,7 +111,6 @@
     	<table name="Collection" field="collection" >
     		<alias name="Agent" field="contentContacts" />
         	<alias name="Agent" field="createdByAgent" />
-        	<table name="Discipline" field="discipline" />
     		<table name="FieldNotebook" field="fieldNoteBooks" />
       		<!-- <alias name="CollectionRelType" field="leftSideRelTypes" />  -->
          	<alias name="Agent" field="modifiedByAgent" />
@@ -122,6 +121,11 @@
       		<!-- <table name="SpAppResourceDir" field="spAppResourceDirs"/> -->
       		<alias name="Agent" field="technicalContacts" />
       		<table name="SpPrincipal" field="userGroups"/>
+      		<table name="Discipline" field="discipline" >
+      			<table name="Division" field="division" >
+      				<table name="Institution" field="institution" />
+      			</table>
+      		</table>	
       	</table>
       	<alias name="ConservDescription" field="conservDescriptions" /> 
       	<!-- table name="Container" field="container" /-->
