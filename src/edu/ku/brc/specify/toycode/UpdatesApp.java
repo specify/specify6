@@ -204,13 +204,14 @@ public class UpdatesApp extends JPanel
             public void actionPerformed(ActionEvent e)
             {
                 merge(baseTF.getText(), 
-                        baseUpTF.getText(), 
-                        macFullTF.getText(), 
-                        macUpTF.getText(), 
-                        outTF.getText(), 
-                        versionTF.getText(), 
-                        Integer.toString((Integer)verSub1.getValue()), 
-                        Integer.toString((Integer)verSub2.getValue()));
+                      baseUpTF.getText(), 
+                      macFullTF.getText(), 
+                      macUpTF.getText(), 
+                      outTF.getText(), 
+                      updateBaseTF.getText(),
+                      versionTF.getText(), 
+                      Integer.toString((Integer)verSub1.getValue()), 
+                      Integer.toString((Integer)verSub2.getValue()));
                 
                 doSave(outTF.getText());
             }
@@ -234,6 +235,7 @@ public class UpdatesApp extends JPanel
                          final String macFullStr,
                          final String macUpStr, 
                          final String outStr, 
+                         final String baseVerStr,
                          final String versionStr, 
                          final String verSub1Str, 
                          final String verSub2Str)
@@ -277,14 +279,12 @@ public class UpdatesApp extends JPanel
         maxFullUpdateDesc = read(new File(macFullStr));
         maxUpUpdateDesc   = read(new File(macUpStr));
         
-        String subVer1Str = Integer.toString((Integer)verSub1.getValue());
-        String subVer2Str = Integer.toString((Integer)verSub2.getValue());
         
-        setAsFull(baseUpdateDesc, updateBaseTF.getText(), versionTF.getText(), subVer1Str, subVer2Str);
-        setAsUpdate(baseUpdateUpDesc, versionTF.getText(), subVer1Str, subVer2Str);
+        setAsFull(baseUpdateDesc, baseVerStr, versionTF.getText(), verSub1Str, verSub2Str);
+        setAsUpdate(baseUpdateUpDesc, versionStr, verSub1Str, verSub2Str);
         
-        setAsFull(maxFullUpdateDesc, updateBaseTF.getText(), versionTF.getText(), subVer1Str, subVer2Str);
-        setAsUpdate(maxUpUpdateDesc, versionTF.getText(), subVer1Str, subVer2Str);
+        setAsFull(maxFullUpdateDesc, baseVerStr, versionTF.getText(), verSub1Str, verSub2Str);
+        setAsUpdate(maxUpUpdateDesc, versionStr, verSub1Str, verSub2Str);
         
         baseUpdateDesc.getEntries().addAll(baseUpdateUpDesc.getEntries());
         baseUpdateDesc.getEntries().addAll(maxFullUpdateDesc.getEntries());
@@ -526,7 +526,7 @@ public class UpdatesApp extends JPanel
         {
             doingCmdLine = true;
             UpdatesApp updateApp = new UpdatesApp();
-            updateApp.merge(args[0], args[1],args[2], args[3], args[4], args[5], args[6], args[7]);
+            updateApp.merge(args[0], args[1],args[2], args[3], args[4], args[5], args[6], args[7], args[8]);
             
         } else
         {
