@@ -67,6 +67,7 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.db.ViewBasedSearchDialogIFace;
+import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.ViewSetMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
@@ -1830,6 +1831,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
             try
             {
                 session = DataProviderFactory.getInstance().createSession();
+                appRes.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+                appRes.setModifiedByAgent(Agent.getUserAgent());
                 session.beginTransaction();
                 if (!dirContainsResource)
                 {
@@ -1843,10 +1846,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     //hibernate exceptions for newly created resources.
                     session.saveOrUpdate(spAppResource);
                 }
-                session.commit();
-                session.flush();
-                return true;
-                
+            	session.commit();
+            	session.flush();
+            	return true;
             } catch (Exception ex)
             {
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
