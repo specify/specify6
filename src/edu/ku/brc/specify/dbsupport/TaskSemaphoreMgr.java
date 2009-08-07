@@ -226,7 +226,7 @@ public class TaskSemaphoreMgr
      * @param scope the scope of the lock
      * @return the semaphore or null if no matching semaphore exists.
      */
-    protected static SpTaskSemaphore getLockInfo(final String title, 
+    public static SpTaskSemaphore getLockInfo(final String title, 
                                                  final String name, 
                                                  final SCOPE  scope)
     {

@@ -44,6 +44,8 @@ import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.SCOPE;
@@ -386,9 +388,27 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             	
             	if (BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS)
             	{
-            		if (TaskSemaphoreMgr.isLocked(title, treeSemaphoreName, SCOPE.Discipline))
+                    SpTaskSemaphore semaphore = TaskSemaphoreMgr.getLockInfo(title, treeSemaphoreName, SCOPE.Discipline);
+            		if (semaphore != null && semaphore.getIsLocked())
             		{
-             			return FormLockStatus.Skip;
+            			String prevLockedBy = null;
+            			SpecifyUser user = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+            			if (semaphore.getOwner() != null && 
+            					!semaphore.getOwner().getId().equals(user.getId()) &&
+                                semaphore.getOwner().getAgents() != null &&
+                                semaphore.getOwner().getAgents().size() > 0)
+                        {
+            				prevLockedBy = semaphore.getOwner().getAgents().iterator().next().getIdentityTitle();
+                        }   
+            			if (prevLockedBy != null)
+            			{
+            				UIRegistry.displayInfoMsgDlgLocalized("DBObjDialogFactory.LockedOut1", title, prevLockedBy);
+            			}
+            			else
+            			{
+            				UIRegistry.displayInfoMsgDlgLocalized("DBObjDialogFactory.LockedOut2", title, prevLockedBy);
+            			}
+            			return FormLockStatus.Skip;
             		}
             	}
             	else
