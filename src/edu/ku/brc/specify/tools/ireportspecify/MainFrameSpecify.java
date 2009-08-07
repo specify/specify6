@@ -41,6 +41,7 @@ import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -86,6 +87,7 @@ import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.SpAppResource;
+import edu.ku.brc.specify.datamodel.SpAppResourceData;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpReport;
@@ -428,7 +430,29 @@ public class MainFrameSpecify extends MainFrame
         	//Need to get the latest copy from context mgr.
         	//If other new reports were created, context mgr may have updated this report's
         	//appResource when new reports' appResources are created and added to a directory - I think.
-        	appRes = AppContextMgr.getInstance().getResource(appRes.getName());
+        	AppResourceIFace freshAppRes = AppContextMgr.getInstance().getResource(appRes.getName());
+        	if (freshAppRes != null)
+        	{
+        		appRes = freshAppRes;
+        	}
+        	else
+        	{
+        		//somebody deleted it in a concurrent instance of Specify. Or Something.
+        		SpAppResource spAppRes = (SpAppResource )appRes;
+        		spAppRes.setSpAppResourceId(null);
+        		spAppRes.setVersion(0);
+        		spAppRes.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        		SpecifyAppContextMgr spMgr = (SpecifyAppContextMgr )AppContextMgr.getInstance();
+        		SpAppResourceDir dir = spMgr.getSpAppResourceDirByName(spMgr.getDirName(spAppRes.getSpAppResourceDir()));
+        		spAppRes.setSpAppResourceDir(dir);
+        		spAppRes.setSpAppResourceDatas(new HashSet<SpAppResourceData>());
+        		spAppRes.setSpReports(new HashSet<SpReport>());
+        		if (rep != null)
+        		{
+        			rep.setSpReport(null);
+        		}
+        		newRep = true;
+        	}
         }
         boolean result = false;
         boolean savedAppRes = false;
