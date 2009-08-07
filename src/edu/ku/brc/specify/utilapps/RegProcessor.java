@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -41,7 +40,6 @@ import java.util.Vector;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.dbsupport.DBConnection;
@@ -87,6 +85,10 @@ public class RegProcessor
     protected Hashtable<String, Hashtable<String, Integer>>      prvTrackCatsHash  = new Hashtable<String, Hashtable<String, Integer>>();
     
     protected Vector<Pair<String, String>>                       dateTimeVector    = new Vector<Pair<String, String>>();
+    
+    protected Hashtable<String, Boolean>                         regNumOKHash      = new Hashtable<String, Boolean>();
+    protected Hashtable<String, String>                          idToIPHash        = null;
+    protected int                                                lineNo            = 0;
 
     protected String[] TYPES = {"Institution", "Division", "Discipline", "Collection"};
     
@@ -98,6 +100,25 @@ public class RegProcessor
     public RegProcessor()
     {
         super();
+
+    }
+    
+    /**
+     * 
+     */
+    public void processFile()
+    {
+        try
+        {
+            //idToIPHash = getIdToIPHash();
+            
+            process(new File("/Users/rods/reg.dat"), true);
+            process(new File("/Users/rods/track.dat"), false);
+            
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
     }
     
     /**
@@ -115,11 +136,14 @@ public class RegProcessor
     {
         Vector<RegProcEntry> kids = new Vector<RegProcEntry>(root.getKids());
         
-        for (RegProcEntry entry : kids)
+        if (!inclAnonymous)
         {
-            if (!inclAnonymous && entry.getName().equals("Anonymous"))
+            for (RegProcEntry entry : kids)
             {
-                root.getKids().remove(entry);
+                if (entry.getName().equals("Anonymous"))
+                {
+                    root.getKids().remove(entry);
+                }
             }
         }
         
@@ -399,465 +423,10 @@ public class RegProcessor
         return null;
     }
 
-    /**
-     * @return
-     * @throws IOException
-     */
-    protected boolean processTrackEntry(final long verTime, final long prevVerTime) throws IOException, SQLException
-    {
-        //SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
-        String     line  = br.readLine();
-        Properties props = new Properties();
-
-        do 
-        {
-            String[] tokens = StringUtils.split(line, "=");
-            if (tokens.length == 2)
-            {
-                String pName = tokens[0].trim();
-                if (pName.indexOf("TREE_") > -1)
-                {
-                    pName = StringUtils.replace(pName, "TREE_", "TR_");
-                    pName = StringUtils.remove(pName, "Def");
-                    
-                } else if (pName.indexOf("TREEDEF") > -1)
-                {
-                    pName = StringUtils.replace(pName, "TREEDEF_", "TD_");
-                    
-                } else if (pName.indexOf("TR_") > -1 && pName.endsWith("Def"))
-                {
-                    pName = StringUtils.remove(pName, "Def");
-                }
-                props.put(pName, tokens[1].trim());
-                
-            } else if (tokens.length > 2)
-            {
-                System.err.println("Length: "+tokens.length+"  ["+line+"]");
-            }
-            
-            line = br.readLine();
-            if (line != null && line.startsWith("----------"))
-            {
-                String collNumber = props.getProperty("Collection_number");
-                String id         = props.getProperty("id");
-                if (id != null)
-                {
-                    String   dateStr;
-                    String   date     = props.getProperty("date");
-                    if (date != null)
-                    {
-                        String[] dateTime = StringUtils.split(date, " ");
-                        dateStr  = dateTime[0] != null ? dateTime[0] : "";
-                        
-                        String timeStr = dateTime.length == 2 && dateTime[1] != null ? dateTime[1] : "";
-                        props.put("date", dateStr);
-                        props.put("time", timeStr);
-                        
-                        if (StringUtils.isNotEmpty(dateStr) || StringUtils.isNotEmpty(dateStr))
-                        {
-                            dateTimeVector.add(new Pair<String, String>(dateStr, timeStr));
-                        }
-                        
-                    } else
-                    {
-                        dateStr = "";
-                    }
-                    
-                    boolean isNew = false;
-                    RegProcEntry entry = trackIdHash.get(id);
-                    if (entry == null)
-                    {
-                        entry = new  RegProcEntry(props);
-                        entry.setId(id);
-                        isNew = true;
-                    }
-                        
-                    // Version Stuff
-                    String version = null;
-                    if (verTime != 0 && prevVerTime != 0)
-                    {
-                        if (dateStr.equals("08/12/03") || 
-                            dateStr.equals("08/12/02"))
-                        {
-                            version = "Alpha 6.1.63";
-                            
-                        } else if (dateStr.equals("08/12/04") || 
-                                   dateStr.equals("08/12/05") || 
-                                   dateStr.equals("08/12/06") || 
-                                   dateStr.equals("08/12/07") || 
-                                   dateStr.equals("08/12/08"))
-                        {
-                            version = "Alpha 6.1.64";
-                        } else
-                        {
-                            version = props.getProperty("app_version");
-                        }
-                        
-                        /*
-                        long     time     = getDate(dateTime[0]);
-                        int      inx      = -1;
-                        for (int i=0;i<dateList.size();i++)
-                        {
-                            //System.out.println("["+df.format(new Date(time))+"]["+df.format(new Date(dateList.get(i)))+"] "+ (time > dateList.get(i)));
-                            //System.out.println(String.format("[%5d][%5d] ", time, dateList.get(i))+ (time > dateList.get(i)));
-                            if (time < dateList.get(i))
-                            {
-                                inx = i-1;
-                                break;
-                                
-                            } else if (time == dateList.get(i))
-                            {
-                                inx = i;
-                                break;
-                            }
-                        }
-                        
-                        if (inx > -1)
-                        {
-                            time    = dateList.get(inx);
-                            version = dateToVer.get(time);
-                            //System.out.println(time+"  "+version+" "+collNumber);
-                        } else
-                        {
-                            continue;
-                        }*/
-                    }
-                    
-
-                    if (connection != null && id != null)
-                    {
-                        Vector<String> numKeys = new Vector<String>();
-                        
-                        ResultSet rs = stmt.executeQuery("SELECT TrackID, CountAmt FROM track WHERE Id = '"+id+"'");
-                        if (rs.next())
-                        {
-                            int trackId = rs.getInt(1);
-                            int count   = rs.getInt(2) + 1;
-                            stmt.executeUpdate("UPDATE track SET CountAmt="+count+" WHERE TrackID = "+trackId);
-                            StringBuilder sb = new StringBuilder();
-                            
-                            for (Object key : props.keySet())
-                            {
-                                if (!key.toString().startsWith("num_"))
-                                {
-                                    sb.setLength(0);
-                                    
-                                    ResultSet rs2 = stmt.executeQuery("SELECT TrackItemID FROM trackitem WHERE TrackID = "+trackId+" AND Name ='"+key.toString()+"'");
-                                    if (rs2.next())
-                                    {
-                                        int trackItemId = rs2.getInt(1);
-                                        sb.append("UPDATE trackitem SET ");
-                                        String valStr = props.getProperty(key.toString());
-                                        if (valStr.length() > 0 && StringUtils.isNumeric(valStr))
-                                        {
-                                            sb.append("CountAmt=");
-                                            sb.append(valStr);
-                                        } else
-                                        {
-                                            sb.append("Value=");
-                                            sb.append("'"+valStr+"'");
-                                        }
-                                        sb.append(" WHERE TrackItemID = ");
-                                        sb.append(trackItemId);
-                                        
-                                    } else
-                                    {
-                                        sb.append("INSERT INTO trackitem (TrackID, Name, Value, CountAmt) VALUES (");
-                                        sb.append(trackId+", ");
-                                        sb.append("'"+key+"', ");
-                                        String valStr = props.getProperty(key.toString());
-                                        if (valStr.length() > 0 && StringUtils.isNumeric(valStr))
-                                        {
-                                            sb.append("null, ");
-                                            sb.append(valStr+")");
-                                        } else
-                                        {
-                                            sb.append("'"+valStr+"', null)");
-                                        } 
-                                    }
-
-                                    //System.out.println(sb.toString());
-                                    stmt.executeUpdate(sb.toString());
-                                    
-                                } else
-                                {
-                                    numKeys.add(key.toString());
-                                }                                
-                            }
-                            
-                        } else
-                        {
-                            StringBuilder sb = new StringBuilder("INSERT INTO track (Id, TimestampCreated, CountAmt) VALUES(");
-                            sb.append("'"+id+"', ");
-                            dateStr = props.getProperty("date");
-                            String timeStr = props.getProperty("time");
-                            sb.append("'20"+StringUtils.replace(dateStr, "/", "-"));
-                            sb.append(" ");
-                            sb.append(timeStr+"', 1)");
-                            try
-                            {
-                                //System.out.println(sb.toString());
-                                
-                                stmt.executeUpdate(sb.toString());
-                                int newID = BasicSQLUtils.getInsertedId(stmt);
-                                //System.out.println(newID);
-                                
-                                for (Object key : props.keySet())
-                                {
-                                    if (!key.toString().startsWith("num_"))
-                                    {
-                                        sb.setLength(0);
-                                        sb.append("INSERT INTO trackitem (TrackID, Name, Value, CountAmt) VALUES (");
-                                        sb.append(newID+", ");
-                                        sb.append("'"+key+"', ");
-                                        String valStr = props.getProperty(key.toString());
-                                        if (valStr.length() > 0 && StringUtils.isNumeric(valStr))
-                                        {
-                                            sb.append("null, ");
-                                            sb.append(valStr+")");
-                                        } else
-                                        {
-                                            sb.append("'"+valStr+"', null)");
-                                        }
-                                        //System.out.println(sb.toString());
-                                        stmt.executeUpdate(sb.toString());
-                                    } else
-                                    {
-                                        numKeys.add(key.toString());
-                                    }
-                                }
-                                
-                            } catch (SQLException ex)
-                            {
-                                ex.printStackTrace();
-                            }
-                        }
-                        rs.close();
-                        
-                        if (numKeys.size() > 0 && StringUtils.isNotEmpty(collNumber))
-                        {
-                            String sql = "SELECT RegisterID FROM register WHERE RegNumber = '"+collNumber+"'";
-                            Integer regId  = BasicSQLUtils.getCount(sql);
-                            if (regId != null)
-                            {
-                                for (String key : numKeys)
-                                {
-                                    boolean doItemInsert = true;
-                                    
-                                    sql = "SELECT RegisterItemID FROM registeritem WHERE RegisterID = "+regId+" AND Name ='" + key + "'"; 
-                                    Integer regItemId = BasicSQLUtils.getCount(sql);
-                                    if (regItemId != null)
-                                    {
-                                        doItemInsert = false;
-                                        sql          = "UPDATE registeritem SET CountAmt='" + props.getProperty(key) + "' WHERE RegisterItemID = " + regItemId; 
-                                    }
-                
-                                    if (doItemInsert) 
-                                    {
-                
-                                        sql = "INSERT INTO registeritem (RegisterID, Name, Value, CountAmt) VALUES (" + regId + ", '" + key + "', " +
-                                              "NULL, "  + props.getProperty(key) +  ")";
-                                   }
-                                   stmt.executeUpdate(sql);
-                                }
-                            }
-                        }
-                    }
-                    
-                    if (version != null && StringUtils.isNotEmpty(collNumber))
-                    {
-                        if (!version.equals(versionNum))
-                        {
-                            if (version.equals(prevVersionNum))
-                            {
-                                System.out.println("***  "+version+" "+collNumber+"  "+entry.get("date"));
-                                Properties p = new Properties();
-                                p.putAll(props);
-                                RegProcEntry e = new RegProcEntry((Properties)props.clone());
-                                e.setId(id);
-                                prvRegNumHash.put(collNumber, e);
-                                
-                            } else
-                            {
-                                continue;
-                            }
-                        } else
-                        {
-                            System.out.println("###  "+version+" "+collNumber+"  "+entry.get("date"));
-                            Properties p = new Properties();
-                            p.putAll(props);
-                            RegProcEntry e = new RegProcEntry((Properties)props.clone());
-                            e.setId(id);
-                            trackRegNumHash.put(collNumber, e);
-                        }
-                    }
-                    // Version Stuff
-                    
-                    if (isNew)
-                    {
-                        trackIdHash.put(id, entry);
-                    } else
-                    {
-                        entry.getProps().clear();
-                        entry.getProps().putAll(props);
-                    }
-                }
-                
-                if (StringUtils.isNotEmpty(collNumber))
-                {
-                    RegProcEntry colEntry = regNumHash.get(collNumber);
-                    if (colEntry != null)
-                    {
-                        for (Object keyObj : props.keySet())
-                        {
-                            String key = keyObj.toString();
-                            if (key.startsWith("num_"))
-                            {
-                                colEntry.getProps().put(key, props.get(key));
-                            }
-                        }
-                    }
-                }
-                
-                return true;
-            }
-        } while (line != null);
-        
-        return false;
-    }
-    
     public static Connection connection     = null;
     public static Statement  stmt           = null;
     public static String     tableName      = null;
     public static String     tableItemName  = null;
-    
-    /**
-     * @return
-     * @throws IOException
-     */
-    protected boolean processEntry() throws IOException
-    {
-        String     line  = br.readLine();
-        Properties props = new Properties();
-
-        do 
-        {
-            String[] tokens = StringUtils.split(line, "=");
-            if (tokens.length == 2)
-            {
-                String key = tokens[0];
-                if (key.equals("SA_Number"))
-                {
-                    key = "ISA_Number";
-                }
-                props.put(key, tokens[1]);
-                
-            } else if (tokens.length > 2)
-            {
-                System.err.println("Length: "+tokens.length+"  ["+line+"]");
-            }
-            
-            line = br.readLine();
-            if (line == null || line.startsWith("----------"))
-            {
-                String regType    = props.getProperty("reg_type");
-                String regNumber  = props.getProperty("reg_number");
-                
-                if (StringUtils.isNotEmpty(regType) && 
-                    StringUtils.isNotEmpty(regNumber))
-                {
-                    String   date     = props.getProperty("date");
-                    if (date != null)
-                    {
-                        String[] dateTime = StringUtils.split(date, " ");
-                        props.put("date", dateTime.length > 0 && dateTime[0] != null ? dateTime[0] : "");
-                        props.put("time", dateTime.length == 2 && dateTime[1] != null ? dateTime[1] : "");
-                    }
-                    
-                    RegProcEntry currEntry = regNumHash.get(regNumber);
-                    if (currEntry == null)
-                    {
-                        currEntry = new RegProcEntry(props);
-                        regNumHash.put(regNumber, currEntry);
-                        
-                        String idStr = currEntry.getId();
-                        if (idStr == null)
-                        {
-                            idStr = props.getProperty("id");
-                        }
-                        
-                        if (connection != null && regNumber != null)
-                        {
-                            StringBuilder sb = new StringBuilder("INSERT INTO register (RegNumber, RegType, TimestampCreated) VALUES(");
-                            sb.append("'"+regNumber+"', ");
-                            sb.append("'"+regType+"', ");
-                            String dateStr = props.getProperty("date");
-                            String timeStr = props.getProperty("time");
-                            sb.append("'20"+StringUtils.replace(dateStr, "/", "-"));
-                            sb.append(" ");
-                            sb.append(timeStr+"')");
-                            try
-                            {
-                                //System.out.println(sb.toString());
-                                
-                                stmt.executeUpdate(sb.toString());
-                                int newID = BasicSQLUtils.getInsertedId(stmt);
-                                
-                                //System.out.println(newID);
-                                
-                                for (Object key : props.keySet())
-                                {
-                                    sb.setLength(0);
-                                    sb.append("INSERT INTO registeritem (RegisterID, Name, Value, CountAmt) VALUES (");
-                                    sb.append(newID+", ");
-                                    sb.append("'"+key+"', ");
-                                    String valStr = props.getProperty(key.toString());
-                                    //System.out.println(key+"  "+key.toString().indexOf("_number"));
-                                    if (valStr.length() > 0 && 
-                                        StringUtils.isNumeric(valStr) && 
-                                        key.toString().indexOf("_number") == -1)
-                                    {
-                                        sb.append("NULL, ");
-                                        sb.append(valStr);
-                                        sb.append(")");
-                                    } else
-                                    {
-                                        sb.append("'"+valStr+"', NULL)");
-                                    }
-                                    //System.out.println(sb.toString());
-                                    stmt.executeUpdate(sb.toString());
-                                }
-                                
-                            } catch (SQLException ex)
-                            {
-                                ex.printStackTrace();
-                            }
-                        }
-
-                    } else
-                    {
-                        currEntry.getProps().putAll(props);
-                    }
-                    
-                    Hashtable<String, RegProcEntry> entryHash = typeHash.get(regType);
-                    if (entryHash == null)
-                    {
-                        entryHash = new  Hashtable<String, RegProcEntry>();
-                        typeHash.put(regType, entryHash);
-                    }
-                    entryHash.put(regNumber, currEntry);
-                    
-                } else
-                {
-                    System.err.println("Skipping: "+regNumber);
-                }
-                
-                return line != null;
-            }
-        } while (line != null);
-        
-        return false;
-    }
     
     /**
      * @return
@@ -983,6 +552,9 @@ public class RegProcessor
         list.add(new Pair<String, String>("num_gtp",    "Chronostratigraphy Records"));
         list.add(new Pair<String, String>("num_gtpu",   "Chronostratigraphy Records Used"));
         
+        list.add(new Pair<String, String>("Phone",      "Phone"));
+        list.add(new Pair<String, String>("Address",    "Address"));
+        
         list.add(new Pair<String, String>("Institution_number",   "Institution Number"));
         list.add(new Pair<String, String>("Institution_name",     "Institution"));
         list.add(new Pair<String, String>("Division_number",      "Division Number"));
@@ -1066,86 +638,6 @@ public class RegProcessor
     }
 
     /**
-     * @param inFile
-     * @throws IOException
-     */
-    protected void processTracks(final File inFile) throws IOException
-    {
-        
-        long versonTime      = 0;
-        long prevVersionTime = 0;
-        if (versionNum != null && prevVersionNum != null)
-        {
-            versonTime      = getDate(verToDateHash.get(versionNum));
-            prevVersionTime = getDate(verToDateHash.get(prevVersionNum));
-        }
-        
-        fr = new FileReader(inFile);
-        br = new BufferedReader(fr);
-
-        try
-        {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost/stats", "Specify", "Specify");
-            stmt       = connection.createStatement();
-
-            // first line is header
-            br.readLine();
-            boolean rv = true;
-            while (rv)
-            {
-                rv = processTrackEntry(versonTime, prevVersionTime);
-            }
-            
-            stmt.close();
-            connection.close();
-            
-        } catch (SQLException ex)
-        {
-            ex.printStackTrace();
-        }
-
-        
-        for (RegProcEntry entry : trackIdHash.values())
-        {
-            //System.out.println(entry);
-            for (Object keyObj : entry.getProps().keySet())
-            {
-                String pName = keyObj.toString();
-                String value = entry.getProps().getProperty(pName);
-                
-                if (pName.startsWith("Usage_"))
-                {
-                    String name = pName.substring(6);
-                    //System.err.println("Usage: ["+pName+"] ["+pName.substring(6)+"]");
-                    addToTracks(name, value, trackUsageHash, trackCatsHash); 
-                    
-                } else if (pName.startsWith("DE_") || 
-                            pName.startsWith("WB_") || 
-                            pName.startsWith("SS_") || 
-                            pName.startsWith("RS_") || 
-                            pName.startsWith("QB_") || 
-                            pName.startsWith("TREE_OPEN_") || 
-                            pName.startsWith("TREEDEF_OPEN_") || 
-                            pName.startsWith("RunCount") || 
-                            pName.startsWith("Tools_"))
-                {
-                    addToTracks(pName, value, trackUsageHash, trackCatsHash); 
-                    //System.err.println("Adding: ["+pName+"] ");
-                } else
-                {
-                    //System.err.println("Couldn't find: ["+pName+"]");
-                }
-            }
-            
-            String collectionNum = entry.get("Collection_number");
-            if (collectionNum != null)
-            {
-                collHash.put(collectionNum, entry);
-            }
-        }
-    }
-    
-    /**
      * 
      */
     public void mergeStats()
@@ -1204,69 +696,111 @@ public class RegProcessor
      */
     public void processSQL()
     {
-        String sql = "SELECT register.RegisterID, register.RegNumber, registeritem.Name, registeritem.Value, registeritem.CountAmt" +
-                     " FROM register INNER JOIN registeritem ON register.RegisterID = registeritem.RegisterID ORDER BY register.RegNumber";
-        
+        String sql = "SELECT r.RegisterID, r.RegNumber, ri.Name, ri.Value, ri.CountAmt, r.TimestampCreated, r.IP" +
+                     " FROM register r INNER JOIN registeritem ri ON r.RegisterID = ri.RegisterID WHERE r.TimestampCreated > '2009-04-12' ORDER BY r.RegNumber";
+        System.err.println(sql);
         //Connection connection = DBConnection.getInstance().getConnection();
         try
         {
-            Properties props = new Properties();
             stmt = DBConnection.getInstance().getConnection().createStatement();
             ResultSet         rs     = stmt.executeQuery(sql);
             int               prevId = Integer.MAX_VALUE;
+            RegProcEntry      currEntry = null;
             while (rs.next())
             {
                 int id = rs.getInt(1);
                 if (id != prevId)
                 {
-                    String regType    = props.getProperty("reg_type");
-                    String regNumber  = props.getProperty("reg_number");
-                    
-                    if (StringUtils.isNotEmpty(regType) && 
-                        StringUtils.isNotEmpty(regNumber))
+                    if (currEntry != null)
                     {
-                        RegProcEntry currEntry = regNumHash.get(regNumber);
-                        if (currEntry == null)
+                        String regType = currEntry.getProps().getProperty("reg_type");
+                        if (regType != null)
                         {
-                            currEntry = new RegProcEntry(props);
-                            regNumHash.put(regNumber, currEntry);
-                            currEntry.setId(rs.getString(2));
+                            Hashtable<String, RegProcEntry> entryHash = typeHash.get(regType);
+                            if (entryHash == null)
+                            {
+                                entryHash = new  Hashtable<String, RegProcEntry>();
+                                typeHash.put(regType, entryHash);
+                            }
+                            currEntry.getProps().put("reg_number", currEntry.getId());
+                            currEntry.setType(currEntry.getProps().getProperty("reg_type"));
 
+                            
+                            if (entryHash.get(currEntry.getId()) == null)
+                            {
+                                entryHash.put(currEntry.getId(), currEntry);    
+                            } else
+                            {
+                                System.err.println("Already there: "+currEntry.getId());
+                            }
                         } else
                         {
-                            currEntry.getProps().putAll(props);
+                            System.err.println("1Skipping: "+rs.getString(2));
                         }
+                    }
                         
-                        Hashtable<String, RegProcEntry> entryHash = typeHash.get(regType);
-                        if (entryHash == null)
-                        {
-                            entryHash = new  Hashtable<String, RegProcEntry>();
-                            typeHash.put(regType, entryHash);
-                        }
-                        entryHash.put(regNumber, currEntry);
+                    String regNumber = rs.getString(2);
+                    currEntry = regNumHash.get(regNumber);
+                    if (currEntry == null)
+                    {
+                        currEntry = new RegProcEntry();
+                        regNumHash.put(regNumber, currEntry);
+                        currEntry.setId(regNumber);
+                        currEntry.setTimestampCreated(rs.getTimestamp(6));
+                        currEntry.getProps().put("ip", rs.getString(7));
                         
                     } else
                     {
-                        System.err.println("Skipping: "+regNumber);
+                        System.err.println("Already "+regNumber);
                     }
-                    
+                        
                     prevId = id;
-                    props = new Properties();
                     
                 } else if (prevId == Integer.MAX_VALUE)
                 {
                     prevId = id;
-                } else
-                {
-                    String value = rs.getString(4);
-                    if (value == null)
-                    {
-                        value = rs.getString(5);
-                    }
-                    props.put(rs.getString(3), value);
+                    
                 }
+            
+                String value = rs.getString(4);
+                if (value == null)
+                {
+                    value = rs.getString(5);
+                }
+                String propName = rs.getString(3);
+                currEntry.getProps().put(propName, value);
+                
             }
             rs.close();
+            
+            Hashtable<String, RegProcEntry> checkHash = new Hashtable<String, RegProcEntry>();
+            Hashtable<String, RegProcEntry> instHash  = typeHash.get("Institution");
+            
+            for (RegProcEntry entry : new Vector<RegProcEntry>(regNumHash.values()))
+            {
+                entry.setName(null);
+                String ip = entry.get("ip");
+                if (ip == null || ip.startsWith("129.") || ip.startsWith("24."))
+                {
+                    System.out.println("Removing ip: "+ip);
+                    instHash.remove(entry.getId());
+                    regNumHash.remove(entry.getId());
+                    
+                } else
+                {
+                    RegProcEntry e = checkHash.get(ip);
+                    if (e == null)
+                    {
+                        checkHash.put(ip, entry);
+                    } else
+                    {
+                        instHash.remove(e.getId());
+                        regNumHash.remove(e.getId());
+                        checkHash.put(ip, entry);
+                        System.out.println("Compressing ip: "+ip);
+                    }
+                }
+            }
             
             buildTree();
 
@@ -1287,73 +821,6 @@ public class RegProcessor
     }
     
     /**
-     * @param inFile
-     * @throws IOException
-     */
-    @SuppressWarnings({ "unchecked", "cast" })
-    public void process(final File inFile) throws IOException
-    {
-        fr = new FileReader(inFile);
-        br = new BufferedReader(fr);
-        
-        try
-        {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost/stats", "Specify", "Specify");
-            stmt       = connection.createStatement();
-
-            // first line is header
-            br.readLine();
-            boolean rv = true;
-            while (rv)
-            {
-                rv = processEntry();
-            }
-            stmt.close();
-            connection.close();
-            
-        } catch (SQLException ex)
-        {
-            ex.printStackTrace();
-        }
-        
-        buildTree();
-
-        br.close();
-        fr.close();
-        
-        boolean doDemo = false;
-        if (doDemo)
-        {
-            Hashtable<String, Boolean> siteNamesHash = new Hashtable<String, Boolean>();
-            List<String> lines = (List<String>)FileUtils.readLines(new File("sites.csv"));
-            for (int i=1;i<lines.size();i++)
-            {
-                String[] toks = lines.get(i).split("\t");
-                if (toks.length > 4)
-                {
-                    String   nm   = toks[4];
-                    if (StringUtils.isNotEmpty(nm) && !nm.startsWith("TOTAL"))
-                    {
-                        siteNamesHash.put(toks[4], true);
-                    }
-                }
-            }
-            Vector<String> names = new Vector<String>(siteNamesHash.keySet());
-            int cnt = 0;
-            for (RegProcEntry entry : typeHash.get("Institution").values())
-            {
-                entry.setName(names.get(cnt % names.size()));
-                cnt++;
-            }
-        }
-        
-        root.sortKids();
-        
-        //System.out.println("--------");
-        //printEntries(root, 0);
-    }
-    
-    /**
      * 
      */
     protected void buildTree()
@@ -1368,9 +835,14 @@ public class RegProcessor
         
         for (String key : regList)
         {
-            //System.out.println("\n"+key);
+            System.out.println("\n"+key);
             Hashtable<String, RegProcEntry> h = typeHash.get(key);
-            
+            if (h == null || h.values() == null)
+            {
+                System.out.println("Skipping: "+key);
+                continue;
+            }
+            System.out.println("Adding: "+key);
             Vector<RegProcEntry> items = new Vector<RegProcEntry>(h.values());
             Collections.sort(items);
             
@@ -1381,14 +853,19 @@ public class RegProcessor
                 if (reg_type.equals("Collection"))
                 {
                     String       dspNum = entry.getProps().getProperty("Discipline_number");
-                    RegProcEntry parent = typeHash.get("Discipline").get(dspNum);
-                    if (entry != null && parent != null)
+                    Hashtable<String, RegProcEntry> hash = typeHash.get("Discipline");
+                    if (hash != null)
                     {
-                        parent.getKids().add(entry);
-                        entry.setParent(parent);
-                    } else
-                    {
-                        System.err.println("Couldn't find Discipline Num["+dspNum+"]");
+                        RegProcEntry parent = typeHash.get("Discipline").get(dspNum);
+                        if (entry != null && parent != null)
+                        {
+                            parent.getKids().add(entry);
+                            entry.setParent(parent);
+                            System.out.println(parent.getName()+" "+entry.getName());
+                        } else
+                        {
+                            System.err.println("Couldn't find Discipline Num["+dspNum+"]");
+                        }
                     }
                     
                 } else if (reg_type.equals("Discipline"))
@@ -1419,7 +896,6 @@ public class RegProcessor
                     
                 } else if (reg_type.equals("Institution"))
                 {
-                    //String nm = entry.getProps().getProperty("Institution_number");
                     root.getKids().add(entry);
                     entry.setParent(root);
                     
@@ -1446,45 +922,204 @@ public class RegProcessor
             printEntries(kid, level+1);
         }
     }
-    
-    /**
-     * 
-     */
-    /*public void createBldSQL()
-    {
-        Hashtable<String, Boolean> allCats = new Hashtable<String, Boolean>();
-        for (Hashtable<String, Integer> hash : trackCatsHash.values())
-        {
-            for (String cat : hash.keySet())
-            {
-                allCats.put(cat, true);
-            }
-        }
-        Vector<String> list = new Vector<String>(allCats.keySet());
-        Collections.sort(list);
-        
-        for (String cat : list)
-        {
-            System.out.println(cat);
-        }
-    }*/
-    
-    //--------------------------------------------------------
 
     /**
-     * @param args
+     * @return
      */
-    /*public static void main(String[] args)
+    protected Hashtable<String, String> getIdToIPHash()
     {
-        RegProcessor p = new RegProcessor();
-        try
+        Hashtable<String, String> hash = new Hashtable<String, String>();
+        String sql = "SELECT DISTINCT(registeritem.Value), register.IP FROM register INNER JOIN registeritem ON register.RegisterID = registeritem.RegisterID WHERE Name = 'id'";
+        Vector<Object[]> rows = BasicSQLUtils.query(DBConnection.getInstance().getConnection(), sql);
+        for (Object[] row : rows)
         {
-            p.process(new File("reg.dat"));
-            p.processTracks(new File("track.dat"));
-            
-        } catch (IOException ex)
-        {
-            ex.printStackTrace();
+            hash.put(row[0].toString(), row[1].toString());
         }
-    }*/
+        return hash;
+    }
+    
+    /**
+     * @return
+     * @throws IOException
+     */
+    protected boolean processEntry() throws IOException
+    {
+        String     line  = br.readLine();
+        Properties props = new Properties();
+        do 
+        {
+            String[] tokens = StringUtils.split(line, "=");
+            if (tokens.length == 2)
+            {
+                props.put(tokens[0].trim(), tokens[1]);
+                
+            } else if (tokens.length > 2)
+            {
+                System.err.println("Length: "+tokens.length+"  ["+line+"]");
+            }
+            
+            line = br.readLine();
+            if (line == null || line.startsWith("----------"))
+            {
+                String ip         = props.getProperty("ip");
+                String regNumber  = props.getProperty("reg_number");
+                
+                if (StringUtils.isNotEmpty(ip) && 
+                    StringUtils.isNotEmpty(regNumber))
+                {
+                    
+                    if (!ip.startsWith("129.") && !ip.startsWith("24."))
+                    {
+                        regNumOKHash.put(regNumber, Boolean.TRUE);
+                        System.out.println("OK: "+regNumber+"  "+ip);
+                    } else
+                    {
+                        System.out.println("SK: "+regNumber+"  "+ip);
+                    }
+                    
+                } else
+                {
+                    System.err.println("Skipping: "+regNumber+"  "+ip);
+                }
+                
+                return line != null;
+            }
+        } while (line != null);
+        
+        return false;
+    }
+    
+    /**
+     * @return
+     * @throws IOException
+     */
+    protected boolean fixProcessEntry() throws IOException
+    {
+        String     line  = br.readLine();
+        Properties props = new Properties();
+        do 
+        {
+            String[] tokens = StringUtils.split(line, "=");
+            if (tokens.length == 2)
+            {
+                props.put(tokens[0], tokens[1]);
+                
+            } else if (tokens.length > 2)
+            {
+                System.err.println("Length: "+tokens.length+"  ["+line+"]");
+            }
+            
+            line = br.readLine();
+            if (line == null || line.startsWith("----------"))
+            {
+                String ip         = props.getProperty("ip");
+                String regNumber  = props.getProperty("reg_number");
+                
+                if (StringUtils.isNotEmpty(ip) && 
+                    StringUtils.isNotEmpty(regNumber))
+                {
+                    
+                   String sql = "UPDATE register SET IP='"+ip+"' WHERE RegNumber = '"+regNumber+"'";
+                   BasicSQLUtils.update(DBConnection.getInstance().getConnection(), sql);
+                    
+                } else
+                {
+                    System.err.println("Skipping: "+regNumber+"  "+ip);
+                }
+                
+                return line != null;
+            }
+        } while (line != null);
+        
+        return false;
+    }
+    
+    /**
+     * @return
+     * @throws IOException
+     */
+    protected boolean fixTrackEntry() throws IOException
+    {
+        String line  = br.readLine();
+        lineNo++;
+
+        Properties props = new Properties();
+        do 
+        {
+            String[] tokens = StringUtils.split(line, "=");
+            
+            if (tokens.length == 2)
+            {
+                props.put(tokens[0].trim(), tokens[1]);
+                
+            } else if (tokens.length > 2)
+            {
+                System.err.println("Length: "+tokens.length+"  ["+line+"]");
+            }
+            
+            line = br.readLine();
+            lineNo++;
+            if (line == null || line.startsWith("----------"))
+            {
+                String id  = props.getProperty("id");
+                String ip  = props.getProperty("ip");
+                
+                if (StringUtils.isNotEmpty(id))
+                {
+                    //String ip = idToIPHash.get(id);
+                    if (ip != null)
+                    {
+                        String sql = "UPDATE track SET IP='"+ip+"' WHERE Id = '"+id+"'";
+                        BasicSQLUtils.update(DBConnection.getInstance().getConnection(), sql);
+                        
+                    } else
+                    {
+                        System.err.println("No Id->IP: "+id);
+                    }
+                    
+                } else
+                {
+                    System.err.println("Track Skipping: "+id+"  line: "+lineNo);
+                }
+                
+                return line != null;
+            }
+        } while (line != null);
+        
+        return false;
+    }
+
+    /**
+     * @param inFile
+     * @throws IOException
+     */
+    @SuppressWarnings({ "unchecked", "cast" })
+    public void process(final File inFile, final boolean doReg) throws IOException
+    {
+        lineNo = 0;
+        fr = new FileReader(inFile);
+        br = new BufferedReader(fr);
+        
+        // first line is header
+        br.readLine();
+        boolean rv = true;
+        while (rv)
+        {
+            if (doReg)
+            {
+                rv = processEntry();
+                //rv = fixProcessEntry();
+                //rv = false;
+            } else
+            {
+                //rv = fixTrackEntry();
+                rv = false;
+            }
+        }
+
+        br.close();
+        fr.close();
+    }
+
+
 }

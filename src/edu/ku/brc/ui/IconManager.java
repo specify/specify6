@@ -20,6 +20,7 @@
 package edu.ku.brc.ui;
 
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -36,6 +37,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import javax.swing.GrayFilter;
 import javax.swing.ImageIcon;
 
 import org.apache.commons.lang.StringUtils;
@@ -590,6 +592,26 @@ public class IconManager extends Component
         ImageIcon icon = new ImageIcon(bi);
         g.dispose();
         return icon;
+    }
+
+    /**
+     * Creates a Black and White image from the color
+     * @param img the image to be converted
+     * @return new B&W image
+     */
+    public static ImageIcon createFadedImage(final ImageIcon icon)
+    {
+        Image image = GrayFilter.createDisabledImage(icon.getImage());
+        return new ImageIcon(image);
+        
+        /*BufferedImage bi = new BufferedImage(img.getIconWidth(), img.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics g = bi.createGraphics();
+        g.drawImage(img.getImage(), 0, 0, null);
+        g.setColor(new Color(255, 255, 255, 128));
+        g.fillRect(0, 0, bi.getWidth(), bi.getHeight());
+        ImageIcon icon = new ImageIcon(bi);
+        g.dispose();
+        return icon;*/
     }
 
     /**

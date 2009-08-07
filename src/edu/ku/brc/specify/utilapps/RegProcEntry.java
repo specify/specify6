@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.utilapps;
 
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -48,7 +49,17 @@ public class RegProcEntry extends DefaultMutableTreeNode implements Comparable<R
     
     protected String               isaNumber = null;
     protected boolean              isSorted = false;
+    protected Timestamp            timestampCreated;
     
+    /**
+     * 
+     */
+    public RegProcEntry()
+    {
+        super();
+        props = new Properties();
+    }
+
     /**
      * 
      */
@@ -59,7 +70,7 @@ public class RegProcEntry extends DefaultMutableTreeNode implements Comparable<R
     
     public RegProcEntry(final Properties props)
     {
-        this(null, props);
+        this.props = props;
         this.type  = props.getProperty("reg_type");
     }
     
@@ -185,6 +196,22 @@ public class RegProcEntry extends DefaultMutableTreeNode implements Comparable<R
             isaNumber = props.getProperty("ISA_Number", "");
         }
         return isaNumber == null ? "" : isaNumber;
+    }
+
+    /**
+     * @return the timestampCreated
+     */
+    public Timestamp getTimestampCreated()
+    {
+        return timestampCreated;
+    }
+
+    /**
+     * @param timestampCreated the timestampCreated to set
+     */
+    public void setTimestampCreated(Timestamp timestampCreated)
+    {
+        this.timestampCreated = timestampCreated;
     }
 
     /* (non-Javadoc)

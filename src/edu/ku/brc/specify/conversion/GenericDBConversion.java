@@ -2210,7 +2210,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             Hashtable<Integer, Integer> newColObjIDTotaxonomyTypeID = new Hashtable<Integer, Integer>();
             Hashtable<Integer, String> taxonomyTypeIDToTaxonomyName = new Hashtable<Integer, String>();
             
-            TableWriter tblWriter = convLogger.getWriter("convertCollectionObjectDefs.html", "Convert Collection Object Defs");
+            TableWriter tblWriter = convLogger.getWriter("convertCollectionObjectDefs.html", "Collection Object Defs");
 
             String  taxonomyTypeName = taxonTypeHolder.getName();
             Integer taxonomyTypeID   = taxonTypeHolder.getId();
@@ -3764,7 +3764,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      */
     public boolean convertLoanAgentRecords(final boolean doingGifts)
     {
-        TableWriter tblWriter = convLogger.getWriter("convert"+(doingGifts ? "Gift" : "Loan")+".html", "Convert "+(doingGifts ? "Gift" : "Loan"));
+        TableWriter tblWriter = convLogger.getWriter("convert"+(doingGifts ? "Gift" : "Loan")+".html", (doingGifts ? "Gifts" : "Loans"));
 
     	String newTableName = doingGifts ? "giftagent"   : "loanagent";
         String idName       = doingGifts ? "GiftAgentID" : "LoanAgentID";
@@ -3929,7 +3929,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      */
     public boolean convertPreparationRecords(final Hashtable<Integer, Map<String, PrepType>> collToPrepTypeHash)
     {
-        TableWriter tblWriter = convLogger.getWriter("convertPreparations.html", "Convert Preparations");
+        TableWriter tblWriter = convLogger.getWriter("convertPreparations.html", "Preparations");
 
         deleteAllRecordsFromTable(newDBConn, "preparation", BasicSQLUtils.myDestinationServerType);
         
@@ -4430,7 +4430,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     public boolean convertDeterminationRecords()
     {
     	
-        TableWriter tblWriter = convLogger.getWriter("convertDeterminations.html", "Convert Determinations");
+        TableWriter tblWriter = convLogger.getWriter("convertDeterminations.html", "Determinations");
 
         BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "determination", BasicSQLUtils.myDestinationServerType);
 
@@ -4893,7 +4893,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             fieldsToSkipHash.put(fName, "X");
         }
 
-        TableWriter tblWriter = convLogger.getWriter("convertCollectionObjects.html", "Convert Collection Objects");
+        TableWriter tblWriter = convLogger.getWriter("convertCollectionObjects.html", "Collection Objects");
 
         String msg = "colObjTaxonMapper: " + colObjTaxonMapper.size();
         log.info(msg);
@@ -5434,7 +5434,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         	return true;
         }
         
-        TableWriter tblWriter = convLogger.getWriter("convertLoanPreparations.html", "Convert Loan Preps");
+        TableWriter tblWriter = convLogger.getWriter("convertLoanPreparations.html", "Loan Preparations");
 
         try
         {
@@ -5733,7 +5733,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         }*/
         //idMapper.setFrame(frame);
 
-        TableWriter tblWriter = convLogger.getWriter("convertGiftPreparations.html", "Convert Gift Preps");
+        TableWriter tblWriter = convLogger.getWriter("convertGiftPreparations.html", "Gift Preparations");
 
         try
         {
@@ -6636,7 +6636,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     protected void convertLocalityExtraInfo(final String tableName, final boolean isGeoCoordDetail)
     {
         String capName = StringUtils.capitalize(tableName);
-        TableWriter tblWriter = convLogger.getWriter(capName + ".html", capName + " Conversion");
+        TableWriter tblWriter = convLogger.getWriter(capName + ".html", capName);
         BasicSQLUtils.setTblWriter(tblWriter);
         IdHashMapper.setTblWriter(tblWriter);
         
@@ -6865,7 +6865,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for LocalityID
         BasicSQLUtils.setShowErrors(errorsToShow);
         
-        TableWriter tblWriter = convLogger.getWriter("Locality.html", "Locality Conversion");
+        TableWriter tblWriter = convLogger.getWriter("Locality.html", "Localities");
         BasicSQLUtils.setTblWriter(tblWriter);
         IdHashMapper.setTblWriter(tblWriter);
 
@@ -6905,7 +6905,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      */
     public void convertGeography(GeographyTreeDef treeDef) throws SQLException
     {
-        TableWriter tblWriter = convLogger.getWriter("Geography.html", "Geography Conversion");
+        TableWriter tblWriter = convLogger.getWriter("Geography.html", "Geography");
         BasicSQLUtils.setTblWriter(tblWriter);
         
         IdHashMapper.setTblWriter(tblWriter);

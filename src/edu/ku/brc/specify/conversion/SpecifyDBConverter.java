@@ -1314,9 +1314,10 @@ public class SpecifyDBConverter
      */
     protected void createTableSummaryPage()
     {
-        ConversionLogger.TableWriter tblWriter = convLogger.getWriter("TableSummary.html", "Table summary");
+        ConversionLogger.TableWriter tblWriter = convLogger.getWriter("TableSummary.html", "Table Summary");
         tblWriter.startTable();
         tblWriter.println("<tr><th>Table</th><th>Count</th></tr>");
+        int total = 0;
         for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
         {
             Integer count = BasicSQLUtils.getCount("select count(*) from "+ti.getName());
@@ -1324,7 +1325,9 @@ public class SpecifyDBConverter
             {
                 tblWriter.log(ti.getName(), count.toString());
             }
+            total += count;
         }
+        tblWriter.println("<tr><td>Total Records</td><td>"+total+"</td></tr>");
         tblWriter.endTable();
         tblWriter.startTable();
         

@@ -68,7 +68,7 @@ public class AppPreferences
     
     protected String             remoteSaverClassName = null;
     protected AppPrefsIOIFace    appPrefsIO           = null;
-    protected boolean            isEnabled            = false;
+    protected boolean            isEnabled            = true;
 
     protected Hashtable<String, List<AppPrefsChangeListener>> listeners = new Hashtable<String, List<AppPrefsChangeListener>>();
     

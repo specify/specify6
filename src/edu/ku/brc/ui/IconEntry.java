@@ -125,7 +125,16 @@ public class IconEntry
         IconSizeEntry sizeEntry = icons.get(id);
         if (sizeEntry == null)
         {
+
             ImageIcon imgIcon = IconManager.createNewScaledIcon(imageIcon, size, id);
+            if (id.blackWhite())
+            {
+                imgIcon = IconManager.createBWImage(imgIcon);
+            }
+            if (id.faded())
+            {
+                imgIcon = IconManager.createFadedImage(imgIcon);
+            }
             IconSizeEntry newSizeEntry = new IconSizeEntry(id, imgIcon);
             icons.put(id, newSizeEntry);
             return imgIcon;

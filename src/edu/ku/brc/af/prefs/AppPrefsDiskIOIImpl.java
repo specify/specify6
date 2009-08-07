@@ -64,7 +64,7 @@ public class AppPrefsDiskIOIImpl implements AppPrefsIOIFace
     @Override
     public boolean isAvailable()
     {
-        return appPrefsMgr.getDirPath() == null || appPrefsMgr.getDirPath().length() == 0;
+        return appPrefsMgr.getDirPath() != null && appPrefsMgr.getDirPath().length() > 0;
     }
 
     /**
@@ -85,7 +85,7 @@ public class AppPrefsDiskIOIImpl implements AppPrefsIOIFace
     {
         checkForAppPrefs();
         
-        if (isAvailable())
+        if (!isAvailable())
         {
             throw new RuntimeException("The directory path for the prefs ["+appPrefsMgr.getDirPath()+"] ["+appPrefsMgr.getLocalFileName()+"] cannot be empty!"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         } 
