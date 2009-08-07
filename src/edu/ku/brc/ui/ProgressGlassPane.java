@@ -87,7 +87,7 @@ public class ProgressGlassPane extends JComponent
             w = (int) (BAR_WIDTH * ((float) progress / 100.0f)) - w;
             int h = BAR_HEIGHT;
     
-            repaint(x, y, w, h);
+            repaint(x, y, x+BAR_WIDTH, h+1);
         }
     }
 
