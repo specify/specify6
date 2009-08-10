@@ -227,12 +227,14 @@ public class XLSExport implements DataExport
             }
             mappings = writeMappings(wbTemplate);
         }
-        
-        if (data.size() > 1)
+        //assuming data is never empty.
+        boolean hasTemplate = data.get(0) instanceof WorkbenchTemplate;
+        boolean hasRows = hasTemplate ? data.size() > 1 : data.size() > 0;
+        if (hasRows)
 		{
 			int[] disciplinees;
-			disciplinees = bldColTypes((WorkbenchTemplate) data.get(0));
-			WorkbenchRow wbRow = (WorkbenchRow) data.get(1);
+			
+			WorkbenchRow wbRow = (WorkbenchRow) data.get(hasTemplate ? 1 : 0);
 			Workbench workBench = wbRow.getWorkbench();
 			WorkbenchTemplate template = workBench.getWorkbenchTemplate();
 			int numCols = template.getWorkbenchTemplateMappingItems()
