@@ -19,6 +19,9 @@
 */
 package edu.ku.brc.specify.extras;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getTopWindow;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Frame;
@@ -32,6 +35,7 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.SwingUtilities;
@@ -72,6 +76,8 @@ import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.AttachmentUtils;
 
 /**
  * @author rod
@@ -353,13 +359,13 @@ public class ViewToSchemaReview
         //UIHelper.makeTableHeadersCentered(table, false);
         UIHelper.calcColumnWidths(table, null);
         
-        CustomDialog dlg = new CustomDialog((Frame)null, "", true, CustomDialog.OKCANCELAPPLY, pb.getPanel()) {
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), "", true, CustomDialog.OKCANCELAPPLY, pb.getPanel()) 
+        {
             @Override
             protected void applyButtonPressed()
             {
                 fix();
             }
-            
         };
         dlg.setApplyLabel("Fix All");
         dlg.setVisible(true);
@@ -368,6 +374,7 @@ public class ViewToSchemaReview
         {
             updateSchema();
         }
+        
     }
     
     /**
@@ -394,7 +401,7 @@ public class ViewToSchemaReview
     /**
      * 
      */
-    public static void dumpFormFieldList()
+    public static void dumpFormFieldList(final boolean doShowInBrowser)
     {
         List<ViewIFace> viewList = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getEntirelyAllViews();
         Hashtable<String, ViewIFace> hash = new Hashtable<String, ViewIFace>();
@@ -408,7 +415,8 @@ public class ViewToSchemaReview
         
         try
         {
-            PrintWriter pw = new PrintWriter(new File("FormFields.html"));
+            File        file = new File("FormFields.html");
+            PrintWriter pw   = new PrintWriter(file);
             
             pw.println("<HTML><HEAD><TITLE>Form Fields</TITLE><link rel=\"stylesheet\" href=\"http://specify6.specifysoftware.org/schema/specify6.css\" type=\"text/css\"/></HEAD><BODY>");
             pw.println("<center>");
@@ -474,6 +482,20 @@ public class ViewToSchemaReview
             pw.println("Number of Fields: "+fieldCnt+"<br>");
             pw.println("</body></html>");
             pw.close();
+            
+            try
+            {
+                if (doShowInBrowser)
+                {
+                    AttachmentUtils.openURI(file.toURI());
+                } else
+                {
+                    JOptionPane.showMessageDialog(getTopWindow(), String.format( getResourceString("FormDisplayer.OUTPUT"), file.getCanonicalFile()));
+                }
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
             
         } catch (Exception ex)
         {

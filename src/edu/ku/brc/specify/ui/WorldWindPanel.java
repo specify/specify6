@@ -19,7 +19,6 @@
 */
 package edu.ku.brc.specify.ui;
 
-import edu.ku.brc.services.geolocate.client.GeorefResult;
 import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.WorldWind;
@@ -36,11 +35,13 @@ import gov.nasa.worldwind.layers.CompassLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.MarkerLayer;
+import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.layers.placename.PlaceNameLayer;
 import gov.nasa.worldwind.render.AnnotationAttributes;
 import gov.nasa.worldwind.render.FrameFactory;
 import gov.nasa.worldwind.render.GlobeAnnotation;
 import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.Polyline;
 import gov.nasa.worldwind.render.markers.BasicMarker;
 import gov.nasa.worldwind.render.markers.BasicMarkerAttributes;
 import gov.nasa.worldwind.render.markers.BasicMarkerShape;
@@ -70,13 +71,17 @@ import javax.swing.JPanel;
  */
 public class WorldWindPanel extends JPanel
 {
-    protected AnnotationLayer        annoLayer;
-    protected MarkerLayer            markerLayer = new MarkerLayer();
-    protected WorldWindowGLCanvas    world = null;
-    protected StatusBar              statusBar;
+    protected AnnotationLayer            annoLayer;
+    protected MarkerLayer                markerLayer = new MarkerLayer();
+    protected RenderableLayer            lineLayer   = new RenderableLayer();
+    protected WorldWindowGLCanvas        world = null;
+    protected StatusBar                  statusBar;
     
     protected ArrayList<Marker>          markers     = new ArrayList<Marker>();
     protected ArrayList<GlobeAnnotation> annotations = new ArrayList<GlobeAnnotation>();
+    
+    protected AnnotationAttributes       annoAttrs   = new AnnotationAttributes();
+    protected BasicMarkerAttributes      markerAttrs;
     
 
     /**
@@ -100,6 +105,27 @@ public class WorldWindPanel extends JPanel
         if (world == null)
         {
             world = new WorldWindowGLCanvas();
+            
+            int radius = 3;
+            annoAttrs.setCornerRadius(radius);
+            annoAttrs.setInsets(new Insets(4, 4, 4, 4));
+            annoAttrs.setBackgroundColor(new Color(0f, 0f, 0f, 0.5f));
+            annoAttrs.setDrawOffset(new Point(0, radius+3));
+            annoAttrs.setDistanceMinScale(0.5);
+            annoAttrs.setDistanceMaxScale(2);
+            annoAttrs.setDistanceMinOpacity(0.5);
+            annoAttrs.setLeader(FrameFactory.LEADER_NONE);
+            annoAttrs.setFont(Font.decode("Arial-BOLD-10"));
+            annoAttrs.setTextColor(Color.WHITE);
+            annoAttrs.setBorderColor(new Color(0.75f, 0.75f, 0.75f, 0.75f));
+            
+            Material material = new Material(new Color(1f, 0.1f, 0.1f, 0.75f));
+            markerAttrs = new BasicMarkerAttributes(material, BasicMarkerShape.ORIENTED_SPHERE, 1d, radius, radius);
+            
+            markerLayer.setOverrideMarkerElevation(true);
+            markerLayer.setKeepSeparated(false);
+            markerLayer.setElevation(0);
+            
             /*world.addRenderingExceptionListener(new RenderingExceptionListener()
             {
                 public void exceptionThrown(Throwable t)
@@ -147,6 +173,8 @@ public class WorldWindPanel extends JPanel
 
        insertBeforePlacenames(world, markerLayer);
        insertBeforePlacenames(world, annoLayer);
+       //insertBeforePlacenames(world, lineLayer);
+       world.getModel().getLayers().add(this.lineLayer);
        
        setLayout(new BorderLayout());
        
@@ -158,12 +186,15 @@ public class WorldWindPanel extends JPanel
        try
         {
            add(new GazetteerPanel(world, null), BorderLayout.NORTH);
+           
         } catch (IllegalAccessException e)
         {
             e.printStackTrace();
+            
         } catch (InstantiationException e)
         {
             e.printStackTrace();
+            
         } catch (ClassNotFoundException e)
         {
             e.printStackTrace();
@@ -171,61 +202,87 @@ public class WorldWindPanel extends JPanel
     }
     
     /**
+     * Adds a polyline to the polyline line layer.
+     * @param polyline the polyline
+     */
+    public void addPolyline(final Polyline polyline)
+    {
+        lineLayer.addRenderable(polyline);
+    }
+    
+    /**
      * Places marker points on map.
      * @param points the list of points
+     * @param flyToIndex
      */
-    public void placeMarkers(final List<GeorefResult> points, final Integer flyToIndex)
+    public void placeMarkers(final List<LatLonPointIFace> points, final Integer flyToIndex)
+    {
+        placeMarkers(points, false, true, flyToIndex);
+    }
+    
+    /**
+     * Clears the marker and annotations layers and creates a new Polyline layer.
+     */
+    public void reset()
     {
         init(); // does this the first time only
-        
-        int radius = 3;
-        AnnotationAttributes defaultAttributes = new AnnotationAttributes();
-        defaultAttributes.setCornerRadius(radius);
-        defaultAttributes.setInsets(new Insets(4, 4, 4, 4));
-        defaultAttributes.setBackgroundColor(new Color(0f, 0f, 0f, 0.5f));
-        defaultAttributes.setDrawOffset(new Point(0, radius+1));
-        defaultAttributes.setDistanceMinScale(0.5);
-        defaultAttributes.setDistanceMaxScale(2);
-        defaultAttributes.setDistanceMinOpacity(0.5);
-        defaultAttributes.setLeader(FrameFactory.LEADER_NONE);
-        defaultAttributes.setFont(Font.decode("Arial-BOLD-10"));
-        defaultAttributes.setTextColor(Color.WHITE);
-        defaultAttributes.setBorderColor(new Color(0.75f, 0.75f, 0.75f, 0.75f));
         
         annoLayer.clearList();
         annoLayer.removeAllAnnotations();
         markerLayer.clearList();
+        lineLayer.clearList();
         
-        Material material = new Material(new Color(1f, 0.1f, 0.1f, 0.75f));
-        BasicMarkerAttributes bma = new BasicMarkerAttributes(material, BasicMarkerShape.ORIENTED_SPHERE, 1d, radius, radius);
+        world.getModel().getLayers().remove(lineLayer);
+        world.getModel().getLayers().add(lineLayer = new RenderableLayer());
         
-        int i = 1;
         markers.clear();
         annotations.clear();
-        for (GeorefResult pnt : points)
+
+    }
+    
+    /**
+     * Places marker points on map.
+     * @param points the list of points
+     * @param doAddTitles
+     * @param doAddMarkCntText
+     * @param flyToIndex
+     */
+    public void placeMarkers(final List<LatLonPointIFace> points, 
+                             final boolean doAddTitles,
+                             final boolean doAddMarkCntText, 
+                             final Integer flyToIndex)
+    {
+        reset();
+        
+        int i = 1;
+        for (LatLonPointIFace pnt : points)
         {
-            double lat = pnt.getWGS84Coordinate().getLatitude();
-            double lon = pnt.getWGS84Coordinate().getLongitude();
+            double   lat = pnt.getLatitude();
+            double   lon = pnt.getLongitude();
             Position pos = Position.fromDegrees(lat, lon, 0);
             
-            Marker marker = new BasicMarker(pos, bma);
+            Marker marker = new BasicMarker(pos, markerAttrs);
             marker.setPosition(Position.fromDegrees(lat, lon, 0));
             markers.add(marker);
             
-            GlobeAnnotation ga = new GlobeAnnotation(Integer.toString(i++), pos, defaultAttributes);
-            annoLayer.addAnnotation(ga);
-            annotations.add(ga);
+            if (doAddTitles || doAddMarkCntText)
+            {
+                String txt = doAddMarkCntText ? Integer.toString(i++) : (pnt.getTitle() != null ? pnt.getTitle() : "");
+                GlobeAnnotation ga = new GlobeAnnotation(txt, pos, annoAttrs);
+                if (txt.length() > 0)
+                {
+                    annoLayer.addAnnotation(ga);
+                }
+                annotations.add(ga);
+            }
         }
-
-        markerLayer.setOverrideMarkerElevation(true);
-        markerLayer.setKeepSeparated(false);
-        markerLayer.setElevation(1000d);
+        
         markerLayer.setMarkers(markers);
         
         if (flyToIndex != null && flyToIndex > -1 && flyToIndex < points.size())
         {
-            double lat = points.get(0).getWGS84Coordinate().getLatitude();
-            double lon = points.get(0).getWGS84Coordinate().getLongitude();
+            double lat = points.get(0).getLatitude();
+            double lon = points.get(0).getLongitude();
             flyTo(LatLon.fromDegrees(lat, lon));
         }
     }
@@ -272,6 +329,22 @@ public class WorldWindPanel extends JPanel
     public MarkerLayer getMarkerLayer()
     {
         return markerLayer;
+    }
+    
+    /**
+     * @return the annoAttrs (not a copy), can be used to alter the current attributes for the annotations.
+     */
+    public AnnotationAttributes getAnnoAttrs()
+    {
+        return annoAttrs;
+    }
+
+    /**
+     * @return the markerAttrs (not a copy), can be used to alter the current attributes for the markers.
+     */
+    public BasicMarkerAttributes getMarkerAttrs()
+    {
+        return markerAttrs;
     }
 
     /**

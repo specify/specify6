@@ -155,6 +155,8 @@ import edu.ku.brc.exceptions.ExceptionTracker;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.services.gpx.GPXPanel;
+import edu.ku.brc.specify.SpecifyUserTypes.UserType;
 import edu.ku.brc.specify.config.CollectingEventsAndAttrsMaint;
 import edu.ku.brc.specify.config.DebugLoggerDialog;
 import edu.ku.brc.specify.config.DisciplineType;
@@ -200,6 +202,7 @@ import edu.ku.brc.specify.rstools.SpAnalysis;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.tools.FormDisplayer;
+import edu.ku.brc.specify.toycode.NotificationConfigPanel;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -1082,6 +1085,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         JMenu treesMenu = UIHelper.createLocalizedMenu(mb, "Specify.TREES_MENU", "Specify.TREES_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
         menu.insert(treesMenu, 0); 
+        
+        JMenu formsMenu = UIHelper.createLocalizedMenu(mb, "Specify.FORMS_MENU", "Specify.FORMS_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
+        menu.insert(formsMenu, 0); 
+        
         JMenu setupMenu = UIHelper.createLocalizedMenu(mb, "Specify.COLSETUP_MENU", "Specify.COLSETUP_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
         menu.insert(setupMenu, 0); // insert at the top
         
@@ -1171,54 +1178,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     
             menu.addSeparator();
             
-            final String reloadViews = "reload_views"; //$NON-NLS-1$
-            JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem(getResourceString("Specify.RELOAD_VIEWS")); //$NON-NLS-1$
-            menu.add(cbMenuItem);
-            cbMenuItem.setSelected(AppPreferences.getLocalPrefs().getBoolean(reloadViews, false));
-            cbMenuItem.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            boolean isReload = !AppPreferences.getLocalPrefs().getBoolean(reloadViews, false);                       
-                            AppPreferences.getLocalPrefs().putBoolean(reloadViews, isReload);
-                            ((JMenuItem)ae.getSource()).setSelected(isReload);
-                        }});
-    
-            final String reloadBackViews = "reload_backstop_views"; //$NON-NLS-1$
-            cbMenuItem = new JCheckBoxMenuItem(getResourceString("Specify.RELOAD_BACKSTOPVIEWS")); //$NON-NLS-1$
-            menu.add(cbMenuItem);
-            cbMenuItem.setSelected(AppPreferences.getLocalPrefs().getBoolean(reloadBackViews, false));
-            cbMenuItem.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            boolean isReload = !AppPreferences.getLocalPrefs().getBoolean(reloadBackViews, false);                       
-                            AppPreferences.getLocalPrefs().putBoolean(reloadBackViews, isReload);
-                            ((JMenuItem)ae.getSource()).setSelected(isReload);
-                        }});
-    
-            final String verifyFields = "verify_field_names"; //$NON-NLS-1$
-            cbMenuItem = new JCheckBoxMenuItem(getResourceString("Specify.VERIFY_FIELDS")); //$NON-NLS-1$
-            menu.add(cbMenuItem);
-            cbMenuItem.setSelected(AppPreferences.getLocalPrefs().getBoolean(verifyFields, false));
-            cbMenuItem.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            boolean isVerify = !AppPreferences.getLocalPrefs().getBoolean(verifyFields, false);                       
-                            AppPreferences.getLocalPrefs().putBoolean(verifyFields, isVerify);
-                            ((JMenuItem)ae.getSource()).setSelected(isVerify);
-                            ViewLoader.setDoFieldVerification(isVerify);
-                        }});
-    
-            cbMenuItem = new JCheckBoxMenuItem(getResourceString("Specify.SHOW_FORM_DEBUG")); //$NON-NLS-1$
-            menu.add(cbMenuItem);
-            cbMenuItem.setSelected(FormViewObj.isUseDebugForm());
-            cbMenuItem.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            boolean useDebugForm = !FormViewObj.isUseDebugForm();
-                            FormViewObj.setUseDebugForm(useDebugForm);
-                            ((JMenuItem)ae.getSource()).setSelected(useDebugForm);
-                        }});
-            menu.addSeparator();
             ttle = "Specify.CONFIG_LOGGERS";//$NON-NLS-1$ 
             mneu = "Specify.CONFIG_LOGGERS_MNEU";//$NON-NLS-1$ 
             desc = "Specify.CONFIG_LOGGER";//$NON-NLS-1$ 
@@ -1247,58 +1206,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                         }
                     });
             
-            menu.addSeparator();
-            ttle = "Specify.CREATE_FORM_IMAGES";//$NON-NLS-1$ 
-            mneu = "Specify.CREATE_FORM_IMAGES_MNEU";//$NON-NLS-1$ 
-            desc = "Specify.CREATE_FORM_IMAGES";//$NON-NLS-1$ 
-            mi = UIHelper.createLocalizedMenuItem(menu, ttle , mneu, desc, true, null);  
-            mi.addActionListener(new ActionListener()
-                    {
-                        @SuppressWarnings("synthetic-access") //$NON-NLS-1$
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            FormDisplayer fd = new FormDisplayer();
-                            fd.generateFormImages();
-                        }
-                    });
-            ttle = "Specify.CREATE_FORM_LIST";//$NON-NLS-1$ 
-            mneu = "Specify.CREATE_FORM_LIST_MNEU";//$NON-NLS-1$ 
-            desc = "Specify.CREATE_FORM_LIST";//$NON-NLS-1$ 
-            mi = UIHelper.createLocalizedMenuItem(menu, ttle , mneu, desc, true, null);  
-            mi.addActionListener(new ActionListener()
-                    {
-                        @SuppressWarnings("synthetic-access") //$NON-NLS-1$
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            FormDisplayer fd = new FormDisplayer();
-                            fd.createViewListing(UIRegistry.getUserHomeDir());
-                        }
-                    });
-            ttle = "Specify.FORM_FIELD_LIST";//$NON-NLS-1$ 
-            mneu = "Specify.FORM_FIELD_LIST_MNEU";//$NON-NLS-1$ 
-            desc = "Specify.FORM_FIELD_LIST";//$NON-NLS-1$ 
-            mi = UIHelper.createLocalizedMenuItem(menu, ttle , mneu, desc, true, null);  
-            mi.addActionListener(new ActionListener()
-                    {
-                        @SuppressWarnings("synthetic-access") //$NON-NLS-1$
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            ViewToSchemaReview.dumpFormFieldList();
-                        }
-                    });
-            
-            ttle = "Specify.VIEW_REVIEW_LIST";//$NON-NLS-1$ 
-            mneu = "Specify.VIEW_REVIEW_LIST_MNEU";//$NON-NLS-1$ 
-            desc = "Specify.VIEW_REVIEW_LIST";//$NON-NLS-1$ 
-            mi = UIHelper.createLocalizedMenuItem(menu, ttle , mneu, desc, true, null);  
-            mi.addActionListener(new ActionListener()
-                    {
-                        @SuppressWarnings("synthetic-access") //$NON-NLS-1$
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            (new ViewToSchemaReview()).checkSchemaAndViews();
-                        }
-                    });
             menu.addSeparator();
             
             ttle = "Specify.SHOW_MEM_STATS";//$NON-NLS-1$ 
@@ -1371,7 +1278,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     });
 
         
-            cbMenuItem = new JCheckBoxMenuItem("Security Activated"); //$NON-NLS-1$
+            JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("Security Activated"); //$NON-NLS-1$
             menu.add(cbMenuItem);
             cbMenuItem.setSelected(AppContextMgr.isSecurityOn());
             cbMenuItem.addActionListener(new ActionListener() {
@@ -1897,6 +1804,19 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     public void doAbout()
     {
+        if (false)
+        {
+            GPXPanel.getDlgInstance().setVisible(true);
+            return;
+        }
+        
+        /*if (false)
+        {
+            NotificationConfigPanel ncp = new NotificationConfigPanel();
+            CustomDialog dlg = new CustomDialog(null, "Notification Configuration", true, ncp);
+            dlg.setVisible(true);
+            return;
+        }*/
         if (false)
         {
             if (GenericLSIDGeneratorFactory.getInstance().isReady())

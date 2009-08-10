@@ -289,7 +289,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      * Adds a new PickList to the NavBox Container.
      * @param pickList the new pickList
      */
-    protected void addPickList(final PickList pickList, final boolean isNew)
+    protected void addPickList(final PickList pickList, @SuppressWarnings("unused") final boolean isNew)
     {
         final String nameStr  = pickList.getName();
         
@@ -874,6 +874,9 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     }
 
     
+    /**
+     * @param tree
+     */
     protected void doTreeUpdate(final BaseTreeTask<?,?,?> tree)
     {
         try

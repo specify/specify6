@@ -1438,8 +1438,8 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         return null;
     }
     
-    /**
-     * @return the permissions array
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getPermsArray()
      */
     @Override
     protected boolean[][] getPermsArray()

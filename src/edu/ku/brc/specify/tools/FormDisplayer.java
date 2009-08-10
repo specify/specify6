@@ -73,6 +73,7 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.utilapps.ERDVisualizer;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -85,7 +86,8 @@ import edu.ku.brc.util.Pair;
  */
 public class FormDisplayer
 {
-    protected PrintWriter pw = null;
+    protected PrintWriter pw   = null;
+    protected File        file = null;
     
     protected String contentTag = "<!-- Content -->"; //$NON-NLS-1$
 
@@ -132,7 +134,8 @@ public class FormDisplayer
     {
         try
         {
-            pw = new PrintWriter(new File(fileName));
+            file = new File(fileName);
+            pw   = new PrintWriter(file);
             pw.print("<html><head><title>"+title+"</title></head><body>"); //$NON-NLS-1$ //$NON-NLS-2$
             
         } catch (IOException ex)
@@ -646,7 +649,7 @@ public class FormDisplayer
     /**
      * Creates an HTML file listing all the forms/Views.
      */
-    public void createViewListing(final String path)
+    public void createViewListing(final String path, final boolean doShowInBrowser)
     {
         String fullPath = (path != null ? path + File.separator : "") + "views.html"; //$NON-NLS-1$ //$NON-NLS-2$
         
@@ -669,7 +672,19 @@ public class FormDisplayer
         pw.flush();
         pw.close();
         
-        JOptionPane.showMessageDialog(getTopWindow(), String.format(getResourceString("FormDisplayer.OUTPUT"), fullPath));
+        try
+        {
+            if (doShowInBrowser)
+            {
+                AttachmentUtils.openURI(file.toURI());
+            } else
+            {
+                JOptionPane.showMessageDialog(getTopWindow(), String.format( getResourceString("FormDisplayer.OUTPUT"), file.getCanonicalFile()));
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
     
     /**
@@ -678,7 +693,7 @@ public class FormDisplayer
     public static void main(String[] args)
     {
         FormDisplayer fd = new FormDisplayer();
-        fd.createViewListing(null);
+        fd.createViewListing(null, true);
     }
 
 }

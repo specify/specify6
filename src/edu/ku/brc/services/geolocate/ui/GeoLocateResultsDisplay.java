@@ -29,6 +29,7 @@ import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -56,6 +57,8 @@ import edu.ku.brc.services.geolocate.client.GeorefResult;
 import edu.ku.brc.services.geolocate.client.GeorefResultSet;
 import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
 import edu.ku.brc.specify.ui.ClickAndGoSelectListener;
+import edu.ku.brc.specify.ui.LatLonPoint;
+import edu.ku.brc.specify.ui.LatLonPointIFace;
 import edu.ku.brc.specify.ui.WorldWindPanel;
 import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.JStatusBar;
@@ -253,7 +256,8 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
         int lastRow = tableModel.getRowCount() - 1;
         resultsTable.getSelectionModel().setSelectionInterval(lastRow, lastRow);
         resultsTable.repaint();
-        wwPanel.placeMarkers(tableModel.getResults(), null);
+        
+        wwPanel.placeMarkers(tableModel.getPoints(), null);
     }
     
     /**
@@ -269,7 +273,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
         tableModel.fireTableCellUpdated(tableModel.getRowCount()-1, 1);
         tableModel.fireTableCellUpdated(tableModel.getRowCount()-1, 2);
         
-        wwPanel.placeMarkers(tableModel.getResults(), null);
+        wwPanel.placeMarkers(tableModel.getPoints(), null);
         wwPanel.getWorld().repaint();
         
         int lastRow = tableModel.getRowCount() - 1;
@@ -284,7 +288,11 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
      * @param country
      * @param georefResults
      */
-    public void setGeoLocateQueryAndResults(String localityString, String county, String state, String country, GeorefResultSet georefResults)
+    public void setGeoLocateQueryAndResults(String localityString, 
+                                            String county, 
+                                            String state, 
+                                            String country, 
+                                            GeorefResultSet georefResults)
     {
         localityStringField.setText(localityString);
         localityStringField.setCaretPosition(0);
@@ -299,7 +307,13 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
         
         if (wwPanel != null)
         {
-            wwPanel.placeMarkers(georefResults.getResultSet(), 0);
+            ArrayList<LatLonPointIFace> pnts = new ArrayList<LatLonPointIFace>(georefResults.getResultSet().size());
+            for (GeorefResult grr : georefResults.getResultSet())
+            {
+                pnts.add(new LatLonPoint(grr.getWGS84Coordinate().getLatitude(), grr.getWGS84Coordinate().getLongitude()));
+            }
+            wwPanel.placeMarkers(pnts, 0);
+            
         } else
         {
             mapLabel.setText(getResourceString("GeoLocateResultsDisplay.LOADING_MAP")); //$NON-NLS-1$
@@ -468,6 +482,9 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
             fireTableDataChanged();
         }
         
+        /**
+         * @param grr
+         */
         public void add(final GeorefResult grr)
         {
             results.add(grr);
@@ -479,6 +496,10 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
             });
         }
         
+        /**
+         * @param index
+         * @return
+         */
         public GeorefResult getResult(int index)
         {
             return results.get(index);
@@ -491,7 +512,24 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
         {
             return results;
         }
+        
+        /**
+         * @return
+         */
+        public List<LatLonPointIFace> getPoints()
+        {
+            ArrayList<LatLonPointIFace> pnts = new ArrayList<LatLonPointIFace>(results.size());
+            
+            for (GeorefResult grr : results)
+            {
+                pnts.add(new LatLonPoint(grr.getWGS84Coordinate().getLatitude(), grr.getWGS84Coordinate().getLongitude()));
+            }
+            return pnts;
+        }
 
+        /* (non-Javadoc)
+         * @see javax.swing.table.AbstractTableModel#getColumnClass(int)
+         */
         @Override
         public Class<?> getColumnClass(int columnIndex)
         {
@@ -514,6 +552,9 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
             return null;
         }
 
+        /* (non-Javadoc)
+         * @see javax.swing.table.AbstractTableModel#getColumnName(int)
+         */
         @Override
         public String getColumnName(int column)
         {
@@ -539,22 +580,37 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
             return null;
         }
 
+        /* (non-Javadoc)
+         * @see javax.swing.table.AbstractTableModel#isCellEditable(int, int)
+         */
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex)
         {
             return false;
         }
 
+        /* (non-Javadoc)
+         * @see javax.swing.table.TableModel#getColumnCount()
+         */
+        @Override
         public int getColumnCount()
         {
             return 4;
         }
 
+        /* (non-Javadoc)
+         * @see javax.swing.table.TableModel#getRowCount()
+         */
+        @Override
         public int getRowCount()
         {
             return (results == null) ? 0 : results.size();
         }
 
+        /* (non-Javadoc)
+         * @see javax.swing.table.TableModel#getValueAt(int, int)
+         */
+        @Override
         public Object getValueAt(int rowIndex, int columnIndex)
         {
             GeorefResult res = results.get(rowIndex);

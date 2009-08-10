@@ -76,7 +76,9 @@
     <icon name="Eraser"        file="Clear20x20.png"   sizes="NonStd"/>
     <icon name="CardImage"     file="ImageWindow20x20.png" sizes="NonStd"/>
     <icon name="LocalityMapper" file="map20x20.png" sizes="NonStd"/>
+    <icon name="MapIcon"        file="map.png" sizes="32"/>
     <icon name="ControlEdit"    file="EditProperties20x20.png" sizes="NonStd"/>
+    <icon name="EditProps"      file="EditProperties32x32.png" sizes="all"/>
     <icon name="Plugins"        file="plug_in.png" sizes="32"/>
     <icon name="DropIndicator"  file="dropindicator.png" sizes="NonStd"/>
     <icon name="Formatting"     file="formatting.png" sizes="32"/>
@@ -153,6 +155,10 @@
     
     <icon name="Down"             file="Down16x16.png" sizes="16"/>
     <icon name="Forward"          file="Forward16x16.png" sizes="16"/>
+    
+    <icon name="ExclaimGreen"     file="exclaim_green.gif" sizes="NonStd"/>
+    <icon name="ExclaimYellow"    file="exclaim_yellow.gif" sizes="NonStd"/>
+    <icon name="ExclaimRed"       file="exclaim.gif" sizes="NonStd"/>
     
     <icon name="MultiKid"         file="MultiKid.png" sizes="16"/>
     <icon name="SingleKid"        file="SingleKid.png" sizes="16"/>
