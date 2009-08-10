@@ -57,6 +57,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     
     public static int[]            daysInMon = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}; 
     protected static final String  deftitle = UIRegistry.getResourceString("FFE_DEFAULT");     
+    protected static final String  systitle = UIRegistry.getResourceString("FFE_SYSTEM");     
 
     protected String               fieldName;
     protected String               name;
@@ -647,8 +648,16 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
         }
         str.append("]");
 
-        str.append(isDefault ? (' ' + deftitle) : "");
+        if (isSystem || isDefault)
+        {
+            str.append(" (");
         
+            str.append(isDefault ? deftitle : "");
+            str.append(isSystem ? ((isDefault ? ", " : "") + systitle) : "");
+        
+            str.append(")");
+        }
+
     	return str.toString();
     }
 
