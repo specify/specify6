@@ -514,7 +514,7 @@ public class LocalityDetail extends DataModelObjBase implements Cloneable
     /**
      * @return the utmDatum
      */
-    @Column(name = "getUtmDatum", unique = false, nullable = true, updatable = true, insertable = true)
+    @Column(name = "UtmDatum", unique = false, nullable = true, updatable = true, insertable = true, length = 32)
     public String getUtmDatum()
     {
         return utmDatum;

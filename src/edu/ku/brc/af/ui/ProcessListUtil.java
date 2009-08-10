@@ -119,7 +119,7 @@ public class ProcessListUtil
             }
             
             String[] toks = StringUtils.split(line, ' ');
-            
+            System.err.println(line);
             if (UIHelper.isWindows())
             {
             	ids.add(Integer.parseInt(toks[1]));

@@ -525,7 +525,7 @@ public class SpecifyDBConverter
         
         log.debug("Preparing new database");
         
-         DBConnection oldDB = DBConnection.createInstance(driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), dbNameDest, oldConnStr, itUsrPwd.first, itUsrPwd.second);
+        DBConnection oldDB = DBConnection.createInstance(driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), dbNameDest, oldConnStr, itUsrPwd.first, itUsrPwd.second);
         
         Connection oldDBConn = oldDB.createConnection();
         Connection newDBConn = DBConnection.getInstance().createConnection();
@@ -547,6 +547,8 @@ public class SpecifyDBConverter
         doFixCollectors = dlg.doFixAgents();
         
         convLogger.initialize(dbNameDest);
+        
+        convLogger.setIndexTitle("Conversion from "+dbNameSource+" to "+dbNameDest);
         
         final GenericDBConversion conversion = new GenericDBConversion(oldDBConn, newDBConn, dbNameSource, convLogger);
         if (!conversion.initialize())

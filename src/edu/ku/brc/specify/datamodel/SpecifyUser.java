@@ -211,7 +211,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
-    @Column(name = "Password", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
+    @Column(name = "Password", unique = false, nullable = false, insertable = true, updatable = true, length = 255)
     public String getPassword()
     {
         return this.password;

@@ -208,7 +208,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     protected int                                           globalIdNumber         = 1;
     protected TaxonTypeHolder                               taxonTypeHolder        = null;
     protected DisciplineType                                disciplineType         = null;
-    protected ConversionLogger                              convLogger = null;
+    protected ConversionLogger                              convLogger             = null;
 
     /**
      * "Old" means the database you want to copy "from"
@@ -8179,6 +8179,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      */
     public void cleanUp()
     {
+        
     	File indexFile = convLogger.closeAll();
     	if (indexFile != null && indexFile.exists())
     	{

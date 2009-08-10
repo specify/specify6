@@ -3975,6 +3975,12 @@ public class FormViewObj implements Viewable,
         try
         {
             dObj = tmpSession.get(tableInfo.getClassObj(), recordSetItemList.get(index).getRecordId());
+            
+        } catch (org.hibernate.ObjectNotFoundException hex)
+        {
+            hex.printStackTrace();
+            UIRegistry.showError("A data object could not be loaded:\n"+hex.toString());
+            
         } catch (Exception ex)
         {
             ex.printStackTrace();

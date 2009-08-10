@@ -24,7 +24,9 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Vector;
@@ -116,6 +118,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 Integer spverId        = null;
                 Integer recVerNum     = 1;
                 
+                log.debug("appVerNumArg: ["+appVerNumArg+"] dbVersion from XML["+dbVersion+"] ");
 
                 if (dbMgr.doesDBHaveTable("spversion"))
                 {
@@ -127,6 +130,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         schemaVersion = row[1].toString();
                         spverId       = (Integer)row[2];
                         recVerNum     = (Integer)row[3];
+                        
+                        log.debug("appVerNumArg: ["+appVerNumArg+"] dbVersion from XML["+dbVersion+"] appVersion["+appVersion+"] schemaVersion["+schemaVersion+"]  spverId["+spverId+"]  recVerNum["+recVerNum+"] ");
+
                         
                         if (appVerNum == null) // happens for developers
                         {
@@ -197,7 +203,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 
                                 UIHelper.centerAndShow(frame);
                                 
-                                boolean ok = SpecifySchemaGenerator.updateSchema(DatabaseDriverInfo.getDriver(dbc.getDriver()), dbc.getServerName(), dbc.getDatabaseName(), usrPwd.first,usrPwd.second);
+                                boolean ok = manuallyFixDB(DatabaseDriverInfo.getDriver(dbc.getDriver()), dbc.getServerName(), dbc.getDatabaseName(), usrPwd.first,usrPwd.second);
+                                if (!ok)
+                                {
+                                    frame.setVisible(false);
+                                    return false;
+                                }
+                                
+                                ok = SpecifySchemaGenerator.updateSchema(DatabaseDriverInfo.getDriver(dbc.getDriver()), dbc.getServerName(), dbc.getDatabaseName(), usrPwd.first, usrPwd.second);
                                 if (!ok)
                                 {
                                     frame.setVisible(false);
@@ -238,6 +251,72 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     dbMgr.close();
                 }
             }
+        }
+        return false;
+    }
+    
+    /**
+     * @param dbdriverInfo
+     * @param hostname
+     * @param databaseName
+     * @param userName
+     * @param password
+     * @return
+     * @throws SQLException
+     */
+    private static boolean manuallyFixDB(final DatabaseDriverInfo dbdriverInfo, 
+                                         final String             hostname,
+                                         final String             databaseName,
+                                         final String             userName,
+                                         final String             password) throws SQLException
+    {
+        String connectionStr = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName, true, true,
+                                                             userName, password, dbdriverInfo.getName());
+        log.debug("generateSchema connectionStr: " + connectionStr);
+
+        log.debug("Creating database connection to: " + connectionStr);
+        // Now connect to other databases and "create" the Derby database
+        DBConnection dbConn = null;
+        try
+        {
+            dbConn = DBConnection.createInstance(dbdriverInfo.getDriverClassName(), dbdriverInfo.getDialectClassName(), 
+                                                 databaseName, connectionStr, userName, password);
+            if (dbConn != null && dbConn.getConnection() != null)
+            {
+                Connection conn = dbConn.getConnection();
+                Statement  stmt = null;
+                try
+                {
+                    stmt = conn.createStatement();
+                    int rv = BasicSQLUtils.update(conn, "ALTER TABLE localitydetail CHANGE getUtmDatum UtmDatum varchar(32)");
+                    if (rv != 0)
+                    {
+                        return false;
+                    }
+                    Integer count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM specifyuser");
+                    rv = BasicSQLUtils.update(conn, "ALTER TABLE specifyuser MODIFY Password varchar(255)");
+
+                    return rv == count;
+                    
+                } catch (SQLException ex)
+                {
+                    ex.printStackTrace();
+                } finally
+                {
+                    if (stmt != null)
+                    {
+                        stmt.close();
+                    }
+                }
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            dbConn.close();
         }
         return false;
     }

@@ -47,6 +47,8 @@ public class ConversionLogger
     protected Hashtable<String, String>      printWritersNameHash  = new Hashtable<String, String>();
     protected Hashtable<String, TableWriter> printWritersHash      = new Hashtable<String, TableWriter>();
     
+    protected String indexTitle = "Index";
+    
     protected File dir;
     
     /**
@@ -70,6 +72,14 @@ public class ConversionLogger
         return false;
     }
     
+    /**
+     * @param indexTitle the indexTitle to set
+     */
+    public void setIndexTitle(String indexTitle)
+    {
+        this.indexTitle = indexTitle;
+    }
+
     /**
      * @param tableName
      * @return
@@ -99,7 +109,7 @@ public class ConversionLogger
         try 
         {
             String path = dir.getAbsolutePath() + File.separator + "index.html";
-            TableWriter indexWriter = new TableWriter(path, "Index");
+            TableWriter indexWriter = new TableWriter(path, indexTitle);
             indexWriter.startTable();
             
             for (TableWriter tblWriter : printWritersHash.values())
