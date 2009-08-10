@@ -37,6 +37,7 @@ public class TreeMerger<N extends Treeable<N,D,I>,
 {
 	final TreeDefIface<N,D,I> treeDef;
 	final DBTableInfo nodeTable;
+	List<TreeMergerUIIFace<N,D,I>> listeners = new Vector<TreeMergerUIIFace<N,D,I>>();
 	Connection connection = null;
 	
 	/**
@@ -46,6 +47,22 @@ public class TreeMerger<N extends Treeable<N,D,I>,
 	{
 		this.treeDef = treeDef;
 		nodeTable = getNodeTable();
+	}
+	
+	/**
+	 * @param listener
+	 */
+	public void addListener(TreeMergerUIIFace<N,D,I> listener)
+	{
+		listeners.add(listener);
+	}
+	
+	/**
+	 * @param listener
+	 */
+	public void removeListener(TreeMergerUIIFace<N,D,I> listener)
+	{
+		listeners.remove(listener);
 	}
 	
 	/**
@@ -104,7 +121,7 @@ public class TreeMerger<N extends Treeable<N,D,I>,
 	{
 		Boolean isAccepted = (Boolean )child[2];
 		String sql = "select " + nodeTable.getIdFieldName() + " from " + nodeTable.getName() + " where "
-			+ getNameFld() + " = '" + BasicSQLUtils.escapeStringLiterals((String )child[1]) + " and "
+			+ getNameFld() + " = '" + BasicSQLUtils.escapeStringLiterals((String )child[1]) + "' and "
 			+ (!isAccepted ? "not " : "") + getAcceptedFld() + " and " + getParentFld() +  " = "
 			+ parentId;
 		Vector<Object[]> matches = BasicSQLUtils.query(connection, sql);
@@ -126,6 +143,10 @@ public class TreeMerger<N extends Treeable<N,D,I>,
 	 */
 	protected void mergeTreeIntoTree(final Integer toMergeId, final Integer mergeIntoId) throws Exception
 	{		
+		for (TreeMergerUIIFace<N,D,I> face : listeners)
+		{
+			face.merging(toMergeId, mergeIntoId);
+		}
 		List<Object[]> children = getChildren(toMergeId);
 		for (Object[] child : children)
 		{
@@ -140,6 +161,10 @@ public class TreeMerger<N extends Treeable<N,D,I>,
 			}
 		}
 		mergeNodes(toMergeId, mergeIntoId);
+		for (TreeMergerUIIFace<N,D,I> face : listeners)
+		{
+			face.merged(toMergeId, mergeIntoId);
+		}
 	}
 	
 	/**
@@ -194,6 +219,25 @@ public class TreeMerger<N extends Treeable<N,D,I>,
 		}
 	}
 	
+	protected List<String> getPreMergeSql(final Integer toMergeId, final Integer mergeIntoId)
+	{
+		// use nodeTable.getRelationships()???
+		
+		Vector<String> result = new Vector<String>();
+		if (nodeTable.getClassObj().equals(Taxon.class))
+		{
+			//deal with determinations and stuff
+		}
+		else if (nodeTable.getClassObj().equals(Geography.class))
+		{
+			result.add("update locality set geographyid = " + mergeIntoId + " where geographyid = " + toMergeId);
+		}
+		else if (nodeTable.getClassObj().equals(Storage.class))
+		{
+			
+		}
+		return result;
+	}
 	/**
 	 * @param toMergeId
 	 * @param mergeIntoId
@@ -201,23 +245,20 @@ public class TreeMerger<N extends Treeable<N,D,I>,
 	 */
 	protected void preMerge(final Integer toMergeId, final Integer mergeIntoId) throws Exception
 	{
-		// use nodeTable.getRelationships()???
-		
 		//business rules??? Use hibernate here??
-		
-		if (nodeTable.getClassObj().equals(Taxon.class))
+		List<String> updaters = getPreMergeSql(toMergeId, mergeIntoId);
+		if (updaters.size() > 0)
 		{
-			//deal with determinations and stuff
-		}
-		else if (nodeTable.getClassObj().equals(Geography.class))
+			Statement stmt = connection.createStatement();
+			for (String sql : updaters)
+			{
+				BasicSQLUtils.exeUpdateCmd(stmt, sql);
+			}
+		}		
+		else 
 		{
-			
+			throw new Exception("Unable to merge " + nodeTable.getName() + " objects");
 		}
-		else if (nodeTable.getClassObj().equals(Storage.class))
-		{
-			
-		}
-		else throw new Exception("Unable to merge " + nodeTable.getName() + " objects");
 	}
 	
 	/**
@@ -239,6 +280,10 @@ public class TreeMerger<N extends Treeable<N,D,I>,
 		finally
 		{
 			stmt.close();
+		}
+		for (TreeMergerUIIFace<N,D,I> face : listeners)
+		{
+			face.moved(toMoveId, null, parentId);
 		}
 	}
 }

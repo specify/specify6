@@ -112,6 +112,8 @@ import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeHelper;
+import edu.ku.brc.specify.treeutils.TreeMerger;
+import edu.ku.brc.specify.treeutils.TreeMergerUIIFace;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DragDropCallback;
 import edu.ku.brc.ui.IconManager;
@@ -151,7 +153,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	
 	private static final boolean debugFind = false;
 	
-	private enum NODE_DROPTYPE {MOVE_NODE, SYNONIMIZE_NODE, CANCEL_DROP}
+	public enum NODE_DROPTYPE {MOVE_NODE, SYNONIMIZE_NODE, MERGE_NODE, CANCEL_DROP}
 	
 	/** Status message display widget. */
 	protected JStatusBar statusBar;
@@ -266,6 +268,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         selNodePrefName = "selected_node:" + treeDef.getClass().getSimpleName() + ":" + treeDef.getTreeDefId();
         
         countGrabberExecutor = Executors.newFixedThreadPool(10);
+        
 	}
 	
 	//XXX - move renumber and verify code somewhere else (possibly debug menu) or dump it.
@@ -2380,6 +2383,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     {
         boolean isSynonymizeOK = treeDef.isSynonymySupported() && isSynonymizeOK(droppedOnNode, draggedNode, treeDef.getSynonymizedLevel());
         boolean isMoveOK      = isMoveOK(droppedOnNode, draggedNode);
+        boolean isMergeOK     = isMergeOK(droppedOnNode, draggedNode);
         
         if (treeDef.getSynonymizedLevel() == -1)
         {
@@ -2425,7 +2429,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             }
         } else
         {
-            int numOptions = 2 + (isSynonymizeOK ? 1 : 0) + (isMoveOK ? 1 : 0);
+        	int numOptions = 2 + (isSynonymizeOK ? 1 : 0) + (isMoveOK ? 1 : 0) + (isMergeOK ? 1 : 0);
             
             CellConstraints cc = new CellConstraints();
             
@@ -2469,29 +2473,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             	pb.add(tac, cc.xy(3, 3));
             }
             pb.setDefaultDialogBorder();
-                        
-            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
+            DropDialog dlg = new DropDialog((Frame)UIRegistry.getTopWindow(), 
                                                 getResourceString("TreeTableView.NODE_ACTION_TITLE"),
-                                                true,
-                                                numOptions == 4 ? CustomDialog.OKCANCELAPPLYHELP : CustomDialog.OKCANCELHELP,
+                                                isMoveOK, isSynonymizeOK, isMergeOK,
                                                 pb.getPanel());
             dlg.setHelpContext("SYNONIMIZE_NODE");
-            if (isSynonymizeOK)
-            {
-                dlg.setOkLabel(getResourceString("TreeTableView.SYNONIMIZE_NODE"));
-            }
-            
-            if (isMoveOK)
-            {
-                if (isSynonymizeOK)
-                {
-                    dlg.setApplyLabel(getResourceString("TreeTableView.MOVE_NODE"));   
-                    dlg.setCloseOnApplyClk(true);
-                } else
-                {
-                    dlg.setOkLabel(getResourceString("TreeTableView.MOVE_NODE"));
-                }
-            }
             dlg.createUI();
             if (treeDef.getNodeClass().equals(Taxon.class))
             {
@@ -2503,19 +2489,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             }
             UIHelper.centerAndShow(dlg);
             
-            int btn = dlg.getBtnPressed();
-            if (!dlg.isCancelled() && btn != CustomDialog.HELP_BTN)
+            if (!dlg.isCancelled() && dlg.getBtnPressed() != CustomDialog.HELP_BTN)
             {
-                if (isSynonymizeOK)
-                {
-                    if (isMoveOK)
-                    {
-                        return btn == CustomDialog.OK_BTN ? NODE_DROPTYPE.SYNONIMIZE_NODE : NODE_DROPTYPE.MOVE_NODE;
-                    }
-                    
-                    return NODE_DROPTYPE.SYNONIMIZE_NODE;
-                }
-                return NODE_DROPTYPE.MOVE_NODE;
+            	return dlg.getAction();
             }
         }
         
@@ -2992,6 +2968,78 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			return true;
 			
 		}
+		else if (nodeDropAction == NODE_DROPTYPE.MERGE_NODE)
+		{
+			final TreeMergerUIIFace<T,D,I> face = new TreeMergerUIIFace<T,D,I>() {
+
+				/* (non-Javadoc)
+				 * @see edu.ku.brc.specify.treeutils.TreeMergerUIIFace#choose(java.util.List, boolean)
+				 */
+				@Override
+				public Integer choose(List<Integer> choices, boolean mustChoose)
+				{
+					System.out.print((mustChoose ? "You MUST choose: " : "Choose: "));
+					for (Integer id : choices)
+					{
+						System.out.print(id + "  ");
+					}
+					System.out.println();
+					return null;
+				}
+
+				/* (non-Javadoc)
+				 * @see edu.ku.brc.specify.treeutils.TreeMergerUIIFace#merged(java.lang.Integer, java.lang.Integer)
+				 */
+				@Override
+				public void merged(Integer toMergeId, Integer mergeIntoId)
+				{
+					System.out.println("merged " + toMergeId + " into " + mergeIntoId);
+					
+				}
+
+				/* (non-Javadoc)
+				 * @see edu.ku.brc.specify.treeutils.TreeMergerUIIFace#merging(java.lang.Integer, java.lang.Integer)
+				 */
+				@Override
+				public void merging(Integer toMergeId, Integer mergeIntoId)
+				{
+					System.out.println("merging " + toMergeId + " into " + mergeIntoId);
+				}
+
+				/* (non-Javadoc)
+				 * @see edu.ku.brc.specify.treeutils.TreeMergerUIIFace#moved(java.lang.Integer, java.lang.Integer, java.lang.Integer)
+				 */
+				@Override
+				public void moved(Integer movedId, Integer oldParentId,
+						Integer newParentId)
+				{
+					System.out.println("moved " + movedId + " from " + oldParentId + " to " + newParentId);
+				}
+				
+			};
+	        final TreeMerger<T, D, I> merger = new TreeMerger<T, D, I>(treeDef);
+	        merger.addListener(face);
+	        new javax.swing.SwingWorker<Object, Object>() {
+
+				/* (non-Javadoc)
+				 * @see javax.swing.SwingWorker#doInBackground()
+				 */
+				@Override
+				protected Object doInBackground() throws Exception
+				{
+			        try
+			        {
+			        	merger.mergeTrees(draggedNode.getId(), droppedOnNode.getId());
+			        } catch (Exception ex)
+			        {
+			        	ex.printStackTrace();
+			        }
+					return null;
+				}
+	        	
+	        }.execute();
+			
+		}
 		return false;
 	}
 	
@@ -3037,6 +3085,24 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             }
         }
 	    return false;
+	}
+	
+	/**
+	 * @param droppedOnNode
+	 * @param draggedNode
+	 * @return 	true if draggedNode can be merged into droppedOnNode
+	 */
+	private boolean isMergeOK(final TreeNode droppedOnNode, 
+	                              final TreeNode draggedNode)
+	{
+		return false;
+		
+		//rank - is higher into lower feasible? Do isEnforced rules need all the time anyway??
+		//accepted status ??? 
+		
+		//return draggedNode.getRank() == droppedOnNode.getRank(); //perhaps not a necessary restriction
+			//&& draggedNode.isHasChildren() && droppedOnNode.isHasChildren(); //else what's the point of merge?
+			//point of merging childless nodes would be for example to merge all localities in 'Douglas Co.' to 'Douglas'.
 	}
 	
 	/**
@@ -3110,12 +3176,28 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		if (isMoveOK(droppedOnNode, draggedNode))
 		{
         	//log.debug("Reparent request IS acceptable.");
-    		listModel.setDropLocationNode(droppedOn);
-    		isOK = true;
+    		if (!isOK)
+    		{
+    			listModel.setDropLocationNode(droppedOn);
+    			isOK = true;
+    		}
     		
     		if (isNodeDiff)
     		{
     		    msg += (msg.length() > 0 ? ", " : "") + getResourceString("TreeViewer.MOVE_IS_OK");
+    		}
+		}
+		
+		if (isMergeOK(droppedOnNode, draggedNode))
+		{
+    		if (!isOK)
+    		{
+    			listModel.setDropLocationNode(droppedOn);
+    			isOK = true;
+    		}
+    		if (isNodeDiff)
+    		{
+    		    msg += (msg.length() > 0 ? ", " : "") + getResourceString("TreeViewer.MERGE_IS_OK");
     		}
 		}
 		
