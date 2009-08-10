@@ -241,11 +241,19 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
         //txt.addFocusListener(this);
         //txt.addKeyListener(keyAdapter);
         
-        txt.getDocument().addDocumentListener(new DocumentAdaptor() {
-            @Override
-            protected void changed(DocumentEvent e) { textChanged(txt); updateBtnUI(); }
-        });
+        txt.getDocument().addDocumentListener(createDocChangeAdaptor(txt));
         return txt;
+    }
+    
+    /**
+     * @return
+     */
+    public DocumentAdaptor createDocChangeAdaptor(final JTextField tf)
+    {
+        return new DocumentAdaptor() {
+            @Override
+            protected void changed(DocumentEvent e) { textChanged(tf); updateBtnUI(); }
+        };
     }
     
     /**

@@ -315,10 +315,19 @@ public class ViewFactory
     {
         String validationRule = cellField.getValidationRule();
         JTextField txt;
-
+        ValPasswordField textField = null;
+            
         if (validator != null && (isRequired || isNotEmpty(validationRule) || cellField.isChangeListenerOnly()))
         {
-            ValPasswordField textField = new ValPasswordField(cellField.getTxtCols());
+            String maxLenStr = cellField.getProperties().getProperty("maxlen");
+            if (StringUtils.isNotEmpty(maxLenStr) && StringUtils.isNumeric(maxLenStr))
+            {
+                int maxlen = Integer.parseInt(maxLenStr);
+                textField = new ValPasswordField(new ValPlainTextDocument(maxlen), "", cellField.getTxtCols());
+            } else
+            {
+                textField = new ValPasswordField(cellField.getTxtCols());
+            }
             textField.setRequired(isRequired);
             textField.setEncrypted(cellField.isEncrypted());
 

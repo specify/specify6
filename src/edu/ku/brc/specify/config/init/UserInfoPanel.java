@@ -28,6 +28,7 @@ import javax.swing.event.DocumentEvent;
 
 import edu.ku.brc.af.ui.PasswordStrengthUI;
 import edu.ku.brc.af.ui.forms.ViewFactory;
+import edu.ku.brc.af.ui.forms.validation.ValPlainTextDocument;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.UIHelper;
@@ -90,13 +91,19 @@ public class UserInfoPanel extends GenericFormPanel
         PasswordStrengthUI pwdStrength = new PasswordStrengthUI();
         builder.add(createI18NFormLabel("PWDSTRENGTH"), cc.xy(1, row));
         builder.add(pwdStrength,                        cc.xyw(3, row, 2)); row += 2;
-        builder.add(statusLbl,                           cc.xyw(3, row, 2)); row += 2;
+        builder.add(statusLbl,                          cc.xyw(3, row, 2)); row += 2;
         
         final JTextField pwdTF = (JTextField)comps.get("usrPassword");
+        ValPlainTextDocument valDoc = new ValPlainTextDocument(64);
+        pwdTF.setDocument(valDoc);
+        valDoc.addDocumentListener(createDocChangeAdaptor(pwdTF));
+        
         pwdStrength.setPasswordField(pwdTF, null);
         
         encryptedTF = UIHelper.createTextField(20);
         ViewFactory.changeTextFieldUIForDisplay(encryptedTF, false);
+        
+        encryptedTF.setDocument(new ValPlainTextDocument(64));
         
         pwdTF.getDocument().addDocumentListener(new DocumentAdaptor() {
             @Override
