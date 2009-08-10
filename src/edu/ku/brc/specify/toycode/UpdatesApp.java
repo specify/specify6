@@ -280,10 +280,10 @@ public class UpdatesApp extends JPanel
         maxUpUpdateDesc   = read(new File(macUpStr));
         
         
-        setAsFull(baseUpdateDesc, baseVerStr, versionTF.getText(), verSub1Str, verSub2Str);
+        setAsFull(baseUpdateDesc, baseVerStr, versionStr, verSub1Str, verSub2Str);
         setAsUpdate(baseUpdateUpDesc, versionStr, verSub1Str, verSub2Str);
         
-        setAsFull(maxFullUpdateDesc, baseVerStr, versionTF.getText(), verSub1Str, verSub2Str);
+        setAsFull(maxFullUpdateDesc, baseVerStr, versionStr, verSub1Str, verSub2Str);
         setAsUpdate(maxUpUpdateDesc, versionStr, verSub1Str, verSub2Str);
         
         baseUpdateDesc.getEntries().addAll(baseUpdateUpDesc.getEntries());
@@ -298,6 +298,7 @@ public class UpdatesApp extends JPanel
         {
             statusTF.setText(msg);
         }
+        doSave(outStr);
 
     }
     
@@ -318,22 +319,30 @@ public class UpdatesApp extends JPanel
         String newVersion = ver + "." + vs1 + "." + vs2;
         String verMax     = ver + "." + vs1 + "." + i2;
         
-        for (UpdateEntry entry : upDesc.getEntries())
+        try
         {
-            if (!entry.getNewVersion().equals(newVersion))
+            for (UpdateEntry entry : upDesc.getEntries())
             {
-                String msg = String.format("The Full entry '%s'\n has the wrong version number '%s'\nThe version should be '%s'!", entry.getFileName(), entry.getNewVersion(), newVersion);
-                if (doingCmdLine)
+                if (!entry.getNewVersion().equals(newVersion))
                 {
-                    System.err.println(msg);
-                } else
-                {
-                    JOptionPane.showConfirmDialog(null, msg, "Version Mismatch", JOptionPane.ERROR_MESSAGE);
+                    String msg = String.format("The Full entry '%s'\n has the wrong version number '%s'\nThe version should be '%s'!", entry.getFileName(), entry.getNewVersion(), newVersion);
+                    if (doingCmdLine)
+                    {
+                        System.err.println(msg);
+                    } else
+                    {
+                        JOptionPane.showConfirmDialog(null, msg, "Version Mismatch", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
+                entry.setUpdatableVersionMax(verMax);
+                entry.setUpdatableVersionMin(baseVer);
             }
-            entry.setUpdatableVersionMax(verMax);
-            entry.setUpdatableVersionMin(baseVer);
+            
+        } catch (java.lang.NullPointerException ex)
+        {
+        	System.err.println("****UpdateDescriptor has no entries.");
         }
+        
     }
     
     /**
@@ -352,21 +361,28 @@ public class UpdatesApp extends JPanel
         String newVersion = ver + "." + vs1 + "." + vs2;
         String verMin     = ver + "." + vs1 + "." + i2;
         
-        for (UpdateEntry entry : upDesc.getEntries())
+        try
         {
-            if (!entry.getNewVersion().equals(newVersion))
+            for (UpdateEntry entry : upDesc.getEntries())
             {
-                String msg = String.format("The Update entry '%s'\n has the wrong version number '%s'\nThe version should be '%s'!", entry.getFileName(), entry.getNewVersion(), newVersion);
-                if (doingCmdLine)
+                if (!entry.getNewVersion().equals(newVersion))
                 {
-                    System.err.println(msg);
-                } else
-                {
-                    JOptionPane.showConfirmDialog(null, msg, "Version Mismatch", JOptionPane.ERROR_MESSAGE);
+                    String msg = String.format("The Update entry '%s'\n has the wrong version number '%s'\nThe version should be '%s'!", entry.getFileName(), entry.getNewVersion(), newVersion);
+                    if (doingCmdLine)
+                    {
+                        System.err.println(msg);
+                    } else
+                    {
+                        JOptionPane.showConfirmDialog(null, msg, "Version Mismatch", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
+                entry.setUpdatableVersionMax(verMin);
+                entry.setUpdatableVersionMin(verMin);
             }
-            entry.setUpdatableVersionMax(verMin);
-            entry.setUpdatableVersionMin(verMin);
+
+        } catch (java.lang.NullPointerException ex)
+        {
+        	System.err.println("****UpdateDescriptor has no entries.");
         }
     }
     
@@ -414,7 +430,10 @@ public class UpdatesApp extends JPanel
             }
         } else
         {
-            System.err.println("File: "+file.getAbsolutePath()+" doesn't exist.");
+        	try
+        	{
+        		System.err.println("File: "+file.getCanonicalPath()+" doesn't exist.");
+        	} catch (IOException ex) { ex.printStackTrace(); }
         }
         return null;
     }
@@ -522,11 +541,22 @@ public class UpdatesApp extends JPanel
      */
     public static void main(String[] args)
     {
-        if (args.length == 8)
+        if (args.length == 9)
         {
+        	for (int i=0;i<args.length;i++) 
+        	{
+        		System.out.println(i+"="+args[i]);
+        	}
             doingCmdLine = true;
             UpdatesApp updateApp = new UpdatesApp();
-            updateApp.merge(args[0], args[1],args[2], args[3], args[4], args[5], args[6], args[7], args[8]);
+            try
+            {
+                updateApp.merge(args[0], args[1],args[2], args[3], args[4], args[5], args[6], args[7], args[8]);         	
+            } catch (java.lang.NullPointerException ex)
+            {
+            	System.err.println("****The merge process failed:  check for errors above.");
+            }
+
             
         } else
         {
