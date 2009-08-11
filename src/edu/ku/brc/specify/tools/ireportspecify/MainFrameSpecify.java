@@ -1813,7 +1813,7 @@ public class MainFrameSpecify extends MainFrame
                 };
                 String nameAndTitle = "Specify iReport"; // I18N
                 UIRegistry.setRelease(true);
-                UIHelper.doLogin(usrPwdProvider, false, false, new IReportLauncher(), 
+                UIHelper.doLogin(usrPwdProvider, true, false, false, new IReportLauncher(), 
                                  "SPIReports", nameAndTitle, nameAndTitle, 
                                  "SpecifyWhite32", "iReport"); // true means do auto login if it can, 
                                                                // second bool means use dialog instead of frame

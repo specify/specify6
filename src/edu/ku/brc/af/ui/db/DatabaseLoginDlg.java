@@ -49,19 +49,21 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
 
     /**
      * Constructor that has the form created from the view system.
+     * @param frame the parent frame
      * @param userName single signon username (for application)
      * @param password single signon password (for application)
-     * @param frame the parent frame
+     * @param engageUPPrefs indicates whether the username and password should be loaded and remembered by local prefs
      * @param listener the listener usually the parent like the Dialog
      * @param iconName name of icon to use
      * @param helpContext context for help btn on dialog
      */
-    public DatabaseLoginDlg(final Frame frame, 
-                            final String userName,
-                            final String password,
+    public DatabaseLoginDlg(final Frame                 frame, 
+                            final String                userName,
+                            final String                password,
+                            final boolean               engageUPPrefs,
                             final DatabaseLoginListener listener,
-                            final String iconName,
-                            final String helpContext)
+                            final String                iconName,
+                            final String                helpContext)
     {
         super(frame);
         
@@ -69,7 +71,7 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
 
         //setTitle(getResourceString("LOGINTITLE")); //$NON-NLS-1$
 
-        dbPanel = new DatabaseLoginPanel(userName, password, this, true, iconName, helpContext);
+        dbPanel = new DatabaseLoginPanel(userName, password, engageUPPrefs, this, true, iconName, helpContext);
         setContentPane(dbPanel);
 
         setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
@@ -81,34 +83,9 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
         pack();
     }
     
-//    /**
-//     * Constructor that has the form created from the view system.
-//     * @param frame the parent frame
-//     * @param listener the listener usually the parent like the Dialog
-//     */
-//    public DatabaseLoginDlg(final Frame frame, final DatabaseLoginListener listener)
-//    {
-//        super(frame);
-//        
-//        this.listener = listener;
-//
-//        setTitle(getResourceString("logintitle"));
-//
-//        dbPanel = new DatabaseLoginPanel(this, true);
-//        setContentPane(dbPanel);
-//
-//        setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
-//        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-//        this.setModal(true);
-//
-//        getRootPane().setDefaultButton(dbPanel.getLoginBtn());
-//
-//        pack();
-//    }
-
     /**
-     * Return whether dialog was cancelled
-     * @return whether dialog was cancelled
+     * Return whether dialog was canceled
+     * @return whether dialog was canceled
      */
     public boolean isCancelled()
     {

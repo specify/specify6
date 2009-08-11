@@ -1551,6 +1551,7 @@ public final class UIHelper
      * and if the login fails then it will display the dialog
      * @param userName single signon username (for application)
      * @param password single signon password (for application)
+     * @param engageUPPrefs indicates whether the username and password should be loaded and remembered by local prefs
      * @param doAutoLogin whether to try to automatically log the user in
      * @param doAutoClose whether it should automatically close the window when it is logged in successfully
      * @param useDialog use a Dialog or a Frame
@@ -1561,6 +1562,7 @@ public final class UIHelper
      */
     public static DatabaseLoginPanel doLogin(final String  userName,
                                              final String  password,
+                                             final boolean engageUPPrefs,
                                              final boolean doAutoClose,
                                              final boolean useDialog,
                                              final DatabaseLoginListener listener,
@@ -1568,13 +1570,14 @@ public final class UIHelper
                                              final String  appIconName,
                                              final String  helpContext)
     {     
-        return doLogin(userName, password, doAutoClose, useDialog, listener, iconName, null, null, appIconName, helpContext);
+        return doLogin(userName, password, engageUPPrefs, doAutoClose, useDialog, listener, iconName, null, null, appIconName, helpContext);
     }
     
     /**
      * Tries to do the login, if doAutoLogin is set to true it will try without displaying a dialog
      * and if the login fails then it will display the dialog
      * @param usrPwdProvider provides db username and password
+     * @param engageUPPrefs indicates whether the username and password should be loaded and remembered by local prefs
      * @param doAutoLogin whether to try to automatically log the user in
      * @param doAutoClose whether it should automatically close the window when it is logged in successfully
      * @param useDialog use a Dialog or a Frame
@@ -1586,6 +1589,7 @@ public final class UIHelper
      * @param helpContext help context for Help button on dialog
      */
     public static DatabaseLoginPanel doLogin(final MasterPasswordProviderIFace usrPwdProvider,
+                                             final boolean engageUPPrefs,
                                              final boolean doAutoClose,
                                              final boolean useDialog,
                                              final DatabaseLoginListener listener,
@@ -1595,7 +1599,7 @@ public final class UIHelper
                                              final String  appIconName,
                                              final String  helpContext)
     {     
-        return doLogin(null, null, usrPwdProvider, doAutoClose, useDialog, listener, iconName, title, appName, appIconName, helpContext); 
+        return doLogin(null, null, engageUPPrefs, usrPwdProvider, doAutoClose, useDialog, listener, iconName, title, appName, appIconName, helpContext); 
     }
     
     /**
@@ -1603,6 +1607,7 @@ public final class UIHelper
      * and if the login fails then it will display the dialog
      * @param userName single signon username (for application)
      * @param password single signon password (for application)
+     * @param engageUPPrefs indicates whether the username and password should be loaded and remembered by local prefs
      * @param doAutoLogin whether to try to automatically log the user in
      * @param doAutoClose whether it should automatically close the window when it is logged in successfully
      * @param useDialog use a Dialog or a Frame
@@ -1615,6 +1620,7 @@ public final class UIHelper
      */
     public static DatabaseLoginPanel doLogin(final String  userName,
                                              final String  password,
+                                             final boolean engageUPPrefs,
                                              final boolean doAutoClose,
                                              final boolean useDialog,
                                              final DatabaseLoginListener listener,
@@ -1624,7 +1630,7 @@ public final class UIHelper
                                              final String  appIconName,
                                              final String  helpContext)
     {     
-        return doLogin(userName, password, null, doAutoClose, useDialog, listener, iconName, title, appName, appIconName, helpContext);
+        return doLogin(userName, password, engageUPPrefs, null, doAutoClose, useDialog, listener, iconName, title, appName, appIconName, helpContext);
     }
     
     /**
@@ -1632,6 +1638,8 @@ public final class UIHelper
      * and if the login fails then it will display the dialog
      * @param userName single signon username (for application)
      * @param password single signon password (for application)
+     * @param usrPwdProvider the provider
+     * @param engageUPPrefs indicates whether the username and password should be loaded and remembered by local prefs
      * @param doAutoLogin whether to try to automatically log the user in
      * @param doAutoClose whether it should automatically close the window when it is logged in successfully
      * @param useDialog use a Dialog or a Frame
@@ -1644,6 +1652,7 @@ public final class UIHelper
      */
     public static DatabaseLoginPanel doLogin(final String  userName,
                                              final String  password,
+                                             final boolean engageUPPrefs,
                                              final MasterPasswordProviderIFace usrPwdProvider,
                                              final boolean doAutoClose,
                                              final boolean useDialog,
@@ -1668,7 +1677,7 @@ public final class UIHelper
         if (useDialog)
         {
             JDialog.setDefaultLookAndFeelDecorated(false); 
-            DatabaseLoginDlg dlg = new DatabaseLoginDlg((Frame)UIRegistry.getTopWindow(), userName, password, listener, iconName, helpContext);
+            DatabaseLoginDlg dlg = new DatabaseLoginDlg((Frame)UIRegistry.getTopWindow(), userName, password, engageUPPrefs, listener, iconName, helpContext);
             JDialog.setDefaultLookAndFeelDecorated(true); 
             dlg.setDoAutoClose(doAutoClose);
             dlg.setModal(true);
@@ -1717,12 +1726,12 @@ public final class UIHelper
         DatabaseLoginPanel panel;
         if (StringUtils.isNotEmpty(title))
         {
-            panel = new DatabaseLoginPanel(userName, password, usrPwdProvider, new DBListener(frame, listener, doAutoClose), 
+            panel = new DatabaseLoginPanel(userName, password, engageUPPrefs, usrPwdProvider, new DBListener(frame, listener, doAutoClose), 
                                            false, title, appName, iconName, helpContext);
         }
         else
         {
-            panel = new DatabaseLoginPanel(userName, password, usrPwdProvider, new DBListener(frame, listener, doAutoClose), 
+            panel = new DatabaseLoginPanel(userName, password, engageUPPrefs, usrPwdProvider, new DBListener(frame, listener, doAutoClose), 
                                           false, null, null, iconName, helpContext);
         }
         

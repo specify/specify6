@@ -130,7 +130,7 @@
 
 <!-- Index Bookmarks -->
 
-   <mapID target="specify" url="http://specify6.specifysoftware.org"/>
+   <mapID target="specify" url="http:/specifysoftware.org"/>
    <mapID target="login" url="SpecifyHelp/Dialogs/Login.html#login"/>
    <mapID target="Forum" url="SpecifyHelp/Intro/about.html#user_forums"/>
    <mapID target="Sample_Resources" url="SpecifyHelp/Intro/about.html#sample_resources"/>

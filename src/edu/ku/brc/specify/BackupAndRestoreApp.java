@@ -121,7 +121,7 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
 
     private boolean              isWorkbenchOnly     = false;
     
-    private String               appName             = "Specify"; //$NON-NLS-1$
+    private String               appName             = "Backup and Restore"; //$NON-NLS-1$
     private String               appVersion          = "6.0"; //$NON-NLS-1$
 
     private String               appBuildVersion     = "(Unknown)"; //$NON-NLS-1$
@@ -190,7 +190,6 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         menuBar = createMenus();
         if (menuBar != null)
         {
-            //top.add(menuBar, BorderLayout.NORTH);
             topFrame.setJMenuBar(menuBar);
         }
         UIRegistry.register(UIRegistry.MENUBAR, menuBar);
@@ -282,8 +281,10 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
                     });
         }
 
+        HelpMgr.setAppDefHelpId("Backup_Restore");
+        
         JMenu helpMenu = UIHelper.createLocalizedMenu(mb, "Specify.HELP_MENU", "Specify.HELP_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
-        HelpMgr.createHelpMenuItem(helpMenu, "Specify"); //$NON-NLS-1$
+        HelpMgr.createHelpMenuItem(helpMenu, "Backup and Restore"); //$NON-NLS-1$
         helpMenu.addSeparator();
         
         if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
@@ -350,6 +351,13 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
             okToShutdown = SubPaneMgr.getInstance().aboutToShutdown();
             if (okToShutdown)
             {
+                if (mainPanel != null)
+                {
+                    mainPanel.savePrefs();
+                    AppPreferences.getLocalPrefs().flush();
+                    AppPreferences.shutdownLocalPrefs();
+                }                
+
                 /*try
                 {
                     DataProviderSessionIFace session     = null;
@@ -457,6 +465,8 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         int h = AppPreferences.getLocalPrefs().getInt("APP.H", r.height);
         UIHelper.positionAndFitToScreen(f, x, y, w, h);
         */
+        
+        //HelpMgr.setHelpID(topFrame, mainPanel.getHelpContext());
         
         Rectangle r = topFrame.getBounds();
         r.setBounds(1, 1, 600, 275);
@@ -567,8 +577,10 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         
         CommandDispatcher.register(BaseTask.APP_CMD_TYPE, this);
         
+        UIRegistry.loadAndPushResourceBundle("backuprestore");
+        dbLoginPanel = UIHelper.doLogin(null, false, false, false, this, "DatabaseIcon", getTitle(), null, "SpecifyWhite32", "Backup_Restore"); // true means do auto login if it can, second bool means use dialog instead of frame
+        UIRegistry.popResourceBundle();
         
-        dbLoginPanel = UIHelper.doLogin(null, false, false, this, "DatabaseIcon", getTitle(), null, "SpecifyWhite32", "Backup_Restore"); // true means do auto login if it can, second bool means use dialog instead of frame
         localPrefs.load();
     }
     /**
@@ -792,11 +804,11 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
          public void run()
          {
               // Set App Name, MUST be done very first thing!
+               // This must be 'Specify'
               UIRegistry.setAppName("Specify");  //$NON-NLS-1$
-               
+              
               // Load Local Prefs
-              AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-              localPrefs.setDirPath(UIRegistry.getAppDataDir());
+              AppPreferences.getLocalPrefs().setDirPath(UIRegistry.getAppDataDir());
                
               startApp();
    

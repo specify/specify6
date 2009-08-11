@@ -170,6 +170,7 @@ public class UIRegistry
     protected String               resourceName   = "resources";
     protected Locale               resourceLocale = Locale.getDefault();
     protected Locale               platformLocale = Locale.getDefault();
+    protected static boolean       doShowAllResStrErors = false;
 
 
     protected ViewBasedDialogFactoryIFace viewbasedFactory = null;
@@ -442,7 +443,10 @@ public class UIRegistry
             
         } catch (MissingResourceException ex) 
         {
-            log.error("Couldn't find key["+key+"] in resource bundle ["+resourceName+"]");
+            if (resBundleStack.size() == 0 || doShowAllResStrErors)
+            {
+                log.warn("Couldn't find key["+key+"] in resource bundle ["+resourceName+"]");
+            }
             
             for (int i=resBundleStack.size()-1;i>-1;i--)
             {
@@ -453,11 +457,24 @@ public class UIRegistry
                     
                 } catch (MissingResourceException mre) 
                 {
-                    log.error("Couldn't find key["+key+"] in resource bundle ["+ri.getName()+"]");
+                    if (i == 0 || doShowAllResStrErors)
+                    {
+                        log.error("Couldn't find key["+key+"] in resource bundle ["+ri.getName()+"]");
+                    }
                 }
             }
             return key;
         }
+    }
+
+    /**
+     * This will enable the showing of all getResourceString ResourceBundle look up errors no matter
+     * the level. Otherwise it only shows the error when it is not found at all.
+     * @param doShowAllResStrErors the doShowAllResStrErors to set
+     */
+    public static void setDoShowAllResStrErors(boolean doShowAllResStrErors)
+    {
+        UIRegistry.doShowAllResStrErors = doShowAllResStrErors;
     }
 
     /**

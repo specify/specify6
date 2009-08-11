@@ -70,6 +70,7 @@ public class HelpMgr
     protected static HelpBroker hb;
     protected static String     helpSystemName;
     protected static String     loadingPage = null;
+    protected static String     appDefHelpId = "specify";
     
     
     protected static Hashtable<Component, String> compHelpHash = new Hashtable<Component, String>();
@@ -117,6 +118,14 @@ public class HelpMgr
                 }
             }
         }
+    }
+
+    /**
+     * @param appDefHelpId the appDefHelpId to set
+     */
+    public static void setAppDefHelpId(String appDefHelpId)
+    {
+        HelpMgr.appDefHelpId = appDefHelpId;
     }
 
     /**
@@ -302,7 +311,7 @@ public class HelpMgr
      */
     static private String getDefaultID()
     {
-        return "specify";
+        return appDefHelpId;
     }
 
     /**
