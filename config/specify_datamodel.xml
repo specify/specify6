@@ -979,7 +979,7 @@
     </table>
     <table classname="edu.ku.brc.specify.datamodel.DNASequence" table="dnasequence" tableid="121" searchable="true" businessrule="edu.ku.brc.specify.datamodel.busrules.DNASequenceBusRules" abbrv="dna">
       <field column="AmbiguousResidues" name="ambiguousResidues" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
-      <field column="BOLDBarcodeID" name="boldBarcodeId" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="BOLDBarcodeID" name="boldBarcodeId" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="true" partialDate="false"/>
       <field column="BOLDLastUpdateDate" name="boldLastUpdateDate" type="java.util.Calendar" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="BOLDSampleID" name="boldSampleId" type="java.lang.String" length="32" indexName="BOLDSampleIDX" updatable="true" required="false" unique="false" indexed="true" partialDate="false"/>
       <field column="BOLDTranslationMatrix" name="boldTranslationMatrix" type="java.lang.String" length="64" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
@@ -1008,7 +1008,7 @@
       <field column="YesNo3" name="yesNo3" type="java.lang.Boolean" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <id column="DnaSequenceID" name="dnaSequenceId" type="java.lang.Integer"/>
       <tableindex indexName="GenBankAccIDX" columnNames="GenBankAccessionNumber"/>
-      <tableindex indexName="BOLDBarCodeIDX" columnNames="BOLDBarCodeID"/>
+      <tableindex indexName="BOLDBarcodeIDX" columnNames="BOLDBarcodeID"/>
       <tableindex indexName="BOLDSampleIDX" columnNames="BOLDSampleID"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CollectionObject" relationshipname="collectionObject" columnname="CollectionObjectID" othersidename="dnaSequences" updatable="false" required="false" save="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false" save="false"/>

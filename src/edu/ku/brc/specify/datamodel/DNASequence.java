@@ -56,7 +56,7 @@ import org.hibernate.annotations.Index;
 @Table(name = "dnasequence")
 @org.hibernate.annotations.Table(appliesTo="dnasequence", indexes =
     {   @Index (name="GenBankAccIDX", columnNames={"GenBankAccessionNumber"}),
-        @Index (name="BOLDBarCodeIDX", columnNames={"BOLDBarCodeID"}),
+        @Index (name="BOLDBarcodeIDX", columnNames={"BOLDBarcodeID"}),
         @Index (name="BOLDSampleIDX", columnNames=("BOLDSampleID"))
     })
 public class DNASequence extends CollectionMember
