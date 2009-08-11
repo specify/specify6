@@ -138,6 +138,8 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected Set<TreatmentEvent>             treatmentEvents;
     protected Set<CollectionObjectAttachment> collectionObjectAttachments;
 
+    protected Set<ExsiccataItem>              exsiccataItems;
+    
     // Constructors
 
     /** default constructor */
@@ -212,6 +214,8 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         conservDescriptions         = new HashSet<ConservDescription>();
         treatmentEvents             = new HashSet<TreatmentEvent>();
         collectionObjectAttachments = new HashSet<CollectionObjectAttachment>();
+        
+        exsiccataItems              = new HashSet<ExsiccataItem>();
     }
     // End Initializer
     
@@ -1090,6 +1094,18 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         this.collectionObjectAttachments = collectionObjectAttachments;
     }
 
+    @OneToMany(mappedBy = "collectionObject")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<ExsiccataItem> getExsiccataItems()
+    {
+        return exsiccataItems;
+    }
+    
+    public void setExsiccataItems(Set<ExsiccataItem> exsiccataItems)
+    {
+        this.exsiccataItems = exsiccataItems;
+    }
+    
    //---------------------------------------------------------------------------
     // Overrides DataModelObjBase
     //---------------------------------------------------------------------------
