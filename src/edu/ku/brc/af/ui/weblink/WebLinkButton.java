@@ -89,7 +89,6 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
     protected JButton                       launchBtn;
     protected JButton                       editBtn     = null;
     protected ValTextField                  textField   = null;
-    protected FormViewObj                   fvo         = null;
     
     protected WebLinkDef                    webLinkDef  = null;
     
