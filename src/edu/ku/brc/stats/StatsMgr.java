@@ -22,11 +22,14 @@ package edu.ku.brc.stats;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.lang.ref.SoftReference;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import javax.swing.JPanel;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
@@ -45,9 +48,11 @@ import edu.ku.brc.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.dbsupport.QueryResultsProcessable;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * This class reads in the statistics.xml file and then enables others to ask for a statistic by name.
@@ -69,6 +74,11 @@ public class StatsMgr
     protected static final String PIE_CHART = "pie chart";
     protected static final String TABLE     = "table";
     protected static final String FORM      = "form";
+    
+    protected static String         resourceName = null;
+    protected static ResourceBundle resBundle    = null;
+    
+    protected static Hashtable<String, String> nameToToolTipHash = new Hashtable<String, String>();
 
 
     // Data Members
@@ -86,7 +96,7 @@ public class StatsMgr
      * Returns the Statistics DOM.
      * @return the Statistics DOM.
      */
-    protected static Element getDOM()
+    public static Element getDOM()
     {
         Element dom = null;
         if (statDOM != null)
@@ -96,12 +106,28 @@ public class StatsMgr
         
         if (dom == null)
         {
+            
             statDOM = new SoftReference<Element>(loadDOM());
             dom     = statDOM.get();
         }
+        
+        if (resourceName == null)
+        {
+            resourceName = XMLHelper.getAttr(dom, "resource", null);
+            loadStatTooltips();
+        }
+        
         return dom;
     }
-     
+    
+    /**
+     * @return the resourceName
+     */
+    public static String getResourceName()
+    {
+        return resourceName;
+    }
+
     /**
      * Load the Statistics DOM.
      * @return return s the DOM
@@ -131,20 +157,83 @@ public class StatsMgr
     {
         return (Element)getDOM().selectSingleNode("/statistics/stat[@name='"+name+"']");
     }
+    
+    /**
+     * 
+     */
+    @SuppressWarnings("unchecked")
+    private static void loadStatTooltips()
+    {
+        nameToToolTipHash.clear();
+        
+        boolean hasResBundle = false;
+        if (StringUtils.isNotEmpty(StatsMgr.getResourceName()))
+        {
+            hasResBundle = UIRegistry.loadAndPushResourceBundle(StatsMgr.getResourceName()) != null;
+        }
+        
+        try
+        {
+            Element dom = getDOM();
+            if (dom != null)
+            {
+                for (Element element : (List<Element>)(dom.selectNodes("/statistics/stat")))
+                {
+                    String name = XMLHelper.getAttr(element, "name", null);
+                    if (name != null)
+                    {
+                        String tooltipName = null;
+                        Element el = (Element)element.selectSingleNode("chartinfo/tooltip");
+                        if (el != null)
+                        {
+                            tooltipName = el.getTextTrim();
+                        } else
+                        {
+                            el = (Element)element.selectSingleNode("tooltip");
+                            if (el != null)
+                            {
+                                tooltipName = el.getTextTrim();
+                            }
+                        }
+                        
+                        if (tooltipName != null)
+                        {
+                            nameToToolTipHash.put(name, UIRegistry.getResourceString(tooltipName));
+                        }
+                    }
+                }
+            }
+            
+        } finally
+        {
+            if (hasResBundle)
+            {
+                UIRegistry.popResourceBundle();
+            }
+        }
+    }
 
     /**
      * Reads the Chart INfo from the DOM and sets it into a Chartable object. The info are string used to decorate the chart,
      * like title, X Axis Title, Y Axis Title etc.
      * @param element the 'chartinfo' element to be processed
      * @param name the name of the child element that needs to be looked up to get its value
+     * @param resBundle the ResourceBundle for localization
      * @return returns the string value for the info element or an empty string
      */
-    protected String getChartInfo(final Element element, final String name)
+    protected String getChartInfo(final Element element, 
+                                  final String name,
+                                  final boolean isI18NKey)
     {
         Element el = (Element)element.selectSingleNode("chartinfo/"+name);
         if (el != null)
         {
-            return el.getText();
+            String str = el.getText();
+            if (isI18NKey)
+            {
+                return UIRegistry.getResourceString(str);
+            }
+            return str;
         }
         return "";
     }
@@ -153,19 +242,23 @@ public class StatsMgr
      * Fills the ChartPanel with any extra description information.
      * @param chartPane the chart pane to be augmented
      */
-    protected void fillWithChartInfo(final Element element, final Chartable chartable)
+    protected String fillWithChartInfo(final Element element, final Chartable chartable)
     {
-        chartable.setTitle(getChartInfo(element, "title"));
-        chartable.setXAxis(getChartInfo(element, "xaxis"));
-        chartable.setYAxis(getChartInfo(element, "yaxis"));
+        boolean isI18NKey = resBundle != null;
+        chartable.setTitle(getChartInfo(element, "title", isI18NKey));
+        chartable.setXAxis(getChartInfo(element, "xaxis", isI18NKey));
+        chartable.setYAxis(getChartInfo(element, "yaxis", isI18NKey));
+        
+        String toolTip = getChartInfo(element, "tooltip", isI18NKey);
 
-        String vert = getChartInfo(element, "vertical");
+        String vert = getChartInfo(element, "vertical", false);
         if (isNotEmpty(vert))
         {
             chartable.setVertical(vert.toLowerCase().equals("true"));
         }
+        return toolTip;
     }
-
+    
     /**
      * Helper method for adding row/col desc and values to a container.
      * @param qrc the QueryResultsContainer that will be added to
@@ -183,20 +276,26 @@ public class StatsMgr
     /**
      * Creates a chart from an XML definition. The query may be defined in the XML so it could be a custom query
      * that comes from an instance of a class.
+     * @param chartName the name of the chart
      * @param element the DOM element of the chart
      * @param qrProcessable the processor to take care of the results
      * @param chartable the chartable to be added to the UI
-     * @param listener the listener who nneds to know when the query is done and all the results are available
+     * @param listener the listener who needs to know when the query is done and all the results are available
      */
-    public void createChart(final Element                 element,
-                            final QueryResultsProcessable qrProcessable,
-                            final Chartable               chartable,
-                            final QueryResultsListener    listener)
+    private void createChart(final String                  chartName,
+                             final Element                 element,
+                             final QueryResultsProcessable qrProcessable,
+                             final Chartable               chartable,
+                             final QueryResultsListener    listener)
     {
         if (element != null)
         {
             // Fill the chart with extra description and decoration info
-            fillWithChartInfo(element, chartable);
+            String tooltip = fillWithChartInfo(element, chartable);
+            if (tooltip != null)
+            {
+                nameToToolTipHash.put(chartName, tooltip);
+            }
 
             // It better have some SQL
             Element sqlElement = (Element)element.selectSingleNode("sql");
@@ -275,91 +374,113 @@ public class StatsMgr
      * Looks up statName and creates the appropriate SubPane.
      * @param statName the name of the stat to be displayed
      */
-    protected JPanel createStatPaneInternal(final String statName)
+    private JPanel createStatPaneInternal(final String statName)
     {
-        String nameStr;
-        String idStr    = null;
-        int    inx      = statName.indexOf(',');
-        if (inx == -1)
+        if (StringUtils.isNotEmpty(resourceName))
         {
-            nameStr = statName;
-        } else
-        {
-            nameStr = statName.substring(0,inx);
-            idStr   = statName.substring(inx+4, statName.length());
+            resBundle = UIRegistry.loadAndPushResourceBundle(resourceName);
         }
 
-        Element dom = getDOM();
-        if (dom != null)
+        try
         {
-            Element element = (Element)dom.selectSingleNode("/statistics/stat[@name='"+nameStr+"']");
-            if (element != null)
+            String nameStr;
+            String idStr    = null;
+            int    inx      = statName.indexOf(',');
+            if (inx == -1)
             {
-                String displayType = element.attributeValue(DISPLAY).toLowerCase();
-    
-    
-                if (displayType.equalsIgnoreCase(BAR_CHART))
-                {
-                    BarChartPanel barChart = new BarChartPanel();
-                    createChart(element, barChart, barChart, barChart);
-                    return barChart;
-    
-                } else if (displayType.equalsIgnoreCase(PIE_CHART))
-                {
-                    PieChartPanel pieChart = new PieChartPanel();
-                    createChart(element, pieChart, pieChart, pieChart);
-                    return pieChart;
-    
-    
-                } else if (displayType.equalsIgnoreCase(FORM))
-                {
-                    createView(element, idStr);
-    
-                } else if (displayType.equals(TABLE))
-                {
-                    Element sqlElement = (Element)element.selectSingleNode("sql");
-                    if (sqlElement == null)
-                    {
-                        throw new RuntimeException("sql element is null!");
-                    }
-    
-                    Element titleElement = (Element)element.selectSingleNode("title");
-                    if (titleElement == null)
-                    {
-                        throw new RuntimeException("sql element is null!");
-                    }
-    
-                    StatsTask    statTask  = (StatsTask)ContextMgr.getTaskByName(StatsTask.STATISTICS);
-                    SQLQueryPane queryPane = new SQLQueryPane(titleElement.getTextTrim(), statTask, true, true);
-                    String       sqlStr    = sqlElement.getTextTrim();
-                    if (idStr != null)
-                    {
-                        int substInx = sqlStr.lastIndexOf("%s");
-                        if (substInx > -1)
-                        {
-                            sqlStr = sqlStr.substring(0, substInx-1) + idStr + sqlStr.substring(substInx+2, sqlStr.length());
-                        } else
-                        {
-                            log.error("Couldn't find the substitue string \"%s\" in ["+sqlStr+"]");
-                        }
-    
-                        //sqlStr = String.format(sqlStr, new Object[] {idStr});
-                    }
-                    //System.out.println(sqlStr);
-                    queryPane.setSQLStr(sqlStr);
-                    queryPane.doQuery();
-                    SubPaneMgr.getInstance().addPane(queryPane);
-    
-                } else
-                {
-                    // error
-                    log.error("Wrong type of display ["+displayType+"] this type is not supported!");
-                }
+                nameStr = statName;
+            } else
+            {
+                nameStr = statName.substring(0,inx);
+                idStr   = statName.substring(inx+4, statName.length());
             }
-        } else
+    
+            Element dom = getDOM();
+            if (dom != null)
+            {
+                Element element = (Element)dom.selectSingleNode("/statistics/stat[@name='"+nameStr+"']");
+                if (element != null)
+                {
+                    String displayType = element.attributeValue(DISPLAY).toLowerCase();
+        
+        
+                    if (displayType.equalsIgnoreCase(BAR_CHART))
+                    {
+                        BarChartPanel barChart = new BarChartPanel();
+                        createChart(nameStr, element, barChart, barChart, barChart);
+                        return barChart;
+        
+                    } else if (displayType.equalsIgnoreCase(PIE_CHART))
+                    {
+                        PieChartPanel pieChart = new PieChartPanel();
+                        createChart(nameStr, element, pieChart, pieChart, pieChart);
+                        return pieChart;
+        
+        
+                    } else if (displayType.equalsIgnoreCase(FORM))
+                    {
+                        createView(element, idStr);
+        
+                    } else if (displayType.equals(TABLE))
+                    {
+                        Element sqlElement = (Element)element.selectSingleNode("sql");
+                        if (sqlElement == null)
+                        {
+                            throw new RuntimeException("sql element is null!");
+                        }
+        
+                        Element titleElement = (Element)element.selectSingleNode("title");
+                        if (titleElement == null)
+                        {
+                            throw new RuntimeException("sql element is null!");
+                        }
+        
+                        String tooltip = XMLHelper.getAttr((Element)element.selectSingleNode("tooltip"), "tooltip", null);
+                        if (tooltip != null)
+                        {
+                            nameToToolTipHash.put(statName, tooltip);
+                        }
+        
+                        StatsTask    statTask  = (StatsTask)ContextMgr.getTaskByName(StatsTask.STATISTICS);
+                        SQLQueryPane queryPane = new SQLQueryPane(titleElement.getTextTrim(), statTask, true, true);
+                        String       sqlStr    = sqlElement.getTextTrim();
+                        if (idStr != null)
+                        {
+                            int substInx = sqlStr.lastIndexOf("%s");
+                            if (substInx > -1)
+                            {
+                                sqlStr = sqlStr.substring(0, substInx-1) + idStr + sqlStr.substring(substInx+2, sqlStr.length());
+                            } else
+                            {
+                                log.error("Couldn't find the substitue string \"%s\" in ["+sqlStr+"]");
+                            }
+        
+                            //sqlStr = String.format(sqlStr, new Object[] {idStr});
+                        }
+                        //System.out.println(sqlStr);
+                        queryPane.setSQLStr(sqlStr);
+                        queryPane.doQuery();
+                        SubPaneMgr.getInstance().addPane(queryPane);
+        
+                    } else
+                    {
+                        // error
+                        log.error("Wrong type of display ["+displayType+"] this type is not supported!");
+                    }
+                }
+            } else
+            {
+                log.error("DOM is NULL!!"); 
+            }
+            
+        } finally
         {
-            log.error("DOM is NULL!!"); 
+            if (resBundle != null)
+            {
+                UIRegistry.popResourceBundle();
+            }
         }
+        
         return null;
     }
     
@@ -370,6 +491,15 @@ public class StatsMgr
     public static JPanel createStatPane(final String statName)
     {
         return instance.createStatPaneInternal(statName);
+    }
+
+    /**
+     * @param statName the statistic name
+     * @return the localized tooltip string
+     */
+    public static String getTooltipForStat(final String statName)
+    {
+        return nameToToolTipHash.get(statName);
     }
 
 

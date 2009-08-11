@@ -29,6 +29,7 @@ import java.util.Vector;
 
 import javax.swing.JPanel;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
@@ -104,37 +105,57 @@ public class StatsTask extends BaseTask
                 log.error("Couldn't load `StatisticsPanel` " +ex); //$NON-NLS-1$
             }
     
-            // Process the NavBox Panel and create all the commands
-            // XXX This needs to be made generic so everyone can use it
-            //
-            List<?> boxes = panelDOM.selectNodes("/boxes/box"); //$NON-NLS-1$
-            for ( Iterator<?> iter = boxes.iterator(); iter.hasNext(); )
+            
+            StatsMgr.getDOM(); // This loads the resource name
+            
+            boolean hasResBundle = false;
+            if (StringUtils.isNotEmpty(StatsMgr.getResourceName()))
             {
-                Element box = (Element) iter.next();
-                NavBox navBox = new NavBox(UIRegistry.getResourceString(box.attributeValue("title"))); //$NON-NLS-1$
-    
-                List<?> items = box.selectNodes("item"); //$NON-NLS-1$
-                for ( Iterator<?> iter2 = items.iterator(); iter2.hasNext(); )
+                hasResBundle = UIRegistry.loadAndPushResourceBundle(StatsMgr.getResourceName()) != null;
+            }
+            
+            try
+            {
+                // Process the NavBox Panel and create all the commands
+                // XXX This needs to be made generic so everyone can use it
+                //
+                List<?> boxes = panelDOM.selectNodes("/boxes/box"); //$NON-NLS-1$
+                for ( Iterator<?> iter = boxes.iterator(); iter.hasNext(); )
                 {
-                    Element item = (Element) iter2.next();
-                    String boxName  = item.attributeValue("name"); //$NON-NLS-1$
-                    String boxTitle = item.attributeValue("title"); //$NON-NLS-1$
-                    String type     = item.attributeValue("type"); //$NON-NLS-1$
-                    ActionListener action = null;
-                    if (type.toLowerCase().equals(PIE_CHART))
+                    Element box = (Element) iter.next();
+                    NavBox navBox = new NavBox(UIRegistry.getResourceString(box.attributeValue("title"))); //$NON-NLS-1$
+        
+                    List<?> items = box.selectNodes("item"); //$NON-NLS-1$
+                    for ( Iterator<?> iter2 = items.iterator(); iter2.hasNext(); )
                     {
-                        type = "Pie_Chart"; //$NON-NLS-1$
-                        action = new DisplayAction(boxName);
-    
-                    } else if (type.toLowerCase().equals(BAR_CHART))
-                    {
-                        type = "Bar_Chart"; //$NON-NLS-1$
-                        action = new DisplayAction(boxName);
-                    }
-    
-                    navBox.add(NavBox.createBtn(boxTitle, type, IconManager.STD_ICON_SIZE, action));
-               }
-               navBoxes.add(navBox);
+                        Element item = (Element) iter2.next();
+                        String boxName  = item.attributeValue("name"); //$NON-NLS-1$
+                        String boxTitle = item.attributeValue("title"); //$NON-NLS-1$
+                        String type     = item.attributeValue("type"); //$NON-NLS-1$
+                        ActionListener action = null;
+                        if (type.toLowerCase().equals(PIE_CHART))
+                        {
+                            type = "Pie_Chart"; //$NON-NLS-1$
+                            action = new DisplayAction(boxName);
+        
+                        } else if (type.toLowerCase().equals(BAR_CHART))
+                        {
+                            type = "Bar_Chart"; //$NON-NLS-1$
+                            action = new DisplayAction(boxName);
+                        }
+        
+                        String tooltip = StatsMgr.getTooltipForStat(boxName);
+                        navBox.add(NavBox.createBtnWithTT(boxTitle, type, tooltip, IconManager.STD_ICON_SIZE, action));
+                   }
+                   navBoxes.add(navBox);
+                }
+                
+            } finally
+            {
+                if (hasResBundle)
+                {
+                    UIRegistry.popResourceBundle();
+                }
             }
         }
         isShowDefault = true;

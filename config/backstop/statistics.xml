@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-  <statistics>
+<statistics resource="stats">
 
     <stat name="Top Five Species" display="Pie Chart">
       <chartinfo>
-        <title>Top Five Species</title>
-        <xaxis>Species</xaxis>
-        <yaxis>Number of Specimens</yaxis>
+        <title>TOP5</title>
+        <xaxis>SPECIES</xaxis>
+        <yaxis>NUMSPECIES</yaxis>
+        <tooltip>TOP5_TT</tooltip>
       </chartinfo>
       <sql type="text">
 	      <tables>
@@ -37,7 +38,8 @@
 
     <stat name="Top 5 Species" display="Bar Chart">
       <chartinfo>
-        <title>Top Five Species</title>
+        <title>TOP5</title>
+        <tooltip>TOP5_CHRT_TT</tooltip>
       </chartinfo>
       <sql type="text">
 	      <tables>
@@ -69,34 +71,38 @@
 
     <stat name="ItemsCatalogedLast10Years" display="Bar Chart">
        <chartinfo>
-         <title>Items Cataloged Last 10 Years</title>
-         <xaxis>Years</xaxis>
-         <yaxis>Number of Specimens</yaxis>
+         <title>ITEMS_LAST10YR</title>
+         <xaxis>YRS</xaxis>
+         <yaxis>NUMSPECIES</yaxis>
+        <tooltip>ITEMS_LAST10YR_TT</tooltip>
        </chartinfo>
        <sql type="custom" name="CatalogedByYearCustomQuery"/>
     </stat>
 
     <stat name="Temporial Periods" display="Bar Chart">
        <chartinfo>
-         <title>Temporial Periods</title>
-         <xaxis>Years</xaxis>
-         <yaxis>Number of Specimens</yaxis>
+         <title>TMP_PERIODS</title>
+         <xaxis>YRS</xaxis>
+         <yaxis>NUMSPECIES</yaxis>
+         <tooltip>TMP_PERIODS_TT</tooltip>
        </chartinfo>
       <sql type="custom" name="CatByPrev10YearsCustomQuery"/>
     </stat>
 
     <stat name="PercentageGrowLast5Years" display="Bar Chart">
        <chartinfo>
-         <title>Percentage Grow Last 5 Years</title>
-         <xaxis>Years</xaxis>
-         <yaxis>Percentage</yaxis>
+         <title>PRCNT_GRWTH_5YR</title>
+         <xaxis>YRS</xaxis>
+         <yaxis>PRCT</yaxis>
+         <tooltip>PRCNT_GRWTH_5YR_TT</tooltip>
        </chartinfo>
       <sql type="custom" name="PercentageGrowthCustomQuery"/>
     </stat>
 
     <stat name="Specimens by Country" display="Bar Chart">
       <chartinfo>
-        <title>Top 7 Number of Specimens by Country</title>
+        <title>TOP7_SPEC_CNTY</title>
+         <tooltip>TOP7_SPEC_CNTY_TT</tooltip>
       </chartinfo>
       <sql type="text">
 	      <tables>
@@ -138,7 +144,8 @@
 
     <stat name="Specimens by Continent" display="Bar Chart">
       <chartinfo>
-        <title>Top 10 Number of Specimens by Continent</title>
+        <title>TOP10_SPEC_CNT</title>
+        <tooltip>TOP10_SPEC_CNT_TT</tooltip>
       </chartinfo>
       <sql type="text">
 	      <tables>
@@ -195,14 +202,16 @@
         <id>5</id>
         <id>52</id>
       </tables>
-      <title>Items on Loan</title>
+      <title>ITMS_LOAN</title>
+      <tooltip>ITMS_LOAN_TT</tooltip>
       <sql type="text">
           <![CDATA[Select distinct loan.LoanNumber as LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName,loan.OriginalDueDate, loanpreparation.Quantity, loanpreparation.DescriptionOfMaterial, address.Address, address.City, address.State, address.Country From loan Inner Join loanpreparation ON loan.LoanID =  loanpreparation.LoanID Inner Join loanagent ON loan.LoanID = loanagent.LoanID Inner Join agent ON loanagent.AgentID = agent.AgentID Inner Join address ON agent.AgentID = address.AgentID where loan.loanid in (select loanid from loan where (IsClosed = false or IsClosed is null)) group by LoanNumber]]>
       </sql>
     </stat>
 
     <stat name="OverdueLoansList" display="Table">
-      <title>Overdue Loans</title>
+      <title>OVRDUE_LOANS</title>
+      <tooltip>OVRDUE_LOANS_TT</tooltip>
       <sql type="text">
 	      <tables>
 	        <id>5</id>
@@ -213,7 +222,8 @@
     </stat>
 
     <stat name="CatalogedLast7DaysDetail" display="Table">
-      <title>Cataloged Last 7 Days</title>
+      <title>CAT_LAST_7DAYS</title>
+      <tooltip>CAT_LAST_7DAYS_TT</tooltip>
       <sql type="text">
 	      <tables>
 	        <id>1</id>
@@ -223,27 +233,30 @@
     </stat>
 
     <stat name="CatalogedLastMonth" display="Table">
-      <title>Cataloged Last Month</title>
+      <title>CAT_LAST_MON</title>
+      <tooltip>CAT_LAST_MON_TT</tooltip>
       <sql type="text">
 	      <tables>
 	        <id>1</id>
 	      </tables>      
-          <![CDATA[Select collectionobject.CatalogNumber,taxon.Name,collectionobject.TimestampCreated From collectionobject Inner Join determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID Inner Join taxon ON determination.TaxonID = taxon.TaxonID where DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= collectionobject.TimestampCreated]]>
+          <![CDATA[SELECT collectionobject.CatalogNumber,taxon.Name,collectionobject.TimestampCreated From collectionobject Inner Join determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID Inner Join taxon ON determination.TaxonID = taxon.TaxonID where DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= collectionobject.TimestampCreated]]>
       </sql>
     </stat>
 
     <stat name="CatalogedLastYear" display="Table">
-      <title>Cataloged Last Year</title>
+      <title>CAT_LAST_YR</title>
+      <tooltip>CAT_LAST_YR_TT</tooltip>
       <sql type="text">
 	      <tables>
 	        <id>1</id>
 	      </tables>      
-          <![CDATA[Select collectionobject.CatalogNumber,taxon.Name,collectionobject.TimestampCreated From collectionobject Inner Join determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID Inner Join taxon ON determination.TaxonID = taxon.TaxonID where DATE_SUB(CURDATE(), INTERVAL 1 YEAR) <= collectionobject.TimestampCreated]]>
+          <![CDATA[SELECT collectionobject.CatalogNumber,taxon.Name,collectionobject.TimestampCreated From collectionobject Inner Join determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID Inner Join taxon ON determination.TaxonID = taxon.TaxonID where DATE_SUB(CURDATE(), INTERVAL 1 YEAR) <= collectionobject.TimestampCreated]]>
       </sql>
     </stat>
 
     <stat name="OverdueLookup" display="Table">
-      <title>Loan Overdue</title>
+      <title>LOAN_OVERDUE</title>
+      <tooltip>LOAN_OVERDUE_TT</tooltip>
       <sql type="text">
 	      <tables>
 	        <id>5</id>
@@ -260,7 +273,8 @@
     <!-- ********************* -->
       <stat name="AccessionByDivision" display="Bar Chart">
           <chartinfo>
-              <title>Top 5 Accessions By Division</title>
+              <title>TOP5_ACC_DIV</title>
+              <tooltip>TOP5_ACC_DIV_TT</tooltip>
           </chartinfo>
           <sql type="text">
 		      <tables>
@@ -292,7 +306,8 @@
 
 
       <stat name="Accession" display="Form" viewset="Common" view="Accession" mode="view">
-	      <title>Permits Expiring This Year</title>
+	      <title>PERMIT_EXP_YR</title>
+          <tooltip>PERMIT_EXP_YR_TT</tooltip>
           <sql type="text">
 		      <tables>
 		        <id>7</id>
@@ -302,7 +317,8 @@
       </stat>
 
       <stat name="CITESPermitsExpireThisYear" display="Form" viewset="Common" view="PermitForAccessions" mode="view">
-	      <title>Permits Expiring This Year</title>
+	      <title>CITES_EXP_TR</title>
+          <tooltip>CITES_EXP_TR_TT</tooltip>
           <sql type="text">
 		      <tables>
 		        <id>6</id>
@@ -314,7 +330,8 @@ permit.EndDate,permit.RenewalDate,permit.Type From permit where permit.PermitID 
 
       <stat name="NonCITESPermitsExpireThisYear" display="Form" viewset="Common" view="PermitForAccessions" mode="view">
           <view mode="display">Permit</view>
-          <title>Non-CITES Permits Expiring This Year</title>
+          <title>NONCITES_EXP_TR</title>
+          <tooltip>NONCITES_EXP_TR_TT</tooltip>
           <sql type="text">
 		      <tables>
 		        <id>6</id>

@@ -56,9 +56,7 @@ public class StartUpTask extends BaseTask
     protected Vector<ToolBarDropDownBtn> tbList     = new Vector<ToolBarDropDownBtn>();
     protected SubPaneIFace               blankPanel = null;
 
-    // XXX Demo Only
     StatsPane statPane;
-
 
     /**
      * Default Constructor
