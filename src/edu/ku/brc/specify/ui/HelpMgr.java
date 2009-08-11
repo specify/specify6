@@ -70,7 +70,7 @@ public class HelpMgr
     protected static HelpBroker hb;
     protected static String     helpSystemName;
     protected static String     loadingPage = null;
-    protected static String     appDefHelpId = "specify";
+    protected static String     appDefHelpId = "About";
     
     
     protected static Hashtable<Component, String> compHelpHash = new Hashtable<Component, String>();
