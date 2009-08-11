@@ -82,7 +82,7 @@ public class TaskSemaphoreMgr
         Discipline discipline = scope == SCOPE.Discipline ? AppContextMgr.getInstance().getClassObject(Discipline.class) : null;
         Collection collection = scope == SCOPE.Collection ? AppContextMgr.getInstance().getClassObject(Collection.class) : null;
        
-        Connection connection = DBConnection.getInstance().createConnection();
+        Connection connection = DBConnection.getInstance().getConnection();
         if (connection != null)
         {
             Statement  stmt = null;
@@ -173,7 +173,7 @@ public class TaskSemaphoreMgr
         Discipline discipline = scope == SCOPE.Discipline ? AppContextMgr.getInstance().getClassObject(Discipline.class) : null;
         Collection collection = scope == SCOPE.Collection ? AppContextMgr.getInstance().getClassObject(Collection.class) : null;
        
-        Connection connection = DBConnection.getInstance().createConnection();
+        Connection connection = DBConnection.getInstance().getConnection();
         if (connection != null)
         {
             Statement  stmt = null;
@@ -209,10 +209,10 @@ public class TaskSemaphoreMgr
                     {
                         stmt.close();
                     }
-                    if (connection != null)
-                    {
-                        connection.close();
-                    }
+//                    if (connection != null)
+//                    {
+//                        connection.close();
+//                    }
                 } catch (Exception ex) 
                 {
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
