@@ -20,6 +20,7 @@
 package edu.ku.brc.dbsupport;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
@@ -132,12 +133,27 @@ public class TableModel2Excel
             return null;
         }
         
+        if (!toFile.canWrite())
+        {
+            UIRegistry.showLocalizedMsg("FILE_NO_WRITE", toFile != null ? toFile.getAbsolutePath() : "");
+            return null;
+        }
+        
         if (tableModel != null && tableModel.getRowCount() > 0)
         {
             try
             {
                 // create a new file
-                FileOutputStream out = new FileOutputStream(toFile);
+                FileOutputStream out;
+                try
+                {
+                    out = new FileOutputStream(toFile);
+                    
+                } catch (FileNotFoundException ex)
+                {
+                    UIRegistry.showLocalizedMsg("FILE_NO_WRITE", toFile != null ? toFile.getAbsolutePath() : "");
+                    return null;
+                }
                 
                 // create a new workbook
                 HSSFWorkbook wb = new HSSFWorkbook();
