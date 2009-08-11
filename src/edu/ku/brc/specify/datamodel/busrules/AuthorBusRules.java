@@ -20,6 +20,9 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
+import java.util.Hashtable;
+
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.specify.datamodel.Author;
 import edu.ku.brc.specify.datamodel.ReferenceWork;
@@ -56,16 +59,31 @@ public class AuthorBusRules extends BaseBusRules
             parentDataObj instanceof ReferenceWork &&
             dataObj instanceof Author)
         {
-            ReferenceWork ce = (ReferenceWork)parentDataObj;
-            Author       col = (Author)dataObj;
+            ReferenceWork rw   = (ReferenceWork)parentDataObj;
+            Author        auth = (Author)dataObj;
             
-            for (Author Author : ce.getAuthors())
+            Hashtable<Integer, Boolean> hash = new Hashtable<Integer, Boolean>();
+            for (Author author : rw.getAuthors())
             {
-               if (Author.getAgent().getAgentId().equals(col.getAgent().getAgentId())) 
-               {
-                   reasonList.add(String.format(getResourceString("RW_DUPLICATE_AUTHORS"), col.getIdentityTitle()));
-                   return STATUS.Error;
-               }
+                Integer id    = author.getAgent().getAgentId();
+                boolean isBad = false;
+                if (hash.get(id) == null)
+                {
+                    if (author.getId() != null && id.equals(auth.getAgent().getAgentId())) 
+                    {
+                        isBad = true;
+                    }
+                    hash.put(id, true);
+                } else
+                {
+                    isBad = true;
+                }
+                
+                if (isBad)
+                {
+                    reasonList.add(String.format(getResourceString("RW_DUPLICATE_AUTHORS"), auth.getIdentityTitle()));
+                    return STATUS.Error;
+                }
             }
         }
         

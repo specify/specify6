@@ -330,7 +330,7 @@
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.PrepType" relationshipname="prepType" columnname="PrepTypeID" othersidename="attributeDefs" updatable="false" required="false" save="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.PreparationAttr" relationshipname="preparationAttrs" othersidename="definition" updatable="false" required="false" save="true"/>
     </table>
-    <table classname="edu.ku.brc.specify.datamodel.Author" table="author" tableid="17" searchable="true" abbrv="au">
+    <table classname="edu.ku.brc.specify.datamodel.Author" table="author" tableid="17" searchable="true" businessrule="edu.ku.brc.specify.datamodel.busrules.AuthorBusRules" abbrv="au">
       <display view="Author" searchdlg="AuthorSearch" newobjdlg="AuthorDisplay"/>
       <field column="OrderNumber" name="orderNumber" type="java.lang.Short" updatable="true" required="true" unique="false" indexed="false" partialDate="false"/>
       <field column="Remarks" name="remarks" type="text" length="4096" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>

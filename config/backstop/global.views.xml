@@ -96,12 +96,13 @@
         
         <view name="Authors"
             class="edu.ku.brc.specify.datamodel.Author"
+            busrules="edu.ku.brc.specify.datamodel.busrules.AuthorBusRules"
             usedefbusrule="false"
             resourcelabels="false">
             <desc><![CDATA[The Author subform for Reference Work form.]]></desc>
             <altviews>
-                <altview name="Author View" viewdef="Author" mode="view"/>
-                <altview name="Author Edit" viewdef="Author" mode="edit" default="true"/>
+                <!--  <altview name="Author View" viewdef="Author" mode="view"/>
+                <altview name="Author Edit" viewdef="Author" mode="edit" default="true"/>  -->
                <altview name="Authors Table View" viewdef="Authors Table" mode="view"/>
                 <altview name="Authors Table Edit" viewdef="Authors Table" mode="edit"/>
             </altviews>

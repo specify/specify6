@@ -57,6 +57,7 @@
         <table name="edu.ku.brc.specify.datamodel.AttributeDef" abbrev="atd" id="16"/>
         <table name="edu.ku.brc.specify.datamodel.Author" abbrev="au" id="17" searchable="true">
         	<display view="Author" dataobjformatter=""  searchdlg="AuthorSearch" newobjdlg="AuthorDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.AuthorBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.AutoNumberingScheme" abbrev="cns" id="97">
         	<display view="AutoNumberingScheme" searchdlg="AutoNumberingScheme" newobjdlg="AutoNumberingScheme"/>
