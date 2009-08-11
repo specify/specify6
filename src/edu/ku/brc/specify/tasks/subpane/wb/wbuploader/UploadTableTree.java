@@ -449,7 +449,7 @@ public class UploadTableTree extends UploadTable
         {
             try
             {
-                getTreeDef().updateAllNodeNumbers((DataModelObjBase)getTreeRoot(), false);
+                getTreeDef().updateAllNodeNumbers((DataModelObjBase)getTreeRoot(), false, false);
             }
             catch (Exception ex)
             {
@@ -681,7 +681,7 @@ public class UploadTableTree extends UploadTable
         {
             try
             {
-                getTreeDef().updateAllNodeNumbers((DataModelObjBase)getTreeRoot(), false);
+                getTreeDef().updateAllNodeNumbers((DataModelObjBase)getTreeRoot(), false, false);
             }
             catch (Exception ex)
             {

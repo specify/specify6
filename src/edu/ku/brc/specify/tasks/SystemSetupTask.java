@@ -881,7 +881,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     {
         try
         {
-        	boolean success = tree.getCurrentTreeDef().updateAllNodeNumbers(null, true); //true forces a progress dialog. 
+        	boolean success = tree.getCurrentTreeDef().updateAllNodeNumbers(null, true, false); //true forces a progress dialog. 
         															   //Currently can't get WriteGlassPane working in this context.(???)
         	if (success)
         	{

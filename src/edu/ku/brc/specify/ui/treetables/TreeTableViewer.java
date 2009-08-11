@@ -271,80 +271,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
 	}
 	
-	//XXX - move renumber and verify code somewhere else (possibly debug menu) or dump it.
-	public void renumberNodes()
-	{
-//	    final NodeNumberer<T,D,I> nodeNumberer = new NodeNumberer<T,D,I>(treeDef);
-//        final JStatusBar nStatusBar = UIRegistry.getStatusBar();
-//        nStatusBar.setProgressRange(nodeNumberer.getProgressName(), 0, 100);
-//        
-//        UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("Updating Tree Structure"), 24);
-//        
-//        nodeNumberer.addPropertyChangeListener(
-//                new PropertyChangeListener() {
-//                    public  void propertyChange(final PropertyChangeEvent evt) {
-//                        if ("progress".equals(evt.getPropertyName())) 
-//                        {
-//                            nStatusBar.setValue(nodeNumberer.getProgressName(), (Integer)evt.getNewValue());
-//                        }
-//                    }
-//                });
-//        try
-//        {
-//            nodeNumberer.execute();
-//            nodeNumberer.get();
-//        }
-//        catch (Exception ex)
-//        {
-//            System.out.println(ex);
-//        }
-//        
-//        UIRegistry.clearSimpleGlassPaneMsg();
-//        nStatusBar.setProgressDone(nodeNumberer.getProgressName());
-
-	    try
-	    {
-	        treeDef.updateAllNodeNumbers(null, false);
-	    }
-	    catch (Exception ex)
-	    {
-    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeTableViewer.class, ex);
-	        System.out.println(ex);
-	    }
-	    
-//        final NodeNumberVerifier<T,D,I> nodeVerifier = new NodeNumberVerifier<T,D,I>(treeDef);
-//        nStatusBar.setProgressRange(nodeVerifier.getProgressName(), 0, 100);
-//        UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("Checking Tree Structure"), 24);
-//        
-//        nodeVerifier.addPropertyChangeListener(
-//                new PropertyChangeListener() {
-//                    public  void propertyChange(final PropertyChangeEvent evt) {
-//                        if ("progress".equals(evt.getPropertyName())) 
-//                        {
-//                            nStatusBar.setValue(nodeNumberer.getProgressName(), (Integer)evt.getNewValue());
-//                        }
-//                    }
-//                });
-//        try
-//        {
-//            nodeVerifier.execute();
-//            nodeVerifier.get();
-//        }
-//        catch (Exception ex)
-//        {
-//            System.out.println(ex);
-//        }
-//        
-//        UIRegistry.clearSimpleGlassPaneMsg();
-//        nStatusBar.setProgressDone(nodeVerifier.getProgressName());
-
-	    
-	}
-	public D getTreeDef()
-	{
-		return this.treeDef;
-	}
 	
     /* (non-Javadoc)
 	 * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#showingPane(boolean)
@@ -2433,7 +2359,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             
             CellConstraints cc = new CellConstraints();
             
-            String rowLayout = numOptions == 4 ? "t:p:g, 10dlu, t:p:g, f:p:g" : "t:p:g, f:p:g";
+            String rowLayout = numOptions == 4 ? "f:p:g, 10dlu, f:p:g, f:p:g" : "f:p:g, f:p:g";
             PanelBuilder    pb = new PanelBuilder(new FormLayout("r:p, 2dlu, f:p:g", rowLayout));
             
             String actionStr = isSynonymizeOK ? getResourceString("TreeTableView.SYNONIMIZE_NODE")
@@ -2970,8 +2896,18 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 		else if (nodeDropAction == NODE_DROPTYPE.MERGE_NODE)
 		{
-			final TreeMergerUIIFace<T,D,I> face = new TreeMergerUIIFace<T,D,I>() {
+	        final TreeNode oldParentNode = listModel.getNodeById(draggedNode.getParentId());
+	        final TreeNode newParentNode = droppedOnNode;
+	        SwingUtilities.invokeLater(new Runnable() {
 
+				@Override
+				public void run() {
+					hideChildren(oldParentNode);
+					hideChildren(newParentNode);
+				}
+	        	
+	        });
+			final TreeMergerUIIFace<T,D,I> face = new TreeMergerUIIFace<T,D,I>() {
 				/* (non-Javadoc)
 				 * @see edu.ku.brc.specify.treeutils.TreeMergerUIIFace#choose(java.util.List, boolean)
 				 */
@@ -3035,6 +2971,28 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			        	ex.printStackTrace();
 			        }
 					return null;
+				}
+
+				@Override
+				protected void done() {
+					try
+					{
+						treeDef.updateAllNodeNumbers(null, false, true);
+					} catch (Exception ex)
+					{
+						edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+						edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(
+								TreeTableViewer.class, ex);
+					}
+			        SwingUtilities.invokeLater(new Runnable() {
+
+						@Override
+						public void run() {
+							showChildren(oldParentNode);
+							showChildren(newParentNode);
+						}
+			        	
+			        });
 				}
 	        	
 	        }.execute();

@@ -75,11 +75,18 @@ public interface TreeDefIface<N extends Treeable<N,D,I>,
 	
 	/**
 	 * @param rootObj
+	 * @param useProgDlg
+	 * @param lockedByCaller - main tree lock handled by caller
+	 * 
+	 * @return true if update completes without errors, else false
+	 * 
 	 * @throws Exception
 	 * 
 	 * Walks the entire tree and assigns node numbers for every item.
+	 *
 	 */
-	public boolean updateAllNodeNumbers(DataModelObjBase rootObj, final boolean useProgDlg) throws Exception;
+	public boolean updateAllNodeNumbers(DataModelObjBase rootObj, final boolean useProgDlg, 
+			final boolean lockedByCaller) throws Exception;
 	
 	/**
 	 * @param rootObj

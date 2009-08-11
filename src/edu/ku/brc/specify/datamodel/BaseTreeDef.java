@@ -496,7 +496,8 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
      */
     @Override
     @SuppressWarnings("unchecked")
-    public boolean updateAllNodeNumbers(final DataModelObjBase rootObj, final boolean useProgDlg) throws Exception
+    public boolean updateAllNodeNumbers(final DataModelObjBase rootObj, final boolean useProgDlg, 
+    		final boolean lockedByCaller) throws Exception
     {    	
     	final NodeNumberer<N,D,I> nodeNumberer = new NodeNumberer<N,D,I>((D )this);
         final JStatusBar nStatusBar = useProgDlg ? null : UIRegistry.getStatusBar();        
@@ -556,32 +557,44 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
         //useGlassPane avoids issues when simpleglasspane is already displayed. no help for normal glass pane yet.
         boolean useGlassPane = !UIRegistry.isShowingGlassPane() && nStatusBar != null;
     	
-        if (!TreeDefStatusMgr.lockTree(this, new TaskSemaphoreMgrCallerIFace(){
-    	    @Override
-    		public TaskSemaphoreMgr.USER_ACTION resolveConflict(SpTaskSemaphore semaphore, 
-                    boolean previouslyLocked,
-                    String prevLockBy)
-    	    {
-    	    	boolean okay = UIRegistry.displayConfirm(UIRegistry.getResourceString("BaseTreeDef.TreeLockMsgTitle"), 
-    	    				String.format(UIRegistry.getResourceString("BaseTreeDef.TreeLockMsg"), 
-    	    						getName(),
-    	    						prevLockBy), 
-    	    				UIRegistry.getResourceString("BaseTreeDef.RemoveLock"), 
-    	    				UIRegistry.getResourceString("CANCEL"), JOptionPane.WARNING_MESSAGE);
-    	    	if (okay)
-    	    	{
-    	    		return USER_ACTION.Override;
-    	    	}
-    	    	return USER_ACTION.Error;
-    	    }
-    		
-    	}))
-    	{
-    		//hopefully lock problems will already have been reported 
-            setRenumberingNodes(false);
-            setNodeNumbersAreUpToDate(wasUpToDate);
-    		return false; 
-    	}
+        if (!lockedByCaller) 
+        {
+			if (!TreeDefStatusMgr.lockTree(this, new TaskSemaphoreMgrCallerIFace() {
+						@Override
+						public TaskSemaphoreMgr.USER_ACTION resolveConflict(
+								SpTaskSemaphore semaphore,
+								boolean previouslyLocked, String prevLockBy) 
+						{
+							boolean okay = UIRegistry
+									.displayConfirm(
+											UIRegistry
+													.getResourceString("BaseTreeDef.TreeLockMsgTitle"),
+											String
+													.format(
+															UIRegistry
+																	.getResourceString("BaseTreeDef.TreeLockMsg"),
+															getName(),
+															prevLockBy),
+											UIRegistry
+													.getResourceString("BaseTreeDef.RemoveLock"),
+											UIRegistry
+													.getResourceString("CANCEL"),
+											JOptionPane.WARNING_MESSAGE);
+							if (okay) 
+							{
+								return USER_ACTION.Override;
+							}
+							return USER_ACTION.Error;
+						}
+
+					})) 
+			{
+				// hopefully lock problems will already have been reported
+				setRenumberingNodes(false);
+				setNodeNumbersAreUpToDate(wasUpToDate);
+				return false;
+			}
+		}
         try
         {
             if (useGlassPane)
@@ -611,10 +624,13 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
         finally
         {
             setRenumberingNodes(false);
-            if (!TreeDefStatusMgr.unlockTree(this))
+            if (!lockedByCaller) 
             {
-            	//hopefully problems will already have been reported 
-            }
+				if (!TreeDefStatusMgr.unlockTree(this)) 
+				{
+					// hopefully problems will already have been reported
+				}
+			}
             if (useGlassPane)
             {
                 UIRegistry.clearSimpleGlassPaneMsg();
@@ -687,7 +703,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                 UIHelper.centerAndShow(dlg);
                 if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
                 {
-                    updateAllNodeNumbers(null, useProgDlg);
+                    updateAllNodeNumbers(null, useProgDlg, false);
                     result = TreeDefStatusMgr.isNodeNumbersAreUpToDate(this);                    
                 }
                 else
