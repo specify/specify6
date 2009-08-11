@@ -351,8 +351,8 @@ public class UIFormatterEditorDlg extends CustomDialog
         setByYearSelected(selectedFormat);
         
         nameTF.setEditable(isNew);
-        nameTF.setText(selectedFormat.getTitle());
-        titleTF.setText(selectedFormat.getName());
+        nameTF.setText(selectedFormat.getName());
+        titleTF.setText(selectedFormat.getTitle());
         updateSample(); 
         
         hookTextChangeListener(nameTF,  "FFE_NO_NAME", 32);
