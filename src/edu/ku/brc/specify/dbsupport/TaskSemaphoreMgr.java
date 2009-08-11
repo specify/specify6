@@ -194,10 +194,9 @@ public class TaskSemaphoreMgr
                 
             } catch (Exception ex)
             {
-                ex.printStackTrace();
-                //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskSemaphoreMgr.class, ex);
-                //log.error(ex);
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskSemaphoreMgr.class, ex);
+                log.error(ex);
             } finally 
             {
                 try
@@ -214,7 +213,12 @@ public class TaskSemaphoreMgr
                     {
                         connection.close();
                     }
-                } catch (Exception ex) {}
+                } catch (Exception ex) 
+                {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskSemaphoreMgr.class, ex);
+                    log.error(ex);
+                }
             }
         }
         return false;
