@@ -32,6 +32,8 @@ import it.businesslogic.ireport.gui.ReportPropertiesFrame;
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -52,6 +54,9 @@ import java.util.ResourceBundle;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -128,6 +133,8 @@ public class MainFrameSpecify extends MainFrame
 
     protected static Integer      overwrittenReportId         = null;
     
+    protected JMenuItem           homePageItem                = null;
+    
     /**
      * @param args -
      *            parameters to configure iReport mainframe
@@ -137,9 +144,58 @@ public class MainFrameSpecify extends MainFrame
         super(args);
         setNoExit(noExit);
         setEmbeddedIreport(embedded);
+        fixUpHelpLinks();
     }
 
-    public void refreshSpJRConnections()
+    public void fixUpHelpLinks()
+    {
+        int helpMenuIdx = 9;
+        int homePageItemIdx = 0;
+        int helpItemIdx = 1;
+        final String jasperHomePage = "http://jasperforge.org/";
+        
+    	JMenuBar mb = getJMenuBar();
+        JMenu hm = mb.getMenu(helpMenuIdx);
+        homePageItem = hm.getItem(homePageItemIdx);
+        //remove original listener linked to bad url
+        ActionListener[] als = homePageItem.getActionListeners();
+        for (int l = 0; l < als.length; l++)
+        {
+        	homePageItem.removeActionListener(als[l]);
+        }
+        //add new listener
+        homePageItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				System.out.println(homePageItem.getText());
+				openUrl(jasperHomePage);
+			}
+        	
+        });
+        
+        JMenuItem helpPageItem = hm.getItem(helpItemIdx);
+        als = helpPageItem.getActionListeners();
+        //remove original listener linked to bad url
+        for (int l = 0; l < als.length; l++)
+        {
+        	helpPageItem.removeActionListener(als[l]);
+        }
+        HelpMgr.registerComponent(helpPageItem, "iReport");
+ 
+    }
+    
+    
+    @Override
+	public void applyI18n() {
+		super.applyI18n();
+		if (homePageItem != null)
+		{
+	        homePageItem.setText(UIRegistry.getResourceString("MainFrameSpecify.JASPERHOMEPAGE"));
+		}
+	}
+
+	public void refreshSpJRConnections()
     {
         refreshingConnections = true;
         try
