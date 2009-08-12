@@ -147,6 +147,9 @@ public class MainFrameSpecify extends MainFrame
         fixUpHelpLinks();
     }
 
+    /**
+     * Re maps help links for a couple items on iReport Help menu
+     */
     public void fixUpHelpLinks()
     {
         int helpMenuIdx = 9;
