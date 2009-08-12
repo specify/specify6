@@ -168,7 +168,6 @@ public class MainFrameSpecify extends MainFrame
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println(homePageItem.getText());
 				openUrl(jasperHomePage);
 			}
         	
