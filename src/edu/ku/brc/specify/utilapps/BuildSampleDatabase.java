@@ -832,7 +832,11 @@ public class BuildSampleDatabase
         {
             colNameHash = getColumnNamesFromXLS(taxonFileName, usingOtherTxnFile);
         }
-        taxonWasBuilt = createTaxonDefFromXML(taxa, colNameHash, taxonTreeDef, taxonXML);
+        
+        if (colNameHash != null)
+        {
+            taxonWasBuilt = createTaxonDefFromXML(taxa, colNameHash, taxonTreeDef, taxonXML);
+        }
         
         frame.incOverall();
         
@@ -8477,6 +8481,11 @@ public class BuildSampleDatabase
                     if (cell != null)
                     {
                         cells[i] = StringUtils.trim(cell.getRichStringCellValue().getString());
+                        if (i == 12 && StringUtils.isNotEmpty(cells[i]))
+                        {
+                            int x = 0;
+                            x++;
+                        }
                         i++;
                     }
                 }
@@ -8535,10 +8544,10 @@ public class BuildSampleDatabase
             {
                 if (cells[inx] == null) break;
 
-                //System.out.println(cells[inx]+"  "+TaxonIndexNames[i]);
+                System.out.println(cells[inx]+"  "+TaxonIndexNames[i]);
                 if (cells[inx].equals(TaxonIndexNames[i]))
                 {
-                    //System.out.println("** "+TaxonIndexNames[i]+" -> "+inx);
+                    System.out.println("** "+TaxonIndexNames[i]+" -> "+inx);
                     taxonExtraColsIndexes.put(TaxonIndexNames[i].toLowerCase(), inx);
                     break;
                 }
