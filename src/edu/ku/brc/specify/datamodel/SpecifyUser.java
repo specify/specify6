@@ -651,7 +651,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         for (SpPrincipal principal : getSpPrincipals())
         {
             if (GroupPrincipal.class.getCanonicalName().equals(principal.getGroupSubClass()) ||
-                    AdminPrincipal.class.getCanonicalName().equals(principal.getGroupSubClass()))
+                AdminPrincipal.class.getCanonicalName().equals(principal.getGroupSubClass()))
             {
                 ++count;
             }

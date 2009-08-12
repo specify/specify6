@@ -195,17 +195,17 @@ public class SecurityAdminPane extends BaseSubPane
         JPanel navTreePanel = createFullTreeNavPanel(); // navigation jTree gets created here 
         navTreePanel.setMinimumSize(new Dimension(200, 200));
         
-        PanelBuilder btnPB = new PanelBuilder(new FormLayout("p,4px,p,4px,p,4px,p,f:p:g", "p"));
-        JButton addUserBtn = UIHelper.createIconBtn("add-person", IconManager.IconSize.NonStd, "Add New User to Group", null); // I18N
+        PanelBuilder btnPB    = new PanelBuilder(new FormLayout("p,4px,p,4px,p,4px,p,4px,p,f:p:g", "p"));
+        JButton addUserBtn    = UIHelper.createIconBtn("add-person", IconManager.IconSize.NonStd, "Add New User to Group", null); // I18N
         JButton addExtUserBtn = UIHelper.createIconBtn("addext-person", IconManager.IconSize.NonStd, "Add Existing User to Group", null); // I18N
-        //JButton rmvUserBtn = UIHelper.createIconBtn("rmv-person", IconManager.IconSize.NonStd, "Remove User from Group (does not delete the user)", null);
-        JButton delUserBtn = UIHelper.createIconBtn("del-person", IconManager.IconSize.NonStd, "Delete User from Group", null);
+        JButton addToAdminBtn = UIHelper.createIconBtn("AdminGroup", IconManager.IconSize.Std24, "Add to the Admin Group", null); // I18N
+        JButton delUserBtn    = UIHelper.createIconBtn("del-person", IconManager.IconSize.NonStd, "Delete User from Group", null);
         btnPB.add(addUserBtn,    cc.xy(1, 1));
         btnPB.add(addExtUserBtn, cc.xy(3, 1));
-        //btnPB.add(rmvUserBtn,    cc.xy(5, 1));
-        btnPB.add(delUserBtn,    cc.xy(5, 1));
+        btnPB.add(addToAdminBtn, cc.xy(5, 1));
+        btnPB.add(delUserBtn,    cc.xy(7, 1));
         
-        navTreeContextMgr.setBtn(addUserBtn, addExtUserBtn, delUserBtn);
+        navTreeContextMgr.setBtn(addUserBtn, addExtUserBtn, addToAdminBtn, delUserBtn);
                
         // Other components that were added to the tree panel are now created here
         // It's better to include the scrollpane with the navigation JTree in a separate panel
@@ -389,7 +389,7 @@ public class SecurityAdminPane extends BaseSubPane
     private DefaultTreeModel createNavigationTreeModel()
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode(UIRegistry.getAppName());
+        DefaultMutableTreeNode   root    = new DefaultMutableTreeNode(UIRegistry.getAppName());
 
         try
         {
