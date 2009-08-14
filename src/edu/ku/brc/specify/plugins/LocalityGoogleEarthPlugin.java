@@ -48,13 +48,13 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.UIPluginable;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable.ErrorType;
+import edu.ku.brc.services.mapping.LatLonPlacemarkIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.plugins.latlon.LatLonUI;
 import edu.ku.brc.specify.rstools.GoogleEarthExporter;
-import edu.ku.brc.specify.rstools.GoogleEarthPlacemarkIFace;
 import edu.ku.brc.specify.tasks.PluginsTask;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -92,6 +92,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     protected Vector<ChangeListener>       listeners    = null;
     protected Pair<BigDecimal, BigDecimal> latLon       = null;
     protected boolean                      isLatLonOK   = false;
+    protected boolean                      isViewMode   = true;
     
     /**
      * 
@@ -103,7 +104,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
         addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0)
             {
-                sendToGoogleEarthTool();
+                doButtonAction();
             }
         });
     }
@@ -111,9 +112,9 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     /**
      * 
      */
-    protected void sendToGoogleEarthTool()
+    protected void doButtonAction()
     {
-        List<GoogleEarthPlacemarkIFace> items = new Vector<GoogleEarthPlacemarkIFace>();
+        List<LatLonPlacemarkIFace> items = new Vector<LatLonPlacemarkIFace>();
         if (ce != null)
         {
             ImageIcon img = imageIcon != null ? imageIcon : IconManager.getIcon("locality", IconManager.IconSize.Std32);
@@ -174,13 +175,14 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.GetSetValueIFace#getValue()
      */
+    @Override
     public Object getValue()
     {
         return origData;
     }
     
     /**
-     * @return
+     * @return the icons for the Discipline
      */
     protected ImageIcon getDisciplineIcon()
     {
@@ -227,6 +229,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
      */
+    @Override
     public void setValue(final Object value, final String defaultValue)
     {
         origData = value;
@@ -284,6 +287,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     /* (non-Javadoc)
      * @see javax.swing.AbstractButton#setEnabled(boolean)
      */
+    @Override
     public void setEnabled(final boolean enabled)
     {
         super.setEnabled(enabled && (hasPoints || isLatLonOK));
@@ -292,6 +296,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.UIPluginable#getUIComponent()
      */
+    @Override
     public JComponent getUIComponent()
     {
         return this;
@@ -300,8 +305,10 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.UIPluginable#initialize(java.util.Properties, boolean)
      */
+    @Override
     public void initialize(final Properties properties, final boolean isViewMode)
     {
+        this.isViewMode = isViewMode;
         setIcon(IconManager.getIcon("GoogleEarth16"));
         setText(getResourceString("GE_DSP_IN_GE"));
         
@@ -319,6 +326,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.UIPluginable#setChangeListener(javax.swing.event.ChangeListener)
      */
+    @Override
     public void addChangeListener(final ChangeListener listener)
     {
         if (this.listeners == null)
@@ -351,6 +359,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.UIPluginable#shutdown()
      */
+    @Override
     public void shutdown()
     {
         if (latLonPlugin != null)
@@ -389,7 +398,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     //-- Inner Classes
     //---------------------------------------------------------------------------------
     
-    class CEPlacemark implements GoogleEarthPlacemarkIFace 
+    class CEPlacemark implements LatLonPlacemarkIFace 
     {
         protected CollectingEvent colEv;
         protected Locality        localityCEP;
@@ -425,6 +434,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
         /* (non-Javadoc)
          * @see edu.ku.brc.specify.rstools.GoogleEarthPlacemarkIFace#getIconURL()
          */
+        @Override
         public ImageIcon getImageIcon()
         {
             return iconURL;
@@ -433,6 +443,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
         /* (non-Javadoc)
          * @see edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace#cleanup()
          */
+        @Override
         public void cleanup()
         {
             colEv       = null;
@@ -442,6 +453,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
         /* (non-Javadoc)
          * @see edu.ku.brc.specify.rstools.GoogleEarthPlacemarkIFace#getHtmlContent(java.lang.String)
          */
+        @Override
         public String getHtmlContent(final String textColorArg)
         {
             String textColor = UIHelper.fixColorForHTML(textColorArg);
@@ -492,6 +504,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
         /* (non-Javadoc)
          * @see edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace#getLatLon()
          */
+        @Override
         public Pair<Double, Double> getLatLon()
         {
             return localityCEP != null ? new Pair<Double, Double>(localityCEP.getLat1(), localityCEP.getLong1()) : null;
@@ -500,9 +513,20 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
         /* (non-Javadoc)
          * @see edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace#getTitle()
          */
+        @Override
         public String getTitle()
         {
             return title;
         }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.services.mapping.LatLonPlacemarkIFace#getAltitude()
+         */
+        @Override
+        public Double getAltitude()
+        {
+            return null;
+        }
+
     }
 }

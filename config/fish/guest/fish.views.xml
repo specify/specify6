@@ -392,7 +392,7 @@
                     <cell type="separator" label="Plugins" colspan="9"/>
                 </row>
                 <row>
-                    <cell type="panel" id="outerPanel" name="outerPanel" coldef="p,f:-163px:g,p,f:-105px:g,p,f:p:g" rowdef="p" colspan="9">
+                    <cell type="panel" id="outerPanel" name="outerPanel" coldef="p,f:p:g,p,f:p:g,p,f:p:g,p,f:p:g" rowdef="p" colspan="9">
                         <rows>
                             <row>
                                 <cell type="label" label=" "/>

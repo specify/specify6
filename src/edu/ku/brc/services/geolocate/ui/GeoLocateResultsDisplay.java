@@ -55,10 +55,10 @@ import edu.ku.brc.services.geolocate.client.GeoLocate;
 import edu.ku.brc.services.geolocate.client.GeographicPoint;
 import edu.ku.brc.services.geolocate.client.GeorefResult;
 import edu.ku.brc.services.geolocate.client.GeorefResultSet;
+import edu.ku.brc.services.mapping.LatLonPlacemarkIFace;
+import edu.ku.brc.services.mapping.LatLonPoint;
 import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
 import edu.ku.brc.specify.ui.ClickAndGoSelectListener;
-import edu.ku.brc.specify.ui.LatLonPoint;
-import edu.ku.brc.specify.ui.LatLonPointIFace;
 import edu.ku.brc.specify.ui.WorldWindPanel;
 import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.JStatusBar;
@@ -79,6 +79,14 @@ import gov.nasa.worldwind.view.OrbitView;
  * @author rods
  * 
  * @code_status Alpha
+ */
+/**
+ * @author rods
+ *
+ * @code_status Alpha
+ *
+ * Aug 12, 2009
+ *
  */
 public class GeoLocateResultsDisplay extends JPanel implements MapperListener, SelectListener
 {
@@ -307,7 +315,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
         
         if (wwPanel != null)
         {
-            ArrayList<LatLonPointIFace> pnts = new ArrayList<LatLonPointIFace>(georefResults.getResultSet().size());
+            ArrayList<LatLonPlacemarkIFace> pnts = new ArrayList<LatLonPlacemarkIFace>(georefResults.getResultSet().size());
             for (GeorefResult grr : georefResults.getResultSet())
             {
                 pnts.add(new LatLonPoint(grr.getWGS84Coordinate().getLatitude(), grr.getWGS84Coordinate().getLongitude()));
@@ -516,9 +524,9 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
         /**
          * @return
          */
-        public List<LatLonPointIFace> getPoints()
+        public List<LatLonPlacemarkIFace> getPoints()
         {
-            ArrayList<LatLonPointIFace> pnts = new ArrayList<LatLonPointIFace>(results.size());
+            ArrayList<LatLonPlacemarkIFace> pnts = new ArrayList<LatLonPlacemarkIFace>(results.size());
             
             for (GeorefResult grr : results)
             {

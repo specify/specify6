@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.ui;
 
+import edu.ku.brc.services.mapping.LatLonPlacemarkIFace;
+import edu.ku.brc.util.Pair;
 import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.WorldWind;
@@ -215,7 +217,7 @@ public class WorldWindPanel extends JPanel
      * @param points the list of points
      * @param flyToIndex
      */
-    public void placeMarkers(final List<LatLonPointIFace> points, final Integer flyToIndex)
+    public void placeMarkers(final List<LatLonPlacemarkIFace> points, final Integer flyToIndex)
     {
         placeMarkers(points, false, true, flyToIndex);
     }
@@ -247,7 +249,7 @@ public class WorldWindPanel extends JPanel
      * @param doAddMarkCntText
      * @param flyToIndex
      */
-    public void placeMarkers(final List<LatLonPointIFace> points, 
+    public void placeMarkers(final List<LatLonPlacemarkIFace> points, 
                              final boolean doAddTitles,
                              final boolean doAddMarkCntText, 
                              final Integer flyToIndex)
@@ -255,25 +257,27 @@ public class WorldWindPanel extends JPanel
         reset();
         
         int i = 1;
-        for (LatLonPointIFace pnt : points)
+        for (LatLonPlacemarkIFace pnt : points)
         {
-            double   lat = pnt.getLatitude();
-            double   lon = pnt.getLongitude();
-            Position pos = Position.fromDegrees(lat, lon, 0);
-            
-            Marker marker = new BasicMarker(pos, markerAttrs);
-            marker.setPosition(Position.fromDegrees(lat, lon, 0));
-            markers.add(marker);
-            
-            if (doAddTitles || doAddMarkCntText)
+            Pair<Double, Double> latLon = pnt.getLatLon();
+            if (latLon != null && latLon.first != null && latLon.second != null)
             {
-                String txt = doAddMarkCntText ? Integer.toString(i++) : (pnt.getTitle() != null ? pnt.getTitle() : "");
-                GlobeAnnotation ga = new GlobeAnnotation(txt, pos, annoAttrs);
-                if (txt.length() > 0)
+                Position pos = Position.fromDegrees(latLon.first, latLon.second, 0);
+                
+                Marker marker = new BasicMarker(pos, markerAttrs);
+                marker.setPosition(Position.fromDegrees(latLon.first, latLon.second, 0));
+                markers.add(marker);
+                
+                if (doAddTitles || doAddMarkCntText)
                 {
-                    annoLayer.addAnnotation(ga);
+                    String txt = doAddMarkCntText ? Integer.toString(i++) : (pnt.getTitle() != null ? pnt.getTitle() : "");
+                    GlobeAnnotation ga = new GlobeAnnotation(txt, pos, annoAttrs);
+                    if (txt.length() > 0)
+                    {
+                        annoLayer.addAnnotation(ga);
+                    }
+                    annotations.add(ga);
                 }
-                annotations.add(ga);
             }
         }
         
@@ -281,9 +285,11 @@ public class WorldWindPanel extends JPanel
         
         if (flyToIndex != null && flyToIndex > -1 && flyToIndex < points.size())
         {
-            double lat = points.get(0).getLatitude();
-            double lon = points.get(0).getLongitude();
-            flyTo(LatLon.fromDegrees(lat, lon));
+            Pair<Double, Double> latLon = points.get(0).getLatLon();
+            if (latLon != null && latLon.first != null && latLon.second != null)
+            {
+                flyTo(LatLon.fromDegrees(latLon.first, latLon.second));
+            }
         }
     }
     

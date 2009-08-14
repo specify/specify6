@@ -138,6 +138,7 @@ import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordGeoLocateProvider;
 import edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordServiceProviderIFace;
+import edu.ku.brc.services.mapping.LatLonPlacemarkIFace;
 import edu.ku.brc.services.mapping.LocalityMapper;
 import edu.ku.brc.services.mapping.SimpleMapLocation;
 import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
@@ -155,7 +156,6 @@ import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.rstools.ExportFileConfigurationFactory;
 import edu.ku.brc.specify.rstools.ExportToFile;
 import edu.ku.brc.specify.rstools.GoogleEarthExporter;
-import edu.ku.brc.specify.rstools.GoogleEarthPlacemarkIFace;
 import edu.ku.brc.specify.rstools.WorkbenchRowPlacemarkWrapper;
 import edu.ku.brc.specify.tasks.DataEntryTask;
 import edu.ku.brc.specify.tasks.InteractionsTask;
@@ -2450,7 +2450,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         
         // put all the selected rows in a List
-        List<GoogleEarthPlacemarkIFace> selectedRows = new Vector<GoogleEarthPlacemarkIFace>();
+        List<LatLonPlacemarkIFace> selectedRows = new Vector<LatLonPlacemarkIFace>();
         List<WorkbenchRow> rows = workbench.getWorkbenchRowsAsList();
         for (int i = 0; i < selection.length; ++i )
         {

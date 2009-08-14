@@ -49,6 +49,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.services.mapping.LatLonPlacemarkIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -141,7 +142,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
             return;
         }
         
-        if (data.get(0) instanceof GoogleEarthPlacemarkIFace)
+        if (data.get(0) instanceof LatLonPlacemarkIFace)
         {
             try
             {
@@ -150,8 +151,8 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
                 log.info("Writing KML output to " + tmpFile.getAbsolutePath());
                 
                 ImageIcon imageIcon = getIconFromPrefs();
-                List<GoogleEarthPlacemarkIFace> mappedPlacemarks = exportPlacemarkList(reqParams.getProperty("description"), 
-                                                                     (List<GoogleEarthPlacemarkIFace>)data, imageIcon, tmpFile);
+                List<LatLonPlacemarkIFace> mappedPlacemarks = exportPlacemarkList(reqParams.getProperty("description"), 
+                                                                     (List<LatLonPlacemarkIFace>)data, imageIcon, tmpFile);
                 if (mappedPlacemarks.size() != data.size())
                 {
                     getStatusBar().setErrorMessage(String.format(getResourceString("NOT_ALL_MAPPED"), new Object[] {(data.size() - mappedPlacemarks.size()), data.size()}));
@@ -396,14 +397,14 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
      * @return a List of placemarks that were mapped (does not include any passed in placemarks that couldn't be mapped for some reason)
      * @throws IOException an error occurred while writing the KML to the file
      */
-    protected List<GoogleEarthPlacemarkIFace> exportPlacemarkList(final String     description,
-                                                                  final List<GoogleEarthPlacemarkIFace> placemarks, 
+    protected List<LatLonPlacemarkIFace> exportPlacemarkList(final String     description,
+                                                                  final List<LatLonPlacemarkIFace> placemarks, 
                                                                   final ImageIcon  imgIconArg, 
                                                                   final File       outputFile) throws IOException
     {
         ImageIcon defaultIcon = IconManager.getImage("DefaultPlacemark");
 
-        List<GoogleEarthPlacemarkIFace> mappedPlacemarks = new Vector<GoogleEarthPlacemarkIFace>();
+        List<LatLonPlacemarkIFace> mappedPlacemarks = new Vector<LatLonPlacemarkIFace>();
         
         GenericKMLGenerator kmlGenerator = new GenericKMLGenerator();
         if (description != null)
@@ -412,7 +413,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
             
         } else if (placemarks.size() == 1)
         {
-            GoogleEarthPlacemarkIFace pm = placemarks.get(0);
+            LatLonPlacemarkIFace pm = placemarks.get(0);
             kmlGenerator.setDescription(pm.getTitle());
             if (pm.getImageIcon() != null)
             {
@@ -472,7 +473,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
         }
         
         // add all of the placemarks to the KML generator
-        for (GoogleEarthPlacemarkIFace pm : placemarks)
+        for (LatLonPlacemarkIFace pm : placemarks)
         {
             String name = pm.getTitle();
             name = name == null ? "" : name;
@@ -631,7 +632,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
      */
     public Class<?>[] getHandledClasses()
     {
-        return new Class<?>[] {CollectingEvent.class, GoogleEarthPlacemarkIFace.class};
+        return new Class<?>[] {CollectingEvent.class, LatLonPlacemarkIFace.class};
     }
 
     /* (non-Javadoc)

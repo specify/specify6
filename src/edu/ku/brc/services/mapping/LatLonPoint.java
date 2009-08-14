@@ -17,7 +17,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-package edu.ku.brc.specify.ui;
+package edu.ku.brc.services.mapping;
+
+import javax.swing.ImageIcon;
+
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rods
@@ -27,14 +31,14 @@ package edu.ku.brc.specify.ui;
  * Aug 9, 2009
  *
  */
-public class LatLonPoint implements LatLonPointIFace
+public class LatLonPoint implements LatLonPlacemarkIFace
 {
-
-    protected Double latitude;
-    protected Double longitude;
-    protected Double altitude;
-    protected String title;
-    
+    protected Double    latitude;
+    protected Double    longitude;
+    protected Double    altitude;
+    protected String    title;
+    protected ImageIcon imageIcon;
+    protected String    html;
     
     /**
      * @param latitude
@@ -64,10 +68,13 @@ public class LatLonPoint implements LatLonPointIFace
     public LatLonPoint(Double latitude, Double longitude, Double altitude, String title)
     {
         super();
-        this.latitude = latitude;
+        
+        this.latitude  = latitude;
         this.longitude = longitude;
-        this.altitude = altitude;
-        this.title = title;
+        this.altitude  = altitude;
+        this.title     = title;
+        this.html      = null;
+        this.imageIcon = null;
     }
 
     /* (non-Javadoc)
@@ -80,30 +87,79 @@ public class LatLonPoint implements LatLonPointIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.LatLonPointIFace#getLatitude()
-     */
-    @Override
-    public Double getLatitude()
-    {
-        return latitude;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.LatLonPointIFace#getLongitude()
-     */
-    @Override
-    public Double getLongitude()
-    {
-        return longitude;
-    }
-
-    /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.LatLonPointIFace#getTitle()
      */
     @Override
     public String getTitle()
     {
         return title;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.mapping.LatLonPlacemarkIFace#cleanup()
+     */
+    @Override
+    public void cleanup()
+    {
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.mapping.LatLonPlacemarkIFace#getHtmlContent(java.lang.String)
+     */
+    @Override
+    public String getHtmlContent(final String textColor)
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.mapping.LatLonPlacemarkIFace#getImageIcon()
+     */
+    @Override
+    public ImageIcon getImageIcon()
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.mapping.LatLonPlacemarkIFace#getLatLon()
+     */
+    @Override
+    public Pair<Double, Double> getLatLon()
+    {
+        return new Pair<Double, Double>(latitude, longitude);
+    }
+
+    /**
+     * @param html the html to set
+     */
+    public void setHtml(String html)
+    {
+        this.html = html;
+    }
+
+    /**
+     * @return the latitude
+     */
+    public Double getLatitude()
+    {
+        return latitude;
+    }
+
+    /**
+     * @param imageIcon the imageIcon to set
+     */
+    public void setImageIcon(ImageIcon imageIcon)
+    {
+        this.imageIcon = imageIcon;
+    }
+
+    /**
+     * @return the longitude
+     */
+    public Double getLongitude()
+    {
+        return longitude;
     }
 
     /**

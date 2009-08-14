@@ -40,12 +40,13 @@ import edu.ku.brc.services.gpx.io.RteType;
 import edu.ku.brc.services.gpx.io.TrkType;
 import edu.ku.brc.services.gpx.io.TrksegType;
 import edu.ku.brc.services.gpx.io.WptType;
-import edu.ku.brc.specify.ui.LatLonPoint;
-import edu.ku.brc.specify.ui.LatLonPointIFace;
+import edu.ku.brc.services.mapping.LatLonPlacemarkIFace;
+import edu.ku.brc.services.mapping.LatLonPoint;
 import edu.ku.brc.specify.ui.WorldWindPanel;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.Polyline;
@@ -152,7 +153,7 @@ public class GPXPanel extends JPanel
         WptType wpt = (WptType)wpList.getSelectedValue();
         if (wpt != null)
         {
-            ArrayList<LatLonPointIFace> pnts = new ArrayList<LatLonPointIFace>(gpxType.getWpt().size());
+            ArrayList<LatLonPlacemarkIFace> pnts = new ArrayList<LatLonPlacemarkIFace>(gpxType.getWpt().size());
             /*for (WptType wp : gpxType.getWpt())
             {
                 pnts.add(new LatLonPoint(wp.getLat().doubleValue(), wp.getLon().doubleValue()));
@@ -170,7 +171,7 @@ public class GPXPanel extends JPanel
         TrkType trkType = (TrkType)trkList.getSelectedValue();
         if (trkType != null)
         {
-            ArrayList<LatLonPointIFace> pnts      = new ArrayList<LatLonPointIFace>(gpxType.getWpt().size());
+            ArrayList<LatLonPlacemarkIFace> pnts      = new ArrayList<LatLonPlacemarkIFace>(gpxType.getWpt().size());
             ArrayList<Position>         positions = new ArrayList<Position>(gpxType.getWpt().size());
             for (TrksegType trkSeg : trkType.getTrkseg())
             {
@@ -193,8 +194,9 @@ public class GPXPanel extends JPanel
             polyLine.setAntiAliasHint(Polyline.ANTIALIAS_NICEST);
             wwPanel.addPolyline(polyLine);
             
-            LatLonPointIFace p = pnts.get(0);
-            wwPanel.flyTo(LatLon.fromDegrees(p.getLatitude(), p.getLongitude()));
+            LatLonPlacemarkIFace  p     = pnts.get(0);
+            Pair<Double, Double> latLon = p.getLatLon();
+            wwPanel.flyTo(LatLon.fromDegrees(latLon.first, latLon.second));
             
         }
     }

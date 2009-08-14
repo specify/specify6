@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-package edu.ku.brc.specify.rstools;
+package edu.ku.brc.services.mapping;
 
 import javax.swing.ImageIcon;
 
@@ -25,12 +25,14 @@ import edu.ku.brc.util.Pair;
 
 /**
  * This interface defines the minimum requirements for an object that is to
- * be displayed in Google Earth as a placemark.
+ * be displayed Lat/Lon information (is used by Google Earth as a placemark).
  * 
  * @author jstewart
+ * @author rods
+ * 
  * @code_status Complete
  */
-public interface GoogleEarthPlacemarkIFace
+public interface LatLonPlacemarkIFace
 {
     /**
      * Returns the title of the placemark.
@@ -52,6 +54,11 @@ public interface GoogleEarthPlacemarkIFace
      * @return the lat and lon
      */
     public abstract Pair<Double,Double> getLatLon();
+    
+    /**
+     * @return the altitude
+     */
+    public abstract Double getAltitude();
     
     /**
      * @return an URL to the image to use or null

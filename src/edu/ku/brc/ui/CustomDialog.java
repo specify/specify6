@@ -111,6 +111,7 @@ public class CustomDialog extends JDialog
     protected boolean           closeOnApplyClk  = false;
     protected boolean           closeOnHelpClk   = false;
     protected int               btnPressed       = NONE_BTN;
+    protected boolean           isCreated        = false;
     
     protected JPanel            mainPanel;
 
@@ -361,9 +362,6 @@ public class CustomDialog extends JDialog
         {
             bb = ButtonBarFactory.buildOKHelpBar(cancelBtn, helpBtn);
             
-        } else  if (whichBtns == OK_BTN)
-        {
-            bb = ButtonBarFactory.buildOKBar(okBtn);
         }
     	return bb;
     }
@@ -372,6 +370,8 @@ public class CustomDialog extends JDialog
      */
     public void createUI()
     {
+        isCreated = true;
+        
         /*if (helpContext == null)
         {
             whichBtns &= ~HELP_BTN; // Clear Bit for Help button if there is no HelpContext
@@ -635,7 +635,7 @@ public class CustomDialog extends JDialog
         {
             UIRegistry.pushWindow(this);
             
-            if (okBtn == null && visible)
+            if (!isCreated && visible)
             {
                 createUI();
             }

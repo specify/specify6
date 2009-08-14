@@ -29,6 +29,7 @@ import javax.swing.ImageIcon;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.services.mapping.LatLonPlacemarkIFace;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
@@ -38,13 +39,13 @@ import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 
 /**
- * This class implements the {@link GoogleEarthPlacemarkIFace} interface
+ * This class implements the {@link LatLonPlacemarkIFace} interface
  * using the data in a {@link WorkbenchRow} object.
  * 
  * @author jstewart
  * @code_status Beta
  */
-public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
+public class WorkbenchRowPlacemarkWrapper implements LatLonPlacemarkIFace
 {
     /** The {@link WorkbenchRow} containing the actual data. */
     protected WorkbenchRow wbRow;
@@ -64,7 +65,7 @@ public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
     /**
      * Constructor.
      * 
-     * @param row the {@link WorkbenchRow} to represent as a {@link GoogleEarthPlacemarkIFace} object
+     * @param row the {@link WorkbenchRow} to represent as a {@link LatLonPlacemarkIFace} object
      * @param label the text label of the resulting placemark
      * @param visibleColumns the columns to use for the HTML
      */
@@ -83,7 +84,7 @@ public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
     }
     
     /**
-     * Initializes all data needed by the {@link GoogleEarthPlacemarkIFace} methods.
+     * Initializes all data needed by the {@link LatLonPlacemarkIFace} methods.
      */
     protected void initExportData()
     {
@@ -226,6 +227,15 @@ public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
      * @see edu.ku.brc.specify.rstools.GoogleEarthPlacemarkIFace#getImageIcon()
      */
     public ImageIcon getImageIcon()
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.mapping.LatLonPlacemarkIFace#getAltitude()
+     */
+    @Override
+    public Double getAltitude()
     {
         return null;
     }
