@@ -183,7 +183,7 @@ public class FieldNotebookPage extends DisciplineMember
     }
 
     @OneToMany(mappedBy = "fieldNotebookPage")
-    @Cascade( {CascadeType.ALL} )
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @OrderBy("ordinal ASC")
     public Set<FieldNotebookPageAttachment> getAttachments()
     {

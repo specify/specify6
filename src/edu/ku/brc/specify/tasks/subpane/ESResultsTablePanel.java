@@ -964,8 +964,10 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
                     try
                     {
                         CommandAction cmdAction = (CommandAction)cmd.clone();
-                        boolean setCmdData = cmdAction.getData() == null;
-                        if (setCmdData)
+                        //cmdAction.setData(null);
+                        
+                        boolean doSetCmdData = cmdAction.getData() == null;
+                        if (doSetCmdData)
                         {
                             cmdAction.setData(getRecordSet(false));
                         }

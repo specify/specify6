@@ -749,12 +749,6 @@ public class DatamodelGenerator
                         continue;
                     }
                     
-                    if (method.getName().equals("getStartDate"))
-                    {
-                        int x= 0;
-                        x++;
-                    }
-                    
                     if (DEBUG)
                     {
                         System.out.println(className + " " + method.getName());
