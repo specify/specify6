@@ -283,7 +283,7 @@ public class UIFormatterEditorDlg extends CustomDialog
         
         SpinnerModel retModel = new SpinnerNumberModel(1, //initial value
                 1, //min
-                10,   //max
+                fieldInfo.getLength(),   //max
                 1);               //step
         sizeSpinner = new JSpinner(retModel);
         isIncChk    = new JCheckBox("Is Incrementer");

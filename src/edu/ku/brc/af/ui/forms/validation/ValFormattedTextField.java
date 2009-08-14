@@ -32,9 +32,16 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -44,6 +51,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -132,6 +140,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     
     protected JComponent[]                comps = null;
     protected char                        autoNumberChar = UIFieldFormatterMgr.getAutoNumberPatternChar();
+    protected KeyStroke                   pasteKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
 
     /**
      * Constructor
@@ -422,6 +431,17 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                     JTextField tf = new BGTextField(f.getSize(), isViewOnly ? "" : f.getValue());
                     tfToAdd = tf;
                     
+                    if (inx == 0)
+                    {
+                        tf.addKeyListener(new KeyAdapter() {
+                            @Override
+                            public void keyPressed(KeyEvent e)
+                            {
+                                checkForPaste(e);
+                            }
+                        });
+                    }
+                    
                     JFormattedDoc document = new JFormattedDoc(tf, formatter, f);
                     tf.setDocument(document);
                     document.addDocumentListener(new DocumentAdaptor() {
@@ -457,21 +477,18 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                     
                     if (f.isIncrementer())
                     {
-                        if (true)
-                        {
-                            editTF     = tf;
-                            cardLayout = new CardLayout();
-                            cardPanel  = new JPanel(cardLayout);
-                            cardPanel.add("edit", tf);
-                            
-                            viewTF = new BGTextField(f.getSize(), isViewOnly ? "" : f.getValue());
-                            viewTF.setDocument(document);
-                            cardPanel.add("view", viewTF);
-                            
-                            cardLayout.show(cardPanel, "view");
-                            comp = cardPanel;
-                            tfToAdd = cardPanel;
-                        }
+                        editTF     = tf;
+                        cardLayout = new CardLayout();
+                        cardPanel  = new JPanel(cardLayout);
+                        cardPanel.add("edit", tf);
+                        
+                        viewTF = new BGTextField(f.getSize(), isViewOnly ? "" : f.getValue());
+                        viewTF.setDocument(document);
+                        cardPanel.add("view", viewTF);
+                        
+                        cardLayout.show(cardPanel, "view");
+                        comp = cardPanel;
+                        tfToAdd = cardPanel;
                     }
                 }
                 
@@ -479,6 +496,49 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                 builder.add(comp, cc.xy(inx+2, 2));
                 comps[inx] = tfToAdd;
                 inx++;
+            }
+        }
+    }
+    
+    /**
+     * @param e the key event
+     */
+    protected void checkForPaste(final KeyEvent e)
+    {
+        if (e.getKeyCode() == pasteKeyStroke.getKeyCode())
+        {
+            Clipboard sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            for (DataFlavor flavor : sysClipboard.getAvailableDataFlavors())
+            {
+                if (flavor.isMimeTypeEqual(DataFlavor.getTextPlainUnicodeFlavor()))
+                {
+                    try
+                    {
+                        StringBuilder sb     = new StringBuilder();
+                        Reader        reader = (InputStreamReader)sysClipboard.getData(flavor);
+                        char[]        buffer = new char[1024];
+                        int           len    = reader.read(buffer);
+                        sb.append(new String(buffer, 0, len));
+                        
+                        while (len > -1)
+                        {
+                            len = reader.read(buffer);
+                            if (len > 0)
+                            {
+                                sb.append(buffer);
+                            }
+                        }
+                        if (sb.length() <= formatter.getLength())
+                        {
+                            setValue(sb.toString(), null);
+                        }
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                    break;
+                }
             }
         }
     }
