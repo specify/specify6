@@ -153,7 +153,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
                                 return false;
                             }
-                            
                         } 
                         
                         if (dbVersion != null && !schemaVersion.equals(dbVersion))
@@ -295,6 +294,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     Integer count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM specifyuser");
                     rv = BasicSQLUtils.update(conn, "ALTER TABLE specifyuser MODIFY Password varchar(255)");
+
+                    count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM autonumsch_div");
+                    if (count != null && count > 0)
+                    {
+                        int rv2 = BasicSQLUtils.update(conn, "DELETE FROM autonumsch_div");
+                        System.err.println(rv2);
+                    }
 
                     return rv == count;
                     

@@ -183,6 +183,8 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
             return;
         }
         
+        UIRegistry.loadAndPushResourceBundle("specifydbsetupwiz");
+        
         UIRegistry.writeSimpleGlassPaneMsg("Building Discipline...", 20); // I18N
         isOKToCont = true;
         final AppContextMgr acm = AppContextMgr.getInstance();
@@ -227,7 +229,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         wizardPanel.processDataForNonBuild();
         
         final BuildSampleDatabase bldSampleDB   = new BuildSampleDatabase();
-        final ProgressFrame       progressFrame = bldSampleDB.createProgressFrame("Creating Disicipline");
+        final ProgressFrame       progressFrame = bldSampleDB.createProgressFrame("Creating Disicipline"); // I18N
         progressFrame.turnOffOverAll();
         
         progressFrame.setProcess(0, 17);

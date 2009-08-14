@@ -700,8 +700,8 @@ public class BuildSampleDatabase
         
         if (pair.second != null)
         {
-            division.addReference(pair.second, "numberingSchemes");
-            persist(division);
+            //division.addReference(pair.second, "numberingSchemes");
+            //persist(division);
         }
         
         commitTx();
@@ -1847,8 +1847,8 @@ public class BuildSampleDatabase
 
         persist(groups);
         
-        division.addReference(accessionNS, "numberingSchemes");
-        persist(division);
+        //division.addReference(accessionNS, "numberingSchemes");
+        //persist(division);
 
         commitTx();
         
@@ -2476,8 +2476,8 @@ public class BuildSampleDatabase
         
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
         
-        division.addReference(accessionNS, "numberingSchemes");
-        persist(division);
+        //division.addReference(accessionNS, "numberingSchemes");
+        //persist(division);
 
         commitTx();
         
@@ -2946,8 +2946,8 @@ public class BuildSampleDatabase
 
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
 
-        division.addReference(accessionNS, "numberingSchemes");
-        persist(division);
+        //division.addReference(accessionNS, "numberingSchemes");
+        //persist(division);
 
         commitTx();
         
@@ -4070,8 +4070,8 @@ public class BuildSampleDatabase
 
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
         
-        division.addReference(accessionNS, "numberingSchemes");
-        persist(division);
+        //division.addReference(accessionNS, "numberingSchemes");
+        //persist(division);
 
         commitTx();
         
@@ -5296,8 +5296,8 @@ public class BuildSampleDatabase
 
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
         
-        division.addReference(accessionNS, "numberingSchemes");
-        persist(division);
+        //division.addReference(accessionNS, "numberingSchemes");
+        //persist(division);
 
         ////////////////////////////////
         // Default user groups and test user
