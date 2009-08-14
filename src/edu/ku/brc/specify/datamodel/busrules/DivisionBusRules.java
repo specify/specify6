@@ -179,6 +179,8 @@ public class DivisionBusRules extends BaseBusRules implements CommandListener
         
         final SpecifyDBSetupWizard wizardPanel = new SpecifyDBSetupWizard(SpecifyDBSetupWizard.WizardType.Division, null);
         
+        UIRegistry.loadAndPushResourceBundle("specifydbsetupwiz");
+        
         String bldTitle = UIRegistry.getResourceString("CREATEDIV");
         final CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), "", true, CustomDialog.NONE_BTN, wizardPanel);
         dlg.setCustomTitleBar(bldTitle);
