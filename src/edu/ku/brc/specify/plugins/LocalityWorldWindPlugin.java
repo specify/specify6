@@ -37,6 +37,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import mondrian.rolap.BitKey.Big;
+
 import edu.ku.brc.services.mapping.LatLonPlacemarkIFace;
 import edu.ku.brc.services.mapping.LatLonPoint;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
@@ -45,6 +47,7 @@ import edu.ku.brc.specify.ui.WorldWindPanel;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.LatLonConverter.FORMAT;
 import edu.ku.brc.util.LatLonConverter.LATLON;
 import gov.nasa.worldwind.event.SelectEvent;
@@ -84,7 +87,23 @@ public class LocalityWorldWindPlugin extends LocalityGoogleEarthPlugin implement
     protected void doButtonAction()
     {
         List<LatLonPlacemarkIFace> items = new Vector<LatLonPlacemarkIFace>();
-        if (ce != null)
+        Pair<BigDecimal, BigDecimal> llPair = latLonPlugin.getLatLon();
+        
+        if (latLonPlugin != null && llPair != null && llPair.first != null && llPair.second != null)
+        {
+            Locality geLoc = new Locality();
+            geLoc.initialize();
+            
+            geLoc.setLatitude1(llPair.first);
+            geLoc.setLongitude1(llPair.second);
+            if (locality != null)
+            {
+                geLoc.setGeography(locality.getGeography());
+            }
+            ImageIcon img = imageIcon != null ? imageIcon : IconManager.getIcon("locality", IconManager.IconSize.Std32);
+            items.add(new CEPlacemark(geLoc, img));
+            
+        } else  if (ce != null)
         {
             ImageIcon img = imageIcon != null ? imageIcon : IconManager.getIcon("locality", IconManager.IconSize.Std32);
             items.add(new CEPlacemark(ce, img));
@@ -186,6 +205,8 @@ public class LocalityWorldWindPlugin extends LocalityGoogleEarthPlugin implement
             String lonStr = ensureFormattedString(new BigDecimal(latLonPnt.getLongitude()), locality.getLong2text(), defaultFormat, LATLON.Longitude);
 
             latLonPlugin.setLatLon(latStr, lonStr, null, null);
+            
+            latLon = new Pair<BigDecimal, BigDecimal>(new BigDecimal(latLonPnt.getLatitude()), new BigDecimal(latLonPnt.getLongitude()));
         }
     }
     
