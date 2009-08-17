@@ -1127,15 +1127,15 @@
 			
 			<rows>
 				<row>
-					<cell type="label" name="title" labelfor="title"/>
+					<cell type="label" name="title" labelfor="title" label="Title"/>
 					<cell type="field" uitype="text" cols="40" id="title" name="reportProperties.title" isrequired="true"/>
 				</row>
 				<row>
-					<cell type="label" name="subTitle" labelfor="subTitle"/>
+					<cell type="label" name="subTitle" labelfor="subTitle" label="Subtitle"/>
 					<cell type="field" uitype="text" cols="40" id="subTitle" name="reportProperties.subTitle" isrequired="true"/>
 				</row>
 				<row>
-					<cell type="label" name="footer" labelfor="footer"/>
+					<cell type="label" name="footer" labelfor="footer" label="Footer"/>
 					<cell type="field" uitype="text" cols="40" id="footer" name="reportProperties.footer" isrequired="true"/>
 				</row>
 			</rows>
