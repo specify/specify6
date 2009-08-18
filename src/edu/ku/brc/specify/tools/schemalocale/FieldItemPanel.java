@@ -927,10 +927,14 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         currContainer = container;
         currJListItem = jListContainerItem;
         
-        String cName = currContainer.getName();
-        if (cName.equals("taxononly"))
+        String cName = null;
+        if (currContainer != null)
         {
-            cName = "taxon";
+            cName = currContainer.getName();
+            if (cName.equals("taxononly"))
+            {
+                cName = "taxon";
+            }
         }
         tableInfo = currContainer == null ? null : DBTableIdMgr.getInstance().getInfoByTableName(cName);
         
