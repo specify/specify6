@@ -300,9 +300,9 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#copyLocale(java.util.Locale, java.util.Locale)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#copyLocale(java.util.Locale, java.util.Locale, java.beans.PropertyChangeListener)
      */
-    public void copyLocale(Locale src, Locale dst)
+    public void copyLocale(final Locale src, final Locale dst, final PropertyChangeListener pcl)
     {
         // no op
     }

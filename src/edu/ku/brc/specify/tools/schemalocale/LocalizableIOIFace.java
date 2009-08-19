@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.tools.schemalocale;
 
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.List;
 import java.util.Locale;
@@ -80,7 +81,7 @@ public interface LocalizableIOIFace
      * @param locale
      * @return
      */
-    public abstract boolean isLocaleInUse(final Locale locale);
+    public abstract boolean isLocaleInUse(Locale locale);
     
     /**
      * @return
@@ -88,10 +89,12 @@ public interface LocalizableIOIFace
     public abstract Vector<Locale> getLocalesInUse();
     
     /**
-     * @param src
-     * @param dst
+     * Copies all the string from one locale to another.
+     * @param src the source locale
+     * @param dst the destination locale
+     * @param pcl listener for changes made during copy
      */
-    public abstract void copyLocale(Locale src, Locale dst);
+    public abstract void copyLocale(Locale src, Locale dst, PropertyChangeListener pcl);
     
     /**
      * @return true on save, false on failure

@@ -63,19 +63,26 @@ public class ProgressGlassPane extends JComponent
         setFont(new Font("Default", Font.BOLD, 16));
     }
 
+    /**
+     * @return the progress (0-100)
+     */
     public int getProgress()
     {
         return progress;
     }
 
-    public void setProgress(int progress)
+    /**
+     * Sets the progress from 0 - 100
+     * @param progress (0-100)
+     */
+    public void setProgress(final int progress)
     {
         int oldProgress = this.progress;
-        this.progress = progress;
+        this.progress   = progress;
         
-        if (progress > -1)
+        if (progress > -1 && progress < 101)
         {
-            progress = Math.min(100, progress);
+            this.progress = Math.min(100, this.progress);
             
             // computes the damaged area
             FontMetrics metrics = getGraphics().getFontMetrics(getFont());
@@ -84,7 +91,7 @@ public class ProgressGlassPane extends JComponent
             int y = (getHeight() - BAR_HEIGHT) / 2;
             y += metrics.getDescent() / 2;
             y += textOffset;
-            w = (int) (BAR_WIDTH * ((float) progress / 100.0f)) - w;
+            w = (int) (BAR_WIDTH * ((float) this.progress / 100.0f)) - w;
             int h = BAR_HEIGHT;
     
             repaint(x, y, x+BAR_WIDTH, h+1);

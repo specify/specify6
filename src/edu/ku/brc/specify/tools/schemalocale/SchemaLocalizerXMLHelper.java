@@ -21,6 +21,7 @@ package edu.ku.brc.specify.tools.schemalocale;
 
 import static edu.ku.brc.specify.config.init.DataBuilder.createPickList;
 
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -1207,10 +1208,10 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#copyLocale(java.util.Locale, java.util.Locale)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#copyLocale(java.util.Locale, java.util.Locale, java.beans.PropertyChangeListener)
      */
     @Override
-    public void copyLocale(final Locale srcLocale, final Locale dstLocale)
+    public void copyLocale(final Locale srcLocale, final Locale dstLocale, final PropertyChangeListener pcl)
     {
         /*for (LocalizableJListItem listItem : getContainerDisplayItems())
         {

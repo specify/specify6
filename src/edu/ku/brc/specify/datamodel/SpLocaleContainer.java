@@ -459,7 +459,7 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
         if (str != null && str instanceof SpLocaleItemStr)
         {
             SpLocaleItemStr strItem = (SpLocaleItemStr)str;
-            strItem.setContainerDesc(this);
+            strItem.setContainerName(this);
             names.add(strItem);
         } else
         {
@@ -489,7 +489,7 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
     {
         if (str != null && str instanceof SpLocaleItemStr)
         {
-            names.add((SpLocaleItemStr)str);
+            names.remove((SpLocaleItemStr)str);
         } else
         {
             log.error("LocalizableStrIFace was null or not of Class SpLocaleItemStr");

@@ -88,6 +88,7 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.util.ComparatorByStringRepresentation;
 
 /**
@@ -733,15 +734,36 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         {
             listener.propertyChange(new PropertyChangeEvent(this, "copyStart", null, null));
         }
-        UIRegistry.getStatusBar().setIndeterminate(getClass().getSimpleName(), true);
+        
+        final String progressName = getClass().getSimpleName();
+        
+        UIRegistry.getStatusBar().setIndeterminate(progressName, true);
+        
+        final CustomDialog parentDlg = (CustomDialog)UIRegistry.getMostRecentWindow();
+        final SimpleGlassPane glassPane = new SimpleGlassPane("Copying Locale...", 18);
+        parentDlg.setGlassPane(glassPane);
+        glassPane.setVisible(true);
+        parentDlg.getOkBtn().setEnabled(false);
         
         SwingWorker workerThread = new SwingWorker()
         {
             @Override
             public Object construct()
             {
-                localizableIO.copyLocale(srcLocale, dstLocale);  
-                
+                localizableIO.copyLocale(srcLocale, dstLocale, new PropertyChangeListener()
+                {
+                    @Override
+                    public void propertyChange(final PropertyChangeEvent evt)
+                    {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run()
+                            {
+                                glassPane.setProgress((Integer)evt.getNewValue());
+                            }
+                        });
+                    }
+                });  
                 return null;
             }
             
@@ -749,7 +771,6 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
             @Override
             public void finished()
             {
-                UIRegistry.getStatusBar().setText("");
                 enableUIControls(true);
                 tablesList.setEnabled(true);
                 fieldPanel.setEnabled(true);
@@ -758,7 +779,10 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
                 {
                     listener.propertyChange(new PropertyChangeEvent(this, "copyEnd", null, null));
                 }
-                UIRegistry.getStatusBar().setProgressDone(getClass().getSimpleName());
+                glassPane.setVisible(false);
+                parentDlg.getOkBtn().setEnabled(true);
+                UIRegistry.getStatusBar().setProgressDone(progressName);
+                UIRegistry.getStatusBar().setText("");
             }
         };
         
