@@ -73,7 +73,7 @@ public class FullNameRebuilder<T extends Treeable<T, D, I>, D extends TreeDefIfa
             initProgress();
             initCacheInfo();
             fullNameBuilder = new FullNameBuilder<T,D,I>(treeDef);
-            rebuildFullNames(new NodeInfo(root.getTreeId(), root.getRankId(), root.getName()), new LinkedList<NodeInfo>());
+            rebuildFullNames(new TreeNodeInfo(root.getTreeId(), root.getRankId(), root.getName()), new LinkedList<TreeNodeInfo>());
             if (ownsSession)
             {
             	traversalSession.commit();
@@ -102,7 +102,7 @@ public class FullNameRebuilder<T extends Treeable<T, D, I>, D extends TreeDefIfa
      * 
      * recursively walks tree and builds full names.
      */
-    protected void rebuildFullNames(NodeInfo node, LinkedList<NodeInfo> parents) throws Exception
+    protected void rebuildFullNames(TreeNodeInfo node, LinkedList<TreeNodeInfo> parents) throws Exception
     {
         List<?> children = getChildrenInfo(node);
         if (node.getRank() >= minRank)
@@ -113,7 +113,7 @@ public class FullNameRebuilder<T extends Treeable<T, D, I>, D extends TreeDefIfa
         for (Object child : children)
         {
             Object[] childInfo = (Object[] )child;
-        	rebuildFullNames(new NodeInfo((Integer )childInfo[0], (Integer )childInfo[2], (String )childInfo[1]),
+        	rebuildFullNames(new TreeNodeInfo((Integer )childInfo[0], (Integer )childInfo[2], (String )childInfo[1]),
         			parents);
         }
         parents.removeLast();
@@ -124,7 +124,7 @@ public class FullNameRebuilder<T extends Treeable<T, D, I>, D extends TreeDefIfa
      * @param parentId
      * @return list of NodeInfo objects for children of parentId.
      */
-    protected List<?> getChildrenInfo(final NodeInfo node)
+    protected List<?> getChildrenInfo(final TreeNodeInfo node)
     {
         childrenQuery.setParameter("parentArg", node.getId());
         return childrenQuery.list();
@@ -177,42 +177,4 @@ public class FullNameRebuilder<T extends Treeable<T, D, I>, D extends TreeDefIfa
                 + " where " + getNodeParentFldName() + " =:parentArg  order by name";
         childrenQuery = traversalSession.createQuery(childrenSQL, true);
     }
-
-    public class NodeInfo
-    {
-    	protected final int id;
-    	protected final int rank;
-    	protected final String name;
-    	
-    	public NodeInfo(final int id, final int rank, final String name)
-    	{
-    		this.id = id;
-    		this.rank = rank;
-    		this.name = name;
-    	}
-
-    	/**
-    	 * @return the id
-    	 */
-    	public int getId() 
-    	{
-    		return id;
-    	}
-
-    	/**
-    	 * @return the rank
-    	 */
-    	public int getRank() 
-    	{
-    		return rank;
-    	}
-
-    	/**
-    	 * @return the name
-    	 */
-    	public String getName() 
-    	{
-    		return name;
-    	}
-    }    	
 }

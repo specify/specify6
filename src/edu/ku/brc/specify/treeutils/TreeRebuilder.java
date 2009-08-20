@@ -99,9 +99,14 @@ public class TreeRebuilder<T extends Treeable<T, D, I>,
 	protected int rebuildTree(TreeNodeInfo node, LinkedList<TreeNodeInfo> parents, int nodeNumber) throws Exception {
         int nn = nodeNumber;
 		List<?> children = getChildrenInfo(node);
+		boolean addParent = false;
         if (doFullNames) 
         {
-        	parents.addLast(node);
+        	if (fullNameBuilder.isInFullName(node.getRank()))
+        	{
+        		parents.addLast(node);
+        		addParent = true;
+        	}
         }
         while (children.size() > 0)
         {
@@ -116,7 +121,10 @@ public class TreeRebuilder<T extends Treeable<T, D, I>,
        String fullName = null;
        if (doFullNames) 
        {
-           parents.removeLast();
+           if (addParent)
+           {
+        	   parents.removeLast();
+           }
            fullName = fullNameBuilder.buildFullName(node, parents);
        }
        writeNode(node.getId(), fullName, nodeNumber, nn);
