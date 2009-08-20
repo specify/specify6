@@ -6,6 +6,7 @@ package edu.ku.brc.specify.treeutils;
 import java.util.LinkedList;
 import java.util.List;
 
+import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
@@ -47,8 +48,32 @@ public class TreeRebuilder<T extends Treeable<T, D, I>,
 	@Override
 	protected Boolean doInBackground() throws Exception 
 	{
-		// TODO Auto-generated method stub
-		return null;
+        traversalSession = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            traversalSession.beginTransaction();
+            buildChildrenQuery();
+            buildUpdateNodeQuery();
+            T root = getTreeRoot();
+            initProgress();
+            initCacheInfo();
+            fullNameBuilder = new FullNameBuilder<T,D,I>(treeDef);
+            rebuildTree(new TreeNodeInfo(root.getTreeId(), root.getRankId(), root.getName()), 
+            		new LinkedList<TreeNodeInfo>(), 1);
+            traversalSession.commit();
+            return true;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NodeNumberer.class, e);
+            return false;
+        }
+        finally
+        {
+            traversalSession.close();
+        }
 	}
 
     /* (non-Javadoc)
@@ -74,10 +99,12 @@ public class TreeRebuilder<T extends Treeable<T, D, I>,
 	protected int rebuildTree(TreeNodeInfo node, LinkedList<TreeNodeInfo> parents, int nodeNumber) throws Exception {
         int nn = nodeNumber;
 		List<?> children = getChildrenInfo(node);
-        if (doFullNames) {
+        if (doFullNames) 
+        {
         	parents.addLast(node);
         }
-        while (children.size() > 0){
+        while (children.size() > 0)
+        {
             Object child = children.get(0);
             Object[] childInfo = (Object[] )child;
             nn = rebuildTree(new TreeNodeInfo((Integer )childInfo[0], (Integer )childInfo[2], (String )childInfo[1]),
@@ -87,7 +114,8 @@ public class TreeRebuilder<T extends Treeable<T, D, I>,
        }
        children = null;
        String fullName = null;
-       if (doFullNames) {
+       if (doFullNames) 
+       {
            parents.removeLast();
            fullName = fullNameBuilder.buildFullName(node, parents);
        }
@@ -119,10 +147,12 @@ public class TreeRebuilder<T extends Treeable<T, D, I>,
     protected void writeNode(int nodeId, String fullName, int nodeNumber, int highestChildNodeNumber) throws Exception
     {
     	updateNodeQuery.setParameter("keyArg", nodeId);
-    	if (doFullNames) {
+    	if (doFullNames) 
+    	{
     		updateNodeQuery.setParameter("fnArg", fullName);
     	}
-    	if (doNodeNumbers) {
+    	if (doNodeNumbers) 
+    	{
             updateNodeQuery.setParameter("nnArg", nodeNumber);
             updateNodeQuery.setParameter("hcnArg", highestChildNodeNumber);    		
     	}
@@ -135,13 +165,16 @@ public class TreeRebuilder<T extends Treeable<T, D, I>,
     protected void buildUpdateNodeQuery()
 	{
 		String updateSQL = "update " + getNodeTblName() + " set ";
-		if (doNodeNumbers) {
+		if (doNodeNumbers) 
+		{
 			updateSQL += "NodeNumber=:nnArg, HighestChildNodeNumber=:hcnArg";
-			if (doFullNames) {
+			if (doFullNames) 
+			{
 				updateSQL += ", ";
 			}
 		}
-		if (doFullNames) {
+		if (doFullNames) 
+		{
 			updateSQL += "FullName=:fnArg";
 		}
 		updateSQL += " where " + getNodeKeyFldName() + "=:keyArg";
