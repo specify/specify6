@@ -236,11 +236,10 @@ public class SimpleGlassPane extends ProgressGlassPane implements AWTEventListen
     protected void checkMouseEvent(MouseEvent e)
     {
         Rectangle r = getInternalBounds();
-        Point p = e.getPoint();
+        Point     p = e.getPoint();
         
         if (r.contains(p))
         {
-            //System.out.println("consumed");
             e.consume();
         }
     }
@@ -266,6 +265,7 @@ public class SimpleGlassPane extends ProgressGlassPane implements AWTEventListen
     public void setFillColor(Color fillColor)
     {
         this.fillColor = fillColor;
+        setBackground(fillColor);
     }
 
     /**

@@ -1,0 +1,19 @@
+<info primitiveTypes="element">
+  <element name="item">
+  
+    <attribute name="webLinkName" property="webLinkName"/>
+    <attribute name="isRequired" property="isRequired"/>
+    
+    <attribute name="name" property="name"/>
+    <attribute name="type" property="type"/>
+    
+    <element name="names">
+      <element name="str" property="names"/>
+    </element>
+    
+    <element name="descs">
+      <element name="str" property="descs"/>
+    </element>
+    
+  </element>
+</info>

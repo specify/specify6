@@ -165,7 +165,7 @@ public class DisciplineBasedContainer extends SpLocaleContainer implements Clone
         DisciplineBasedContainer dbc = new DisciplineBasedContainer();
         dbc.initialize();
         dbc.schemaType     = schemaType;
-        dbc.discipline = discipline;
+        dbc.discipline     = discipline;
         dbc.name           = name;
         dbc.type           = type;
         

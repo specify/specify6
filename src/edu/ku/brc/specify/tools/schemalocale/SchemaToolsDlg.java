@@ -23,12 +23,19 @@ import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.FileWriter;
+import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -37,19 +44,29 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
+import org.apache.commons.betwixt.XMLIntrospector;
+import org.apache.commons.betwixt.io.BeanWriter;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.dnd.SimpleGlassPane;
 
 /**
  * @author rod
@@ -161,7 +178,6 @@ public class SchemaToolsDlg extends CustomDialog
 
             public void actionPerformed(ActionEvent arg0)
             {
-                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), getResourceString("SL_NOT_IMPLEMENTED"));
                 exportSchemaLocales();
             }
         });
@@ -254,8 +270,111 @@ public class SchemaToolsDlg extends CustomDialog
     /**
      * 
      */
+    @SuppressWarnings("unchecked")
     protected void exportSchemaLocales()
     {
+        FileDialog dlg = new FileDialog(((Frame)UIRegistry.getTopWindow()), getResourceString("Save"), FileDialog.SAVE);
+        dlg.setVisible(true);
         
+        String fileName = dlg.getFile();
+        if (fileName != null)
+        {
+            final File    outFile = new File(dlg.getDirectory() + File.separator + fileName);
+            //final File    outFile = new File("xxx.xml");
+        
+            final SimpleGlassPane glassPane = new SimpleGlassPane("Exporting Schema...", 18);
+            glassPane.setBarHeight(12);
+            glassPane.setFillColor(new Color(0, 0, 0, 85));
+            
+            setGlassPane(glassPane);
+            glassPane.setVisible(true);
+            
+            SwingWorker<Integer, Integer> backupWorker = new SwingWorker<Integer, Integer>()
+            {
+                @Override
+                protected Integer doInBackground() throws Exception
+                {
+                    
+                    DataProviderSessionIFace  session    = null;
+                    try
+                    {
+                        session = DataProviderFactory.getInstance().createSession();
+                        
+                        String sql = "FROM SpLocaleContainer WHERE disciplineId = "+ AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
+                        List<SpLocaleContainer> spContainers = (List<SpLocaleContainer>)session.getDataList(sql);
+
+                        try
+                        {
+                            FileWriter fw   = new FileWriter(outFile);
+
+                            //fw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<vector>\n");
+                            fw.write("<vector>\n");
+
+                            BeanWriter      beanWriter = new BeanWriter(fw);
+                            XMLIntrospector introspector = beanWriter.getXMLIntrospector();
+                            introspector.getConfiguration().setWrapCollectionsInElement(true);
+                            beanWriter.getBindingConfiguration().setMapIDs(false);
+                            beanWriter.setWriteEmptyElements(false);
+
+                            beanWriter.enablePrettyPrint();
+                            
+                            double step  = 100.0 / (double)spContainers.size();
+                            double total = 0.0;
+                            for (SpLocaleContainer container : spContainers)
+                            {
+                                // force Load of lazy collections
+                                container.getDescs().size();
+                                container.getNames().size();
+                                beanWriter.write(container);
+                                
+                                total += step;
+                                firePropertyChange("progress", 0, (int)total);
+                            }
+                            
+                            fw.write("</vector>\n");
+                            fw.close();
+
+                        } catch(Exception ex)
+                        {
+                            ex.printStackTrace();
+                        }
+                        
+                    } catch (Exception e)
+                    {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerDlg.class, e);
+                        e.printStackTrace();
+                        
+                    } finally
+                    {
+                        if (session != null)
+                        {
+                            session.close();
+                        }
+                    }
+
+                    return null;
+                }
+
+                @Override
+                protected void done()
+                {
+                    super.done();
+                    
+                    glassPane.setVisible(false);
+                }
+            };
+            
+            backupWorker.addPropertyChangeListener(
+                    new PropertyChangeListener() {
+                        public  void propertyChange(final PropertyChangeEvent evt) {
+                            if (evt.getPropertyName().equals("progress")) 
+                            {
+                                glassPane.setProgress((Integer)evt.getNewValue());
+                            }
+                        }
+                    });
+            backupWorker.execute();
+        }
     }
 }
