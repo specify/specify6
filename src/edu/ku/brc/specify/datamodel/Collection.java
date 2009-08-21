@@ -744,6 +744,8 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         {
             ans.getTableNumber();
             ans.getCollections();
+            ans.getDivisions();
+            ans.getDisciplines();
         }
     }
 

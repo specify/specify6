@@ -27,6 +27,7 @@ import org.hibernate.Session;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.AutoNumberGeneric;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.util.Pair;
@@ -62,10 +63,11 @@ public class CollectionAutoNumberAlphaNum extends AutoNumberGeneric
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.db.AutoNumberGeneric#getHighestObject(org.hibernate.Session, java.lang.String, edu.ku.brc.util.Pair, edu.ku.brc.util.Pair)
+     * @see edu.ku.brc.af.core.db.AutoNumberGeneric#getHighestObject(edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace, org.hibernate.Session, java.lang.String, edu.ku.brc.util.Pair, edu.ku.brc.util.Pair)
      */
     @Override
-    protected Object getHighestObject(final Session session, 
+    protected Object getHighestObject(final UIFieldFormatterIFace formatter, 
+                                      final Session session, 
                                       final String  value,
                                       final Pair<Integer, Integer> yearPos, 
                                       final Pair<Integer, Integer> pos) throws Exception

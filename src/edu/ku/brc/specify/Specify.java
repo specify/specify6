@@ -168,6 +168,7 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.ConversionLogger;
 import edu.ku.brc.specify.conversion.ConversionLogger.TableWriter;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
@@ -194,6 +195,7 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
+import edu.ku.brc.specify.dbsupport.BuildFromGeonames;
 import edu.ku.brc.specify.extras.ViewToSchemaReview;
 import edu.ku.brc.specify.prefs.SystemPrefs;
 import edu.ku.brc.specify.rstools.SpAnalysis;
@@ -1800,13 +1802,19 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     public void doAbout()
     {
-        if (false)
+        /*if (true)
         {
-            GPXPanel.getDlgInstance().setVisible(true);
-            return;
+            AppContextMgr acm    = AppContextMgr.getInstance();
+            Discipline    disp   = acm.getClassObject(Discipline.class);
+            Agent         agent  = acm.getClassObject(Agent.class);
+            
+            Connection conn = DBConnection.getInstance().getConnection();
+            
+            BuildFromGeonames bldGeoNames = new BuildFromGeonames(disp.getGeographyTreeDef(), "2009-08-17", agent, conn, null);
+            bldGeoNames.build();
         }
         
-        /*if (false)
+        if (false)
         {
             NotificationConfigPanel ncp = new NotificationConfigPanel();
             CustomDialog dlg = new CustomDialog(null, "Notification Configuration", true, ncp);

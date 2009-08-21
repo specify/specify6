@@ -394,7 +394,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
         }
         
         if (dataClassName.equals("edu.ku.brc.specify.datamodel.Accession") &&  //$NON-NLS-1$
-                fieldName.equals("accessionNumber")) //$NON-NLS-1$
+            fieldName.equals("accessionNumber")) //$NON-NLS-1$
         {
             return new AccessionAutoNumberAlphaNum();
         }

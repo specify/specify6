@@ -21,14 +21,20 @@ package edu.ku.brc.specify.dbsupport;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
+import org.jfree.util.Log;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.AutoNumberGeneric;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -41,6 +47,9 @@ import edu.ku.brc.util.Pair;
  */
 public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
 {
+    
+    private static final Logger  log = Logger.getLogger(AccessionAutoNumberAlphaNum.class);
+    
     /**
      * Default Constructor. 
      */
@@ -62,15 +71,42 @@ public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.db.AutoNumberGeneric#getHighestObject(org.hibernate.Session, java.lang.String, edu.ku.brc.util.Pair, edu.ku.brc.util.Pair)
+     * @see edu.ku.brc.af.core.db.AutoNumberGeneric#getHighestObject(edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace, org.hibernate.Session, java.lang.String, edu.ku.brc.util.Pair, edu.ku.brc.util.Pair)
      */
     @Override
-    protected Object getHighestObject(final Session session, 
+    protected Object getHighestObject(final UIFieldFormatterIFace formatter, 
+                                      final Session session, 
                                       final String  value,
                                       final Pair<Integer, Integer> yearPos, 
                                       final Pair<Integer, Integer> pos) throws Exception
     {
-        Division currDivision = AppContextMgr.getInstance().getClassObject(Division.class);
+        Division    currDivision = AppContextMgr.getInstance().getClassObject(Division.class);
+        //Institution institution  = AppContextMgr.getInstance().getClassObject(Institution.class);
+        
+        //boolean doingGlobalAccessions = institution.getIsAccessionsGlobal();
+        
+        String ansSQL = "SELECT ans.AutonumberingSchemeID, ans.FormatName, ans.IsNumericOnly, ans.SchemeName, dv.Name, dv.DivisionID FROM autonumberingscheme ans Inner Join autonumsch_div ad ON ans.AutoNumberingSchemeID = ad.AutoNumberingSchemeID Inner Join division dv ON ad.DivisionID = dv.UserGroupScopeId WHERE dv.UserGroupScopeId = %d AND FormatName = '%s'";
+        String sql = String.format(ansSQL, currDivision.getId(), formatter.getName());
+        log.debug(sql);
+        Vector<Object[]> rows = BasicSQLUtils.query(sql);
+        Integer ansID = null;
+        if (rows.size() == 1)
+        {
+            ansID = (Integer)rows.get(0)[0];
+        } else
+        {
+            log.debug("Too many Formatters named ["+formatter.getName()+"]");
+        }
+        
+        //String sql          = "SELECT autonumberingscheme.FormatName, autonumberingscheme.SchemeName, autonumberingscheme.IsNumericOnly, collection.CollectionName, discipline.Name, division.Name, accession.AccessionNumber FROM autonumberingscheme Inner Join autonumsch_coll ON autonumberingscheme.AutoNumberingSchemeID = autonumsch_coll.AutoNumberingSchemeID Inner Join collection ON autonumsch_coll.CollectionID = collection.UserGroupScopeId Inner Join discipline ON collection.DisciplineID = discipline.UserGroupScopeId Inner Join division ON discipline.DivisionID = division.UserGroupScopeId Inner Join accession ON division.UserGroupScopeId = accession.DivisionID ";
+        //String ansToDivLong = "SELECT ans.FormatName, ans.SchemeName, ans.IsNumericOnly, c.CollectionName, ds.Name, dv.Name FROM autonumberingscheme ans Inner Join autonumsch_coll ac ON ans.AutoNumberingSchemeID = ac.AutoNumberingSchemeID Inner Join collection c ON ac.CollectionID = c.UserGroupScopeId Inner Join discipline ds ON c.DisciplineID = ds.UserGroupScopeId Inner Join division dv ON ds.DivisionID = dv.UserGroupScopeId ";
+        String ansToDivSQL  = "SELECT dv.UserGroupScopeId DivID FROM autonumberingscheme ans Inner Join autonumsch_div ad ON ans.AutoNumberingSchemeID = ad.AutoNumberingSchemeID Inner Join division dv ON ad.DivisionID = dv.UserGroupScopeId WHERE ans.AutoNumberingSchemeID = %d";
+        
+        Vector<Integer> divIds = new Vector<Integer>();
+        for (Object[] row : BasicSQLUtils.query(String.format(ansToDivSQL, ansID)))
+        {
+            divIds.add((Integer)row[0]);
+        }
         
         Integer yearVal = null;
         if (yearPos != null && StringUtils.isNotEmpty(value) && value.length() >= yearPos.second)
@@ -80,8 +116,15 @@ public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
 
         StringBuilder sb = new StringBuilder(" From Accession c Join c.division dv Join dv.numberingSchemes ans WHERE ans.id = ");
         sb.append(currDivision.getNumberingSchemesByType(Accession.getClassTableId()).getAutoNumberingSchemeId());
-        sb.append(" AND dv.id = ");
-        sb.append(currDivision.getId());
+        sb.append(" AND dv.id in (");
+        //sb.append(currDivision.getId());
+        for (Integer dvId : divIds)
+        {
+            sb.append(dvId);
+            sb.append(',');
+        }
+        sb.setLength(sb.length()-1);
+        sb.append(')');
         
         if (yearVal != null)
         {
@@ -109,6 +152,7 @@ public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
             }
             
             System.out.println("AccessionAutoNumberAlphaNum - "+sb.toString());
+            
             List<?> list = session.createQuery(sb.toString()).setMaxResults(1).list();
             if (list.size() == 1)
             {

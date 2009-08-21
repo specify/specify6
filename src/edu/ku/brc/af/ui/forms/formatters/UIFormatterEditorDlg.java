@@ -70,6 +70,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.db.AutoNumberGeneric;
+import edu.ku.brc.af.core.db.AutoNumberIFace;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField.FieldType;
 import edu.ku.brc.ui.CustomDialog;
@@ -807,7 +808,8 @@ public class UIFormatterEditorDlg extends CustomDialog
         {
             if (selectedFormat.getAutoNumber() == null)
             {
-                selectedFormat.setAutoNumber(new AutoNumberGeneric());
+                AutoNumberIFace autoNum = UIFieldFormatterMgr.createAutoNumber(AutoNumberGeneric.class.getName(), fieldInfo.getTableInfo().getClassName(), fieldInfo.getName());
+                selectedFormat.setAutoNumber(autoNum);
             }
         } else
         {

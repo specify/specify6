@@ -55,6 +55,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.db.AutoNumberGeneric;
+import edu.ku.brc.af.core.db.AutoNumberIFace;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.ui.CustomDialog;
 
@@ -333,9 +334,9 @@ public class UIFormatterListEdtDlg extends CustomDialog
                 
                 if (selectedUIF.isIncrementer() && selectedUIF.getAutoNumber() == null)
                 {
-                    selectedUIF.setAutoNumber(new AutoNumberGeneric(
-                            fieldInfo.getTableInfo().getClassName(),
-                            fieldInfo.getName(), false));
+                    
+                    AutoNumberIFace autoNum = UIFieldFormatterMgr.createAutoNumber(AutoNumberGeneric.class.getName(), fieldInfo.getTableInfo().getClassName(), fieldInfo.getName());
+                    selectedUIF.setAutoNumber(autoNum);
                 }
                 
                 DefaultListModel model = (DefaultListModel) formatList.getModel();

@@ -91,7 +91,7 @@ public class DatabaseConfiguration extends Configuration
         {
             conn = DatabaseService.getAdminLevelConnection(urlArg, driverArg);//.getInstance().getConnection();;
             String sql = "DELETE FROM sp_app_configuration " //$NON-NLS-1$
-                    + "WHERE appName=\""+appName+"\" AND loginModuleClass=\""+loginModuleName+"\""; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    + "WHERE appName='"+appName+"' AND loginModuleClass='"+loginModuleName+"'"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             log.debug("executing SQL: " + sql); //$NON-NLS-1$
             
             //            conn = DatabaseService.getAdminLevelConnection(url, driver);//.getInstance().getConnection();;
@@ -132,7 +132,7 @@ public class DatabaseConfiguration extends Configuration
         try
         {
             conn = DatabaseService.getAdminLevelConnection(urlArg, driverArg);//.getInstance().getConnection();;
-            String sql = "INSERT INTO sp_app_configuration VALUES (\""+appName+"\", \""+entry.getLoginModuleName()+"\", \""+controlFlagString(entry.getControlFlag())+"\")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            String sql = "INSERT INTO sp_app_configuration VALUES ('"+appName+"', '"+entry.getLoginModuleName()+"', '"+controlFlagString(entry.getControlFlag())+"')"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
             log.debug("executing SQL: " + sql); //$NON-NLS-1$
             //String sql = "INSERT INTO app_configuration VALUES (?, ?, ?)";
             
@@ -207,7 +207,7 @@ public class DatabaseConfiguration extends Configuration
         {
             conn = DatabaseService.getAdminLevelConnection(url, driver);//.getInstance().getConnection();;
             String sql = "SELECT loginModuleClass, controlFlag " //$NON-NLS-1$
-                    + "FROM app_configuration WHERE appName=\""+applicationName+"\""; //$NON-NLS-1$ //$NON-NLS-2$
+                    + "FROM app_configuration WHERE appName='"+applicationName+"'"; //$NON-NLS-1$ //$NON-NLS-2$
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, applicationName);
             ResultSet rs = pstmt.executeQuery();

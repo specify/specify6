@@ -66,7 +66,9 @@ public class LithoStratTreeTask extends BaseTreeTask<LithoStrat,LithoStratTreeDe
     @Override
     protected LithoStratTreeDef getCurrentTreeDef()
     {
-        return AppContextMgr.getInstance().getClassObject(Discipline.class).getLithoStratTreeDef();
+        Discipline disp = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        
+        return disp != null ? disp.getLithoStratTreeDef() : null;
     }
     
 

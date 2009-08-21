@@ -120,7 +120,8 @@ public class AutoNumberGeneric implements AutoNumberIFace
      * @return
      * @throws Exception
      */
-    protected Object getHighestObject(final Session session, 
+    protected Object getHighestObject(final UIFieldFormatterIFace formatter, 
+                                      final Session session, 
                                       final String  value,
                                       final Pair<Integer, Integer> yearPos, 
                                       final Pair<Integer, Integer> pos) throws Exception
@@ -396,26 +397,23 @@ public class AutoNumberGeneric implements AutoNumberIFace
                 UIFieldFormatterField  yearField = formatter.getYear();
                 Pair<Integer, Integer> yrPos     = yearField != null ? formatter.getYearPosition() : null;
                 
-                Object dataObj = getHighestObject(session, formValue, yrPos, formatter.getIncPosition());
-                //if (dataObj != null)
+                Object dataObj      = getHighestObject(formatter, session, formValue, yrPos, formatter.getIncPosition());
+                String highestValue = dataObj != null ? (String)getter.getFieldValue(dataObj, fieldName) : null;
+                
+                Pair<Integer, Integer> yearAndIncVal = getYearAndIncVal(formatter, highestValue, formValue);
+                
+                // Should NEVER be null
+                if (yearAndIncVal != null)
                 {
-                    String highestValue  = dataObj != null ? (String)getter.getFieldValue(dataObj, fieldName) : null;
-                    
-                    Pair<Integer, Integer> yearAndIncVal = getYearAndIncVal(formatter, highestValue, formValue);
-                    
-                    // Should NEVER be null
-                    if (yearAndIncVal != null)
+                    if (yearAndIncVal.second != null)
                     {
-                        if (yearAndIncVal.second != null)
-                        {
-                            return buildNewNumber(formatter, formValue, yearAndIncVal);
-                        }
-                        errorMsg = getResourceString("AUTONUM_BAD_DATA_ERR");
-                        
-                    } else
-                    {
-                        errorMsg = "yearAndIncVal was NULL and should NEVER be!"; //$NON-NLS-1$
+                        return buildNewNumber(formatter, formValue, yearAndIncVal);
                     }
+                    errorMsg = getResourceString("AUTONUM_BAD_DATA_ERR");
+                    
+                } else
+                {
+                    errorMsg = "yearAndIncVal was NULL and should NEVER be!"; //$NON-NLS-1$
                 }
                 return null;
                 
