@@ -137,6 +137,7 @@ import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.db.BackupServiceFactory;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -936,8 +937,9 @@ public class BuildSampleDatabase
             }
         }
         
-        convertGeographyFromXLS(discipline.getGeographyTreeDef());
-        //createGeographyFromGeonames(discipline, userAgent, itUsername, itPassword);
+        //convertGeographyFromXLS(discipline.getGeographyTreeDef());
+        @SuppressWarnings("unused")
+        Geography earth = createGeographyFromGeonames(discipline, userAgent, itUsername, itPassword);
         
         frame.setProcess(++createStep);
         frame.incOverall();
@@ -3636,13 +3638,71 @@ public class BuildSampleDatabase
                                                  final String     itUsername,
                                                  final String     itPassword)
     {
-        
-        BuildFromGeonames bldGeoNames = new BuildFromGeonames(discipline.getGeographyTreeDef(), "2009-08-17", agent, itUsername, itPassword, frame);
-        Geography earth = bldGeoNames.buildEarth(session);
-        
-        if (bldGeoNames.loadGeoNamesDB())
+        Geography earth = null;
+        try
         {
-            bldGeoNames.build(earth.getId());
+            Connection currConn = DBConnection.getInstance().getConnection();
+            
+            int delCnt = BasicSQLUtils.update(currConn, "DELETE FROM geography WHERE GeographyID > 1 AND RankId = 400");
+            log.debug("Deleted "+delCnt+" geography records.");
+            delCnt = BasicSQLUtils.update(currConn, "DELETE FROM geography WHERE GeographyID > 1 AND RankId = 300");
+            log.debug("Deleted "+delCnt+" geography records.");
+            delCnt = BasicSQLUtils.update(currConn, "DELETE FROM geography WHERE GeographyID > 1 AND RankId = 200");
+            log.debug("Deleted "+delCnt+" geography records.");
+            delCnt = BasicSQLUtils.update(currConn, "DELETE FROM geography WHERE GeographyID > 1 AND RankId = 100");
+            log.debug("Deleted "+delCnt+" geography records.");
+            delCnt = BasicSQLUtils.update(currConn, "DELETE FROM geography WHERE RankId = 0");
+            log.debug("Deleted "+delCnt+" geography records.");
+            
+            BuildFromGeonames bldGeoNames = new BuildFromGeonames(discipline.getGeographyTreeDef(), dateFormatter.format(now), agent, itUsername, itPassword, frame);
+            
+            try
+            {
+                startTx();
+                earth = bldGeoNames.buildEarth(session);
+                commitTx();
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                rollbackTx();
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BackupServiceFactory.class, ex);
+
+                return null;
+            }
+            
+            if (bldGeoNames.loadGeoNamesDB())
+            {
+                bldGeoNames.build(earth.getId());
+            }
+            
+            session.refresh(earth);
+            
+            GeographyTreeDef geoTreeDef = discipline.getGeographyTreeDef();
+            session.refresh(earth);
+            
+            frame.setDesc("Configuring Geography Tree...");
+            if (true)
+            {
+                NodeNumberer<Geography,GeographyTreeDef,GeographyTreeDefItem> nodeNumberer = new NodeNumberer<Geography,GeographyTreeDef,GeographyTreeDefItem>(geoTreeDef);
+                nodeNumberer.doInBackground();
+                
+            } else
+            {
+                startTx();
+                
+                TreeHelper.fixFullnameForNodeAndDescendants(earth);
+                earth.setNodeNumber(1);
+                fixNodeNumbersFromRoot(earth);
+                commitTx();
+            }
+            
+            
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
         }
         
         return earth;
@@ -8410,6 +8470,9 @@ public class BuildSampleDatabase
             }
         });
         
+        Connection conn = null;
+        Statement  stmt = null;
+        
         TaxonTreeDefItem rootTreeDefItem = rankedItems.get(0);
         Set<Taxon>       rootKids        = rootTreeDefItem.getTreeEntries();
         Taxon            root            = rootKids.iterator().next();
@@ -8454,9 +8517,9 @@ public class BuildSampleDatabase
                 });
             }
             
-            Connection conn = DBConnection.getInstance().createConnection();
+            conn = DBConnection.getInstance().createConnection();
             //conn.setAutoCommit(false);
-            Statement stmt = conn.createStatement();
+            stmt = conn.createStatement();
             
             rows = sheet.rowIterator();
             while (rows.hasNext())
@@ -8548,7 +8611,7 @@ public class BuildSampleDatabase
                 counter++;
             }
             
-            stmt.executeUpdate("update taxon set isaccepted = true where isaccepted is null and acceptedid is null");
+            stmt.executeUpdate("UPDATE taxon SET IsAccepted = true WHERE IsAccepted IS NULL and AcceptedID IS NULL");
             
             conn.close();
             
@@ -8561,6 +8624,25 @@ public class BuildSampleDatabase
         } catch (Exception ex)
         {
             ex.printStackTrace();
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BackupServiceFactory.class, ex);
+            
+        } finally
+        {
+            try
+            {
+                if (stmt != null)
+                {
+                    stmt.close();
+                }
+                if (conn != null)
+                {
+                    conn.close();
+                }
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
         }
 
         if (frame != null)

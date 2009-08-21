@@ -590,11 +590,10 @@ public class MySQLBackupService extends BackupServiceFactory
                 FileInputStream input = null;
                 try
                 {
-                    String userName  = DBConnection.getInstance().getUserName();
-                    String password  = DBConnection.getInstance().getPassword();
-                    userName = "root";
-                    password = userName;
-                	String   cmdLine = mysqlLoc+" -u "+userName+" --password="+password+" " + databaseName; // XXX RELEASE
+                    String userName  = itUsername != null ? itUsername : DBConnection.getInstance().getUserName();
+                    String password  = itPassword != null ? itPassword : DBConnection.getInstance().getPassword();
+                    
+                	String   cmdLine = mysqlLoc+" -u "+userName+" --password="+password+" " + databaseName;
                 	String[] args    = StringUtils.split(cmdLine, ' ');
                     Process  process = Runtime.getRuntime().exec(args); 
                     

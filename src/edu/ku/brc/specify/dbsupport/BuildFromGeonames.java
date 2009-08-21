@@ -132,8 +132,11 @@ public class BuildFromGeonames
             earth.setHighestChildNodeNumber(1);
             earth.setRankId(0);
             earth.setDefinition(geoDef);
+            
             GeographyTreeDefItem defItem = geoDef.getDefItemByRank(0);
+            
             earth.setDefinitionItem(defItem);
+            defItem.getTreeEntries().add(earth);
             
             session.saveOrUpdate(earth);
             
@@ -204,14 +207,17 @@ public class BuildFromGeonames
             }
             rs.close();
             
-            int delCnt = BasicSQLUtils.update(currConn, "DELETE FROM geography WHERE GeographyID > 1 AND RankId = 400");
-            log.debug("Deleted "+delCnt+" geography records.");
-            delCnt = BasicSQLUtils.update(currConn, "DELETE FROM geography WHERE GeographyID > 1 AND RankId = 300");
-            log.debug("Deleted "+delCnt+" geography records.");
-            delCnt = BasicSQLUtils.update(currConn, "DELETE FROM geography WHERE GeographyID > 1 AND RankId = 200");
-            log.debug("Deleted "+delCnt+" geography records.");
-            delCnt = BasicSQLUtils.update(currConn, "DELETE FROM geography WHERE GeographyID > 1 AND RankId = 100");
-            log.debug("Deleted "+delCnt+" geography records.");
+            /*if (false) // For testing
+            {
+                int delCnt = BasicSQLUtils.update(currConn, "DELETE FROM geography WHERE GeographyID > 1 AND RankId = 400");
+                log.debug("Deleted "+delCnt+" geography records.");
+                delCnt = BasicSQLUtils.update(currConn, "DELETE FROM geography WHERE GeographyID > 1 AND RankId = 300");
+                log.debug("Deleted "+delCnt+" geography records.");
+                delCnt = BasicSQLUtils.update(currConn, "DELETE FROM geography WHERE GeographyID > 1 AND RankId = 200");
+                log.debug("Deleted "+delCnt+" geography records.");
+                delCnt = BasicSQLUtils.update(currConn, "DELETE FROM geography WHERE GeographyID > 1 AND RankId = 100");
+                log.debug("Deleted "+delCnt+" geography records.");
+            }*/
             
             currConn.setAutoCommit(false);
             
@@ -271,7 +277,7 @@ public class BuildFromGeonames
                     Statement tmpStmt = connection.createStatement();
                     
                     String str = "SELECT name, iso_alpha2, continent FROM countryinfo  WHERE iso_alpha2 = '"+code+"'";
-                    log.debug(str);
+                    //log.debug(str);
                     ResultSet tmpRS = tmpStmt.executeQuery(str);
                     while (tmpRS.next())
                     {
@@ -632,7 +638,11 @@ public class BuildFromGeonames
             final File unzippedFile = unzipToFile(file);
             if (unzippedFile != null && unzippedFile.exists())
             {
-                return BackupServiceFactory.getInstance().doRestoreInBackground("geonames", unzippedFile.getAbsolutePath(), null, null, null, true); // does it asynchronously
+                BackupServiceFactory bsf = BackupServiceFactory.getInstance();
+                bsf.setUsernamePassword(itUsername, itPassword);
+                boolean status = bsf.doRestoreInBackground("geonames", unzippedFile.getAbsolutePath(), null, null, null, true); // does it asynchronously
+                bsf.setUsernamePassword(null, null);
+                return status;
             }
         }
         return false;

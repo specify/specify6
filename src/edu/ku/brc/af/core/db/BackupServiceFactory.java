@@ -52,6 +52,10 @@ public abstract class BackupServiceFactory
     
     protected static BackupServiceFactory instance = null;
     
+    protected String itUsername = null;
+    protected String itPassword = null;
+    
+    
     /**
      * Protected Constructor
      */
@@ -112,6 +116,17 @@ public abstract class BackupServiceFactory
      * 
      */
     public abstract void doRestore();
+    
+    /**
+     * Sets the IT Username and Password that should be used instead of the one username and password in the current connection.
+     * @param itUsr the username 
+     * @param itPwd the password
+     */
+    public void setUsernamePassword(final String itUsr, final String itPwd)
+    {
+        itUsername = itUsr;
+        itPassword = itPwd;
+    }
     
     /**
      * @param databaseName
