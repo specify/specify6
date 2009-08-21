@@ -121,7 +121,7 @@ public class TreeMerger<N extends Treeable<N,D,I>,
 	{
 		Boolean isAccepted = (Boolean )child[2];
 		String sql = "select " + nodeTable.getIdFieldName() + " from " + nodeTable.getName() + " where "
-			+ getNameFld() + " = '" + BasicSQLUtils.escapeStringLiterals((String )child[1]) + "' and "
+			+ getNameFld() + " = " + BasicSQLUtils.getEscapedSQLStrExpr((String )child[1]) + " and "
 			+ (!isAccepted ? "not " : "") + getAcceptedFld() + " and " + getParentFld() +  " = "
 			+ parentId;
 		Vector<Object[]> matches = BasicSQLUtils.query(connection, sql);

@@ -878,8 +878,43 @@ public class BasicSQLUtils
         //return getStrValue(obj, null);
     }
     
-    // MEG NEEDS TO FIX THIS!!!!!!! IT IS NOT CORRECT, BUT I WANTED TO MOVE ON
+    /**
+     * @param str
+     * @return escaped and delimited string for use in SQL, 
+     * using appropriate delimiter for DestinationServerType
+     */
+    public static String getEscapedSQLStrExpr(String str)
+    {
+    	String delimiter = "'";
+    	if (myDestinationServerType == SERVERTYPE.MS_SQLServer
+    			|| myDestinationServerType == SERVERTYPE.MySQL)
+    	{
+    		//possibly for other dbms some other encloser would be required
+    		log.info("setting string delimiter to \"'\" for ServerType " + myDestinationServerType);
+    	}
+    	return delimiter + escapeStringLiterals(str, delimiter) + delimiter;
+	}
+    
+    /**
+     * @param str
+     * @return escaped version of str 
+     * 
+     * Delimiter is assumed to be "'"
+     */
     public static String escapeStringLiterals(String str)
+    {
+    	//" can't be used to enclose strings in where clauses for SQLServer and postgres
+    	//' works for MySQL, SQLServer, and postgres
+    	return escapeStringLiterals(str, "'");
+    }
+    
+    // MEG NEEDS TO FIX THIS!!!!!!! IT IS NOT CORRECT, BUT I WANTED TO MOVE ON
+    /**
+     * @param str string to escape
+     * @param enclosingChar character used to delimit the string
+     * @return string with bad characters escaped 
+     */
+    public static String escapeStringLiterals(String str, String enclosingChar)
     {
 //        if (s.indexOf("\r\n")>= 0)
 //                {
@@ -918,15 +953,15 @@ public class BasicSQLUtils
             // s = StringEscapeUtils.escapeJava(s);
            // log.debug("backslash:" + s);
         }
-        if (s.indexOf("\"") >= 0)
+        if (enclosingChar.equals("\"") && s.indexOf("\"") >= 0)
         {
             s = s.replaceAll("\"", "\\\"\"");
             // s = s.replaceAll("\"","\\\"");
             //log.debug("escaped double quotes:" + s);
         }
-        if ((s.indexOf("\'") >= 0))
+        if (enclosingChar.equals("\'") && s.indexOf("\'") >= 0)
         {
-            if (myDestinationServerType == SERVERTYPE.MS_SQLServer)
+            //if (myDestinationServerType == SERVERTYPE.MS_SQLServer)
             {
                 s = s.replaceAll("\'", "\'\'");
             }
@@ -959,9 +994,9 @@ public class BasicSQLUtils
             try
             {
                 str =  clob.getSubString(1, (int) clob.length());
-                str = escapeStringLiterals(str);
-                return '"'+str+'"';
-                
+//                str = escapeStringLiterals(str);
+//                return '"'+str+'"';
+                return getEscapedSQLStrExpr(str);
             } catch (SQLException ex)
             {
                 edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
@@ -977,11 +1012,12 @@ public class BasicSQLUtils
         else if (obj instanceof String)
         {
             String str = (String)obj;
-            if (str.indexOf('"') > -1 || str.indexOf('\\') > -1 || str.indexOf('\'') > -1)
-            {
-                str = escapeStringLiterals(str);
-            }
-            return '"'+str+'"';
+//            if (str.indexOf('"') > -1 || str.indexOf('\\') > -1 || str.indexOf('\'') > -1)
+//            {
+//                str = escapeStringLiterals(str);
+//            }
+//            return '"'+str+'"';
+            	return getEscapedSQLStrExpr(str);
 //            String str = (String)obj;
 //            if (str.indexOf('"') > -1 || str.indexOf('\\') > -1)
 //            {
