@@ -22,8 +22,8 @@ package edu.ku.brc.specify.dbsupport;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -173,7 +173,6 @@ public class BuildFromGeonames
             DBConnection currDBConn = DBConnection.getInstance();
             
             DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver(currDBConn.getDriverName());
-            //currDBConn.setServerName("localhost");
             String             connStr    = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, currDBConn.getServerName(), dbName, itUsername, itPassword, driverInfo.getName());
             
             geoDBConn  = DBConnection.createInstance(currDBConn.getDriver(), currDBConn.getDialect(), "geonames", connStr, itUsername, itPassword);
@@ -223,8 +222,9 @@ public class BuildFromGeonames
             
             if (frame != null)
             {
-                frame.setDesc("Creating Continents...");
+                frame.setDesc("Creating Continents..."); // I18N
             }
+            
             int cnt = 0;
             // Continent
             String sqlStr = "SELECT continentCodes.name, geoname.latitude, geoname.longitude, continentCodes.code FROM geoname Inner Join continentCodes ON geoname.name = continentCodes.name";
@@ -405,6 +405,9 @@ public class BuildFromGeonames
         } catch (Exception ex)
         {
             ex.printStackTrace();
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
+
             try
             {
                 currConn.rollback();
@@ -583,8 +586,9 @@ public class BuildFromGeonames
     }
     
     /**
-     * @param zipFile
-     * @return
+     * Unzips the geonames backup file.
+     * @param zipFile the backup file
+     * @return the file of the new uncompressed back up file.
      */
     private File unzipToFile(final File zipFile)
     {
@@ -616,6 +620,8 @@ public class BuildFromGeonames
             
         } catch (ZipException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
             return null; //I think this means it is not a zip file.
             
         } catch (Exception ex)
@@ -628,7 +634,8 @@ public class BuildFromGeonames
     }
     
     /**
-     * @param pcl
+     * Unzips and loads the SQL backup of the geonames database needed for building the full geography tree.
+     * @return true if build correctly.
      */
     public boolean loadGeoNamesDB()
     {
@@ -640,8 +647,22 @@ public class BuildFromGeonames
             {
                 BackupServiceFactory bsf = BackupServiceFactory.getInstance();
                 bsf.setUsernamePassword(itUsername, itPassword);
+                
                 boolean status = bsf.doRestoreInBackground("geonames", unzippedFile.getAbsolutePath(), null, null, null, true); // does it asynchronously
+                
+                // delete the unzipped file
+                try
+                {
+                    unzippedFile.delete();
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+                
+                // Clear IT Username and Password
                 bsf.setUsernamePassword(null, null);
+                
                 return status;
             }
         }

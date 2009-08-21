@@ -3641,19 +3641,6 @@ public class BuildSampleDatabase
         Geography earth = null;
         try
         {
-            Connection currConn = DBConnection.getInstance().getConnection();
-            
-            int delCnt = BasicSQLUtils.update(currConn, "DELETE FROM geography WHERE GeographyID > 1 AND RankId = 400");
-            log.debug("Deleted "+delCnt+" geography records.");
-            delCnt = BasicSQLUtils.update(currConn, "DELETE FROM geography WHERE GeographyID > 1 AND RankId = 300");
-            log.debug("Deleted "+delCnt+" geography records.");
-            delCnt = BasicSQLUtils.update(currConn, "DELETE FROM geography WHERE GeographyID > 1 AND RankId = 200");
-            log.debug("Deleted "+delCnt+" geography records.");
-            delCnt = BasicSQLUtils.update(currConn, "DELETE FROM geography WHERE GeographyID > 1 AND RankId = 100");
-            log.debug("Deleted "+delCnt+" geography records.");
-            delCnt = BasicSQLUtils.update(currConn, "DELETE FROM geography WHERE RankId = 0");
-            log.debug("Deleted "+delCnt+" geography records.");
-            
             BuildFromGeonames bldGeoNames = new BuildFromGeonames(discipline.getGeographyTreeDef(), dateFormatter.format(now), agent, itUsername, itPassword, frame);
             
             try
