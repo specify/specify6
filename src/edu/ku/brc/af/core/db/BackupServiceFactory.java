@@ -114,6 +114,21 @@ public abstract class BackupServiceFactory
     public abstract void doRestore();
     
     /**
+     * @param databaseName
+     * @param restoreFilePath
+     * @param restoreMsgKey
+     * @param completionMsgKey
+     * @param pcl
+     * @param doSynchronously
+     */
+    public abstract boolean doRestoreInBackground(String                 databaseName,
+                                                  String                 restoreFilePath,
+                                                  String                 restoreMsgKey,
+                                                  String                 completionMsgKey,
+                                                  PropertyChangeListener pcl,
+                                                  boolean                doSynchronously);
+    
+    /**
      * @param doSendAppExit whether it should send an applications exit command
      * @return true if it is doing a backup
      */

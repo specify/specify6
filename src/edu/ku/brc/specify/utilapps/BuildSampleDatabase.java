@@ -151,6 +151,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
@@ -235,6 +236,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.dbsupport.BuildFromGeonames;
 import edu.ku.brc.specify.dbsupport.HibernateDataProviderSession;
 import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
@@ -530,7 +532,7 @@ public class BuildSampleDatabase
         if (doCreateDiv)
         {
             DisciplineType disciplineType = (DisciplineType)props.get("disciplineType");   
-            createEmptyDivision(institution, disciplineType, specifyAdminUser, props, doCreateDisp, false);
+            return createEmptyDivision(institution, disciplineType, specifyAdminUser, props, doCreateDisp, false) != null;
         }
         return true;
     }
@@ -602,7 +604,11 @@ public class BuildSampleDatabase
         
         if (doCreateDisp)
         {
-            createEmptyDisciplineAndCollection(division, props, disciplineType, userAgent, specifyAdminUser, true, false);
+            Pair<Discipline, Collection> dc = createEmptyDisciplineAndCollection(division, props, disciplineType, userAgent, specifyAdminUser, true, false);
+            if (dc == null)
+            {
+                return null;
+            }
         }
         
         frame.incOverall();
@@ -655,62 +661,65 @@ public class BuildSampleDatabase
                                                       preLoadTaxon, 
                                                       taxonFileName, 
                                                       usingOtherTxnFile != null ? usingOtherTxnFile : false,
-                                                      taxonXML, geoXML);
-        
-        frame.setProcess(0, 17);
-        frame.setProcess(++createStep);
-        frame.setDesc("Loading Schema..."); // I18N
-        
-        boolean isAccGlobal = false;
-        if (props.get("accglobal") == null)
+                                                      taxonXML, geoXML, props);
+        if (discipline != null)
         {
-            Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
-            isAccGlobal = inst != null && inst.getIsAccessionsGlobal();
+            frame.setProcess(0, 17);
+            frame.setProcess(++createStep);
+            frame.setDesc("Loading Schema..."); // I18N
             
-        } else
-        {
-            isAccGlobal = (Boolean)props.get("accglobal");
+            boolean isAccGlobal = false;
+            if (props.get("accglobal") == null)
+            {
+                Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
+                isAccGlobal = inst != null && inst.getIsAccessionsGlobal();
+                
+            } else
+            {
+                isAccGlobal = (Boolean)props.get("accglobal");
+            }
+            
+            // The two AutoNumberingSchemes have been committed
+            Pair<AutoNumberingScheme, AutoNumberingScheme> pair = localizeDisciplineSchema(discipline, props, isAccGlobal);
+            
+            // These create a new session and persist records in the Schema tables (SpLocaleContainerItem)
+            makeFieldVisible(null, discipline);
+            makeFieldVisible(disciplineType.getName(), discipline);
+            
+            frame.setProcess(0, 17);
+            frame.setProcess(++createStep);
+    
+            Collection collection = null;
+            if (doCollection)
+            {
+                // Persists the Collection
+                collection = createEmptyCollection(discipline, 
+                                                   props.getProperty("collPrefix").toString(), 
+                                                   props.getProperty("collName").toString(),
+                                                   userAgent,
+                                                   specifyAdminUser,
+                                                   pair.first,
+                                                   pair.second,
+                                                   disciplineType.isEmbeddedCollecingEvent());
+            }
+            
+            startTx();
+            
+            if (pair.second != null)
+            {
+                division.addReference(pair.second, "numberingSchemes");
+                persist(division);
+            }
+            
+            commitTx();
+            
+            buildDarwinCoreSchema(discipline); // creates own DataProviderSessionIFace
+            
+            log.debug("Out createEmptyDisciplineAndCollection - createStep: "+createStep);
+            
+            return new Pair<Discipline, Collection>(discipline, collection);
         }
-        
-        // The two AutoNumberingSchemes have been committed
-        Pair<AutoNumberingScheme, AutoNumberingScheme> pair = localizeDisciplineSchema(discipline, props, isAccGlobal);
-        
-        // These create a new session and persist records in the Schema tables (SpLocaleContainerItem)
-        makeFieldVisible(null, discipline);
-        makeFieldVisible(disciplineType.getName(), discipline);
-        
-        frame.setProcess(0, 17);
-        frame.setProcess(++createStep);
-
-        Collection collection = null;
-        if (doCollection)
-        {
-            // Persists the Collection
-            collection = createEmptyCollection(discipline, 
-                                               props.getProperty("collPrefix").toString(), 
-                                               props.getProperty("collName").toString(),
-                                               userAgent,
-                                               specifyAdminUser,
-                                               pair.first,
-                                               pair.second,
-                                               disciplineType.isEmbeddedCollecingEvent());
-        }
-        
-        startTx();
-        
-        if (pair.second != null)
-        {
-            //division.addReference(pair.second, "numberingSchemes");
-            //persist(division);
-        }
-        
-        commitTx();
-        
-        buildDarwinCoreSchema(discipline); // creates own DataProviderSessionIFace
-        
-        log.debug("Out createEmptyDisciplineAndCollection - createStep: "+createStep);
-        
-        return new Pair<Discipline, Collection>(discipline, collection);
+        return null;
     }
     
     /**
@@ -731,7 +740,8 @@ public class BuildSampleDatabase
                                             final String         taxonFileName,
                                             final boolean        usingOtherTxnFile, 
                                             final String         taxonXML, 
-                                            final String         geoXML)
+                                            final String         geoXML, 
+                                            final Properties     props)
     {
         log.debug("In createEmptyDiscipline - createStep: "+createStep);
 
@@ -821,7 +831,7 @@ public class BuildSampleDatabase
         
         frame.incOverall();
         
-        List<Object> geos        = new Vector<Object>();
+        List<Object> geos = new Vector<Object>();
         //List<Object> lithoStrats = isPaleo ? createSimpleLithoStrat(lithoStratTreeDef, false) : null;
         
         startTx();
@@ -905,7 +915,29 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
-        convertGeographyFromXLS(geoTreeDef);  // this does a startTx() / commitTx()
+        //convertGeographyFromXLS(geoTreeDef);  // this does a startTx() / commitTx()
+        
+        String itUsername = props.getProperty("dbUserName");
+        String itPassword = props.getProperty("dbPassword");
+        if (StringUtils.isEmpty(itUsername) || StringUtils.isEmpty(itPassword))
+        {
+            frame.setVisible(false);
+            
+            Pair<String, String> usrPwd = SchemaUpdateService.getITUsernamePwd();
+            frame.setVisible(true);
+            if (usrPwd != null)
+            {
+                itUsername = usrPwd.first;
+                itPassword = usrPwd.second;
+                
+            } else
+            {
+                return null;
+            }
+        }
+        
+        convertGeographyFromXLS(discipline.getGeographyTreeDef());
+        //createGeographyFromGeonames(discipline, userAgent, itUsername, itPassword);
         
         frame.setProcess(++createStep);
         frame.incOverall();
@@ -1847,8 +1879,8 @@ public class BuildSampleDatabase
 
         persist(groups);
         
-        //division.addReference(accessionNS, "numberingSchemes");
-        //persist(division);
+        division.addReference(accessionNS, "numberingSchemes");
+        persist(division);
 
         commitTx();
         
@@ -2476,8 +2508,8 @@ public class BuildSampleDatabase
         
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
         
-        //division.addReference(accessionNS, "numberingSchemes");
-        //persist(division);
+        division.addReference(accessionNS, "numberingSchemes");
+        persist(division);
 
         commitTx();
         
@@ -2946,8 +2978,8 @@ public class BuildSampleDatabase
 
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
 
-        //division.addReference(accessionNS, "numberingSchemes");
-        //persist(division);
+        division.addReference(accessionNS, "numberingSchemes");
+        persist(division);
 
         commitTx();
         
@@ -3594,7 +3626,27 @@ public class BuildSampleDatabase
         return earth;
     }
     
-    
+    /**
+     * @param discipline
+     * @param treeDef
+     * @return
+     */
+    public Geography createGeographyFromGeonames(final Discipline discipline, 
+                                                 final Agent      agent,
+                                                 final String     itUsername,
+                                                 final String     itPassword)
+    {
+        
+        BuildFromGeonames bldGeoNames = new BuildFromGeonames(discipline.getGeographyTreeDef(), "2009-08-17", agent, itUsername, itPassword, frame);
+        Geography earth = bldGeoNames.buildEarth(session);
+        
+        if (bldGeoNames.loadGeoNamesDB())
+        {
+            bldGeoNames.build(earth.getId());
+        }
+        
+        return earth;
+    }
     /**
      * @param treeDef
      * @return
@@ -3691,6 +3743,7 @@ public class BuildSampleDatabase
                         i++;
                     }
                 }
+                // Sets nulls to unused cells
                 for (int j=i;j<4;j++)
                 {
                     cells[j] = null;
@@ -4070,8 +4123,8 @@ public class BuildSampleDatabase
 
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
         
-        //division.addReference(accessionNS, "numberingSchemes");
-        //persist(division);
+        division.addReference(accessionNS, "numberingSchemes");
+        persist(division);
 
         commitTx();
         
@@ -5296,8 +5349,8 @@ public class BuildSampleDatabase
 
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
         
-        //division.addReference(accessionNS, "numberingSchemes");
-        //persist(division);
+        division.addReference(accessionNS, "numberingSchemes");
+        persist(division);
 
         ////////////////////////////////
         // Default user groups and test user

@@ -16,7 +16,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Hashtable;
@@ -504,23 +503,6 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	}
 	
 	/**
-	 * @return IT user name and pw
-	 */
-	protected Pair<String, String> getITPW()
-	{
-		try
-		{
-			return SchemaUpdateService.getITUsernamePwd();
-		} catch (SQLException ex)
-		{
-            UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExportPanel.class, ex);
-            UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
-            return null;
-		}
-	}
-	
-	/**
 	 * @param theMapping
 	 * @param countOnly
 	 * @return hql to retreive cache contents for the mapping
@@ -592,7 +574,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         Pair<String, String> it = null;
 		if (rebuildExistingTbl)
 		{
-				it = getITPW();
+				it = SchemaUpdateService.getITUsernamePwd();
 				if (it == null)
 				{
 					return null;

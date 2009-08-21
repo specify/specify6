@@ -67,7 +67,6 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.db.ViewBasedSearchDialogIFace;
-import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.ViewSetMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
@@ -759,7 +758,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             sb.append(" AND userType is null"); //$NON-NLS-1$
         }
         
-        log.debug(sb.toString());
+        //log.debug(sb.toString());
         
         List<?> list = sessionArg.getDataList(sb.toString());
         if (list.size() == 1)
@@ -770,12 +769,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
             appResDir.getSpPersistedAppResources();
             appResDir.getSpPersistedViewSets();
             
-            if (true)
+            // forces load of resource
+            for (SpAppResource appRes : appResDir.getSpPersistedAppResources())
             {
-                for (SpAppResource appRes : appResDir.getSpPersistedAppResources())
-                {
-                    log.debug(appRes.getName());
-                }
+                @SuppressWarnings("unused")
+                String nameStr = appRes.getName();
             }
             appResDir.setTitle(localizedTitle);
             return appResDir;

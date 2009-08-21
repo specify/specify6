@@ -850,17 +850,23 @@ public class SpecifyDBSetupWizard extends JPanel
                     bsd.setDataType(dataType);
                     
                     Division division = bsd.createEmptyDivision(institution, disciplineType, user, props, true, true);
-                    isOK = division != null;
-                    
-                    progressFrame.incOverall();
-                    
-                    if (isOK)
+                    if (division != null)
                     {
-                        saveFormatters();
+                        isOK = division != null;
+                        
+                        progressFrame.incOverall();
+                        
+                        if (isOK)
+                        {
+                            saveFormatters();
+                        }
+        
+                        progressFrame.setVisible(false);
+                        progressFrame.dispose();
+                    } else
+                    {
+                        isOK = false;
                     }
-    
-                    progressFrame.setVisible(false);
-                    progressFrame.dispose();
                     
                     JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
                                                   getLocalizedMessage("BLD_DONE", getResourceString(isOK ? "BLD_OK" :"BLD_NOTOK")),

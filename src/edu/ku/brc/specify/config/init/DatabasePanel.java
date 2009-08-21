@@ -320,9 +320,12 @@ public class DatabasePanel extends BaseSetupPanel
 
         final DatabaseDriverInfo driverInfo = (DatabaseDriverInfo)drivers.getSelectedItem();
         String connStrInitial = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName, dbUserName, dbPwd, driverInfo.getName());
-        System.err.println(connStrInitial);
+        //System.err.println(connStrInitial);
         
         DBConnection.checkForEmbeddedDir("createDB - "+connStrInitial);
+        
+        DBConnection.getInstance().setDriverName(driverInfo.getName());
+        DBConnection.getInstance().setServerName(hostName);
         
         VerifyStatus status = verifyDatabase(properties);
         if ((isOK == null || !isOK) && status == VerifyStatus.OK)
@@ -666,15 +669,9 @@ public class DatabasePanel extends BaseSetupPanel
             return VerifyStatus.OK;
         }
         
-        if (checkForDatabase(props))
-        {
-            boolean proceed = UIHelper.promptForAction("PROCEED", "CANCEL", "DEL_CUR_DB_TITLE", UIRegistry.getLocalizedMessage("DEL_CUR_DB", props.getProperty(DBNAME)));
-            status = proceed ? VerifyStatus.OK : VerifyStatus.CANCELLED;
-
-        } else
-        {
-            status = VerifyStatus.OK;
-        }
+        // Here is when we check when the database is NOT embedded
+        
+        status = isOkToProceed(props) ? VerifyStatus.OK : VerifyStatus.CANCELLED;
         
         return status;
     }
@@ -684,46 +681,14 @@ public class DatabasePanel extends BaseSetupPanel
      * @param props the props
      * @return true if it exists
      */
-    private boolean checkForDatabase(final Properties props)
+    private boolean isOkToProceed(final Properties props)
     {
-        final String dbName = props.getProperty(DBNAME);
-        
-        DBMSUserMgr mgr = null;
-        try
-        {
-            String itUsername = props.getProperty(DBUSERNAME);
-            String itPassword = props.getProperty(DBPWD);
-            String hostName   = props.getProperty(HOSTNAME);
+        String dbName     = props.getProperty(DBNAME);
+        String itUsername = props.getProperty(DBUSERNAME);
+        String itPassword = props.getProperty(DBPWD);
+        String hostName   = props.getProperty(HOSTNAME);
             
-            mgr = DBMSUserMgr.getInstance();
-            
-            if (mgr.connectToDBMS(itUsername, itPassword, hostName))
-            {
-                if (mgr.doesDBExists(dbName))
-                {
-                    mgr.close();
-                    
-                    if (mgr.connect(itUsername, itPassword, hostName, dbName))
-                    {
-                        return mgr.doesDBHaveTables();
-                    }
-                    
-                }
-            }
-            
-        } catch (Exception ex)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, ex);
-            
-        } finally
-        {
-            if (mgr != null)
-            {
-                mgr.close();
-            }
-        }
-        return false;
+        return DBMSUserMgr.isOkToProceed(dbName, hostName, itUsername, itPassword);
     }
     
     /**
