@@ -251,7 +251,6 @@ public class CollectionBusRules extends BaseBusRules
                                                                       userAgent,
                                                                       specifyAdminUser,
                                                                       catNumScheme,
-                                                                      accNumScheme,
                                                                       disciplineType.isEmbeddedCollecingEvent());
                             
                     acm.setClassObject(SpecifyUser.class, specifyAdminUser);

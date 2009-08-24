@@ -294,14 +294,24 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     Integer count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM specifyuser");
                     rv = BasicSQLUtils.update(conn, "ALTER TABLE specifyuser MODIFY Password varchar(255)");
-
-                    count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM autonumsch_div");
-                    if (count != null && count > 0)
+                    if (rv == count)
                     {
-                        int rv2 = BasicSQLUtils.update(conn, "DELETE FROM autonumsch_div");
-                        System.err.println(rv2);
+                        
                     }
-
+                    
+                    // Find Accession NumberingSchemes that 'attached' to Collections
+                    String postfix = " FROM autonumsch_coll ac Inner Join autonumberingscheme ans ON ac.AutoNumberingSchemeID = ans.AutoNumberingSchemeID WHERE ans.TableNumber =  '7'";
+                    count = BasicSQLUtils.getCountAsInt("SELECT COUNT(*)" + postfix);
+                    if (count > 0)
+                    {
+                        String ansSQL = "SELECT ac.CollectionID, ac.AutoNumberingSchemeID " + postfix;
+                        for (Object[] row : BasicSQLUtils.query(ansSQL))
+                        {
+                            String sql = "DELETE FROM autonumsch_coll WHERE CollectionID = " + ((Integer)row[0]) + " AND AutoNumberingSchemeID = " + ((Integer)row[1]);
+                            rv = BasicSQLUtils.update(sql);
+                        }
+                    }
+                    
                     return rv == count;
                     
                 } catch (SQLException ex)

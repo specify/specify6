@@ -720,15 +720,16 @@ public class BuildSampleDatabase
                                                    userAgent,
                                                    specifyAdminUser,
                                                    ansPair.first,
-                                                   ansPair.second,
                                                    disciplineType.isEmbeddedCollecingEvent());
             }
             
             startTx();
             
+            // Adds AutoNumberScheme to Division
             if (ansPair.second != null)
             {
                 division.addReference(ansPair.second, "numberingSchemes");
+                persist(ansPair.second);
                 persist(division);
             }
             
@@ -1028,7 +1029,6 @@ public class BuildSampleDatabase
                                             final Agent              userAgent,
                                             final SpecifyUser        specifyAdminUser,
                                             final AutoNumberingScheme catNumScheme,
-                                            final AutoNumberingScheme accANS,
                                             final boolean             isEmbeddedCE)
     {
         log.debug("In createEmptyCollection - createStep: "+createStep);
@@ -1055,17 +1055,7 @@ public class BuildSampleDatabase
         collection.getTechnicalContacts().add(userAgent);
         collection.getContentContacts().add(userAgent);
         
-        if (accANS != null)
-        {
-            collection.getNumberingSchemes().add(accANS);
-            accANS.getCollections().add(collection);
-            persist(collection);
-            persist(accANS);
-            
-        } else
-        {
-            persist(collection);
-        }
+        persist(collection);
         persist(catNumScheme);
         
         frame.setProcess(++createStep);
