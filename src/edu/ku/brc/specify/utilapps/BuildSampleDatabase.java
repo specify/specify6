@@ -344,26 +344,42 @@ public class BuildSampleDatabase
         nowStr              = "'" + dateTimeFormatter.format(now) + "'";
     }
     
+    /**
+     * @return
+     */
     public Session getSession()
     {
         return session;
     }
     
+    /**
+     * @return
+     */
     public DataType getDataType()
     {
         return dataType;
     }
     
-    public void setSession(Session s)
+    /**
+     * @param s
+     */
+    public void setSession(final Session s)
     {
         session = s;
     }
     
+    /**
+     * @return
+     */
     public ProgressFrame getFrame()
     {
         return frame;
     }
     
+    /**
+     * @param dataObjects
+     * @param userAgent
+     */
     protected void standardQueries(final Vector<Object> dataObjects, 
                                    final Agent userAgent)
     {
@@ -406,6 +422,10 @@ public class BuildSampleDatabase
         return null;
     }
     
+    /**
+     * @param clazz
+     * @param ans
+     */
     private void addAutoNumberingScheme(final Class<?> clazz, final AutoNumberingScheme ans)
     {
         Vector<AutoNumberingScheme> numberingSchemes = numberingSchemesHash.get(clazz);
@@ -681,7 +701,7 @@ public class BuildSampleDatabase
             }
             
             // The two AutoNumberingSchemes have been committed
-            Pair<AutoNumberingScheme, AutoNumberingScheme> pair = localizeDisciplineSchema(discipline, props, isAccGlobal);
+            Pair<AutoNumberingScheme, AutoNumberingScheme> ansPair = localizeDisciplineSchema(discipline, props, isAccGlobal);
             
             // These create a new session and persist records in the Schema tables (SpLocaleContainerItem)
             makeFieldVisible(null, discipline);
@@ -699,16 +719,16 @@ public class BuildSampleDatabase
                                                    props.getProperty("collName").toString(),
                                                    userAgent,
                                                    specifyAdminUser,
-                                                   pair.first,
-                                                   pair.second,
+                                                   ansPair.first,
+                                                   ansPair.second,
                                                    disciplineType.isEmbeddedCollecingEvent());
             }
             
             startTx();
             
-            if (pair.second != null)
+            if (ansPair.second != null)
             {
-                division.addReference(pair.second, "numberingSchemes");
+                division.addReference(ansPair.second, "numberingSchemes");
                 persist(division);
             }
             
@@ -1017,9 +1037,6 @@ public class BuildSampleDatabase
         
         startTx();
         
-        //AutoNumberingScheme catNumScheme = (AutoNumberingScheme)session.merge(catNumSchemeArg);
-        //AutoNumberingScheme accANS       = accANSArg != null ? (AutoNumberingScheme)session.merge(accANSArg) : null; // should NOT be null
-
         ////////////////////////////////
         // Create Collection
         ////////////////////////////////
@@ -1098,6 +1115,8 @@ public class BuildSampleDatabase
     /**
      * @param props
      * @param propName
+     * @param schemeName
+     * @param tableId
      * @return
      */
     public AutoNumberingScheme createAutoNumScheme(final Properties props, 
@@ -1136,6 +1155,7 @@ public class BuildSampleDatabase
     /**
      * @param discipline
      * @param props
+     * @param isAccGlobal
      * @return
      */
     public Pair<AutoNumberingScheme, AutoNumberingScheme> localizeDisciplineSchema(final Discipline discipline, 
@@ -5320,12 +5340,6 @@ public class BuildSampleDatabase
                 addAutoNumberingScheme(Accession.class, accANS);
             }
             pair.second = accANS;
-        }
-        
-        if (pair.first == null || pair.second == null)
-        {
-            int x= 0;
-            x++;
         }
         return pair;
     }
