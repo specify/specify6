@@ -45,6 +45,10 @@ public class TreeRebuilder<T extends Treeable<T, D, I>,
 			final int minRank, final boolean doNodeNumbers, final boolean doFullNames) 
 	{
 		super(treeDef);
+		if (!(doNodeNumbers || doFullNames))
+		{
+			throw new RuntimeException("TreeRebuilder: Invalid call to constructor. The parameters doNodeNumbers and doFullNames cannot both be false.");
+		}
 		this.minRank = minRank;
 		this.doNodeNumbers = doNodeNumbers;
 		this.doFullNames = doFullNames;
