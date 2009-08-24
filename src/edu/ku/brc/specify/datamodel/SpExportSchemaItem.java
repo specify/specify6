@@ -90,7 +90,7 @@ public class SpExportSchemaItem extends DataModelObjBase
     /**
      * @return the fieldName
      */
-    @Column(name = "FieldName", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    @Column(name = "FieldName", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getFieldName()
     {
         return fieldName;

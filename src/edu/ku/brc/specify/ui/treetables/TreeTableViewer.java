@@ -2977,7 +2977,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 				protected void done() {
 					try
 					{
-						treeDef.updateAllNodeNumbers(null, false, true);
+						treeDef.updateAllNodes(null, false, true);
 					} catch (Exception ex)
 					{
 						edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();

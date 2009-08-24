@@ -22,7 +22,6 @@ package edu.ku.brc.specify.datamodel;
 import java.util.List;
 import java.util.Set;
 
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.util.Nameable;
 
 public interface TreeDefIface<N extends Treeable<N,D,I>,
@@ -94,8 +93,22 @@ public interface TreeDefIface<N extends Treeable<N,D,I>,
 	 * 
 	 * Walks the entire tree and builds the FullName for every item.
 	 */
-	public boolean updateAllFullNames(DataModelObjBase rootObj, DataProviderSessionIFace session,
-			int minRank) throws Exception;
+	public boolean updateAllFullNames(DataModelObjBase rootObj, final boolean useProgDlg,
+			final boolean lockedByCaller, int minRank) throws Exception;
+	
+	/**
+	 * @param rootObj
+	 * @param useProgDlg
+	 * @param lockedByCaller
+	 * 
+	 * @return true if update completes without errors, else false
+	 * 
+	 * @throws Exception
+	 * 
+	 * Walks the entire tree and assigns node numbers and fullname for every item.
+	 */
+	public boolean updateAllNodes(DataModelObjBase rootObj, final boolean useProgDlg, 
+			final boolean lockedByCaller) throws Exception;
 	
 	/**
 	 * @return true if node numbers are to be kept up to date at all times.

@@ -62,7 +62,7 @@ public class FullNameBuilder<T extends Treeable<T, D, I>, D extends TreeDefIface
 		});		
 		for (I rank : treedef.getTreeDefItems())
 		{
-			if (rank.getIsInFullName())
+			if (rank.getIsInFullName() != null && rank.getIsInFullName())
 			{
 				ranks.add(new FullNameInfo(rank));
 			}
@@ -84,8 +84,13 @@ public class FullNameBuilder<T extends Treeable<T, D, I>, D extends TreeDefIface
 	 * @param parents
 	 * @return the FullName for node.
 	 */
-	public String buildFullName(TreeNodeInfo node, LinkedList<TreeNodeInfo> parents)
+	public String buildFullName(TreeNodeInfo node, LinkedList<TreeNodeInfo> parents) throws Exception
 	{
+		if (!isInFullName(node.getRank()))
+		{
+			return node.getName();
+		}
+		
 		StringBuilder sb = new StringBuilder();
 		
 		
@@ -103,7 +108,7 @@ public class FullNameBuilder<T extends Treeable<T, D, I>, D extends TreeDefIface
 				addedNode = true;
 				name = node.getName();
 			}
-			else 
+			else if ((addedNode || reverse == TreeDefIface.FORWARD) && parentIterator.hasNext())
 			{
 				TreeNodeInfo parentInfo = parentIterator.next();
 				if (parentInfo.getRank() == info.getRank())
@@ -132,28 +137,7 @@ public class FullNameBuilder<T extends Treeable<T, D, I>, D extends TreeDefIface
 		
 		if (!addedNode) //in other words, the node's rank is not in the full name
 		{
-			//XXX Is this right? I think this is what the current full name builder does (TreeHelper.java) but..
-			//if sub genus is not in full name but genus then the full name for subgenus will be "GenusName SubgenusName".
-			//Don't know if it's right. Don't know if it matters...
-			if (reverse == TreeDefIface.REVERSE)
-			{
-				if (sb.length() > 0)
-				{
-					sb.insert(0, node.getName() + " ");
-				}
-				else
-				{
-					sb.append(node.getName());
-				}
-			}
-			else
-			{
-				if (nextSeparator != null)
-				{
-					sb.append(nextSeparator);
-				}
-				sb.append(node.getName());
-			}
+			throw new Exception("FullNameBuilder: error building full name for " + node.getName() + " (id=" + node.getId() + ")");
 		}
 		return sb.toString();
 	}
