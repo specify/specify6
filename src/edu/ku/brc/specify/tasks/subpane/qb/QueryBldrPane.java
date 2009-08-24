@@ -305,65 +305,81 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
 
     protected void loadAutoMaps() {
-		autoMaps.put("Phylum", new AutoMap(
-				"1,9-determinations,4-preferredTaxon.taxon.Phylum", "Phylum",
-				"1,9-determinations,4-preferredTaxon", false));
-		autoMaps.put("Kingdom", new AutoMap(
-				"1,9-determinations,4-preferredTaxon.taxon.Kingdom", "Kingdom",
-				"1,9-determinations,4-preferredTaxon", false));
-		autoMaps.put("Order", new AutoMap(
-				"1,9-determinations,4-preferredTaxon.taxon.Order", "Order",
-				"1,9-determinations,4-preferredTaxon", false));
-		autoMaps.put("CatalogNumber", new AutoMap(
-				"1.collectionobject.catalogNumber", "catalogNumber", "1", false));
-		autoMaps.put("Class", new AutoMap(
-				"1,9-determinations,4-preferredTaxon.taxon.Class", "Class",
-				"1,9-determinations,4-preferredTaxon", false));
-		autoMaps.put("ScientificNameAuthor", new AutoMap(
+		
+    	//from older darwin cores 
+    	autoMaps.put("scientificnameauthor", new AutoMap(
 				"1,9-determinations,4-preferredTaxon.taxon.author", "author",
 				"1,9-determinations,4-preferredTaxon", false));
-		autoMaps.put("Genus", new AutoMap(
-				"1,9-determinations,4-preferredTaxon.taxon.Genus", "Genus",
-				"1,9-determinations,4-preferredTaxon", false));
-		autoMaps.put("Family", new AutoMap(
-				"1,9-determinations,4-preferredTaxon.taxon.Family", "Family",
-				"1,9-determinations,4-preferredTaxon", false));
-		autoMaps.put("ScientificName", new AutoMap(
-				"1,9-determinations,4-preferredTaxon.taxon.fullName",
-				"fullName", "1,9-determinations,4-preferredTaxon", false));
-		autoMaps.put("Country", new AutoMap("1,10,2,3.geography.Country",
-				"Country", "1,10,2,3", false));
-		autoMaps.put("Collector", new AutoMap(
+		autoMaps.put("collector", new AutoMap(
 				"1,10,30-collectors.collector.collectors", "collectors",
 				"1,10,30-collectors", true));
-		autoMaps.put("SpecificEpithet", new AutoMap(
-				"1,9-determinations,4-preferredTaxon.taxon.Species", "Species",
-				"1,9-determinations,4-preferredTaxon", false));
-		autoMaps.put("Continent", new AutoMap("1,10,2,3.geography.Continent",
-				"Continent", "1,10,2,3", false));
-		autoMaps.put("StateProvince", new AutoMap("1,10,2,3.geography.State",
-				"State", "1,10,2,3", false));
-		autoMaps.put("County", new AutoMap("1,10,2,3.geography.County",
-				"County", "1,10,2,3", false));
-		autoMaps.put("CollectionCode", new AutoMap("1,23.collection.code",
-				"code", "1,23", false));
-		autoMaps.put("InstitutionCode", new AutoMap("1,23,26,96,94.institution.code",
-				"code", "1,23,26,96,94", false));
-		autoMaps.put("Locality", new AutoMap("1,10,2.locality.localityName",
-				"localityName", "1,10,2", false));
-		autoMaps.put("DecimalLatitude", new AutoMap(
-				"1,10,2.locality.latitude1", "latitude1", "1,10,2", false));
-		autoMaps.put("MaximumElevationInMeters", new AutoMap(
-				"1,10,2.locality.maxElevation", "maxElevation", "1,10,2", false));
-		autoMaps.put("GlobalUniqueIdentifier", new AutoMap(
+		autoMaps.put("globaluniqueidentifier", new AutoMap(
 				"1.collectionobject.guid", "guid", "1", false));
-		autoMaps.put("MinimumElevationInMeters", new AutoMap(
-				"1,10,2.locality.minElevation", "minElevation", "1,10,2", false));
-		autoMaps.put("DecimalLongitude", new AutoMap(
-				"1,10,2.locality.longitude1", "longitude1", "1,10,2", false));
-		autoMaps.put("DayCollected", new AutoMap(
+		autoMaps.put("daycollected", new AutoMap(
 				"1,10.collectingevent.startDate", "startDate", "1,10", false));
-	}
+		
+		//from darwin core used by ipt
+		autoMaps.put("catalognumber", new AutoMap("1.collectionobject.catalogNumber", "catalogNumber", "1", false));
+		autoMaps.put("class", new AutoMap("1,9-determinations,4-preferredTaxon.taxon.Class", "Class", "1,9-determinations,4-preferredTaxon", false));
+		autoMaps.put("collectioncode", new AutoMap("1,23.collection.code", "code", "1,23", false));
+		autoMaps.put("continent", new AutoMap("1,10,2,3.geography.Continent", "Continent", "1,10,2,3", false));
+		autoMaps.put("coordinateuncertaintyinmeters", new AutoMap("1,10,2.locality.latLongAccuracy", "latLongAccuracy", "1,10,2", false));
+		autoMaps.put("country", new AutoMap("1,10,2,3.geography.Country", "Country", "1,10,2,3", false));
+		autoMaps.put("county", new AutoMap("1,10,2,3.geography.County", "County", "1,10,2,3", false));
+		autoMaps.put("dateidentified", new AutoMap("1,9-determinations.determination.determinedDate", "determinedDate", "1,9-determinations", false));
+		autoMaps.put("decimallatitude", new AutoMap("1,10,2.locality.latitude1", "latitude1", "1,10,2", false));
+		autoMaps.put("decimallongitude", new AutoMap("1,10,2.locality.longitude1", "longitude1", "1,10,2", false));
+		autoMaps.put("eventdate", new AutoMap("1,10.collectingevent.startDate", "startDate", "1,10", false));
+		autoMaps.put("eventremarks", new AutoMap("1,10.collectingevent.remarks", "remarks", "1,10", false));
+		autoMaps.put("eventtime", new AutoMap("1,10.collectingevent.startTime", "startTime", "1,10", false));
+		autoMaps.put("family", new AutoMap("1,9-determinations,4-preferredTaxon.taxon.Family", "Family", "1,9-determinations,4-preferredTaxon", false));
+		autoMaps.put("fieldnumber", new AutoMap("1.collectionobject.fieldNumber", "fieldNumber", "1", false));
+		autoMaps.put("genus", new AutoMap("1,9-determinations,4-preferredTaxon.taxon.Genus", "Genus", "1,9-determinations,4-preferredTaxon", false));
+		autoMaps.put("geodeticdatum", new AutoMap("1,10,2.locality.datum", "datum", "1,10,2", false));
+		autoMaps.put("georeferencedby", new AutoMap("1,10,2,123-geoCoordDetails,5-geoRefDetBy.agent.geoRefDetBy", "geoRefDetBy", "1,10,2,123-geoCoordDetails,5-geoRefDetBy", false));
+		autoMaps.put("georeferenceprotocol", new AutoMap("1,10,2,123-geoCoordDetails.geocoorddetail.protocol", "protocol", "1,10,2,123-geoCoordDetails", false));
+		autoMaps.put("georeferenceremarks", new AutoMap("1,10,2,123-geoCoordDetails.geocoorddetail.geoRefRemarks", "geoRefRemarks", "1,10,2,123-geoCoordDetails", false));
+		autoMaps.put("georeferencesources", new AutoMap("1,10,2,123-geoCoordDetails.geocoorddetail.source", "source", "1,10,2,123-geoCoordDetails", false));
+		autoMaps.put("georeferenceverificationstatus", new AutoMap("1,10,2,123-geoCoordDetails.geocoorddetail.geoRefVerificationStatus", "geoRefVerificationStatus", "1,10,2,123-geoCoordDetails", false));
+		autoMaps.put("habitat", new AutoMap("1,10,92.collectingeventattribute.text9", "text9", "1,10,92", false));
+		autoMaps.put("identificationqualifier", new AutoMap("1,9-determinations.determination.qualifier", "qualifier", "1,9-determinations", false));
+		autoMaps.put("identificationreferences", new AutoMap("1,9-determinations,38-determinationCitations.determinationcitation.determinationCitations", "determinationCitations", "1,9-determinations,38-determinationCitations", false));
+		autoMaps.put("identificationremarks", new AutoMap("1,9-determinations.determination.remarks", "remarks", "1,9-determinations", false));
+		autoMaps.put("identifiedby", new AutoMap("1,9-determinations,5-determiner.agent.determiner", "determiner", "1,9-determinations,5-determiner", false));
+		autoMaps.put("individualcount", new AutoMap("1.collectionobject.countAmt", "countAmt", "1", false));
+		autoMaps.put("infraspecificepithet", new AutoMap("1,9-determinations,4-preferredTaxon.taxon.Subspecies", "Subspecies", "1,9-determinations,4-preferredTaxon", false));
+		autoMaps.put("institutioncode", new AutoMap("1,23,26,96,94.institution.code", "code", "1,23,26,96,94", false));
+		autoMaps.put("island", new AutoMap("1,10,2,124-localityDetails.localitydetail.island", "island", "1,10,2,124-localityDetails", false));
+		autoMaps.put("islandgroup", new AutoMap("1,10,2,124-localityDetails.localitydetail.islandGroup", "islandGroup", "1,10,2,124-localityDetails", false));
+		autoMaps.put("kingdom", new AutoMap("1,9-determinations,4-preferredTaxon.taxon.Kingdom", "Kingdom", "1,9-determinations,4-preferredTaxon", false));
+		autoMaps.put("lifestage", new AutoMap("1,93.collectionobjectattribute.text4", "text4", "1,93", false));
+		autoMaps.put("locality", new AutoMap("1,10,2.locality.localityName", "localityName", "1,10,2", false));
+		autoMaps.put("locationremarks", new AutoMap("1,10,2.locality.remarks", "remarks", "1,10,2", false));
+		autoMaps.put("maximumdepthinmeters", new AutoMap("1,10,92.collectingeventattribute.text2", "text2", "1,10,92", false));
+		autoMaps.put("maximumelevationinmeters", new AutoMap("1,10,2.locality.maxElevation", "maxElevation", "1,10,2", false));
+		autoMaps.put("minimumdepthinmeters", new AutoMap("1,10,92.collectingeventattribute.text1", "text1", "1,10,92", false));
+		autoMaps.put("minimumelevationinmeters", new AutoMap("1,10,2.locality.minElevation", "minElevation", "1,10,2", false));
+		autoMaps.put("occurrenceremarks", new AutoMap("1.collectionobject.remarks", "remarks", "1", false));
+		autoMaps.put("order", new AutoMap("1,9-determinations,4-preferredTaxon.taxon.Order", "Order", "1,9-determinations,4-preferredTaxon", false));
+		autoMaps.put("othercatalognumbers", new AutoMap("1.collectionobject.altCatalogNumber", "altCatalogNumber", "1", false));
+		autoMaps.put("phylum", new AutoMap("1,9-determinations,4-preferredTaxon.taxon.Phylum", "Phylum", "1,9-determinations,4-preferredTaxon", false));
+		autoMaps.put("preparations", new AutoMap("1,63-preparations.preparation.preparations", "preparations", "1,63-preparations", false));
+		autoMaps.put("previousidentifications", new AutoMap("1,9-determinations.determination.determinations", "determinations", "1,9-determinations", false));
+		autoMaps.put("recordedby", new AutoMap("1,5-cataloger.agent.cataloger", "cataloger", "1,5-cataloger", false));
+		autoMaps.put("reproductivecondition", new AutoMap("1,93.collectionobjectattribute.text3", "text3", "1,93", false));
+		autoMaps.put("scientificname", new AutoMap("1,9-determinations,4-preferredTaxon.taxon.fullName", "fullName", "1,9-determinations,4-preferredTaxon", false));
+		autoMaps.put("scientificnameauthorship", new AutoMap("1,9-determinations,4-preferredTaxon.taxon.author", "author", "1,9-determinations,4-preferredTaxon", false));
+		autoMaps.put("sex", new AutoMap("1,93.collectionobjectattribute.text1", "text1", "1,93", false));
+		autoMaps.put("specificepithet", new AutoMap("1,9-determinations,4-preferredTaxon.taxon.Species", "Species", "1,9-determinations,4-preferredTaxon", false));
+		autoMaps.put("stateprovince", new AutoMap("1,10,2,3.geography.State", "State", "1,10,2,3", false));
+		autoMaps.put("subgenus", new AutoMap("1,9-determinations,4-preferredTaxon.taxon.Subgenus", "Subgenus", "1,9-determinations,4-preferredTaxon", false));
+		autoMaps.put("taxonremarks", new AutoMap("1,9-determinations,4-preferredTaxon.taxon.remarks", "remarks", "1,9-determinations,4-preferredTaxon", false));
+		autoMaps.put("typestatus", new AutoMap("1,9-determinations.determination.typeStatusName", "typeStatusName", "1,9-determinations", false));
+		autoMaps.put("verbatimelevation", new AutoMap("1,10,2.locality.verbatimElevation", "verbatimElevation", "1,10,2", false));
+		autoMaps.put("verbatimeventdate", new AutoMap("1,10.collectingevent.verbatimDate", "verbatimDate", "1,10", false));
+		autoMaps.put("verbatimlocality", new AutoMap("1,10.collectingevent.verbatimLocality", "verbatimLocality", "1,10", false));
+		autoMaps.put("vernacularname", new AutoMap("1,9-determinations,4-preferredTaxon.taxon.commonName", "commonName", "1,9-determinations,4-preferredTaxon", false));
+		autoMaps.put("waterbody", new AutoMap("1,10,2,124-localityDetails.localitydetail.waterBody", "waterBody", "1,10,2,124-localityDetails", false));	}
     /**
      * create the query builder UI.
      */
@@ -963,7 +979,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         		if (!qfp.isConditionForSchema())
 				{
 					AutoMap mappedTo = autoMaps.get(qfp.getSchemaItem()
-							.getFieldName());
+							.getFieldName().toLowerCase());
 					if (mappedTo != null)
 					{
 						FieldQRI fqri = getFieldQRI(tableTree, mappedTo

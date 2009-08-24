@@ -315,6 +315,11 @@
         <table name="LocalityCitation" field="localityCitations">
             <alias name="ReferenceWork"/>
         </table>
+        <table name="GeoCoordDetail" field="geoCoordDetails">
+        	<alias name="Agent" field="geoRefDetBy"/>
+       		<alias name="Agent" field="createdByAgent" />
+      		<alias name="Agent" field="modifiedByAgent" />
+        </table>
         <!-- alias name="CollectingEvent" field="collectingEvents"/-->
     </table>
     

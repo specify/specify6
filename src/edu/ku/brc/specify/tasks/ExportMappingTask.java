@@ -9,6 +9,7 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -605,7 +606,7 @@ public class ExportMappingTask extends QueryTask
 				schema.setSchemaVersion(version.getText());
 				schema.setDescription(xsd.attributeValue("targetNamespace"));
 				schema.setDiscipline(AppContextMgr.getInstance().getClassObject(Discipline.class));
-				for (Object itemObj : xsd.selectNodes("xsd:element"))
+				for (Object itemObj : getNodesForDef(xsd))
 				{
 					SpExportSchemaItem item = createSchemaItem((Element ) itemObj);
 					item.setSpExportSchema(schema);
@@ -639,6 +640,45 @@ public class ExportMappingTask extends QueryTask
 		return false;
 	}
 	
+	@SuppressWarnings("unchecked")
+	List<Object> getNodesForDef(final Element xsd)
+	{
+		List<Object> result = null;
+		try
+		{
+			result = xsd.selectNodes("xsd:element");
+		}
+		catch (Exception ex)
+		{
+			System.out.println(ex.getLocalizedMessage());
+		}
+		if (result == null)
+		{
+			result = new LinkedList<Object>();
+//			for (Object grp : xsd.selectNodes("xs:group"))
+//			{
+//				for (Object seq : ((Element )grp).selectNodes("xs:sequence"))
+//				{
+//					for (Object obj : ((Element )seq).selectNodes("xs:element"))
+//					{
+//						result.add(obj);
+//					}
+//				}
+//			}
+			for (Object obj : xsd.selectNodes("xs:element"))
+			{
+				if (((Element )obj).attributeValue("type", null) != null)
+				{
+					result.add(obj);
+				}
+			}
+		}
+		for (Object obj : result)
+		{
+			System.out.println(((Element )obj).attributeValue("name"));
+		}
+		return result;
+	}
 	
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.QueryTask#getPopupMenu()

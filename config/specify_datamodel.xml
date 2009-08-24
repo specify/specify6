@@ -2545,7 +2545,7 @@
     <table classname="edu.ku.brc.specify.datamodel.SpExportSchemaItem" table="spexportschemaitem" tableid="525" searchable="false" abbrv="exsi">
       <field column="DataType" name="dataType" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="Description" name="description" type="java.lang.String" length="255" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
-      <field column="FieldName" name="fieldName" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="FieldName" name="fieldName" type="java.lang.String" length="64" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="Formatter" name="formatter" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" updatable="false" required="true" unique="false" indexed="false" partialDate="false"/>
       <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
