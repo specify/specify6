@@ -68,6 +68,7 @@ public class CommandActionWrapper implements ActionListener
                 try
                 {
                     ca = (CommandAction)commandAction.clone();
+                    
                 } catch (CloneNotSupportedException e1)
                 {
                     e1.printStackTrace();
@@ -75,8 +76,8 @@ public class CommandActionWrapper implements ActionListener
                 ca.setConsumed(false);
                 DataActionEvent dataActionEv = (DataActionEvent)e;
                 
-                CommandAction innerCmdAction = (CommandAction)(dataActionEv.getSourceObj() != null ? dataActionEv.getSourceObj().getData() : null);
-                ca.setData(innerCmdAction == commandAction ? ca : innerCmdAction);
+                Object innerData = dataActionEv.getSourceObj() != null ? dataActionEv.getSourceObj().getData() : null;
+                ca.setData(innerData == commandAction ? ca : innerData);
             }
             CommandDispatcher.dispatch(ca);
         }
