@@ -26,7 +26,9 @@ public class TreeRebuilder<T extends Treeable<T, D, I>,
 				D extends TreeDefIface<T, D, I>, 
 				I extends TreeDefItemIface<T, D, I>> extends TreeTraversalWorker<T, D, I> 
 {
-    protected FullNameBuilder<T,D,I> fullNameBuilder;
+    public enum RebuildMode{Full, FullNames, NodeNumbers};
+	
+	protected FullNameBuilder<T,D,I> fullNameBuilder;
     protected final int minRank;
     protected QueryIFace updateNodeQuery = null;
     protected final boolean doNodeNumbers;
@@ -42,16 +44,12 @@ public class TreeRebuilder<T extends Treeable<T, D, I>,
 	 * @param doFullNames
 	 */
 	public TreeRebuilder(final D treeDef, 
-			final int minRank, final boolean doNodeNumbers, final boolean doFullNames) 
+			final int minRank, final RebuildMode rebuildMode) 
 	{
 		super(treeDef);
-		if (!(doNodeNumbers || doFullNames))
-		{
-			throw new RuntimeException("TreeRebuilder: Invalid call to constructor. The parameters doNodeNumbers and doFullNames cannot both be false.");
-		}
 		this.minRank = minRank;
-		this.doNodeNumbers = doNodeNumbers;
-		this.doFullNames = doFullNames;
+		this.doNodeNumbers = rebuildMode == RebuildMode.Full || rebuildMode == RebuildMode.NodeNumbers;
+		this.doFullNames = rebuildMode == RebuildMode.Full || rebuildMode == RebuildMode.FullNames;
 	}
 	/* (non-Javadoc)
 	 * @see javax.swing.SwingWorker#doInBackground()

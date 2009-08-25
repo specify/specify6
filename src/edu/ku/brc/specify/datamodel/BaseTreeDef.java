@@ -365,7 +365,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
 	public boolean updateAllFullNames(DataModelObjBase rootObj, final boolean useProgDlg,
 			final boolean lockedByCaller, int minRank) throws Exception 
 	{
-    	return treeTraversal(rootObj, useProgDlg, lockedByCaller, minRank, false, true);
+    	return treeTraversal(rootObj, useProgDlg, lockedByCaller, minRank, TreeRebuilder.RebuildMode.FullNames);
  	}
 
     protected boolean checkForOtherLoginsBeforeNodeNumberUpdate()
@@ -432,22 +432,21 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     public boolean updateAllNodes(final DataModelObjBase rootObj, final boolean useProgDlg, 
     		final boolean lockedByCaller) throws Exception
     {
-    	return treeTraversal(rootObj, useProgDlg, lockedByCaller, 0, true, true);
+    	return treeTraversal(rootObj, useProgDlg, lockedByCaller, 0, TreeRebuilder.RebuildMode.NodeNumbers);
     }
     
     @Override
 	public boolean updateAllNodeNumbers(DataModelObjBase rootObj,
 			boolean useProgDlg, boolean lockedByCaller) throws Exception {
-		return treeTraversal(rootObj, useProgDlg, lockedByCaller, 0, true, false);
+		return treeTraversal(rootObj, useProgDlg, lockedByCaller, 0, TreeRebuilder.RebuildMode.NodeNumbers);
 	}
 
 	@SuppressWarnings("unchecked")
     public boolean treeTraversal(final DataModelObjBase rootObj, final boolean useProgDlg, 
-    		final boolean lockedByCaller, final int minRank, final boolean doNodeNumbers, 
-    		final boolean doFullNames) throws Exception
+    		final boolean lockedByCaller, final int minRank, final TreeRebuilder.RebuildMode rebuildMode) throws Exception
     {    	
     	//final NodeNumberer<N,D,I> nodeNumberer = new NodeNumberer<N,D,I>((D )this);
-    	final TreeRebuilder<N,D,I> treeRebuilder = new TreeRebuilder<N,D,I>((D )this, minRank, doNodeNumbers, doFullNames);
+    	final TreeRebuilder<N,D,I> treeRebuilder = new TreeRebuilder<N,D,I>((D )this, minRank, rebuildMode);
         final JStatusBar nStatusBar = useProgDlg ? null : UIRegistry.getStatusBar();        
         final ProgressDialog progDlg = nStatusBar != null ? null :
             new ProgressDialog(UIRegistry.getResourceString("BaseTreeDef.UPDATING_TREE_DLG"), false, false);
