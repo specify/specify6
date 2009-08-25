@@ -2748,8 +2748,10 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                               
                             	for (WorkbenchDataItem wbdi : wbtmi.getWorkbenchDataItems())
                                 {
-                                    session.delete(wbdi);
-                            		//wbdi.setWorkbenchTemplateMappingItem(null);
+                                    wbdi.getWorkbenchRow().getWorkbenchDataItems().remove(wbdi);
+                                    wbdi.setWorkbenchRow(null);
+                            		session.delete(wbdi);
+                            		wbdi.setWorkbenchTemplateMappingItem(null);
                                 }
                             	wbtmi.getWorkbenchDataItems().clear();
                             }
@@ -2767,10 +2769,17 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     session.saveOrUpdate(wbtmi) ;
                 }
                 
+                session.saveOrUpdate(workbenchTemplate);
+                for (Workbench wb : workbenchTemplate.getWorkbenches())
+                {
+                	session.saveOrUpdate(wb);
+                }
                 
                 //Check to see if geo/ref data needs to be updated
+                //This is actually only necessary if lat/long mappings have been switched - lat mapping changed to a long mapping or vice-versa.
+                //XXX Surely it is possible to tell if a lat/long switch has been made and not do this after every template change??
                 WorkbenchTemplateMappingItem aGeoRefMapping = null;
-                for (WorkbenchTemplateMappingItem wbtmi : items)
+                for (WorkbenchTemplateMappingItem wbtmi : workbenchTemplate.getWorkbenchTemplateMappingItems())
                 {
                     if (aGeoRefMapping == null && wbtmi.getTableName().equals("locality"))
                     {
@@ -2786,17 +2795,16 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 {
                 	for (Workbench wb : workbenchTemplate.getWorkbenches())
                 	{
-                		Workbench mwb = session.merge(wb);
-                		mwb.forceLoad();
-                		for (WorkbenchRow wbRow : mwb.getWorkbenchRows())
+                		wb.forceLoad();
+                		for (WorkbenchRow wbRow : wb.getWorkbenchRows())
                 		{
                 			wbRow.updateGeoRefTextFldsIfNecessary(aGeoRefMapping);
                 		}
-                		session.saveOrUpdate(mwb);
+                		session.saveOrUpdate(wb);
                 	}
                 }
+
                 
-                session.saveOrUpdate(workbenchTemplate);
                 session.commit();
                 session.flush();
                 

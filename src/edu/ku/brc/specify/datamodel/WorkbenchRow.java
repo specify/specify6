@@ -720,7 +720,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         for (WorkbenchDataItem wbdi : workbenchDataItems)
         {
             WorkbenchTemplateMappingItem map = wbdi.getWorkbenchTemplateMappingItem();
-            if (map.getTableName().equals("locality"))
+            if (map.getTableName().equals("locality")) 
             {
                 if (map.getFieldName().equalsIgnoreCase("latitude1") || map.getFieldName().equalsIgnoreCase("latitude2")
                         || map.getFieldName().equalsIgnoreCase("longitude1") || map.getFieldName().equalsIgnoreCase("longitude2"))
