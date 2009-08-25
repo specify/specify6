@@ -32,7 +32,9 @@ import edu.ku.brc.specify.datamodel.Treeable;
 /**
  * @author tnoble
  *
- *Called by FullNameRebuilder to build FullNames during TreeTraversal
+ *Called by FullNameRebuilder to build FullNames during TreeTraversal.
+ *
+ *FullNameRebuilder takes responsibility for constructing parents argument to the buildFullName method.
  */
 public class FullNameBuilder<T extends Treeable<T, D, I>, D extends TreeDefIface<T, D, I>, I extends TreeDefItemIface<T, D, I>> 
 	
