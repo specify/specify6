@@ -83,7 +83,7 @@ public class FullNameBuilder<T extends Treeable<T, D, I>, D extends TreeDefIface
 	
 	/**
 	 * @param node
-	 * @param parents
+	 * @param parents a list of the parents for node (only levels that are IN the full name should be contained in this list) 
 	 * @return the FullName for node.
 	 */
 	public String buildFullName(TreeNodeInfo node, LinkedList<TreeNodeInfo> parents) throws Exception
