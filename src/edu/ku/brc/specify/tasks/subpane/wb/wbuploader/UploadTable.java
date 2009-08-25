@@ -2121,8 +2121,11 @@ public class UploadTable implements Comparable<UploadTable>
         int blankSeq = 0;
         
         //for Locality table only
-        LatLonConverter.FORMAT llFmt = null;
+        LatLonConverter.FORMAT llFmt1 = null; 
+        LatLonConverter.FORMAT llFmt2 = null;
         GeoRefConverter gc = new GeoRefConverter();
+        UploadField llFld = null; //for 'generic' latlon errors.
+        
         Vector<UploadTableInvalidValue> invalidNulls = new Vector<UploadTableInvalidValue>();
         Vector<Integer> invalidBlankSeqs = new Vector<Integer>();
         for (Vector<UploadField> flds : uploadFields)
@@ -2170,24 +2173,40 @@ public class UploadTable implements Comparable<UploadTable>
                 if (tblClass.equals(Locality.class))
                 {
                     //Check each row to see that lat/long formats are the same.
-                    if (fld.getField().getName().equalsIgnoreCase("latitude1") || fld.getField().getName().equalsIgnoreCase("latitude1")
-                            || fld.getField().getName().equalsIgnoreCase("longitude1") || fld.getField().getName().equalsIgnoreCase("longitude2"))
+                	String fldName = fld.getField().getName();
+                    if (fldName.equalsIgnoreCase("latitude1") || fldName.equalsIgnoreCase("latitude2")
+                            || fldName.equalsIgnoreCase("longitude1") || fldName.equalsIgnoreCase("longitude2"))
                     {
-                        LatLonConverter.FORMAT fmt = gc.getLatLonFormat(StringUtils.stripToNull(fld.getValue()));
+                        llFld = fld;
+                    	LatLonConverter.FORMAT fmt = gc.getLatLonFormat(StringUtils.stripToNull(fld.getValue()));
+                        LatLonConverter.FORMAT llFmt = fldName.endsWith("1") ? llFmt1 : llFmt2;
                         if (llFmt == null)
                         {
                             llFmt = fmt;
+                            if (fldName.endsWith("1"))
+                            {
+                            	llFmt1 = fmt;
+                            } else 
+                            {
+                            	llFmt2 = fmt;
+                            }
                         }
                         else
                         {
                             if (!llFmt.equals(fmt))
                             {
-                                invalidValues.add(new UploadTableInvalidValue(null, this, fld, row, 
-                                        new Exception(UIRegistry.getResourceString("WB_UPLOADER_UNMATCHING_LATLONG_FORMAT"))));
+                                invalidValues.add(new UploadTableInvalidValue(null, this, null, row, 
+                                        new Exception(UIRegistry.getResourceString("WB_UPLOADER_INVALID_LATLONG"))));
                             }
                         }
                     }
                 }
+            }
+            
+            if (tblClass.equals(Locality.class) && llFmt1 != llFmt2 && llFmt2 != LatLonConverter.FORMAT.None)
+            {
+                invalidValues.add(new UploadTableInvalidValue(null, this, llFld, row, 
+                        new Exception(UIRegistry.getResourceString("WB_UPLOADER_INVALID_LATLONG"))));
             }
             if (isBlank)
             /* 
