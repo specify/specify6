@@ -2055,46 +2055,46 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * @param row
      * @param uploadData
+     * @param seq
      * @return true if all the fields corresponding directly to columns in the dataset are blank,
      */
-    protected boolean isBlankRow(int row, UploadData uploadData)
+    protected boolean isBlankRow(int row, UploadData uploadData, int seq) 
     {
-        int seq = 0;
-    	for (Vector<UploadField> flds : uploadFields)
-        {
-            for (UploadField fld : flds)    
-        	{
-            	if (fld.getIndex() != -1)
-            	{
-            		fld.setValue(uploadData.get(row, fld.getIndex()));
-                    if (!isBlankVal(fld, seq, row, uploadData))
-                    {
-                    	return false;
-                    }
-            	}
-        	}
-            seq++;
-        }
-        return true;
-    }
+		for (UploadField fld : uploadFields.get(seq)) 
+		{
+			if (fld.getIndex() != -1 || fld.getField().isForeignKey()) 
+			{
+				int idx = fld.getIndex();
+				if (idx == -1)
+				{
+					idx = uploadData.indexOfWbFldName(fld.getWbFldName());
+				}
+				if (!StringUtils.isEmpty(uploadData.get(row, idx))) 
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
     
     /**
      * @param row
      * @param uploadData
      * @return true if a non-null constraint needs to be enforced.
      */
-    protected boolean shouldEnforceNonNullConstraint(final int row, final UploadData uploadData)
+    protected boolean shouldEnforceNonNullConstraint(final int row, final UploadData uploadData, final int seq)
     {
     	//This is a rather lame implementation.
     	//Generally, if all fields in a table are blank, and related tables don't require a record,
     	//then there is no need to enforce not-null constraints.
     	if (tblClass.equals(PrepType.class)) 
     	{
-    		return !Uploader.currentUpload.getUploadTableByName("Preparation").isBlankRow(row, uploadData);
+    		return !Uploader.currentUpload.getUploadTableByName("Preparation").isBlankRow(row, uploadData, seq);
     	}
     	if (tblClass.equals(Accession.class)) 
     	{
-    		return !Uploader.currentUpload.getUploadTableByName("Accession").isBlankRow(row, uploadData);
+    		return !Uploader.currentUpload.getUploadTableByName("Accession").isBlankRow(row, uploadData, seq);
     	}
     	return true;
     }
@@ -2146,7 +2146,7 @@ public class UploadTable implements Comparable<UploadTable>
                     {
                         if (invalidNull(fld, uploadData, row, seq)) 
                         { 
-                        	if (shouldEnforceNonNullConstraint(row, uploadData))
+                        	if (shouldEnforceNonNullConstraint(row, uploadData, seq))
                         	{
                         		throw new Exception(
                         				getResourceString("WB_UPLOAD_FIELD_MUST_CONTAIN_DATA")); 

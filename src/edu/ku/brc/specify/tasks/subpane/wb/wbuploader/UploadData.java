@@ -23,6 +23,7 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 
 /**
@@ -122,4 +123,24 @@ public class UploadData
     {
         this.wbRows = freshRows;
     }
+    
+    /**
+     * @param wbFldName
+     * @return index for column named wbFldName
+     */
+    public int indexOfWbFldName(String wbFldName)
+    {
+    	if (wbRows.size() > 0)
+    	{
+    		for (WorkbenchDataItem wbdi : wbRows.get(0).getWorkbenchDataItems())
+    		{
+    			if (wbdi.getWorkbenchTemplateMappingItem().getCaption().equals(wbFldName))
+    			{
+    				return wbdi.getColumnNumber();
+    			}
+    		}
+    	}
+    	return -1;
+    }
+    
 }
