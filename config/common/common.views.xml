@@ -223,8 +223,8 @@
               <altviews>
                   <altview name="COS View"       viewdef="CollectionObjectSub" mode="view"/>
                   <altview name="COS Edit"       viewdef="CollectionObjectSub" mode="edit" default="true"/>
-                  <altview name="COS Table Edit" viewdef="CollectionObjectSub Table" mode="edit"/>
-                  <altview name="COS Table View" viewdef="CollectionObjectSub Table" mode="view"/>
+                  <!-- <altview name="COS Table Edit" viewdef="CollectionObjectSub Table" mode="edit"/>
+                  <altview name="COS Table View" viewdef="CollectionObjectSub Table" mode="view"/>  -->
               </altviews>      
          </view>
         
@@ -997,7 +997,7 @@
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
-            <desc><![CDATA[Collection Object subform table for Project form.]]></desc>
+            <desc><![CDATA[Accession Items]]></desc>
             <definition>AccessionItems</definition>
         </viewdef>
         
