@@ -67,6 +67,7 @@ import edu.ku.brc.af.ui.SearchTermField;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
+import edu.ku.brc.af.ui.db.ERTICaptionInfo.ColInfo;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
@@ -339,10 +340,10 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
      */
     public void createUI()
     {
-        panel      = new JPanel(new BorderLayout());
+        panel = new JPanel(new BorderLayout());
         add(panel, BorderLayout.CENTER);
         panel.setPreferredSize(new Dimension(300,200));
-        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 8, 0), BorderFactory.createLineBorder(Color.BLACK)));
      }
     
     /**
@@ -430,9 +431,30 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
             int cnt = 0;
             for (ERTICaptionInfo captionInfo : esTableInfo.getVisibleCaptionInfo())
             {
-                Object value  = StringUtils.isNotEmpty(captionInfo.getColName()) ? dataMap.get(captionInfo.getColName()) : null;
+                String colName = null;
                 
-                //log.debug("Column Name["+captionInfo.getColName()+"] Value["+value+"]");
+                Object value = null;
+                if (captionInfo.getColName() == null)
+                {
+                    for (ColInfo colInfo : captionInfo.getColInfoList())
+                    {
+                        colName = colInfo.getColumnName();
+                        log.debug("colInfo - colInfoColumn Name["+colName+"]");
+                      
+                        value = dataMap.get(colName);
+                        if (value != null)
+                        {
+                            log.debug("Column Name["+colName+"]["+captionInfo.getColLabel()+"] ["+captionInfo.getFieldInfo()+"] Value["+value+"]");
+                            break;
+                        }
+                    }
+                } else
+                {
+                    colName = captionInfo.getColName();
+                    value  = StringUtils.isNotEmpty(colName) ? dataMap.get(captionInfo.getColName()) : null;
+                    log.debug("Column Name["+colName+"]["+captionInfo.getColLabel()+"] ["+captionInfo.getFieldInfo()+"] Value["+value+"]");
+                }
+                
                 if (value != null)
                 {
                     String valStr = value.toString();
@@ -457,7 +479,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                                     if (captionInfo.getFieldInfo() != null && form instanceof FormViewObj)
                                     {
                                         FormViewObj fvo = (FormViewObj)form;
-                                        FormViewObj.FVOFieldInfo fInfo = fvo.getFieldInfoForName(captionInfo.getFieldInfo().getColumn());
+                                        FormViewObj.FVOFieldInfo fInfo = fvo.getFieldInfoForName(colName);
                                         if (fInfo != null)
                                         {
                                             if (fInfo.getFormCell() != null && fInfo.getFormCell().getPropertyAsBoolean("ispartial", false))
@@ -466,9 +488,9 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                                                 {
                                                     FormCellFieldIFace cif = (FormCellFieldIFace)fInfo.getFormCell();
                                                     String             fmt = cif.getUIFieldFormatterName();
-                                                    if (StringUtils.isNotEmpty(fmt) && fmt.equals("SearchDate"))
+                                                    if (StringUtils.isNotEmpty(fmt) && fmt.equals("SearchDate"))  // XXX There is a better way to check for this (use the enum)
                                                     {
-                                                        clause = getDateClause(firstTerm, captionInfo.getColName());
+                                                        clause = getDateClause(firstTerm, colName);
                                                     }
                                                 }
                                                 if (clause == null)
@@ -482,7 +504,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                                     
                                     if (clause == null)
                                     {
-                                        clause = ESTermParser.getInstance().createWhereClause(firstTerm, null, captionInfo.getColName());
+                                        clause = ESTermParser.getInstance().createWhereClause(firstTerm, null, colName);
                                     }
                                     strBuf.append(clause);
                                     cnt++;

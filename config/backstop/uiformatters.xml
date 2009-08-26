@@ -126,6 +126,7 @@
     <external>edu.ku.brc.specify.ui.PartialDateFormatter</external>
   </format>
 
-  
+  <format system="true" name="SearchDate" class="java.util.Date" type="date" partialdate="Search">
+  </format>
 
 </formats>

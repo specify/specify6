@@ -336,6 +336,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             bgStr = formatter.toPattern();
     
             document = new JFormattedDoc(this, formatter, requiredLength);
+            document.setIgnoreLenForValidation(isPartialOK);
             setDocument(document);
             document.addDocumentListener(new DocumentAdaptor() {
                 @Override

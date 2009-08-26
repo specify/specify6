@@ -312,23 +312,50 @@ public class SpecifyDBConverter
             Vector<Object[]> dbNames = BasicSQLUtils.query(conn, "show databases");
             for (Object[] row : dbNames)
             {
-                System.err.println("Setting ["+row[0].toString()+"]");
-                conn.setCatalog(row[0].toString());
+                String dbName = row[0].toString();
+                if (dbName.equalsIgnoreCase("kui_fish_dbo"))
+                {
+                    System.out.println("xxx");
+                }
+                
+                System.out.print("Database Found ["+dbName+"]  ");
+                conn.setCatalog(dbName);
                 
                 boolean fnd = false;
                 Vector<Object[]> tables = BasicSQLUtils.query(conn, "show tables");
                 for (Object[] tblRow : tables)
                 {
-                    if (tblRow[0].toString().equals("usysversion"))
+                    String tableName = tblRow[0].toString();
+                    //System.out.println("  ["+tableName+"]  ");
+                    if (tableName.equalsIgnoreCase("usysversion"))
                     {
                         fnd = true;
+                        System.out.println(" is Sp5");
                         break;
                     }
                 }
                 
                 if (!fnd)
                 {
+                    System.out.println(" is NOT Sp5");
                     continue;
+                }
+                
+                try
+                {
+                    Integer count = BasicSQLUtils.getCount(conn, "select COUNT(*) FROM collection");
+                    if (count == null)
+                    {
+                        for (Object[] tblRow : tables)
+                        {
+                            String tableName = tblRow[0].toString();
+                            BasicSQLUtils.update(conn, "RENAME TABLE " + tableName + " TO "+ tableName.toLowerCase());
+                        }
+                    }
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
                 }
                 
                 Vector<Object[]> tableDesc = BasicSQLUtils.query(conn, "select CollectionName FROM collection");

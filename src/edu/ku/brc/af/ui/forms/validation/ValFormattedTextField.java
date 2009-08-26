@@ -514,18 +514,26 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                 {
                     try
                     {
-                        StringBuilder sb     = new StringBuilder();
-                        Reader        reader = (InputStreamReader)sysClipboard.getData(flavor);
-                        char[]        buffer = new char[1024];
-                        int           len    = reader.read(buffer);
-                        sb.append(new String(buffer, 0, len));
-                        
-                        while (len > -1)
+                        StringBuilder sb      = new StringBuilder();
+                        Object        dataObj = sysClipboard.getData(flavor);
+                        if (dataObj instanceof String)
                         {
-                            len = reader.read(buffer);
-                            if (len > 0)
+                            sb.append((String)dataObj);
+                            
+                        } else if (dataObj instanceof InputStreamReader)
+                        {
+                            Reader        reader = (InputStreamReader)sysClipboard.getData(flavor);
+                            char[]        buffer = new char[1024];
+                            int           len    = reader.read(buffer);
+                            sb.append(new String(buffer, 0, len));
+                            
+                            while (len > -1)
                             {
-                                sb.append(buffer);
+                                len = reader.read(buffer);
+                                if (len > 0)
+                                {
+                                    sb.append(buffer);
+                                }
                             }
                         }
                         if (sb.length() <= formatter.getLength())
@@ -1044,6 +1052,28 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     {
         UIValidatable.ErrorType oldState = valState;
         
+        if (isPartialOK)
+        {
+            boolean hasText = false;
+            for (int i=0;i<documents.size();i++)
+            {
+                JFormattedDoc doc = documents.get(i);
+                
+                if (!hasText && doc.getLength() > 0 && i > 0)
+                {
+                    System.err.println("ERROR");
+                    return valState = UIValidatable.ErrorType.Error;
+                }
+                
+                if (doc.getLength() > 0)
+                {
+                    hasText = true;
+                }
+            }
+            System.err.println("VALID");
+            return valState = UIValidatable.ErrorType.Valid;
+        }
+        
         if (isViewOnly)
         {
             valState = UIValidatable.ErrorType.Valid;
@@ -1063,6 +1093,9 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                 {
                     valState = UIFieldFormatter.isValid(formatter, data, !isAutoFmtOn) ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error;
                 }
+            } else if (isPartialOK)
+            {
+                valState = StringUtils.isNotEmpty(data) ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error;
             } else
             {
                 valState = UIFieldFormatter.isValid(formatter, data, !isAutoFmtOn) ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error;
@@ -1196,6 +1229,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         }
         // else
         String val = getText();
+        System.err.println("["+val+"]");
         if (formatter.isFromUIFormatter() || isFromUIFmtOverride)
         {
             if (StringUtils.isNotEmpty(val))
@@ -1284,14 +1318,25 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
             String text = getText();
             int bgStrLen = bgStr == null ? 0 : bgStr.length();
             int txtLen   = text  == null ? 0 : text.length();
-            if (isEnabled() && txtLen < bgStrLen)
+            if (isEnabled())
             {
-                FontMetrics fm   = g.getFontMetrics();
-                int          w   = fm.stringWidth(text);
-                pnt = new Point(inner.left+w, inner.top + fm.getAscent());
-
-                g.setColor(textColor);
-                g.drawString(bgStr.substring(text.length(), bgStr.length()), pnt.x, pnt.y);
+                if (txtLen < bgStrLen)
+                {
+                    FontMetrics fm   = g.getFontMetrics();
+                    int          w   = fm.stringWidth(text);
+                    pnt = new Point(inner.left+w, inner.top + fm.getAscent());
+    
+                    g.setColor(textColor);
+                    g.drawString(bgStr.substring(text.length(), bgStr.length()), pnt.x, pnt.y);
+                }
+                
+                if (valState == UIValidatable.ErrorType.Error && isEnabled())
+                {
+                    UIHelper.drawRoundedRect((Graphics2D)g, isNew ? new Color(249,249,0) : valTextColor.getColor(), getSize(), 1);
+                } else if (valState == UIValidatable.ErrorType.Incomplete && isEnabled())
+                {
+                    UIHelper.drawRoundedRect((Graphics2D)g, new Color(249,249,0), getSize(), 1);
+                }
             }
         }
     }

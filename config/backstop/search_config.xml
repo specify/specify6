@@ -693,10 +693,10 @@
                 <sql>
                     <![CDATA[SELECT 
  collectingevent.CollectingEventID, 
- collectingevent.StartDate,
- collectingevent.StartDatePrecision,
  collectingevent.StationFieldNumber,
  collectingtrip.CollectingTripName,
+ collectingevent.StartDate,
+ collectingevent.StartDatePrecision,
    %s 
  FROM 
  collectingevent
@@ -705,12 +705,12 @@
                 </sql>
                 <captions>
                     <caption tableid="10" col="CollectingEventID" visible="false"/>
+                    <caption tableid="10" col="StationFieldNumber"/>
+                    <caption tableid="87" col="CollectingTripName" />
                     <caption tableid="10" formatter="PartialDate">
                         <col name="StartDate"          field="startDate"/>
                         <col name="StartDatePrecision" field="startDatePrecision"/>
                     </caption>
-                    <caption tableid="10" col="StationFieldNumber"/>
-                    <caption tableid="87" col="CollectingTripName" />
                  </captions>
             </detailView>
         </table>

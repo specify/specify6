@@ -39,7 +39,7 @@ import edu.ku.brc.util.Pair;
  */
 public interface UIFieldFormatterIFace
 {
-    public enum PartialDateEnum {None, Full, Month, Year}
+    public enum PartialDateEnum {None, Full, Month, Year, Search}
     public enum FormatterType   {generic, date, numeric} // all lower case to follow convention in uiformatters.xml
 
     /**

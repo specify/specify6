@@ -845,10 +845,15 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
             prefPostFix = "year";
         }
         
-        DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat"+prefPostFix);
+        DateWrapper dateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat"+prefPostFix);
+        
+        if (partialType == UIFieldFormatter.PartialDateEnum.Search)
+        {
+            dateFormat = new DateWrapper(new SimpleDateFormat("yyyy-MM-dd"));
+        }
 
         StringBuilder newFormatStr = new StringBuilder();
-        String        formatStr    = scrDateFormat.getSimpleDateFormat().toPattern();
+        String        formatStr    = dateFormat.getSimpleDateFormat().toPattern();
         boolean       wasConsumed  = false;
         char          currChar     = ' ';
 
@@ -859,8 +864,9 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
             {
                 if (c == 'M') // make sure we consume them
                 {
-                    if (partialType == UIFieldFormatter.PartialDateEnum.Full
-                            || partialType == UIFieldFormatter.PartialDateEnum.Month)
+                    if (partialType == UIFieldFormatter.PartialDateEnum.Full || 
+                        partialType == UIFieldFormatter.PartialDateEnum.Search || 
+                        partialType == UIFieldFormatter.PartialDateEnum.Month)
                     {
                         String s = "";
                         s += c;
@@ -878,7 +884,8 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
 
                 } else if (c == 'd')
                 {
-                    if (partialType == UIFieldFormatter.PartialDateEnum.Full)
+                    if (partialType == UIFieldFormatter.PartialDateEnum.Full || 
+                        partialType == UIFieldFormatter.PartialDateEnum.Search)
                     {
                         String s = "";
                         s += c;
@@ -933,13 +940,13 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
             }
         } // for
 
-        if (partialType == UIFieldFormatter.PartialDateEnum.Full)
+        if (partialType == UIFieldFormatter.PartialDateEnum.Full || partialType == UIFieldFormatter.PartialDateEnum.Search)
         {
-            formatter.setDateWrapper(scrDateFormat);
+            formatter.setDateWrapper(dateFormat);
         } else
         {
-            scrDateFormat.setSimpleDateFormat(new SimpleDateFormat(newFormatStr.toString()));
-            formatter.setDateWrapper(scrDateFormat);
+            dateFormat.setSimpleDateFormat(new SimpleDateFormat(newFormatStr.toString()));
+            formatter.setDateWrapper(dateFormat);
         }
     }
 

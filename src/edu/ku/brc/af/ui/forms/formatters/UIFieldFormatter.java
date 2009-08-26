@@ -62,6 +62,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     protected String               fieldName;
     protected String               name;
     protected boolean              isSystem;
+    protected boolean              isExternal;
     protected String               title;
     protected Class<?>             dataClass;
     protected FormatterType        type;
@@ -86,6 +87,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     public UIFieldFormatter() 
     {
         fields = new Vector<UIFieldFormatterField>();
+        this.isExternal = false;
     }
     
     /**
@@ -110,6 +112,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     {
         this.name            = name;
         this.isSystem        = isSystem;
+        this.isExternal      = false;
         this.fieldName       = fieldName;
         this.dataClass       = dataClass;
         this.partialDateType = partialDateType;
@@ -134,6 +137,22 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     public boolean isSystem()
     {
         return isSystem;
+    }
+
+    /**
+     * @return the isExternal
+     */
+    public boolean isExternal()
+    {
+        return isExternal;
+    }
+
+    /**
+     * @param isExternal the isExternal to set
+     */
+    public void setExternal(boolean isExternal)
+    {
+        this.isExternal = isExternal;
     }
 
     /* (non-Javadoc)
@@ -311,7 +330,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     @Override
     public boolean isDate()
     {
-        return type == FormatterType.date;
+        return type == FormatterType.date && (partialDateType == null || partialDateType != PartialDateEnum.Search);
     }
 
     /* (non-Javadoc)
@@ -961,6 +980,12 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
             {
                 field.toXML(sb);
             }
+        }
+        if (isExternal)
+        {
+            sb.append("    <external>");
+            sb.append("    <external>");
+            sb.append("    </extneral>\n");
         }
         sb.append("  </format>\n\n");
     }
