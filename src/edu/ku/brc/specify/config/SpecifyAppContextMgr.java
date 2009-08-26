@@ -1831,6 +1831,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 session = DataProviderFactory.getInstance().createSession();
                 appRes.setTimestampModified(new Timestamp(System.currentTimeMillis()));
                 appRes.setModifiedByAgent(Agent.getUserAgent());
+                appRes.setLevel((short)0);
                 session.beginTransaction();
                 if (!dirContainsResource)
                 {
@@ -1849,10 +1850,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
             	return true;
             } catch (Exception ex)
             {
+                ex.printStackTrace();
+                
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
                 session.rollback();
-                log.error(ex);
+
                 
             } finally 
             {

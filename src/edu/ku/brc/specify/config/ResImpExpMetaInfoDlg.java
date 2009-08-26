@@ -54,26 +54,28 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class ResImpExpMetaInfoDlg extends CustomDialog
 {
-    protected JComboBox  mimeTypeCBX;  // text/xml, jrxml/label, jrxml/report, jrxml/subreport
-    protected JTextField descTxt;      // text
+    protected JComboBox     mimeTypeCBX;  // text/xml, jrxml/label, jrxml/report, jrxml/subreport
+    protected JTextField    descTxt;      // text
     
     // Meta Info
-    protected JComboBox  tableIdCBX;    // List of all the tables
-    protected JCheckBox  reqsRecSetChk; // whether a recordset is required
+    protected JComboBox     tableIdCBX;    // List of all the tables
+    protected JCheckBox     reqsRecSetChk; // whether a recordset is required
     
-    protected JComboBox  rptTypeCBX;    // Invoice, WorkBench, Report
+    protected JComboBox     rptTypeCBX;    // Invoice, WorkBench, Report
     
-    protected JTextField subReportsTxt; // list of subreports
-    protected JTextField actionsTxt;
+    protected JTextField    subReportsTxt; // list of subreports
+    protected JTextField    actionsTxt;
     
     protected SpAppResource appRes = null;
     
     /**
      * Default Constructor.
+     * @param appRes
+     * @param isReport
      */
     public ResImpExpMetaInfoDlg(final SpAppResource appRes)
     {
-        super((Frame)UIRegistry.getTopWindow(), "Title", true, OKCANCELHELP, null); //$NON-NLS-1$
+        super((Frame)UIRegistry.getTopWindow(), "Resource Import / Export", true, OKCANCELHELP, null); //$NON-NLS-1$   // I18N
         
         this.appRes = appRes;
     }
@@ -88,8 +90,8 @@ public class ResImpExpMetaInfoDlg extends CustomDialog
         
         //HelpMgr.registerComponent(helpBtn, "ResImpExpMetaInfoDlg");
         
-        DefaultComboBoxModel mimeModel = new DefaultComboBoxModel(new String[] {"XML", "Label", "Report", "Subreport"});
-        DefaultComboBoxModel typeModel = new DefaultComboBoxModel(new String[] {"Report", "Invoice", "WorkBench", "CollectionObject"});
+        DefaultComboBoxModel mimeModel = new DefaultComboBoxModel(new String[] {"XML", "Label", "Report", "Subreport"});                  // I18N
+        DefaultComboBoxModel typeModel = new DefaultComboBoxModel(new String[] {"Report", "Invoice", "WorkBench", "CollectionObject"});   // I18N
         
         DefaultComboBoxModel tblModel = new DefaultComboBoxModel(DBTableIdMgr.getInstance().getTablesForUserDisplay());
         
@@ -106,29 +108,29 @@ public class ResImpExpMetaInfoDlg extends CustomDialog
         subReportsTxt = createTextField();
         actionsTxt    = createTextField();
         
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,4px,p,4px,p,4px,p,4px,p,4px,p,4px,p,4px,")); //$NON-NLS-1$ //$NON-NLS-2$
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,4px,p,4px,p,4px,p,4px,p,4px,p,4px,p,4px")); //$NON-NLS-1$ //$NON-NLS-2$
         CellConstraints cc = new CellConstraints();
 
         int y = 1;
-        pb.add(createI18NFormLabel("Mime Type"), cc.xy(1, y));
+        pb.add(createI18NFormLabel("Mime Type"), cc.xy(1, y));              // I18N
         pb.add(mimeTypeCBX,                      cc.xy(3, y)); y += 2;
         
-        pb.add(createI18NFormLabel("Description"), cc.xy(1, y));
+        pb.add(createI18NFormLabel("Description"), cc.xy(1, y));              // I18N
         pb.add(descTxt,                            cc.xyw(3, y, 2)); y += 2;
         
-        pb.add(createI18NFormLabel("Table"), cc.xy(1, y));
+        pb.add(createI18NFormLabel("Table"), cc.xy(1, y));              // I18N
         pb.add(tableIdCBX,                   cc.xy(3, y)); y += 2;
         
-        //pb.add(createI18NFormLabel("Mime Type"), cc.xy(1, y));
+        //pb.add(createI18NFormLabel("Mime Type"), cc.xy(1, y));              // I18N
         pb.add(reqsRecSetChk,                      cc.xy(3, y)); y += 2;
         
-        pb.add(createI18NFormLabel("Report Type"), cc.xy(1, y));
+        pb.add(createI18NFormLabel("Report Type"), cc.xy(1, y));              // I18N
         pb.add(rptTypeCBX,                         cc.xy(3, y)); y += 2;
         
-        pb.add(createI18NFormLabel("Sub-Reports"), cc.xy(1, y));
+        pb.add(createI18NFormLabel("Sub-Reports"), cc.xy(1, y));              // I18N
         pb.add(subReportsTxt,                      cc.xyw(3, y, 2)); y += 2;
         
-        pb.add(createI18NFormLabel("Action"), cc.xy(1, y));
+        pb.add(createI18NFormLabel("Action"), cc.xy(1, y));              // I18N
         pb.add(actionsTxt,                    cc.xyw(3, y, 2)); y += 2;
         
         pb.setDefaultDialogBorder();
