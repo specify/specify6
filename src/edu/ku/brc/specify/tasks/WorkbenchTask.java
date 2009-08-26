@@ -2768,13 +2768,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     //log.debug("new ["+wbtmi.getCaption()+"]["+wbtmi.getViewOrder().shortValue()+"]");
                     session.saveOrUpdate(wbtmi) ;
                 }
-                
-                session.saveOrUpdate(workbenchTemplate);
-                for (Workbench wb : workbenchTemplate.getWorkbenches())
-                {
-                	session.saveOrUpdate(wb);
-                }
-                
+                                
                 //Check to see if geo/ref data needs to be updated
                 //This is actually only necessary if lat/long mappings have been switched - lat mapping changed to a long mapping or vice-versa.
                 //XXX Surely it is possible to tell if a lat/long switch has been made and not do this after every template change??
@@ -2800,10 +2794,15 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 		{
                 			wbRow.updateGeoRefTextFldsIfNecessary(aGeoRefMapping);
                 		}
-                		session.saveOrUpdate(wb);
+                		//session.saveOrUpdate(wb);
                 	}
                 }
 
+                session.saveOrUpdate(workbenchTemplate);
+                for (Workbench wb : workbenchTemplate.getWorkbenches())
+                {
+                	session.saveOrUpdate(wb);
+                }
                 
                 session.commit();
                 session.flush();
