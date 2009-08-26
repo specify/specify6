@@ -80,10 +80,13 @@ public class BasicSQLUtils
     
     protected static    int showErrors           = SHOW_ALL;
     
+    
     protected static SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     protected static SimpleDateFormat dateFormatter     = new SimpleDateFormat("yyyy-MM-dd");
     protected static Calendar         calendar          = new GregorianCalendar();
-
+    protected static Timestamp        now               = new Timestamp(System .currentTimeMillis());
+    protected static String           nowStr            = dateTimeFormatter.format(now);
+    
     protected static BasicSQLUtils    basicSQLUtils = new  BasicSQLUtils();
 
     protected static Map<String, String> ignoreMappingFieldNames = null;
@@ -886,12 +889,12 @@ public class BasicSQLUtils
     public static String getEscapedSQLStrExpr(String str)
     {
     	String delimiter = "'";
-    	if (myDestinationServerType == SERVERTYPE.MS_SQLServer
+    	/*if (myDestinationServerType == SERVERTYPE.MS_SQLServer
     			|| myDestinationServerType == SERVERTYPE.MySQL)
     	{
     		//possibly for other dbms some other encloser would be required
     		log.info("setting string delimiter to \"'\" for ServerType " + myDestinationServerType);
-    	}
+    	}*/
     	return delimiter + escapeStringLiterals(str, delimiter) + delimiter;
 	}
     
@@ -1737,7 +1740,8 @@ public class BasicSQLUtils
                                 {
                                     if (isAccessionTable)
                                     {
-                                        str.append(getStrValue(UIHelper.convertIntToDate(rs.getInt(fromHash.get("DateAccessioned")))));
+                                        Date date = UIHelper.convertIntToDate(rs.getInt(fromHash.get("DateAccessioned")));
+                                        str.append(date != null ? getStrValue(date) : getStrValue(timestampCreatedCached, newFieldName.getType()));
     
                                     } else
                                     {
@@ -1755,13 +1759,13 @@ public class BasicSQLUtils
                                 {
                                     if (isAccessionTable)
                                     {
-                                        str.append(getStrValue(UIHelper.convertIntToDate(rs.getInt(fromHash.get("DateAccessioned")))));
+                                        Date date = UIHelper.convertIntToDate(rs.getInt(fromHash.get("DateAccessioned")));
+                                        str.append(date != null ? getStrValue(date) : getStrValue(timestampCreatedCached, newFieldName.getType()));
     
                                     } else
                                     {
                                         str.append(getStrValue(timestampModifiedCached, newFieldName.getType()));
                                     }
-    
                                 } else
                                 {
                                     str.append(getStrValue(timestampModifiedCached, newFieldName.getType()));
@@ -1955,6 +1959,32 @@ public class BasicSQLUtils
         }
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);//meg added
         return true;
+    }
+    
+    /**
+     * @param newFieldName
+     * @param type
+     * @param data
+     * @param sb
+     */
+    public static  void fixTimestamps(final String newFieldName, 
+                                      final String type, 
+                                      final Object data, 
+                                      final StringBuilder sb)
+    {
+        if (newFieldName.equals("TimestampModified") || newFieldName.equals("TimestampModified"))
+        {
+            if (getStrValue(data, type).toString().toLowerCase().equals("null"))
+            {
+                sb.append("'" + nowStr + "'");
+            } else
+            {
+                sb.append(getStrValue(data, type));
+            }
+        } else
+        {
+            sb.append(getStrValue(data, type));
+        }
     }
     
     /**

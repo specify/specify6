@@ -3668,27 +3668,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                         // hack for ??bug?? found in Sp5 that inserted null values in
                         // timestampmodified field of determination table?
-                        if (newFieldName.equals("TimestampModified"))
-                        {
-                            // log.error("******TimestampModified***************" +
-                            // getStrValue(data, newFieldMetaData.get(i).getType()));
-                            if (getStrValue(data, newFieldMetaData.get(i).getType()).toString().toLowerCase().equals("null"))
-                            {
-                                // log.error("******TimestampModified***************" + "found null
-                                // value, appending string: " + "'"+nowStr+"'");
-                                str.append("'" + nowStr + "'");
-                                // log.error("new string: " +str);
-                            } else
-                            {
-                                str.append(getStrValue(data, newFieldMetaData.get(i).getType()));
-                            }
-                        } else
-                        {
-                            // log.error("my debgings - ##########################" +
-                            // getStrValue(data, newFieldMetaData.get(i).getType()).toString());
-                            str.append(getStrValue(data, newFieldMetaData.get(i).getType()));
-                            // log.error("new string: " +str);
-                        }
+                        BasicSQLUtils.fixTimestamps(newFieldName, newFieldMetaData.get(i).getType(), data, str);
                     }
                 }
                 str.append(")");
@@ -3755,7 +3735,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
         return true;
     }
-    
 
     /**
      * Converts all the CollectionObject Physical records and CollectionObjectCatalog Records into
@@ -4688,29 +4667,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             }
                         }
 
-                        // hack for ??bug?? found in Sp5 that inserted null values in
-                        // timestampmodified field of determination table?
-                        if (newFieldName.equals("TimestampModified"))
-                        {
-                            // log.error("******TimestampModified***************" +
-                            // getStrValue(data, newFieldMetaData.get(i).getType()));
-                            if (getStrValue(data, newFieldMetaData.get(i).getType()).toString().toLowerCase().equals("null"))
-                            {
-                                // log.error("******TimestampModified***************" + "found null
-                                // value, appending string: " + "'"+nowStr+"'");
-                                str.append("'" + nowStr + "'");
-                                // log.error("new string: " +str);
-                            } else
-                            {
-                                str.append(getStrValue(data, newFieldMetaData.get(i).getType()));
-                            }
-                        } else
-                        {
-                            // log.error("my debgings - ##########################" +
-                            // getStrValue(data, newFieldMetaData.get(i).getType()).toString());
-                            str.append(getStrValue(data, newFieldMetaData.get(i).getType()));
-                            // log.error("new string: " +str);
-                        }
+                        BasicSQLUtils.fixTimestamps(newFieldName, newFieldMetaData.get(i).getType(), data, str);
                     }
                 }
                 str.append(")");
@@ -6753,8 +6710,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     } else
                     {
                         Object obj = rs.getObject(i);
-                        if (obj != null && !colName.equals("TimestampCreated")
-                                && !colName.equals("TimestampModified"))
+                        if (obj != null && 
+                            !colName.equals("TimestampCreated") &&
+                            !colName.equals("TimestampModified"))
                         {
                             hasData = true;
                         }

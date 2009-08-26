@@ -458,7 +458,11 @@ public class AgentConverter
 
                         } else if (agentColumns[i].equals("agent.LastName") || agentColumns[i].equals("LastName"))
                         {
-                            sqlStr.append(BasicSQLUtils.getStrValue(namePair.second));
+                            
+                            int    lastNameLen = 50;
+                            String lastName    = namePair.second;
+                            lastName = lastName.length() <= lastNameLen ? lastName : lastName.substring(0, lastNameLen);
+                            sqlStr.append(BasicSQLUtils.getStrValue(lastName));
 
                         } else if (agentColumns[i].equals("agent.FirstName") || agentColumns[i].equals("FirstName"))
                         {

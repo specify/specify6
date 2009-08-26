@@ -582,7 +582,7 @@ public final class UIHelper
         calendar.clear();
 
         int year  = iDate / 10000;
-        if (year > 1800)
+        if (year > 1700)
         {
             int tmp   = (iDate - (year * 10000));
             int month = tmp / 100;

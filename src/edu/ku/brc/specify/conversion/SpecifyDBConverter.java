@@ -31,6 +31,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
@@ -576,6 +577,25 @@ public class SpecifyDBConverter
         convLogger.initialize(dbNameDest);
         
         convLogger.setIndexTitle("Conversion from "+dbNameSource+" to "+dbNameDest);
+        
+        // Makes sure old data has all the TimestampCreated filled in
+        SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        Timestamp        now               = new Timestamp(System .currentTimeMillis());
+        String           nowStr            = dateTimeFormatter.format(now);
+        Vector<Object[]> tables = BasicSQLUtils.query(oldDBConn, "show tables");
+        for (Object[] tblRow : tables)
+        {
+            String tableName = tblRow[0].toString();
+            try
+            {
+                if (BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM " + tableName + " WHERE TimestampCreated IS NULL") > 0)
+                {
+                    BasicSQLUtils.update(oldDBConn, "UPDATE "+tableName+ " SET TimestampCreated='"+nowStr+"' WHERE TimestampCreated IS NULL");
+                }
+            } catch (Exception ex)
+            {
+            }
+        }
         
         final GenericDBConversion conversion = new GenericDBConversion(oldDBConn, newDBConn, dbNameSource, convLogger);
         if (!conversion.initialize())
