@@ -938,7 +938,7 @@ public class BaseBusRules implements BusinessRulesIFace
             if (obj instanceof FormDataObjIFace)
             {
                 FormDataObjIFace colObj = (FormDataObjIFace)obj;
-                if (obj == colObj || (colObj.getId() != null && dataObj.getId() != null && dataObj.getId().equals(colObj.getId())))
+                if (dataObj == colObj || (colObj.getId() != null && dataObj.getId() != null && dataObj.getId().equals(colObj.getId())))
                 {
                     cnt++;
                 }

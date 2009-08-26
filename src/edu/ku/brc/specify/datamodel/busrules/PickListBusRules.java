@@ -529,10 +529,10 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
             session = DataProviderFactory.getInstance().createSession();
             reasonList.clear();
             
-            String sql = QueryAdjusterForDomain.getInstance().adjustSQL("FROM PickList WHERE name = '"+ pickList.getName()+"' AND collectionId = COLLID");
+            String   sql  = QueryAdjusterForDomain.getInstance().adjustSQL("FROM PickList WHERE name = '"+ pickList.getName()+"' AND collectionId = COLLID");
             PickList dbPL = (PickList)session.getData(sql);
-            //log.debug("["+dbPL.getId().intValue()+"]["+pickList.getId().intValue()+"]");
-            if (dbPL != null && dbPL.getId().intValue() != pickList.getId().intValue())
+            //log.debug("["+dbPL.getId()+"]["+pickList.getId()+"]");
+            if (dbPL != null && (pickList.getId() == null || !dbPL.getId().equals(pickList.getId())))
             {
                 reasonList.add(getLocalizedMessage("PL_DUPLICATE_NAME", pickList.getName()));
                 return STATUS.Error;
@@ -540,9 +540,9 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
             
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListBusRules.class, ex);
-            log.error(ex);
             
         } finally
         {
