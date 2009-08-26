@@ -68,13 +68,14 @@ public class AccessionAuthorizationBusRules extends BaseBusRules
                     @Override
                     public void valueChanged(ListSelectionEvent e)
                     {
-                        if (!e.getValueIsAdjusting())
+                        if (e != null && !e.getValueIsAdjusting())
                         {
                             FormDataObjIFace parentData = (FormDataObjIFace)formViewObj.getParentDataObj();
                             Set<?>           setOfData  = parentData instanceof Accession ? ((Accession)parentData).getAccessionAuthorizations() :
                                                           ((RepositoryAgreement)parentData).getRepositoryAgreementAuthorizations();
                             
                             Permit permit = (Permit)permitQCBX.getValue();
+                            System.out.println(permit);
                             if (countDataObjectById(setOfData, permit) > 1)
                             {
                                 UIRegistry.showLocalizedError("ACCAUTH_DUP", permit.getIdentityTitle());
