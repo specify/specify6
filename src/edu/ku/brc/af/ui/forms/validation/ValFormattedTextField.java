@@ -1061,7 +1061,6 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                 
                 if (!hasText && doc.getLength() > 0 && i > 0)
                 {
-                    System.err.println("ERROR");
                     return valState = UIValidatable.ErrorType.Error;
                 }
                 
@@ -1070,7 +1069,6 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                     hasText = true;
                 }
             }
-            System.err.println("VALID");
             return valState = UIValidatable.ErrorType.Valid;
         }
         
@@ -1229,7 +1227,6 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         }
         // else
         String val = getText();
-        System.err.println("["+val+"]");
         if (formatter.isFromUIFormatter() || isFromUIFmtOverride)
         {
             if (StringUtils.isNotEmpty(val))
