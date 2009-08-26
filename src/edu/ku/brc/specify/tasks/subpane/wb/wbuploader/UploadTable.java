@@ -986,7 +986,7 @@ public class UploadTable implements Comparable<UploadTable>
                     arg[0] = parentRec;
                 }
                 pt.getSetter().invoke(rec, arg);
-                requirementsMet = requirementsMet && arg[0] != null || !pt.isRequired();
+                requirementsMet = requirementsMet && (arg[0] != null || !pt.isRequired());
             }
         }
         return requirementsMet;
@@ -2413,6 +2413,11 @@ public class UploadTable implements Comparable<UploadTable>
         }
     }
 
+    /**
+     * @param rec
+     * 
+     * Called after a write to update Match selection history.
+     */
     protected void finishMatching(final DataModelObjBase rec)
     {
         if (restrictedValsForAddNewMatch != null)
@@ -2423,6 +2428,9 @@ public class UploadTable implements Comparable<UploadTable>
         }
     }
 
+    /**
+     * @return all tables that precede this table in the Upload graph
+     */
     public Vector<ParentTableEntry> getAncestors()
     {
         Vector<ParentTableEntry> result = new Vector<ParentTableEntry>();
