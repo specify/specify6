@@ -178,36 +178,37 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
     {
         Loan loan = (Loan)formViewObj.getDataObj();
         
-        if (formViewObj != null && loan != null && loan.getId() != null)
+        if (formViewObj != null && loan != null)
         {
-            DataProviderSessionIFace session = formViewObj.getSession();
-            
-            try
+            if (loan.getId() != null)
             {
-                if (session == null)
-                {
-                    session = DataProviderFactory.getInstance().createSession();
-                }
-            
-                session.attach(loan);
-                loan.forceLoad();
+                DataProviderSessionIFace session = formViewObj.getSession();
                 
-            } catch (Exception ex)
-            {
-                //UsageTracker.incrHandledUsageCount();
-                //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataEntryTask.class, ex);
-                //log.error(ex);
-                ex.printStackTrace();
-                
-            } finally
-            {
-                if (session != null && formViewObj.getSession() == null)
+                try
                 {
-                    session.close();
-                }
-            }
-            
-            if (loan.getId() == null)
+                    if (session == null)
+                    {
+                        session = DataProviderFactory.getInstance().createSession();
+                    }
+                
+                    session.attach(loan);
+                    loan.forceLoad();
+                    
+                } catch (Exception ex)
+                {
+                    //UsageTracker.incrHandledUsageCount();
+                    //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataEntryTask.class, ex);
+                    //log.error(ex);
+                    ex.printStackTrace();
+                    
+                } finally
+                {
+                    if (session != null && formViewObj.getSession() == null)
+                    {
+                        session.close();
+                    }
+                } 
+            } else 
             {
                 Integer dueInMonths = AppPreferences.getRemote().getInt(DUEINMONTHS, 6);
                 if (dueInMonths != null)
@@ -218,6 +219,7 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
                 }
             }
         }
+            
     }
 
     /* (non-Javadoc)
