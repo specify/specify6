@@ -165,10 +165,7 @@ import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.config.init.RegisterSpecify;
 import edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.conversion.ConversionLogger;
-import edu.ku.brc.specify.conversion.ConversionLogger.TableWriter;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
-import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
@@ -195,10 +192,8 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
-import edu.ku.brc.specify.dbsupport.BuildFromGeonames;
 import edu.ku.brc.specify.extras.ViewToSchemaReview;
 import edu.ku.brc.specify.prefs.SystemPrefs;
-import edu.ku.brc.specify.rstools.SpAnalysis;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.HelpMgr;
@@ -1275,6 +1270,23 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                         }
                     });
 
+            ttle = "Load GPX Points";//$NON-NLS-1$ 
+            mneu = "a";//$NON-NLS-1$ 
+            desc = "";//$NON-NLS-1$ 
+            mi = UIHelper.createMenuItemWithAction(menu, ttle, mneu , desc, true, null); 
+            mi.addActionListener(new ActionListener()
+                    {
+                        @SuppressWarnings("synthetic-access") //$NON-NLS-1$
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            CustomDialog dlg = GPXPanel.getDlgInstance();
+                            if (dlg != null)
+                            {
+                                dlg.setVisible(true);
+                            }
+                        }
+                    });
+
         
             JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("Security Activated"); //$NON-NLS-1$
             menu.add(cbMenuItem);
@@ -1802,25 +1814,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     public void doAbout()
     {
-        /*if (true)
-        {
-            AppContextMgr acm    = AppContextMgr.getInstance();
-            Discipline    disp   = acm.getClassObject(Discipline.class);
-            Agent         agent  = acm.getClassObject(Agent.class);
-            
-            Connection conn = DBConnection.getInstance().getConnection();
-            
-            BuildFromGeonames bldGeoNames = new BuildFromGeonames(disp.getGeographyTreeDef(), "2009-08-17", agent, conn, null);
-            bldGeoNames.build();
-        }
-        
-        if (false)
-        {
-            NotificationConfigPanel ncp = new NotificationConfigPanel();
-            CustomDialog dlg = new CustomDialog(null, "Notification Configuration", true, ncp);
-            dlg.setVisible(true);
-            return;
-        }*/
         if (false)
         {
             if (GenericLSIDGeneratorFactory.getInstance().isReady())
@@ -1833,20 +1826,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 System.err.println(GenericLSIDGeneratorFactory.getInstance().getErrorMsg());
                 GenericLSIDGeneratorFactory.getInstance().reset();
             }
-        }
-        
-        if (false)
-        {
-            ConversionLogger cnvLgr = new ConversionLogger();
-            cnvLgr.initialize("dups");
-            TableWriter tblWriter = cnvLgr.getWriter("Duplicates.html", "Duplicates");
-            SpAnalysis spa = new SpAnalysis();
-            spa.checkAgents(tblWriter);
-            spa.checkAddress(tblWriter);
-            tblWriter.close();
-            cnvLgr.closeAll();
-            System.out.println("Done");
-            return;
         }
         
         if (false)
