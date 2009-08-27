@@ -108,7 +108,7 @@ public class DataObjFieldFormatMgr
     /**
      * Resets the Mgr so it gets reloaded.
      */
-    public static void reset()
+    public void reset()
     {
         if (instance != null)
         {

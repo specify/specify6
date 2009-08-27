@@ -54,6 +54,15 @@ public class SpecifyDataObjFieldFormatMgr extends DataObjFieldFormatMgr implemen
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr#reset()
+     */
+    @Override
+    public void reset()
+    {
+        instance = null;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr#getDOM()
      */
     protected Element getDOM() throws Exception

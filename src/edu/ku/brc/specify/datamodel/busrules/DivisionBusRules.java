@@ -255,8 +255,8 @@ public class DivisionBusRules extends BaseBusRules implements CommandListener
                 acm.setClassObject(Discipline.class, null);
                 acm.setClassObject(Collection.class, null);
                 
-                UIFieldFormatterMgr.reset();
-                DataObjFieldFormatMgr.reset();
+                UIFieldFormatterMgr.getInstance().reset();
+                DataObjFieldFormatMgr.getInstance().reset();
                 
                 Session session = null;
                 try

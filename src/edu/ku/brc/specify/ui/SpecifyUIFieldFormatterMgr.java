@@ -210,6 +210,15 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
         this.pathWasSet    = true;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr#reset()
+     */
+    @Override
+    public void reset()
+    {
+        instance = null;
+    }
+
     /**
      * 
      */
