@@ -377,6 +377,7 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
                 try
                 {
                     doc.insertString(doc.getLength(), field.getSep(), null);
+                    
                     System.err.println("["+field.getName()+"]["+field.getSep()+"]["+field.getFormat()+"]["+field.toString()+"]");
                     insertFieldIntoTextEditor(new DataObjDataFieldWrapper(field));
                 }

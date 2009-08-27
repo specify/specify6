@@ -3680,22 +3680,13 @@ public class BuildSampleDatabase
             session.refresh(earth);
             
             frame.setDesc("Configuring Geography Tree...");
-            if (true)
+            
+            Discipline disp = AppContextMgr.getInstance().getClassObject(Discipline.class);
+            if (disp == null)
             {
-                NodeNumberer<Geography,GeographyTreeDef,GeographyTreeDefItem> nodeNumberer = new NodeNumberer<Geography,GeographyTreeDef,GeographyTreeDefItem>(geoTreeDef);
-                nodeNumberer.doInBackground();
-                
-            } else
-            {
-                startTx();
-                
-                TreeHelper.fixFullnameForNodeAndDescendants(earth);
-                earth.setNodeNumber(1);
-                fixNodeNumbersFromRoot(earth);
-                commitTx();
+                AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
             }
-            
-            
+            geoTreeDef.updateAllNodeNumbers(earth, true, true);
             
         } catch (Exception ex)
         {

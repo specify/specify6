@@ -249,7 +249,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      */
     public boolean initialize()
     {
-        Integer txnTypeCnt  = BasicSQLUtils.getCount(oldDBConn, "select count(*) from taxonomytype where TaxonomyTypeID in (SELECT distinct TaxonomyTypeID from taxonname where RankId <> 0)");
+        Integer txnTypeCnt  = BasicSQLUtils.getCount(oldDBConn, "SELECT count(*) FROM taxonomytype WHERE TaxonomyTypeID IN (SELECT distinct TaxonomyTypeID FROM taxonname WHERE RankId <> 0)");
         if (txnTypeCnt != null)
         {
             String sql = "SELECT tt.TaxonomyTypeID,TaxonomyTypeName,cnt FROM taxonomytype tt INNER JOIN (SELECT COUNT(*) as cnt, TaxonomyTypeID FROM " +

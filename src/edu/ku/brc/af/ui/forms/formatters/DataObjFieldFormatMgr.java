@@ -42,6 +42,7 @@ import org.dom4j.Element;
 import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.DataObjectGettable;
@@ -330,6 +331,8 @@ public class DataObjFieldFormatMgr
                             }
                         } else
                         {
+                            DBTableInfo tableInfo = switchFormatter.getTableInfo();
+                            
                             List<?> fieldsElements = switchElement.selectNodes("fields");
                             for (Object fieldsObj : fieldsElements)
                             {
@@ -343,18 +346,37 @@ public class DataObjFieldFormatMgr
                                 {
                                     Element  fieldElement  = (Element)fldObj;
                                     String   fieldName     = fieldElement.getTextTrim();
-                                    String   dataTypeStr   = getAttr(fieldElement, "type",      "string");
+                                    String   dataTypeStr   = getAttr(fieldElement, "type",      null);
                                     String   formatStr     = getAttr(fieldElement, "format",    null);
                                     String   sepStr        = getAttr(fieldElement, "sep",       null);
                                     String   formatterName = getAttr(fieldElement, "formatter", null);
                                     String   uifieldformatter = getAttr(fieldElement, "uifieldformatter", null);
                                     
-                                    Class<?> classObj      = typeHash.get(dataTypeStr);
+                                    DBFieldInfo        fieldInfo = tableInfo.getFieldByName(fieldName);
+                                    DBRelationshipInfo relInfo   = fieldInfo == null ? tableInfo.getRelationshipByName(fieldName) : null;
+                                    
+                                    Class<?> classObj;
+                                    if (dataTypeStr == null)
+                                    {
+                                        if (fieldInfo != null)
+                                        {
+                                            classObj = fieldInfo.getDataClass();
+                                        } else
+                                        {
+                                            classObj = String.class;
+                                        }
+                                    } else
+                                    {
+                                        classObj = typeHash.get(dataTypeStr);
+                                    }
+                                    
                                     if (classObj == null)
                                     {
                                         log.error("Couldn't map standard type["+dataTypeStr+"]");
                                     }
                                     fields[inx] = new DataObjDataField(fieldName, classObj, formatStr, sepStr, formatterName, uifieldformatter);
+                                    fields[inx].setDbInfo(tableInfo, fieldInfo, relInfo);
+                                    
                                     inx++;
                                 }
                                 switchFormatter.add(new DataObjDataFieldFormat(name, dataClass, isDefault, format, valueStr, fields));

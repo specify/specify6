@@ -61,6 +61,9 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
     
     protected Vector<DataObjDataFieldFormatIFace> formatsVector = new Vector<DataObjDataFieldFormatIFace>();
     
+    // Transient
+    protected DBTableInfo            tableInfo = null;
+    
     /**
      * A formatter that can have one or more formatters that depend on an external value, typically from the database.
      * @param name the name of the formatter
@@ -357,6 +360,22 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
     {
         this.fieldName = fieldName;
     }
+    
+    /**
+     * @return the table info object for this class or null
+     */
+    public DBTableInfo getTableInfo()
+    {
+        if (tableInfo == null)
+        {
+            tableInfo = DBTableIdMgr.getInstance().getByClassName(dataClass.getName());
+            if (tableInfo == null)
+            {
+                log.error("No DBTableInfo for class["+dataClass.getName()+"]");
+            }
+        }
+        return tableInfo;
+    }
 
     /**
      * 
@@ -365,7 +384,7 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
     {
     	if (StringUtils.isNotEmpty(fieldName))
     	{
-    		DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(dataClass.getName());
+    		DBTableInfo tableInfo = getTableInfo();
     		fieldInfo = tableInfo.getFieldByName(fieldName);
     	}
     	
