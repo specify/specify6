@@ -521,7 +521,10 @@ public class SpecifyDBSetupWizard extends JPanel
                         SpecifyDBSetupWizard.this.listener.finished();
                     } else
                     {
-                        SpecifyDBSetupWizard.this.listener.cancelled();
+                        if (UIHelper.promptForAction("QUIT", "NO", "CANCEL", getResourceString("SURE_QUIT")))
+                        {
+                            SpecifyDBSetupWizard.this.listener.cancelled();
+                        }
                     }
                 }
             }

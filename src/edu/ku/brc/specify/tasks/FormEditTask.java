@@ -67,6 +67,8 @@ public class FormEditTask extends BaseTask
     public FormEditTask()
     {
         super(FORMS, "Forms");
+        
+        iconName = "Form";
     }
 
     /* (non-Javadoc)
