@@ -43,6 +43,7 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -192,11 +193,16 @@ public class TaskSemaphoreMgr
                 }
                 return false;
                 
+            } catch (com.mysql.jdbc.exceptions.jdbc4.CommunicationsException ex)
+            {
+                UIRegistry.showLocalizedMsg("TIMEOUT_ERR");
+                
             } catch (Exception ex)
             {
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskSemaphoreMgr.class, ex);
                 log.error(ex);
+                
             } finally 
             {
                 try
