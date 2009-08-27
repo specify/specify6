@@ -56,6 +56,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
+import javax.swing.text.PlainDocument;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -147,6 +148,8 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
         addFieldPB.add(sepLbl,      cc.xy(1,1));
         addFieldPB.add(sepText,     cc.xy(3,1));
         addFieldPB.add(addFieldBtn, cc.xy(5,1));
+        
+        sepText.setDocument(new FilteredDoc());
         
         addFieldBtn.setEnabled(false);
         sepLbl.setEnabled(false);
@@ -629,5 +632,30 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
         
         DataObjDataFieldFormat singleFormatter = fieldsArray.length == 0 ? null : new DataObjDataFieldFormat("", tableInfo.getClassObj(), false, "", "", fieldsArray);
         formatter.setSingle(singleFormatter);
+    }
+    
+    class FilteredDoc extends PlainDocument
+    {
+        /**
+         * 
+         */
+        public FilteredDoc()
+        {
+            super();
+        }
+        
+        /* (non-Javadoc)
+         * @see javax.swing.text.Document#insertString(int, java.lang.String, javax.swing.text.AttributeSet)
+         */
+        @Override
+        public void insertString(final int offset, final String strArg, final AttributeSet attr) throws BadLocationException
+        {
+            if (!StringUtils.contains(strArg, '\'') && 
+                !StringUtils.contains(strArg, '"') && 
+                !StringUtils.contains(strArg, '`'))
+            {
+                super.insertString(offset, strArg, attr);
+            }
+        }
     }
 }

@@ -746,12 +746,19 @@ public class DataObjFieldFormatMgr
                                 {
                                     strBuf.append(sep);
                                 }
-                                //log.debug("["+value+"]["+format.getFormat()+"]");
-                                args[0] = value;
-                                Formatter formatter = new Formatter();
-                                formatter.format(field.getFormat(), args);
-                                strBuf.append(formatter.toString());
-                                args[0] = null;
+                                //log.debug("["+value+"]["+format+"]");
+                                if (field.getFormat() != null)
+                                {
+                                    args[0] = value;
+                                    Formatter formatter = new Formatter();
+                                    formatter.format(field.getFormat(), args);
+                                    strBuf.append(formatter.toString());
+                                    args[0] = null;
+                                    
+                                } else
+                                {
+                                    strBuf.append(value.toString());
+                                }
                             }
                         } else
                         {
