@@ -75,6 +75,7 @@ import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttribute;
@@ -2092,9 +2093,9 @@ public class UploadTable implements Comparable<UploadTable>
     	{
     		return !Uploader.currentUpload.getUploadTableByName("Preparation").isBlankRow(row, uploadData, seq);
     	}
-    	if (tblClass.equals(Accession.class)) 
+    	if (tblClass.equals(Accession.class) || tblClass.equals(Permit.class)) 
     	{
-    		return !Uploader.currentUpload.getUploadTableByName("Accession").isBlankRow(row, uploadData, seq);
+    		return !isBlankRow(row, uploadData, seq);
     	}
     	return true;
     }
