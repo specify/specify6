@@ -1411,13 +1411,13 @@ public class DatamodelGenerator
      * Takes a list and prints out data model file using betwixt.
      * @param classesList the class list
      */
-    public boolean writeTree(final List<?> classesList)
+    public boolean writeTree(final List<Table> classesList)
     {
         if (doRelsToZeroToOne)
         {
-            for (Object obj : classesList)
+            for (Table tbl : classesList)
             {
-                adjustRelsForZeroToOne((Table)obj);
+                adjustRelsForZeroToOne(tbl);
             }
         }
         
@@ -1430,8 +1430,7 @@ public class DatamodelGenerator
             }
             log.info("writing data model tree to file: " + DatamodelHelper.getDatamodelFilePath());
             
-            //Element root = XMLHelper.readFileToDOM4J(new FileInputStream(XMLHelper.getConfigDirPath(datamodelOutputFileName)));
-            File file = new File(DatamodelHelper.getDatamodelFilePath());
+            File file = DatamodelHelper.getDatamodelFilePath();
             FileWriter fw = new FileWriter(file);
             fw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
             fw.write("<!-- \n");

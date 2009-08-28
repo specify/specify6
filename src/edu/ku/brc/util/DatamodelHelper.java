@@ -24,89 +24,89 @@ import java.io.File;
 import edu.ku.brc.helpers.XMLHelper;
 
 /**
- * Class that finds the path to hbm files
+ * Class that knows the path to the POJO source and to the DBtableId source file.
  * 
- * @code_status Unknown
+ * @code_status Beta
  * 
  * @author megkumin
  * 
  */
 public class DatamodelHelper 
 {
-	// Static Data Members
-	//private static final Logger log = Logger.getLogger(DatamodelHelper.class);
-
-    private static String outputFileName = "specify_datamodel.xml";
+    private final static String SPDATAMODELLISTINGFILE    = "specify_tableid_listing.xml";
+    private final static String SPWB_DATAMODELLISTINGFILE = "specify_workbench_upload_def.xml";
     
-	/**
-	 * 
-	 */
-	public DatamodelHelper() 
-	{
-		super();
-		// TODO Auto-generated constructor stub
-	}
+    private static String outputFileName      = "specify_datamodel.xml";
+    private static String outputCacheFileName = "specify_datamodel_cache.xml";
+    
+    
+    /**
+     * 
+     */
+    private DatamodelHelper() 
+    {
+        super();
+    }
 
-	/**
-	 * Returns full path to file in hbm directory
-	 * 
-	 * @param fileName
-	 *            the name of the file to be read
-	 * @return the path to the file
-	 */
-	public static String getDataModelSrcDirPath() 
-	{
-        //return ClassLoader.getSystemResource("Accession.hbm.xml").getFile();
-        /*String fileName = "Accession.hbm.xml";
-		String path = new File(".").getAbsolutePath();
-		if (path.endsWith(".")) {
-			path = path.substring(0, path.length() - 2);
-		}*/
-		return"src" + File.separator
-				+ "edu" + File.separator + "ku" + File.separator + "brc"
-				+ File.separator + "specify" + File.separator + "datamodel";
-                
-        //return "OldHBMs";
-	}
+    /**
+     * @return the outputFileName (the standard name of the file and this file is never written over!)
+     */
+    public static String getOutputFileName()
+    {
+        return outputFileName;
+    }
+    
+    /**
+     * @param outputFileName the outputFileName to set
+     */
+    public static void setOutputFileName(String outputFileName)
+    {
+        DatamodelHelper.outputFileName = outputFileName;
+    }
 
-	/**
-	 * Gets the path to UI based hbm files
-	 * 
-	 * @return - path to ui based hbm files String -
-	 */
-	public static String getUiHbmDirPath() 
-	{
-	    // return ClassLoader.getSystemResource("PickList.hbm.xml").getFile();
-		String fileName = "PickList.hbm.xml";
-		String path = new File(".").getAbsolutePath();
-		if (path.endsWith(".")) {
-			path = path.substring(0, path.length() - 2);
-		}
-		return path + File.separator + File.separator + "src" + File.separator
-				+ "edu" + File.separator + "ku" + File.separator + "brc"
-				+ File.separator + "ui" + File.separator + "db"
-				+ File.separator + fileName;
-	}
+    /**
+     * @return the name of the file if it was updated.
+     */
+    public static String getCachedFileName()
+    {
+        return outputCacheFileName;
+    }
 
-	/**
-	 * Returns full path to file in datamodel File
-	 * 
-	 * @return the path to the file
-	 */
-	public static String getDatamodelFilePath() 
-	{
-		return XMLHelper.getConfigDirPath(outputFileName);
-	}
+    /**
+     * Returns full path to POJO source directory.
+     * @return the path to the file
+     */
+    public static String getDataModelSrcDirPath() 
+    {
+        return "src" + File.separator +
+               "edu" + File.separator + "ku" + File.separator + "brc" +
+                File.separator + "specify" + File.separator + "datamodel";
+    }
 
-	/**
-	 * Returns full path to file in tableId listing file
-	 * 
-	 * @return the path to the file
-	 */
-	public static String getTableIdFilePath() 
-	{
-		return XMLHelper.getConfigDirPath("specify_tableid_listing.xml");
-	}
+    /**
+     * Returns file that points to the data model File.
+     * 
+     * @return the path to the file
+     */
+    public static File getDatamodelFilePath() 
+    {
+        File file = new File(XMLHelper.getConfigDirPath(outputCacheFileName));
+        if (file.exists())
+        {
+            return file;
+        }
+        return new File(XMLHelper.getConfigDirPath(outputFileName));
+    }
+
+    /**
+     * Returns full path to file in tableId listing file
+     * 
+     * @return the path to the file
+     */
+    public static String getTableIdFilePath() 
+    {
+        return XMLHelper.getConfigDirPath(SPDATAMODELLISTINGFILE);
+    }
     
     /**
      * Returns full path to file workbench upload def file
@@ -115,22 +115,6 @@ public class DatamodelHelper
      */
     public static String getWorkbenchUploadDefFilePath()
     {
-        return XMLHelper.getConfigDirPath("specify_workbench_upload_def.xml");
-    }
-
-    /**
-     * @return the outputFileName
-     */
-    public static String getOutputFileName()
-    {
-        return outputFileName;
-    }
-
-    /**
-     * @param outputFileName the outputFileName to set
-     */
-    public static void setOutputFileName(String outputFileName)
-    {
-        DatamodelHelper.outputFileName = outputFileName;
+        return XMLHelper.getConfigDirPath(SPWB_DATAMODELLISTINGFILE);
     }
 }

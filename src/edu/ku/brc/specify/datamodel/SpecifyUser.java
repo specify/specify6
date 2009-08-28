@@ -292,7 +292,10 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      */
     public void setLoginOutTime(Timestamp loginOutTime)
     {
-        this.loginOutTime = loginOutTime;
+        if (loginOutTime != null && loginOutTime.getTime() > 0)
+        {
+            this.loginOutTime = loginOutTime;
+        }
     }
 
     /**

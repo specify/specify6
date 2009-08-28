@@ -14,18 +14,22 @@ import java.util.Vector;
 
 import javax.swing.SwingWorker;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttribute;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttribute;
 import edu.ku.brc.ui.UIRegistry;
@@ -186,6 +190,43 @@ public class CollectingEventsAndAttrsMaint
      */
     public void performMaint()
     {
+        
+        // First Check Prefs
+        String convPrefName = "INST.CONVERTED";
+        
+        AppPreferences remotePrefs = AppPreferences.getRemote();
+        if (remotePrefs.getBoolean(convPrefName, false))
+        {
+            return;
+        }
+        
+        // Skip converted databases
+        Institution institution = AppContextMgr.getInstance().getClassObject(Institution.class);
+        String      remarks     = institution.getRemarks();
+        if (StringUtils.isNotEmpty(remarks) && remarks.equals("Sp5Converted")) 
+        {
+            try
+            {
+                institution.setRemarks(null);
+                session.beginTransaction();
+                session.saveOrUpdate(institution);
+                session.commit();
+                
+                AppContextMgr.getInstance().setClassObject(Institution.class, institution);
+                remotePrefs.getBoolean(convPrefName, true);
+                return;
+                
+            } catch (Exception ex1)
+            {
+                ex1.printStackTrace();
+                session.rollback();
+                UIRegistry.showError("Database mainteneance could not be performed.\nTry again later.\nSpecify must exit now.");
+                DBConnection.shutdown();
+                HibernateUtil.shutdown();
+                System.exit(0);
+            }
+        }
+        
         final ArrayList<Integer> collectionsIds = new ArrayList<Integer>(16);
         for (Object[] row : BasicSQLUtils.query("SELECT CollectionID FROM collection WHERE IsEmbeddedCollectingEvent = TRUE"))
         {

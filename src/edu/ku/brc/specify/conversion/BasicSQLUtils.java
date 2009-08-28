@@ -886,16 +886,20 @@ public class BasicSQLUtils
      * @return escaped and delimited string for use in SQL, 
      * using appropriate delimiter for DestinationServerType
      */
-    public static String getEscapedSQLStrExpr(String str)
+    public static String getEscapedSQLStrExpr(final String str)
     {
-    	String delimiter = "'";
-    	/*if (myDestinationServerType == SERVERTYPE.MS_SQLServer
-    			|| myDestinationServerType == SERVERTYPE.MySQL)
-    	{
-    		//possibly for other dbms some other encloser would be required
-    		log.info("setting string delimiter to \"'\" for ServerType " + myDestinationServerType);
-    	}*/
-    	return delimiter + escapeStringLiterals(str, delimiter) + delimiter;
+        if (str != null)
+        {
+        	String delimiter = "'";
+        	/*if (myDestinationServerType == SERVERTYPE.MS_SQLServer
+        			|| myDestinationServerType == SERVERTYPE.MySQL)
+        	{
+        		//possibly for other dbms some other encloser would be required
+        		log.info("setting string delimiter to \"'\" for ServerType " + myDestinationServerType);
+        	}*/
+        	return delimiter + escapeStringLiterals(str, delimiter) + delimiter;
+        }
+        return null;
 	}
     
     /**
@@ -942,37 +946,40 @@ public class BasicSQLUtils
 //        }
 //                
        // log.debug("escaping string literal:" + s);
-        String s = str;
-        if (s.indexOf("\\") >= 0)
+        if (str != null)
         {
-
-            // s = s.replaceAll("\\","\\\\\\");
-            // s = s.replaceAll("\\", "\\\\");
-            if (myDestinationServerType != SERVERTYPE.MS_SQLServer)
+            String s = str;
+            if (s.indexOf("\\") >= 0)
             {
-                s = s.replaceAll("\\\\", "\\\\\\\\");
-                //log.debug("escaping !M$ backslash:" + s);
+                // s = s.replaceAll("\\","\\\\\\");
+                // s = s.replaceAll("\\", "\\\\");
+                if (myDestinationServerType != SERVERTYPE.MS_SQLServer)
+                {
+                    s = s.replaceAll("\\\\", "\\\\\\\\");
+                    //log.debug("escaping !M$ backslash:" + s);
+                }
+                // s = StringEscapeUtils.escapeJava(s);
+               // log.debug("backslash:" + s);
             }
-            // s = StringEscapeUtils.escapeJava(s);
-           // log.debug("backslash:" + s);
-        }
-        if (enclosingChar.equals("\"") && s.indexOf("\"") >= 0)
-        {
-            s = s.replaceAll("\"", "\\\"\"");
-            // s = s.replaceAll("\"","\\\"");
-            //log.debug("escaped double quotes:" + s);
-        }
-        if (enclosingChar.equals("\'") && s.indexOf("\'") >= 0)
-        {
-            //if (myDestinationServerType == SERVERTYPE.MS_SQLServer)
+            if (enclosingChar.equals("\"") && s.indexOf("\"") >= 0)
             {
-                s = s.replaceAll("\'", "\'\'");
+                s = s.replaceAll("\"", "\\\"\"");
+                // s = s.replaceAll("\"","\\\"");
+                //log.debug("escaped double quotes:" + s);
             }
-            // s = s.replaceAll("\'","\\\'\'");
-            // s = s.replaceAll("\'","\\\'");
-            // log.debug("single quotes:" + s);
+            if (enclosingChar.equals("\'") && s.indexOf("\'") >= 0)
+            {
+                //if (myDestinationServerType == SERVERTYPE.MS_SQLServer)
+                {
+                    s = s.replaceAll("\'", "\'\'");
+                }
+                // s = s.replaceAll("\'","\\\'\'");
+                // s = s.replaceAll("\'","\\\'");
+                // log.debug("single quotes:" + s);
+            }
+            return s;
         }
-        return s;
+        return null;
     }
 
     /**

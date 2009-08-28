@@ -514,6 +514,8 @@ public class SpecifyDBConverter
         boolean startfromScratch    = true; 
         boolean deleteMappingTables = true;
         
+        long startTime = System.currentTimeMillis();
+        
         System.out.println("************************************************************");
         System.out.println("From "+dbNameSource+" to "+dbNameDest);
         System.out.println("************************************************************");
@@ -586,14 +588,17 @@ public class SpecifyDBConverter
         for (Object[] tblRow : tables)
         {
             String tableName = tblRow[0].toString();
-            try
+            if (!tableName.toLowerCase().startsWith("usys"))
             {
-                if (BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM " + tableName + " WHERE TimestampCreated IS NULL") > 0)
+                try
                 {
-                    BasicSQLUtils.update(oldDBConn, "UPDATE "+tableName+ " SET TimestampCreated='"+nowStr+"' WHERE TimestampCreated IS NULL");
+                    if (BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM " + tableName + " WHERE TimestampCreated IS NULL") > 0)
+                    {
+                        BasicSQLUtils.update(oldDBConn, "UPDATE "+tableName+ " SET TimestampCreated='"+nowStr+"' WHERE TimestampCreated IS NULL");
+                    }
+                } catch (Exception ex)
+                {
                 }
-            } catch (Exception ex)
-            {
             }
         }
         
@@ -1334,8 +1339,11 @@ public class SpecifyDBConverter
             {
                 idMapperMgr.cleanup();
             }
-            log.info("Done - " + dbNameDest);
-            frame.setDesc("Done - " + dbNameDest);
+            
+            long endTime = System.currentTimeMillis();
+            
+            log.info("Done - " + dbNameDest + " " + ((endTime - startTime) / 60000));
+            frame.setDesc("Done - " + dbNameDest + " " + ((endTime - startTime) / 60000));
             frame.setTitle("Done - " + dbNameDest);
             frame.incOverall();
             frame.processDone();

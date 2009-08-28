@@ -1151,7 +1151,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         }
                     }
                     
-                    
                     user.setIsLoggedIn(true);
                     user.setLoginOutTime(new Timestamp(System.currentTimeMillis()));
                     
@@ -1163,6 +1162,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         
                     } catch (Exception ex)
                     {
+                        session.rollback();
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
                         log.error(ex);
