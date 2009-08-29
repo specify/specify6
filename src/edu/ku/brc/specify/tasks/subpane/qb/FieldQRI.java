@@ -92,6 +92,17 @@ public class FieldQRI extends BaseQRI
     }
     
     /**
+     * @param forWhereClause
+     * @param forSchemaExport
+     * @return
+     */
+    protected boolean addPartialDateColumn(final boolean forWhereClause, 
+    		final boolean forSchemaExport)
+    {
+    	return !forWhereClause && getFieldInfo() != null && getFieldInfo().isPartialDate() && !forSchemaExport;
+    }
+    
+    /**
      * @param ta
      * @param forWhereClause
      * @return sql/hql specification for this field.
@@ -100,7 +111,7 @@ public class FieldQRI extends BaseQRI
     		final boolean forSchemaExport)
     {
         String result = ta.getAbbreviation(table.getTableTree()) + "." + getFieldName();
-        if (!forWhereClause && getFieldInfo() != null && getFieldInfo().isPartialDate() && !forSchemaExport)
+        if (addPartialDateColumn(forWhereClause, forSchemaExport))
         {
             String precName = getFieldInfo().getDatePrecisionName();
             result += ", " + ta.getAbbreviation(table.getTableTree()) + "." + precName;

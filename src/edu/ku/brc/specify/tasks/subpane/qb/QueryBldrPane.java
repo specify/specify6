@@ -1914,13 +1914,17 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         treeGrps.add(newTg);
                     }
                 }
+                else if (qfp.getFieldQRI() instanceof DateAccessorQRI)
+                {
+                	erti = new ERTICaptionInfoDatePart(colName, lbl, qfp.getStringId(), ((DateAccessorQRI) qfp.getFieldQRI()).getDatePart(), fi);
+                }
                 else
                 {
                 	erti = new ERTICaptionInfoQB(colName, lbl, true, getColumnFormatter(qfp.getFieldQRI(), forSchemaExport), 0, qfp.getStringId(), qfp.getPickList(), fi);
                 }
                 erti.setColClass(qfp.getFieldQRI().getDataClass());
                 if (!forSchemaExport && 
-                		qfp.getFieldInfo() != null && qfp.getFieldQRI().getFieldInfo().isPartialDate())
+                		qfp.getFieldInfo() != null /*&& !(erti instanceof ERTICaptionInfoDatePart)*/ && qfp.getFieldQRI().getFieldInfo().isPartialDate())
                 {
                     String precName = qfp.getFieldQRI().getFieldInfo().getDatePrecisionName();
                     

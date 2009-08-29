@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
@@ -28,7 +29,9 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.tasks.subpane.qb.DateAccessorQRI.DATEPART;
 
 /**
  * @author rod
@@ -55,17 +58,48 @@ public class TableQRI extends ExpandableQRI
         determineRel(); //probably not necessary
     }
         
+    /**
+     * @param fieldInfo the field to add
+     */
     public void addField(final DBFieldInfo fieldInfo)
     {
         fields.add(new FieldQRI(this, fieldInfo));
+        if (Calendar.class.isAssignableFrom(fieldInfo.getDataClass()))
+        {
+        	if (addDateAccessors(fieldInfo))
+        	{
+        		fields.add(new DateAccessorQRI(this, fieldInfo, DATEPART.NumericDay));
+        		fields.add(new DateAccessorQRI(this, fieldInfo, DATEPART.NumericMonth));
+        		fields.add(new DateAccessorQRI(this, fieldInfo, DATEPART.NumericYear));
+        	}
+        }        		
     }
     
+    /**
+     * @param fieldInfo
+     * @return true if Day,Month,Year accessors should be added for the (assumed) date
+     * field represented by fieldInfo.
+     * 
+     */
+    protected boolean addDateAccessors(final DBFieldInfo fieldInfo)
+    {
+    	return fieldInfo.getTableInfo().getClassObj().equals(CollectingEvent.class)
+    	  || fieldInfo.getTableInfo().getClassObj().equals(Determination.class);
+    }
+    
+    /**
+     * @param fieldQRI the field to add
+     */
     public void addField(final FieldQRI fieldQRI)
     {
         fieldQRI.setTable(this);
         fields.add(fieldQRI);
     }
     
+    /**
+     * @param fieldQRI the field whose clone to add
+     * @throws CloneNotSupportedException
+     */
     public void addFieldClone(final FieldQRI fieldQRI) throws CloneNotSupportedException
     {
         FieldQRI newField = (FieldQRI)fieldQRI.clone();
