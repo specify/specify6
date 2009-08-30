@@ -68,6 +68,8 @@ public class ExportMappingTask extends QueryTask
 	
 	protected static final String	DEF_IMP_PREF	= "ExportSchemaMapping.SchemaImportDir";
 	
+	//protected static final String[] unSupportedsubstitutionGroups = {"dwc"
+	
 	public ExportMappingTask()
 	{
 		super("ExportMappingTask",
@@ -335,21 +337,23 @@ public class ExportMappingTask extends QueryTask
 		if (queryBldrPane == null || queryBldrPane.aboutToShutdown())
 		{
 			SpExportSchema selectedSchema = chooseExportSchema();
-			exportSchema = selectedSchema;
-			schemaMapping = new SpExportSchemaMapping();
-			schemaMapping.initialize();
-			schemaMapping.setSpExportSchema(exportSchema);
-			SpQuery query = createNewQueryDataObj();
-			if (query != null)
+			if (selectedSchema != null) 
 			{
-				addingMapping.set(true);
-				try
+				exportSchema = selectedSchema;
+				schemaMapping = new SpExportSchemaMapping();
+				schemaMapping.initialize();
+				schemaMapping.setSpExportSchema(exportSchema);
+				SpQuery query = createNewQueryDataObj();
+				if (query != null) 
 				{
-					editQuery(query);
-				}
-				finally
-				{
-					addingMapping.set(false);
+					addingMapping.set(true);
+					try 
+					{
+						editQuery(query);
+					} finally 
+					{
+						addingMapping.set(false);
+					}
 				}
 			}
 		}
@@ -640,6 +644,17 @@ public class ExportMappingTask extends QueryTask
 		return false;
 	}
 	
+	protected boolean includeGroup(String substitutionGroupName)
+	{
+		return true;
+	}
+	
+	protected boolean includeTerm(Element term)
+	{
+		return term.attributeValue("type", null) != null
+			&& includeGroup(term.attributeValue("substitutionGroup", null));
+	}
+	
 	@SuppressWarnings("unchecked")
 	List<Object> getNodesForDef(final Element xsd)
 	{
@@ -650,21 +665,11 @@ public class ExportMappingTask extends QueryTask
 		}
 		catch (Exception ex)
 		{
-			System.out.println(ex.getLocalizedMessage());
+			//ignore: must be a newer schema that doesn't use "xsd:element"
 		}
 		if (result == null)
 		{
 			result = new LinkedList<Object>();
-//			for (Object grp : xsd.selectNodes("xs:group"))
-//			{
-//				for (Object seq : ((Element )grp).selectNodes("xs:sequence"))
-//				{
-//					for (Object obj : ((Element )seq).selectNodes("xs:element"))
-//					{
-//						result.add(obj);
-//					}
-//				}
-//			}
 			for (Object obj : xsd.selectNodes("xs:element"))
 			{
 				if (((Element )obj).attributeValue("type", null) != null)
