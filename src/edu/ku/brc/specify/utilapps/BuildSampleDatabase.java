@@ -3686,7 +3686,7 @@ public class BuildSampleDatabase
             {
                 AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
             }
-            geoTreeDef.updateAllNodeNumbers(earth, true, true);
+            geoTreeDef.updateAllNodes(earth, true, true);
             
         } catch (Exception ex)
         {
