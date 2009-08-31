@@ -45,6 +45,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.auth.specify.policy.DatabaseService;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -560,10 +561,10 @@ public class PermissionService
         {
             //XXX convert to hibernate
             conn = DatabaseService.getInstance().getConnection();   
-            String query = "SELECT sppermission.SpPermissionID FROM sppermission WHERE sppermission.Actions=\""+permission.getActions()+"\" " //$NON-NLS-1$ //$NON-NLS-2$
-            + "AND sppermission.Name=\""+permission.getName() + "\" " //$NON-NLS-1$ //$NON-NLS-2$
-            + "AND sppermission.PermissionClass=\""+permission.getClass().getCanonicalName()+ "\" "; //$NON-NLS-1$ //$NON-NLS-2$
-             pstmt = conn.prepareStatement(query);
+            String query = "SELECT sppermission.SpPermissionID FROM sppermission WHERE sppermission.Actions='"+permission.getActions()+"' " //$NON-NLS-1$ //$NON-NLS-2$
+            + "AND sppermission.Name='" + permission.getName() + "' " //$NON-NLS-1$ //$NON-NLS-2$
+            + "AND sppermission.PermissionClass='"+permission.getClass().getCanonicalName()+ "' "; //$NON-NLS-1$ //$NON-NLS-2$
+             pstmt = conn.prepareStatement(BasicSQLUtils.escapeStringLiterals(query));
             if(debug)log.debug("executing: " + query); //$NON-NLS-1$
             ResultSet rs = pstmt.executeQuery();
             while (rs.next())
