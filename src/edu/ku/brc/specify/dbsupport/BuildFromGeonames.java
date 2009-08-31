@@ -22,7 +22,6 @@ package edu.ku.brc.specify.dbsupport;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,15 +38,16 @@ import org.hibernate.Session;
 
 import edu.ku.brc.af.core.db.BackupServiceFactory;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
 import edu.ku.brc.ui.ProgressFrame;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rods
@@ -60,7 +60,9 @@ import edu.ku.brc.ui.ProgressFrame;
 public class BuildFromGeonames
 {
     private static final Logger  log      = Logger.getLogger(BuildFromGeonames.class);
-            
+    
+    private static String      dbName = "geonames";
+             
     protected GeographyTreeDef geoDef;
     protected String           nowStr;
     protected String           insertSQL = null;
@@ -70,7 +72,7 @@ public class BuildFromGeonames
     
     protected String           itUsername;
     protected String           itPassword;
-    protected Connection       connection;
+    protected Connection       connection = null;
     protected Connection       currConn;
     
     protected Hashtable<String, String>  countryToContHash     = new Hashtable<String, String>();
@@ -166,11 +168,11 @@ public class BuildFromGeonames
         Statement    updateStmt = null;
         try
         {
-            currConn = DBConnection.getInstance().createConnection();
-            
-            String dbName = "geonames";
-            
             DBConnection currDBConn = DBConnection.getInstance();
+            if (currConn == null)
+            {
+                currConn = currDBConn.createConnection();
+            }
             
             DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver(currDBConn.getDriverName());
             String             connStr    = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, currDBConn.getServerName(), dbName, itUsername, itPassword, driverInfo.getName());
@@ -187,7 +189,6 @@ public class BuildFromGeonames
                 frame.setProcess(0, count);
                 frame.setDesc("Creating Geography...");
             }
-            
             
             Hashtable<String, String> continentCodeFromName = new Hashtable<String, String>();
             ResultSet rs = stmt.executeQuery("SELECT code, name from continentCodes");
@@ -406,7 +407,7 @@ public class BuildFromGeonames
         {
             ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildFromGeonames.class, ex);
 
             try
             {
@@ -621,13 +622,13 @@ public class BuildFromGeonames
         } catch (ZipException ex)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildFromGeonames.class, ex);
             return null; //I think this means it is not a zip file.
             
         } catch (Exception ex)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildFromGeonames.class, ex);
             return null;
         }
         return outFile;
@@ -639,6 +640,43 @@ public class BuildFromGeonames
      */
     public boolean loadGeoNamesDB()
     {
+        try
+        {
+            DBConnection currDBConn = DBConnection.getInstance();
+            
+            DBMSUserMgr.DBSTATUS status = DBMSUserMgr.checkForDB(dbName, currDBConn.getServerName(), itUsername, itPassword);
+            
+            if (status == DBMSUserMgr.DBSTATUS.missingOrEmpty)
+            {
+                
+                DBMSUserMgr dbMgr = DBMSUserMgr.getInstance();
+                
+                if (dbMgr != null)
+                {
+                    if (dbMgr.connectToDBMS(itUsername, itPassword, currDBConn.getServerName()))
+                    {
+                        if (!dbMgr.createDatabase(dbName))
+                        {
+                            UIRegistry.showLocalizedError("ERROR_CRE_GEODB", dbName);
+                        }
+                    } else
+                    {
+                        UIRegistry.showLocalizedError("ERROR_LOGIN_GEODB", dbName);
+                    }
+                    
+                } else
+                {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildFromGeonames.class, new Exception("Couldn't create DBMSMgr"));
+                }
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildFromGeonames.class, ex);
+        }
+        
         File file = new File(XMLHelper.getConfigDirPath("geonames.sql.zip"));
         if (file.exists())
         {
