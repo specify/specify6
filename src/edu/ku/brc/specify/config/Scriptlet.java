@@ -370,13 +370,13 @@ public class Scriptlet extends JRDefaultScriptlet
         if (latitude != null && latitude.length() >= 1)
         {
             String temp1[] = latitude.split("deg");
-            locality += ", " + temp1[0] + temp1[1];
+            locality += ", " + temp1[0] + (temp1.length > 1 ? temp1[1] : "");
         }
 
         if (longitude != null && longitude.length() >= 1)
         {
             String temp2[] = longitude.split("deg");
-            locality += ", " + temp2[0] + temp2[1];
+            locality += ", " + temp2[0] + (temp2.length > 1 ? temp2[1] : "");
         }
 
         return locality;
