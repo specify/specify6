@@ -432,7 +432,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     public boolean updateAllNodes(final DataModelObjBase rootObj, final boolean useProgDlg, 
     		final boolean lockedByCaller) throws Exception
     {
-    	return treeTraversal(rootObj, useProgDlg, lockedByCaller, 0, TreeRebuilder.RebuildMode.NodeNumbers);
+    	return treeTraversal(rootObj, useProgDlg, lockedByCaller, 0, TreeRebuilder.RebuildMode.Full);
     }
     
     @Override
