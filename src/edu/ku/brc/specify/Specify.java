@@ -404,11 +404,12 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         AttachmentManagerIface attachMgr          = null;
         File                   attachmentLocation = null;
-        File location = UIRegistry.getAppDataSubDir("AttachmentStorage", true); //$NON-NLS-1$
+        File                   location           = UIRegistry.getAppDataSubDir("AttachmentStorage", true); //$NON-NLS-1$
+            
         try
         {
             String path = localPrefs.get(ATTACHMENT_PATH_PREF, null);
-            attachmentLocation = path != null ? new File(path) : location;
+            attachmentLocation = path != null && !UIRegistry.isMobile() ? new File(path) : location;
             if (!AttachmentUtils.isAttachmentDirMounted(attachmentLocation))
             {
                 UIRegistry.showLocalizedError("AttachmentUtils.LOC_BAD", location.getAbsolutePath());
