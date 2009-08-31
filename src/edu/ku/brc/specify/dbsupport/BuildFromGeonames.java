@@ -22,12 +22,16 @@ package edu.ku.brc.specify.dbsupport;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
@@ -75,18 +79,21 @@ public class BuildFromGeonames
     protected Connection       connection = null;
     protected Connection       currConn;
     
+    protected ArrayList<Object> rowData = new ArrayList<Object>();
+    
     protected Hashtable<String, String>  countryToContHash     = new Hashtable<String, String>();
-    protected Hashtable<String, String>  countryToAbbrevHash   = new Hashtable<String, String>();
     protected Hashtable<String, Integer> contToIdHash          = new Hashtable<String, Integer>();
     protected Hashtable<String, String>  continentNameFromCode = new Hashtable<String, String>();
+    
+    protected Hashtable<String, Hashtable<String, Integer>>  countryStateCodeToIdHash = new Hashtable<String, Hashtable<String, Integer>>();
     
     
     
     protected Hashtable<String, String>  stateToCountryHash = new Hashtable<String, String>();
-    protected Hashtable<String, Integer> countryToIdHash    = new Hashtable<String, Integer>();
+    protected Hashtable<String, Integer> countryCodeToIdHash    = new Hashtable<String, Integer>();
     
-    protected Hashtable<String, String>  countyToStateHash = new Hashtable<String, String>();
-    protected Hashtable<String, Integer> stateToIdHash    = new Hashtable<String, Integer>();
+    //protected Hashtable<String, String>  countyToStateHash = new Hashtable<String, String>();
+    //protected Hashtable<String, Integer> stateToIdHash    = new Hashtable<String, Integer>();
     
     /**
      * @param geoDef
@@ -199,14 +206,6 @@ public class BuildFromGeonames
             }
             rs.close();
             
-            rs = stmt.executeQuery("SELECT g.name AS CountryFullName, ci.name AS Country, cc.name, cc.code AS Continent FROM geoname g Inner Join countryinfo ci ON g.country = ci.iso_alpha2 Inner Join continentCodes cc ON ci.continent = cc.code ORDER BY Country");
-            while (rs.next())
-            {
-                //System.out.println("["+rs.getString(1)+"]["+rs.getString(2)+"]["+rs.getString(3)+"]["+rs.getString(4)+"]");
-                countryToContHash.put(rs.getString(1), rs.getString(4));
-            }
-            rs.close();
-            
             /*if (false) // For testing
             {
                 int delCnt = BasicSQLUtils.update(currConn, "DELETE FROM geography WHERE GeographyID > 1 AND RankId = 400");
@@ -227,7 +226,10 @@ public class BuildFromGeonames
             }
             
             int cnt = 0;
+            
+            //////////////////////
             // Continent
+            //////////////////////
             String sqlStr = "SELECT continentCodes.name, geoname.latitude, geoname.longitude, continentCodes.code FROM geoname Inner Join continentCodes ON geoname.name = continentCodes.name";
             rs = stmt.executeQuery(sqlStr);
             while (rs.next())
@@ -244,7 +246,7 @@ public class BuildFromGeonames
                     int rv = updateStmt.executeUpdate(sql.toString());
                     
                     Integer newId = BasicSQLUtils.getInsertedId(updateStmt);
-                    contToIdHash.put(rs.getString(1), newId);
+                    contToIdHash.put(rs.getString(4), newId);
                     
                     currConn.commit();
                 }
@@ -258,6 +260,10 @@ public class BuildFromGeonames
             }
             rs.close();
             
+            //////////////////////
+            // Countries
+            //////////////////////
+            
             // Make hash of Country Codes
             HashSet<String> countryCodes = new HashSet<String>();
             rs = stmt.executeQuery("SELECT DISTINCT country FROM geoname WHERE fcode = 'PCLI'");
@@ -267,59 +273,34 @@ public class BuildFromGeonames
             }
             rs.close();
             
-            rs = stmt.executeQuery("SELECT iso_alpha2 FROM countryinfo ORDER BY iso_alpha2");
-            while (rs.next())
-            {
-                String code = rs.getString(1);
-                if (!countryCodes.contains(code))
-                {
-                    //System.out.println(code);
-                    
-                    Statement tmpStmt = connection.createStatement();
-                    
-                    String str = "SELECT name, iso_alpha2, continent FROM countryinfo  WHERE iso_alpha2 = '"+code+"'";
-                    //log.debug(str);
-                    ResultSet tmpRS = tmpStmt.executeQuery(str);
-                    while (tmpRS.next())
-                    {
-                        createCountry(tmpRS.getString(1), tmpRS.getString(2), tmpRS.getString(3), 200);
-                        @SuppressWarnings("unused")
-                        int rv = updateStmt.executeUpdate(sql.toString());
-                        
-                        countryToAbbrevHash.put(tmpRS.getString(1), tmpRS.getString(2));
-                        
-                        Integer newId = BasicSQLUtils.getInsertedId(updateStmt);
-                        countryToIdHash.put(code, newId);
-                        
-                        currConn.commit();
-                    }
-                    tmpRS.close();
-                    tmpStmt.close();
-                    sql.setLength(insertSQL.length());
-                }
-            }
-            rs.close();
-            
             if (frame != null)
             {
                 frame.setDesc("Creating Countries...");
             }
-            // Country
+            
+            // First map all Countries to Continents
+            rs = stmt.executeQuery("SELECT name, iso_alpha2 AS CountryCode, continent FROM countryinfo ORDER BY continent, iso_alpha2");
+            while (rs.next())
+            {
+                String countryCode   = rs.getString(2);
+                String continentCode = rs.getString(3);
+                countryStateCodeToIdHash.put(countryCode, new Hashtable<String, Integer>());
+                countryToContHash.put(countryCode, continentCode);
+            }
+            rs.close();
+            
+            // Now create ll the countries in the geoname table
             sqlStr = "SELECT name, latitude, longitude, country FROM geonames.geoname WHERE fcode = 'PCLI' ORDER BY name";
             rs = stmt.executeQuery(sqlStr);
             while (rs.next())
             {
-                String nameStr = rs.getString(1);
                 if (buildInsert(rs, 200, earthId))
                 {
-                    countryToAbbrevHash.put(nameStr, rs.getString(4));
-                    
                     @SuppressWarnings("unused")
                     int rv = updateStmt.executeUpdate(sql.toString());
                     
                     Integer newId = BasicSQLUtils.getInsertedId(updateStmt);
-                    countryToIdHash.put(rs.getString(4), newId);
-                    
+                    countryCodeToIdHash.put(rs.getString(4), newId);
                     currConn.commit();
                 }
                 
@@ -334,25 +315,64 @@ public class BuildFromGeonames
             }
             rs.close();
             
+            // Create an Countries that referenced in the geoname table
+            rs = stmt.executeQuery("SELECT name, iso_alpha2 AS CountryCode, continent FROM countryinfo ORDER BY continent, iso_alpha2");
+            while (rs.next())
+            {
+                String countryCode   = rs.getString(2);
+                String continentCode = rs.getString(3);
+                
+                if (BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM geography WHERE RankID = 200 AND Abbrev = '"+countryCode+"'") == 0)
+                {
+                    String countryName = rs.getString(1);
+                    
+                    log.error("Adding country["+countryName+"]");
+                    
+                    createCountry(countryName, countryCode, continentCode, 200);
+                    @SuppressWarnings("unused")
+                    int rv = updateStmt.executeUpdate(sql.toString());
+                    
+                    Integer newId = BasicSQLUtils.getInsertedId(updateStmt);
+                    countryCodeToIdHash.put(countryCode, newId);
+                    
+                    currConn.commit();
+                    sql.setLength(insertSQL.length());
+                }
+            }
+            rs.close();
+            
             if (frame != null)
             {
                 frame.setDesc("Creating States...");
             }
             
-            // STATE
-            sqlStr = "SELECT name,  latitude, longitude, country FROM geonames.geoname WHERE fcode = 'ADM1' ORDER BY name";
+            //////////////////////
+            // States
+            //////////////////////
+            sqlStr = "SELECT name, latitude, longitude, country, admin1 as StateCode FROM geonames.geoname WHERE fcode = 'ADM1' ORDER BY name";
             rs = stmt.executeQuery(sqlStr);
             while (rs.next())
             {
                 if (buildInsert(rs, 300, earthId))
                 {
-                    String nameStr = rs.getString(1);
-                    stateToCountryHash.put(nameStr, rs.getString(4));
+                    String nameStr     = rs.getString(1);
+                    String countryCode = rs.getString(4);
+                    String stateCode   = rs.getString(5);
+                    
+                    stateToCountryHash.put(nameStr, countryCode);
                     
                     @SuppressWarnings("unused")
                     int rv = updateStmt.executeUpdate(sql.toString());
                     Integer newId = BasicSQLUtils.getInsertedId(updateStmt);
-                    stateToIdHash.put(nameStr, newId);
+                    
+                    Hashtable<String, Integer> stateToIdHash = countryStateCodeToIdHash.get(countryCode);
+                    if (stateToIdHash != null)
+                    {
+                        stateToIdHash.put(stateCode, newId);
+                    } else
+                    {
+                        log.error("****** Error - No State for code ["+stateCode+"]  Country: "+countryCode+"   Name: "+nameStr);
+                    }
     
                     currConn.commit();
                 }
@@ -368,13 +388,56 @@ public class BuildFromGeonames
             }
             rs.close();
             
+            // Create States that are referenced by Counties in Countries
+            sqlStr = "SELECT name AS CountyName, latitude, longitude, country, admin1 as StateCode FROM geonames.geoname WHERE fcode = 'ADM2' ORDER BY name";
+            rs = stmt.executeQuery(sqlStr);
+            while (rs.next())
+            {
+                String countryCode = rs.getString(4);
+                String stateCode   = rs.getString(5);
+                
+                Hashtable<String, Integer> stateToIdHash = countryStateCodeToIdHash.get(countryCode);
+                if (stateToIdHash != null && stateToIdHash.get(stateCode) == null)
+                {
+                    rowData.clear();
+                    rowData.add(stateCode);            // State Name, same as Code
+                    rowData.add(new BigDecimal(-1000));
+                    rowData.add(new BigDecimal(-1000));
+                    rowData.add(countryCode);
+                    rowData.add(stateCode);
+                                       
+                    if (buildInsert(rowData, 300, earthId))
+                    {
+                        stateToCountryHash.put(stateCode, countryCode);
+                        
+                        @SuppressWarnings("unused")
+                        int rv = updateStmt.executeUpdate(sql.toString());
+                        Integer newId = BasicSQLUtils.getInsertedId(updateStmt);
+                        
+                        stateToIdHash.put(stateCode, newId);
+                        
+                        currConn.commit();
+                    }
+                    sql.setLength(insertSQL.length());
+                }
+                
+                /*cnt++;
+                if (frame != null && cnt % 100 == 0)
+                {
+                    frame.setProcess(cnt);
+                }*/
+
+            }
+            rs.close();
             if (frame != null)
             {
                 frame.setDesc("Creating Counties...");
             }
             
-            // COUNTY
-            sqlStr = "SELECT name, latitude, longitude, country FROM geonames.geoname WHERE fcode = 'ADM2' ORDER BY name";
+            //////////////////////
+            // County
+            //////////////////////
+            sqlStr = "SELECT name, latitude, longitude, country, admin1 as StateCode FROM geonames.geoname WHERE fcode = 'ADM2' ORDER BY name";
             rs = stmt.executeQuery(sqlStr);
             while (rs.next())
             {
@@ -443,45 +506,67 @@ public class BuildFromGeonames
                                 final int       rankId,
                                 final int       earthId) throws SQLException
     {
+        rowData.clear();
+        for (int i=0;i<rs.getMetaData().getColumnCount();i++)
+        {
+            rowData.add(rs.getObject(i+1));
+        }
+        return buildInsert(rowData, rankId, earthId);
+    }
+    
+    /**
+     * @param rs
+     * @param geoDefItemId
+     * @throws SQLException
+     */
+    private boolean buildInsert(final List<Object> row, 
+                                final int          rankId,
+                                final int          earthId) throws SQLException
+    {
         
         GeographyTreeDefItem item         = geoDef.getDefItemByRank(rankId);
         int                  geoDefItemId = item.getId();
         
-        String nameStr = rs.getString(1).trim();
+        String nameStr = row.get(0).toString().trim();
         
         Integer parentId = null;
+        String  abbrev   = null;
         
         if (rankId == 100) // Country
         {
             parentId = earthId;
+            abbrev   = row.get(3).toString();
             
         } else if (rankId == 200) // Country
         {
-            String continentCode = countryToContHash.get(nameStr);
+            String countryCode   = row.get(3).toString();
+            String continentCode = countryToContHash.get(countryCode);
+            
+            abbrev = countryCode;
+            
             if (continentCode != null)
             {
-                String continentName = continentNameFromCode.get(continentCode);
-                if (continentName != null)
+                parentId = contToIdHash.get(continentCode);
+                if (parentId == null)
                 {
-                    parentId = contToIdHash.get(continentName);
-                    if (parentId == null)
-                    {
-                        log.error("No Continent Id for Name  ["+continentName+"]   Country["+nameStr+"]");
-                    }
-                } else
-                {
-                    log.error("No Continent Name for Code ["+continentCode+"]");
+                    log.error("No Continent Id for Name  continentCode["+continentCode+"]   Country["+nameStr+"]");
                 }
             } else
             {
-                log.error("No Continent Code for Country Name["+nameStr+"]["+rs.getString(4)+"]");
+                StringBuilder sb = new StringBuilder("No Continent Code ["+continentCode+":\n");
+                for (int i=0;i<row.size();i++)
+                {
+                    sb.append(i+" - "+row.get(i)+"\n");
+                }
+                log.error(sb.toString());
             }
             
         } else if (rankId == 300) // State
         {
-            String countryCode = rs.getString(4);
+            String countryCode = row.get(3).toString();
+            abbrev             = row.get(4).toString();
             
-            parentId = countryToIdHash.get(countryCode);
+            parentId = countryCodeToIdHash.get(countryCode);
             if (parentId == null)
             {
                 log.error("No Country Code Id for ["+countryCode+"]["+nameStr+"]");
@@ -489,10 +574,22 @@ public class BuildFromGeonames
             
         } else if (rankId == 400) // County
         {
-            parentId = countryToIdHash.get(rs.getString(4));
-            if (parentId == null)
+            String stateCode   = row.get(4).toString();
+            String countryCode = row.get(3).toString();
+            
+            abbrev = row.get(3).toString();
+            
+            Hashtable<String, Integer> stateToIdHash = countryStateCodeToIdHash.get(countryCode);
+            if (stateToIdHash != null)
             {
-                log.error("No State Id for CC["+rs.getString(4)+"]  State["+nameStr+"]");
+                parentId = stateToIdHash.get(stateCode);
+                if (parentId == null)
+                {
+                    log.error("No State Id for CC["+countryCode+"]  stateCode["+stateCode+"] County["+nameStr+"]");
+                }
+            } else
+            {
+                log.error("No State Hash for CC["+countryCode+"]  State["+stateCode+"] Name: "+row.get(1));
             }
         }
         
@@ -504,6 +601,9 @@ public class BuildFromGeonames
         
         if (parentId != null)
         {
+            Double lat = ((BigDecimal)row.get(1)).doubleValue();
+            Double lon = ((BigDecimal)row.get(2)).doubleValue();
+            
             sql.append("\"");
             sql.append(nameStr);
             sql.append("\",");
@@ -517,11 +617,12 @@ public class BuildFromGeonames
             sql.append(",");
             sql.append(createdByAgent == null ? 1 : createdByAgent.getId());
             sql.append(",");
-            sql.append(rs.getDouble(2)); // Lat
+            sql.append(lat > -181 ? lat.toString() : "NULL"); // Lat
             sql.append(",");
-            sql.append(rs.getDouble(3)); // Lon
+            sql.append(lon > -181 ? lon.toString() : "NULL"); // Lon
             sql.append(",");
-            sql.append(StringUtils.isNotEmpty(rs.getString(4)) ? ("\"" + rs.getString(4) + "\""): "NULL"); // Abbrev
+            
+            sql.append(StringUtils.isNotEmpty(abbrev) ? ("\"" + abbrev + "\""): "NULL"); // Abbrev
             sql.append(",\"");
             sql.append(nowStr);
             sql.append("\",\"");
@@ -545,19 +646,12 @@ public class BuildFromGeonames
         
         Integer parentId = null;
         
-        String continentName = continentNameFromCode.get(continentCode);
-        if (continentName != null)
+        parentId = contToIdHash.get(continentCode);
+        if (parentId == null)
         {
-            parentId = contToIdHash.get(continentName);
-            if (parentId == null)
-            {
-                log.error("No Continent Id for Name  ["+continentName+"]   Country["+nameStr+"]");
-            }
-        } else
-        {
-            log.error("No Continent Name for Code ["+continentCode+"]");
+            log.error("No Continent Id for continentCode["+continentCode+"]   Country["+nameStr+"]");
         }
-        
+    
         if (parentId != null || rankId == 100)
         {
             sql.append("\"");

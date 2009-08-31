@@ -7290,36 +7290,39 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             rs.close();
             stmt.close();
             
-            // Now assign the appropriate PaleoContext to the CollectionObject
-            stmt = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            
-            sql  = "SELECT CollectionObjectID, CollectingEventID FROM collectionobject";
-            rs   = stmt.executeQuery(sql);
-            
-            while (rs.next())
+            if (lithoStratIdMapper != null)
             {
-                if (rs.getObject(2) == null) continue;
-                    
-                int coId = lithoStratIdMapper.get(rs.getInt(1));
-                int ceId = lithoStratIdMapper.get(rs.getInt(2));
-                try
+                // Now assign the appropriate PaleoContext to the CollectionObject
+                stmt = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                
+                sql  = "SELECT CollectionObjectID, CollectingEventID FROM collectionobject";
+                rs   = stmt.executeQuery(sql);
+                
+                while (rs.next())
                 {
-                    Integer paleoContextID = ceToPCHash.get(ceId);
-                    
-                    String sqlUpdate = "UPDATE collectionobject SET PaleoContextID=" + paleoContextID + " WHERE CollectingEventID = " + coId;
-                    updateStatement.executeUpdate(sqlUpdate);
-
-                } catch (SQLException e)
-                {
-                    e.printStackTrace();
-                    log.error(e);
-                    showError(e.getMessage());
-                    throw new RuntimeException(e);
+                    if (rs.getObject(1) == null || rs.getObject(2) == null) continue;
+                        
+                    int coId = lithoStratIdMapper.get(rs.getInt(1));
+                    int ceId = lithoStratIdMapper.get(rs.getInt(2));
+                    try
+                    {
+                        Integer paleoContextID = ceToPCHash.get(ceId);
+                        
+                        String sqlUpdate = "UPDATE collectionobject SET PaleoContextID=" + paleoContextID + " WHERE CollectingEventID = " + coId;
+                        updateStatement.executeUpdate(sqlUpdate);
+    
+                    } catch (SQLException e)
+                    {
+                        e.printStackTrace();
+                        log.error(e);
+                        showError(e.getMessage());
+                        throw new RuntimeException(e);
+                    }
                 }
+                
+                rs.close();
+                stmt.close();
             }
-            
-            rs.close();
-            stmt.close();
             updateStatement.close();
     
             // set up Geography foreign key mapping for locality
