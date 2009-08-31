@@ -1071,13 +1071,20 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
             UIRegistry.setBaseAppDataDir(appdatadir);
         }
         
-     // For Debugging Only 
+        // For Debugging Only 
         //System.setProperty("mobile", "true");
+        //System.setProperty("embedded", "true");
         
         String mobile = System.getProperty("mobile");
         if (StringUtils.isNotEmpty(mobile))
         {
             UIRegistry.setMobile(true);
+        }
+        
+        String embeddedStr = System.getProperty("embedded");
+        if (StringUtils.isNotEmpty(embeddedStr))
+        {
+            UIRegistry.setEmbedded(true);
         }
         
         String embeddeddbdir = System.getProperty("embeddeddbdir");

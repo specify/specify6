@@ -365,11 +365,18 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
         
         // For Debugging Only 
         //System.setProperty("mobile", "true");
+        //System.setProperty("embedded", "true");
         
         String mobile = System.getProperty("mobile");
         if (StringUtils.isNotEmpty(mobile))
         {
             UIRegistry.setMobile(true);
+        }
+        
+        String embeddedStr = System.getProperty("embedded");
+        if (StringUtils.isNotEmpty(embeddedStr))
+        {
+            UIRegistry.setEmbedded(true);
         }
         
         String embeddeddbdir = System.getProperty("embeddeddbdir");
@@ -410,6 +417,16 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
                 if (localPrefs.getBoolean(EXTRA_CHECK, null) == null)
                 {
                     localPrefs.putBoolean(EXTRA_CHECK, true);
+                }
+                
+                if (UIHelper.isLinux())
+                {
+                    Specify.checkForSpecifyAppsRunning();
+                }
+                
+                if (UIRegistry.isEmbedded())
+                {
+                    checkForMySQLProcesses();
                 }
                 
                 setUpSystemProperties();

@@ -143,6 +143,9 @@ public class UIRegistry
     protected static int              STD_WAIT_TIME    = 2000; // 2 Seconds
     public    static int              STD_FONT_SIZE    = 20;   // 20 point size
     
+    protected static Boolean          isEmbedded       = null;
+    protected static Boolean          isMobile         = null;
+    
 
     // Data Members
     protected Hashtable<String, Component> components  = new Hashtable<String, Component>();
@@ -1668,7 +1671,7 @@ public class UIRegistry
      */
     public static void setMobile(final boolean isMobile)
     {
-        System.setProperty("mobile", isMobile ? "true" : "false");
+        UIRegistry.isMobile = isMobile;
     }
     
     /**
@@ -1676,10 +1679,25 @@ public class UIRegistry
      */
     public static boolean isMobile()
     {
-        String isMobileStr = System.getProperty("mobile");
-        return StringUtils.isNotEmpty(isMobileStr) && isMobileStr.equals("true");
+        return isMobile != null && isMobile;
     }
     
+    /**
+     * @return the isEmbedded
+     */
+    public static Boolean isEmbedded()
+    {
+        return isEmbedded != null && isEmbedded;
+    }
+
+    /**
+     * @param isEmbedded the isEmbedded to set
+     */
+    public static void setEmbedded(Boolean isEmbedded)
+    {
+        UIRegistry.isEmbedded = isEmbedded;
+    }
+
     /**
      * Sets the path to the embedded DB.
      * @param path the path.

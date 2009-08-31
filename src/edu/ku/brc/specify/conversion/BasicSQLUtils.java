@@ -882,6 +882,8 @@ public class BasicSQLUtils
     }
     
     /**
+     * Escaped and delimited string for use in SQL, 
+     * using appropriate delimiter for DestinationServerType
      * @param str
      * @return escaped and delimited string for use in SQL, 
      * using appropriate delimiter for DestinationServerType
@@ -903,7 +905,8 @@ public class BasicSQLUtils
 	}
     
     /**
-     * @param str
+     * Escapes the single quote so it can be part of the data without causing an exception.
+     * @param str the string to be escaped
      * @return escaped version of str 
      * 
      * Delimiter is assumed to be "'"

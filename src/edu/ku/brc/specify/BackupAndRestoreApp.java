@@ -74,6 +74,7 @@ import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
+import edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame;
 import edu.ku.brc.specify.prefs.MySQLPrefs;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
@@ -173,7 +174,7 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         setPreferredSize(new Dimension(1024, 768)); // For demo
         
         topFrame = new JFrame(gc);
-        topFrame.setIconImage(IconManager.getImage("AppIcon").getImage()); //$NON-NLS-1$
+        topFrame.setIconImage(IconManager.getImage("Backup", IconManager.IconSize.Std32).getImage()); //$NON-NLS-1$
         //topFrame.setAlwaysOnTop(true);
         
         topFrame.setGlassPane(glassPane = GhostGlassPane.getInstance());
@@ -541,6 +542,16 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
     {
         log.debug("StartUp..."); //$NON-NLS-1$
         
+        if (UIHelper.isLinux())
+        {
+            Specify.checkForSpecifyAppsRunning();
+        }
+        
+        if (UIRegistry.isEmbedded())
+        {
+            SpecifyDBSetupWizardFrame.checkForMySQLProcesses();
+        }
+        
         // Adjust Default Swing UI Default Resources (Color, Fonts, etc) per Platform
         UIHelper.adjustUIDefaults();
         
@@ -781,13 +792,20 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
            UIRegistry.setBaseAppDataDir(appdatadir);
        }
        
-    // For Debugging Only 
+       // For Debugging Only 
        //System.setProperty("mobile", "true");
+       //System.setProperty("embedded", "true");
        
        String mobile = System.getProperty("mobile");
        if (StringUtils.isNotEmpty(mobile))
        {
            UIRegistry.setMobile(true);
+       }
+       
+       String embeddedStr = System.getProperty("embedded");
+       if (StringUtils.isNotEmpty(embeddedStr))
+       {
+           UIRegistry.setEmbedded(true);
        }
        
        String embeddeddbdir = System.getProperty("embeddeddbdir");

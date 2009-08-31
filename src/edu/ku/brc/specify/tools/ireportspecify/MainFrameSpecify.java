@@ -90,6 +90,7 @@ import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpAppResourceData;
@@ -1688,11 +1689,18 @@ public class MainFrameSpecify extends MainFrame
         
         // For Debugging Only 
         //System.setProperty("mobile", "true");
+        //System.setProperty("embedded", "true");
         
         String mobile = System.getProperty("mobile");
         if (StringUtils.isNotEmpty(mobile))
         {
             UIRegistry.setMobile(true);
+        }
+        
+        String embeddedStr = System.getProperty("embedded");
+        if (StringUtils.isNotEmpty(embeddedStr))
+        {
+            UIRegistry.setEmbedded(true);
         }
         
         String embeddeddbdir = System.getProperty("embeddeddbdir");
@@ -1713,8 +1721,6 @@ public class MainFrameSpecify extends MainFrame
         IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml")); //$NON-NLS-1$
         IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml")); //$NON-NLS-1$
         IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml")); //$NON-NLS-1$
-
-        
         
         System.setProperty(AppContextMgr.factoryName,                   "edu.ku.brc.specify.config.SpecifyAppContextMgr");      // Needed by AppContextMgr //$NON-NLS-1$
         System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");         // Needed by AppReferences //$NON-NLS-1$
@@ -1768,6 +1774,16 @@ public class MainFrameSpecify extends MainFrame
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, e);
                     log.error("Can't change L&F: ", e); //$NON-NLS-1$
+                }
+                
+                if (UIHelper.isLinux())
+                {
+                    Specify.checkForSpecifyAppsRunning();
+                }
+                
+                if (UIRegistry.isEmbedded())
+                {
+                    SpecifyDBSetupWizardFrame.checkForMySQLProcesses();
                 }
                 
                 DatabaseLoginPanel.MasterPasswordProviderIFace usrPwdProvider = new DatabaseLoginPanel.MasterPasswordProviderIFace()

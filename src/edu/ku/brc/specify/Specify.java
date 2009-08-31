@@ -342,7 +342,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     public static void checkForSpecifyAppsRunning()
     {
-        List<Integer> ids = ProcessListUtil.getProcessIdWithText("exe4j.moduleName", "specify");
+        List<Integer> ids = ProcessListUtil.getProcessIdWithText("exe4j.moduleName", "specify", "SpiReport");
         if (ids.size() > 1)
         {
             UIRegistry.showLocalizedMsg("WARNING", "Specify.TOO_MANY_SP");
@@ -362,7 +362,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     	    checkForSpecifyAppsRunning();
     	}
     	
-    	SpecifyDBSetupWizardFrame.checkForMySQLProcesses();
+    	if (UIRegistry.isEmbedded())
+    	{
+    	    SpecifyDBSetupWizardFrame.checkForMySQLProcesses();
+    	}
     	
         // Adjust Default Swing UI Default Resources (Color, Fonts, etc) per Platform
         UIHelper.adjustUIDefaults();
@@ -2993,11 +2996,18 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
           
       // For Debugging Only 
       //System.setProperty("mobile", "true");
+      System.setProperty("embedded", "true");
       
       String mobile = System.getProperty("mobile");
       if (StringUtils.isNotEmpty(mobile))
       {
           UIRegistry.setMobile(true);
+      }
+      
+      String embeddedStr = System.getProperty("embedded");
+      if (StringUtils.isNotEmpty(embeddedStr))
+      {
+          UIRegistry.setEmbedded(true);
       }
       
       String embeddeddbdir = System.getProperty("embeddeddbdir");
