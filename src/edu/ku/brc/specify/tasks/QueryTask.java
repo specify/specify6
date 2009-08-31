@@ -1885,11 +1885,67 @@ public class QueryTask extends BaseTask
     }
     
     /**
+     * @return id for usage tracker
+     */
+    protected String getExportUsageKey()
+    {
+    	return "QB.EXPORT";
+    }
+    
+    /**
+     * @return i18n resource id
+     */
+    protected String getNothingToExporti18nKey()
+    {
+    	return "QY_NO_QUERIES_TO_EXPORT";
+    }
+    
+    /**
+     * @return resource id for export dialog title
+     */
+    protected String getExportDlgTitlei18nKey()
+    {
+    	return "QY_EXPORT_QUERIES";
+    }
+    
+    /**
+     * @return resource id for export dialog message
+     */
+    protected String getExportDlgMsgi18nKey()
+    {
+    	return "QY_SEL_QUERIES_EXP";
+    }
+    
+    /**
+     * @return export help context id
+     */
+    protected String getExportHelpContext()
+    {
+    	return "QBExport";
+    }
+    
+    /**
+     * @return first line for export section
+     */
+    protected String getXMLExportFirstLine()
+    {
+    	return "<queries>\n";
+    }
+
+    /**
+     * @return last line for export section
+     */
+    protected String getXMLExportLastLine()
+    {
+    	return "</queries>";
+    }
+
+    /**
      * 
      */
     protected void exportQueries()
     {
-        UsageTracker.incrUsageCount("QB.EXPORT");
+        UsageTracker.incrUsageCount(getExportUsageKey());
         Vector<String> list = new Vector<String>();
         for (NavBoxItemIFace nbi : navBox.getItems())
         {
@@ -1899,7 +1955,7 @@ public class QueryTask extends BaseTask
         List<String> selectedList = null;
         if (list.size() == 0)
         {
-        	UIRegistry.showLocalizedMsg("QY_NO_QUERIES_TO_EXPORT");
+        	UIRegistry.showLocalizedMsg(getNothingToExporti18nKey());
         	return;
         }
         if (list.size() == 1)
@@ -1908,21 +1964,21 @@ public class QueryTask extends BaseTask
         } else
         {
             ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)UIRegistry.getMostRecentWindow(),
-                    "QY_EXPORT_QUERIES",
-                    "QY_SEL_QUERIES_EXP",
+            		getExportDlgTitlei18nKey(),
+            		getExportDlgMsgi18nKey(),
                     list,
                     CustomDialog.OKCANCELHELP,
                     ToggleButtonChooserPanel.Type.Checkbox);
             dlg.setAddSelectAll(true);
             dlg.setUseScrollPane(true);
-            dlg.setHelpContext("QBExport");
+            dlg.setHelpContext(getExportHelpContext());
             UIHelper.centerAndShow(dlg);
             selectedList = dlg.getSelectedObjects();
         }
         
         String path = AppPreferences.getLocalPrefs().get(XML_PATH_PREF, null);
         
-        FileDialog fDlg = new FileDialog(((Frame)UIRegistry.getTopWindow()), "Save", FileDialog.SAVE);
+        FileDialog fDlg = new FileDialog(((Frame)UIRegistry.getTopWindow()), UIRegistry.getResourceString("SAVE"), FileDialog.SAVE);
         if (path != null)
         {
             fDlg.setDirectory(path);
@@ -1970,12 +2026,12 @@ public class QueryTask extends BaseTask
             }
             
             StringBuilder sb = new StringBuilder();
-            sb.append("<queries>\n");
+            sb.append(getXMLExportFirstLine());
             for (SpQuery q : queries)
             {
                 q.toXML(sb);
             }
-            sb.append("</queries>");
+            sb.append(getXMLExportLastLine());
             FileUtils.writeStringToFile(new File(path), sb.toString());
             
         } catch (Exception ex)

@@ -20,6 +20,9 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.log4j.Logger;
+import org.dom4j.Element;
+
+import edu.ku.brc.helpers.XMLHelper;
 
 /**
  * @author timbo
@@ -49,6 +52,65 @@ public class SpExportSchemaMapping extends DataModelObjBase
 	{
 		
 	}
+
+    /**
+     * @param sb StringBuilder to hold XML
+     * 
+     * constructs an XML representation for the schema mapping.
+     */
+    public void toXML(final StringBuilder sb)
+    {
+        sb.append("<spexportschemamapping ");
+        XMLHelper.addAttr(sb, "mappingName", mappingName);
+        XMLHelper.addAttr(sb, "description", description);
+        sb.append(">\r\n");
+        sb.append("<spexportschemas>\n");
+        for (SpExportSchema schema : spExportSchemas)
+        {
+        	schema.toXML(sb);
+        }
+        sb.append("</spexportschemas>\n");
+        
+        sb.append("<spexportschemaitemmappings>\n");
+        for (SpExportSchemaItemMapping mapping : mappings)
+        {
+        	mapping.toXML(sb);
+        }
+        sb.append("</spexportschemaitemsmappings>\n");
+        
+        sb.append("</spexportschemamapping>");    	
+    }
+	
+    /**
+     * @param element Element containing attributes for the schema mapping
+     * @param query the query associated with the schema mapping
+     * Loads attributes from a dom Element
+     */
+    public void fromXML(final Element element, final SpQuery query)
+    {
+    	mappingName = XMLHelper.getAttr(element, "mappingName", null);
+    	description = XMLHelper.getAttr(element, "description", null);
+
+        for (Object obj : element.selectNodes("spexportschemas/spexportschema"))
+        {
+            Element schemaEl = (Element)obj;
+            SpExportSchema schema = new SpExportSchema();
+            schema.initialize();
+            schema.fromXML(schemaEl);
+            schema.getSpExportSchemaMappings().add(this);
+            spExportSchemas.add(schema);
+        }
+        
+        for (Object obj : element.selectNodes("spexportschemaitemmappings/spexportschemaitemmapping"))
+        {
+        	Element mappingEl = (Element )obj;
+        	SpExportSchemaItemMapping mapping = new SpExportSchemaItemMapping();
+        	mapping.initialize();
+        	mapping.fromXML(mappingEl, query, this);
+        	mapping.setExportSchemaMapping(this);
+        	mappings.add(mapping);
+        }        
+    }
 	
     @Id
     @GeneratedValue

@@ -52,6 +52,7 @@ import edu.ku.brc.ui.UIRegistry;
  * Feb 4, 2009
  *
  */
+@SuppressWarnings("serial")
 public class ResImpExpMetaInfoDlg extends CustomDialog
 {
     protected JComboBox     mimeTypeCBX;  // text/xml, jrxml/label, jrxml/report, jrxml/subreport
@@ -75,7 +76,7 @@ public class ResImpExpMetaInfoDlg extends CustomDialog
      */
     public ResImpExpMetaInfoDlg(final SpAppResource appRes)
     {
-        super((Frame)UIRegistry.getTopWindow(), "Resource Import / Export", true, OKCANCELHELP, null); //$NON-NLS-1$   // I18N
+        super((Frame)UIRegistry.getTopWindow(), UIRegistry.getResourceString("ResImpExpMetaInfoDlg.DlgTitle"), true, OKCANCELHELP, null); //$NON-NLS-1$   // I18N
         
         this.appRes = appRes;
     }

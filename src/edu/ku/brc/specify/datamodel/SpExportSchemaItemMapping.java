@@ -13,6 +13,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.dom4j.Element;
+
+import edu.ku.brc.helpers.XMLHelper;
+
 /**
  * @author timbo
  *
@@ -36,6 +40,62 @@ public class SpExportSchemaItemMapping extends DataModelObjBase
     public SpExportSchemaItemMapping()
     {
     	//nothing
+    }
+    
+    
+    /**
+     * @param sb StringBuilder to hold XML
+     * 
+     * constructs an XML representation for the mapping.
+     */
+    public void toXML(final StringBuilder sb)
+    {
+    	sb.append("<spexportschemaitemmapping ");
+    	XMLHelper.addAttr(sb, "queryField", queryField.getStringId()); //unique id for field within query
+    	XMLHelper.addAttr(sb, "exportSchema", exportSchemaItem.getSpExportSchema().getSchemaName());
+    	XMLHelper.addAttr(sb, "exportSchemaItem", exportSchemaItem.getFieldName()); //unique id for item in schema
+    	XMLHelper.addAttr(sb, "remarks", remarks);
+    	sb.append(" />\n");
+    }
+    
+    /**
+     * @param element Element containing attributes for the schema mapping
+     * @param query
+     * @param schemaMapping
+     * 
+     * Loads attributes from a dom Element
+     */
+    public void fromXML(final Element element, final SpQuery query, final SpExportSchemaMapping schemaMapping)
+    {
+    	remarks = XMLHelper.getAttr(element, "remarks", null);
+    	
+    	String qfId = XMLHelper.getAttr(element, "queryField", null);
+    	for (SpQueryField qf : query.getFields())
+    	{
+    		if (qf.getStringId().equals(qfId))
+    		{
+    			queryField = qf;
+    			break;
+    		}
+    	}
+    	
+    	String schemaName = XMLHelper.getAttr(element, "exportSchema", null);
+    	for (SpExportSchema es : schemaMapping.getSpExportSchemas())
+    	{
+    		if (es.getSchemaName().equals(schemaName))
+    		{
+    	    	String itemName = XMLHelper.getAttr(element, "exportSchemaItem", null);
+    	    	for (SpExportSchemaItem esi : es.getSpExportSchemaItems())
+    	    	{
+    	    		if (esi.getFieldName().equals(itemName))
+    	    		{
+    	    			exportSchemaItem = esi;
+    	    			break;
+    	    		}
+    	    	}
+    		}
+    	}
+    	
     }
     
 	/* (non-Javadoc)
@@ -134,7 +194,7 @@ public class SpExportSchemaItemMapping extends DataModelObjBase
 	 * @return the exportMapping
 	 */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "SpQueryFieldID", unique = false, nullable = true, insertable = true, updatable = true)
+    @JoinColumn(name = "SpQueryFieldID", unique = false, nullable = false, insertable = true, updatable = true)
 	public SpQueryField getQueryField()
 	{
 		return queryField;

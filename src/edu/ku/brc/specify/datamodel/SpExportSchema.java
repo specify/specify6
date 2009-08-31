@@ -34,8 +34,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.dom4j.Element;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+
+import edu.ku.brc.helpers.XMLHelper;
 
 /**
  * @author rod
@@ -66,6 +69,50 @@ public class SpExportSchema extends DataModelObjBase
     public SpExportSchema()
     {
         super();
+    }
+    
+    
+    /**
+     * @param sb StringBuilder to hold XML
+     * 
+     * constructs an XML representation for the schema.
+     */
+    public void toXML(final StringBuilder sb)
+    {
+        sb.append("<spexportschema ");
+        XMLHelper.addAttr(sb, "schemaName", schemaName);
+        XMLHelper.addAttr(sb, "schemaVersion", schemaVersion);
+        XMLHelper.addAttr(sb, "description", description);
+        sb.append(">\r\n");
+        sb.append("<spexportschemaitems>\n");
+        for (SpExportSchemaItem item : spExportSchemaItems)
+        {
+        	item.toXML(sb);
+        }
+        sb.append("</spexportschemaitems>\n");
+        
+        sb.append("</spexportschema>");    	
+    }
+    
+    /**
+     * @param element Element containing attributes for the schema
+     * 
+     * Loads attributes and items from a dom Element
+     */
+    public void fromXML(final Element element)
+    {
+    	schemaName = XMLHelper.getAttr(element, "schemaName", null);
+    	schemaVersion = XMLHelper.getAttr(element, "schemaVersion", null);
+    	description = XMLHelper.getAttr(element, "description", null);
+        for (Object obj : element.selectNodes("spexportschemaitems/spexportschemaitem"))
+        {
+            Element itemEl = (Element)obj;
+            SpExportSchemaItem item = new SpExportSchemaItem();
+            item.initialize();
+            item.fromXML(itemEl);
+            item.setSpExportSchema(this);
+            spExportSchemaItems.add(item);
+        }
     }
     
     /* (non-Javadoc)

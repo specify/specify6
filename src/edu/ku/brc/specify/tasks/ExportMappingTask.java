@@ -727,5 +727,69 @@ public class ExportMappingTask extends QueryTask
 		result.setDataType(itemElement.attributeValue("type"));
 		return result;
 	}
+
+
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.QueryTask#getExportDlgMsgi18nKey()
+	 */
+	@Override
+	protected String getExportDlgMsgi18nKey() {
+		return "ExportMappingTask.NothingToExport";
+	}
+
+
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.QueryTask#getExportDlgTitlei18nKey()
+	 */
+	@Override
+	protected String getExportDlgTitlei18nKey() {
+		return "ExportMappingTask.EXPORT_QUERIES";
+	}
+
+
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.QueryTask#getExportHelpContext()
+	 */
+	@Override
+	protected String getExportHelpContext() {
+		// TODO Auto-generated method stub
+		//XXX help for mapper???
+		return super.getExportHelpContext();
+	}
+
+
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.QueryTask#getExportUsageKey()
+	 */
+	@Override
+	protected String getExportUsageKey() {
+		return "ExportMapper.Export";
+	}
+
+
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.QueryTask#getXMLExportFirstLine()
+	 */
+	@Override
+	protected String getXMLExportFirstLine() {
+		return "<spexportschemamappings>\n";
+	}
+
+
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.QueryTask#getXMLExportLastLine()
+	 */
+	@Override
+	protected String getXMLExportLastLine() {
+		return "</spexportschemamappings>";
+	}
+	
+	
 }
 
