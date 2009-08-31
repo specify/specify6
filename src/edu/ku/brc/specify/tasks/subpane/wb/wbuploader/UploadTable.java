@@ -2204,7 +2204,7 @@ public class UploadTable implements Comparable<UploadTable>
                 }
             }
             
-            if (tblClass.equals(Locality.class) && llFmt1 != llFmt2 && llFmt2 != LatLonConverter.FORMAT.None)
+            if (tblClass.equals(Locality.class) && llFmt1 != llFmt2 && llFmt2 != null && llFmt2 != LatLonConverter.FORMAT.None)
             {
                 invalidValues.add(new UploadTableInvalidValue(null, this, llFld, row, 
                         new Exception(UIRegistry.getResourceString("WB_UPLOADER_INVALID_LATLONG"))));
