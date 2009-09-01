@@ -114,6 +114,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
@@ -1106,7 +1107,8 @@ public class TableViewObj implements Viewable,
                         comp.validate();
                         comp.repaint();
                     }
-                } else if (dialog.getBtnPressed() == ViewBasedDisplayIFace.CANCEL_BTN)
+                } else if (dialog.getBtnPressed() == ViewBasedDisplayIFace.CANCEL_BTN ||
+                           dialog.getBtnPressed() == CustomDialog.NONE_BTN)
                 {
                     // since it was added in before the dlg was shown we now need to remove.
                     if (parentDataObj != null && isEditing && isNew)
