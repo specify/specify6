@@ -29,7 +29,6 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
-import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.tasks.subpane.qb.DateAccessorQRI.DATEPART;
 
@@ -83,8 +82,12 @@ public class TableQRI extends ExpandableQRI
      */
     protected boolean addDateAccessors(final DBFieldInfo fieldInfo)
     {
-    	return fieldInfo.getTableInfo().getClassObj().equals(CollectingEvent.class)
-    	  || fieldInfo.getTableInfo().getClassObj().equals(Determination.class);
+    	//Assuming fieldInfo has already been determined to be a Calendar field.
+    	
+    	return true;
+    	
+    	//return fieldInfo.getTableInfo().getClassObj().equals(CollectingEvent.class)
+    	//  || fieldInfo.getTableInfo().getClassObj().equals(Determination.class);
     }
     
     /**

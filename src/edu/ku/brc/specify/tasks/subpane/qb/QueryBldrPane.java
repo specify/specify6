@@ -1432,7 +1432,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         
         String result = sqlStr.toString();
         log.info(result);
-         return new HQLSpecs(result, paramsToSet, sortElements);
+        return new HQLSpecs(result, paramsToSet, sortElements);
     }
   
     /**
@@ -1914,17 +1914,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         treeGrps.add(newTg);
                     }
                 }
-                else if (qfp.getFieldQRI() instanceof DateAccessorQRI)
-                {
-                	erti = new ERTICaptionInfoDatePart(colName, lbl, qfp.getStringId(), ((DateAccessorQRI) qfp.getFieldQRI()).getDatePart(), fi);
-                }
                 else
                 {
                 	erti = new ERTICaptionInfoQB(colName, lbl, true, getColumnFormatter(qfp.getFieldQRI(), forSchemaExport), 0, qfp.getStringId(), qfp.getPickList(), fi);
                 }
                 erti.setColClass(qfp.getFieldQRI().getDataClass());
                 if (!forSchemaExport && 
-                		qfp.getFieldInfo() != null /*&& !(erti instanceof ERTICaptionInfoDatePart)*/ && qfp.getFieldQRI().getFieldInfo().isPartialDate())
+                		qfp.getFieldInfo() != null && !(qfp.getFieldQRI() instanceof DateAccessorQRI) && qfp.getFieldQRI().getFieldInfo().isPartialDate())
                 {
                     String precName = qfp.getFieldQRI().getFieldInfo().getDatePrecisionName();
                     
@@ -2851,7 +2847,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     if (fld instanceof FieldQRI)
                     {
                         FieldQRI qri2 = (FieldQRI )fld;
-                        if (qri2.getFieldName().equals(qri.getFieldName()))
+                        if (qri2.getStringId().equals(qri.getStringId()))
                         {
                             qri2.setIsInUse(true);
                         }
@@ -3259,6 +3255,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				{
 					BaseQRI qri = qfp.getFieldQRI() instanceof RelQRI ? qfp
 							.getFieldQRI().getTable() : qfp.getFieldQRI();
+					boolean done = false;
 					for (JList lb : listBoxList)
 					{
 						if (lb.isVisible())
@@ -3266,12 +3263,24 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 							for (int i = 0; i < ((DefaultListModel) lb
 									.getModel()).getSize(); i++)
 							{
-								if (((DefaultListModel) lb.getModel())
-										.getElementAt(i) == qri)
+								BaseQRI qriI = (BaseQRI )((DefaultListModel) lb.getModel()).getElementAt(i);
+								boolean match = qriI == qri;
+								if (!match && qriI instanceof FieldQRI && qri instanceof FieldQRI)
 								{
+									match = ((FieldQRI )qriI).getStringId().equals(((FieldQRI)qri).getStringId());
+								}
+								if (match)
+								{
+									qriI.setIsInUse(false);
 									lb.repaint();
+									done = true;
+									break;
 								}
 							}
+						}
+						if (done)
+						{
+							break;
 						}
 					}
 				} catch (ArrayIndexOutOfBoundsException ex)

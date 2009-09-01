@@ -1016,17 +1016,24 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 }
                 else if (fieldQRI.getDataClass().equals(Calendar.class) || fieldQRI.getDataClass().equals(java.sql.Timestamp.class))
                 {
-                    for (int p = 0; p < criteriaStrs.length; p++)
+                	for (int p = 0; p < criteriaStrs.length; p++)
                     {
-                        String paramName = "spparam" + paramList.size();
+                		String paramName = "spparam" + paramList.size();
                         try
                         {
-                            Object arg = dateConverter.convert((String)criteriaStrs[p]);
-                            if (fieldQRI.getDataClass().equals(java.sql.Timestamp.class))
+                            if (fieldQRI instanceof DateAccessorQRI)
                             {
-                                arg = new java.sql.Timestamp(((Calendar)arg).getTimeInMillis());
+                            	new Integer((String )criteriaStrs[p]);
                             }
-                            paramList.add(new Pair<String, Object>(paramName, arg));
+                            else
+                            {
+                            	Object arg = dateConverter.convert((String)criteriaStrs[p]);
+                            	if (fieldQRI.getDataClass().equals(java.sql.Timestamp.class))
+                            	{
+                            		arg = new java.sql.Timestamp(((Calendar)arg).getTimeInMillis());
+                            	}
+                            	paramList.add(new Pair<String, Object>(paramName, arg));
+                            }
                         }
                         catch (ParseException ex)
                         {
@@ -1046,7 +1053,14 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                                 criteriaFormula += ", ";
                             }
                         }
-                        criteriaFormula += ":" + paramName;
+                        if (fieldQRI instanceof DateAccessorQRI)
+                        {
+                        	criteriaFormula += (String )criteriaStrs[p];
+                        }
+                        else
+                        {
+                        	criteriaFormula += ":" + paramName;
+                        }
                     }
                     if (SpQueryField.OperatorType.getOrdForName(operStr) == SpQueryField.OperatorType.IN
                             .getOrdinal())
@@ -1054,7 +1068,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                         criteriaFormula = "(" + criteriaFormula + ")";
                     }
                 }
-                else if (Number.class.isAssignableFrom(fieldQRI.getDataClass()))
+                else if (Number.class.isAssignableFrom(fieldQRI.getDataClass()) )
                 {
                     Constructor<?> tester;
                     try
