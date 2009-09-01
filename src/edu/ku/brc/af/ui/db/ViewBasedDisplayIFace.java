@@ -36,6 +36,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 public interface ViewBasedDisplayIFace
 {
     // Note: These values match both CustomDialog and CustomFrame
+    public static final int NONE_BTN           = 0;
     public static final int OK_BTN             = 1;
     public static final int CANCEL_BTN         = 2;
     public static final int HELP_BTN           = 4;
@@ -117,6 +118,11 @@ public interface ViewBasedDisplayIFace
      * @return the integer code for which btn of the CustomDialog was pressed
      */
     public abstract int getBtnPressed();
+    
+    /**
+     * @return true if the cancel button of the 'x' on the window was clicked.
+     */
+    public abstract boolean isCancelled();
     
     /**
      * @param helpContext

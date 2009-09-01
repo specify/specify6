@@ -1107,8 +1107,7 @@ public class TableViewObj implements Viewable,
                         comp.validate();
                         comp.repaint();
                     }
-                } else if (dialog.getBtnPressed() == ViewBasedDisplayIFace.CANCEL_BTN ||
-                           dialog.getBtnPressed() == CustomDialog.NONE_BTN)
+                } else if (dialog.isCancelled())
                 {
                     // since it was added in before the dlg was shown we now need to remove.
                     if (parentDataObj != null && isEditing && isNew)

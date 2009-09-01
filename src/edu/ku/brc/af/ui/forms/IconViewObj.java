@@ -572,7 +572,7 @@ public class IconViewObj implements Viewable
 
             rootHasChanged();
             
-        } else if (dialog.getBtnPressed() == ViewBasedDisplayIFace.CANCEL_BTN)
+        } else if (dialog.isCancelled())
         {
             if (mvParent.getMultiViewParent() != null && mvParent.getMultiViewParent().getCurrentValidator() != null)
             {
