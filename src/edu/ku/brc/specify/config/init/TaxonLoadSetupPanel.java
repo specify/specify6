@@ -370,6 +370,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
                 File f = new File(filePath);
                 return f.exists();
             }
+            return false;
         }
         return true;
     }
