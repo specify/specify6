@@ -82,7 +82,7 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.Specify" vmParameters="-Xmx768m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="edu.ku.brc.specify.Specify" vmParameters="-Xmx768m" arguments="-Dappdir=.. -Dmobile" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
@@ -113,7 +113,7 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.utilapps.BuildSampleDatabase" vmParameters="-Xmx512m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="edu.ku.brc.specify.utilapps.BuildSampleDatabase" vmParameters="-Xmx512m" arguments="-Dappdir=.. -Dmobile" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
@@ -144,7 +144,7 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerFrame" vmParameters="-Xmx512m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerFrame" vmParameters="-Xmx512m" arguments="-Dappdir=.. -Dmobile" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
@@ -175,7 +175,7 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.tools.ireportspecify.MainFrameSpecify" vmParameters="-Xmx512m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="edu.ku.brc.specify.tools.ireportspecify.MainFrameSpecify" vmParameters="-Xmx512m" arguments="-Dappdir=.. -Dmobile" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
@@ -206,7 +206,7 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.conversion.SpecifyDBConverter" vmParameters="-Xmx768m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="edu.ku.brc.specify.conversion.SpecifyDBConverter" vmParameters="-Xmx768m" arguments="-Dappdir=.. -Dmobile" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
@@ -237,7 +237,7 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.conversion.ConvertVerifier" vmParameters="-Xmx512m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="edu.ku.brc.specify.conversion.ConvertVerifier" vmParameters="-Xmx512m" arguments="-Dappdir=.. -Dmobile" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
@@ -268,7 +268,7 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame" vmParameters="-Xmx1024m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame" vmParameters="-Xmx1024m" arguments="-Dappdir=.. -Dmobile" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
@@ -299,7 +299,7 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.Specify" vmParameters="-Xmx1024m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="edu.ku.brc.specify.Specify" vmParameters="-Xmx1024m" arguments="-Dappdir=.. -Dmobile" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
@@ -330,7 +330,7 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.BackupAndRestoreApp" vmParameters="-Xmx768m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="edu.ku.brc.specify.BackupAndRestoreApp" vmParameters="-Xmx768m" arguments="-Dappdir=.. -Dmobile" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
@@ -361,7 +361,7 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.utilapps.RegisterApp" vmParameters="-Xmx768m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="edu.ku.brc.specify.utilapps.RegisterApp" vmParameters="-Xmx768m" arguments="-Dappdir=.. -Dmobile" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
@@ -392,7 +392,7 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.utilapps.ImportFileSplitter" vmParameters="-Xmx768m" arguments="-Dappdir=.. -Dcom.apple.macos.useSmallTabs=true -Dapple.laf.useScreenMenuBar=true -Xdock:icon=&quot;src/edu/ku/brc/specify/images/specify128.png&quot; -Dcom.apple.mrj.application.apple.menu.about.name=ImportFileSplitter" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="edu.ku.brc.specify.utilapps.ImportFileSplitter" vmParameters="-Xmx768m" arguments="-Dappdir=.. -Dmobile -Dcom.apple.macos.useSmallTabs=true -Dapple.laf.useScreenMenuBar=true -Xdock:icon=&quot;src/edu/ku/brc/specify/images/specify128.png&quot; -Dcom.apple.mrj.application.apple.menu.about.name=ImportFileSplitter" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
@@ -423,7 +423,7 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.tools.export.ExportPanel" vmParameters="-Xmx1024m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="edu.ku.brc.specify.tools.export.ExportPanel" vmParameters="-Xmx1024m" arguments="-Dappdir=.. -Dmobile" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
@@ -454,7 +454,7 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.tools.StrLocalizer" vmParameters="-Xmx512m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="edu.ku.brc.specify.tools.StrLocalizer" vmParameters="-Xmx512m" arguments="-Dappdir=.. -Dmobile" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
