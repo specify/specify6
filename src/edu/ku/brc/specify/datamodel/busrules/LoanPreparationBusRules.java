@@ -62,6 +62,8 @@ import edu.ku.brc.util.Triple;
  */
 public class LoanPreparationBusRules extends BaseBusRules implements CommandListener
 {
+    private final String LOAN_QTY_RANGE_ERR = "LOAN_QTY_RANGE_ERR";
+    
     private boolean    isFillingForm    = false;
     private SubViewBtn loanRetBtn       = null;
     
@@ -143,12 +145,26 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                             if (formViewObj != null)
                             {
                                 LoanPreparation loanPrep = (LoanPreparation)formViewObj.getDataObj();
-                                loanPrep.setQuantity(quantity.getIntValue());
+                                Integer qty = quantity.getIntValue();
+                                if (qty != null && qty >= quantity.getMinValue() && qty <= quantity.getMaxValue())
+                                {
+                                    loanPrep.setQuantity(qty);
+                                } else
+                                {
+                                    UIRegistry.showLocalizedError(LOAN_QTY_RANGE_ERR, qty, quantity.getMinValue(), quantity.getMaxValue());
+                                }
                             }
                             
                             if (!isFillingForm)
                             {
-                                quantitiesChanged(quantity, Integer.parseInt(quantityResolved.getText()), qtyResolved, isResolved);
+                                Integer qtyResVal = Integer.parseInt(quantityResolved.getText());
+                                if (qtyResVal != null && qtyResVal >= quantity.getMinValue() && qtyResVal <= quantity.getMaxValue())
+                                {
+                                    quantitiesChanged(quantity, qtyResVal, qtyResolved, isResolved);
+                                } else
+                                {
+                                    UIRegistry.showLocalizedError(LOAN_QTY_RANGE_ERR, qtyResVal, quantity.getMinValue(), quantity.getMaxValue());
+                                }
                             }
                         }
                     }
@@ -285,10 +301,10 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                 }
                 
                 // Calculate the total available
-                System.out.println("qPrepCnt "+qPrepCnt+"  qQnt "+qQnt+"  qQntRes "+qQntRes+"  qGiftQnt "+qGiftQnt+" avail: "+(qPrepCnt - (qQnt - qQntRes) - qGiftQnt));
+                //System.out.println("qPrepCnt "+qPrepCnt+"  qQnt "+qQnt+"  qQntRes "+qQntRes+"  qGiftQnt "+qGiftQnt+" avail: "+(qPrepCnt - (qQnt - qQntRes) - qGiftQnt));
                 int availableQnt = Math.max(0, qPrepCnt - (qQnt - qQntRes) - qGiftQnt); // shouldn't be negative
                 
-                System.out.println("availableQnt "+availableQnt+" loanPrep.getQuantity() "+loanPrep.getQuantity());
+                //System.out.println("availableQnt "+availableQnt+" loanPrep.getQuantity() "+loanPrep.getQuantity());
                 // Adding insurance against expceptions in case the quantity is eve greater
                 // may want to add a popup error msg
                 if (availableQnt == 0)
