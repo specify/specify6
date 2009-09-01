@@ -135,13 +135,16 @@ public abstract class BackupServiceFactory
      * @param completionMsgKey
      * @param pcl
      * @param doSynchronously
+     * @param useGlassPane
+     * @return
      */
     public abstract boolean doRestoreInBackground(String                 databaseName,
                                                   String                 restoreFilePath,
                                                   String                 restoreMsgKey,
                                                   String                 completionMsgKey,
                                                   PropertyChangeListener pcl,
-                                                  boolean                doSynchronously);
+                                                  boolean                doSynchronously,
+                                                  boolean                useGlassPane);
     
     /**
      * @param doSendAppExit whether it should send an applications exit command

@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
@@ -780,7 +779,7 @@ public class BuildFromGeonames
                 BackupServiceFactory bsf = BackupServiceFactory.getInstance();
                 bsf.setUsernamePassword(itUsername, itPassword);
                 
-                boolean status = bsf.doRestoreInBackground("geonames", unzippedFile.getAbsolutePath(), null, null, null, true); // does it asynchronously
+                boolean status = bsf.doRestoreInBackground("geonames", unzippedFile.getAbsolutePath(), null, null, null, true, false); // true - does it asynchronously, false - ignore glass pane
                 
                 // delete the unzipped file
                 try

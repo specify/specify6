@@ -215,8 +215,15 @@ public class SimpleGlassPane extends ProgressGlassPane implements AWTEventListen
             }
         }*/
     }
-
     
+    /**
+     * @return the text
+     */
+    public String getText()
+    {
+        return text;
+    }
+
     /**
      * @return
      */

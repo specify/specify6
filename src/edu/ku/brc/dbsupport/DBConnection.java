@@ -278,10 +278,10 @@ public class DBConnection
             }
             Class.forName(dbDriver); // load driver
             
-            if (System.getProperty("user.name").equals("rods"))
-            {
-                log.debug("******** ["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"] ");
-            }
+            //if (System.getProperty("user.name").equals("rods"))
+            //{
+            //    log.debug("******** ["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"] ");
+            //}
             //System.err.println("["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"] ");
             con = DriverManager.getConnection(dbConnectionStr, dbUsername, dbPassword);
             

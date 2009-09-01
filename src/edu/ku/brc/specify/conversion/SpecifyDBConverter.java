@@ -588,7 +588,11 @@ public class SpecifyDBConverter
         for (Object[] tblRow : tables)
         {
             String tableName = tblRow[0].toString();
-            if (!tableName.toLowerCase().startsWith("usys"))
+            if (!tableName.toLowerCase().startsWith("usys") && 
+                !tableName.toLowerCase().startsWith("web") && 
+                !tableName.toLowerCase().equals("taxonomytype") && 
+                !tableName.toLowerCase().equals("taxonomicunittype") && 
+                !tableName.toLowerCase().equals("reports"))
             {
                 try
                 {

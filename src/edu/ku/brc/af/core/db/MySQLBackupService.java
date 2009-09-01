@@ -533,18 +533,19 @@ public class MySQLBackupService extends BackupServiceFactory
     /**
      * Does backup restore
      * @param restoreFilePath the path of the backup file
-     * @param glassPane the glasspane to write the message on
+     * @param glassPane the glass pane to write the message on
+     * @param useGlassPane whether it invokes the glass pane or ignores it
      */
     protected void doActualRestore(final String restoreFilePath, 
                                    final SimpleGlassPane glassPane)
     {
-        final String databaseName = DBConnection.getInstance().getDatabaseName();
+        String databaseName = DBConnection.getInstance().getDatabaseName();
         doRestoreInBackground(databaseName, restoreFilePath, glassPane, RESTORE_COMPLETE, null, false);
         
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.db.BackupServiceFactory#doRestoreInBackground(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.beans.PropertyChangeListener, boolean)
+     * @see edu.ku.brc.af.core.db.BackupServiceFactory#doRestoreInBackground(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.beans.PropertyChangeListener, boolean, boolean)
      */
     @Override
     public boolean doRestoreInBackground(final String                 databaseName,
@@ -552,9 +553,10 @@ public class MySQLBackupService extends BackupServiceFactory
                                          final String                 restoreMsgKey,
                                          final String                 completionMsgKey,
                                          final PropertyChangeListener pcl,
-                                         final boolean                doSynchronously)
+                                         final boolean                doSynchronously,
+                                         final boolean                useGlassPane)
     {
-        SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage(restoreMsgKey, databaseName), 24);
+        SimpleGlassPane glassPane = useGlassPane ? UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage(restoreMsgKey, databaseName), 24) : null;
         return doRestoreInBackground(databaseName, restoreFilePath, glassPane,completionMsgKey, pcl, doSynchronously);
     }
     
@@ -711,7 +713,10 @@ public class MySQLBackupService extends BackupServiceFactory
                     statusBar.setProgressDone(STATUSBAR_NAME);
                 }
                 
-                UIRegistry.clearSimpleGlassPaneMsg();
+                if (glassPane != null)
+                {
+                    UIRegistry.clearSimpleGlassPaneMsg();
+                }
                 
                 if (StringUtils.isNotEmpty(errorMsg))
                 {
@@ -735,7 +740,7 @@ public class MySQLBackupService extends BackupServiceFactory
         backupWorker.addPropertyChangeListener(
                 new PropertyChangeListener() {
                     public  void propertyChange(final PropertyChangeEvent evt) {
-                        if (MEGS.equals(evt.getPropertyName())) 
+                        if (MEGS.equals(evt.getPropertyName()) && glassPane != null) 
                         {
                             int value = (Integer)evt.getNewValue();
                             
