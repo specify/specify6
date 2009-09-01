@@ -361,7 +361,7 @@ public class BuildFromGeonames
                     stateToCountryHash.put(nameStr, countryCode);
                     
                     @SuppressWarnings("unused")
-                    int rv = updateStmt.executeUpdate(sql.toString());
+                    int     rv    = updateStmt.executeUpdate(sql.toString());
                     Integer newId = BasicSQLUtils.getInsertedId(updateStmt);
                     
                     Hashtable<String, Integer> stateToIdHash = countryStateCodeToIdHash.get(countryCode);
@@ -399,7 +399,7 @@ public class BuildFromGeonames
                 if (stateToIdHash != null && stateToIdHash.get(stateCode) == null)
                 {
                     rowData.clear();
-                    rowData.add(stateCode);            // State Name, same as Code
+                    rowData.add(rs.getString(1));            // State Name, same as Code
                     rowData.add(new BigDecimal(-1000));
                     rowData.add(new BigDecimal(-1000));
                     rowData.add(countryCode);
@@ -409,8 +409,10 @@ public class BuildFromGeonames
                     {
                         stateToCountryHash.put(stateCode, countryCode);
                         
+                        log.debug("Adding State ["+rs.getString(1)+"]["+stateCode+"] for Country ["+countryCode+"]");
+                        
                         @SuppressWarnings("unused")
-                        int rv = updateStmt.executeUpdate(sql.toString());
+                        int     rv    = updateStmt.executeUpdate(sql.toString());
                         Integer newId = BasicSQLUtils.getInsertedId(updateStmt);
                         
                         stateToIdHash.put(stateCode, newId);
