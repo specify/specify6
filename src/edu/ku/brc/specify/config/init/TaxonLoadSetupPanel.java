@@ -362,7 +362,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
      */
     public boolean isUIValid()
     {
-        if (!otherTF.isFocusOwner())
+        if (preloadChk.isSelected() && otherBrw.isEnabled() && !otherTF.isFocusOwner())
         {
             String filePath = otherTF.getText();
             if (!filePath.isEmpty() && FilenameUtils.isExtension(filePath.toLowerCase(), "xls"))
