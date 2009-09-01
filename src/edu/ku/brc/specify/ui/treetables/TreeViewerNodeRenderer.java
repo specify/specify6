@@ -720,8 +720,6 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             int cellHeight = list.getFixedCellHeight();
             int midCell    = cellHeight / 2;
 
-            if (node.fullName.startsWith("Paragon")) System.out.println(node.fullName);
-            
             if (node != model.getVisibleRoot() && parent != null)
             {
                 Pair<Integer,Integer> parentAnchorBounds = getAnchorBoundsForRank(parent.getRank());

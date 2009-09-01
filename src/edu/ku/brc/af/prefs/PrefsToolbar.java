@@ -200,7 +200,7 @@ public class PrefsToolbar extends JPanel
                 if (AppContextMgr.isSecurityOn())
                 {
                     PermissionSettings perm = SecurityMgr.getInstance().getPermission("Prefs."+prefName);
-                    PermissionSettings.dumpPermissions("Prefs: "+prefName, perm.getOptions());
+                    //PermissionSettings.dumpPermissions("Prefs: "+prefName, perm.getOptions());
                     if (!perm.canView()) // this means Enabled
                     {
                         continue;

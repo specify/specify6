@@ -1287,7 +1287,7 @@ public class ViewFactory
                         PermissionSettings perm = tblInfo.getPermissions();
                         if (perm != null)
                         {
-                            PermissionSettings.dumpPermissions("QCBX: "+tblInfo.getShortClassName(), perm.getOptions());
+                            //PermissionSettings.dumpPermissions("QCBX: "+tblInfo.getShortClassName(), perm.getOptions());
                             if (perm.isViewOnly() || !perm.canView())
                             {
                                 uiType = FormCellField.FieldType.textfieldinfo;

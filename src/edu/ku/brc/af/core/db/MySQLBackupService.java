@@ -735,7 +735,10 @@ public class MySQLBackupService extends BackupServiceFactory
             }
         };
         
-        glassPane.setProgress(0);
+        if (glassPane != null)
+        {
+            glassPane.setProgress(0);
+        }
         
         backupWorker.addPropertyChangeListener(
                 new PropertyChangeListener() {
