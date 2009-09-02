@@ -691,7 +691,19 @@ public class ExportMappingTask extends QueryTask
 	@Override
 	public JPopupMenu getPopupMenu()
 	{
+		//return super.getPopupMenu();
 		return null;
+	}
+
+
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.QueryTask#getTopLevelNodeSelector()
+	 */
+	@Override
+	protected String getTopLevelNodeSelector() 
+	{
+		return "/spexportschemamappings/query";
 	}
 
 
@@ -788,6 +800,17 @@ public class ExportMappingTask extends QueryTask
 	@Override
 	protected String getXMLExportLastLine() {
 		return "</spexportschemamappings>";
+	}
+
+
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.QueryTask#toXML(edu.ku.brc.specify.datamodel.SpQuery, java.lang.StringBuilder)
+	 */
+	@Override
+	protected void toXML(SpQuery query, StringBuilder sb) {
+		//XXX Don't seem to need this method anymore...
+		super.toXML(query, sb);
 	}
 	
 	

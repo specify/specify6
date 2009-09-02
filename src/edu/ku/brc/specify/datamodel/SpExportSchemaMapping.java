@@ -76,7 +76,7 @@ public class SpExportSchemaMapping extends DataModelObjBase
         {
         	mapping.toXML(sb);
         }
-        sb.append("</spexportschemaitemsmappings>\n");
+        sb.append("</spexportschemaitemmappings>\n");
         
         sb.append("</spexportschemamapping>");    	
     }

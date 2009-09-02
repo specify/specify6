@@ -1785,7 +1785,13 @@ public class QueryTask extends BaseTask
         }
     }
     
-    
+    /**
+     * @return string to select objects for import from xml.
+     */
+    protected String getTopLevelNodeSelector()
+    {
+    	return "/queries/query"; 
+    }
     /**
      * 
      */
@@ -1815,7 +1821,7 @@ public class QueryTask extends BaseTask
         {
         
             Element root = XMLHelper.readFileToDOM4J(new File(path));
-            for (Object obj : root.selectNodes("/queries/query"))
+            for (Object obj : root.selectNodes(getTopLevelNodeSelector()))
             {
                 Element el = (Element)obj;
                 SpQuery query = new SpQuery();
@@ -1940,6 +1946,17 @@ public class QueryTask extends BaseTask
     	return "</queries>";
     }
 
+    /**
+     * @param query 
+     * @param sb
+     * 
+     * writes xml for query to sb.
+     */
+    protected void toXML(final SpQuery query, final StringBuilder sb)
+    {
+    	query.toXML(sb);
+    }
+    
     /**
      * 
      */

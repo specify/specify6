@@ -419,6 +419,12 @@ public class SpQuery extends DataModelObjBase implements Cloneable
             field.toXML(sb);
         }
         sb.append("</fields>\r\n");
+        
+        SpExportSchemaMapping mapping = getMapping();
+        if (mapping != null)
+        {
+        	mapping.toXML(sb);
+        }
         sb.append("</query>\r\n");
     }
     
@@ -446,6 +452,31 @@ public class SpQuery extends DataModelObjBase implements Cloneable
             field.setQuery(this);
             fields.add(field);
         }
+        
+        Element mapping = (Element )element.selectSingleNode("spexportschemamapping");
+        if (mapping != null)
+        {
+        	SpExportSchemaMapping esm = new SpExportSchemaMapping();
+        	esm.initialize();
+        	esm.fromXML(mapping, this);
+        }
+    }
+    
+    /**
+     * @return the SpExportSchemaMapping object for this query, if it exists.
+     */
+    @Transient
+    public SpExportSchemaMapping getMapping()
+    {
+    	for (SpQueryField field : fields)
+    	{
+    		SpExportSchemaItemMapping mapItem = field.getMapping();
+    		if (mapItem != null)
+    		{
+    			return mapItem.getExportSchemaMapping();
+    		}
+    	}
+    	return null;
     }
     
     //----------------------------------------------------------------------
