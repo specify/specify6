@@ -1874,7 +1874,7 @@ public class QueryTask extends BaseTask
             query.setName(qName);
         }
         
-        if (DataModelObjBase.save(true, queriesList))
+        if (saveImportedQueries(queriesList))
         {
             for (SpQuery query : queriesList)
             {
@@ -1890,6 +1890,15 @@ public class QueryTask extends BaseTask
         }
     }
     
+    /**
+     * @param queriesList a list of imported queries.
+     * 
+     * @return true if the queries are successfully saved to the db.
+     */
+    protected boolean saveImportedQueries(List<SpQuery> queriesList)
+    {
+    	return DataModelObjBase.save(true, queriesList);
+    }
     /**
      * @return id for usage tracker
      */

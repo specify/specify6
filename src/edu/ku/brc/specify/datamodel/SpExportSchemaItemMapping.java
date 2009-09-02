@@ -75,6 +75,7 @@ public class SpExportSchemaItemMapping extends DataModelObjBase
     		if (qf.getStringId().equals(qfId))
     		{
     			queryField = qf;
+    			qf.setMapping(this);
     			break;
     		}
     	}

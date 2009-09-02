@@ -9,6 +9,7 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
@@ -44,6 +45,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.helpers.UIFileFilter;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpExportSchema;
 import edu.ku.brc.specify.datamodel.SpExportSchemaItem;
@@ -689,13 +691,67 @@ public class ExportMappingTask extends QueryTask
 	 * @see edu.ku.brc.specify.tasks.QueryTask#getPopupMenu()
 	 */
 	@Override
-	public JPopupMenu getPopupMenu()
+	public JPopupMenu getPopupMenu() 
 	{
-		//return super.getPopupMenu();
-		return null;
+		JPopupMenu popupMenu = new JPopupMenu();
+		JMenuItem mi = new JMenuItem(UIRegistry
+				.getResourceString("ExportMappingTask.XML_EXPORT_MAPPINGS"));
+		popupMenu.add(mi);
+
+		mi.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				importQueries();
+			}
+		});
+
+		mi = new JMenuItem(UIRegistry.getResourceString("ExportMappingTask.XML_IMPORT_MAPPINGS"));
+		popupMenu.add(mi);
+
+		mi.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				exportQueries();
+			}
+		});
+		
+//		mi = new JMenuItem(UIRegistry.getResourceString("ExportMappingTask.DELETE_SCHEMATA"));
+//		popupMenu.add(mi);
+//
+//		mi.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				deleteSchemata();
+//			}
+//		});
+
+		return popupMenu;
 	}
 
 
+	/**
+	 * Presents a list of existing SpExportSchemas.
+	 * Deletes selected schema, if not in use.
+	 * If in use displays a message listing the SpExportMappings that use the Schema
+	 */
+	protected void deleteSchemata()
+	{
+		DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+		if (session != null)
+		{
+			try
+			{
+				List<SpExportSchema> schemas =  session.getDataList(SpExportSchema.class, "discipline",	
+						AppContextMgr.getInstance().getClassObject(Discipline.class), DataProviderSessionIFace.CompareType.Equals);
+				ChooseFromListDlg<SpExportSchema> dlg = new ChooseFromListDlg<SpExportSchema>((Frame )UIRegistry.getTopWindow(),
+						getResourceString("ExportMappingTask.DELETE_DLG_TITLE"), schemas);
+				UIHelper.centerAndShow(dlg);
+				UIRegistry.showLocalizedMsg("Not Done");
+			
+			}
+			finally
+			{
+				session.close();
+			}
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.QueryTask#getTopLevelNodeSelector()
@@ -811,6 +867,71 @@ public class ExportMappingTask extends QueryTask
 	protected void toXML(SpQuery query, StringBuilder sb) {
 		//XXX Don't seem to need this method anymore...
 		super.toXML(query, sb);
+	}
+
+	/**
+	 * @param obj object to be named
+	 * @param sql query to return names in use
+	 * 
+	 * If necessary modifies obj's name to make it unique.
+	 */
+	protected String uniqueName(String currentName, String sql)
+	{
+		Vector<Object[]> names = BasicSQLUtils.query(sql);
+		HashSet<String> nameSet = new HashSet<String>();
+		for (Object[] name : names)
+		{
+			nameSet.add((String )name[0]);
+		}
+        int    cnt      = 0;
+        String objName    = currentName;
+        while (nameSet.contains(objName))
+        {
+            cnt++;
+            objName = currentName + cnt;
+       }
+       return objName;	
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.QueryTask#saveImportedQueries(java.util.List)
+	 */
+	@Override
+	protected boolean saveImportedQueries(List<SpQuery> queriesList) 
+	{
+		for (SpQuery q : queriesList)
+		{
+			SpExportSchemaMapping m = q.getMapping();
+			//assuming m is not null...
+			
+			for (SpExportSchema e : m.getSpExportSchemas())
+			{
+				//XXX - kind of a problem with the export schema names. A unique name is not
+				//actually necessary, but if not set, then things could get confusing (more so)
+				//for people who use this feature regularly
+				e.setSchemaName(uniqueName(e.getSchemaName(), "select SchemaName from spexportschema where DisciplineID = " 
+						+ AppContextMgr.getInstance().getClassObject(Discipline.class).getId()));
+				e.setDiscipline(AppContextMgr.getInstance().getClassObject(Discipline.class));
+				
+				//clear link to m to make hibernate happy.
+				//This only works because e will always be a new SpExportSchema - no attempt is made to match existing
+				//SpExportSchemas (and their contents).
+				e.getSpExportSchemaMappings().clear(); 
+				
+				if (!DataModelObjBase.save(true, e))
+				{
+					return false;
+				}
+			}
+			
+			m.setMappingName(q.getName()); //assuming q already got a unique name and that mapping name==query name always
+			if (!DataModelObjBase.save(true, q, m))
+			{
+				return false;
+			}
+			
+		}
+		return true;
 	}
 	
 	
