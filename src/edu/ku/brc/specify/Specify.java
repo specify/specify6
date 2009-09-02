@@ -2996,7 +2996,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
           
       // For Debugging Only 
       //System.setProperty("mobile", "true");
-      System.setProperty("embedded", "true");
+      //System.setProperty("embedded", "true");
       
       String mobile = System.getProperty("mobile");
       if (StringUtils.isNotEmpty(mobile))
