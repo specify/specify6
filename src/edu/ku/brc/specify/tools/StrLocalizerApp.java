@@ -78,9 +78,9 @@ import edu.ku.brc.ui.dnd.GhostGlassPane;
  * Jul 15, 2009
  *
  */
-public class StrLocalizer extends JPanel implements FrameworkAppIFace
+public class StrLocalizerApp extends JPanel implements FrameworkAppIFace
 {
-    private static final Logger  log                = Logger.getLogger(StrLocalizer.class);
+    private static final Logger  log                = Logger.getLogger(StrLocalizerApp.class);
     
     protected GhostGlassPane glassPane;
     
@@ -110,7 +110,7 @@ public class StrLocalizer extends JPanel implements FrameworkAppIFace
     /**
      * 
      */
-    public StrLocalizer()
+    public StrLocalizerApp()
     {
         super();
         
@@ -137,7 +137,7 @@ public class StrLocalizer extends JPanel implements FrameworkAppIFace
         termList   = new JList(new ItemModel(englishFile));
         newTermList = new JList(newKeyList);
         
-        int len = newKeyList.size();
+        //int len = newKeyList.size();
         
         englishLbl = UIHelper.createTextArea(3, 40);
         textField  = UIHelper.createTextField(40);
@@ -724,7 +724,7 @@ public class StrLocalizer extends JPanel implements FrameworkAppIFace
                 }
                 
                 JFrame frame = new JFrame("String Localizer");
-                StrLocalizer sl = new StrLocalizer();
+                StrLocalizerApp sl = new StrLocalizerApp();
                 sl.addMenuBar(frame);
                 frame.setContentPane(sl);
                 Dimension size = frame.getPreferredSize();

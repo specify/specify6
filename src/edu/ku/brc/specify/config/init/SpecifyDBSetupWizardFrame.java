@@ -67,6 +67,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
+import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
@@ -85,6 +86,9 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
 {
     //private static final Logger  log = Logger.getLogger(SpecifyDBSetupWizardFrame.class);
     
+    private String               appVersion          = "6.0"; //$NON-NLS-1$
+    private String               appBuildVersion     = "(Unknown)"; //$NON-NLS-1$
+ 
     /**
      * @throws HeadlessException
      */
@@ -106,7 +110,7 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
         SpecifyAppPrefs.setSkipRemotePrefs(true);
         SpecifyAppPrefs.initialPrefs();
         
-        ImageIcon helpIcon = IconManager.getIcon("WizardIcon", IconSize.Std16); //$NON-NLS-1$
+        ImageIcon helpIcon = IconManager.getIcon(SpecifyDBSetupWizard.getIconName(), IconSize.Std16); //$NON-NLS-1$
         HelpMgr.initializeHelp("SpecifyHelp", helpIcon.getImage()); //$NON-NLS-1$
         
         JMenuBar menuBar = createMenus();
@@ -116,7 +120,7 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
         }
         UIRegistry.register(UIRegistry.MENUBAR, menuBar);
         
-        setIconImage(IconManager.getIcon("WizardIcon", IconManager.IconSize.Std16).getImage());
+        setIconImage(IconManager.getIcon(SpecifyDBSetupWizard.getIconName(), IconManager.IconSize.Std16).getImage());
         
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -149,15 +153,29 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
                     @Override
                     public void panelChanged(String title)
                     {
-                       setTitle(title);
+                       setTitle(getAppTitle(title));
                     }
         });
         
-        setTitle(getResourceString("MAIN_TITLE"));
+        setTitle(getAppTitle(getResourceString("MAIN_TITLE")));
         
         setContentPane(wizPanel);
         
         pack();
+    }
+    
+    /**
+     * (To be replaced by method in AppBase)
+     */
+    protected String getAppTitle(final String titleStr)
+    {
+        String install4JStr = UIHelper.getInstall4JInstallString();
+        if (StringUtils.isNotEmpty(install4JStr))
+        {
+            appVersion = install4JStr;
+        }
+        
+        return AppBase.getTitle(appVersion, appBuildVersion, titleStr);
     }
     
     /**
@@ -334,59 +352,7 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
             e.printStackTrace();
         }
         
-        for (String s : args)
-        {
-            String[] pairs = s.split("="); //$NON-NLS-1$
-            if (pairs.length == 2)
-            {
-                if (pairs[0].startsWith("-D")) //$NON-NLS-1$
-                {
-                    System.setProperty(pairs[0].substring(2, pairs[0].length()), pairs[1]);
-                } 
-            } else
-            {
-                String symbol = pairs[0].substring(2, pairs[0].length());
-                System.setProperty(symbol, symbol);
-            }
-        }
-        
-        // Now check the System Properties
-        String appDir = System.getProperty("appdir");
-        if (StringUtils.isNotEmpty(appDir))
-        {
-            UIRegistry.setDefaultWorkingPath(appDir);
-        }
-        
-        String appdatadir = System.getProperty("appdatadir");
-        if (StringUtils.isNotEmpty(appdatadir))
-        {
-            UIRegistry.setBaseAppDataDir(appdatadir);
-        }
-        
-        // For Debugging Only 
-        //System.setProperty("mobile", "true");
-        //System.setProperty("embedded", "true");
-        
-        String mobile = System.getProperty("mobile");
-        if (StringUtils.isNotEmpty(mobile))
-        {
-            UIRegistry.setMobile(true);
-        }
-        
-        String embeddedStr = System.getProperty("embedded");
-        if (StringUtils.isNotEmpty(embeddedStr))
-        {
-            UIRegistry.setEmbedded(true);
-        }
-        
-        String embeddeddbdir = System.getProperty("embeddeddbdir");
-        if (StringUtils.isNotEmpty(embeddeddbdir))
-        {
-            UIRegistry.setEmbeddedDBDir(embeddeddbdir);
-        } else
-        {
-            UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
-        }
+        AppBase.processArgs(args);
         
         SwingUtilities.invokeLater(new Runnable()
         {

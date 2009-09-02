@@ -20,7 +20,6 @@
 package edu.ku.brc.ui;
 
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -698,6 +697,23 @@ public class IconManager extends Component
     	//else
     	log.error("Couldn't find icon [" + iconSize + "] to scale to [" + scaledIconSize + "]");
     	return null;
+    }
+    
+    
+    /**
+     * @return an icon name with 'E' or 'M' for embedded or mobile
+     */
+    public static String makeIconName(final String baseName)
+    {
+        String postFix = "";
+        if (UIRegistry.isEmbedded())
+        {
+            postFix = "E";
+        } else if (UIRegistry.isMobile())
+        {
+            postFix = "M";
+        }
+        return baseName + postFix;
     }
  
 }

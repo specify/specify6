@@ -196,6 +196,7 @@ import edu.ku.brc.specify.extras.ViewToSchemaReview;
 import edu.ku.brc.specify.prefs.SystemPrefs;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
+import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -269,7 +270,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     
     private String               appName             = "Specify"; //$NON-NLS-1$
     private String               appVersion          = "6.0"; //$NON-NLS-1$
-
     private String               appBuildVersion     = "(Unknown)"; //$NON-NLS-1$
     
     protected static CacheManager cacheManager        = new CacheManager();
@@ -564,7 +564,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             }
         }*/
         
-        dbLoginPanel = UIHelper.doLogin(usrPwdProvider, true, false, false, this, "SpecifyLargeIcon", getTitle(), null, "SpecifyWhite32", "login"); // true means do auto login if it can, second bool means use dialog instead of frame
+        dbLoginPanel = UIHelper.doLogin(usrPwdProvider, true, false, false, this, getLargeIconName(), getTitle(), null, getOpaqueIconName(), "login"); // true means do auto login if it can, second bool means use dialog instead of frame
         localPrefs.load();
     }
     
@@ -666,7 +666,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         setPreferredSize(new Dimension(1024, 768)); // For demo
 
         topFrame = new JFrame(gc);
-        topFrame.setIconImage(IconManager.getImage("AppIcon").getImage()); //$NON-NLS-1$
+        topFrame.setIconImage(IconManager.getImage(getIconName()).getImage()); //$NON-NLS-1$
         //topFrame.setAlwaysOnTop(true);
         
         topFrame.setGlassPane(glassPane = GhostGlassPane.getInstance());
@@ -720,13 +720,37 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 
         add(statusField, BorderLayout.SOUTH);
     }
+
+    /**
+     * @return
+     */
+    public static String getIconName()
+    {
+        return IconManager.makeIconName("AppIcon");
+    }
+    
+    /**
+     * @return icon for Windows or Linux.
+     */
+    public static String getOpaqueIconName()
+    {
+        return IconManager.makeIconName("SpecifyWhite32");
+    }
+    
+    /**
+     * @return
+     */
+    public static String getLargeIconName()
+    {
+        return IconManager.makeIconName("SpecifyLargeIcon");
+    }
     
     /**
      * @param imgEncoded uuencoded image string
      */
     protected void setAppIcon(final String imgEncoded)
     {
-        String appIconName      = "AppIcon";
+        String appIconName      = getIconName();
         String innerAppIconName = "InnerAppIcon";
         
         ImageIcon appImgIcon = null;
@@ -746,7 +770,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         appIcon.setIcon(appImgIcon);
         if (!UIHelper.isMacOS())
         {
-        	appImgIcon = IconManager.getImage("SpecifyWhite32", IconManager.IconSize.Std32); //$NON-NLS-1$
+        	appImgIcon = IconManager.getImage(getOpaqueIconName(), IconManager.IconSize.Std32); //$NON-NLS-1$
         }
         CustomDialog.setAppIcon(appImgIcon);
         CustomFrame.setAppIcon(appImgIcon);
@@ -2168,22 +2192,17 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     }
     
     /**
-     * If the version number is '(Unknown)' then it wasn't installed with install4j.
-     * @return the title for Specify which may include the version number.
+     * (To be replaced by method in AppBase)
      */
     protected String getTitle()
     {
-        String title        = "";
         String install4JStr = UIHelper.getInstall4JInstallString();
         if (StringUtils.isNotEmpty(install4JStr))
         {
             appVersion = install4JStr;
-            title = appName + " " + appVersion; //$NON-NLS-1$
-        } else
-        {
-            title = appName + " " + appVersion + "  - " + appBuildVersion; //$NON-NLS-1$ //$NON-NLS-2$
         }
-        return title;
+        
+        return AppBase.getTitle(appVersion, appBuildVersion, appName);
     }
 
     /**
@@ -2872,7 +2891,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       BaseTask.setToolbarBtnFont(newBaseFont); // For ToolbarButtons
       RolloverCommand.setDefaultFont(newBaseFont);
       
-      ImageIcon helpIcon = IconManager.getIcon("AppIcon",IconSize.Std16); //$NON-NLS-1$
+      ImageIcon helpIcon = IconManager.getIcon(getIconName(),IconSize.Std16); //$NON-NLS-1$
       HelpMgr.initializeHelp("SpecifyHelp", helpIcon.getImage()); //$NON-NLS-1$
       
       // Startup Specify
@@ -2917,107 +2936,12 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
    */
   public static void main(String[] args)
   {
-      
       // Set App Name, MUST be done very first thing!
       UIRegistry.setAppName("Specify");  //$NON-NLS-1$
 
-      /*UIDefaults uiDefaults = UIManager.getDefaults();
-      Enumeration<Object> e = uiDefaults.keys();
-      while (e.hasMoreElements())
-      {
-          Object key = e.nextElement();
-          if (key.toString().startsWith("Label"))
-          {
-              System.out.println(key);
-          }
-      }*/
-      /*if (true)
-      {
-          File[] files = (new File("iReportLibs")).listFiles();
-          for (File f : files)
-          {
-              System.err.println("            <string>$JAVAROOT/"+f.getName()+"</string>");
-          }
-          return;
-      }*/
-      /*
-      try
-      {
-          List<String> lines = (List<String>)FileUtils.readLines(new File("/Users/rod/Downloads/types.html"));
-          for (String line : lines)
-          {
-              if (StringUtils.contains(line, "//rs.tdwg.org/ontology/voc/"))
-              {
-                  int inx  = line.indexOf('>');
-                  int eInx = line.indexOf('<', inx);
-                  String name = line.substring(inx+1, eInx);
-                  System.out.println("      <picklistitem title=\""+UIHelper.makeNamePretty(name)+"\" value=\""+name+"\"/>");
-              }
-          }
-          
-      } catch (Exception ex)
-      {
-          
-      }
-      if (true) return;*/
-      
       log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
       
-      for (String s : args)
-      {
-          String[] pairs = s.split("="); //$NON-NLS-1$
-          if (pairs.length == 2)
-          {
-              if (pairs[0].startsWith("-D")) //$NON-NLS-1$
-              {
-                  System.err.println("["+pairs[0].substring(2, pairs[0].length())+"]["+pairs[1]+"]");
-                  System.setProperty(pairs[0].substring(2, pairs[0].length()), pairs[1]);
-              } 
-          } else
-          {
-              String symbol = pairs[0].substring(2, pairs[0].length());
-              System.err.println("["+symbol+"]");
-              System.setProperty(symbol, symbol);
-          }
-      }
-      
-      // Now check the System Properties
-      String appDir = System.getProperty("appdir");
-      if (StringUtils.isNotEmpty(appDir))
-      {
-          UIRegistry.setDefaultWorkingPath(appDir);
-      }
-      
-      String appdatadir = System.getProperty("appdatadir");
-      if (StringUtils.isNotEmpty(appdatadir))
-      {
-          UIRegistry.setBaseAppDataDir(appdatadir);
-      }
-          
-      // For Debugging Only 
-      //System.setProperty("mobile", "true");
-      //System.setProperty("embedded", "true");
-      
-      String mobile = System.getProperty("mobile");
-      if (StringUtils.isNotEmpty(mobile))
-      {
-          UIRegistry.setMobile(true);
-      }
-      
-      String embeddedStr = System.getProperty("embedded");
-      if (StringUtils.isNotEmpty(embeddedStr))
-      {
-          UIRegistry.setEmbedded(true);
-      }
-      
-      String embeddeddbdir = System.getProperty("embeddeddbdir");
-      if (StringUtils.isNotEmpty(embeddeddbdir))
-      {
-          UIRegistry.setEmbeddedDBDir(embeddeddbdir);
-      } else
-      {
-          UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
-      }
+      AppBase.processArgs(args);
       
       SwingUtilities.invokeLater(new Runnable() {
           @SuppressWarnings("synthetic-access") //$NON-NLS-1$

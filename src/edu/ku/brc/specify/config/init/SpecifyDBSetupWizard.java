@@ -550,7 +550,7 @@ public class SpecifyDBSetupWizard extends JPanel
         
         setLayout(new BorderLayout());
         PanelBuilder  iconBldr  = new PanelBuilder(new FormLayout("20px, f:p:g,p,f:p:g,8px", "20px,t:p,f:p:g, 8px"));
-        JLabel        iconLbl   = new JLabel(IconManager.getIcon("WizardIcon"));
+        JLabel        iconLbl   = new JLabel(IconManager.getIcon(getIconName()));
         iconLbl.setVerticalAlignment(SwingConstants.TOP);
         iconBldr.add(iconLbl, cc.xy(2, 3));
         add(iconBldr.getPanel(), BorderLayout.WEST);
@@ -562,6 +562,14 @@ public class SpecifyDBSetupWizard extends JPanel
         
         panels.get(0).updateBtnUI();
         
+    }
+    
+    /**
+     * @return
+     */
+    public static String getIconName()
+    {
+        return IconManager.makeIconName("WizardIcon");
     }
     
     /**

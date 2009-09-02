@@ -1693,7 +1693,7 @@ public class UIRegistry
     /**
      * @param isEmbedded the isEmbedded to set
      */
-    public static void setEmbedded(Boolean isEmbedded)
+    public static void setEmbedded(final Boolean isEmbedded)
     {
         UIRegistry.isEmbedded = isEmbedded;
     }

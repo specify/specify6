@@ -104,6 +104,7 @@ import edu.ku.brc.specify.tasks.subpane.JRConnectionFieldDef;
 import edu.ku.brc.specify.tasks.subpane.SpJRIReportConnection;
 import edu.ku.brc.specify.tasks.subpane.qb.QBJRIReportConnection;
 import edu.ku.brc.specify.tasks.subpane.wb.WBJRIReportConnection;
+import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CustomDialog;
@@ -1658,59 +1659,7 @@ public class MainFrameSpecify extends MainFrame
         
         UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
         
-        for (String s : args)
-        {
-            String[] pairs = s.split("="); //$NON-NLS-1$
-            if (pairs.length == 2)
-            {
-                if (pairs[0].startsWith("-D")) //$NON-NLS-1$
-                {
-                    System.setProperty(pairs[0].substring(2, pairs[0].length()), pairs[1]);
-                } 
-            } else
-            {
-                String symbol = pairs[0].substring(2, pairs[0].length());
-                System.setProperty(symbol, symbol);
-            }
-        }
-        
-        // Now check the System Properties
-        String appDir = System.getProperty("appdir");
-        if (StringUtils.isNotEmpty(appDir))
-        {
-            UIRegistry.setDefaultWorkingPath(appDir);
-        }
-        
-        String appdatadir = System.getProperty("appdatadir");
-        if (StringUtils.isNotEmpty(appdatadir))
-        {
-            UIRegistry.setBaseAppDataDir(appdatadir);
-        }
-        
-        // For Debugging Only 
-        //System.setProperty("mobile", "true");
-        //System.setProperty("embedded", "true");
-        
-        String mobile = System.getProperty("mobile");
-        if (StringUtils.isNotEmpty(mobile))
-        {
-            UIRegistry.setMobile(true);
-        }
-        
-        String embeddedStr = System.getProperty("embedded");
-        if (StringUtils.isNotEmpty(embeddedStr))
-        {
-            UIRegistry.setEmbedded(true);
-        }
-        
-        String embeddeddbdir = System.getProperty("embeddeddbdir");
-        if (StringUtils.isNotEmpty(embeddeddbdir))
-        {
-            UIRegistry.setEmbeddedDBDir(embeddeddbdir);
-        } else
-        {
-            UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
-        }
+        AppBase.processArgs(args);
 
         // Set App Name, MUST be done very first thing!
         UIRegistry.setAppName("iReports4Specify");  //$NON-NLS-1$
@@ -1748,7 +1697,7 @@ public class MainFrameSpecify extends MainFrame
         HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener()); //$NON-NLS-1$
         HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener()); //$NON-NLS-1$
 
-        ImageIcon helpIcon = IconManager.getIcon("AppIcon",IconSize.Std16); //$NON-NLS-1$
+        ImageIcon helpIcon = IconManager.getIcon(IconManager.makeIconName("AppIcon"), IconSize.Std16); //$NON-NLS-1$
         HelpMgr.initializeHelp("SpecifyHelp", helpIcon.getImage()); //$NON-NLS-1$
 
         SwingUtilities.invokeLater(new Runnable() {
@@ -1888,8 +1837,8 @@ public class MainFrameSpecify extends MainFrame
                 String nameAndTitle = "Specify iReport"; // I18N
                 UIRegistry.setRelease(true);
                 UIHelper.doLogin(usrPwdProvider, true, false, false, new IReportLauncher(), 
-                                 "SPIReports", nameAndTitle, nameAndTitle, 
-                                 "SpecifyWhite32", "iReport"); // true means do auto login if it can, 
+                                 IconManager.makeIconName("SPIReports"), nameAndTitle, nameAndTitle, 
+                                 IconManager.makeIconName("SpecifyWhite32"), "iReport"); // true means do auto login if it can, 
                                                                // second bool means use dialog instead of frame
                 
                 localPrefs.load();

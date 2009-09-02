@@ -76,6 +76,7 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame;
 import edu.ku.brc.specify.prefs.MySQLPrefs;
+import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -222,6 +223,19 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         topFrame.setContentPane(this);
     }
     
+    public static String getIconName()
+    {
+        String postFix = "";
+        if (UIRegistry.isEmbedded())
+        {
+            postFix = "E";
+        } else if (UIRegistry.isMobile())
+        {
+            postFix = "M";
+        }
+        return "DatabaseIcon" + postFix;
+    }
+    
     /**
      * @param imgEncoded uuencoded image string
      */
@@ -237,7 +251,7 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
                 return;
             }
         }
-        appImgIcon = IconManager.getImage("AppIcon", IconManager.IconSize.Std32); //$NON-NLS-1$
+        appImgIcon = IconManager.getImage(getIconName(), IconManager.IconSize.Std32); //$NON-NLS-1$
         appIcon.setIcon(appImgIcon);
     }
 
@@ -426,14 +440,26 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
     {
         String title        = "";
         String install4JStr = UIHelper.getInstall4JInstallString();
+        
+        String postFix = "";
+        if (UIRegistry.isEmbedded())
+        {
+            postFix = " (EZDB)";
+            
+        } else if (UIRegistry.isMobile())
+        {
+            postFix = " (Mobile)";
+        }
+        
         if (StringUtils.isNotEmpty(install4JStr))
         {
             appVersion = install4JStr;
-            title = appName + " Alpha " + appVersion; //$NON-NLS-1$
+            title = appName + postFix + " " + appVersion; //$NON-NLS-1$
         } else
         {
-            title = appName + " " + appVersion + "  - " + appBuildVersion; //$NON-NLS-1$ //$NON-NLS-2$
+            title = appName + postFix + " " + appVersion + "  - " + appBuildVersion; //$NON-NLS-1$ //$NON-NLS-2$
         }
+        
         return title;
     }
 
@@ -589,7 +615,7 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         CommandDispatcher.register(BaseTask.APP_CMD_TYPE, this);
         
         UIRegistry.loadAndPushResourceBundle("backuprestore");
-        dbLoginPanel = UIHelper.doLogin(null, false, false, false, this, "DatabaseIcon", getTitle(), null, "SpecifyWhite32", "Backup_Restore"); // true means do auto login if it can, second bool means use dialog instead of frame
+        dbLoginPanel = UIHelper.doLogin(null, false, false, false, this, getIconName(), getTitle(), null, Specify.getOpaqueIconName(), "Backup_Restore"); // true means do auto login if it can, second bool means use dialog instead of frame
         UIRegistry.popResourceBundle();
         
         localPrefs.load();
@@ -758,64 +784,7 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
     */
    public static void main(String[] args)
    {
-       log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-       // This is for Windows and Exe4J, turn the args into System Properties
-       
-       UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
-       
-       for (String s : args)
-       {
-           String[] pairs = s.split("="); //$NON-NLS-1$
-           if (pairs.length == 2)
-           {
-               if (pairs[0].startsWith("-D")) //$NON-NLS-1$
-               {
-                   System.setProperty(pairs[0].substring(2, pairs[0].length()), pairs[1]);
-               } 
-           } else
-           {
-               String symbol = pairs[0].substring(2, pairs[0].length());
-               System.setProperty(symbol, symbol);
-           }
-       }
-       
-       // Now check the System Properties
-       String appDir = System.getProperty("appdir");
-       if (StringUtils.isNotEmpty(appDir))
-       {
-           UIRegistry.setDefaultWorkingPath(appDir);
-       }
-       
-       String appdatadir = System.getProperty("appdatadir");
-       if (StringUtils.isNotEmpty(appdatadir))
-       {
-           UIRegistry.setBaseAppDataDir(appdatadir);
-       }
-       
-       // For Debugging Only 
-       //System.setProperty("mobile", "true");
-       //System.setProperty("embedded", "true");
-       
-       String mobile = System.getProperty("mobile");
-       if (StringUtils.isNotEmpty(mobile))
-       {
-           UIRegistry.setMobile(true);
-       }
-       
-       String embeddedStr = System.getProperty("embedded");
-       if (StringUtils.isNotEmpty(embeddedStr))
-       {
-           UIRegistry.setEmbedded(true);
-       }
-       
-       String embeddeddbdir = System.getProperty("embeddeddbdir");
-       if (StringUtils.isNotEmpty(embeddeddbdir))
-       {
-           UIRegistry.setEmbeddedDBDir(embeddeddbdir);
-       } else
-       {
-           UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
-       }
+       AppBase.processArgs(args);
        
        SwingUtilities.invokeLater(new Runnable() {
            @SuppressWarnings("synthetic-access") //$NON-NLS-1$
