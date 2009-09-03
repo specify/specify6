@@ -4094,11 +4094,18 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         //scrollRectToVisible doesn't work when newBounds is above the viewport.
         //This is a java bug: http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6333318
+//        if (rect.y < queryFieldsScroll.getViewport().getViewPosition().y)
+//        {
+//            queryFieldsScroll.getViewport().setViewPosition(new Point(rect.x,rect.y));
+//        }
+        queryFieldsScroll.getViewport().scrollRectToVisible(rect);
+        
+        //scrollRectToVisible doesn't work when newBounds is above the viewport.
+        //This is a java bug: http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6333318
         if (rect.y < queryFieldsScroll.getViewport().getViewPosition().y)
         {
             queryFieldsScroll.getViewport().setViewPosition(new Point(rect.x,rect.y));
         }
-        queryFieldsScroll.getViewport().scrollRectToVisible(rect);
     }
     
     /* (non-Javadoc)
