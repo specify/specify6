@@ -803,6 +803,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         	SpExportSchemaMapping newMap = session.get(SpExportSchemaMapping.class,	maps.get(mapToRefresh).getId());
 			newMap.forceLoad();
 			newMap.getMappings().iterator().next().getQueryField().getQuery().forceLoad();
+			newMap.getSpExportSchema().forceLoad();
 	        maps.set(mapToRefresh, newMap);
        }
         finally
