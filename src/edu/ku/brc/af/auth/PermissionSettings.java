@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.af.auth;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.af.core.PermissionIFace;
 
 /**
@@ -31,6 +33,8 @@ import edu.ku.brc.af.core.PermissionIFace;
  */
 public class PermissionSettings implements PermissionIFace 
 {
+    private static final Logger log = Logger.getLogger(PermissionSettings.class);
+    
     public static final int NO_PERM          =   0; // Indicates there are no permissions
     public static final int CAN_VIEW         =   1; // Indicates the user can view the form
     public static final int CAN_MODIFY       =   2; // Indicates the user can modify data
@@ -259,10 +263,7 @@ public class PermissionSettings implements PermissionIFace
      */
     public static void dumpPermissions(final String title, final int options)
     {
-        System.err.print(title + " - ");
-        System.err.print(" View: "   + (canView(options)   ? "Y" : "N"));
-        System.err.print(" Modify: " + (canModify(options) ? "Y" : "N"));
-        System.err.print(" Delete: " + (canDelete(options) ? "Y" : "N"));
-        System.err.println(" Add: "  + (canAdd(options)    ? "Y" : "N"));
+        log.debug(title + " - View: " + (canView(options)   ? "Y" : "N") + " Modify: " + (canModify(options) ? "Y" : "N") +
+                  " Delete: " + (canDelete(options) ? "Y" : "N") + " Add: "  + (canAdd(options)    ? "Y" : "N"));
     }
 }

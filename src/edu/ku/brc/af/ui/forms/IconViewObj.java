@@ -47,6 +47,7 @@ import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -124,6 +125,7 @@ public class IconViewObj implements Viewable
     protected boolean                       isEditing;
     
     protected BusinessRulesIFace            businessRules;
+    protected Class<?>                      dataClass;
     
     protected boolean                       orderableDataClass;
     
@@ -137,11 +139,15 @@ public class IconViewObj implements Viewable
      * @param altView the altView
      * @param mvParent the parent MultiView
      * @param options the view options
+     * @param cellName the name of the cell when it is a subview
+     * @param dataClass the class of the data that is put into the form
      */
     public IconViewObj(final ViewIFace     view, 
                        final AltViewIFace altView, 
                        final MultiView    mvParent, 
-                       final int          options)
+                       final int          options,
+                       final String       cellName,
+                       final Class<?>     dataClass)
     {
         this.view          = view;
         this.altView       = altView;
@@ -150,6 +156,8 @@ public class IconViewObj implements Viewable
         this.viewDef       = altView.getViewDef();
         this.dataTypeError = false;
         this.businessRules = view.createBusinessRule();
+        this.cellName      = cellName;
+        this.dataClass     = dataClass;
         
         if (businessRules != null)
         {
@@ -224,7 +232,7 @@ public class IconViewObj implements Viewable
         }
         
         altViewsList = new Vector<AltViewIFace>();
-        switcherUI   = FormViewObj.createMenuSwitcherPanel(mvParent, view, altView, altViewsList, mainComp);
+        switcherUI   = FormViewObj.createMenuSwitcherPanel(mvParent, view, altView, altViewsList, mainComp, cellName, dataClass);
         
         iconTray = new OrderedIconTray(IconTray.SINGLE_ROW);
         iconTray.addPropertyChangeListener(new PropertyChangeListener()
@@ -742,24 +750,26 @@ public class IconViewObj implements Viewable
         {
             if (perm == null)
             {
-                Class<?> cls;
-                if (classToCreate == null)
+                String shortClassName = MultiView.getClassNameFromParentMV(dataClass, mvParent, cellName);
+                if (StringUtils.isEmpty(shortClassName))
                 {
-                    try
+                    if (classToCreate == null)
                     {
-                        cls = Class.forName(view.getClassName());
-                    } catch (Exception ex) 
+                        try
+                        {
+                            shortClassName = Class.forName(view.getClassName()).getSimpleName();
+                            
+                        } catch (Exception ex) 
+                        {
+                            shortClassName = dataObj.getClass().getSimpleName();
+                        }
+                    } else
                     {
-                        cls = dataObj.getClass();
+                        shortClassName = classToCreate.getSimpleName();
                     }
-                    
-                } else
-                {
-                    cls = classToCreate;
                 }
-                perm = SecurityMgr.getInstance().getPermission("DO."+cls.getSimpleName().toLowerCase());                
-                //SecurityMgr.dumpPermissions(dataObj.getClass().getSimpleName(), perm2.getOptions());
-               }
+                perm = SecurityMgr.getInstance().getPermission("DO."+shortClassName);            
+            }
             
             if ((isEditing && perm.isViewOnly()) || (!isEditing && !perm.canView()))
             {

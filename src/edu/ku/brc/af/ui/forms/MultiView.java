@@ -230,7 +230,7 @@ public class MultiView extends JPanel
         
         if (AppContextMgr.isSecurityOn())
         {
-            this.permissions = getPremissionFromView(view);
+            this.permissions = getPremissionFromView(view, getClassNameFromParentMV(null, mvParent, cellName));
             //PermissionSettings.dumpPermissions("DO."+view.getName(), permissions.getOptions());
         } else
         {
@@ -250,7 +250,7 @@ public class MultiView extends JPanel
                     this.createWithMode = av.getMode();
                     
                     //log.debug("CREATING: createWithMode "+createWithMode+"  "+av.getName()+" "+av.getMode());
-                    createViewable(av.getName());
+                    createViewable(av.getName(), cellName);
                     
                 } else
                 {
@@ -267,12 +267,12 @@ public class MultiView extends JPanel
                     this.createWithMode = av.getMode();
                     
                     //log.debug("CREATING: createWithMode "+createWithMode+"  "+av.getName()+" "+av.getMode());
-                    createViewable(av.getName());
+                    createViewable(av.getName(), cellName);
                 }
             }
         } else
         {
-            createViewable(defaultAltView.getName());
+            createViewable(defaultAltView.getName(), cellName);
         }
         
         this.createWithMode = createWithMode;
@@ -318,13 +318,13 @@ public class MultiView extends JPanel
         
         if (AppContextMgr.isSecurityOn())
         {
-            this.permissions = getPremissionFromView(view);
+            this.permissions = getPremissionFromView(view, getClassNameFromParentMV(null, mvParent, cellName));
         } else
         {
             this.permissions = new PermissionSettings(PermissionSettings.ALL_PERM);
         }
         
-        createViewable(altView != null ? altView : createDefaultViewable(null));
+        createViewable(altView != null ? altView : createDefaultViewable(null), cellName);
         showView(altView.getName());
     }
     
@@ -364,16 +364,49 @@ public class MultiView extends JPanel
     }
     
     /**
-     * Get the Permissions for the data type from the views.
-     * @param viewArg the view
-     * @return the premissions
+     * Get the short class name for the cell's data type.
+     * @param dataClass the class of the data that is put into the form
+     * @param parent the MultiView parent
+     * @param cellName the cell name of the child
+     * @return the short class name for the class type of the data for the cell
      */
-    public static PermissionSettings getPremissionFromView(final ViewIFace viewArg)
+    public static String getClassNameFromParentMV(final Class<?> dataClass, final MultiView parent, final String cellName)
     {
-        String shortClass = StringUtils.substringAfterLast(viewArg.getClassName(), ".");
+        String dataClassName = dataClass != null ? dataClass.getSimpleName() : null;
+        if (dataClassName == null && parent != null && cellName != null)
+        {
+            String className = parent.getView().getClassName();
+            if (className != null)
+            {
+                DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(className);
+                if (tblInfo != null)
+                {
+                    DBTableChildIFace childInfo = tblInfo.getItemByName(cellName);
+                    if (childInfo != null)
+                    {
+                        dataClassName = childInfo.getDataClass().getSimpleName();
+                    } else
+                    {
+                        log.debug("Couldn't find cellName["+cellName+"] for table["+tblInfo.getName()+"]");
+                    }
+                }
+            }
+        }
+        return dataClassName;
+    }
+    
+    /**
+     * Get the Permissions for the data type from the views.
+     * @param view the view
+     * @param shortClassName the short class name if it is already know (null can be passed in)
+     * @return the permissions
+     */
+    public static PermissionSettings getPremissionFromView(final ViewIFace view, final String shortClassName)
+    {
+        String shortClass = StringUtils.isNotEmpty(shortClassName) ? shortClassName : StringUtils.substringAfterLast(view.getClassName(), ".");
         if (shortClass == null)
         {
-            shortClass = viewArg.getClassName();
+            shortClass = view.getClassName();
         }
         return SecurityMgr.getInstance().getPermission("DO."+shortClass.toLowerCase());
     }
@@ -739,7 +772,7 @@ public class MultiView extends JPanel
         Viewable viewable = viewMapByName.get(name);
         if (viewable == null)
         {
-            viewable = createViewable(name);
+            viewable = createViewable(name, null);
         }
         
         Vector<ViewState> viewStateList = null;
@@ -829,7 +862,7 @@ public class MultiView extends JPanel
      * Show a Viewable by name.
      * @param devName the registered name of the component (In this case it is the name of the Viewable)
      */
-    public Viewable createViewable(final String altViewName)
+    public Viewable createViewable(final String altViewName, final String cellName)
     {
         // Find the AltView to create
         List<AltViewIFace> list = view.getAltViews();
@@ -838,7 +871,7 @@ public class MultiView extends JPanel
         {
             if (altViewName.equals(altView.getName()))
             {
-                return createViewable(altView);
+                return createViewable(altView, cellName);
             }
             inx++;
         }
@@ -852,7 +885,7 @@ public class MultiView extends JPanel
      * Show a Viewable by name.
      * @param devName the registered name of the component (In this case it is the name of the Viewable)
      */
-    protected Viewable createViewable(final AltViewIFace altView)
+    protected Viewable createViewable(final AltViewIFace altView, final String cellName)
     {
         ViewIFace newView = AppContextMgr.getInstance().getView(view.getViewSetName(), altView.getView().getName());
         // 12/14/07 - rods
@@ -880,7 +913,7 @@ public class MultiView extends JPanel
 
             int tmpCreateOptions = createOptions | (createWithMode == AltViewIFace.CreationMode.EDIT ? (IS_EDITTING) : 0);
             //MultiView.printCreateOptions("createViewable", createOptions);
-            Viewable viewable = ViewFactory.createFormView(this, newView, altView.getName(), data, tmpCreateOptions, getBackground());
+            Viewable viewable = ViewFactory.createFormView(this, newView, altView.getName(), data, tmpCreateOptions, cellName, getBackground());
             if (viewable != null)
             {
                 if (add(viewable, altView.getName()))

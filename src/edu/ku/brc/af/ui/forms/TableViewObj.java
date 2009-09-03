@@ -114,7 +114,6 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.ColorWrapper;
-import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
@@ -213,6 +212,7 @@ public class TableViewObj implements Viewable,
     protected JPanel                        sepController   = null;
 
     protected BusinessRulesIFace            businessRules   = null; 
+    protected Class<?>                      dataClass;
 
     protected DraggableRecordIdentifier     draggableRecIdentifier   = null;
     
@@ -245,12 +245,17 @@ public class TableViewObj implements Viewable,
      * @param mvParent the parent
      * @param formValidator the validator
      * @param options the creation options
+     * @param cellName the name of the cell when it is a subview
+     * @param dataClass the class of the data that is put into the form
+     * @param bgColor
      */
     public TableViewObj(final ViewIFace     view,
                         final AltViewIFace  altView,
                         final MultiView     mvParent,
                         final FormValidator formValidator,
                         final int           options,
+                        final String        cellName,
+                        final Class<?>      dataClass,
                         final Color         bgColor)
     {
         this.view        = view;
@@ -259,7 +264,9 @@ public class TableViewObj implements Viewable,
         this.options     = options;
         this.viewDef     = altView.getViewDef();
         this.formValidator = formValidator;
-        
+        this.cellName      = cellName;
+        this.dataClass     = dataClass;
+
         businessRules    = view.createBusinessRule();
         dataGetter       = altView.getViewDef().getDataGettable();
         this.formViewDef = (FormViewDefIFace)altView.getViewDef();
@@ -322,7 +329,7 @@ public class TableViewObj implements Viewable,
                     altView.setMode(AltViewIFace.CreationMode.EDIT);
                 }
                 
-                switcherUI = FormViewObj.createMenuSwitcherPanel(mvParent, view, altView, altViewsList, mainComp);
+                switcherUI = FormViewObj.createMenuSwitcherPanel(mvParent, view, altView, altViewsList, mainComp, cellName, dataClass);
                 
                 if (tempMode != null)
                 {
@@ -493,7 +500,8 @@ public class TableViewObj implements Viewable,
         
         if (AppContextMgr.isSecurityOn())
         {
-            setPermsFromTableInfo(view.getClassName());
+            String shortClasName = MultiView.getClassNameFromParentMV(dataClass, mvParent, cellName);
+            setPermsFromTableInfo(shortClasName != null ? shortClasName : view.getClassName());
         } else
         {
             perm = new PermissionSettings(PermissionSettings.ALL_PERM);

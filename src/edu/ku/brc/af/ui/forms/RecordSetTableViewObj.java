@@ -77,15 +77,22 @@ public class RecordSetTableViewObj extends TableViewObj
      * @param altView the altView
      * @param mvParent the parent MultiView
      * @param options the view options
+     * @param formValidator
+     * @param options
+     * @param cellName the name of the cell when it is a subview
+     * @param dataClass the class of the data that is put into the form
+     * @param bgColor
      */
     public RecordSetTableViewObj(final ViewIFace     view,
                                  final AltViewIFace  altView,
                                  final MultiView     mvParent,
                                  final FormValidator formValidator,
                                  final int           options,
+                                 final String        cellName,
+                                 final Class<?>      dataClass,
                                  final Color         bgColor)
     {
-        super(view, altView, mvParent, formValidator, options, bgColor);
+        super(view, altView, mvParent, formValidator, options, cellName, dataClass, bgColor);
         
         // we need a form validator that always says it's valid
         validator = new FormValidator(null)

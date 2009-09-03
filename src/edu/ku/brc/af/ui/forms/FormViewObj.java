@@ -260,6 +260,7 @@ public class FormViewObj implements Viewable,
 
     protected BusinessRulesIFace            businessRules   = null;
     protected boolean                       hasInitBR       = false;
+    protected Class<?>                      dataClass;
 
     protected DraggableRecordIdentifier     draggableRecIdentifier   = null;
     
@@ -290,7 +291,7 @@ public class FormViewObj implements Viewable,
      * @param options the options needed for creating the form
      * @param bgColor bg color it should use
      */
-    public FormViewObj(final ViewIFace     view,
+    /*public FormViewObj(final ViewIFace     view,
                        final AltViewIFace  altView,
                        final MultiView     mvParent,
                        final FormValidator formValidator,
@@ -298,7 +299,7 @@ public class FormViewObj implements Viewable,
                        final Color         bgColor)
     {
         this(view, altView, mvParent, formValidator, options, null, bgColor);
-    }
+    }*/
     
     /**
      * Constructor with FormView definition.
@@ -316,12 +317,14 @@ public class FormViewObj implements Viewable,
                        final FormValidator formValidator,
                        final int           options,
                        final String        cellName,
+                       final Class<?>      dataClass,
                        final Color         bgColor)
     {
         this.view        = view;
         this.altView     = altView;
         this.mvParent    = mvParent;
         this.cellName    = cellName;
+        this.dataClass   = dataClass;
         this.bgColor     = bgColor;
 
         businessRules    = view.createBusinessRule();
@@ -457,7 +460,7 @@ public class FormViewObj implements Viewable,
                 altViewsList = new Vector<AltViewIFace>();
                 
                 // This will return null if it isn't suppose to have a switcher
-                switcherUI = createMenuSwitcherPanel(mvParent, view, altView, altViewsList, restrictablePanel);
+                switcherUI = createMenuSwitcherPanel(mvParent, view, altView, altViewsList, restrictablePanel, cellName, dataClass);
                 
                 if (altViewsList.size() > 0)
                 {
@@ -714,22 +717,22 @@ public class FormViewObj implements Viewable,
      * @param altViewArg the AltViewIFace
      * @param altViewsListArg the Vector of AltViewIFace that will contains the ones in the Drop Down
      * @return the special combobox
+     * @param restrictableUI
+     * @param cellName the name of the cell when it is a subview
+     * @param dataClass the class of the data that is put into the form
+     * @return
      */
     public static MenuSwitcherPanel createMenuSwitcherPanel(final MultiView            mvParentArg, 
                                                             final ViewIFace            viewArg, 
                                                             final AltViewIFace         altViewArg, 
                                                             final Vector<AltViewIFace> altViewsListArg,
-                                                            final RestrictableUIIFace  restrictableUI)
+                                                            final RestrictableUIIFace  restrictableUI,
+                                                            final String               cellName,
+                                                            final Class<?>             dataClass)
     {
         if (AppContextMgr.isSecurityOn())
         {
-            String shortName = StringUtils.substringAfterLast(viewArg.getClassName(), ".");
-            if (shortName == null)
-            {
-                shortName = viewArg.getClassName();
-            }
-            
-            PermissionSettings perm = SecurityMgr.getInstance().getPermission("DO."+shortName.toLowerCase());
+            PermissionSettings perm = MultiView.getPremissionFromView(viewArg, MultiView.getClassNameFromParentMV(dataClass, mvParentArg, cellName));
             PermissionSettings.dumpPermissions(mvParentArg.getViewName(), perm.getOptions());
             
             if (perm.hasNoPerm() && restrictableUI != null)
@@ -1789,7 +1792,7 @@ public class FormViewObj implements Viewable,
         if (isAutoNumberOn)
         {
             for (FVOFieldInfo fieldInfo : controlsById.values())
-            {
+            {   
                 Component comp = fieldInfo.getComp();
                 if (comp instanceof AutoNumberableIFace && comp.isEnabled())
                 {
@@ -3448,12 +3451,7 @@ public class FormViewObj implements Viewable,
                         perm = tableInfo.getPermissions();
                     } else
                     {
-                        String shortName = StringUtils.substringAfterLast(view.getClassName(), ".");
-                        if (shortName == null)
-                        {
-                            shortName = view.getClassName();
-                        }
-                        perm = SecurityMgr.getInstance().getPermission("DO."+shortName.toLowerCase());
+                        perm = MultiView.getPremissionFromView(view, MultiView.getClassNameFromParentMV(dataClass, mvParent, cellName));
                     }
                     //SecurityMgr.dumpPermissions(mvParentArg.getViewName(), perm.getOptions());
                     canAdd = perm.canAdd();
@@ -4507,22 +4505,26 @@ public class FormViewObj implements Viewable,
         // Make sure we get the right class name, the dataObj is sometimes a "Set<?>"
         if (perm == null)
         {
-            Class<?> cls;
-            if (classToCreate == null)
+            String shortClassName = MultiView.getClassNameFromParentMV(dataClass, mvParent, cellName);
+            if (StringUtils.isEmpty(shortClassName))
             {
-                try
+                if (classToCreate == null)
                 {
-                    cls = Class.forName(view.getClassName());
-                } catch (Exception ex) 
+                    try
+                    {
+                        shortClassName = Class.forName(view.getClassName()).getSimpleName();
+                        
+                    } catch (Exception ex) 
+                    {
+                        shortClassName = dataObj.getClass().getSimpleName();
+                    }
+                    
+                } else
                 {
-                    cls = dataObj.getClass();
+                    shortClassName = classToCreate.getSimpleName();
                 }
-                
-            } else
-            {
-                cls = classToCreate;
             }
-            perm = SecurityMgr.getInstance().getPermission("DO."+cls.getSimpleName().toLowerCase());
+            perm = SecurityMgr.getInstance().getPermission("DO."+shortClassName);
         }
     }
 
