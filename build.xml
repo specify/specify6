@@ -224,7 +224,7 @@
 		
 		<copy file="${jar.name}.jar" todir="${installer.dir}" />
 		
-		<!-- LINUX icons -->
+		<!-- LINUX icons
 		<copy file="${source.root}/edu/ku/brc/specify/images/specify16.png" todir="${installer.dir}/images" />
 		<copy file="${source.root}/edu/ku/brc/specify/images/specify32.png" todir="${installer.dir}/images" />
 		
@@ -246,23 +246,24 @@
 		<copy file="${source.root}/edu/ku/brc/specify/images/data_split32.png" todir="${installer.dir}/images" />
 		<copy file="${source.root}/edu/ku/brc/specify/images/data_split16.png" todir="${installer.dir}/images" />			
 				
-		<!-- WINDOWS icons -->
-		<copy file="${source.root}/edu/ku/brc/specify/images/specify128.ico" todir="${installer.dir}/images" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spbackup128.ico" todir="${installer.dir}/images" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spbuilder128.ico" todir="${installer.dir}/images" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spireport128.ico" todir="${installer.dir}/images" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spstatistics128.ico" todir="${installer.dir}/images" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spwizard128.ico" todir="${installer.dir}/images" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/data_split.ico" todir="${installer.dir}/images" />				
+		WINDOWS icons
+		<copy file="packaging/ico/specify128.ico" todir="${installer.dir}/images" />
+		<copy file="packaging/ico/spbackup128.ico" todir="${installer.dir}/images" />
+		<copy file="packaging/ico/spbuilder128.ico" todir="${installer.dir}/images" />
+		<copy file="packaging/ico/spireport128.ico" todir="${installer.dir}/images" />
+		<copy file="packaging/ico/spstatistics128.ico" todir="${installer.dir}/images" />
+		<copy file="packaging/ico/spwizard128.ico" todir="${installer.dir}/images" />
+		<copy file="packaging/ico/data_split.ico" todir="${installer.dir}/images" />				
 		
-		<!-- MAC OS X icons -->
-		<copy file="${source.root}/edu/ku/brc/specify/images/specify.icns" todir="${installer.dir}/images" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spwizard.icns" todir="${installer.dir}/images" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/backuprestore.icns" todir="${installer.dir}/images" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spireports.icns" todir="${installer.dir}/images" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spbuilder.icns" todir="${installer.dir}/images" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/statistics.icns" todir="${installer.dir}/images" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/data_split.icns" todir="${installer.dir}/images" />
+		MAC OS X icons
+		<copy file="packaging/icns/specify.icns" todir="${installer.dir}/images" />
+		<copy file="packaging/icns/spwizard.icns" todir="${installer.dir}/images" />
+		<copy file="packaging/icns/images/backuprestore.icns" todir="${installer.dir}/images" />
+		<copy file="packaging/icns/images/spireports.icns" todir="${installer.dir}/images" />
+		<copy file="packaging/icns/images/spbuilder.icns" todir="${installer.dir}/images" />
+		<copy file="packaging/icns/images/statistics.icns" todir="${installer.dir}/images" />
+		<copy file="packaging/icns/images/data_split.icns" todir="${installer.dir}/images" />
+		-->
 		
 		<copy file="packaging/readme.html" todir="${installer.dir}" />
 		<copy file="packaging/license_agreement.html" todir="${installer.dir}" />
