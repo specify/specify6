@@ -682,7 +682,7 @@ public class ExportMappingTask extends QueryTask
 	{
 		JPopupMenu popupMenu = new JPopupMenu();
 		JMenuItem mi = new JMenuItem(UIRegistry
-				.getResourceString("ExportMappingTask.XML_EXPORT_MAPPINGS"));
+				.getResourceString("ExportMappingTask.XML_IMPORT_MAPPINGS"));
 		popupMenu.add(mi);
 
 		mi.addActionListener(new ActionListener() {
@@ -691,7 +691,7 @@ public class ExportMappingTask extends QueryTask
 			}
 		});
 
-		mi = new JMenuItem(UIRegistry.getResourceString("ExportMappingTask.XML_IMPORT_MAPPINGS"));
+		mi = new JMenuItem(UIRegistry.getResourceString("ExportMappingTask.XML_EXPORT_MAPPINGS"));
 		popupMenu.add(mi);
 
 		mi.addActionListener(new ActionListener() {
