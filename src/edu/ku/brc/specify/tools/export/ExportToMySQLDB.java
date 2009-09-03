@@ -41,15 +41,16 @@ public class ExportToMySQLDB
 	 * @param fld
 	 * @return mysql field type declaration.
 	 */
-	protected static String getFieldTypeDef(DBFieldInfo fld)
+	protected static String getFieldTypeDef(ERTICaptionInfo column)
 	{
-		if (fld == null)
+		DBFieldInfo fld = column.getFieldInfo();
+		Class<?> dataType = column.getColClass() != null ? column.getColClass() : (fld != null ? fld.getDataClass() : null);
+		if (dataType == null)
 		{
-			//assume the column is formatted and/or aggregated
-			return "varchar(300)"; //a really long string
+			//assume it's format or aggregatated or otherwise special
+			return "varchar(300)";
 		}
 		
-		Class<?> dataType = fld.getDataClass();
 		if (dataType.equals(String.class))
 		{
 			return "varchar(" + fld.getLength() + ")";
@@ -117,7 +118,7 @@ public class ExportToMySQLDB
 	 */
 	protected static String getFieldDef(ERTICaptionInfo column)
 	{
-		return "`" + getFieldName(column) +  "` " + getFieldTypeDef(column.getFieldInfo());
+		return "`" + getFieldName(column) +  "` " + getFieldTypeDef(column);
 	}
 	
 	/**

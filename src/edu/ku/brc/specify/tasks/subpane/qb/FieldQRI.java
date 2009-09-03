@@ -125,6 +125,9 @@ public class FieldQRI extends BaseQRI
         return result;
     }
         
+    /**
+     * @return the data type for the field
+     */
     public Class<?> getDataClass()
     {
         if (fi != null)

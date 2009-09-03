@@ -216,6 +216,7 @@ public class ExportMappingTask extends QueryTask
 						.getResourceString("ExportSchemaMapEditor.ChooseSchemaTitle"),
 				getExportSchemas());
 		UIHelper.centerAndShow(dlg);
+		if (dlg.isCancelled()) return null;
 		return dlg.getSelectedObject();
 	}
 
