@@ -23,7 +23,6 @@
       <dirEntry mountPoint="18" file="../InstallerFiles" overwrite="4" shared="false" mode="644" uninstallMode="0" excludeSuffixes=".DS_Store, .svn" dirMode="755">
         <exclude>
           <entry location="non-mac-application-adapter.jar" fileType="regular" />
-          <entry location="specify.icns" fileType="regular" />
           <entry location="SpecifyBigSplash.png" fileType="regular" />
         </exclude>
       </dirEntry>
@@ -31,7 +30,7 @@
     <components />
   </files>
   <launchers>
-    <launcher name="Specify" id="19" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/images/specify.icns" pngIcon16File="../InstallerFiles/images/specify16.png" pngIcon32File="../InstallerFiles/images/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="Specify" id="19" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="Specify" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -61,7 +60,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="SpecifyBuilder" id="22" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/images/spbuilder.icns" pngIcon16File="../InstallerFiles/images/specify16.png" pngIcon32File="../InstallerFiles/images/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="SpecifyBuilder" id="22" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="SpecifyBuilder" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -91,7 +90,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="SpLocalizer" id="279" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/images/specify.icns" pngIcon16File="../InstallerFiles/images/specify16.png" pngIcon32File="../InstallerFiles/images/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="SpLocalizer" id="279" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="SpLocalizer" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -121,7 +120,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="SpiReport" id="286" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/images/spireports.icns" pngIcon16File="../InstallerFiles/images/specify16.png" pngIcon32File="../InstallerFiles/images/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="SpiReport" id="286" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/spireports.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="SpiReport" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -151,7 +150,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="SpecifyDBConverter" id="724" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/images/specify.icns" pngIcon16File="../InstallerFiles/images/specify16.png" pngIcon32File="../InstallerFiles/images/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="SpecifyDBConverter" id="724" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="SpecifyDBConverter" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -181,7 +180,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="ConvertVerifier" id="727" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/images/specify.icns" pngIcon16File="../InstallerFiles/images/specify16.png" pngIcon32File="../InstallerFiles/images/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="ConvertVerifier" id="727" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="ConvertVerifier" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -211,7 +210,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="SpWizard" id="807" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/images/spwizard.icns" pngIcon16File="../InstallerFiles/images/specify16.png" pngIcon32File="../InstallerFiles/images/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="SpWizard" id="807" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/spwizardE.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="SpWizard" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -241,7 +240,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="Specify1GB" id="887" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/images/specify.icns" pngIcon16File="../InstallerFiles/images/specify16.png" pngIcon32File="../InstallerFiles/images/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="Specify1GB" id="887" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="Specify1GB" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -271,7 +270,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="SpBackupRestore" id="967" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/images/backuprestore.icns" pngIcon16File="../InstallerFiles/images/specify16.png" pngIcon32File="../InstallerFiles/images/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="SpBackupRestore" id="967" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/spbackupE.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="SpBackupRestore" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -301,7 +300,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="Register" id="1048" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/images/statistics.icns" pngIcon16File="../InstallerFiles/images/specify16.png" pngIcon32File="../InstallerFiles/images/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="Register" id="1048" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/statistics.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="Register" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -331,7 +330,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="ImportFileSplitter" id="1238" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/images/data_split.icns" pngIcon16File="../InstallerFiles/images/specify16.png" pngIcon32File="../InstallerFiles/images/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="ImportFileSplitter" id="1238" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/data_split.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="ImportFileSplitter" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -361,7 +360,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="SchemaExporter" id="1319" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/images/specify.icns" pngIcon16File="../InstallerFiles/images/specify16.png" pngIcon32File="../InstallerFiles/images/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="SchemaExporter" id="1319" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="SchemaExporter" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -391,7 +390,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="StrL10N" id="1400" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/images/specify.icns" pngIcon16File="../InstallerFiles/images/specify16.png" pngIcon32File="../InstallerFiles/images/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="StrL10N" id="1400" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="StrL10N" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -425,7 +424,7 @@
   <installerGui installerType="1" suggestPreviousProgramGroup="false" addOnAppId="" suggestPreviousLocations="true">
     <customCode useInstalledFiles="false" />
     <applications>
-      <application name="" id="installer" beanClass="com.install4j.runtime.beans.applications.InstallerApplication" enabled="true" commentSet="false" comment="" customIcnsFile="../InstallerFiles/images/specify.icns" customIcoFile="">
+      <application name="" id="installer" beanClass="com.install4j.runtime.beans.applications.InstallerApplication" enabled="true" commentSet="false" comment="" customicnsFile="icns/specifyE.icns" customIcoFile="">
         <serializedBean>
           <java class="java.beans.XMLDecoder">
             <object class="com.install4j.runtime.beans.applications.InstallerApplication">
@@ -436,12 +435,12 @@
               </void>
               <void property="customPngIcon16File">
                 <object class="com.install4j.api.beans.ExternalFile">
-                  <string>../InstallerFiles/images/specify16.png</string>
+                  <string>../src/edu/ku/brc/specify/images/specify16.png</string>
                 </object>
               </void>
               <void property="customPngIcon32File">
                 <object class="com.install4j.api.beans.ExternalFile">
-                  <string>../InstallerFiles/images/specify32.png</string>
+                  <string>../src/edu/ku/brc/specify/images/specify32.png</string>
                 </object>
               </void>
               <void property="frameHeight">
