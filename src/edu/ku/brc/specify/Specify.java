@@ -770,8 +770,13 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         appIcon.setIcon(appImgIcon);
         if (!UIHelper.isMacOS())
         {
-        	appImgIcon = IconManager.getImage(getOpaqueIconName(), IconManager.IconSize.Std32); //$NON-NLS-1$
+            ImageIcon otherAppIcon = IconManager.getImage(getOpaqueIconName(), IconManager.IconSize.Std32); //$NON-NLS-1$
+            if (otherAppIcon != null)
+            {
+                appImgIcon = otherAppIcon;
+            }
         }
+        
         CustomDialog.setAppIcon(appImgIcon);
         CustomFrame.setAppIcon(appImgIcon);
         IconManager.register(innerAppIconName, appImgIcon, null, IconManager.IconSize.Std32);
