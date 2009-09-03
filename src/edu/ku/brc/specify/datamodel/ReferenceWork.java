@@ -644,9 +644,12 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)(journal != null ? Journal.getClassTableId() : containedRFParent != null ? ReferenceWork.getClassTableId() : null);
+        // Throws exception when inlined
+        Integer tblId = journal != null ? Journal.getClassTableId() : null;
+        tblId = tblId != null ? tblId : containedRFParent != null ? ReferenceWork.getClassTableId() : null;
+        return tblId;
     }
 
     /* (non-Javadoc)
@@ -656,7 +659,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     @Transient
     public Integer getParentId()
     {
-        return journal != null ? Journal.getClassTableId() : containedRFParent != null ? containedRFParent.getId() : null;
+        return journal != null ? journal.getId() : containedRFParent != null ? containedRFParent.getId() : null;
     }
     
     /* (non-Javadoc)

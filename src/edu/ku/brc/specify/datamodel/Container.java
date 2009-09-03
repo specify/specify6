@@ -255,9 +255,9 @@ public class Container extends CollectionMember implements java.io.Serializable
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Container.getClassTableId();
+        return Container.getClassTableId();
     }
 
     /* (non-Javadoc)

@@ -205,9 +205,9 @@ public class AgentSpecialty extends DataModelObjBase implements Serializable, Or
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Agent.getClassTableId();
+        return Agent.getClassTableId();
     }
 
     /* (non-Javadoc)

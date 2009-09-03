@@ -379,9 +379,9 @@ public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<Per
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)AccessionAuthorization.getClassTableId();
+        return AccessionAuthorization.getClassTableId();
     }
 
     /* (non-Javadoc)

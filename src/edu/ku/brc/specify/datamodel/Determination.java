@@ -586,9 +586,9 @@ public class Determination extends CollectionMember implements java.io.Serializa
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)CollectionObject.getClassTableId();
+        return CollectionObject.getClassTableId();
     }
 
     /* (non-Javadoc)

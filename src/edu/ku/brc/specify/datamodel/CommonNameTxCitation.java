@@ -308,9 +308,9 @@ public class CommonNameTxCitation extends DataModelObjBase implements java.io.Se
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)CommonNameTx.getClassTableId();
+        return CommonNameTx.getClassTableId();
     }
 
     /* (non-Javadoc)

@@ -268,9 +268,9 @@ public class PreparationAttr extends CollectionMember implements AttributeIFace,
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Preparation.getClassTableId();
+        return Preparation.getClassTableId();
     }
 
     /* (non-Javadoc)

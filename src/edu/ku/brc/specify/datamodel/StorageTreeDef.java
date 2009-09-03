@@ -325,9 +325,9 @@ public class StorageTreeDef extends BaseTreeDef<Storage, StorageTreeDef, Storage
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Institution.getClassTableId();
+        return Institution.getClassTableId();
     }
 
     /* (non-Javadoc)

@@ -188,9 +188,9 @@ public class PreparationAttachment extends CollectionMember implements ObjectAtt
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Preparation.getClassTableId();
+        return Preparation.getClassTableId();
     }
 
     /* (non-Javadoc)

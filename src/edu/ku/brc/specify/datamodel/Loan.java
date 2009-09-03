@@ -635,9 +635,9 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Discipline.getClassTableId();
+        return Discipline.getClassTableId();
     }
 
     /* (non-Javadoc)

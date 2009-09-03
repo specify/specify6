@@ -256,9 +256,9 @@ public class BorrowMaterial extends CollectionMember implements java.io.Serializ
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Borrow.getClassTableId();
+        return Borrow.getClassTableId();
     }
 
     /* (non-Javadoc)

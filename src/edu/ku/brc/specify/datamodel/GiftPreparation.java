@@ -235,9 +235,9 @@ public class GiftPreparation extends CollectionMember implements java.io.Seriali
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Gift.getClassTableId();
+        return Gift.getClassTableId();
     }
 
     /* (non-Javadoc)

@@ -372,9 +372,9 @@ public class LithoStratTreeDefItem extends DataModelObjBase implements Serializa
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)LithoStratTreeDef.getClassTableId();
+        return LithoStratTreeDef.getClassTableId();
     }
 
     /* (non-Javadoc)

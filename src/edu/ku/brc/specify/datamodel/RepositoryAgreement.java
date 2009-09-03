@@ -432,9 +432,12 @@ public class RepositoryAgreement extends DataModelObjBase implements AttachmentO
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)(accessions != null && accessions.size() > 0 ? Accession.getClassTableId() : division != null ? Division.getClassTableId() : null);
+        // Throws exception when inlined
+        Integer tblId = accessions != null && accessions.size() > 0 ? Accession.getClassTableId() : null;
+        tblId = tblId != null ? tblId : division != null ? Division.getClassTableId() : null;
+        return tblId;
     }
 
     /* (non-Javadoc)

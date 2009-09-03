@@ -644,9 +644,9 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Geography.getClassTableId();
+        return Geography.getClassTableId();
     }
 
     /* (non-Javadoc)

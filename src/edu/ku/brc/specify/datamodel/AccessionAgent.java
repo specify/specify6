@@ -211,9 +211,9 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Accession.getClassTableId();
+        return Accession.getClassTableId();
     }
 
     /* (non-Javadoc)

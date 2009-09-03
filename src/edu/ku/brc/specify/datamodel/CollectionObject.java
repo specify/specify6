@@ -1133,9 +1133,9 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Collection.getClassTableId();
+        return Collection.getClassTableId();
     }
 
     /* (non-Javadoc)

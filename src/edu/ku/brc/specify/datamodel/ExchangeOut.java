@@ -424,9 +424,9 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return(short) Division.getClassTableId();
+        return Division.getClassTableId();
     }
 
     /* (non-Javadoc)

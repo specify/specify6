@@ -504,16 +504,16 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
         if (collectingTrip != null)
         {
-            return (short)CollectingTrip.getClassTableId();
+            return CollectingTrip.getClassTableId();
         }
         
         if (collectionObjects != null && collectionObjects.size() > 0)
         {
-            return (short)CollectionObject.getClassTableId();
+            return CollectionObject.getClassTableId();
         }
         return null;
     }

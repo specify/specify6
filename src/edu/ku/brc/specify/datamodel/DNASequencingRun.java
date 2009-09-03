@@ -751,9 +751,9 @@ public class DNASequencingRun extends CollectionMember
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)DNASequence.getClassTableId();
+        return DNASequence.getClassTableId();
     }
 
     /* (non-Javadoc)

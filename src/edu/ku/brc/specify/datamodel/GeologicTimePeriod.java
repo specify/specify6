@@ -501,9 +501,9 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)GeologicTimePeriod.getClassTableId();
+        return GeologicTimePeriod.getClassTableId();
     }
 
     /* (non-Javadoc)

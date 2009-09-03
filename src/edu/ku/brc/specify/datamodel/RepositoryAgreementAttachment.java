@@ -205,9 +205,9 @@ public class RepositoryAgreementAttachment extends DataModelObjBase implements O
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)RepositoryAgreement.getClassTableId();
+        return RepositoryAgreement.getClassTableId();
     }
 
     /* (non-Javadoc)

@@ -337,9 +337,9 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)GeographyTreeDef.getClassTableId();
+        return GeographyTreeDef.getClassTableId();
     }
 
     /* (non-Javadoc)

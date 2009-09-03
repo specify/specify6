@@ -1297,9 +1297,9 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Taxon.getClassTableId();
+        return Taxon.getClassTableId();
     }
 
     /* (non-Javadoc)

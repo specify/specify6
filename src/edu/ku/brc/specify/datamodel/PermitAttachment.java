@@ -164,9 +164,9 @@ public class PermitAttachment extends DataModelObjBase implements ObjectAttachme
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Permit.getClassTableId();
+        return Permit.getClassTableId();
     }
 
     /* (non-Javadoc)

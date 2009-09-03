@@ -278,19 +278,19 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
         if (collectingEventAttrs != null && collectingEventAttrs.size() > 0)
         {
-            return (short)CollectingEventAttr.getClassTableId();
+            return CollectingEventAttr.getClassTableId();
         }
         if (preparationAttrs != null && collectingEventAttrs.size() > 0)
         {
-            return (short)PreparationAttr.getClassTableId();
+            return PreparationAttr.getClassTableId();
         }
         if (collectionObjectAttrs != null && collectingEventAttrs.size() > 0)
         {
-            return (short)CollectionObjectAttr.getClassTableId();
+            return CollectionObjectAttr.getClassTableId();
         }
         return null;
     }

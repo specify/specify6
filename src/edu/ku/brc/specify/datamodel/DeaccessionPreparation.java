@@ -205,9 +205,9 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Deaccession.getClassTableId();
+        return Deaccession.getClassTableId();
     }
 
     /* (non-Javadoc)

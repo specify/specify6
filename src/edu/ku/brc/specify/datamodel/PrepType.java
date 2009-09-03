@@ -204,9 +204,9 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Collection.getClassTableId();
+        return Collection.getClassTableId();
     }
 
     /* (non-Javadoc)

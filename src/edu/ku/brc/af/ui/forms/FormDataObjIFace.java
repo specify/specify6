@@ -188,7 +188,7 @@ public interface FormDataObjIFace
     /**
      * @return The parent data object's table id at the time the object is inserted, updated, or deleted.
      */
-    public abstract Short getParentTableId();
+    public abstract Integer getParentTableId();
     
     /**
      * @return The parent data object's primary record id at the time the object is inserted, updated, or deleted.

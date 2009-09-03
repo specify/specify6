@@ -965,9 +965,9 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)CollectionObject.getClassTableId();
+        return CollectionObject.getClassTableId();
     }
 
     /* (non-Javadoc)

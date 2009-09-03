@@ -914,9 +914,9 @@ public class PreparationAttribute extends CollectionMember implements Cloneable
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Preparation.getClassTableId();
+        return Preparation.getClassTableId();
     }
 
     /* (non-Javadoc)

@@ -165,9 +165,9 @@ public class FieldNotebookPageAttachment extends DataModelObjBase implements Obj
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)FieldNotebookPage.getClassTableId();
+        return FieldNotebookPage.getClassTableId();
     }
 
     /* (non-Javadoc)

@@ -239,9 +239,9 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Taxon.getClassTableId();
+        return Taxon.getClassTableId();
     }
 
     /* (non-Javadoc)

@@ -402,15 +402,15 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
         if (division != null)
         {
-            return (short)Division.getClassTableId();
+            return Division.getClassTableId();
         }
         if (collectionObject != null)
         {
-            return (short)CollectionObject.getClassTableId();
+            return CollectionObject.getClassTableId();
         }
         return null;
     }

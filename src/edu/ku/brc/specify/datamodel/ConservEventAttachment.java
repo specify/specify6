@@ -204,9 +204,9 @@ public class ConservEventAttachment extends DataModelObjBase implements ObjectAt
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)ConservEvent.getClassTableId();
+        return ConservEvent.getClassTableId();
     }
 
     /* (non-Javadoc)

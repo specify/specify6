@@ -430,9 +430,13 @@ public class TreatmentEvent extends DataModelObjBase
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)(accession != null ? Accession.getClassTableId() : collectionObject != null ? CollectionObject.getClassTableId() : division != null ? Division.getClassTableId() : null);
+        // Throws exception when inlined
+        Integer tblId = accession != null ? Accession.getClassTableId() : null;
+        tblId = tblId != null ? tblId : collectionObject != null ? CollectionObject.getClassTableId() : null;
+        tblId = tblId != null ? tblId : division != null ? Division.getClassTableId() : null;
+        return tblId;
     }
 
     /* (non-Javadoc)

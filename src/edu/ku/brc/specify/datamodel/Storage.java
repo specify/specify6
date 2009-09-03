@@ -437,9 +437,9 @@ public class Storage extends DataModelObjBase implements Serializable, Treeable<
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Storage.getClassTableId();
+        return Storage.getClassTableId();
     }
 
     /* (non-Javadoc)

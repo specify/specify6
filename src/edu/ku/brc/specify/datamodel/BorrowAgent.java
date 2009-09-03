@@ -177,9 +177,9 @@ public class BorrowAgent extends CollectionMember implements java.io.Serializabl
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Agent.getClassTableId();
+        return Agent.getClassTableId();
     }
 
     /* (non-Javadoc)

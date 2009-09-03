@@ -372,9 +372,9 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)GeologicTimePeriodTreeDef.getClassTableId();
+        return GeologicTimePeriodTreeDef.getClassTableId();
     }
 
     /* (non-Javadoc)

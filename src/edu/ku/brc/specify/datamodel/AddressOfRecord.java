@@ -339,27 +339,27 @@ public class AddressOfRecord extends DataModelObjBase
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
         if (accessions != null && accessions.size() == 1)
         {
-            return (short)Accession.getClassTableId();
+            return Accession.getClassTableId();
         }
         if (repositoryAgreements != null && repositoryAgreements.size() == 1)
         {
-            return (short)RepositoryAgreement.getClassTableId();
+            return RepositoryAgreement.getClassTableId();
         }
         if (loans != null && loans.size() == 1)
         {
-            return (short)Loan.getClassTableId();
+            return Loan.getClassTableId();
         }
         if (exchangeIns != null && exchangeIns.size() == 1)
         {
-            return (short)ExchangeIn.getClassTableId();
+            return ExchangeIn.getClassTableId();
         }
         if (exchangeOuts != null && exchangeOuts.size() == 1)
         {
-            return (short)ExchangeOut.getClassTableId();
+            return ExchangeOut.getClassTableId();
         }
         return null;
     }

@@ -287,9 +287,9 @@ public class DNASequencingRunCitation extends DataModelObjBase
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)DNASequencingRun.getClassTableId();
+        return DNASequencingRun.getClassTableId();
     }
 
     /* (non-Javadoc)

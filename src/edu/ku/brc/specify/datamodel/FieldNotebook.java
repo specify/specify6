@@ -289,9 +289,9 @@ public class FieldNotebook extends DisciplineMember
      */
     @Override
     @Transient
-   public Short getParentTableId()
+   public Integer getParentTableId()
     {
-        return (short)Collection.getClassTableId();
+        return Collection.getClassTableId();
     }
 
     /* (non-Javadoc)

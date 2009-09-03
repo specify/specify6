@@ -358,9 +358,9 @@ public class StorageTreeDefItem extends DataModelObjBase implements Serializable
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)StorageTreeDef.getClassTableId();
+        return StorageTreeDef.getClassTableId();
     }
 
     /* (non-Javadoc)

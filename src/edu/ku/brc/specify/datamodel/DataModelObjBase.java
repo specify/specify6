@@ -626,7 +626,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
         return null;
     }

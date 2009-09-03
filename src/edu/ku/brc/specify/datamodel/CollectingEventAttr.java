@@ -265,9 +265,9 @@ public class CollectingEventAttr extends CollectionMember implements AttributeIF
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)CollectingEvent.getClassTableId();
+        return CollectingEvent.getClassTableId();
     }
 
     /* (non-Javadoc)

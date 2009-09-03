@@ -345,9 +345,9 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable,
      */
     @Override
     @Transient
-   public Short getParentTableId()
+   public Integer getParentTableId()
     {
-        return (short)TaxonTreeDef.getClassTableId();
+        return TaxonTreeDef.getClassTableId();
     }
 
     /* (non-Javadoc)

@@ -413,23 +413,23 @@ public class Shipment extends CollectionMember implements java.io.Serializable
      */
     @Override
     @Transient
-   public Short getParentTableId()
+   public Integer getParentTableId()
     {
         if (borrow != null)
         {
-            return (short)Borrow.getClassTableId();
+            return Borrow.getClassTableId();
         }
         if (loan != null)
         {
-            return (short)Loan.getClassTableId();
+            return Loan.getClassTableId();
         }
         if (exchangeOut != null)
         {
-            return (short)ExchangeOut.getClassTableId();
+            return ExchangeOut.getClassTableId();
         }
         if (gift != null)
         {
-            return (short)Gift.getClassTableId();
+            return Gift.getClassTableId();
         }
         return null;
     }

@@ -188,9 +188,9 @@ public class LoanAgent extends CollectionMember implements java.io.Serializable 
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Loan.getClassTableId();
+        return Loan.getClassTableId();
     }
 
     /* (non-Javadoc)

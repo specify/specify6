@@ -311,9 +311,9 @@ public class LoanPreparation extends CollectionMember implements java.io.Seriali
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Loan.getClassTableId();
+        return Loan.getClassTableId();
     }
 
     /* (non-Javadoc)

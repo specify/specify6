@@ -234,9 +234,9 @@ public class CommonNameTx extends DataModelObjBase implements Serializable
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Taxon.getClassTableId();
+        return Taxon.getClassTableId();
     }
 
     /* (non-Javadoc)

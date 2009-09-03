@@ -764,9 +764,9 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Discipline.getClassTableId();
+        return Discipline.getClassTableId();
     }
 
     /* (non-Javadoc)

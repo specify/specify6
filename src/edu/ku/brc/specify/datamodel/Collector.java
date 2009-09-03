@@ -263,9 +263,9 @@ public class Collector extends CollectionMember implements java.io.Serializable,
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)CollectingEvent.getClassTableId();
+        return CollectingEvent.getClassTableId();
     }
 
     /* (non-Javadoc)

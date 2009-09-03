@@ -442,9 +442,9 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Discipline.getClassTableId();
+        return Discipline.getClassTableId();
     }
 
     /* (non-Javadoc)

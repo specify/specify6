@@ -182,9 +182,9 @@ public class AgentAttachment extends DataModelObjBase implements ObjectAttachmen
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Agent.getClassTableId();
+        return Agent.getClassTableId();
     }
 
     /* (non-Javadoc)

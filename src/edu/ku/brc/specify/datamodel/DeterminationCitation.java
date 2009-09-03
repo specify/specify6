@@ -166,9 +166,9 @@ public class DeterminationCitation extends CollectionMember implements java.io.S
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Determination.getClassTableId();
+        return Determination.getClassTableId();
     }
 
     /* (non-Javadoc)

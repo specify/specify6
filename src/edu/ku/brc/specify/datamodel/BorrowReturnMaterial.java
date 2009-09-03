@@ -196,9 +196,9 @@ public class BorrowReturnMaterial extends CollectionMember implements java.io.Se
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)BorrowMaterial.getClassTableId();
+        return BorrowMaterial.getClassTableId();
     }
 
     /* (non-Javadoc)

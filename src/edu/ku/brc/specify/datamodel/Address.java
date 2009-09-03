@@ -521,19 +521,19 @@ public class Address extends DataModelObjBase implements Orderable,
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
         if (agent != null)
         {
-            return (short)Agent.getClassTableId();
+            return Agent.getClassTableId();
         }
         if (insitutions != null && insitutions.size() == 1)
         {
-            return (short)Institution.getClassTableId();
+            return Institution.getClassTableId();
         }
         if (divisions != null && divisions.size() == 1)
         {
-            return (short)Division.getClassTableId();
+            return Division.getClassTableId();
         }
         return null;
     }

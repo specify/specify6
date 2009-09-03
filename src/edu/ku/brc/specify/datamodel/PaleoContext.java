@@ -372,9 +372,9 @@ public class PaleoContext extends CollectionMember implements Cloneable
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)CollectionObject.getClassTableId();
+        return CollectionObject.getClassTableId();
     }
 
     /* (non-Javadoc)

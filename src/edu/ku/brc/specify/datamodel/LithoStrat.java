@@ -520,9 +520,9 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)LithoStrat.getClassTableId();
+        return LithoStrat.getClassTableId();
     }
 
     /* (non-Javadoc)

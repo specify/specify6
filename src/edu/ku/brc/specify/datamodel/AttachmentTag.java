@@ -96,9 +96,9 @@ public class AttachmentTag extends DataModelObjBase implements Serializable
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Attachment.getClassTableId();
+        return Attachment.getClassTableId();
     }
 
     /* (non-Javadoc)

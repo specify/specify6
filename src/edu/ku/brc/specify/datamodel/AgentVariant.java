@@ -222,9 +222,9 @@ public class AgentVariant extends DataModelObjBase implements Serializable
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Agent.getClassTableId();
+        return Agent.getClassTableId();
     }
 
     /* (non-Javadoc)

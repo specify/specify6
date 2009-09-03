@@ -194,9 +194,9 @@ public class LoanAttachment extends DataModelObjBase implements ObjectAttachment
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Loan.getClassTableId();
+        return Loan.getClassTableId();
     }
 
     /* (non-Javadoc)

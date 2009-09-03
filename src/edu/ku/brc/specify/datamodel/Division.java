@@ -460,9 +460,9 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Institution.getClassTableId();
+        return Institution.getClassTableId();
     }
 
     /* (non-Javadoc)

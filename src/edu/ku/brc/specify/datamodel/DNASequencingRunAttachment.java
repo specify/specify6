@@ -166,9 +166,9 @@ public class DNASequencingRunAttachment extends DataModelObjBase implements Obje
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)DNASequencingRun.getClassTableId();
+        return DNASequencingRun.getClassTableId();
     }
 
     /* (non-Javadoc)

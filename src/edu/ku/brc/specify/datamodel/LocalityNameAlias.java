@@ -151,9 +151,9 @@ public class LocalityNameAlias extends DisciplineMember
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Locality.getClassTableId();
+        return Locality.getClassTableId();
     }
 
     /* (non-Javadoc)

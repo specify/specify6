@@ -174,9 +174,9 @@ public class ExsiccataItem extends DataModelObjBase implements java.io.Serializa
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Exsiccata.getClassTableId();
+        return Exsiccata.getClassTableId();
     }
 
     /* (non-Javadoc)

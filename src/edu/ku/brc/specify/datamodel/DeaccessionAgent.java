@@ -170,9 +170,9 @@ public class DeaccessionAgent extends DataModelObjBase implements java.io.Serial
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Deaccession.getClassTableId();
+        return Deaccession.getClassTableId();
     }
 
     /* (non-Javadoc)

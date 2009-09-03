@@ -197,9 +197,9 @@ public class AccessionAuthorization extends DataModelObjBase implements java.io.
      */
     @Override
     @Transient
-   public Short getParentTableId()
+   public Integer getParentTableId()
     {
-        return (short)Accession.getClassTableId();
+        return Accession.getClassTableId();
     }
 
     /* (non-Javadoc)

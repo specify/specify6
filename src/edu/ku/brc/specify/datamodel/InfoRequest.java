@@ -297,9 +297,9 @@ public class InfoRequest extends CollectionMember implements java.io.Serializabl
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)Collection.getClassTableId();
+        return Collection.getClassTableId();
     }
 
     /* (non-Javadoc)

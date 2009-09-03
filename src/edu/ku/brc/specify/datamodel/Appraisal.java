@@ -294,9 +294,17 @@ public class Appraisal extends DataModelObjBase
      */
     @Override
     @Transient
-    public Short getParentTableId()
+    public Integer getParentTableId()
     {
-        return (short)(accession != null ? Accession.getClassTableId() : CollectionObject.getClassTableId());
+        if (accession != null)
+        {
+            return Accession.getClassTableId();
+        }
+        if (collectionObjects != null && collectionObjects.size() > 0)
+        {
+            return CollectionObject.getClassTableId();
+        }
+        return null;
     }
 
     /* (non-Javadoc)
