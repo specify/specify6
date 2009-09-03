@@ -179,7 +179,7 @@ public class SpExportSchemaItemMapping extends DataModelObjBase
 	 * @return the exportSchemaItem
 	 */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "ExportSchemaItemID", unique = false, nullable = false, insertable = true, updatable = true)
+    @JoinColumn(name = "ExportSchemaItemID", unique = false, nullable = true, insertable = true, updatable = true)
 	public SpExportSchemaItem getExportSchemaItem()
 	{
 		return exportSchemaItem;
@@ -195,7 +195,7 @@ public class SpExportSchemaItemMapping extends DataModelObjBase
 	 * @return the exportMapping
 	 */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "SpQueryFieldID", unique = false, nullable = false, insertable = true, updatable = true)
+    @JoinColumn(name = "SpQueryFieldID", unique = false, nullable = true, insertable = true, updatable = true)
 	public SpQueryField getQueryField()
 	{
 		return queryField;

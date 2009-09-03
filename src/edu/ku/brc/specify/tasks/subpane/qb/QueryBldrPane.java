@@ -217,7 +217,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected boolean                                        isHeadless  = false; 
     
     protected SpExportSchema                                 exportSchema;
-    protected SpExportSchemaMapping                          schemaMapping;    
+    protected SpExportSchemaMapping                          schemaMapping;   
     /**
      * True if warning to reload after schema/treeDef changes has been shown.
      */
@@ -750,6 +750,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected boolean removeSchemaItemMapping(SpExportSchemaItemMapping itemMapping)
     {
     	int size = schemaMapping.getMappings().size();
+    	//XXX Most probably not necessary to worry multiple copies of mapping items.
     	SpExportSchemaItemMapping theOne = null;
     	for (SpExportSchemaItemMapping esim : schemaMapping.getMappings())
     	{
@@ -762,9 +763,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     	if (theOne != null)
     	{
     		schemaMapping.getMappings().remove(theOne);
+    		theOne.setExportSchemaItem(null);
     		theOne.setExportSchemaMapping(null);
     		theOne.getQueryField().setMapping(null);
-    		theOne.setQueryField(null);
+    		if (theOne != itemMapping)
+    		{
+    			itemMapping.setExportSchemaMapping(null);
+    			itemMapping.getQueryField().setMapping(null);
+    			itemMapping.setQueryField(null);
+    		}
     	}
     	return schemaMapping.getMappings().size() < size;
     }
@@ -777,6 +784,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected boolean removeFieldFromQuery(SpQueryField toRemove)
     {
     	int size = query.getFields().size();
+    	//XXX probably don't need to worry about multiple copies of QueryFields and Mappings anymore???
     	SpQueryField theFieldObjectInTheFieldsSetToRemove = null;
     	for (SpQueryField fld : query.getFields())
     	{
@@ -800,6 +808,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     	{
     		query.getFields().remove(theFieldObjectInTheFieldsSetToRemove);
     		theFieldObjectInTheFieldsSetToRemove.setQuery(null);
+    	}
+    	
+    	//XXX probably not necessary to check for this anymore ???
+    	if (toRemove != theFieldObjectInTheFieldsSetToRemove)
+    	{
+    		toRemove.getQuery().getFields().remove(toRemove);
+    		toRemove.setQuery(null);
     	}
     	return query.getFields().size() < size;
     }
@@ -918,7 +933,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             { 
                 throw new RuntimeException("Invalid context for query."); 
             }
-            query.forceLoad(true);                	
+            //query.forceLoad(true);                	
             qfps = exportSchema == null ? getQueryFieldPanels(this, query.getFields(), tableTree, tableTreeHash, saveBtn, missingFlds)
             		: getQueryFieldPanelsForMapping(this, query.getFields(), tableTree, tableTreeHash, saveBtn, schemaMapping, missingFlds, autoMaps);
             
@@ -2550,7 +2565,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     protected boolean saveQuery(final boolean saveAs)
     {
-     	if (exportSchema == null)
+     	boolean result = false;
+     	
+    	if (exportSchema == null)
 		{
 			if (!query.isNamed() || saveAs)
 			{
@@ -2634,10 +2651,28 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             
             if (schemaMapping != null)
             {
-            	//return DataModelObjBase.save(true, query, schemaMapping);
-            	return DataModelObjBase.save(true, schemaMapping, query);
+            	result =  DataModelObjBase.save(true, query, schemaMapping);
             }
-            return DataModelObjBase.save(true, query);
+            else
+            {
+            	result =  DataModelObjBase.save(true, query);
+            }
+            if (result)
+            {
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            	try
+            	{
+            		query = session.get(SpQuery.class, query.getId());
+            		query.forceLoad(true);
+            		schemaMapping = query.getMapping();
+            		schemaMapping.forceLoad();
+            	}
+            	finally
+            	{
+            		session.close();
+            	}
+            }
+            return result;
         }
         //else
         {
@@ -3192,7 +3227,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     public void removeQueryFieldItem(final QueryFieldPanel qfp)
 	{
-		query.forceLoad(true);
+		//refreshQuery();
 		if (query.getReports().size() > 0)
 		{
 			CustomDialog cd = new CustomDialog(

@@ -268,24 +268,11 @@ public class ExportMappingTask extends QueryTask
 	{
 		if (!addingMapping.get())
 		{
-			//determine schema info from query
-			Vector<Object[]> esm = BasicSQLUtils.query("select distinct esm.spexportschemamappingid from spexportschemamapping esm "
-					+ "inner join spexportschemaitemmapping esim on esim.spexportschemamappingid = "
-					+ "esm.spexportschemamappingid inner join spqueryfield qf on qf.spqueryfieldid = esim.spqueryfieldid "
-					+ "where qf.spqueryid = " + query.getId());
-			Integer esmId = (Integer )esm.get(0)[0];
-			DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-			try
-			{
-				schemaMapping = session.get(SpExportSchemaMapping.class, esmId);
-				schemaMapping.forceLoad();
-				exportSchema = schemaMapping.getSpExportSchema();
-				exportSchema.forceLoad();
-			}
-			finally
-			{
-				session.close();
-			}
+			schemaMapping = query.getMapping();
+			if (schemaMapping != null)
+        	{
+        		exportSchema = schemaMapping.getSpExportSchema();
+        	}
 		}
         return new QueryBldrPane(query.getName(), this, query, false, exportSchema, schemaMapping);
 	}

@@ -1105,7 +1105,8 @@ public class QueryTask extends BaseTask
             Object dataObj = session.getData(SpQuery.class, "spQueryId", queryId, DataProviderSessionIFace.CompareType.Equals);
             if (dataObj != null)
             {
-                editQuery((SpQuery)dataObj);
+                ((SpQuery )dataObj).forceLoad(true);
+            	editQuery((SpQuery)dataObj);
             }
         } catch (Exception ex)
         {

@@ -336,8 +336,14 @@ public class SpExportSchemaMapping extends DataModelObjBase
 		{
 			schema.getId();
 		}
+		boolean loadedQuery = false;
 		for (SpExportSchemaItemMapping map : getMappings())
 		{
+			if (!loadedQuery)
+			{
+				map.getQueryField().getQuery().forceLoad();
+				loadedQuery = true;
+			}
 			map.getExportSchemaItem();
 		}
 	}
