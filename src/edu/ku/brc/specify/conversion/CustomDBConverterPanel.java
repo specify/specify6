@@ -312,10 +312,10 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
         if (dbDrivers.size() > 0)
         {
             String selectedStr = AppPreferences.getLocalPrefs().get("convert.dbdriverSource_selected", "SQLServer");
-            int inx = Collections.binarySearch(dbDrivers, new DatabaseDriverInfo(selectedStr, null, null, false));
+            int inx = Collections.binarySearch(dbDrivers, new DatabaseDriverInfo(selectedStr, null, null, false, null));
             dbDriverCBX.setSelectedIndex(inx > -1 ? inx : -1);
             selectedStr = AppPreferences.getLocalPrefs().get("convert.dbdriverDest_selected", "SQLServer");
-            inx = Collections.binarySearch(dbDrivers, new DatabaseDriverInfo(selectedStr, null, null, false));
+            inx = Collections.binarySearch(dbDrivers, new DatabaseDriverInfo(selectedStr, null, null, false, null));
             dbDriverCBX2.setSelectedIndex(inx > -1 ? inx : -1);
 
         } else
