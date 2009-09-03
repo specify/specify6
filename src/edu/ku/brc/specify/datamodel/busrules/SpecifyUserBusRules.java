@@ -20,12 +20,18 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import java.awt.Component;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+
+import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.ui.PasswordStrengthUI;
@@ -37,6 +43,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
@@ -70,6 +77,7 @@ public class SpecifyUserBusRules extends BaseBusRules
         final JPasswordField     pwdTxt       = formViewObj.getCompById("3");
         final JTextField         keyTxt       = formViewObj.getCompById("key");
         final JButton            genBtn       = formViewObj.getCompById("GenerateKey");
+        final JButton            copyBtn      = formViewObj.getCompById("CopyToCB");
         final JButton            showPwdBtn   = formViewObj.getCompById("ShowPwd");
         final PasswordStrengthUI pwdStrenthUI = formViewObj.getCompById("6");
         
@@ -78,6 +86,8 @@ public class SpecifyUserBusRules extends BaseBusRules
         {
             return;
         }
+        
+        copyBtn.setEnabled(false);
         
         final char echoChar = pwdTxt.getEchoChar();
         currEcho = echoChar;
@@ -99,6 +109,24 @@ public class SpecifyUserBusRules extends BaseBusRules
                 currEcho = currEcho == echoChar ? 0 : echoChar;
                 pwdTxt.setEchoChar(currEcho);
                 showPwdBtn.setText(UIRegistry.getResourceString(currEcho == echoChar ? "SHOW_PASSWORD" : "HIDE_PASSWORD"));
+            }
+        });
+        
+        copyBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                StringSelection stsel  = new StringSelection(keyTxt.getText());
+                Clipboard       sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                sysClipboard.setContents(stsel, stsel);
+            }
+        });
+        
+        keyTxt.getDocument().addDocumentListener(new DocumentAdaptor() {
+            @Override
+            protected void changed(DocumentEvent e)
+            {
+                copyBtn.setEnabled(!StringUtils.deleteWhitespace(keyTxt.getText()).isEmpty());
             }
         });
         

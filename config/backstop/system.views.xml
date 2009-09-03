@@ -990,12 +990,12 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[User Data Entry Form]]></desc>
-            <columnDef>p,3dlu,p,6px,p,p:g</columnDef>
+            <columnDef>p,3dlu,p,6px,p,6px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>            
 
             <rows>
                 <row>
-                    <cell type="separator" label="User" colspan="6"/>
+                    <cell type="separator" label="User" colspan="8"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
@@ -1026,6 +1026,7 @@
                     <cell type="label" labelfor="key" label="Key"/>
                     <cell type="field" id="key" name="key" uitype="text" ignore="true" readonly="true"/> 
                     <cell type="command" id="GenerateKey" name="GenerateKey" label="Generate New Key" ignore="true"/>
+                    <cell type="command" id="CopyToCB" name="CopyToCB" label="Copy to Clipboard" ignore="true"/>
                 </row>
                 <!--row>
                     <cell type="label" labelfor="4" label="Retype Password"/>
