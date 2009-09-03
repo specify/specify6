@@ -384,12 +384,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListEditorDlg.class, ex);
                 //log.error(ex);
                 pickListCache = null;
-            } finally
-            {
-                if (session != null)
-                {
-                    session.close();
-                }
+                
             }
         }
     }
