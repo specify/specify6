@@ -5,6 +5,7 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,9 +16,11 @@ import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -36,6 +39,7 @@ import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -700,14 +704,14 @@ public class ExportMappingTask extends QueryTask
 			}
 		});
 		
-//		mi = new JMenuItem(UIRegistry.getResourceString("ExportMappingTask.DELETE_SCHEMATA"));
-//		popupMenu.add(mi);
-//
-//		mi.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				deleteSchemata();
-//			}
-//		});
+		mi = new JMenuItem(UIRegistry.getResourceString("ExportMappingTask.DELETE_SCHEMATA"));
+		popupMenu.add(mi);
+
+		mi.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				deleteSchemata();
+			}
+		});
 
 		return popupMenu;
 	}
@@ -716,7 +720,7 @@ public class ExportMappingTask extends QueryTask
 	/**
 	 * Presents a list of existing SpExportSchemas.
 	 * Deletes selected schema, if not in use.
-	 * If in use displays a message listing the SpExportMappings that use the Schema
+	 * If in use displays a message listing the SpExportSchemaMappings that use the Schema
 	 */
 	protected void deleteSchemata()
 	{
@@ -728,9 +732,40 @@ public class ExportMappingTask extends QueryTask
 				List<SpExportSchema> schemas =  session.getDataList(SpExportSchema.class, "discipline",	
 						AppContextMgr.getInstance().getClassObject(Discipline.class), DataProviderSessionIFace.CompareType.Equals);
 				ChooseFromListDlg<SpExportSchema> dlg = new ChooseFromListDlg<SpExportSchema>((Frame )UIRegistry.getTopWindow(),
-						getResourceString("ExportMappingTask.DELETE_DLG_TITLE"), schemas);
+						getResourceString("ExportMappingTask.DELETE_DLG_TITLE"), 
+						getResourceString("ExportMappingTask.DELETE_DLG_MSG"), -1, schemas);
 				UIHelper.centerAndShow(dlg);
-				UIRegistry.showLocalizedMsg("Not Done");
+				if (!dlg.isCancelled() && dlg.getSelectedObject() != null)
+				{
+					SpExportSchema selected = dlg.getSelectedObject();
+					if (selected.getSpExportSchemaMappings().size() > 0)
+					{
+						displayMappings(dlg.getSelectedObject(), selected.getSpExportSchemaMappings().size() > 1 ?
+								getResourceString("ExportMappingTask.MAPPINGS_PREVENT_DELETE") :
+									getResourceString("ExportMappingTask.MAPPING_PREVENTS_DELETE"));
+					}
+					else
+					{
+						boolean rollback = false;
+						try
+						{
+							session.beginTransaction();
+							session.delete(selected);
+							session.commit();
+							UIRegistry.displayLocalizedStatusBarText("ExportMappingTask.SchemaDeleted");
+						}
+						catch (Exception ex)
+						{
+				            if (rollback)
+				            {
+				            	session.rollback();
+				            }
+							UsageTracker.incrHandledUsageCount();
+				            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExportMappingTask.class, ex);
+							UIRegistry.displayStatusBarErrMsg(UIRegistry.getResourceString("ExportMappingTask.SchemaDeleteError"));
+						}
+					}
+				}
 			
 			}
 			finally
@@ -740,6 +775,31 @@ public class ExportMappingTask extends QueryTask
 		}
 	}
 
+	/**
+	 * @param schema
+	 * 
+	 * Displays a dialog listing the SpExportSchemaMappings based on schema
+	 */
+	protected void displayMappings(SpExportSchema schema, String msg)
+	{
+		DefaultListModel model = new DefaultListModel();
+		int i = 0;
+		for (SpExportSchemaMapping mapping : schema.getSpExportSchemaMappings())
+		{
+			model.add(i++, mapping.getMappingName());
+		}
+		JList list = new JList(model);
+		PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, p:g, 5dlu", "5dlu, p, 3dlu"));
+		CellConstraints cc = new CellConstraints();
+		pb.add(new JLabel(msg), cc.xy(2, 2));
+		JPanel pane = new JPanel(new BorderLayout());
+		pane.add(pb.getPanel(), BorderLayout.NORTH);
+		pane.add(list, BorderLayout.CENTER);
+		CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), UIRegistry.getResourceString("ExportMappingTask.MAPPINGS_TITLE"),
+				true, CustomDialog.OK_BTN, pane);
+		UIHelper.centerAndShow(cd);
+	}
+	
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.QueryTask#getTopLevelNodeSelector()
 	 */
