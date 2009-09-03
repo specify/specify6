@@ -34,6 +34,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.ui.dnd.SimpleGlassPane;
 
 /**
  * @author rods
@@ -116,6 +117,25 @@ public abstract class BackupServiceFactory
      * 
      */
     public abstract void doRestore();
+    
+    
+    /**
+     * @param databaseName
+     * @param options
+     * @param restoreZipFilePath
+     * @param glassPane
+     * @param completionMsgKey
+     * @param pcl
+     * @param doSynchronously
+     * @return
+     */
+    public abstract boolean doRestoreBulkDataInBackground(String                 databaseName,
+                                                          String                 options,
+                                                          String                 restoreZipFilePath, 
+                                                          SimpleGlassPane        glassPane,
+                                                          String                 completionMsgKey,
+                                                          PropertyChangeListener pcl,
+                                                          boolean                doSynchronously);
     
     /**
      * Sets the IT Username and Password that should be used instead of the one username and password in the current connection.

@@ -164,7 +164,7 @@ class SetUpBuildDlg extends CustomDialog
         UIFieldFormatterMgr.setDoingLocal(true);
         
         driverList = DatabaseDriverInfo.getDriversList();
-        int inx = Collections.binarySearch(driverList, new DatabaseDriverInfo(dbDriverName, null, null, false));
+        int inx = Collections.binarySearch(driverList, new DatabaseDriverInfo(dbDriverName, null, null, false, null));
         
         drivers = createComboBox(driverList);
         drivers.setSelectedIndex(inx);

@@ -37,6 +37,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -110,6 +111,20 @@ public class DisciplinePanel extends BaseSetupPanel
             public void actionPerformed(ActionEvent e)
             {
                 updateBtnUI();
+                
+                System.out.println(disciplines.getSelectedIndex());
+                
+                if (disciplines.getSelectedIndex() > -1)
+                {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run()
+                        {
+                            DisciplineType dt = (DisciplineType)disciplines.getSelectedItem();
+                            disciplineName.setText(dt.getTitle());
+                        }
+                    });
+                }
             }
         });
     }

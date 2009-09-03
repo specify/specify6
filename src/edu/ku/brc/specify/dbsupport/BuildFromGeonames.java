@@ -775,29 +775,35 @@ public class BuildFromGeonames
         File file = new File(XMLHelper.getConfigDirPath("geonames.sql.zip"));
         if (file.exists())
         {
-            final File unzippedFile = unzipToFile(file);
-            if (unzippedFile != null && unzippedFile.exists())
+            BackupServiceFactory bsf = BackupServiceFactory.getInstance();
+            bsf.setUsernamePassword(itUsername, itPassword);
+            
+            //boolean status = bsf.doRestoreInBackground("geonames", unzippedFile.getAbsolutePath(), null, null, null, true, false); // true - does it asynchronously, false - ignore glass pane
+            boolean status = bsf.doRestoreBulkDataInBackground("geonames", null, file.getAbsolutePath(), null, null, null, true); // true - does it asynchronously, false - ignore glass pane
+            
+            // delete the unzipped file
+            /*try
             {
-                BackupServiceFactory bsf = BackupServiceFactory.getInstance();
-                bsf.setUsernamePassword(itUsername, itPassword);
+                DBConnection currDBConn = DBConnection.getInstance();
                 
-                boolean status = bsf.doRestoreInBackground("geonames", unzippedFile.getAbsolutePath(), null, null, null, true, false); // true - does it asynchronously, false - ignore glass pane
-                
-                // delete the unzipped file
-                try
+                DBMSUserMgr dbMgr = DBMSUserMgr.getInstance();
+                if (dbMgr.connectToDBMS(itUsername, itPassword, currDBConn.getServerName()))
                 {
-                    unzippedFile.delete();
-                    
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
+                    if (!DBMSUserMgr.getInstance().dropDatabase(dbName))
+                    {
+                        //return null;
+                    }
                 }
                 
-                // Clear IT Username and Password
-                bsf.setUsernamePassword(null, null);
-                
-                return status;
-            }
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }*/
+            
+            // Clear IT Username and Password
+            bsf.setUsernamePassword(null, null);
+            
+            return status;
         }
         return false;
     }

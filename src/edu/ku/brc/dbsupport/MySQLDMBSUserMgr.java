@@ -179,9 +179,9 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
         {
             if (connection != null)
             {
-                int rv = BasicSQLUtils.update(connection, "DROP DATABASE "+dbName);
+                int rv = BasicSQLUtils.update(connection, "DROP DATABASE "+dbName); // Returns number of tables
                 
-                return rv == 0;
+                return rv > -1;
             }
             
         } catch (Exception ex)

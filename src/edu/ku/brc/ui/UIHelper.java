@@ -1727,12 +1727,12 @@ public final class UIHelper
         if (StringUtils.isNotEmpty(title))
         {
             panel = new DatabaseLoginPanel(userName, password, engageUPPrefs, usrPwdProvider, new DBListener(frame, listener, doAutoClose), 
-                                           false, title, appName, iconName, helpContext);
+                                           false, true, title, appName, iconName, helpContext);
         }
         else
         {
             panel = new DatabaseLoginPanel(userName, password, engageUPPrefs, usrPwdProvider, new DBListener(frame, listener, doAutoClose), 
-                                          false, null, null, iconName, helpContext);
+                                          false, true, null, null, iconName, helpContext);
         }
         
         panel.setAutoClose(doAutoClose);

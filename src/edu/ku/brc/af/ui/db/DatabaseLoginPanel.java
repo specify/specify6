@@ -139,6 +139,7 @@ public class DatabaseLoginPanel extends JTiledPanel
     protected boolean                    isCancelled    = true;
     protected boolean                    isLoggingIn    = false;
     protected boolean                    isAutoClose    = false;
+    protected boolean                    doLoginWithDB  = true;
 
     protected DatabaseLoginListener      dbListener;
     protected JaasContext                jaasContext;
@@ -227,7 +228,7 @@ public class DatabaseLoginPanel extends JTiledPanel
                               final String iconName,
                               final String helpContext)
     {
-        this(userName, password, engageUPPrefs, null, dbListener, isDlg, title, appName, iconName, helpContext);
+        this(userName, password, engageUPPrefs, null, dbListener, isDlg, true, title, appName, iconName, helpContext);
     }
 
     /**
@@ -251,7 +252,7 @@ public class DatabaseLoginPanel extends JTiledPanel
                               final String iconName,
                               final String helpContext)
     {
-        this(null, null, engageUPPrefs, usrPwdProvider, dbListener, isDlg, title, appName, iconName, helpContext);
+        this(null, null, engageUPPrefs, usrPwdProvider, dbListener, isDlg, true, title, appName, iconName, helpContext);
     }
 
     /**
@@ -261,6 +262,7 @@ public class DatabaseLoginPanel extends JTiledPanel
      * @param masterUsrPwdProvider provides a hook to get the Master UserName and Password
      * @param dbListener listener to the panel (usually the frame or dialog)
      * @param isDlg whether the parent is a dialog (false mean JFrame)
+     * @param doLoginWithDB whether it should login using the database name
      * @param title the title for the title bar
      * @param appName the name of the app
      * @param iconName name of icon to use
@@ -271,7 +273,8 @@ public class DatabaseLoginPanel extends JTiledPanel
                               final boolean               engageUPPrefs,
                               final MasterPasswordProviderIFace masterUsrPwdProvider,
                               final DatabaseLoginListener dbListener,  
-                              final boolean isDlg, 
+                              final boolean isDlg,
+                              final boolean doLoginWithDB,
                               final String title,
                               final String appName,
                               final String iconName,
@@ -285,6 +288,7 @@ public class DatabaseLoginPanel extends JTiledPanel
         this.title       = title;
         this.appName     = appName;
         this.doSaveUPPrefs = engageUPPrefs;
+        this.doLoginWithDB = doLoginWithDB;
         
         createUI(isDlg, iconName, engageUPPrefs, helpContext);
         
@@ -461,7 +465,7 @@ public class DatabaseLoginPanel extends JTiledPanel
             } else
             {
                 String selectedStr = localPrefs.get("login.dbdriver_selected", "MySQL"); //$NON-NLS-1$ //$NON-NLS-2$
-                int inx = Collections.binarySearch(dbDrivers, new DatabaseDriverInfo(selectedStr, null, null, false));
+                int inx = Collections.binarySearch(dbDrivers, new DatabaseDriverInfo(selectedStr, null, null, false, null));
                 dbDriverCBX.setSelectedIndex(inx > -1 ? inx : -1);
             }
 
@@ -1123,7 +1127,7 @@ public class DatabaseLoginPanel extends JTiledPanel
      */
     public String getDatabaseName()
     {
-        return databases.getTextField().getText();
+        return doLoginWithDB ? databases.getTextField().getText() : null;
     }
 
     /**

@@ -58,7 +58,8 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
     protected String driver;
     protected String dialect;
     protected boolean isEmbedded;
-    
+    protected String port;
+
     protected Hashtable<ConnectionType, String> connectionFormats = new Hashtable<ConnectionType, String>();
     
     /**
@@ -70,12 +71,14 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
     public DatabaseDriverInfo(final String name, 
                               final String driver, 
                               final String dialect,
-                              final boolean isEmbedded)
+                              final boolean isEmbedded,
+                              final String port)
     {
         this.name = name;
         this.driver = driver;
         this.dialect = dialect;
         this.isEmbedded = isEmbedded;
+        this.port = port;
     }
     
     /**
@@ -152,6 +155,7 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
             connStr = connStr.replaceFirst("DATABASE", StringUtils.isNotEmpty(databaseName) && doAddAsDBName ? databaseName : ""); //$NON-NLS-1$
             connStr = connStr.replaceFirst("USERNAME", StringUtils.isNotEmpty(username) ? username : ""); //$NON-NLS-1$
             connStr = connStr.replaceFirst("PASSWORD", StringUtils.isNotEmpty(password) ? password : ""); //$NON-NLS-1$
+            connStr = connStr.replaceFirst("PORT", StringUtils.isNotEmpty(port) ? port : ""); //$NON-NLS-1$
             
             if (isEmbedded && doAddToPath)
             {
@@ -219,6 +223,14 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
     public String toString()
     {
         return name;
+    }
+
+    /**
+     * @return the port
+     */
+    public String getPort()
+    {
+        return port;
     }
 
     /**
@@ -304,7 +316,13 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
                         
                         String  driver     = getAttr(dbElement, "driver", null); //$NON-NLS-1$
                         String  dialect    = getAttr(dbElement, "dialect", null); //$NON-NLS-1$
+                        String  port       = getAttr(dbElement, "port", null); //$NON-NLS-1$
                         boolean isEmbedded = getAttr(dbElement, "embedded", false); //$NON-NLS-1$
+                        
+                        if ((UIRegistry.isEmbedded() || UIRegistry.isMobile()) && !isEmbedded)
+                        {
+                            continue;
+                        }
                         
                        // these can go away once we validate the XML
                         if (StringUtils.isEmpty(driver))
@@ -316,7 +334,7 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
                             throw new RuntimeException("Dialect cannot be null!"); //$NON-NLS-1$
                         }                       
                         
-                        DatabaseDriverInfo drv = new DatabaseDriverInfo(name, driver, dialect, isEmbedded);
+                        DatabaseDriverInfo drv = new DatabaseDriverInfo(name, driver, dialect, isEmbedded, port);
                         
                         // Load up the Connection Types
                         for ( Iterator<?> connIter = dbElement.elementIterator( "connection" ); connIter.hasNext(); )  //$NON-NLS-1$
@@ -366,7 +384,7 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
      */
     public static DatabaseDriverInfo getInfoByName(final Vector<DatabaseDriverInfo> dbDrivers, final String name)
     {
-        int inx = Collections.binarySearch(dbDrivers, new DatabaseDriverInfo(name, null, null, false));
+        int inx = Collections.binarySearch(dbDrivers, new DatabaseDriverInfo(name, null, null, false, null));
         return inx > -1 ? dbDrivers.get(inx) : null;
     }
 

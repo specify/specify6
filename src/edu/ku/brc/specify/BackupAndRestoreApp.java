@@ -25,6 +25,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
@@ -37,6 +38,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -68,8 +70,10 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.tasks.BaseTask;
+import edu.ku.brc.af.ui.db.DatabaseLoginDlg;
 import edu.ku.brc.af.ui.db.DatabaseLoginListener;
 import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
+import edu.ku.brc.af.ui.db.DatabaseLoginPanel.MasterPasswordProviderIFace;
 import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
@@ -715,6 +719,93 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
     public void cancelled()
     {
         doExit(true);
+    }
+    
+    /**
+     * Tries to do the login, if doAutoLogin is set to true it will try without displaying a dialog
+     * and if the login fails then it will display the dialog
+     * @param userName single signon username (for application)
+     * @param password single signon password (for application)
+     * @param usrPwdProvider the provider
+     * @param engageUPPrefs indicates whether the username and password should be loaded and remembered by local prefs
+     * @param doAutoLogin whether to try to automatically log the user in
+     * @param doAutoClose whether it should automatically close the window when it is logged in successfully
+     * @param useDialog use a Dialog or a Frame
+     * @param listener a listener for when it is logged in or fails
+     * @param iconName name of icon to use
+     * @param title name
+     * @param appName name
+     * @param appIconName application icon name
+     * @param helpContext help context for Help button on dialog
+     */
+    public static DatabaseLoginPanel doLogin(final boolean engageUPPrefs,
+                                             final MasterPasswordProviderIFace usrPwdProvider,
+                                             final boolean doAutoClose,
+                                             final DatabaseLoginListener listener,
+                                             final String  iconName,
+                                             final String  title,
+                                             final String  appName,
+                                             final String  appIconName,
+                                             final String  helpContext) //frame's icon name
+    {  
+        
+        ImageIcon icon = IconManager.getIcon("AppIcon", IconManager.IconSize.Std16);
+        if (StringUtils.isNotEmpty(appIconName))
+        {
+            ImageIcon imgIcon = IconManager.getIcon(appIconName);
+            if (imgIcon != null)
+            {
+                icon = imgIcon;
+            }
+        }
+
+        // else
+        class DBListener implements DatabaseLoginListener
+        {
+            protected JFrame                frame;
+            protected DatabaseLoginListener frameDBListener;
+            protected boolean               doAutoCloseOfListener;
+
+            public DBListener(JFrame frame, DatabaseLoginListener frameDBListener, boolean doAutoCloseOfListener)
+            {
+                this.frame                 = frame;
+                this.frameDBListener       = frameDBListener;
+                this.doAutoCloseOfListener = doAutoCloseOfListener;
+            }
+            
+            public void loggedIn(final Window window, final String databaseName, final String userNameArg)
+            {
+                log.debug("UIHelper.doLogin[DBListener]");
+                if (doAutoCloseOfListener)
+                {
+                    frame.setVisible(false);
+                }
+                frameDBListener.loggedIn(window, databaseName, userNameArg);
+            }
+
+            public void cancelled()
+            {
+                frame.setVisible(false);
+                frameDBListener.cancelled();
+            }
+        }
+        JFrame.setDefaultLookAndFeelDecorated(false);
+
+        JFrame frame = new JFrame(title);
+        DatabaseLoginPanel panel = new DatabaseLoginPanel(null, null, false, usrPwdProvider, new DBListener(frame, listener, doAutoClose), 
+                                                          false, false, title, appName, iconName, helpContext);
+        
+        panel.setAutoClose(doAutoClose);
+        panel.setWindow(frame);
+        frame.setContentPane(panel);
+        frame.setIconImage(icon.getImage());
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        frame.pack();
+
+        UIHelper.centerAndShow(frame);
+
+        return panel;
     }
     
     //-----------------------------------------------------------------------------

@@ -153,10 +153,13 @@ public class MySQLPrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
         
         PanelBuilder btnPB = new PanelBuilder(new FormLayout("f:p:g,2px,p,5px,p,f:p:g", "p"));
         
-        btnPB.add(backupBtn, cc.xy(3, 1));
-        if (doShowRestore)
+        if (!UIRegistry.isMobile() && !UIRegistry.isEmbedded())
         {
-            btnPB.add(restoreBtn, cc.xy(5, 1));
+            btnPB.add(backupBtn, cc.xy(3, 1));
+            if (doShowRestore)
+            {
+                btnPB.add(restoreBtn, cc.xy(5, 1));
+            }
         }
         btnPB.setOpaque(false);
 
