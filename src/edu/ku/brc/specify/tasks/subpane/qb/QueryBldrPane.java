@@ -1809,6 +1809,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return fldName.trim().replaceAll(" ", "_");
     }
     
+    /**
+     * @param fqri
+     * @param forSchemaExport
+     * @return the formatter for the column displaying fqri's data.
+     * Generally the default or user-defined formatter is used, except in special cases for
+     * Schema mapping queries.
+     */
     protected static UIFieldFormatterIFace getColumnFormatter(final FieldQRI fqri, final boolean forSchemaExport)
     {
     	if (fqri instanceof RelQRI)
@@ -1820,9 +1827,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
             return null;
         }
-    	if (forSchemaExport && fqri.getDataClass().equals(Calendar.class))
+    	if (forSchemaExport && 
+    			(fqri.getDataClass().equals(Calendar.class) || 
+    				java.util.Date.class.isAssignableFrom(fqri.getDataClass())))
     	{
-    		return new CalendarExportFormatter();
+    		return new DateExportFormatter();
     	}
     	return fqri.getFormatter();
     }

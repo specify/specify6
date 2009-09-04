@@ -45,7 +45,7 @@ public class ExportToMySQLDB
 	{
 		DBFieldInfo fld = column.getFieldInfo();
 		Class<?> dataType = column.getColClass() != null ? column.getColClass() : (fld != null ? fld.getDataClass() : null);
-		if (dataType == null)
+		if (dataType == null && fld == null)
 		{
 			//assume it's format or aggregatated or otherwise special
 			return "varchar(300)";
@@ -53,9 +53,14 @@ public class ExportToMySQLDB
 		
 		if (dataType.equals(String.class))
 		{
-			return "varchar(" + fld.getLength() + ")";
+			String length = "300";
+			if (fld != null && fld.getLength() != -1)
+			{
+				length = String.valueOf(fld.getLength());
+			}
+			return "varchar(" + length + ")";
 		}
-		if (dataType.equals(Integer.class) || dataType.equals(Byte.class))
+		if (dataType.equals(Integer.class) || dataType.equals(Byte.class) || dataType.equals(Short.class) || dataType.equals(Long.class))
 		{
 			return "int";
 		}
@@ -72,7 +77,7 @@ public class ExportToMySQLDB
 		{
 			return "bit(1)";
 		}
-		if (dataType.equals(Double.class))
+		if (dataType.equals(Double.class) || dataType.equals(Float.class))
 		{
 			return "double";
 		}
@@ -541,7 +546,7 @@ public class ExportToMySQLDB
 			{
 				int type = rows.getMetaData().getColumnType(c);
 				// remove tabs and line returns
-				// If link to origianl specify db model field was available
+				// If link to original specify db model field was available
 				// would only
 				// need to do this for 'remarks' fields.
 				if (type == java.sql.Types.LONGNVARCHAR
