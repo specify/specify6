@@ -1576,8 +1576,8 @@ public class UploadTable implements Comparable<UploadTable>
             critter.add(Restrictions.eq(propName, arg));
             if (arg instanceof DataModelObjBase) 
             { 
-                String value = DataObjFieldFormatMgr.getInstance().format(arg, arg.getClass());
-                if (value != null)
+            	String value = DataObjFieldFormatMgr.getInstance().format(arg, arg.getClass());
+                if (StringUtils.isNotBlank(value))
                 {
                     return value;
                 }

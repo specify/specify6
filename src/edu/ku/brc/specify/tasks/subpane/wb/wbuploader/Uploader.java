@@ -2469,9 +2469,11 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected Integer getUploadedObjects()
     {
-        Integer result = 0;
+    	Integer result = 0;
         for (UploadTable ut : uploadTables)
         {
+            //NOTE the uploadedRecs structure in UploadTable is cleared at the beginning up each upload,
+        	//after an undo, uploadedRecs will still contain the records that were 'undone'.
             result += ut.getUploadedRecs().size();
         }
         return result;
@@ -3011,6 +3013,14 @@ public class Uploader implements ActionListener, KeyListener
                    return;
                }
                
+               if (op.equals(Uploader.RETRIEVING_UPLOADED_DATA))
+               {
+            	   //There's really nothing to do in this case anymore
+            	   return;
+               }
+               
+               int uploadedObjects = getUploadedObjects();
+               
                if (op.equals(Uploader.SUCCESS) || op.equals(Uploader.SUCCESS_PARTIAL))
                {
                    if (mainPanel.getUploadTbls().getSelectedIndex() == -1)
@@ -3020,21 +3030,29 @@ public class Uploader implements ActionListener, KeyListener
                    }
                }
 
-               if ((op.equals(Uploader.SUCCESS) || op.equals(Uploader.SUCCESS_PARTIAL)) 
-            		   && getUploadedObjects() > 0)
+               if (op.equals(Uploader.SUCCESS) || op.equals(Uploader.SUCCESS_PARTIAL)) 
                {
-            	   mainPanel.closeBtn.setText(getResourceString("WB_UPLOAD.COMMIT"));
+            	   if (uploadedObjects > 0)
+            	   {
+            		   mainPanel.closeBtn.setText(getResourceString("WB_UPLOAD.COMMIT"));
+            	   }
+            	   else
+            	   {
+            		   mainPanel.closeBtn.setText(getResourceString("CLOSE"));
+            	   }
                }
-               else
+               
+               if (op.equals(Uploader.READY_TO_UPLOAD))
                {
             	   mainPanel.closeBtn.setText(getResourceString("CLOSE"));
                }
+               
                
                if (op.equals(UPLOADING) || op.equals(SUCCESS) || op.equals(Uploader.SUCCESS_PARTIAL))
                {
                    mainPanel.showUploadTblTbl();
                }
-               else
+               else if (uploadedObjects == 0)
                {
                    mainPanel.showUploadTblList();
                }
@@ -3150,7 +3168,8 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected void viewSelectedTable()
     {
-        if (currentOp.equals(Uploader.SUCCESS) || currentOp.equals(Uploader.SUCCESS_PARTIAL))
+        if (currentOp.equals(Uploader.SUCCESS) || currentOp.equals(Uploader.SUCCESS_PARTIAL)
+        		|| currentOp.equals(Uploader.RETRIEVING_UPLOADED_DATA))
         {
             viewUploadsAll();
 //            if (mainPanel.getUploadTbls().getSelectedValue() != null)
@@ -3219,7 +3238,7 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected boolean canUpload(final String op)
     {
-        return op.equals(Uploader.READY_TO_UPLOAD) || op.equals(Uploader.SUCCESS_PARTIAL);
+        return op.equals(Uploader.READY_TO_UPLOAD) || op.equals(Uploader.SUCCESS_PARTIAL) ;
     }
 
     /**
@@ -3752,7 +3771,7 @@ public class Uploader implements ActionListener, KeyListener
             {
                 super.finished();
                 statusBar.setText("");
-                setCurrentOp(Uploader.SUCCESS);
+                //setCurrentOp(Uploader.SUCCESS);
                 if (!cancelled)
                 {
                     viewSelectedTable();
