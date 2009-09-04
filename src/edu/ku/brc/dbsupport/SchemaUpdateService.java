@@ -23,6 +23,7 @@ import java.awt.Frame;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.sql.SQLException;
+import java.util.Vector;
 
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
@@ -60,7 +61,25 @@ public abstract class SchemaUpdateService
     
     public enum CONTEXT_STATUS {OK, Error, Ignore, Initial}
     
+    protected Vector<String> errMsgList = new Vector<String>();
+
     protected static SchemaUpdateService instance = null;
+    
+    /**
+     * 
+     */
+    public SchemaUpdateService()
+    {
+        super();
+    }
+
+    /**
+     * @return the errMsgList
+     */
+    public Vector<String> getErrMsgList()
+    {
+        return errMsgList;
+    }
     
     /**
      * @return a username/password pair if valid or null if canceled

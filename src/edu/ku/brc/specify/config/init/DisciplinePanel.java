@@ -112,8 +112,6 @@ public class DisciplinePanel extends BaseSetupPanel
             {
                 updateBtnUI();
                 
-                System.out.println(disciplines.getSelectedIndex());
-                
                 if (disciplines.getSelectedIndex() > -1)
                 {
                     SwingUtilities.invokeLater(new Runnable() {

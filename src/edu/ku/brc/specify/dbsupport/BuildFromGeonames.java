@@ -20,8 +20,6 @@
 package edu.ku.brc.specify.dbsupport;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -31,9 +29,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipInputStream;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -679,54 +674,6 @@ public class BuildFromGeonames
         {
             log.error("parentId is NULL ["+continentCode+"]");
         }
-    }
-    
-    /**
-     * Unzips the geonames backup file.
-     * @param zipFile the backup file
-     * @return the file of the new uncompressed back up file.
-     */
-    private File unzipToFile(final File zipFile)
-    {
-        final int bufSize = 102400;
-        
-        File outFile = null;
-        try
-        {
-            ZipInputStream zin   = new ZipInputStream(new FileInputStream(zipFile));
-            ZipEntry       entry = zin.getNextEntry();
-            if (entry == null)
-            {
-                return null;
-            }
-            if (zin.available() == 0)
-            {
-                return null;
-            }
-            outFile = File.createTempFile("zip_", "sql");
-            FileOutputStream fos = new FileOutputStream(outFile);
-            
-            byte[] bytes = new byte[bufSize]; // 10K
-            int bytesRead = zin.read(bytes, 0, bufSize);
-            while (bytesRead > 0)
-            {
-                fos.write(bytes, 0, bytesRead);
-                bytesRead = zin.read(bytes, 0, 100);
-            }
-            
-        } catch (ZipException ex)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildFromGeonames.class, ex);
-            return null; //I think this means it is not a zip file.
-            
-        } catch (Exception ex)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildFromGeonames.class, ex);
-            return null;
-        }
-        return outFile;
     }
     
     /**

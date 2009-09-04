@@ -64,6 +64,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
+    
     /**
      * 
      */
@@ -212,6 +213,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 ok = SpecifySchemaGenerator.updateSchema(DatabaseDriverInfo.getDriver(dbc.getDriver()), dbc.getServerName(), dbc.getDatabaseName(), usrPwd.first, usrPwd.second);
                                 if (!ok)
                                 {
+                                    errMsgList.add("There was an error updating the schema.");
                                     frame.setVisible(false);
                                     return false;
                                 }
@@ -253,7 +255,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         }
         return false;
     }
-    
+
     /**
      * @param dbdriverInfo
      * @param hostname
@@ -263,11 +265,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      * @return
      * @throws SQLException
      */
-    private static boolean manuallyFixDB(final DatabaseDriverInfo dbdriverInfo, 
-                                         final String             hostname,
-                                         final String             databaseName,
-                                         final String             userName,
-                                         final String             password) throws SQLException
+    private boolean manuallyFixDB(final DatabaseDriverInfo dbdriverInfo, 
+                                  final String             hostname,
+                                  final String             databaseName,
+                                  final String             userName,
+                                  final String             password) throws SQLException
     {
         String connectionStr = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName, true, true,
                                                              userName, password, dbdriverInfo.getName());
@@ -290,13 +292,15 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     int rv = BasicSQLUtils.update(conn, "ALTER TABLE localitydetail CHANGE getUtmDatum UtmDatum varchar(32)");
                     if (rv != 0)
                     {
+                        errMsgList.add("Unable to alter table: localitydetail");
                         return false;
                     }
                     Integer count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM specifyuser");
                     rv = BasicSQLUtils.update(conn, "ALTER TABLE specifyuser MODIFY Password varchar(255)");
-                    if (rv == count)
+                    if (rv != count)
                     {
-                        
+                        errMsgList.add("Update count didn't match for update to table: specifyuser");
+                        return false;
                     }
                     
                     // Find Accession NumberingSchemes that 'attached' to Collections
@@ -310,6 +314,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             String sql = "DELETE FROM autonumsch_coll WHERE CollectionID = " + ((Integer)row[0]) + " AND AutoNumberingSchemeID = " + ((Integer)row[1]);
                             rv = BasicSQLUtils.update(sql);
                         }
+                        if (rv != count)
+                        {
+                            errMsgList.add("There was an error fixing the table: autonumsch_coll");
+                        }
+                        
+                    } else
+                    {
+                        rv = count;
                     }
                     
                     return rv == count;
@@ -317,6 +329,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 } catch (SQLException ex)
                 {
                     ex.printStackTrace();
+                    
                 } finally
                 {
                     if (stmt != null)

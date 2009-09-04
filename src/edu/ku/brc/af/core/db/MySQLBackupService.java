@@ -1107,11 +1107,11 @@ public class MySQLBackupService extends BackupServiceFactory
                         
                         ZipFileHelper.getInstance().cleanUp();
                         
-                        if (!dbMgr.dropDatabase(databaseName))
+                        /*if (!dbMgr.dropDatabase(databaseName))
                         {
                             log.error("Database["+databaseName+"] could not be dropped after load.");
                             UIRegistry.showLocalizedError("MySQLBackupService.ERR_DRP_DBAF", databaseName);
-                        }
+                        }*/
                         
                         setProgress(100);
                         

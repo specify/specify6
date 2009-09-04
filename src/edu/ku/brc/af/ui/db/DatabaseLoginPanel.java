@@ -1017,7 +1017,20 @@ public class DatabaseLoginPanel extends JTiledPanel
                         DBConnection.getInstance().setConnectionStr(drvInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, getServerName(), getDatabaseName()));
                         
                         // This needs to be done before Hibernate starts up
-                        SchemaUpdateService.getInstance().updateSchema(UIHelper.getInstall4JInstallString());
+                        if (!SchemaUpdateService.getInstance().updateSchema(UIHelper.getInstall4JInstallString()))
+                        {
+                            StringBuilder sb = new StringBuilder();
+                            for (String s : SchemaUpdateService.getInstance().getErrMsgList())
+                            {
+                                sb.append(s);
+                                sb.append("\n");
+                            }
+                            sb.append(getResourceString("APP_EXIT")); // 18N
+                            UIRegistry.showError(sb.toString());
+                        } else
+                        {
+                            UIRegistry.showLocalizedMsg(JOptionPane.QUESTION_MESSAGE, "", "SCHEMA_UP_OK");
+                        }
                     }
                 }
                 return null;
