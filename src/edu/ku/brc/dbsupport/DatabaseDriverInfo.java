@@ -319,7 +319,13 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
                         String  port       = getAttr(dbElement, "port", null); //$NON-NLS-1$
                         boolean isEmbedded = getAttr(dbElement, "embedded", false); //$NON-NLS-1$
                         
-                        if ((UIRegistry.isEmbedded() || UIRegistry.isMobile()) && !isEmbedded)
+                        if (UIRegistry.isEmbedded() || UIRegistry.isMobile()) // Application is Embedded
+                        {
+                            if (!isEmbedded)
+                            {
+                                continue;
+                            }
+                        } else if (isEmbedded)
                         {
                             continue;
                         }
