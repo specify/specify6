@@ -210,7 +210,7 @@ public class ViewFactory
         
         Class<?> dataClass = null;
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
-        MultiView   parentsMV = parentView.getMultiViewParent();
+        MultiView   parentsMV = parentView != null ? parentView.getMultiViewParent() : null;
         if (tableInfo == null && parentsMV != null && cellName != null)
         {
             tableInfo = DBTableIdMgr.getInstance().getByClassName(parentsMV.getView().getClassName());
@@ -2368,7 +2368,7 @@ public class ViewFactory
             }
             
             DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
-            MultiView   parentsMV = parentView.getMultiViewParent();
+            MultiView   parentsMV = parentView != null ? parentView.getMultiViewParent() : null;
             if (tableInfo == null && parentsMV != null)
             {
                 tableInfo = DBTableIdMgr.getInstance().getByClassName(parentsMV.getView().getClassName());

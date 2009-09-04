@@ -72,6 +72,7 @@ import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.validation.ValPasswordField;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -555,17 +556,17 @@ public class UserAndMasterPasswordMgr
      * the user's password.
      */
     protected String getResourceStringFromURL(final String urlLoc,
-                                   final String username,
-                                   final String password)
+                                              final String username,
+                                              final String password)
     {
-        String encrytpedStr = Encryption.encrypt(username+","+password, password);
-        String fullURL      = urlLoc + "?data=" + encrytpedStr;
+        String encrytpedStr = Encryption.encrypt(username+","+password, username);
+        String fullURL      = urlLoc + "?data=" + encrytpedStr + ";db=" + DBConnection.getInstance().getDatabaseName();
         
         Exception exception = null;
         BufferedReader bufRdr = null;
         try 
         {
-            URL url = new URL(fullURL);
+            URL url = new URL(fullURL); 
 
             URLConnection urlConn = url.openConnection(); 
             urlConn.setDoInput(true); 
