@@ -253,7 +253,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 }
             }
         }
-        return false;
+        return true;
     }
 
     /**

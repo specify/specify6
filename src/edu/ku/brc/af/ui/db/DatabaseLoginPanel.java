@@ -1029,7 +1029,7 @@ public class DatabaseLoginPanel extends JTiledPanel
                             UIRegistry.showError(sb.toString());
                         } else
                         {
-                            UIRegistry.showLocalizedMsg(JOptionPane.QUESTION_MESSAGE, "", "SCHEMA_UP_OK");
+                            //UIRegistry.showLocalizedMsg(JOptionPane.QUESTION_MESSAGE, "", "SCHEMA_UP_OK");
                         }
                     }
                 }
