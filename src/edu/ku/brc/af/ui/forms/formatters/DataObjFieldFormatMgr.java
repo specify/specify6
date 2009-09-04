@@ -23,9 +23,11 @@ import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
 import java.io.File;
 import java.security.AccessController;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Formatter;
 import java.util.Hashtable;
@@ -701,8 +703,18 @@ public class DataObjFieldFormatMgr
                 StringBuilder strBuf = new StringBuilder(128);
                 for (DataObjDataField field : format.getFields())
                 {
+                    Class<?> fieldClass = field.getType();
+                    
                     Object[] values = getFieldValues(new String[]{field.getName()}, dataObj, getter);
                     Object   value  = values != null ? values[0] : null;
+                    
+                    // NOTE: if the field was a Date or Calendar object it has already been reformatted to a String
+                    // so we change the fieldClass to string so everything works out.
+                    if (fieldClass == Date.class || fieldClass == Calendar.class)
+                    {
+                        fieldClass = String.class;
+                    }
+                    
                     if (value != null)
                     {
                         if (AppContextMgr.isSecurityOn() && value instanceof FormDataObjIFace)
@@ -750,11 +762,10 @@ public class DataObjFieldFormatMgr
                                 strBuf.append(value);
                             }
                             
-                        } else if (value.getClass() == field.getType())
+                        } else if (value.getClass() == fieldClass)
                         {
                             // When format is null then it is a string
-                            if (field.getType() == String.class &&
-                                (field.getFormat() == null || format.equals("%s")))
+                            if (fieldClass == String.class && (field.getFormat() == null || format.equals("%s")))
                             {
                                 if (field.getSep() != null)
                                 {
@@ -785,7 +796,7 @@ public class DataObjFieldFormatMgr
                         } else
                         {
                             log.error("Mismatch of types data retrieved as class["+(value != null ? value.getClass().getSimpleName() : "N/A")+
-                                    "] and the format requires ["+(field != null ? (field.getType() != null ? field.getType().getSimpleName() : "N/A 2") : "N/A")+"]");
+                                    "] and the format requires ["+(field != null ? (fieldClass != null ? fieldClass.getSimpleName() : "N/A 2") : "N/A")+"]");
                         }
                     }
                 }
