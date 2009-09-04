@@ -31,6 +31,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 import javax.persistence.Column;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
@@ -180,7 +181,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getModifiedByAgent()
      */
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "ModifiedByAgentID")
     public Agent getModifiedByAgent()
     {
@@ -198,7 +199,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
     /**
      * @return the createdByAgent
      */
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "CreatedByAgentID", updatable = false)
     public Agent getCreatedByAgent()
     {
