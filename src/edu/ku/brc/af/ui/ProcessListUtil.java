@@ -103,23 +103,24 @@ public class ProcessListUtil
         List<String> processList = ProcessListUtil.getRunningProcesses();
         for (String line : processList)
         {
-            //System.out.println(line);
+            
             boolean doCont = false;
             for (int i=0;i<text.length;i++)
             {
                 if (!StringUtils.contains(line.toLowerCase(), text[i].toLowerCase()))
                 {
+                    //System.err.println("*"+line);
                     doCont = true;
                     break;
                 }
             }
+            
             if (doCont)
             {
                 continue;
             }
             
             String[] toks = StringUtils.split(line, ' ');
-            System.err.println(line);
             if (UIHelper.isWindows())
             {
             	ids.add(Integer.parseInt(toks[1]));

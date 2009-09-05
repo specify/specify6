@@ -194,16 +194,17 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
                 }
             }
             
-            
             try
             {
                 boolean cont = true;
+                int cnt = 0;
                 while (cont)
                 {
                     Thread.sleep(2000);
                     
                     ids = ProcessListUtil.getProcessIdWithText("3337");
-                    cont = ids.size()> 0;
+                    cont = ids.size() > 0 && cnt < 5;
+                    cnt++;
                 }
                 
             } catch (Exception ex)
