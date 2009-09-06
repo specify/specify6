@@ -841,6 +841,11 @@ public class ExportMappingTask extends QueryTask
 		result.initialize();
 		result.setFieldName(itemElement.attributeValue("name"));
 		result.setDataType(itemElement.attributeValue("type"));
+		for (Object docObj : itemElement.selectNodes("xsd:annotation/xsd:documentation"))
+		{
+			Element docElem = (Element )docObj;
+			result.setDescription(docElem.getText());
+		}
 		return result;
 	}
 
