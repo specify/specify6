@@ -1,0 +1,479 @@
+<?xml version="1.0"?>
+<!-- $Id: darwin2.xsd,v 1.12 2002/05/31 05:15:43 peejinator Exp $ -->
+<!-- version 1.13 2003/03/15 John Wieczorek (Museum of Vertebrate Zoology) -->
+<!-- version 1.21 2003/06/17 John Wieczorek (Museum of Vertebrate Zoology) -->
+<xsd:schema targetNamespace="http://digir.net/schema/conceptual/darwin/2003/1.0" 
+                xmlns="http://digir.net/schema/conceptual/darwin/2003/1.0" 
+                xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                xmlns:digir="http://digir.net/schema/protocol/2003/1.0" elementFormDefault="qualified">
+	<xsd:import namespace="http://digir.net/schema/protocol/2003/1.0" 
+               schemaLocation="http://digir.sourceforge.net/schema/protocol/2003/1.0/digir.xsd"/>
+	<xsd:annotation>
+		<xsd:documentation>$Id: darwin2.xsd,v 1.21 2003/06/17 11:14:24 John Wieczorek Exp $</xsd:documentation>
+		<xsd:documentation/>
+		<xsd:documentation>XML Schema draft Darwin Core Version 2 (http://tsadev.speciesanalyst.net/documentation/ow.asp?DarwinCoreV2) content model.  Uses and extends data elements from the DiGIR (http://digir.net) protocol.</xsd:documentation>
+	</xsd:annotation>
+	<xsd:import namespace="http://digir.net/schema/protocol/2003/1.0" schemaLocation="http://digir.sourceforge.net/schema/protocol/2003/1.0/digir.xsd"/>
+	<xsd:element name="DateLastModified" type="xsd:dateTime" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>ISO 8601 date and time in UTC(GMT) when the record was last modified. Example: "November 5, 1994, 8:15:30 am, US Eastern Standard Time" would be "1994-11-05T13:15:30Z" (see http://www.w3.org/TR/NOTE-datetime).</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="BasisOfRecord" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>A description indicating whether the record represents an observation, tissue sample, living organism, voucher specimen, germplasm/seed, genetic information, etc.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="InstitutionCode" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>A code that identifies the institution to which the cataloged item belongs. No global registry exists for institutional codes; use the code that is "standard" in your discipline. This attribute must contain no spaces.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="CollectionCode" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>A unique alphanumeric value that identifies the collection within the institution in which the item is cataloged. This attribute must contain no spaces.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="CatalogNumberText" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>An alphanumeric value which identifies an individual cataloged item within the collection. It is recommended that this value provides a key by which the individual cataloged item can be identified.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="CatalogNumberNumeric" type="xsd:nonNegativeInteger" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The CatalogNumber as a numeric value, if applicable. Allows searching on numeric ranges of CatalogNumbers.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Collector" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The name(s) of the collector(s) of the original data for the cataloged item.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="CollectorNumber" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>An identifying string applied to the cataloged item at the time of collection. Serves as a link between field notes and the cataloged items.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="FieldNumber" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>An identifying string applied to a set of material that resulted from a single collecting event.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="YearCollected" type="xsd:gYear" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The four digit year in the Common Era calendar in which the cataloged item was collected.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="MonthCollected" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The two digit month of year in the Common Era calendar during which the cataloged item was collected from the field.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:nonNegativeInteger">
+				<xsd:minInclusive value="1"/>
+				<xsd:maxInclusive value="12"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:element>
+	<xsd:element name="DayCollected" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The two digit day of the month in the Common Era calendar during which the cataloged item was collected from the field.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:nonNegativeInteger">
+				<xsd:minInclusive value="1"/>
+				<xsd:maxInclusive value="31"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:element>
+	<xsd:element name="TimeCollected" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The time of day the cataloged item was collected, expressed as decimal hours from midnight, local time (e.g., 12.0 = noon, 13.5 = 1:30pm).</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:decimal">
+				<xsd:minInclusive value="0"/>
+				<xsd:maxExclusive value="24.0"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:element>
+	<xsd:element name="VerbatimCollectingDate" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The verbatim original representation of the date information for the collecting event.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="FieldNotes" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>A reference to, or flag marking the existence of notes taken in the field for the cataloged item.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="JulianDay" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The ordinal day of the year (i.e., the number of days since December 31 of the previous year; January 1 is Julian Day 1) on which the cataloged item was collected. May be derived from the YearCollected, MonthCollected, and DayCollected by the provider.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="HigherGeography" type="xsd:string" substitutionGroup="digir:searchableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The combination of all geographic elements less specific than locality. "Like" query operations on this element will search for a substring in any of the higher geography attributes.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ContinentOcean" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The full, unabbreviated name of the continent or ocean from which the cataloged item was collected.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="IslandGroup" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The full, unabbreviated name of the island group from which the cataloged item was collected.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Island" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The full, unabbreviated name of the island from which the cataloged item was collected.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Country" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The full, unabbreviated name of the country or major political unit from which the cataloged item was collected.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="StateProvince" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The full, unabbreviated name of the state, province, or region (i.e., the next smaller political region than Country) from which the cataloged item was collected.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="County" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The full, unabbreviated name of the county, shire, or municipality (i.e., the next smaller political region than StateProvince) from which the cataloged item was collected.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Locality" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The description of the locality from which the cataloged item was collected, sans geographic information provided in other geographic fields.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DecimalLatitude" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The latitude of the location from which the cataloged item was collected, expressed in decimal degrees.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:decimal">
+				<xsd:minInclusive value="-90.0"/>
+				<xsd:maxInclusive value="90.0"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:element>
+	<xsd:element name="DecimalLongitude" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The longitude of the location from which the cataloged item was collected, expressed in decimal degrees.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:decimal">
+				<xsd:minInclusive value="-180.0"/>
+				<xsd:maxInclusive value="180.0"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:element>
+	<xsd:element name="HorizontalDatum" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The horizontal geodetic datum to which the DecimalLatitude and DecimalLongitude refer.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="OriginalCoordinateSystem" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The name of the system in which the original geographic coordinates were recorded (e.g., "decimal degrees", "degrees minutes seconds", "UTM", etc.).</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="VerbatimLatitude" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>A text representation of the Latitude data in its original format in the source database.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="VerbatimLongitude" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>A text representation of the Longitude data in its original format in the source database.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="GeorefMethod" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>A reference to the methods used for determining the coordinates and uncertainties.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="CoordinateUncertaintyInMeters" type="xsd:decimal" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The upper limit of the distance (in meters) from the given latitude and longitude describing a circle within which the whole of the described locality must lie. Use NULL where the uncertainty is unknown, cannot be estimated, or is not applicable.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="LatLongComments" type="xsd:decimal" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>Comments about the LatLong determination.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="BoundingBox" type="xsd:string" substitutionGroup="digir:searchableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>This access point provides a mechanism for performing searches using a bounding box. A Bounding Box element is not typically present in the database, but rather is derived from the DecimalLatitude and DecimalLongitude columns by the data provider.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="MinimumElevationInMeters" type="xsd:decimal" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The minimum distance in meters above (positive) or below sea level of the collecting locality.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="MaximumElevationInMeters" type="xsd:decimal" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The maximum distance in meters above (positive) or below sea level of the collecting locality.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="VerbatimElevation" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>A text representation of the Elevation in its original format in the source database.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="MinimumDepthInMeters" type="xsd:decimal" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The minimum distance in meters below the surface of the water at which the collection was made; all material collected was at least this deep. Positive below the surface, negative above (e.g., collecting above sea level in tidal areas).</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="MaximumDepthInMeters" type="xsd:decimal" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The maximum distance in meters below the surface of the water at which the collection was made; all material collected was at most this deep. Positive below the surface, negative above (e.g., collecting above sea level in tidal areas).</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="VerbatimDepth" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>A text representation of the Depth in its original format in the source database.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ScientificName" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The full name of lowest level taxon to which the cataloged item can be identified (e.g., genus name, specific epithet, subspecific epithet, etc.).</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="HigherTaxon" type="xsd:string" substitutionGroup="digir:searchableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The combination of names of taxonomic ranks less specific than Genus. "Like" query operations on this element will search for a substring in any of the higher taxon attributes.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Kingdom" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The phylogenetic kingdom to which the cataloged item belongs.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Phylum" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The phylogenetic phylum (or division) to which the cataloged item belongs.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Class" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The phylogenetic class to which the cataloged item belongs.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Order" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The phylogenetic order to which the cataloged item belongs.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Family" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The phylogenetic family to which the cataloged item belongs.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Genus" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The phylogenetic genus to which the cataloged item belongs.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Species" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The phylogenetic specific epithet of the cataloged item.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Subspecies" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The phylogenetic subspecific epithet of the cataloged item.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ScientificNameAuthor" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The author of the ScientificName. Can be more than one author in a concatenated string. Should be formatted according to the conventions of the applicable taxonomic discipline.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="IdentifiedBy" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The name(s) of the person(s) who applied the currently accepted ScientificName to the cataloged item.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="IdentificationModifier" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>Additional information documenting the taxonomic determination of the cataloged item (e.g., "cf.", "aff.", "subspecies in question", etc.).</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="YearIdentified" type="xsd:gYear" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The four digit year in the Common Era calendar in which the cataloged item was identified as having the ScientificName.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="MonthIdentified" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The two digit month in the Common Era calendar during which the cataloged item was identified.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:nonNegativeInteger">
+				<xsd:minInclusive value="1"/>
+				<xsd:maxInclusive value="12"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:element>
+	<xsd:element name="DayIdentified" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The two digit day of the month in the Common Era calendar during which the cataloged item was identified.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:nonNegativeInteger">
+				<xsd:minInclusive value="1"/>
+				<xsd:maxInclusive value="31"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:element>
+	<xsd:element name="TypeStatus" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>A list of one or more nomenclatural types that the cataloged item represents (e.g., "holotype of Ctenomys sociabilis. Pearson O. P., and M. I. Christie. 1985. Historia Natural, 5(37):388.").</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Sex" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The sex of a cataloged item (e.g., male, female, hermaphrodite, gynandromorph, not recorded, indeterminate, transitional - between sexes, for sequential hermaphrodites).</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Preparations" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>A concatenated list of preparations and preservation methods (skin, skull, skeleton, whole animal (ETOH), slide, etc.) for the cataloged item.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Tissues" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>A concatenated list of tissues and preservation methods (whole (frozen), liver (EDTA), etc.) for the cataloged item.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="IndividualCount" type="xsd:nonNegativeInteger" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The number of individuals present in the lot or container referred to by the catalog number. Not an estimate of abundance or density at the collecting locality.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="AgeClass" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The age class, reproductive stage, life stage of the biological individual (e.g., juvenile, adult, eft, nymph, etc.).</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="GenBankNum" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>GenBank Accession number.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="OtherCatalogNumbers" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>A list of previous or alternative fully qualified catalog numbers of the cataloged item whether in the current collection or in any other.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="RelatedCatalogedItems" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>The fully qualified identifier (Institution Code + " " + Collection Code + " " + Catalog Number) of the related Cataloged Item, preceded by the nature of the relationship (e.g., (sibling of) MVZ Mamm 1234).</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Remarks" type="xsd:string" substitutionGroup="digir:searchableReturnableData" nillable="true">
+		<xsd:annotation>
+			<xsd:documentation>Free text comments accompanying the cataloged item record.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="list">
+		<xsd:annotation>
+			<xsd:documentation>A concrete digir:listType specifying all elements available for multiCOP operations.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="digir:listType">
+				<xsd:sequence>
+					<xsd:choice>
+						<xsd:element ref="DateLastModified" maxOccurs="unbounded"/>
+						<xsd:element ref="BasisOfRecord" maxOccurs="unbounded"/>
+						<xsd:element ref="InstitutionCode" maxOccurs="unbounded"/>
+						<xsd:element ref="CollectionCode" maxOccurs="unbounded"/>
+						<xsd:element ref="CatalogNumberText" maxOccurs="unbounded"/>
+						<xsd:element ref="CatalogNumberNumeric" maxOccurs="unbounded"/>
+						<xsd:element ref="Collector" maxOccurs="unbounded"/>
+						<xsd:element ref="CollectorNumber" maxOccurs="unbounded"/>
+						<xsd:element ref="FieldNumber" maxOccurs="unbounded"/>
+						<xsd:element ref="YearCollected" maxOccurs="unbounded"/>
+						<xsd:element ref="MonthCollected" maxOccurs="unbounded"/>
+						<xsd:element ref="DayCollected" maxOccurs="unbounded"/>
+						<xsd:element ref="TimeCollected" maxOccurs="unbounded"/>
+						<xsd:element ref="VerbatimCollectingDate" maxOccurs="unbounded"/>
+						<xsd:element ref="FieldNotes" maxOccurs="unbounded"/>
+						<xsd:element ref="JulianDay" maxOccurs="unbounded"/>
+						<xsd:element ref="HigherGeography" maxOccurs="unbounded"/>
+						<xsd:element ref="ContinentOcean" maxOccurs="unbounded"/>
+						<xsd:element ref="IslandGroup" maxOccurs="unbounded"/>
+						<xsd:element ref="Island" maxOccurs="unbounded"/>
+						<xsd:element ref="Country" maxOccurs="unbounded"/>
+						<xsd:element ref="StateProvince" maxOccurs="unbounded"/>
+						<xsd:element ref="County" maxOccurs="unbounded"/>
+						<xsd:element ref="Locality" maxOccurs="unbounded"/>
+						<xsd:element ref="DecimalLatitude" maxOccurs="unbounded"/>
+						<xsd:element ref="DecimalLongitude" maxOccurs="unbounded"/>
+						<xsd:element ref="HorizontalDatum" maxOccurs="unbounded"/>
+						<xsd:element ref="OriginalCoordinateSystem" maxOccurs="unbounded"/>
+						<xsd:element ref="VerbatimLatitude" maxOccurs="unbounded"/>
+						<xsd:element ref="VerbatimLongitude" maxOccurs="unbounded"/>
+						<xsd:element ref="GeorefMethod" maxOccurs="unbounded"/>
+						<xsd:element ref="CoordinateUncertaintyInMeters" maxOccurs="unbounded"/>
+						<xsd:element ref="LatLongComments" maxOccurs="unbounded"/>
+						<xsd:element ref="BoundingBox" maxOccurs="unbounded"/>
+						<xsd:element ref="MinimumElevationInMeters" maxOccurs="unbounded"/>
+						<xsd:element ref="MaximumElevationInMeters" maxOccurs="unbounded"/>
+						<xsd:element ref="VerbatimElevation" maxOccurs="unbounded"/>
+						<xsd:element ref="MinimumDepthInMeters" maxOccurs="unbounded"/>
+						<xsd:element ref="MaximumDepthInMeters" maxOccurs="unbounded"/>
+						<xsd:element ref="VerbatimDepth" maxOccurs="unbounded"/>
+						<xsd:element ref="ScientificName" maxOccurs="unbounded"/>
+						<xsd:element ref="HigherTaxon" maxOccurs="unbounded"/>
+						<xsd:element ref="Kingdom" maxOccurs="unbounded"/>
+						<xsd:element ref="Phylum" maxOccurs="unbounded"/>
+						<xsd:element ref="Class" maxOccurs="unbounded"/>
+						<xsd:element ref="Order" maxOccurs="unbounded"/>
+						<xsd:element ref="Family" maxOccurs="unbounded"/>
+						<xsd:element ref="Genus" maxOccurs="unbounded"/>
+						<xsd:element ref="Species" maxOccurs="unbounded"/>
+						<xsd:element ref="Subspecies" maxOccurs="unbounded"/>
+						<xsd:element ref="ScientificNameAuthor" maxOccurs="unbounded"/>
+						<xsd:element ref="IdentificationModifier" maxOccurs="unbounded"/>
+						<xsd:element ref="IdentifiedBy" maxOccurs="unbounded"/>
+						<xsd:element ref="YearIdentified" maxOccurs="unbounded"/>
+						<xsd:element ref="MonthIdentified" maxOccurs="unbounded"/>
+						<xsd:element ref="DayIdentified" maxOccurs="unbounded"/>
+						<xsd:element ref="TypeStatus" maxOccurs="unbounded"/>
+						<xsd:element ref="Sex" maxOccurs="unbounded"/>
+						<xsd:element ref="Preparations" maxOccurs="unbounded"/>
+						<xsd:element ref="Tissues" maxOccurs="unbounded"/>
+						<xsd:element ref="IndividualCount" maxOccurs="unbounded"/>
+						<xsd:element ref="AgeClass" maxOccurs="unbounded"/>
+						<xsd:element ref="GenBankNum" maxOccurs="unbounded"/>
+						<xsd:element ref="OtherCatalogNumbers" maxOccurs="unbounded"/>
+						<xsd:element ref="RelatedCatalogedItems" maxOccurs="unbounded"/>
+						<xsd:element ref="Remarks" maxOccurs="unbounded"/>
+					</xsd:choice>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:element name="requiredList" abstract="true" substitutionGroup="digir:requiredList">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="DateLastModified"/>
+				<xsd:element ref="InstitutionCode"/>
+				<xsd:element ref="CollectionCode"/>
+				<xsd:element ref="CatalogNumberText"/>
+				<xsd:element ref="ScientificName"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>
