@@ -887,15 +887,18 @@ public class NavigationTreeMgr
      * @return
      */
     @SuppressWarnings( { "unchecked", "unused" })
-    private <T> T getParentOfClass(final  DefaultMutableTreeNode node, final Class<?> cls)
+    protected <T> T getParentOfClass(final DefaultMutableTreeNode node, final Class<?> cls)
     {
         DefaultMutableTreeNode parent = node;
         while (parent != null)
         {
-            DataModelObjBaseWrapper userData = (DataModelObjBaseWrapper)parent.getUserObject();
-            if (userData.getDataObj().getClass() == cls)
+            if (parent.getUserObject() instanceof DataModelObjBaseWrapper)
             {
-                return (T)userData.getDataObj();
+                DataModelObjBaseWrapper userData = (DataModelObjBaseWrapper)parent.getUserObject();
+                if (userData.getDataObj().getClass() == cls)
+                {
+                    return (T)userData.getDataObj();
+                }
             }
             parent = (DefaultMutableTreeNode)parent.getParent();
         }

@@ -19,7 +19,9 @@
 */
 package edu.ku.brc.specify.tasks.subpane.security;
 
+import java.awt.Component;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
@@ -29,10 +31,14 @@ import javax.swing.JPanel;
 
 import edu.ku.brc.af.auth.specify.permission.PermissionService;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayPanel;
+import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -204,9 +210,10 @@ public class AdminInfoSubPanelWrapper
     /**
      * @param session the current session
      */
-    public void savePermissionData(final DataProviderSessionIFace session) throws Exception
+    public void savePermissionData(final DataProviderSessionIFace session, 
+                                   final Discipline nodesDiscipline) throws Exception
     {
-        MultiView   mv  = getMultiView();
+        MultiView mv = getMultiView();
         mv.getDataFromUI();
         
         Object obj = mv.getData();
@@ -214,9 +221,21 @@ public class AdminInfoSubPanelWrapper
         SpecifyUserBusRules busRules = new SpecifyUserBusRules();
         busRules.initialize(mv.getCurrentView());
         
+        ValComboBoxFromQuery agentCBX = null;
+        FormViewObj          fvo      = mv.getCurrentViewAsFormViewObj();
+        Component            cbx      = fvo.getControlByName("agent");
+        if (cbx != null && cbx instanceof ValComboBoxFromQuery)
+        {
+            agentCBX = (ValComboBoxFromQuery)cbx;
+        }
+        
+        Agent uiAgent = (Agent)agentCBX.getValue();
+        
         // Couldn't call BuinessRules because of a double session
         // need to look into it later
         //BusinessRulesIFace br = mv.getCurrentViewAsFormViewObj().getBusinessRules();
+        
+        Agent toBeReleased = null;
         
         // We need to do this because we can't call the BusniessRules
         if (obj instanceof SpecifyUser)
@@ -225,16 +244,36 @@ public class AdminInfoSubPanelWrapper
             
             busRules.beforeMerge(user, session);
             
+            // Get All the Agent Ids for this discipline.
+            String sql = "SELECT a.AgentID FROM discipline d INNER JOIN agent_discipline ad ON d.UserGroupScopeId = ad.DisciplineID " +
+                         "INNER JOIN agent a ON ad.AgentID = a.AgentID " +
+                         "INNER JOIN specifyuser sp ON a.SpecifyUserID = sp.SpecifyUserID " +
+                         "WHERE d.UserGroupScopeId = " + nodesDiscipline.getId();
+            HashSet<Integer> dispAgentIds = new HashSet<Integer>();
+            for (Object objId : BasicSQLUtils.querySingleCol(sql))
+            {
+                dispAgentIds.add((Integer)objId);
+            }
+            
             // Hibernate doesn't seem to be cascading the Merge
             // when Agent has been edited outside the session.
-            // So this seems to be the only way I can cal merge and save.
+            // So this seems to be the only way I can call merge and save.
             // it is totally bizarre
+            
             Set<Agent> set = user.getAgents();
             for (Agent agent : new Vector<Agent>(set))
             {
-                set.remove(agent);
-                set.add(session.get(Agent.class, agent.getId()));
+                if (dispAgentIds.contains(agent.getId()))
+                {
+                    set.remove(agent);
+                    agent.setSpecifyUser(null);
+                    toBeReleased = agent;
+                }
             }
+            
+            Agent agt = session.get(Agent.class, uiAgent.getId());
+            set.add(agt);
+            agt.setSpecifyUser(user);
             
             user = session.merge(user);
             busRules.beforeSave(user, session);
@@ -247,6 +286,13 @@ public class AdminInfoSubPanelWrapper
         
         principal = session.merge(principal);
         session.saveOrUpdate(principal);
+        
+        if (toBeReleased != null)
+        {
+            toBeReleased = session.merge(toBeReleased);
+            toBeReleased.setSpecifyUser(null);
+            session.saveOrUpdate(toBeReleased);
+        }
         
         for (PermissionPanelEditor editor : permissionEditors)
         {

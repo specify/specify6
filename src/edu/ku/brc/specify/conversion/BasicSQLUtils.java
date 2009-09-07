@@ -541,6 +541,7 @@ public class BasicSQLUtils
     /**
      * @param conn
      * @param sql
+     * @param includeHeaderRow
      * @return
      */
     public static Vector<Object[]> query(final Connection conn, final String sql, final boolean includeHeaderRow)
@@ -639,6 +640,110 @@ public class BasicSQLUtils
 
         return list;
     }
+
+    /**
+     * @param sql
+     * @return
+     */
+    public static Vector<Object> querySingleCol(final String sql)
+    {
+        return querySingleCol(null, sql);
+    }
+
+    /**
+     * @param conn 
+     * @param sql
+     * @return
+     */
+    public static Vector<Object> querySingleCol(final Connection conn, final String sql)
+    {
+        Vector<Object> list = new Vector<Object>();
+        Statement stmt = null;
+        
+        Connection connection    = null;
+        boolean    doCloseConn   = false;
+        boolean    doSkipConnSet = false;
+        boolean    isStale       = true;
+        int        tries         = 0;
+        
+        while (isStale && tries < 3)
+        {
+            try
+            {
+                if (!doSkipConnSet)
+                {
+                    if (conn != null)
+                    {
+                        connection = conn;
+                        
+                    } else if (dbConn != null)
+                    {
+                        connection = dbConn;
+                    } else
+                    {
+                        connection = DBConnection.getInstance().createConnection();
+                        doCloseConn = true;
+                    }
+                }
+    
+                tries++;
+                stmt = connection.createStatement();
+                ResultSet         rs       = stmt.executeQuery(sql);
+                ResultSetMetaData metaData = rs.getMetaData();
+                int               numCols  = metaData.getColumnCount();
+                
+                if (numCols > 1)
+                {
+                    log.warn("Query has "+numCols+" columns and should only have one.");
+                }
+
+                while (rs.next())
+                {
+                    list.add(rs.getObject(1));
+                }
+                rs.close();
+                
+                isStale = false;
+    
+            } catch (CommunicationsException ex)
+            {
+                connection = DBConnection.getInstance().createConnection();
+                doCloseConn   = true;
+                doSkipConnSet = true;
+                
+            } catch (SQLException ex)
+            {
+                ex.printStackTrace();
+                
+                if (!skipTrackExceptions)
+                {
+                    edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
+                }
+                
+            } finally
+            {
+                if (stmt != null)
+                {
+                    try
+                    {
+                        stmt.close();
+                    } catch (Exception ex) {}
+                }
+            }
+            
+            if (!isStale && connection != null && doCloseConn)
+            {
+                try
+                {
+                    connection.close();
+                } catch (Exception ex) {}
+            }
+        }
+
+        return list;
+    }
+
 
     
     /**

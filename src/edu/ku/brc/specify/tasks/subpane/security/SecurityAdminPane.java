@@ -120,9 +120,11 @@ public class SecurityAdminPane extends BaseSubPane
     private String                                      currentTitle        = null;
     private JAutoCompTextField                          searchText;
     
+    private Discipline                                  nodesDiscipline = null;
+    
     // manages creation and deletion of items on the navigation tree
-     NavigationTreeMgr navTreeMgr;
-     private NavigationTreeContextMenuMgr navTreeContextMgr;
+    private NavigationTreeMgr            navTreeMgr;
+    private NavigationTreeContextMenuMgr navTreeContextMgr;
     
     @SuppressWarnings("unused")
     private boolean hasPermissionToModify = false;
@@ -314,6 +316,7 @@ public class SecurityAdminPane extends BaseSubPane
                     }
                 }
 
+                nodesDiscipline = navTreeMgr.getParentOfClass(node, Discipline.class);
                 showInfoPanel(dataWrp, secondObjWrp, node.toString());
                 updateUIEnabled(dataWrp);
             }
@@ -1015,7 +1018,7 @@ public class SecurityAdminPane extends BaseSubPane
             session.beginTransaction();
             
             // then save permissions
-            currentDisplayPanel.savePermissionData(session);
+            currentDisplayPanel.savePermissionData(session, nodesDiscipline);
             currentEditorPanel.setHasChanged(false);
             
             session.commit();

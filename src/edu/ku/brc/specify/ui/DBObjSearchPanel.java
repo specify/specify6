@@ -121,7 +121,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
 
     protected JPanel         panel;
     protected JScrollPane    scrollPane;
-    protected JTable         table;
+    //protected JTable         table;
 
     protected JButton        searchBtn;
     protected Color          textBGColor    = null;

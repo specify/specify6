@@ -158,7 +158,6 @@ public class SpecifyUserBusRules extends BaseBusRules
     {
         super.afterFillForm(dataObj);
         
-        
         if (formViewObj != null && formViewObj.getDataObj() instanceof SpecifyUser)
         {
             SpecifyUser spUser  = (SpecifyUser)formViewObj.getDataObj();
@@ -231,20 +230,6 @@ public class SpecifyUserBusRules extends BaseBusRules
             if (pwd.length() < 30)
             {
                 spUser.setPassword(Encryption.encrypt(pwd, pwd));
-            }
-            
-            for (Agent agent : spUser.getAgents())
-            {
-                try
-                {
-                    session.saveOrUpdate(agent);
-                    
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyUserBusRules.class, ex);
-                }
             }
         }
     }
