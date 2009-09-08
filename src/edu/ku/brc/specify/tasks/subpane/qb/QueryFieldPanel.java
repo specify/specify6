@@ -707,7 +707,8 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             return new SpQueryField.OperatorType[] {
                 SpQueryField.OperatorType.EQUALS,
                 SpQueryField.OperatorType.LIKE,
-                SpQueryField.OperatorType.IN};
+                SpQueryField.OperatorType.IN,
+                SpQueryField.OperatorType.EMPTY};
         }
         //CatalogNumber needs special treatment - works better as a number.
         //And other fields? Not sure how to tell. Maybe the formatter?????
@@ -979,7 +980,8 @@ public class QueryFieldPanel extends JPanel implements ActionListener
     {
         if (operatorCBX.getSelectedItem().equals(SpQueryField.OperatorType.EMPTY))
         {
-            return fieldQRI.getSQLFldSpec(ta, true, this.schemaItem != null) + (isNotCheckbox.isSelected() ? " is not " : " is ") + "null";
+            //return fieldQRI.getSQLFldSpec(ta, true, this.schemaItem != null) + (isNotCheckbox.isSelected() ? " is not " : " is ") + "null";
+        	return fieldQRI.getNullCondition(ta, schemaItem != null, isNotCheckbox.isSelected());
         }
         
         if (hasCriteria())
@@ -1134,7 +1136,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 operStr = "Like";
             }
                             
-            if (criteriaFormula.length() > 0)
+            if (criteriaFormula.length() > 0 || fieldQRI instanceof TreeLevelQRI)
             {
                 if (fieldQRI instanceof TreeLevelQRI)
                 {

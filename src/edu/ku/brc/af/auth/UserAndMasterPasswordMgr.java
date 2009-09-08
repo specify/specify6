@@ -509,7 +509,8 @@ public class UserAndMasterPasswordMgr
                                  !((JTextField)dbPwdTxt).getText().isEmpty() &&
                                  !usrText.getText().isEmpty() &&
                                  !((JTextField)pwdText).getText().isEmpty();
-                dlg.getOkBtn().setEnabled(enable);
+                //dlg.getOkBtn().setEnabled(enable);
+                dlg.getOkBtn().setEnabled(true);
             }
             @Override
             public void changedUpdate(DocumentEvent e) { check(); }

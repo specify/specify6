@@ -2727,7 +2727,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             		query = session.get(SpQuery.class, query.getId());
             		query.forceLoad(true);
             		schemaMapping = query.getMapping();
-            		schemaMapping.forceLoad();
+            		if (schemaMapping != null)
+            		{
+            			schemaMapping.forceLoad();
+            		}
             	}
             	finally
             	{

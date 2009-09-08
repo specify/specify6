@@ -105,6 +105,7 @@ public class FieldQRI extends BaseQRI
     /**
      * @param ta
      * @param forWhereClause
+     * @param forSchemaExport
      * @return sql/hql specification for this field.
      */
     public String getSQLFldSpec(final TableAbbreviator ta, final boolean forWhereClause, 
@@ -125,6 +126,17 @@ public class FieldQRI extends BaseQRI
         return result;
     }
         
+    /**
+     * @param ta
+     * @param forSchemaExport
+     * @param negate
+     * @return the null or not null condition for the field
+     */
+    public String getNullCondition(final TableAbbreviator ta, final boolean forSchemaExport, final boolean negate)
+    {
+        return getSQLFldSpec(ta, true, forSchemaExport) + (negate ? " is not " : " is ") + "null";
+    }
+    
     /**
      * @return the data type for the field
      */
