@@ -77,7 +77,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      * @see edu.ku.brc.dbsupport.SchemaUpdateService#updateSchema(java.lang.String)
      */
     @Override
-    public boolean updateSchema(final String appVerNumArg)
+    public SchemaUpdateTpe updateSchema(final String appVerNumArg)
     {
         String  dbVersion = null;
         String  appVerNum = appVerNumArg;
@@ -152,9 +152,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             } else
                             {
                                 CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
-                                return false;
+                                return SchemaUpdateTpe.Error;
                             }
-                        } 
+                        }
                         
                         if (dbVersion != null && !schemaVersion.equals(dbVersion))
                         {
@@ -164,10 +164,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             } else
                             {
                                 CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
-                                return false;
+                                return SchemaUpdateTpe.Error;
                             }
                         }
-                        
                     }
                 } else
                 {
@@ -186,7 +185,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             if (!askToUpdateSchema())
                             {
                                 CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
-                                return false;
+                                return SchemaUpdateTpe.Error;
                             }
                             
                             Pair<String, String> usrPwd = getITUsernamePwd();
@@ -207,7 +206,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 if (!ok)
                                 {
                                     frame.setVisible(false);
-                                    return false;
+                                    return SchemaUpdateTpe.Error;
                                 }
                                 
                                 ok = SpecifySchemaGenerator.updateSchema(DatabaseDriverInfo.getDriver(dbc.getDriver()), dbc.getServerName(), dbc.getDatabaseName(), usrPwd.first, usrPwd.second);
@@ -215,14 +214,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 {
                                     errMsgList.add("There was an error updating the schema.");
                                     frame.setVisible(false);
-                                    return false;
+                                    return SchemaUpdateTpe.Error;
                                 }
                                 frame.setVisible(false);
                                 
                             } else
                             {
                                 CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
-                                return false;
+                                return SchemaUpdateTpe.Error;
                             }
                         }
                         
@@ -240,7 +239,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             //System.err.println(sql);
                             BasicSQLUtils.update(dbConn.getConnection(), sql);
                         }
-                        return true;
+                        return SchemaUpdateTpe.Success;
+                    } else
+                    {
+                        return SchemaUpdateTpe.NotNeeded;
                     }
                     
                 } catch (SQLException e)
@@ -253,7 +255,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 }
             }
         }
-        return true;
+        return SchemaUpdateTpe.Error;
     }
 
     /**
@@ -304,19 +306,31 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     
                     // Find Accession NumberingSchemes that 'attached' to Collections
-                    String postfix = " FROM autonumsch_coll ac Inner Join autonumberingscheme ans ON ac.AutoNumberingSchemeID = ans.AutoNumberingSchemeID WHERE ans.TableNumber =  '7'";
+                    String postfix = " FROM autonumsch_coll ac Inner Join autonumberingscheme ans ON ac.AutoNumberingSchemeID = ans.AutoNumberingSchemeID WHERE ans.TableNumber = '7'";
+                    log.debug("SELECT COUNT(*)" + postfix);
                     count = BasicSQLUtils.getCountAsInt("SELECT COUNT(*)" + postfix);
                     if (count > 0)
                     {
                         String ansSQL = "SELECT ac.CollectionID, ac.AutoNumberingSchemeID " + postfix;
+                        log.debug(ansSQL);
+                        int totCnt = 0;
                         for (Object[] row : BasicSQLUtils.query(ansSQL))
                         {
                             String sql = "DELETE FROM autonumsch_coll WHERE CollectionID = " + ((Integer)row[0]) + " AND AutoNumberingSchemeID = " + ((Integer)row[1]);
+                            log.debug(sql);
                             rv = BasicSQLUtils.update(sql);
+                            if (rv != 1)
+                            {
+                                errMsgList.add("There was an error fixing the table: autonumsch_coll for CollectionID = " + ((Integer)row[0]) + " AND AutoNumberingSchemeID = " + ((Integer)row[1]));
+                            }
+                            totCnt++;
                         }
-                        if (rv != count)
+                        if (totCnt != count)
                         {
                             errMsgList.add("There was an error fixing the table: autonumsch_coll");
+                        } else
+                        {
+                            rv = count;
                         }
                         
                     } else

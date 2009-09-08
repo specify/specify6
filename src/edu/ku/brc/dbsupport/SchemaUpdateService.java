@@ -59,6 +59,8 @@ public abstract class SchemaUpdateService
 {
     public static final String factoryName = "edu.ku.brc.af.core.db.SchmeaUpdateService"; //$NON-NLS-1$
     
+    public enum SchemaUpdateTpe {Success, Error, NotNeeded}
+    
     public enum CONTEXT_STATUS {OK, Error, Ignore, Initial}
     
     protected Vector<String> errMsgList = new Vector<String>();
@@ -146,7 +148,7 @@ public abstract class SchemaUpdateService
      * @param versionNumber the current version number of the application
      * @return the view
      */
-    public abstract boolean updateSchema(String versionNumber);
+    public abstract SchemaUpdateTpe updateSchema(String versionNumber);
     
     /**
      * Returns the instance of the AppContextMgr.

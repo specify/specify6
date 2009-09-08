@@ -74,6 +74,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
+import edu.ku.brc.dbsupport.SchemaUpdateService.SchemaUpdateTpe;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.init.SpecifyDBSetupWizard;
@@ -1017,7 +1018,8 @@ public class DatabaseLoginPanel extends JTiledPanel
                         DBConnection.getInstance().setConnectionStr(drvInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, getServerName(), getDatabaseName()));
                         
                         // This needs to be done before Hibernate starts up
-                        if (!SchemaUpdateService.getInstance().updateSchema(UIHelper.getInstall4JInstallString()))
+                        SchemaUpdateTpe status = SchemaUpdateService.getInstance().updateSchema(UIHelper.getInstall4JInstallString());
+                        if (status == SchemaUpdateTpe.Error)
                         {
                             StringBuilder sb = new StringBuilder();
                             for (String s : SchemaUpdateService.getInstance().getErrMsgList())
@@ -1027,9 +1029,10 @@ public class DatabaseLoginPanel extends JTiledPanel
                             }
                             sb.append(getResourceString("APP_EXIT")); // 18N
                             UIRegistry.showError(sb.toString());
-                        } else
+                            
+                        } else if (status == status.Success)
                         {
-                            //UIRegistry.showLocalizedMsg(JOptionPane.QUESTION_MESSAGE, "", "SCHEMA_UP_OK");
+                            UIRegistry.showLocalizedMsg(JOptionPane.QUESTION_MESSAGE, "", "SCHEMA_UP_OK");
                         }
                     }
                 }
