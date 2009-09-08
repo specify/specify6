@@ -103,8 +103,8 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="SpiReportEZDB" id="357" external="false" excludeFromMenu="false" menuName="" icnsFile="" pngIcon16File="../src/edu/ku/brc/specify/images/spireport16.png" pngIcon32File="../src/edu/ku/brc/specify/images/spireport32.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="SpiReportEZDB" type="1" iconSet="true" iconFile="ico/spireport128.ico" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
+    <launcher name="SpiReportEZDB" id="357" external="false" excludeFromMenu="false" menuName="" icnsFile="" pngIcon16File="../src/edu/ku/brc/specify/images/spireport16E.png" pngIcon32File="../src/edu/ku/brc/specify/images/spireport32E.png" macServiceDependencies="" swtApp="false" fileset="">
+      <executable name="SpiReportEZDB" type="1" iconSet="true" iconFile="ico/spireportE.ico" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
@@ -689,7 +689,7 @@
                         <boolean>false</boolean>
                       </void>
                       <void property="updateDescriptorUrl">
-                        <string>http://update.specifysoftware.org/updates.xml</string>
+                        <string>http://update.specifysoftware.org/updates-embed.xml</string>
                       </void>
                       <void property="variable">
                         <string>updateDescriptor</string>

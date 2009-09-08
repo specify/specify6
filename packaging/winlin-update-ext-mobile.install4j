@@ -565,7 +565,7 @@
                         <boolean>false</boolean>
                       </void>
                       <void property="updateDescriptorUrl">
-                        <string>http://update.specifysoftware.org/updates.xml</string>
+                        <string>http://update.specifysoftware.org/updates-mobile.xml</string>
                       </void>
                       <void property="variable">
                         <string>updateDescriptor</string>

@@ -30,7 +30,7 @@
     <components />
   </files>
   <launchers>
-    <launcher name="Specify" id="19" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specify.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="Specify" id="19" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specify.icns" pngIcon16File="../src/edu/ku/brc/specify/images/specify16.png" pngIcon32File="../src/edu/ku/brc/specify/images/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="Specify" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -59,7 +59,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="SpiReport" id="286" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/spireports.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="SpiReport" id="286" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/spireports.icns" pngIcon16File="../src/edu/ku/brc/specify/images/spireport16.png" pngIcon32File="../src/edu/ku/brc/specify/images/spireport32.png" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="SpiReport" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -88,7 +88,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="SpWizard" id="724" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/spwizard.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="SpWizard" id="724" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/spwizard.icns" pngIcon16File="../src/edu/ku/brc/specify/images/spwizard16.png" pngIcon32File="../src/edu/ku/brc/specify/images/spwizard32.png" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="SpWizard" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -117,7 +117,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="SpBackupRestore" id="804" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/spbackup.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="SpBackupRestore" id="804" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/spbackup.icns" pngIcon16File="../src/edu/ku/brc/specify/images/spbackup16.png" pngIcon32File="../src/edu/ku/brc/specify/images/spbackup32.png" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="SpBackupRestore" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -146,7 +146,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="Specify1GB" id="1209" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specify.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="Specify1GB" id="1209" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specify.icns" pngIcon16File="../src/edu/ku/brc/specify/images/specify16.png" pngIcon32File="../src/edu/ku/brc/specify/images/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="Specify1GB" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -175,7 +175,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="ImportFileSplitter" id="1238" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/data_split.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="ImportFileSplitter" id="1238" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/data_split.icns" pngIcon16File="../src/edu/ku/brc/specify/images/data_split16.png" pngIcon32File="../src/edu/ku/brc/specify/images/data_split32.png" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="ImportFileSplitter" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>

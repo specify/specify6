@@ -30,7 +30,7 @@
     <components />
   </files>
   <launchers>
-    <launcher name="Specify Mobile WorkBench Mobile" id="19" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyM.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="Specify Mobile WorkBench Mobile" id="19" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyM.icns" pngIcon16File="../src/edu/ku/brc/specify/images/specify16M.png" pngIcon32File="../src/edu/ku/brc/specify/images/specify32M.png" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="SpMobileWBmobile" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -60,7 +60,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="Specify Easy Database Mobile" id="724" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyM.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="Specify Easy Database Mobile" id="724" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyM.icns" pngIcon16File="../src/edu/ku/brc/specify/images/specify16M.png" pngIcon32File="../src/edu/ku/brc/specify/images/specify32M.png" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="SpMobileWBmobile" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -530,7 +530,7 @@
                         <boolean>false</boolean>
                       </void>
                       <void property="updateDescriptorUrl">
-                        <string>http://update.specifysoftware.org/updates.xml</string>
+                        <string>http://update.specifysoftware.org/updates-mobile.xml</string>
                       </void>
                       <void property="variable">
                         <string>updateDescriptor</string>

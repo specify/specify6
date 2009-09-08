@@ -29,7 +29,7 @@
     <components />
   </files>
   <launchers>
-    <launcher name="SpecifyEZDB" id="19" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="SpecifyEZDB" id="19" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="../src/edu/ku/brc/specify/images/specify16E.png" pngIcon32File="../src/edu/ku/brc/specify/images/specify32E.png" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="SpecifyEZDB" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -59,7 +59,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="SpecifyBuilderEZDB" id="22" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="SpecifyBuilderEZDB" id="22" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="../src/edu/ku/brc/specify/images/specify16E.png" pngIcon32File="../src/edu/ku/brc/specify/images/specify32E.png" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="SpecifyBuilderEZDB" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -89,7 +89,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="SpLocalizerEZDB" id="279" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="SpLocalizerEZDB" id="279" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="../src/edu/ku/brc/specify/images/specify16E.png" pngIcon32File="../src/edu/ku/brc/specify/images/specify32E.png" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="SpLocalizerEZDB" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -119,7 +119,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="SpiReportEZDB" id="286" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/spireports.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="SpiReportEZDB" id="286" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/spireportsE.icns" pngIcon16File="../src/edu/ku/brc/specify/images/spireport16E.png" pngIcon32File="../src/edu/ku/brc/specify/images/spireport32E.png" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="SpiReportEZDB" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -149,7 +149,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="SpecifyDBConverterEZDB" id="724" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="SpecifyDBConverterEZDB" id="724" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="../src/edu/ku/brc/specify/images/specify16E.png" pngIcon32File="../src/edu/ku/brc/specify/images/specify32E.png" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="SpecifyDBConverterEZDB" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -179,7 +179,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="ConvertVerifierEZDB" id="727" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="ConvertVerifierEZDB" id="727" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="../src/edu/ku/brc/specify/images/specify16E.png" pngIcon32File="../src/edu/ku/brc/specify/images/specify32E.png" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="ConvertVerifierEZDB" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -209,7 +209,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="SpWizardEZDB" id="807" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/spwizardE.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="SpWizardEZDB" id="807" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/spwizardE.icns" pngIcon16File="../src/edu/ku/brc/specify/images/spwizard16E.png" pngIcon32File="../src/edu/ku/brc/specify/images/spwizard32E.png" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="SpWizardEZDB" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -239,7 +239,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="Specify1GBEZDB" id="887" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="Specify1GBEZDB" id="887" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="../src/edu/ku/brc/specify/images/specify16E.png" pngIcon32File="../src/edu/ku/brc/specify/images/specify32E.png" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="Specify1GBEZDB" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -269,7 +269,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="RegisterEZDB" id="1048" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/statistics.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="RegisterEZDB" id="1048" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/statistics.icns" pngIcon16File="../src/edu/ku/brc/specify/images/spstatistics16x16.png" pngIcon32File="../src/edu/ku/brc/specify/images/spstatistics32x32.png" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="RegisterEZDB" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -299,7 +299,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="ImportFileSplitterEZDB" id="1238" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/data_split.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="ImportFileSplitterEZDB" id="1238" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/data_split.icns" pngIcon16File="../src/edu/ku/brc/specify/images/data_split16.png" pngIcon32File="../src/edu/ku/brc/specify/images/data_split32.png" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="ImportFileSplitterEZDB" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -329,7 +329,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="SchemaExporterEZDB" id="1319" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="SchemaExporterEZDB" id="1319" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="../src/edu/ku/brc/specify/images/specify16E.png" pngIcon32File="../src/edu/ku/brc/specify/images/specify32E.png" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="SchemaExporterEZDB" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -359,7 +359,7 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="StrL10NEZDB" id="1400" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
+    <launcher name="StrL10NEZDB" id="1400" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyE.icns" pngIcon16File="../src/edu/ku/brc/specify/images/specify16E.png" pngIcon32File="../src/edu/ku/brc/specify/images/specify32E.png" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="StrL10NEZDB" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -829,7 +829,7 @@
                         <boolean>false</boolean>
                       </void>
                       <void property="updateDescriptorUrl">
-                        <string>http://specify6-test.nhm.ku.edu/specifydownloads/specify6/alpha/updates.xml</string>
+                        <string>http://specify6-test.nhm.ku.edu/specifydownloads/specify6/alpha/updates-embed.xml</string>
                       </void>
                       <void property="variable">
                         <string>updateDescriptor</string>
