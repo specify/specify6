@@ -23,7 +23,6 @@
       <dirEntry mountPoint="18" file="../InstallerFiles" overwrite="4" shared="false" mode="644" uninstallMode="0" excludeSuffixes=".DS_Store, .svn" dirMode="755">
         <exclude>
           <entry location="non-mac-application-adapter.jar" fileType="regular" />
-          <entry location="SpecifyBigSplash.png" fileType="regular" />
         </exclude>
       </dirEntry>
     </entries>
@@ -270,36 +269,6 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <!-- <launcher name="SpBackupRestoreEZDB" id="967" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/spbackupE.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="SpBackupRestoreEZDB" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
-        <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
-      </executable>
-      <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
-        <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2009 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
-          <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
-        </text>
-      </splashScreen>
-      <java mainClass="edu.ku.brc.specify.BackupAndRestoreApp" vmParameters="-Xmx768m" arguments="-Dappdir=.. -Dembedded -Dcom.apple.macos.useSmallTabs=true -Dapple.laf.useScreenMenuBar=true -Xdock:icon=&quot;src/edu/ku/brc/specify/images/specify128.png&quot; -Dcom.apple.mrj.application.apple.menu.about.name=SpBackupRestore" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
-        <classPath>
-          <archive location="specify.jar" failOnError="true" />
-          <scanDirectory location="libs" failOnError="true" />
-          <scanDirectory location="hibernate_libs" failOnError="true" />
-          <scanDirectory location="iReportLibs" failOnError="true" />
-          <scanDirectory location="wwlib" failOnError="true" />
-          <directory location="help" failOnError="false" />
-          <scanDirectory location="embedded_libs" failOnError="true" />
-        </classPath>
-        <nativeLibraryDirectories>
-          <directory name="wwlib" />
-        </nativeLibraryDirectories>
-      </java>
-      <includedFiles />
-      <unextractableFiles />
-      <customScript mode="1" file="">
-        <scriptLines />
-      </customScript>
-    </launcher> -->
     <launcher name="RegisterEZDB" id="1048" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/statistics.icns" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false" fileset="">
       <executable name="RegisterEZDB" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
@@ -424,7 +393,7 @@
   <installerGui installerType="1" suggestPreviousProgramGroup="false" addOnAppId="" suggestPreviousLocations="true">
     <customCode useInstalledFiles="false" />
     <applications>
-      <application name="" id="installer" beanClass="com.install4j.runtime.beans.applications.InstallerApplication" enabled="true" commentSet="false" comment="" customicnsFile="icns/specifyE.icns" customIcoFile="">
+      <application name="" id="installer" beanClass="com.install4j.runtime.beans.applications.InstallerApplication" enabled="true" commentSet="false" comment="" customIcnsFile="" customIcoFile="">
         <serializedBean>
           <java class="java.beans.XMLDecoder">
             <object class="com.install4j.runtime.beans.applications.InstallerApplication">
@@ -1504,7 +1473,7 @@ if (wizardContext != null) {
     </applications>
   </installerGui>
   <mediaSets>
-    <macosFolder name="Mac OS X Folder" id="24" mediaFileName="" installDir="Specify6" overridePrincipalLanguage="false" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="">
+    <macosFolder name="Mac OS X Folder" id="24" mediaFileName="" installDir="Specify6EZDB" overridePrincipalLanguage="false" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="">
       <excludedLaunchers />
       <excludedComponents />
       <excludedBeans />
@@ -1521,7 +1490,7 @@ if (wizardContext != null) {
       </exclude>
       <variables />
     </macosFolder>
-    <win32 name="Windows" id="176" mediaFileName="" installDir="Specify" overridePrincipalLanguage="false" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="" runAsAdmin="false">
+    <win32 name="Windows" id="176" mediaFileName="" installDir="SpecifyEZDB" overridePrincipalLanguage="false" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="" runAsAdmin="false">
       <excludedLaunchers />
       <excludedComponents />
       <excludedBeans />
@@ -1531,7 +1500,7 @@ if (wizardContext != null) {
       </exclude>
       <variables />
     </win32>
-    <unixInstaller name="Unix Installer" id="179" mediaFileName="" installDir="Specify" overridePrincipalLanguage="false" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="">
+    <unixInstaller name="Unix Installer" id="179" mediaFileName="" installDir="SpecifyEZDB" overridePrincipalLanguage="false" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="">
       <excludedLaunchers />
       <excludedComponents />
       <excludedBeans />
