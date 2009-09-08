@@ -342,12 +342,23 @@ public class AppPrefsCache
         if (hash.get(fullName) == null)
         {
             String defValue = simpleFormat.toPattern();
-            String prefVal  = checkForPref(fullName, defValue);
+            String prefVal  =  checkForPref(fullName, defValue);
+            
+            //-------------------------------------------------------------------------------
+            // This corrects the formatter when it has a two digit year (Bug 7555)
+            // still have not found out what is causing the problem.
+            //-------------------------------------------------------------------------------
+            if (prefVal.length() == 8 && StringUtils.countMatches(prefVal, "yyyy") == 0)
+            {
+                prefVal = StringUtils.replace(prefVal, "yy", "yyyy");
+            }
+            
             simpleFormat.applyPattern(prefVal);
             DateFormatCacheEntry dateEntry = new DateFormatCacheEntry(simpleFormat, fullName, prefVal, defValue);
             getPref().addChangeListener(fullName, dateEntry);
             hash.put(fullName, dateEntry);
         }
+
     }
     
     /**
