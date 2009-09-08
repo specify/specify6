@@ -3,15 +3,23 @@
 	<!-- accession -->
     <field table="Accession" name="authAgentFirstName1" onetomanysequence="0" actualtable="accessionagent" relationshipname="agent" relatedfieldname="firstName"/>
     <field table="Accession" name="authAgentLastName1" onetomanysequence="0" actualtable="accessionagent" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="Accession" name="authAgentMiddle1" onetomanysequence="0" actualtable="accessionagent" relationshipname="agent" relatedfieldname="middleInitial"/>
+    <field table="Accession" name="authAgentTitle1" onetomanysequence="0" actualtable="accessionagent" relationshipname="agent" relatedfieldname="title"/>
     <field table="Accession" name="authRole1" onetomanysequence="0" actualtable="accessionagent" actualname="Role" relationshipname="accession"/>
     <field table="Accession" name="authAgentFirstName2" onetomanysequence="1" actualtable="accessionagent" relationshipname="agent" relatedfieldname="firstName"/>
     <field table="Accession" name="authAgentLastName2" onetomanysequence="1" actualtable="accessionagent" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="Accession" name="authAgentMiddle2" onetomanysequence="1" actualtable="accessionagent" relationshipname="agent" relatedfieldname="middleInitial"/>
+    <field table="Accession" name="authAgentTitle2" onetomanysequence="1" actualtable="accessionagent" relationshipname="agent" relatedfieldname="title"/>
     <field table="Accession" name="authRole2" onetomanysequence="1" actualtable="accessionagent" actualname="Role" relationshipname="accession"/>
     <field table="Accession" name="authAgentFirstName3" onetomanysequence="2" actualtable="accessionagent" relationshipname="agent" relatedfieldname="firstName"/>
     <field table="Accession" name="authAgentLastName3" onetomanysequence="2" actualtable="accessionagent" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="Accession" name="authAgentMiddle3" onetomanysequence="2" actualtable="accessionagent" relationshipname="agent" relatedfieldname="middleInitial"/>
+    <field table="Accession" name="authAgentTitle3" onetomanysequence="2" actualtable="accessionagent" relationshipname="agent" relatedfieldname="title"/>
     <field table="Accession" name="authRole3" onetomanysequence="2" actualtable="accessionagent" actualname="Role" relationshipname="accession"/>
     <field table="Accession" name="authAgentFirstName4" onetomanysequence="3" actualtable="accessionagent" relationshipname="agent" relatedfieldname="firstName"/>
     <field table="Accession" name="authAgentLastName4" onetomanysequence="3" actualtable="accessionagent" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="Accession" name="authAgentMiddle4" onetomanysequence="3" actualtable="accessionagent" relationshipname="agent" relatedfieldname="middleInitial"/>
+    <field table="Accession" name="authAgentTitle4" onetomanysequence="3" actualtable="accessionagent" relationshipname="agent" relatedfieldname="title"/>
     <field table="Accession" name="authRole4" onetomanysequence="3" actualtable="accessionagent" actualname="Role" relationshipname="accession"/>
     <field table="Accession" name="Permit" onetomanysequence="0" actualtable="accessionauthorization" relationshipname="permit" relatedfieldname="permitNumber"/>
     <field table="Accession" name="number" actualname="accessionNumber"/>
@@ -27,20 +35,36 @@
 	<!-- collectingevent -->
     <field table="CollectingEvent" name="collectorFirstName1" onetomanysequence="0" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="firstName"/>
     <field table="CollectingEvent" name="collectorLastName1" onetomanysequence="0" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="CollectingEvent" name="collectorMiddle1" onetomanysequence="0" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="middleInitial"/>
+    <field table="CollectingEvent" name="collectorTitle1" onetomanysequence="0" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="title"/>
     <field table="CollectingEvent" name="collectorFirstName2" onetomanysequence="1" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="firstName"/>
     <field table="CollectingEvent" name="collectorLastName2" onetomanysequence="1" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="CollectingEvent" name="collectorMiddle2" onetomanysequence="1" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="middleInitial"/>
+    <field table="CollectingEvent" name="collectorTitle2" onetomanysequence="1" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="title"/>
     <field table="CollectingEvent" name="collectorFirstName3" onetomanysequence="2" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="firstName"/>
     <field table="CollectingEvent" name="collectorLastName3" onetomanysequence="2" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="CollectingEvent" name="collectorMiddle3" onetomanysequence="2" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="middleInitial"/>
+    <field table="CollectingEvent" name="collectorTitle3" onetomanysequence="2" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="title"/>
     <field table="CollectingEvent" name="collectorFirstName4" onetomanysequence="3" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="firstName"/>
     <field table="CollectingEvent" name="collectorLastName4" onetomanysequence="3" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="CollectingEvent" name="collectorMiddle4" onetomanysequence="3" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="middleInitial"/>
+    <field table="CollectingEvent" name="collectorTitle4" onetomanysequence="3" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="title"/>
     <field table="CollectingEvent" name="collectorFirstName5" onetomanysequence="4" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="firstName"/>
     <field table="CollectingEvent" name="collectorLastName5" onetomanysequence="4" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="CollectingEvent" name="collectorMiddle5" onetomanysequence="4" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="middleInitial"/>
+    <field table="CollectingEvent" name="collectorTitle5" onetomanysequence="4" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="title"/>
     <field table="CollectingEvent" name="collectorFirstName6" onetomanysequence="5" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="firstName"/>
     <field table="CollectingEvent" name="collectorLastName6" onetomanysequence="5" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="CollectingEvent" name="collectorMiddle6" onetomanysequence="5" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="middleInitial"/>
+    <field table="CollectingEvent" name="collectorTitle6" onetomanysequence="5" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="title"/>
     <field table="CollectingEvent" name="collectorFirstName7" onetomanysequence="6" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="firstName"/>
     <field table="CollectingEvent" name="collectorLastName7" onetomanysequence="6" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="CollectingEvent" name="collectorMiddle7" onetomanysequence="6" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="middleInitial"/>
+    <field table="CollectingEvent" name="collectorTitle7" onetomanysequence="6" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="title"/>
     <field table="CollectingEvent" name="collectorFirstName8" onetomanysequence="7" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="firstName"/>
     <field table="CollectingEvent" name="collectorLastName8" onetomanysequence="7" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="CollectingEvent" name="collectorMiddle8" onetomanysequence="7" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="middleInitial"/>
+    <field table="CollectingEvent" name="collectorTitle8" onetomanysequence="7" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="title"/>
 	<field table="CollectingEvent" name="collectingEventRemarks" actualname="Remarks"/>
 
   	<!-- collectingeventattribute -->
@@ -96,6 +120,8 @@
 	<field table="CollectionObject" name="collectionObjectRemarks" actualname="Remarks"/>
     <field table="CollectionObject" name="catalogerFirstName" relationshipname="cataloger" relatedfieldname="firstName"/>
     <field table="CollectionObject" name="catalogerLastName" relationshipname="cataloger" relatedfieldname="lastName"/>
+    <field table="CollectionObject" name="catalogerMiddle" relationshipname="cataloger" relatedfieldname="middleInitial"/>
+    <field table="CollectionObject" name="catalogerTitle" relationshipname="cataloger" relatedfieldname="title"/>
     <field table="CollectionObject" name="collectionObjectCitation" onetomanysequence="0" actualtable="CollectionObjectCitation" relationshipname="referenceWork" relatedfieldname="title"/>
 
 	<!-- collectionobjectattribute -->
@@ -169,6 +195,8 @@
     <field table="Determination" name="determinedDate1" actualname="determinedDate" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Determination" name="determinerLastName1" onetomanysequence="0" relationshipname="determiner" relatedfieldname="lastName"/>
     <field table="Determination" name="determinerFirstName1" onetomanysequence="0" relationshipname="determiner" relatedfieldname="firstName"/>
+    <field table="Determination" name="determinerMiddle1" onetomanysequence="0" relationshipname="determiner" relatedfieldname="middleInitial"/>
+    <field table="Determination" name="determinerTitle1" onetomanysequence="0" relationshipname="determiner" relatedfieldname="title"/>
     <field table="Determination" name="isCurrent1" actualname="isCurrent" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Determination" name="phylum1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="30"/>
     <field table="Determination" name="subphylum1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="40"/>
@@ -213,6 +241,8 @@
     <field table="Determination" name="determinedDate2" actualname="determinedDate" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Determination" name="determinerLastName2" onetomanysequence="1" relationshipname="determiner" relatedfieldname="lastName"/>
     <field table="Determination" name="determinerFirstName2" onetomanysequence="1" relationshipname="determiner" relatedfieldname="firstName"/>
+    <field table="Determination" name="determinerMiddle2" onetomanysequence="1" relationshipname="determiner" relatedfieldname="middleInitial"/>
+    <field table="Determination" name="determinerTitle2" onetomanysequence="1" relationshipname="determiner" relatedfieldname="title"/>
     <field table="Determination" name="isCurrent2" actualname="isCurrent" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Determination" name="phylum2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="30"/>
     <field table="Determination" name="subphylum2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="40"/>
@@ -316,6 +346,8 @@
     <field table="Preparation" name="preparedDate1" actualname="preparedDate" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy1" onetomanysequence="0" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
     <field table="Preparation" name="preparedLastNameBy1" onetomanysequence="0" relationshipname="preparedByAgent" relatedfieldname="lastName"/>
+    <field table="Preparation" name="preparedMiddleBy1" onetomanysequence="0" relationshipname="preparedByAgent" relatedfieldname="middleInitial"/>
+    <field table="Preparation" name="preparedTitleBy1" onetomanysequence="0" relationshipname="preparedByAgent" relatedfieldname="title"/>
     <field table="Preparation" name="prepType1" onetomanysequence="0" relationshipname="prepType" relatedfieldname="name"/>
     <field table="Preparation" name="count1" actualname="countAmt" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation1" actualname="storageLocation" onetomanysequence="0" relationshipname="collectionObject"/>
@@ -324,6 +356,8 @@
     <field table="Preparation" name="preparedDate2" actualname="preparedDate" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy2" onetomanysequence="1" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
     <field table="Preparation" name="preparedLastNameBy2" onetomanysequence="1" relationshipname="preparedByAgent" relatedfieldname="lastName"/>
+    <field table="Preparation" name="preparedMiddleBy2" onetomanysequence="1" relationshipname="preparedByAgent" relatedfieldname="middleInitial"/>
+    <field table="Preparation" name="preparedTitleBy2" onetomanysequence="1" relationshipname="preparedByAgent" relatedfieldname="title"/>
     <field table="Preparation" name="prepType2" onetomanysequence="1"  relationshipname="prepType" relatedfieldname="name"/>
     <field table="Preparation" name="count2" actualname="countAmt" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation2" actualname="storageLocation" onetomanysequence="1" relationshipname="collectionObject"/>
@@ -332,6 +366,8 @@
     <field table="Preparation" name="preparedDate3" actualname="preparedDate" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy3" onetomanysequence="2" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
     <field table="Preparation" name="preparedLastNameBy3" onetomanysequence="2" relationshipname="preparedByAgent" relatedfieldname="lastName"/>
+    <field table="Preparation" name="preparedMiddleBy3" onetomanysequence="2" relationshipname="preparedByAgent" relatedfieldname="middleInitial"/>
+    <field table="Preparation" name="preparedTitleBy3" onetomanysequence="2" relationshipname="preparedByAgent" relatedfieldname="title"/>
     <field table="Preparation" name="prepType3" onetomanysequence="2" relationshipname="prepType" relatedfieldname="name"/>
     <field table="Preparation" name="count3" actualname="countAmt" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation3" actualname="storageLocation" onetomanysequence="2" relationshipname="collectionObject"/>
@@ -340,6 +376,8 @@
     <field table="Preparation" name="preparedDate4" actualname="preparedDate" onetomanysequence="3" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy4" onetomanysequence="3" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
     <field table="Preparation" name="preparedLastNameBy4" onetomanysequence="3" relationshipname="preparedByAgent" relatedfieldname="lastName"/>
+    <field table="Preparation" name="preparedMiddleBy4" onetomanysequence="3" relationshipname="preparedByAgent" relatedfieldname="middleInitial"/>
+    <field table="Preparation" name="preparedTitleBy4" onetomanysequence="3" relationshipname="preparedByAgent" relatedfieldname="title"/>
     <field table="Preparation" name="prepType4" onetomanysequence="3" relationshipname="prepType" relatedfieldname="name"/>
     <field table="Preparation" name="count4" actualname="countAmt" onetomanysequence="3" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation4" actualname="storageLocation" onetomanysequence="3" relationshipname="collectionObject"/>
@@ -348,6 +386,8 @@
     <field table="Preparation" name="preparedDate5" actualname="preparedDate" onetomanysequence="4" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy5" onetomanysequence="4" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
     <field table="Preparation" name="preparedLastNameBy5" onetomanysequence="4" relationshipname="preparedByAgent" relatedfieldname="lastName"/>
+    <field table="Preparation" name="preparedMiddleBy5" onetomanysequence="4" relationshipname="preparedByAgent" relatedfieldname="middleInitial"/>
+    <field table="Preparation" name="preparedTitleBy5" onetomanysequence="4" relationshipname="preparedByAgent" relatedfieldname="title"/>
     <field table="Preparation" name="prepType5" onetomanysequence="4" relationshipname="prepType" relatedfieldname="name"/>
     <field table="Preparation" name="count5" actualname="countAmt" onetomanysequence="4" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation5" actualname="storageLocation" onetomanysequence="4" relationshipname="collectionObject"/>
@@ -356,6 +396,8 @@
     <field table="Preparation" name="preparedDate6" actualname="preparedDate" onetomanysequence="5" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy6" onetomanysequence="5" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
     <field table="Preparation" name="preparedLastNameBy6" onetomanysequence="5" relationshipname="preparedByAgent" relatedfieldname="lastName"/>
+    <field table="Preparation" name="preparedMiddleBy6" onetomanysequence="5" relationshipname="preparedByAgent" relatedfieldname="middleInitial"/>
+    <field table="Preparation" name="preparedTitleBy6" onetomanysequence="5" relationshipname="preparedByAgent" relatedfieldname="title"/>
     <field table="Preparation" name="prepType6" onetomanysequence="5" relationshipname="prepType" relatedfieldname="name"/>
     <field table="Preparation" name="count6" actualname="countAmt" onetomanysequence="5" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation6" actualname="storageLocation" onetomanysequence="5" relationshipname="collectionObject"/>
@@ -364,6 +406,8 @@
     <field table="Preparation" name="preparedDate7" actualname="preparedDate" onetomanysequence="6" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy7" onetomanysequence="6" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
     <field table="Preparation" name="preparedLastNameBy7" onetomanysequence="6" relationshipname="preparedByAgent" relatedfieldname="lastName"/>
+    <field table="Preparation" name="preparedMiddleBy7" onetomanysequence="6" relationshipname="preparedByAgent" relatedfieldname="middleInitial"/>
+    <field table="Preparation" name="preparedTitleBy7" onetomanysequence="6" relationshipname="preparedByAgent" relatedfieldname="title"/>
     <field table="Preparation" name="prepType7" onetomanysequence="6" relationshipname="prepType" relatedfieldname="name"/>
     <field table="Preparation" name="count7" actualname="countAmt" onetomanysequence="6" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation7" actualname="storageLocation" onetomanysequence="6" relationshipname="collectionObject"/>
@@ -372,6 +416,8 @@
     <field table="Preparation" name="preparedDate8" actualname="preparedDate" onetomanysequence="7" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy8" onetomanysequence="7" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
     <field table="Preparation" name="preparedLastNameBy8" onetomanysequence="7" relationshipname="preparedByAgent" relatedfieldname="lastName"/>
+    <field table="Preparation" name="preparedMiddleBy8" onetomanysequence="7" relationshipname="preparedByAgent" relatedfieldname="middleInitial"/>
+    <field table="Preparation" name="preparedTitleBy8" onetomanysequence="7" relationshipname="preparedByAgent" relatedfieldname="title"/>
     <field table="Preparation" name="prepType8" onetomanysequence="7" relationshipname="prepType" relatedfieldname="name"/>
     <field table="Preparation" name="count8" actualname="countAmt" onetomanysequence="7" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation8" actualname="storageLocation" onetomanysequence="7" relationshipname="collectionObject"/>
@@ -414,6 +460,38 @@
     <field table="PreparationAttribute" name="preparedDate" actualname="AttrDate"/>
 
 	<!-- referencework -->
+    <field table="ReferenceWork" name="authorFirstName1" onetomanysequence="0" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="firstName"/>
+    <field table="ReferenceWork" name="authorLastName1" onetomanysequence="0" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="ReferenceWork" name="authorMiddle1" onetomanysequence="0" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="middleInitial"/>
+    <field table="ReferenceWork" name="authorTitle1" onetomanysequence="0" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="title"/>
+    <field table="ReferenceWork" name="authorFirstName2" onetomanysequence="1" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="firstName"/>
+    <field table="ReferenceWork" name="authorLastName2" onetomanysequence="1" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="ReferenceWork" name="authorMiddle2" onetomanysequence="1" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="middleInitial"/>
+    <field table="ReferenceWork" name="authorTitle2" onetomanysequence="1" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="title"/>
+    <field table="ReferenceWork" name="authorFirstName3" onetomanysequence="2" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="firstName"/>
+    <field table="ReferenceWork" name="authorLastName3" onetomanysequence="2" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="ReferenceWork" name="authorMiddle3" onetomanysequence="2" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="middleInitial"/>
+    <field table="ReferenceWork" name="authorTitle3" onetomanysequence="2" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="title"/>
+    <field table="ReferenceWork" name="authorFirstName4" onetomanysequence="3" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="firstName"/>
+    <field table="ReferenceWork" name="authorLastName4" onetomanysequence="3" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="ReferenceWork" name="authorMiddle4" onetomanysequence="3" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="middleInitial"/>
+    <field table="ReferenceWork" name="authorTitle4" onetomanysequence="3" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="title"/>
+    <field table="ReferenceWork" name="authorFirstName5" onetomanysequence="4" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="firstName"/>
+    <field table="ReferenceWork" name="authorLastName5" onetomanysequence="4" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="ReferenceWork" name="authorMiddle5" onetomanysequence="4" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="middleInitial"/>
+    <field table="ReferenceWork" name="authorTitle5" onetomanysequence="4" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="title"/>
+    <field table="ReferenceWork" name="authorFirstName6" onetomanysequence="5" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="firstName"/>
+    <field table="ReferenceWork" name="authorLastName6" onetomanysequence="5" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="ReferenceWork" name="authorMiddle6" onetomanysequence="5" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="middleInitial"/>
+    <field table="ReferenceWork" name="authorTitle6" onetomanysequence="5" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="title"/>
+    <field table="ReferenceWork" name="authorFirstName7" onetomanysequence="6" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="firstName"/>
+    <field table="ReferenceWork" name="authorLastName7" onetomanysequence="6" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="ReferenceWork" name="authorMiddle7" onetomanysequence="6" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="middleInitial"/>
+    <field table="ReferenceWork" name="authorTitle7" onetomanysequence="6" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="title"/>
+    <field table="ReferenceWork" name="authorFirstName8" onetomanysequence="7" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="firstName"/>
+    <field table="ReferenceWork" name="authorLastName8" onetomanysequence="7" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="ReferenceWork" name="authorMiddle8" onetomanysequence="7" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="middleInitial"/>
+    <field table="ReferenceWork" name="authorTitle8" onetomanysequence="7" sequencefield="orderNumber" actualtable="author" relationshipname="agent" relatedfieldname="title"/>
     <field table="ReferenceWork" name="referenceWorkRemarks" actualname="Remarks"/>
     <field table="ReferenceWork" name="referenceWorkText1" actualname="Text1"/>
     <field table="ReferenceWork" name="referenceWorkText2" actualname="Text2"/>
