@@ -313,7 +313,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         boolean isOK = true;
         if (deletable != null && dataObjArg instanceof FormDataObjIFace && ((FormDataObjIFace)dataObjArg).getId() != null)
         {
-            Integer count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM CollectionObject WHERE CollectionObjectID = " + ((FormDataObjIFace)dataObjArg).getId());
+            Integer count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM collectionobject WHERE CollectionObjectID = " + ((FormDataObjIFace)dataObjArg).getId());
             if (count != null && count == 0)
             {
                 showLocalizedMsg("NO_RECORD_FOUND_TITLE", "NO_RECORD_FOUND");
