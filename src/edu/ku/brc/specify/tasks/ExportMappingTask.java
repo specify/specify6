@@ -29,6 +29,7 @@ import javax.swing.SwingConstants;
 
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+import org.dom4j.XPathException;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -841,10 +842,19 @@ public class ExportMappingTask extends QueryTask
 		result.initialize();
 		result.setFieldName(itemElement.attributeValue("name"));
 		result.setDataType(itemElement.attributeValue("type"));
-		for (Object docObj : itemElement.selectNodes("xsd:annotation/xsd:documentation"))
+		try 
 		{
-			Element docElem = (Element )docObj;
-			result.setDescription(docElem.getText());
+			for (Object docObj : itemElement.selectNodes("xsd:annotation/xsd:documentation"))
+			{
+				//so if there is more than one docObj earlier objects 
+				//are overwritten by later objects
+				Element docElem = (Element )docObj;
+				result.setDescription(docElem.getText());
+			}
+		} catch (XPathException ex)
+		{
+			//newer xsds don't seem to have remarks and definitely don't use "xsd" prefix
+			result.setDescription(null);
 		}
 		return result;
 	}

@@ -590,6 +590,11 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         
         final List<ERTICaptionInfoQB> cols = specs.getSecond();
         HQLSpecs hql = specs.getFirst();
+        if (!QueryBldrPane.checkUniqueRecIds(hql.getHql())) 
+        {
+        	UIRegistry.showError(UIRegistry.getResourceString("ExportPanel.DUPLICATE_KEYS_EXPORT"));
+        	return null;
+        }
         final QBDataSource src = new QBDataSource(hql.getHql(), hql.getArgs(), hql
                 .getSortElements(), cols,
                 includeRecordIds);

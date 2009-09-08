@@ -119,6 +119,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
@@ -365,7 +366,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 		autoMaps.put("phylum", new AutoMap("1,9-determinations,4-preferredTaxon.taxon.Phylum", "Phylum", "1,9-determinations,4-preferredTaxon", false));
 		autoMaps.put("preparations", new AutoMap("1,63-preparations.preparation.preparations", "preparations", "1,63-preparations", false));
 		autoMaps.put("previousidentifications", new AutoMap("1,9-determinations.determination.determinations", "determinations", "1,9-determinations", false));
-		autoMaps.put("recordedby", new AutoMap("1,5-cataloger.agent.cataloger", "cataloger", "1,5-cataloger", false));
+		autoMaps.put("recordedby", new AutoMap(
+				"1,10,30-collectors.collector.collectors", "collectors",
+				"1,10,30-collectors", true));
 		autoMaps.put("reproductivecondition", new AutoMap("1,93.collectionobjectattribute.text3", "text3", "1,93", false));
 		autoMaps.put("scientificname", new AutoMap("1,9-determinations,4-preferredTaxon.taxon.fullName", "fullName", "1,9-determinations,4-preferredTaxon", false));
 		autoMaps.put("scientificnameauthorship", new AutoMap("1,9-determinations,4-preferredTaxon.taxon.author", "author", "1,9-determinations,4-preferredTaxon", false));
@@ -555,40 +558,44 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
         });
         distinctChk = createCheckBox(UIRegistry.getResourceString("QB_DISTINCT"));
-        distinctChk.setSelected(false);
-        distinctChk.addActionListener(new ActionListener()
+        distinctChk.setVisible(schemaMapping == null);
+        if (schemaMapping == null)
         {
-            public void actionPerformed(ActionEvent ae)
-            {
-                new SwingWorker() {
+        	distinctChk.setSelected(false);
+        	distinctChk.addActionListener(new ActionListener()
+        	{
+        		public void actionPerformed(ActionEvent ae)
+        		{
+        			new SwingWorker() {
 
-                    /* (non-Javadoc)
-                     * @see edu.ku.brc.helpers.SwingWorker#construct()
-                     */
-                    @Override
-                    public Object construct()
-                    {
-                    	if (distinctChk.isSelected())
-                        {
-                          	UsageTracker.incrUsageCount("QB.DistinctOn");
-                        }
-                        else
-                        {
-                           	UsageTracker.incrUsageCount("QB.DistinctOff");
-                        }
-                        if ((isTreeLevelSelected() || isAggFieldSelected()) && countOnly && distinctChk.isSelected())
-                        {
-                           	countOnlyChk.setSelected(false);
-                           	countOnly = false;
-                        }
-                        query.setCountOnly(countOnly);
-                        query.setSelectDistinct(distinctChk.isSelected());
-                        saveBtn.setEnabled(queryFieldItems.size() > 0);
-                       return null;
-                    }
-                }.start();
-            }
-        });
+        				/* (non-Javadoc)
+        				 * @see edu.ku.brc.helpers.SwingWorker#construct()
+        				 */
+        				@Override
+        				public Object construct()
+        				{
+        					if (distinctChk.isSelected())
+        					{
+        						UsageTracker.incrUsageCount("QB.DistinctOn");
+        					}
+        					else
+        					{
+        						UsageTracker.incrUsageCount("QB.DistinctOff");
+        					}
+        					if ((isTreeLevelSelected() || isAggFieldSelected()) && countOnly && distinctChk.isSelected())
+        					{
+        						countOnlyChk.setSelected(false);
+        						countOnly = false;
+        					}
+        					query.setCountOnly(countOnly);
+        					query.setSelectDistinct(distinctChk.isSelected());
+        					saveBtn.setEnabled(queryFieldItems.size() > 0);
+        					return null;
+        				}
+        			}.start();
+        		}
+        	});
+        }
         countOnlyChk = createCheckBox(UIRegistry.getResourceString("QB_COUNT_ONLY"));
         countOnlyChk.setSelected(false);
         countOnlyChk.addActionListener(new ActionListener()
@@ -1451,6 +1458,44 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
   
     /**
+     * @param hql
+     * @return true if each record in the query defined by hql has
+     * a unique key.
+     * 
+     * NOTE: for large databases this method might take a long time.
+     * It probably should be called from a SwingWorker. 
+     */
+    public static boolean checkUniqueRecIds(final String hql)
+    {
+        //Assumes the ID field is selected by hql -
+    	//Which is also an assumption that 'distinct' is not used.
+    	//Assumes that  'select' is lower case.
+    	int fromStart = hql.toLowerCase().indexOf(" from ");
+    	int idEnd = hql.indexOf(',', 0); 
+        String fldPart = hql.substring(0, idEnd);
+        String countHql = fldPart + " " + hql.substring(fromStart);
+        String distinctFldPart = fldPart.replaceFirst("select ", "select distinct ");
+        String distinctHql = distinctFldPart + " " + hql.substring(fromStart);
+    	DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+        	try
+        	{
+            	QueryIFace q1 = session.createQuery(countHql, false);
+        		QueryIFace q2 = session.createQuery(distinctHql, false);
+        		return q1.list().size() == q2.list().size();
+        	} catch (Exception ex) 
+        	{
+                UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
+        	}
+        } finally
+        {
+        	session.close();
+        }
+    	return false;
+    }
+    /**
      * @param rootAlias
      * @param node
      * @return reasonably likely to be unique alias for table represented by node.
@@ -1558,7 +1603,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         try
         {
             //XXX need to determine exportQuery params (probably)
-        	HQLSpecs hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree, null, searchSynonymy, false, null);    
+        	HQLSpecs hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree, null, searchSynonymy, false, null);  
+        	if (schemaMapping != null)
+        	{
+        		if (!checkUniqueRecIds(hql.getHql()))
+        		{
+        			UIRegistry.displayErrorDlg(UIRegistry.getResourceString("ExportPanel.DUPLICATE_KEYS_EXPORT"));
+        			return;
+        		}
+        	}
             processSQL(queryFieldItems, hql, rootTable.getTableInfo(), distinct);
         }
         catch (Exception ex)
