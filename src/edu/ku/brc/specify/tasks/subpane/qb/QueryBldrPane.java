@@ -1604,14 +1604,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         {
             //XXX need to determine exportQuery params (probably)
         	HQLSpecs hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree, null, searchSynonymy, false, null);  
-        	if (schemaMapping != null)
-        	{
-        		if (!checkUniqueRecIds(hql.getHql()))
-        		{
-        			UIRegistry.displayErrorDlg(UIRegistry.getResourceString("ExportPanel.DUPLICATE_KEYS_EXPORT"));
-        			return;
-        		}
-        	}
             processSQL(queryFieldItems, hql, rootTable.getTableInfo(), distinct);
         }
         catch (Exception ex)
@@ -2321,8 +2313,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         completedResults.set(runningResults.get());
         runningResults.set(null);
-       
-        if (!completedResults.get().getCancelled())
+        if (completedResults.get() != null && !completedResults.get().getCancelled())
 		{
 			int results = completedResults.get().getQuery().getDataObjects()
 					.size();
@@ -2537,6 +2528,16 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             @Override
             public Object construct()
             {
+            	if (schemaMapping != null)
+            	{
+            		if (!checkUniqueRecIds(hqlSpecs.getHql()))
+            		{
+            			UIRegistry.displayErrorDlg(UIRegistry.getResourceString("ExportPanel.DUPLICATE_KEYS_EXPORT"));
+            			runningResults.set(null);
+            			resultsComplete();
+            			return null;
+            		}
+            	}
                 if (esrp == null)
                 {
                     CommandAction cmdAction = new CommandAction("Express_Search", "HQL", qri);
