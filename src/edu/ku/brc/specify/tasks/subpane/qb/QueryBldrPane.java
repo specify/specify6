@@ -3618,6 +3618,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 log.error("Couldn't find [" + fld.getFieldName() + "] [" + fld.getTableList()
                         + "]");
+                fields.remove(fld);
+                fld.setQuery(null);
                 if (missingFlds != null)
                 {
                     missingFlds.add(fld.getColumnAlias());
@@ -3695,6 +3697,18 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         		{
         			log.error("Couldn't find [" + fld.getFieldName() + "] [" + fld.getTableList()
                         + "]");
+        			for (SpQueryField field : fields)
+        			{
+        				//ain't superstitious but checking ids in case 
+        				//fld and field are different java objects
+        				if (field.getId().equals(fld.getId()))
+        				{
+        					fields.remove(field);
+        					field.setQuery(null);
+        					fld.setQuery(null);
+        					break;
+        				}
+        			}
         			if (missingFlds != null)
         			{
         				missingFlds.add(fld.getColumnAlias());
