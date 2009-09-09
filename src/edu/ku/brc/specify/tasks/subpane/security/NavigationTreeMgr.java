@@ -692,7 +692,11 @@ public class NavigationTreeMgr
                 
                 // link newly create agent to discipline
                 userAgent.getDisciplines().add(localDiscipline);
-                localDiscipline.getAgents().add(userAgent);
+                
+                // this next line is not needed in order for the relationship to be saved
+                // and it is problematic when there are a lot of agents
+                //localDiscipline.getAgents().add(userAgent);
+                
                 session.commit();
                 
                 parentWrp.setDataObj(localGroup);
