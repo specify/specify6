@@ -1097,7 +1097,12 @@ public class MySQLBackupService extends BackupServiceFactory
                             {
                                 if (file.getName().endsWith("infile"))
                                 {
-                                    String sql = "LOAD DATA LOCAL INFILE '" + file.getCanonicalPath() + "' INTO TABLE " + FilenameUtils.getBaseName(file.getName());
+                                    String fPath = file.getCanonicalPath();
+                                    if (UIHelper.isWindows())
+                                    {
+                                        fPath = StringUtils.replace(fPath, "\\", "\\\\");
+                                    }
+                                    String sql = "LOAD DATA LOCAL INFILE '" + fPath + "' INTO TABLE " + FilenameUtils.getBaseName(file.getName());
                                     //System.out.println(sql);
                                     int rv = BasicSQLUtils.update(connection, sql);
                                     System.out.println("rv= "+rv);
