@@ -48,7 +48,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
@@ -67,8 +67,9 @@ import edu.ku.brc.util.Pair;
 public class ChooseCollectionDlg extends CustomDialog
 {
     protected JList list;
-    protected List<Collection>             collectionList;
+    protected List<Pair<String, Integer>>  collectionList;
     protected Hashtable<String, ImageIcon> iconHash = new Hashtable<String, ImageIcon>();
+    protected Hashtable<Integer, String>   collIdToDispType = new Hashtable<Integer, String>();
     
     /**
      * @param frame
@@ -77,7 +78,7 @@ public class ChooseCollectionDlg extends CustomDialog
      * @param contentPanel
      * @throws HeadlessException
      */
-    public ChooseCollectionDlg(List<Collection> collectionList) throws HeadlessException
+    public ChooseCollectionDlg(List<Pair<String, Integer>> collectionList) throws HeadlessException
     {
         super((Frame)UIRegistry.getTopWindow(), getResourceString("ChooseCollectionDlg.CHS_COL_TITLE"), true, OK_BTN, null);
         
@@ -97,6 +98,12 @@ public class ChooseCollectionDlg extends CustomDialog
             }
         });
         
+        for (Pair<String, Integer> p : collectionList)
+        {
+            String dispType = BasicSQLUtils.querySingleObj("SELECT d.Type FROM collection AS c Inner Join discipline AS d ON c.DisciplineID = d.UserGroupScopeId WHERE c.UserGroupScopeId = " + p.second);
+            collIdToDispType.put(p.second, dispType);
+        }
+        
         for (Pair<String, ImageIcon> p : disciplinesList)
         {
             iconHash.put(p.first, p.second);
@@ -114,9 +121,9 @@ public class ChooseCollectionDlg extends CustomDialog
         PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g,8px"));
         CellConstraints cc = new CellConstraints();
         
-        for (Collection col : collectionList)
+        for (Pair<String, Integer> collPair : collectionList)
         {
-            ((DefaultListModel)list.getModel()).addElement(col);
+            ((DefaultListModel)list.getModel()).addElement(collPair);
         }
         
         JScrollPane sp = new JScrollPane(list, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -149,7 +156,8 @@ public class ChooseCollectionDlg extends CustomDialog
         
         DefaultListCellRenderer renderer = new DefaultListCellRenderer()
         {
-            //@Override
+            @Override
+            @SuppressWarnings("unchecked")
             public Component getListCellRendererComponent(JList listArg,
                                                           Object value,
                                                           int index,
@@ -157,13 +165,15 @@ public class ChooseCollectionDlg extends CustomDialog
                                                           boolean cellHasFocus)
             {
                 JLabel label = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                Collection col = (Collection)value;
-                label.setText(col.toString());
+                Pair<String, Integer> collPair = (Pair<String, Integer>)value;
+                label.setText(collPair.first);
                 
-                DisciplineType disciplineType = DisciplineType.getDiscipline(DisciplineType.STD_DISCIPLINES.valueOf(col.getDiscipline().getType()));
+                String dispType = collIdToDispType.get(collPair.second);
+                
+                DisciplineType disciplineType = DisciplineType.getDiscipline(DisciplineType.STD_DISCIPLINES.valueOf(dispType));
                 label.setIcon(iconHash.get(disciplineType.getDisciplineType().toString()));
                 
-                ImageIcon imgIcon = IconManager.getIcon(col.getDiscipline().getType(), IconManager.IconSize.Std24);
+                ImageIcon imgIcon = IconManager.getIcon(dispType, IconManager.IconSize.Std24);
                 if (imgIcon == null)
                 {
                     imgIcon = IconManager.getIcon("Blank", IconManager.IconSize.Std24);
@@ -183,16 +193,21 @@ public class ChooseCollectionDlg extends CustomDialog
         okBtn.setEnabled(false);
     }
     
+    /**
+     * @param index
+     */
     public void setSelectedIndex(final int index)
     {
         list.setSelectedIndex(index);
     }
+    
     /**
      * @return
      */
-    public Collection getSelectedObject()
+    @SuppressWarnings("unchecked")
+    public Pair<String, Integer> getSelectedObject()
     {
-        return (Collection)list.getSelectedValue();
+        return (Pair<String, Integer>)list.getSelectedValue();
     }
 
 }

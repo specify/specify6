@@ -187,7 +187,7 @@ public final class UIHelper
     
     // Static Data Members
     protected static final Logger   log      = Logger.getLogger(UIHelper.class);
-    protected static Calendar       calendar = new GregorianCalendar();
+    protected static Calendar       calendar;
     protected static OSTYPE         oSType;
     protected static boolean        isMacOS_10_5_X   = false;
     protected static BasicStroke    stdLineStroke    = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
@@ -214,7 +214,8 @@ public final class UIHelper
     
 
     static {
-
+        calendar = GregorianCalendar.getInstance();
+        
         String osStr = System.getProperty("os.name");
         if (osStr.startsWith("Mac OS X"))
         {

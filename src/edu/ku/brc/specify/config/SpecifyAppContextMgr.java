@@ -36,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -348,7 +349,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public int getNumOfCollectionsForUser()
     {
-        String sqlStr = "SELECT count(cs) From Collection as cs Inner Join cs.userGroups as princ Inner Join princ.specifyUsers as user where user.specifyUserId = "+user.getSpecifyUserId(); //$NON-NLS-1$
+        String sqlStr = "SELECT count(cs) From Collection as cs INNER JOIN cs.userGroups as princ INNER JOIN princ.specifyUsers as user where user.specifyUserId = "+user.getSpecifyUserId(); //$NON-NLS-1$
         
         DataProviderSessionIFace session = null;
         try
@@ -412,7 +413,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             // First get the Collections the User has access to.
             Hashtable<String, Collection> collectionHash = new Hashtable<String, Collection>();
-            String sqlStr = "SELECT cs From Discipline as ct Inner Join ct.agents cta Inner Join cta.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+userArg.getSpecifyUserId(); //$NON-NLS-1$
+            String sqlStr = "SELECT cs From Discipline as ct INNER JOIN ct.agents cta INNER JOIN cta.specifyUser as user INNER JOIN ct.collections as cs where user.specifyUserId = "+userArg.getSpecifyUserId(); //$NON-NLS-1$
             for (Object obj : sessionArg.getDataList(sqlStr))
             {
                 Collection cs = (Collection)obj; 
@@ -471,84 +472,76 @@ public class SpecifyAppContextMgr extends AppContextMgr
         DataProviderSessionIFace session = null;
         try
         {
+            AppPreferences remotePrefs = AppPreferences.getRemote();
+            
             session = DataProviderFactory.getInstance().createSession();
             
             SpecifyUser spUser = session.getData(SpecifyUser.class, "id", userArg.getId(), DataProviderSessionIFace.CompareType.Equals); //$NON-NLS-1$
             
-            final String prefName = mkUserDBPrefName("recent_collection_id"); //$NON-NLS-1$
+            String  alwaysAskPref = "ALWAYS.ASK.COLL"; //$NON-NLS-1$
+            boolean askForColl    = remotePrefs.getBoolean(alwaysAskPref, false);
+            
+            String prefName    = mkUserDBPrefName("recent_collection_id"); //$NON-NLS-1$
             
             // First get the Collections the User has access to.
-            Hashtable<String, Collection> collectionHash = new Hashtable<String, Collection>();
-            String sqlStr = "SELECT cs From Collection as cs Inner Join cs.userGroups as princ Inner Join princ.specifyUsers as user where user.specifyUserId = "+spUser.getSpecifyUserId(); //$NON-NLS-1$
-            for (Object obj : session.getDataList(sqlStr))
+            Hashtable<String, Pair<String, Integer>> collectionHash = new Hashtable<String, Pair<String, Integer>>();
+            
+            String sqlStr = "SELECT cln.CollectionName, cln.CollectionID FROM collection AS cln " + 
+                            "INNER JOIN spprincipal AS p ON cln.UserGroupScopeId = p.userGroupScopeID " + 
+                            "INNER JOIN specifyuser_spprincipal AS su_pr ON p.SpPrincipalID = su_pr.SpPrincipalID " + 
+                            "INNER JOIN specifyuser AS su ON su_pr.SpecifyUserID = su.SpecifyUserID " + 
+                            "WHERE su.SpecifyUserID = "+spUser.getSpecifyUserId(); //$NON-NLS-1$
+            
+            for (Object[] row : BasicSQLUtils.query(sqlStr))
             {
-                Collection collection = (Collection)obj; 
-                collection.forceLoad();
-                
-                collection.getDiscipline();// force load of Discipline
-                collection.getDiscipline().getAgents(); // force load of agents
-                collectionHash.put(collection.getCollectionName(), collection);
+                String  collName = row[0].toString();
+                Integer collId   = (Integer)row[1];
+                collectionHash.put(collName, new Pair<String, Integer>(collName, collId));
             }
     
-            Collection collection = null;
-            
-            AppPreferences appPrefs  = AppPreferences.getRemote();
-            String         recentIds = appPrefs.get(prefName, null);
+            Pair<String, Integer> currColl = null;
+            String         recentIds = askForColl ? null : remotePrefs.get(prefName, null);
             if (StringUtils.isNotEmpty(recentIds))
             {
-                List<?> list = session.getDataList("FROM Collection WHERE collectionId = " + recentIds); //$NON-NLS-1$
-                if (list.size() == 1)
+                Vector<Object[]> rows = BasicSQLUtils.query("SELECT cln.CollectionName, cln.UserGroupScopeId FROM collection AS cln WHERE UserGroupScopeId = " + recentIds); //$NON-NLS-1$
+                if (rows.size() == 1)
                 {
-
-                    collection = (Collection)list.get(0);
-                    collection.forceLoad();
-                }
-                else
+                    String  collName = rows.get(0)[0].toString();
+                    Integer collId   = (Integer)rows.get(0)[1];
+                    currColl = new Pair<String, Integer>(collName, collId);
+                    
+                } else
                 {
                     log.debug("could NOT find recent ids"); //$NON-NLS-1$
                 }
             }
             
-            if (collection != null && collectionHash.get(collection.getCollectionName()) == null)
+            if (currColl != null && collectionHash.get(currColl.first) == null)
             {
-                collection = null;
+                currColl = null;
             }
             
-            if (collection == null || startingOver)
+            
+            if (currColl == null || startingOver)
             {
                 if (collectionHash.size() == 1)
                 {
-                    collection = collectionHash.elements().nextElement();
-                    collection.forceLoad();
+                    currColl = collectionHash.elements().nextElement();
     
                 } else if (collectionHash.size() > 0)
                 {
-                    List<Collection> list = new Vector<Collection>();
+                    List<Pair<String, Integer>> list = new Vector<Pair<String, Integer>>();
                     list.addAll(collectionHash.values());
-                    Collections.sort(list);
+                    Collections.sort(list, new Comparator<Pair<String, Integer>>() {
+                        @Override
+                        public int compare(Pair<String, Integer> o1, Pair<String, Integer> o2)
+                        {
+                            return o1.first.compareTo(o2.first);
+                        }
+                    });
                     
                     int selectColInx = -1;
-                    if (collection != null)
-                    {
-                        int i = 0;
-                        for (Collection c : list)
-                        {
-                            if (c.getId().intValue() == collection.getId().intValue())
-                            {
-                                selectColInx = i;
-                                break;
-                            }
-                            i++;
-                        }
-                    } else
-                    {
-                        log.error("Collection was null!"); //$NON-NLS-1$
-                    }
-    
                     
-                    session.close();
-                    session = null;
-
                     ChooseCollectionDlg colDlg = null;
                     do {
                         colDlg = new ChooseCollectionDlg(list);
@@ -567,37 +560,36 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         colDlg.setVisible(true);
                         
                     } while (colDlg.getSelectedObject() == null || colDlg.isCancelled());
-
                     
-                    collection = colDlg.getSelectedObject();
-                    
-                    session = DataProviderFactory.getInstance().createSession();
-                    session.attach(collection);
-                    session.attach(spUser);
-                    
-                    collection.forceLoad();
-                    
-                } else
-                {
-                    // Accession / Registrar / Director may not be assigned to any Collection
-                    // Or for a stand alone Accessions Database there may not be any 
-                    
-                    UIRegistry.showLocalizedError("SpecifyAppContextMgr.ERR_NO_COLL");
-                    //CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit"));
-                    return null;
-                }
-    
-                if (collection != null)
-                {
-                    appPrefs.put(prefName, (Long.toString(collection.getCollectionId())));
+                    currColl = colDlg.getSelectedObject();
                 }
             }
             
+            Collection collection = null;
+            
+            if (currColl != null)
+            {
+                session = DataProviderFactory.getInstance().createSession();
+                
+                collection = (Collection)session.getData("FROM Collection WHERE id = " + currColl.second);
+                if (collection != null)
+                {
+                    collection.forceLoad();
+                    remotePrefs.put(prefName, (Long.toString(collection.getCollectionId())));
+                }
+            }
+            
+            if (collection == null)
+            {
+                UIRegistry.showLocalizedError("SpecifyAppContextMgr.ERR_NO_COLL");
+                //CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit"));
+                return null;
+            }
+            
             AppContextMgr.getInstance().setClassObject(Collection.class, collection);
-            // XXX Collection.setCurrentCollectionIds(getCollectionIdList(sessionArg));
             
             String colObjStr = "CollectionObject"; //$NON-NLS-1$
-            String iconName = AppPreferences.getRemote().get(FormattingPrefsPanel.getDisciplineImageName(), colObjStr);
+            String iconName = remotePrefs.get(FormattingPrefsPanel.getDisciplineImageName(), colObjStr);
             if (StringUtils.isEmpty(iconName) || iconName.equals(colObjStr))
             {
                 iconName = "colobj_backstop"; //$NON-NLS-1$

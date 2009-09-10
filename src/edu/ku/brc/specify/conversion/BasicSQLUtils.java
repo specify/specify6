@@ -1589,7 +1589,7 @@ public class BasicSQLUtils
                                     final SERVERTYPE sourceServerType,
                                     final SERVERTYPE destServerType)
     {
-        Timestamp now = new Timestamp(System.currentTimeMillis());
+        //Timestamp now = new Timestamp(System.currentTimeMillis());
 
         IdMapperMgr idMapperMgr = IdMapperMgr.getInstance();
 
