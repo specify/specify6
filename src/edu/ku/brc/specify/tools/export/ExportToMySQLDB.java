@@ -48,13 +48,13 @@ public class ExportToMySQLDB
 		if (dataType == null && fld == null)
 		{
 			//assume it's format or aggregatated or otherwise special
-			return "varchar(300)";
+			return "varchar(256)";
 		}
 		
 		if (dataType.equals(String.class))
 		{
-			String length = "300";
-			if (fld != null && fld.getLength() != -1)
+			String length = "256";
+			if (fld != null && fld.getLength() != -1 && fld.getLength() <= 256)
 			{
 				length = String.valueOf(fld.getLength());
 			}
@@ -386,7 +386,13 @@ public class ExportToMySQLDB
 			}
 			else 
 			{
-				val = BasicSQLUtils.getStrValue(row.getFieldValue(r));
+				Object fldVal = row.getFieldValue(r);
+				if (fldVal instanceof String)
+				{
+					String fldStr = (String )fldVal;
+					fldVal = fldStr.substring(0, Math.min(fldStr.length(), 256));
+				}
+				val = BasicSQLUtils.getStrValue(fldVal);
 				if (StringUtils.isBlank(val))
 				{
 					val = "null";
