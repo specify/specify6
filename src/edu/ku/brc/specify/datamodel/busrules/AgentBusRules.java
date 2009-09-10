@@ -457,7 +457,10 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
             if (!contains(agent, discipline))
             {
                 agent.getDisciplines().add(discipline);
-                discipline.getAgents().add(agent);
+                
+                // this next line is not needed in order for the relationship to be saved
+                // and it is problematic when there are a lot of agents
+                //discipline.getAgents().add(agent);
             }
         }
     }
