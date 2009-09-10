@@ -490,7 +490,7 @@ public class BasicSQLUtils
         Statement stmt  = null;
         try
         {
-            log.debug(sql);
+            //log.debug(sql);
             stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
             if (rs.next())
@@ -499,7 +499,7 @@ public class BasicSQLUtils
             }
             rs.close();
             
-            log.debug(count+" - "+sql);
+            //log.debug(count+" - "+sql);
 
         } catch (Exception ex)
         {
@@ -744,6 +744,31 @@ public class BasicSQLUtils
         return list;
     }
 
+    /**
+     * @param sql
+     * @return
+     */
+    public static <T> T querySingleObj(final String sql)
+    {
+        return querySingleObj(null, sql);
+    }
+
+    /**
+     * @param conn 
+     * @param sql
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T querySingleObj(final Connection conn, final String sql)
+    {
+        Vector<Object> list = querySingleCol(conn, sql);
+        if (list.size() > 1)
+        {
+            log.warn("The query ["+sql+"] returned more than one object.");
+        }
+        return (T)list.get(0);
+    }
+
 
     
     /**
@@ -798,7 +823,7 @@ public class BasicSQLUtils
      * Deletes all the records from a table
      * @param connection connection to the DB
      * @param tableName the name of the table
-     * @return the return value from the SQL update statment (or -1 on an exception)
+     * @return the return value from the SQL update statement (or -1 on an exception)
      */
     public static int deleteAllRecordsFromTable(final Connection connection, 
                                                 final String    tableName,
