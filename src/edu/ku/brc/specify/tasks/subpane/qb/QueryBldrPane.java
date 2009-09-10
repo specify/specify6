@@ -1295,7 +1295,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
         StringBuilder sqlStr = new StringBuilder();
         sqlStr.append("select ");
-        if (distinct || hqlHasSynJoins || isSchemaExport)
+        if (distinct || hqlHasSynJoins)
         {
             sqlStr.append(" distinct ");
         }
@@ -1468,11 +1468,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     public static boolean checkUniqueRecIds(final String hql)
     {
         //Assumes the ID field is selected by hql -
-    	//Which is also an assumption that 'distinct' is not used.
     	//Assumes that  'select' is lower case.
     	int fromStart = hql.toLowerCase().indexOf(" from ");
     	int idEnd = hql.indexOf(',', 0); 
         String fldPart = hql.substring(0, idEnd);
+        if (fldPart.indexOf("distinct") != -1)
+        {
+        	fldPart = fldPart.replaceFirst("select distinct ", "select ");
+        }
         String countHql = fldPart + " " + hql.substring(fromStart);
         String distinctFldPart = fldPart.replaceFirst("select ", "select distinct ");
         String distinctHql = distinctFldPart + " " + hql.substring(fromStart);
