@@ -2535,7 +2535,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             	{
             		if (!checkUniqueRecIds(hqlSpecs.getHql()))
             		{
-            			UIRegistry.displayErrorDlg(UIRegistry.getResourceString("ExportPanel.DUPLICATE_KEYS_EXPORT"));
+            			SwingUtilities.invokeLater(new Runnable() {
+
+							@Override
+							public void run()
+							{
+		            			UIRegistry.displayErrorDlg(UIRegistry.getResourceString("ExportPanel.DUPLICATE_KEYS_EXPORT"));
+							}
+            			});
             			runningResults.set(null);
             			resultsComplete();
             			return null;
