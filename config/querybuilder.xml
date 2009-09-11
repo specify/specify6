@@ -38,7 +38,7 @@
         <table name="AgentAttachment" field="agentAttachments">
             <alias name="Attachment"/>
         </table>
-        <table name="AgentVariant"/>
+        <table name="AgentVariant" field="variants"/>
     </table>
 
 	<table name="Appraisal">
