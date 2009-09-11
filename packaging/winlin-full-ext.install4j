@@ -1301,6 +1301,15 @@ if (wizardContext != null) {
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
       <exclude>
+        <entry location="wwlib/libjogl_awt.so" fileType="regular" />
+        <entry location="wwlib/libjogl_cg.jnilib" fileType="regular" />
+        <entry location="wwlib/libjogl.jnilib" fileType="regular" />
+        <entry location="wwlib/libjogl_cg.so" fileType="regular" />
+        <entry location="wwlib/libjogl_awt.jnilib" fileType="regular" />
+        <entry location="wwlib/libgluegen-rt.jnilib" fileType="regular" />
+        <entry location="wwlib/libgluegen-rt.so" fileType="regular" />
+        <entry location="wwlib/libjogl.so" fileType="regular" />
+      </exclude>
         <entry location="mac" fileType="regular" />
       </exclude>
       <variables />
@@ -1311,7 +1320,14 @@ if (wizardContext != null) {
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
       <exclude>
-        <entry location="mac" fileType="regular" />
+        <entry location="wwlib/libjogl_cg.jnilib" fileType="regular" />
+        <entry location="wwlib/gluegen-rt.dll" fileType="regular" />
+        <entry location="wwlib/libjogl.jnilib" fileType="regular" />
+        <entry location="wwlib/libjogl_awt.jnilib" fileType="regular" />
+        <entry location="wwlib/libgluegen-rt.jnilib" fileType="regular" />
+        <entry location="wwlib/jogl_cg.dll" fileType="regular" />
+        <entry location="wwlib/jogl.dll" fileType="regular" />
+        <entry location="wwlib/jogl_awt.dll" fileType="regular" />
       </exclude>
       <variables />
       <installerScript mode="1" file="">

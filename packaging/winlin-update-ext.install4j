@@ -1343,7 +1343,16 @@ if (wizardContext != null) {
       <excludedComponents />
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
-      <exclude />
+       <exclude>
+        <entry location="wwlib/libjogl_awt.so" fileType="regular" />
+        <entry location="wwlib/libjogl_cg.jnilib" fileType="regular" />
+        <entry location="wwlib/libjogl.jnilib" fileType="regular" />
+        <entry location="wwlib/libjogl_cg.so" fileType="regular" />
+        <entry location="wwlib/libjogl_awt.jnilib" fileType="regular" />
+        <entry location="wwlib/libgluegen-rt.jnilib" fileType="regular" />
+        <entry location="wwlib/libgluegen-rt.so" fileType="regular" />
+        <entry location="wwlib/libjogl.so" fileType="regular" />
+      </exclude>
       <variables />
     </win32>
     <unixInstaller name="Unix Installer" id="179" mediaFileName="" installDir="Specify" overridePrincipalLanguage="false" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="">
@@ -1351,7 +1360,16 @@ if (wizardContext != null) {
       <excludedComponents />
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
-      <exclude />
+      <exclude>
+        <entry location="wwlib/libjogl_cg.jnilib" fileType="regular" />
+        <entry location="wwlib/gluegen-rt.dll" fileType="regular" />
+        <entry location="wwlib/libjogl.jnilib" fileType="regular" />
+        <entry location="wwlib/libjogl_awt.jnilib" fileType="regular" />
+        <entry location="wwlib/libgluegen-rt.jnilib" fileType="regular" />
+        <entry location="wwlib/jogl_cg.dll" fileType="regular" />
+        <entry location="wwlib/jogl.dll" fileType="regular" />
+        <entry location="wwlib/jogl_awt.dll" fileType="regular" />
+      </exclude>
       <variables />
       <installerScript mode="1" file="">
         <scriptLines />
