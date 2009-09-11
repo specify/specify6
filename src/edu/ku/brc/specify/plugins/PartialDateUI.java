@@ -485,13 +485,13 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
         JLabel lbl = parent.getLabelFor(this);
         if (lbl != null && StringUtils.isNotEmpty(dateFieldName))
         {
-            
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(parent.getView().getClassName());
             if (tblInfo != null)
             {
                 final DBFieldInfo fi = tblInfo.getFieldByName(dateFieldName);
                 if (fi != null)
                 {
+                    title      = fi.getTitle();
                     isRequired = fi.isRequired();
                     if (uivs[0] instanceof ValFormattedTextFieldSingle)
                     {
