@@ -22,49 +22,50 @@
     <entries>
       <dirEntry mountPoint="18" file="../InstallerFiles" overwrite="4" shared="false" mode="644" uninstallMode="0" excludeSuffixes=".DS_Store, .svn" dirMode="755">
         <exclude>
+          <entry location="embedded_libs" fileType="regular" />
           <entry location="demo_files/taxonomy" fileType="regular" />
-          <entry location="hibernate_libs" fileType="regular" />
           <entry location="iReportLibs" fileType="regular" />
-          <entry location="libs/ant-launcher.jar" fileType="regular" />
-          <entry location="libs/ant.jar" fileType="regular" />
-          <entry location="libs/commons-beanutils.jar" fileType="regular" />
-          <entry location="libs/commons-betwixt.jar" fileType="regular" />
-          <entry location="libs/commons-codec.jar" fileType="regular" />
+          <entry location="hibernate_libs" fileType="regular" />
           <entry location="libs/commons-digester.jar" fileType="regular" />
-          <entry location="libs/commons-httpclient.jar" fileType="regular" />
-          <entry location="libs/commons-io.jar" fileType="regular" />
-          <entry location="libs/commons-jexl.jar" fileType="regular" />
-          <entry location="libs/commons-lang.jar" fileType="regular" />
-          <entry location="libs/commons-validator.jar" fileType="regular" />
-          <entry location="libs/DynamicJasper.jar" fileType="regular" />
+          <entry location="libs/jfreechart.jar" fileType="regular" />
+          <entry location="libs/poi.jar" fileType="regular" />
+          <entry location="libs/xstream.jar" fileType="regular" />
+          <entry location="libs/swingx.jar" fileType="regular" />
+          <entry location="libs/msbase.jar" fileType="regular" />
+          <entry location="libs/jazzy-core.jar" fileType="regular" />
           <entry location="libs/ezmorph.jar" fileType="regular" />
+          <entry location="libs/jcommon.jar" fileType="regular" />
+          <entry location="libs/versions.txt" fileType="regular" />
           <entry location="libs/forms.jar" fileType="regular" />
-          <entry location="libs/itext.jar" fileType="regular" />
+          <entry location="libs/commons-io.jar" fileType="regular" />
+          <entry location="libs/looks.jar" fileType="regular" />
+          <entry location="libs/log4j.jar" fileType="regular" />
+          <entry location="libs/msutil.jar" fileType="regular" />
+          <entry location="libs/commons-httpclient.jar" fileType="regular" />
+          <entry location="libs/junit.jar" fileType="regular" />
+          <entry location="libs/xpp3_minO.jar" fileType="regular" />
+          <entry location="libs/ant-launcher.jar" fileType="regular" />
+          <entry location="libs/mssqlserver.jar" fileType="regular" />
+          <entry location="libs/servlet-api.jar" fileType="regular" />
+          <entry location="libs/ant.jar" fileType="regular" />
+          <entry location="libs/mail.jar" fileType="regular" />
+          <entry location="libs/commons-codec.jar" fileType="regular" />
           <entry location="libs/jasperreports.jar" fileType="regular" />
+          <entry location="libs/json-lib.jar" fileType="regular" />
+          <entry location="libs/mysql-connector.jar" fileType="regular" />
+          <entry location="libs/commons-lang.jar" fileType="regular" />
+          <entry location="libs/commons-beanutils.jar" fileType="regular" />
+          <entry location="libs/TimingFramework.jar" fileType="regular" />
+          <entry location="libs/jtds.jar" fileType="regular" />
+          <entry location="libs/commons-jexl.jar" fileType="regular" />
+          <entry location="libs/jh.jar" fileType="regular" />
+          <entry location="libs/jazzy-swing.jar" fileType="regular" />
+          <entry location="libs/DynamicJasper.jar" fileType="regular" />
+          <entry location="libs/commons-betwixt.jar" fileType="regular" />
           <entry location="libs/javacsv.jar" fileType="regular" />
           <entry location="libs/jaxen.jar" fileType="regular" />
-          <entry location="libs/jazzy-core.jar" fileType="regular" />
-          <entry location="libs/jazzy-swing.jar" fileType="regular" />
-          <entry location="libs/jcommon.jar" fileType="regular" />
-          <entry location="libs/jfreechart.jar" fileType="regular" />
-          <entry location="libs/jh.jar" fileType="regular" />
-          <entry location="libs/json-lib.jar" fileType="regular" />
-          <entry location="libs/jtds.jar" fileType="regular" />
-          <entry location="libs/junit.jar" fileType="regular" />
-          <entry location="libs/log4j.jar" fileType="regular" />
-          <entry location="libs/looks.jar" fileType="regular" />
-          <entry location="libs/mail.jar" fileType="regular" />
-          <entry location="libs/msbase.jar" fileType="regular" />
-          <entry location="libs/mssqlserver.jar" fileType="regular" />
-          <entry location="libs/msutil.jar" fileType="regular" />
-          <entry location="libs/mysql-connector.jar" fileType="regular" />
-          <entry location="libs/poi.jar" fileType="regular" />
-          <entry location="libs/servlet-api.jar" fileType="regular" />
-          <entry location="libs/swingx.jar" fileType="regular" />
-          <entry location="libs/TimingFramework.jar" fileType="regular" />
-          <entry location="libs/versions.txt" fileType="regular" />
-          <entry location="libs/xpp3_minO.jar" fileType="regular" />
-          <entry location="libs/xstream.jar" fileType="regular" />
+          <entry location="libs/commons-validator.jar" fileType="regular" />
+          <entry location="libs/itext.jar" fileType="regular" />
           <entry location="SpecifyBigSplash.png" fileType="regular" />
         </exclude>
       </dirEntry>
@@ -267,12 +268,12 @@
               </void>
               <void property="customPngIcon16File">
                 <object class="com.install4j.api.beans.ExternalFile">
-                  <string>../InstallerFiles/images/specify16.png</string>
+                  <string>../src/edu/ku/brc/specify/images/specify16.png</string>
                 </object>
               </void>
               <void property="customPngIcon32File">
                 <object class="com.install4j.api.beans.ExternalFile">
-                  <string>../InstallerFiles/images/specify32.png</string>
+                  <string>../src/edu/ku/brc/specify/images/specify32.png</string>
                 </object>
               </void>
               <void property="frameWidth">

@@ -22,6 +22,7 @@
     <entries>
       <dirEntry mountPoint="18" file="../InstallerFiles" overwrite="4" shared="false" mode="644" uninstallMode="0" excludeSuffixes=".DS_Store, .svn" dirMode="755">
         <exclude>
+          <entry location="embedded_libs" fileType="regular" />
           <entry location="non-mac-application-adapter.jar" fileType="regular" />
           <entry location="SpecifyBigSplash.png" fileType="regular" />
         </exclude>
@@ -208,7 +209,7 @@
   <installerGui installerType="1" suggestPreviousProgramGroup="false" addOnAppId="" suggestPreviousLocations="true">
     <customCode useInstalledFiles="false" />
     <applications>
-      <application name="" id="installer" beanClass="com.install4j.runtime.beans.applications.InstallerApplication" enabled="true" commentSet="false" comment="" customicnsFile="icns/specify.icns" customIcoFile="">
+      <application name="" id="installer" beanClass="com.install4j.runtime.beans.applications.InstallerApplication" enabled="true" commentSet="false" comment="" customIcnsFile="" customIcoFile="">
         <serializedBean>
           <java class="java.beans.XMLDecoder">
             <object class="com.install4j.runtime.beans.applications.InstallerApplication">
