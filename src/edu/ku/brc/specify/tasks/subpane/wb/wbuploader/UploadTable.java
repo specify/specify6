@@ -74,6 +74,7 @@ import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.PrepType;
@@ -945,14 +946,22 @@ public class UploadTable implements Comparable<UploadTable>
                 parType[0] = parentTblClass;
                 String keyName = pt.getForeignKey();
                 String setterName = capitalize(keyName.substring(0, keyName.length() - 2));
-                if (tblClass == Preparation.class && setterName.equals("PreparedBy"))
+                //XXX This is mucho el cheapo. Probably should add an attribute to one the workbench xml file
+                //to specify the member name when it does not match the class name
+                //OR, if the ParentTableEntry.relationship included the relationship name (or was replaced
+                //by a DBRelationshipInfo object), the name could serve as a second choice for the member name.
+                if (tblClass.equals(Preparation.class) && setterName.equals("PreparedBy"))
                 {
                     setterName = "PreparedByAgent";
                 }
-                else if (tblClass == Determination.class
+                else if (tblClass.equals(Determination.class)
                         && setterName.equals("DeterminationStatus"))
                 {
                     setterName = "Status";
+                }
+                else if (tblClass.equals(GeoCoordDetail.class) && setterName.equals("Agent"))
+                {
+                	setterName = "GeoRefDetBy";
                 }
                 pt.setSetter(tblClass.getMethod("set" + setterName, parType));
             }

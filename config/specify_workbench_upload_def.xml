@@ -342,6 +342,16 @@
     <field table="Locality" name="baseMeridian" actualtable="LocalityDetail" relationshipname="locality"/>
     <field table="Locality" name="localityCitation" onetomanysequence="0" actualtable="LocalityCitation" relationshipname="referenceWork" relatedfieldname="title"/>
    	
+   	<!-- geocoorddetail -->
+    <!-- <field table="GeoCoordDetail" name="geoRefRemarks"/>
+    <field table="GeoCoordDetail" name="originalCoordSystem" actualtable="GeoCoordDetail" relationshipname="locality"/>
+    <field table="GeoCoordDetail" name="namedPlaceExtent" actualtable="GeoCoordDetail" relationshipname="locality"/>
+    <field table="GeoCoordDetail" name="geoRefDetDate" actualtable="GeoCoordDetail" relationshipname="locality"/>-->
+    <field table="GeoCoordDetail" name="geoRefByFirst" relationshipname="geoRefDetBy"  relatedfieldname="firstName"/>
+    <field table="GeoCoordDetail" name="geoRefByLast" relationshipname="geoRefDetBy"  relatedfieldname="lastName"/>
+    <field table="GeoCoordDetail" name="geoRefByMiddle" relationshipname="geoRefDetBy"  relatedfieldname="middleInitial"/>
+    <field table="GeoCoordDetail" name="geoRefByTitle" relationshipname="geoRefDetBy" relatedfieldname="title"/>
+   	
   	<!-- preparation -->
     <field table="Preparation" name="preparedDate1" actualname="preparedDate" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy1" onetomanysequence="0" relationshipname="preparedByAgent" relatedfieldname="firstName"/>

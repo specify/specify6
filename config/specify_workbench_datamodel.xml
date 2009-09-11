@@ -397,6 +397,16 @@
     <field column="Drainage" name="drainage" type="java.lang.String" length="64"/>
     <field column="Citation (Locality)" name="localityCitation" type="java.lang.String" length="64"/>
   </table>
+  <table classname="edu.ku.brc.specify.datamodel.GeoCoordDetail" table="geocoorddetail" tableid="123" searchable="true" abbrv="gcd">
+    <field column="Original Coord System" name="originalCoordSystem" type="java.lang.String" length="32"/>
+    <field column="NamedPlaceExtent" name="namedPlaceExtent" type="java.lang.Float"/>
+    <field column="Georeference Date" name="geoRefDetDate" type="java.util.Calendar" />
+    <field column="Georeferenced By Last Name" name="geoRefByLast" type="java.lang.String" length="50"/> 
+    <field column="Georeferenced By First Name" name="geoRefByFirst" type="java.lang.String" length="50"/> 
+    <field column="Georeferenced By Middle Initials" name="geoRefByMiddle" type="java.lang.String" length="50"/> 
+    <field column="Georeferenced By Title" name="geoRefByTitle" type="java.lang.String" length="50"/> 
+    <field column="Georeference Remarks" name="geoRefRemarks" type="java.lang.String" length="255"/>
+  </table>
   
   <table classname="edu.ku.brc.specify.datamodel.Preparation" table="preparation" tableid="63" lazy="true" >
     <field column="Prepared Date 1" name="preparedDate1" type="calendar_date"/>
