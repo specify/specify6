@@ -1015,9 +1015,9 @@ public class ResourceImportExportDlg extends CustomDialog
         		{
                 	session.beginTransaction();
                 	transOpen = true;
-                	if (rep.getQuery().getId() == null)
+                	if (rep.getReportObject() != null && rep.getReportObject().getId() == null)
                 	{
-                		session.saveOrUpdate(rep.getQuery());
+                		session.saveOrUpdate(rep.getReportObject());
                 	}
                 	session.saveOrUpdate(rep);
                 	session.commit();

@@ -2170,7 +2170,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             //if isCompileRequired() is still true, then an error probably occurred compiling the report.
             JasperReport jr = !jcr.isCompileRequired() ? (JasperReport) JRLoader.loadObject(jcr.getCompiledFile()) : null;
             ReportParametersPanel rpp = jr != null ? new ReportParametersPanel(jr, true) : null;
-            JRDataSource src;
+            JRDataSource src = null;
             if (rs == null && ((qpp != null && qpp.getHasPrompts()) || (rpp != null && rpp.getParamCount() > 0)))
             {
                 Component pane = null;
@@ -2252,15 +2252,21 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                     try
                     {
-                		Workbench wb = session.get(Workbench.class, rs.getOnlyItem().getRecordId());
-                		if (wb != null)
+                		boolean loadedWB = false;
+                		if (rs != null && rs.getOnlyItem() != null)
                 		{
-                			wb.forceLoad();
-                			src = new WorkbenchJRDataSource(wb, true);
+                			Workbench wb = session.get(Workbench.class, rs.getOnlyItem().getRecordId());
+                			if (wb != null)
+                			{
+                				wb.forceLoad();
+                				src = new WorkbenchJRDataSource(wb, true);
+                				loadedWB = true;
+                			}
                 		}
-                		else
+                		if (!loadedWB)
                 		{
-                			UIRegistry.displayErrorDlgLocalized("QueryBldrPane.WB_LOAD_ERROR_FOR_REPORT", rs.getName());
+                			UIRegistry.displayErrorDlgLocalized("QueryBldrPane.WB_LOAD_ERROR_FOR_REPORT", 
+                					rs != null ? rs.getName() : "[" + UIRegistry.getResourceString("NONE") + "]");
                 			return;
                 		}
                     }

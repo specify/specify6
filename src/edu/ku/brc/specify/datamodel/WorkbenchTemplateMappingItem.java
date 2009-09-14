@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.datamodel;
 
+import static edu.ku.brc.helpers.XMLHelper.addAttr;
+
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,7 +35,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.dom4j.Element;
+
 import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.helpers.XMLHelper;
 
 /**
  * Items are sorted by ViewOrder
@@ -522,6 +527,58 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     }
 
     /**
+     * @param sb
+     * 
+     * Constructs an XML description of the object
+     */
+    public void toXML(final StringBuilder sb)
+    {
+        sb.append("<workbenchtemplatemappingitem ");
+        addAttr(sb, "tableName", tableName);
+        addAttr(sb, "srcTableId", srcTableId);
+        addAttr(sb, "fieldName", fieldName);
+        addAttr(sb, "importedColName", importedColName);
+        addAttr(sb, "caption", caption);
+        addAttr(sb, "viewOrder", viewOrder);
+        addAttr(sb, "origImportColumnIndex", origImportColumnIndex);
+        addAttr(sb, "dataFieldLength", dataFieldLength);
+        addAttr(sb, "fieldType", fieldType);
+        addAttr(sb, "metaData", metaData);
+        addAttr(sb, "xCoord", xCoord);
+        addAttr(sb, "yCoord", yCoord);
+        addAttr(sb, "carryForward", carryForward);
+        addAttr(sb, "isExportableToContent", isExportableToContent);
+        addAttr(sb, "isIncludedInTitle", isIncludedInTitle);
+        addAttr(sb, "isRequired", isRequired);
+        sb.append(" />");
+    }
+
+    /**
+     * @param element
+     * 
+     * reads attributes from element.
+     */
+    public void fromXML(final Element element)
+    {
+    	tableName = XMLHelper.getAttr(element, "tableName", null);
+    	srcTableId = XMLHelper.getAttr(element, "srcTableId", -1);
+    	fieldName = XMLHelper.getAttr(element, "fieldName", null);
+    	importedColName = XMLHelper.getAttr(element, "importedColName", null);
+    	caption = XMLHelper.getAttr(element, "caption", null);
+    	viewOrder = (short )XMLHelper.getAttr(element, "viewOrder", -1);
+    	origImportColumnIndex = (short )XMLHelper.getAttr(element, "origImportColumnIndex", -1);
+    	dataFieldLength = (short )XMLHelper.getAttr(element, "dataFieldLength", -1);
+    	fieldType = (short )XMLHelper.getAttr(element, "fieldType", -1);
+    	metaData = XMLHelper.getAttr(element, "metaData", null);
+    	xCoord = (short )XMLHelper.getAttr(element, "xCoord", -1);
+    	yCoord = (short )XMLHelper.getAttr(element, "yCoord", -1);
+    	carryForward = XMLHelper.getAttr(element, "carryForward", false);
+    	isExportableToContent = XMLHelper.getAttr(element, "isExportableToContent", false);
+    	isIncludedInTitle = XMLHelper.getAttr(element, "isIncludedInTitle", false);
+    	isRequired = XMLHelper.getAttr(element, "isRequired", false);
+    }
+    
+    /**
      * @return the Table ID for the class.
      */
     public static int getClassTableId()
@@ -536,4 +593,5 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     {
         return importedColNameMaxLength;
     }
+    
 }

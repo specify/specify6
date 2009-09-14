@@ -369,7 +369,11 @@ public class SpReport extends DataModelObjBase
     public void forceLoad()
     {
         //getQuery().forceLoad(false);
-        getReportObject().forceLoad();
+    	DataModelObjBase repObj = getReportObject();
+    	if (repObj != null)
+    	{
+    		repObj.forceLoad();
+    	}
         getAppResource();
         getSpecifyUser();
     }
@@ -441,6 +445,10 @@ public class SpReport extends DataModelObjBase
         {
         	query.forceLoad();
         	query.toXML(sb);
+        } else if (workbenchTemplate != null)
+        {
+        	workbenchTemplate.forceLoad();
+        	workbenchTemplate.toXML(sb);
         }
         sb.append("</report>\r\n");
     }
@@ -459,6 +467,8 @@ public class SpReport extends DataModelObjBase
         {
         	repeatField = null;
         }
+        query = null;
+        workbenchTemplate = null;
         Element qryNode = element.element("query");
         if (qryNode != null)
         {
@@ -472,9 +482,19 @@ public class SpReport extends DataModelObjBase
         		query.setName(getUniqueNameForImportQuery(query.getName()));
         	}
         }
-        else
+        Element wbtNode = element.element("workbenchtemplate");
+        if (wbtNode != null)
         {
-        	query = null;
+        	WorkbenchTemplate newWbt = new WorkbenchTemplate();
+        	newWbt.initialize();
+        	newWbt.fromXML(wbtNode);
+        	newWbt.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
+        	workbenchTemplate = newWbt;
+//        	workbenchTemplate = determineWbTemplateForImport(newWbt);
+//        	if (workbenchTemplate.getId() == null)
+//        	{
+//        		query.setName(getUniqueNameForImportWbTemplate(workbenchTemplate.getName()));
+//        	}
         }
     }
     
