@@ -194,7 +194,8 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
         String[] relationships = 
         {
                 "determination", "TaxonID",
-                "taxoncitation", "TaxonID",
+                //allow cascade deletes for citations
+                //"taxoncitation", "TaxonID", 
                 "taxon",         "HybridParent1ID",
                 "taxon",         "HybridParent2ID",
                 "taxon",         "AcceptedID"

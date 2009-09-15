@@ -848,8 +848,8 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         this.commonNames = commonNames;
     }
 
-    @OneToMany(mappedBy = "taxon")
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK, CascadeType.DELETE_ORPHAN} )
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "taxon")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
 	public Set<TaxonCitation> getTaxonCitations()
 	{
 		return this.taxonCitations;

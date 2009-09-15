@@ -172,6 +172,10 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         }
     }
 
+    /**
+     * @return list of relationships for purposes of checking
+     * if a record can be deleted.
+     */
     public abstract String[] getRelatedTableAndColumnNames();
     
     
