@@ -571,7 +571,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             session = DataProviderFactory.getInstance().createSession();
             
             D treeDef = (D)session.load(currentDef.getClass(), currentDef.getTreeDefId());
-    	    TreeDefinitionEditor<T,D,I> defEditor = new TreeDefinitionEditor<T,D,I>(treeDef, title, this, canEditTreeDef);
+    	    TreeDefinitionEditor<T,D,I> defEditor = new TreeDefinitionEditor<T,D,I>(treeDef, titleArg, this, canEditTreeDef);
     	    
             return defEditor;
             
