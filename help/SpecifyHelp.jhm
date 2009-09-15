@@ -148,6 +148,7 @@
    <mapID target="Add_Collection" url="SpecifyHelp/Configuration/institution_hierarchy.html#add_collection"/>
    <mapID target="Add_User" url="SpecifyHelp/Security/permissions.html#add_user"/>
    <mapID target="SecuritySummary" url="SpecifyHelp/Security/permissions.html#security_summary"/>
+   <mapID target="SecurityAdmin" url="SpecifyHelp/Security/permissions.html"/>
    <mapID target="Set_Permissions" url="SpecifyHelp/Security/permissions.html#set_permissions"/>
    <mapID target="DataEntryConfigure" url="SpecifyHelp/Data_Entry/Data_Entry.html#data_entry_configure"/>
    <mapID target="SUBVIEW_FORM_HELP" url="SpecifyHelp/Dialogs/Using_Forms.html#sub_form"/>
