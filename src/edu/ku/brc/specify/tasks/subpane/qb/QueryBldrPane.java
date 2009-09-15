@@ -2052,6 +2052,28 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
     
     /**
+     * @param qf
+     * @param fi
+     * 
+     * @return the data class for the result column defined by qf and fi.
+     */
+    protected static Class<?> getDataClass(final SpQueryField qf, final DBFieldInfo fi)
+    {
+    	if (Calendar.class.isAssignableFrom(fi.getDataClass()))
+    	{
+    		//sleazy way to see if qf is a DatePartAccessor
+    		String idString = qf.getStringId();
+    		if (idString.endsWith(fi.getName() + DateAccessorQRI.DATEPART.NumericDay.toString())
+    				|| idString.endsWith(fi.getName() + DateAccessorQRI.DATEPART.NumericMonth.toString())
+    				|| idString.endsWith(fi.getName() + DateAccessorQRI.DATEPART.NumericYear.toString()))
+    		{
+    			return Integer.class;
+    		}
+    	}
+    	return fi.getDataClass();
+    }
+    
+    /**
      * @param queryFields
      * @param fixLabels
      * @return ERTICaptionInfo for the visible columns represented in an SpQuery's queryFields.
@@ -2083,7 +2105,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         if (fi != null)
                         {
                             erti = new ERTICaptionInfoQB(colName, lbl, true, fi.getFormatter(), 0, qf.getStringId(), RecordTypeCodeBuilder.getTypeCode(fi), fi);
-                            erti.setColClass(fi.getDataClass());
+                            erti.setColClass(getDataClass(qf, fi));
                         }
                         else
                         {
