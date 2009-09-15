@@ -1009,6 +1009,7 @@ public class ResourceImportExportDlg extends CustomDialog
 				AppContextMgr.getInstance().saveResource(appRes);
 				resourceSaved = true;
 				rep.setAppResource((SpAppResource) appRes);
+				((SpAppResource)appRes).getSpReports().add(rep);
 				DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         		boolean transOpen = false;
         		try
@@ -1021,6 +1022,7 @@ public class ResourceImportExportDlg extends CustomDialog
                 	}
                 	session.saveOrUpdate(rep);
                 	session.commit();
+                	//AppContextMgr.getInstance().saveResource(appRes);
                 	transOpen = false;
                 }
                 finally
@@ -1255,12 +1257,15 @@ public class ResourceImportExportDlg extends CustomDialog
 								return;
 							}
 
-							appRes.setSpAppResourceDir(dir);
-							dir.getSpAppResources().add(appRes);
+							if (!isRepRes)
+							{
+								appRes.setSpAppResourceDir(dir);
+								dir.getSpAppResources().add(appRes);
 
-							appRes.setDataAsString(data);
-							SpecifyAppContextMgr mgr = (SpecifyAppContextMgr) AppContextMgr.getInstance();
-							mgr.saveResource(appRes);
+								appRes.setDataAsString(data);
+								SpecifyAppContextMgr mgr = (SpecifyAppContextMgr) AppContextMgr.getInstance();
+								mgr.saveResource(appRes);
+							}
 							
 						} catch (Exception e)
 						{
