@@ -1120,10 +1120,10 @@ public class ResourceImportExportDlg extends CustomDialog
 						session.beginTransaction();
 
 						vso = (SpViewSetObj) viewSetsList.getSelectedValue();
-						if (vso.getId() == null)
-						{
+						//if (vso.getId() == null)
+						//{
 							// vso = (SpViewSetObj)vso.clone();
-						}
+						//}
 						SpAppResourceDir appResDir = vso.getSpAppResourceDir();
 						importedName = vso.getName();
 

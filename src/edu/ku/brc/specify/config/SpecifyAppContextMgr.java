@@ -758,14 +758,17 @@ public class SpecifyAppContextMgr extends AppContextMgr
             SpAppResourceDir appResDir = (SpAppResourceDir)list.get(0);
             
             // This loads the lazy sets
-            appResDir.getSpPersistedAppResources();
-            appResDir.getSpPersistedViewSets();
+            appResDir.getSpPersistedAppResources().size();
+            appResDir.getSpPersistedViewSets().size();
             
             // forces load of resource
             for (SpAppResource appRes : appResDir.getSpPersistedAppResources())
             {
-                @SuppressWarnings("unused")
-                String nameStr = appRes.getName();
+                log.debug(appRes.getName());
+            }
+            for (SpViewSetObj vso : appResDir.getSpViewSets())
+            {
+                log.debug(vso.getName());
             }
             appResDir.setTitle(localizedTitle);
             return appResDir;
@@ -1407,7 +1410,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // Common Views 
             //---------------------------------------------------------
             title     = getResourceString("SpecifyAppContextMgr."+COMMONDIR);
-            appResDir = getAppResDir(session, user, null, null, null, false, title, true);
+            appResDir = getAppResDir(session, user, null, null, COMMONDIR, false, title, true);
             dir = XMLHelper.getConfigDir("common"); //$NON-NLS-1$
             if (dir.exists())
             {
@@ -1587,7 +1590,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public List<ViewSetIFace> getViewSetList(final SpAppResourceDir dir)
     {
-        if (debug) log.debug("Looking up["+dir.getUniqueIdentifer()+"]["+dir.getVerboseUniqueIdentifer()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        if (debug) log.debug("Looking up ["+dir.toString()+"] ["+dir.getUniqueIdentifer()+"]["+dir.getVerboseUniqueIdentifer()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         
         Boolean reloadViews = AppPreferences.getLocalPrefs().getBoolean("reload_views", false); //$NON-NLS-1$
         if (reloadViews || forceReloadViews)
@@ -1619,6 +1622,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     Element root = null;
                     try
                     {
+                        //if (debug) log.debug(vso.getDataAsString());
                         root = XMLHelper.readStrToDOM4J(vso.getDataAsString());
                         
                     } catch (Exception ex)
@@ -1749,6 +1753,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
     @Override
     public ViewIFace getView(final String viewSetName, final String viewName)
     {
+        if (debug) log.debug("getView - viewSetName[" + viewSetName + "][" + viewName + "]");
+        
         if (StringUtils.isEmpty(viewName))
         {
             throw new RuntimeException("Sorry the View Name cannot be empty."); //$NON-NLS-1$
@@ -1759,10 +1765,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         for (SpAppResourceDir dir : spAppResourceList)
         {
             //if (debug) log.debug("getView "+getSpAppResDefAsString(appResDef)+"  ["+appResDef.getUniqueIdentifer()+"]\n  ["+appResDef.getIdentityTitle()+"]");
-            if (debug)
-            {
-                log.debug(dir.getIdentityTitle());
-            }
+            if (debug) log.debug("getView - " + dir.getIdentityTitle());
             
             for (ViewSetIFace vs : getViewSetList(dir))
             {
@@ -1919,6 +1922,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
     @Override
     public AppResourceIFace getResource(final String name)
     {
+        if (debug) log.debug("getting resource["+name+"]");
+        
         DataProviderSessionIFace session = null;
         try
         {
