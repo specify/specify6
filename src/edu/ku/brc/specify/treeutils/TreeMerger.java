@@ -12,12 +12,10 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.Geography;
-import edu.ku.brc.specify.datamodel.Storage;
-import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules;
 
 
 /**
@@ -219,22 +217,19 @@ public class TreeMerger<N extends Treeable<N,D,I>,
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected List<String> getPreMergeSql(final Integer toMergeId, final Integer mergeIntoId)
 	{
-		// use nodeTable.getRelationships()???
-		
 		Vector<String> result = new Vector<String>();
-		if (nodeTable.getClassObj().equals(Taxon.class))
+		BaseTreeBusRules<N,D,I> busRules = (BaseTreeBusRules<N,D,I> )DBTableIdMgr.getInstance().getBusinessRule(treeDef.getNodeClass());
+		if (busRules != null)
 		{
-			//deal with determinations and stuff
-		}
-		else if (nodeTable.getClassObj().equals(Geography.class))
-		{
-			result.add("update locality set geographyid = " + mergeIntoId + " where geographyid = " + toMergeId);
-		}
-		else if (nodeTable.getClassObj().equals(Storage.class))
-		{
-			
+			String[] rels = busRules.getAllRelatedTableAndColumnNames();	
+			for (int i = 0; i < rels.length; i += 2)
+			{
+				result.add("update " + rels[i] + " set " + rels[i+1] + " = " + mergeIntoId 
+						+ " where " + rels[i+1] + " = " + toMergeId);
+			}
 		}
 		return result;
 	}

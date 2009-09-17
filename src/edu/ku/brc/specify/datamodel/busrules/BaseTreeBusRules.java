@@ -173,11 +173,22 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
     }
 
     /**
-     * @return list of relationships for purposes of checking
-     * if a record can be deleted.
+     * @return list of foreign key relationships for purposes of checking
+     * if a record can be deleted. 
+     * The list contains two entries for each relationship. The first entry
+     * is the related table name. The second is the name of the foreign key field in the related table.
      */
     public abstract String[] getRelatedTableAndColumnNames();
     
+    /**
+    * @return list of ass foreign key relationships. 
+    * The list contains two entries for each relationship. The first entry
+    * is the related table name. The second is the name of the foreign key field in the related table.
+    */
+    public String[] getAllRelatedTableAndColumnNames()
+    {
+    	return getRelatedTableAndColumnNames();
+    }
     
     /* (non-Javadoc)
 	 * @see edu.ku.brc.af.ui.forms.BaseBusRules#okToEnableDelete(java.lang.Object)

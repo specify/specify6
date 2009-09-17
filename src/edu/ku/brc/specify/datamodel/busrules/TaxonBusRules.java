@@ -204,7 +204,28 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
         return relationships;
     }
 
+    
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules#getAllRelatedTableAndColumnNames()
+     */
+    @Override
+	public String[] getAllRelatedTableAndColumnNames() 
+    {
+    	//XXX probably better to use DBTableInfo for this? (trickiness with PreferredTaxonID).
+    	String[] relationships = 
+        {
+                "determination", "TaxonID",
+                "determination", "PreferredTaxonID",
+                "taxoncitation", "TaxonID", 
+                "taxon",         "HybridParent1ID",
+                "taxon",         "HybridParent2ID",
+                "taxon",         "AcceptedID"
+        };
+
+        return relationships;
+	}
+
+	/* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     @Override
