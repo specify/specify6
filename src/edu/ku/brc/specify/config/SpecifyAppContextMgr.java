@@ -798,8 +798,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
     public AppResourceIFace revertResource(final String virtualDirName,
                                            final AppResourceIFace appResource)
     {
-        int                 virtualNameIndex = getVirtualDirIndex(virtualDirName);
-        String[] levels = getVirtualDirNames();
+        int      virtualNameIndex = getVirtualDirIndex(virtualDirName);
+        String[] levels           = getVirtualDirNames();
         
         SpAppResource    fndAppRes = null;
         for (int i=virtualNameIndex;i<levels.length;i++)
@@ -829,13 +829,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         if (fndAppRes.getSpAppResourceId() == null)
         {
-            //String         path      = fndAppRes.getFileName();
-            //String         dirPath   = path.substring(0, path.length() - (new File(path).getName().length())-1);
-            
-            //AppResourceMgr appResMgr = new AppResourceMgr();
-            //SpAppResource  newAppRes = (SpAppResource)appResMgr.loadResourceByName(new File(dirPath), appResource.getName());
             removeAppResource(virtualDirName, appResource);
-            
             return null;
         }
         
@@ -891,9 +885,22 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         session.attach(spAppResourceDir);
                         spAppResourceDir.getSpPersistedViewSets().remove(fndVSO);
                         spAppResourceDir.getSpViewSets().remove(fndVSO);
+                        
+                        boolean shouldDelDir = spAppResourceDir.getSpPersistedViewSets().size() == 0 && spAppResourceDir.getSpViewSets().size() == 0;
+                        
                         session.beginTransaction();
-                        session.save(spAppResourceDir);
+                        
+                        if (!shouldDelDir)
+                        {
+                            session.save(spAppResourceDir);
+                        }
+                        
                         session.delete(fndVSO);
+                        
+                        if (shouldDelDir)
+                        {
+                            session.delete(spAppResourceDir);
+                        }
                         
                         session.commit();
                         session.flush();
