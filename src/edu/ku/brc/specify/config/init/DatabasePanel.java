@@ -24,6 +24,7 @@ import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -54,6 +55,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
+import edu.ku.brc.dbsupport.DBMSUserMgr.DBSTATUS;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
@@ -94,8 +96,9 @@ public class DatabasePanel extends BaseSetupPanel
     protected Vector<DatabaseDriverInfo> driverList;
     protected boolean                    doSetDefaultValues;
     
+    protected boolean                 isOKForCreateBtn = false;
     protected Boolean                 isOK = null;
-    protected JButton                 createBTN;
+    protected JButton                 createDBBtn;
     protected JLabel                  label;
     protected String                  errorKey = null;
     
@@ -142,11 +145,11 @@ public class DatabasePanel extends BaseSetupPanel
         builder.add(drivers, cc.xy(3, row));
         row += 2;
         
-        label     = UIHelper.createLabel("", SwingConstants.CENTER);
-        createBTN = UIHelper.createI18NButton("CREATE_DB");
+        label       = UIHelper.createLabel("", SwingConstants.CENTER);
+        createDBBtn = UIHelper.createI18NButton("CREATE_DB");
         
         PanelBuilder tstPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p"));
-        tstPB.add(createBTN,          cc.xy(2, 1));
+        tstPB.add(createDBBtn,        cc.xy(2, 1));
         
         PanelBuilder panelPB = new PanelBuilder(new FormLayout("f:p:g", "20px,p,2px,p,8px,p"));
         panelPB.add(tstPB.getPanel(), cc.xy(1, 2));
@@ -170,16 +173,16 @@ public class DatabasePanel extends BaseSetupPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                createBTN.setEnabled(false);
+                createDBBtn.setEnabled(false);
                 skipStepBtn.setEnabled(false);
                 boolean ok = skipDBCreate();
-                createBTN.setEnabled(true);
+                createDBBtn.setEnabled(true);
                 skipStepBtn.setEnabled(true);
                 advLabel.setText(UIRegistry.getResourceString(ok ? "ADV_DB_OK" : "ADV_DB_ERR"));
             }
         });
         
-        createBTN.addActionListener(new ActionListener() {
+        createDBBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {
@@ -224,7 +227,7 @@ public class DatabasePanel extends BaseSetupPanel
         if (isOK != null && !isOK)
         {
             isOK = null;
-            createBTN.setVisible(true);
+            createDBBtn.setVisible(true);
             label.setText(" ");
         }
     }
@@ -239,7 +242,7 @@ public class DatabasePanel extends BaseSetupPanel
         dbNameTxt.setEnabled(enable);
         hostNameTxt.setEnabled(enable);
         drivers.setEnabled(enable);
-        createBTN.setEnabled(enable);
+        createDBBtn.setEnabled(enable);
         skipStepBtn.setEnabled(enable);
     }
 
@@ -279,22 +282,28 @@ public class DatabasePanel extends BaseSetupPanel
         String newConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, "", dbUserName, dbPwd, driverInfo.getName());
         DBConnection.checkForEmbeddedDir(newConnStr);
         
-        if (mgr.connectToDBMS(dbUserName, dbPwd, hostName))
+        try
         {
-            newConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName, dbUserName, dbPwd, driverInfo.getName());
-            
-            DBConnection dbc = DBConnection.getInstance();
-            dbc.setConnectionStr(newConnStr);
-            dbc.setDriver(driverInfo.getDriverClassName());
-            dbc.setDialect(driverInfo.getDialectClassName());
-            dbc.setDriverName(driverInfo.getName());
-            dbc.setServerName(hostName);
-            dbc.setUsernamePassword(dbUserName, dbPwd);
-            dbc.setDatabaseName(dbName);
-            
-            nextBtn.setEnabled(isOK == null || isOK || manualLoginOK);
-            mgr.close();
-            return true;
+            if (mgr.connectToDBMS(dbUserName, dbPwd, hostName))
+            {
+                newConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName, dbUserName, dbPwd, driverInfo.getName());
+                
+                DBConnection dbc = DBConnection.getInstance();
+                dbc.setConnectionStr(newConnStr);
+                dbc.setDriver(driverInfo.getDriverClassName());
+                dbc.setDialect(driverInfo.getDialectClassName());
+                dbc.setDriverName(driverInfo.getName());
+                dbc.setServerName(hostName);
+                dbc.setUsernamePassword(dbUserName, dbPwd);
+                dbc.setDatabaseName(dbName);
+                
+                nextBtn.setEnabled(isOK == null || isOK || manualLoginOK);
+                mgr.close();
+                return true;
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
         }
         return false;
     }
@@ -334,9 +343,11 @@ public class DatabasePanel extends BaseSetupPanel
             progressBar.setVisible(true);
             
             label.setText(getResourceString("CONN_DB"));
-            createBTN.setVisible(false);
+            createDBBtn.setVisible(false);
             
             setUIEnabled(false);
+            
+            DatabasePanel.this.label.setForeground(Color.BLACK);
             
             SwingWorker<Object, Object> worker = new SwingWorker<Object, Object>()
             {
@@ -481,7 +492,7 @@ public class DatabasePanel extends BaseSetupPanel
                     progressBar.setVisible(false);
                     
                     updateBtnUI();
-                    createBTN.setVisible(!isOK);
+                    createDBBtn.setVisible(!isOK);
                     
                     if (isOK)
                     {
@@ -524,6 +535,8 @@ public class DatabasePanel extends BaseSetupPanel
         {
             errorKey = "NO_LOGIN_ROOT";
             DatabasePanel.this.label.setText(UIRegistry.getResourceString(errorKey));
+            DatabasePanel.this.label.setForeground(Color.RED);
+            
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run()
@@ -546,6 +559,10 @@ public class DatabasePanel extends BaseSetupPanel
         {
             nextBtn.setEnabled(isValid && (isOK == null || isOK || manualLoginOK));
         }
+        if (createDBBtn != null)
+        {
+            createDBBtn.setEnabled(isOKForCreateBtn);
+        }
     }
     
     /**
@@ -555,13 +572,24 @@ public class DatabasePanel extends BaseSetupPanel
     @Override
     public boolean isUIValid()
     {
+        label.setText("");
+        
         JTextField[] txtFields = {usernameTxt, passwordTxt, dbNameTxt};
         for (JTextField tf : txtFields)
         {
             if (StringUtils.isEmpty(tf.getText()))
             {
-                return false;
+                return isOKForCreateBtn = false;
             }
+        }
+        
+        isOKForCreateBtn = true;
+        String text = dbNameTxt.getText();
+        if (!text.isEmpty() && !StringUtils.isAlpha(text.substring(0, 1)))
+        {
+            DatabasePanel.this.label.setForeground(Color.RED);
+            label.setText(getResourceString("ERR_BAD_DBNAME"));
+            return isOKForCreateBtn = false;
         }
         
         return (isOK != null && isOK) || manualLoginOK;
@@ -618,7 +646,6 @@ public class DatabasePanel extends BaseSetupPanel
     protected VerifyStatus verifyDatabase(final Properties props)
     {
         boolean      isEmbedded = DBConnection.getInstance().isEmbedded();
-        VerifyStatus status     = VerifyStatus.OK;
         String       dbName     = props.getProperty(DBNAME);
         if (isEmbedded)
         {
@@ -671,9 +698,12 @@ public class DatabasePanel extends BaseSetupPanel
         
         // Here is when we check when the database is NOT embedded
         
-        status = isOkToProceed(props) ? VerifyStatus.OK : VerifyStatus.CANCELLED;
-        
-        return status;
+        switch (isOkToProceed(props))
+        {
+            case ok        : return VerifyStatus.OK;
+            case cancelled : return VerifyStatus.CANCELLED;
+            default        : return VerifyStatus.ERROR;
+        }
     }
     
     /**
@@ -681,7 +711,7 @@ public class DatabasePanel extends BaseSetupPanel
      * @param props the props
      * @return true if it exists
      */
-    private boolean isOkToProceed(final Properties props)
+    private DBSTATUS isOkToProceed(final Properties props)
     {
         String dbName     = props.getProperty(DBNAME);
         String itUsername = props.getProperty(DBUSERNAME);

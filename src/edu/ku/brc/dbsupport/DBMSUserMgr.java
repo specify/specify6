@@ -205,17 +205,17 @@ public abstract class DBMSUserMgr
      * @return if the database has table then it prompts the user,
      * DBSTATUS.ok if no database, or the database has no tables; DBSTATUS.cancelled 
      */
-    public static boolean isOkToProceed(final String dbName, 
-                                        final String hostName, 
-                                        final String itUsername,
-                                        final String itPassword)
+    public static DBSTATUS isOkToProceed(final String dbName, 
+                                         final String hostName, 
+                                         final String itUsername,
+                                         final String itPassword)
     {
         DBSTATUS status = checkForDB(dbName, hostName, itUsername,itPassword);
         if (status == status.hasTables)
         {
-            return UIHelper.promptForAction("PROCEED", "CANCEL", "DEL_CUR_DB_TITLE", UIRegistry.getLocalizedMessage("DEL_CUR_DB", dbName));
+            status = UIHelper.promptForAction("PROCEED", "CANCEL", "DEL_CUR_DB_TITLE", UIRegistry.getLocalizedMessage("DEL_CUR_DB", dbName)) ? DBSTATUS.ok : DBSTATUS.cancelled;
         }
-        return status == DBSTATUS.missingOrEmpty;
+        return status;
     }
 
     /**
