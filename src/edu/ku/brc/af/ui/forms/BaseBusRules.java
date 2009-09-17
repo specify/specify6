@@ -885,9 +885,12 @@ public class BaseBusRules implements BusinessRulesIFace
         boolean doLSID = ((SpecifyLSIDGeneratorFactory)SpecifyLSIDGeneratorFactory.getInstance()).isPrefOn(data.getTableId());
         if (doLSID)
         {
+            //----------------------------------------------------------------
+            // We want Version to always be on
             //AppPreferences remote = AppPreferences.getRemote();
             //String                prefix       = "Prefs.LSID.";
             boolean               doVersioning = true;//remote.getBoolean(prefix + "UseVersioning", false);
+            //----------------------------------------------------------------
             UIFieldFormatterIFace formatter    = null;
             
             if (data.getTableId() == 1)
