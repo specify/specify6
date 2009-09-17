@@ -275,7 +275,7 @@ public class ChooseFromListDlg<T> extends JDialog
      * @param desc the list to be selected from
      * @param includeCancelBtn indicates whether to create and display a cancel btn
      */
-    protected void createUI()
+    public void createUI()
     {
         setTitle(title);
 
@@ -454,6 +454,22 @@ public class ChooseFromListDlg<T> extends JDialog
 
     }
     
+    /**
+     * @return the okBtn
+     */
+    public JButton getOkBtn()
+    {
+        return okBtn;
+    }
+
+    /**
+     * @return the list
+     */
+    public JList getList()
+    {
+        return list;
+    }
+
     public void setCloseOnApply(final boolean isCloseOnApply)
     {
         this.isCloseOnApply = isCloseOnApply;

@@ -2466,15 +2466,15 @@ public class DataBuilder
                                                                 final boolean isNumericOnly,
                                                                 final int   tableNumber)
     {
-        AutoNumberingScheme cns = new AutoNumberingScheme();
-        cns.initialize();
-        cns.setFormatName(formatName);
-        cns.setTableNumber(tableNumber);
-        cns.setSchemeName(schemeName);
-        cns.setSchemeClassName(schemeClassName);
-        cns.setIsNumericOnly(isNumericOnly);
-        persist(cns);
-        return cns;
+        AutoNumberingScheme ans = new AutoNumberingScheme();
+        ans.initialize();
+        ans.setFormatName(formatName);
+        ans.setTableNumber(tableNumber);
+        ans.setSchemeName(schemeName);
+        ans.setSchemeClassName(schemeClassName);
+        ans.setIsNumericOnly(isNumericOnly);
+        persist(ans);
+        return ans;
     }
 
     public static SpPermission createPermission(final String name, 

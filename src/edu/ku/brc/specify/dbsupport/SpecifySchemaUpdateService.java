@@ -22,6 +22,7 @@ package edu.ku.brc.specify.dbsupport;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Frame;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.sql.Connection;
@@ -29,6 +30,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -45,6 +49,7 @@ import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
+import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.ProgressFrame;
@@ -311,14 +316,25 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     count = BasicSQLUtils.getCountAsInt("SELECT COUNT(*)" + postfix);
                     if (count > 0)
                     {
+                        // Get the Format name being used for each Collection's Access Number
+                        Hashtable<Integer, String> collIdToFormatHash = new Hashtable<Integer, String>();
+                        String sql = "SELECT c.UserGroupScopeId, ci.`Format` FROM collection c Inner Join discipline d ON c.DisciplineID = d.UserGroupScopeId " +
+                                     "Inner Join splocalecontainer cn ON d.UserGroupScopeId = cn.DisciplineID " +
+                                     "Inner Join splocalecontaineritem ci ON cn.SpLocaleContainerID = ci.SpLocaleContainerID " + 
+                                     "WHERE ci.Name =  'accessionNumber'";
+                        for (Object[] row : BasicSQLUtils.query(conn, sql))
+                        {
+                            collIdToFormatHash.put((Integer)row[0], row[1].toString());  // Key -> CollId, Value -> Format
+                        }
+                        
                         String ansSQL = "SELECT ac.CollectionID, ac.AutoNumberingSchemeID " + postfix;
                         log.debug(ansSQL);
                         int totCnt = 0;
-                        for (Object[] row : BasicSQLUtils.query(ansSQL))
+                        for (Object[] row : BasicSQLUtils.query(conn, ansSQL))
                         {
-                            String sql = "DELETE FROM autonumsch_coll WHERE CollectionID = " + ((Integer)row[0]) + " AND AutoNumberingSchemeID = " + ((Integer)row[1]);
+                            sql = "DELETE FROM autonumsch_coll WHERE CollectionID = " + ((Integer)row[0]) + " AND AutoNumberingSchemeID = " + ((Integer)row[1]);
                             log.debug(sql);
-                            rv = BasicSQLUtils.update(sql);
+                            rv = BasicSQLUtils.update(conn, sql);
                             if (rv != 1)
                             {
                                 errMsgList.add("There was an error fixing the table: autonumsch_coll for CollectionID = " + ((Integer)row[0]) + " AND AutoNumberingSchemeID = " + ((Integer)row[1]));
@@ -338,7 +354,106 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         rv = count;
                     }
                     
-                    return rv == count;
+                    if (rv != count)
+                    {
+                        return false;
+                    }
+                    
+                    String sql = "SELECT COUNT(d.UserGroupScopeId) CNT, d.UserGroupScopeId FROM division d INNER JOIN autonumsch_div ad ON d.UserGroupScopeId = ad.DivisionID " +
+                                 "INNER JOIN autonumberingscheme ans ON ad.AutoNumberingSchemeID = ans.AutoNumberingSchemeID GROUP BY d.UserGroupScopeId";
+                    log.debug(sql);
+                    for (Object[] row : BasicSQLUtils.query(conn, sql))
+                    {
+                        Integer divId = ((Integer)row[1]);
+                        if (((Long)row[0]) > 1)
+                        {
+                            sql = "SELECT  dv.UserGroupScopeId AS divId, ds.UserGroupScopeId AS dispId, ci.Name, ci.`Format` FROM division dv " +
+                                  "Inner Join discipline ds ON dv.UserGroupScopeId = ds.DivisionID " +
+                                  "Inner Join splocalecontainer c ON ds.UserGroupScopeId = c.DisciplineID " +
+                                  "Inner Join splocalecontaineritem ci ON c.SpLocaleContainerID = ci.SpLocaleContainerID " +
+                                  "WHERE ci.Name = 'accessionNumber' AND dv.UserGroupScopeId = " + divId;
+                            Vector<String>             namesList = new Vector<String>();
+                            Hashtable<String, Integer> formatNames = new Hashtable<String, Integer>();
+                            for (Object[] innerRow : BasicSQLUtils.query(conn, sql))
+                            {
+                                String  formatName = innerRow[3].toString();
+                                Integer dsid       = (Integer)innerRow[1];
+                                if (formatNames.get(formatName) == null)
+                                {
+                                    formatNames.put(formatName, dsid);
+                                    namesList.add(formatName);
+                                }
+                            }
+                            
+                            String desc = "<html>Accessions belong to the same Division. They must all share the same formatter.<BR>" +
+                                          "Please choose a format below that will be the for your Division.<BR>";
+                            ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>((Frame)UIRegistry.getTopWindow(), "Choose a Format", desc, ChooseFromListDlg.OK_BTN, namesList);
+                            dlg.setVisible(true);
+                            
+                            String newFormatName = dlg.getSelectedObject();
+                            
+                            List<String> disciplineNameList = new ArrayList<String>();
+                                
+                            sql = "SELECT ans.AutoNumberingSchemeID FROM division d INNER JOIN autonumsch_div ad ON d.UserGroupScopeId = ad.DivisionID " +
+                                  "INNER JOIN autonumberingscheme ans ON ad.AutoNumberingSchemeID = ans.AutoNumberingSchemeID WHERE d.UserGroupScopeId = " + divId;
+                            log.debug(sql);
+                            int cnt = 0;
+                            for (Object idAnsObj : BasicSQLUtils.querySingleCol(conn, sql))
+                            {
+                                Integer ansId = (Integer)idAnsObj;
+                                if (cnt > 0)
+                                {
+                                    sql = "DELETE FROM autonumsch_div WHERE DivisionID = " + divId + " AND AutoNumberingSchemeID = " + ansId;
+                                    if (BasicSQLUtils.update(conn, sql) != 1)
+                                    {
+                                        errMsgList.add("There was an error fixing the table: autonumsch_div for DivisionID = " + divId + " AND AutoNumberingSchemeID = " + ansId);
+                                        return false;
+                                    }
+                                    
+                                    sql = "DELETE FROM autonumberingscheme WHERE AutoNumberingSchemeID = " + ansId;
+                                    if (BasicSQLUtils.update(conn, sql) != 1)
+                                    {
+                                        errMsgList.add("There was an error fixing the table: autonumberingscheme; removing AutoNumberingSchemeID = " + ansId);
+                                        return false;
+                                    }
+                                    
+                                    sql = "SELECT SpLocaleContainerItemID, ds.Name FROM splocalecontaineritem ci INNER JOIN splocalecontainer c ON ci.SpLocaleContainerID = c.SpLocaleContainerID " +
+                                          "INNER JOIN discipline ds ON c.DisciplineID = ds.UserGroupScopeId " +
+                                          "INNER JOIN division dv ON ds.DivisionID = dv.UserGroupScopeId " +
+                                          "WHERE ci.Name =  'accessionNumber' AND dv.UserGroupScopeId = " + divId + " AND NOT (ci.`Format` = '" + newFormatName + "')";
+                                    
+                                    log.debug(sql);
+                                    
+                                    for (Object[] idRow : BasicSQLUtils.query(conn, sql))
+                                    {
+                                        Integer spItemId = (Integer)idRow[0];
+                                        String  dispName = idRow[1].toString();
+                                        
+                                        sql = "UPDATE splocalecontaineritem SET `Format`='"+newFormatName+"' WHERE SpLocaleContainerItemID  = " + spItemId;
+                                        log.debug(sql);
+                                        if (BasicSQLUtils.update(conn, sql) == 1)
+                                        {
+                                            disciplineNameList.add(dispName);
+                                        } else
+                                        {
+                                            log.error("Error changing formatter name.");
+                                        }
+                                    }
+                                }
+                                cnt++;
+                            }
+                            
+                            desc = "<html>The following Disciplines have had their Accession Number formatter changed.<BR>" +
+                     		       "This change may require some Accession Numbers to be changed.<BR>" + 
+                                   "Please contact Specify Customer Support for additional help.<BR>";
+                            dlg = new ChooseFromListDlg<String>((Frame)UIRegistry.getTopWindow(), "Accession Number Changes", desc, ChooseFromListDlg.OK_BTN, disciplineNameList);
+                            dlg.createUI();
+                            dlg.getOkBtn().setEnabled(true);
+                            dlg.setVisible(true);
+
+                        }
+                    }
+                    return true;
                     
                 } catch (SQLException ex)
                 {

@@ -232,17 +232,16 @@ public class CollectionBusRules extends BaseBusRules
                     AutoNumberingScheme catNumScheme = bldSampleDB.createAutoNumScheme(props, "catnumfmt", "Catalog Numbering Scheme", CollectionObject.getClassTableId());
                     AutoNumberingScheme accNumScheme = null;
 
-                    if (!institution.getIsAccessionsGlobal())
-                    {
-                        accNumScheme = bldSampleDB.createAutoNumScheme(props, "accnumfmt", "Accession Numbering Scheme", Accession.getClassTableId()); // I18N
-                        
-                    } else
+                    if (institution.getIsAccessionsGlobal())
                     {
                         List<?> list = hSession.getDataList("FROM AutoNumberingScheme WHERE tableNumber = "+Accession.getClassTableId());
                         if (list != null && list.size() == 1)
                         {
                             accNumScheme = (AutoNumberingScheme)list.get(0);
                         }
+                    } else
+                    {
+                        accNumScheme = bldSampleDB.createAutoNumScheme(props, "accnumfmt", "Accession Numbering Scheme", Accession.getClassTableId()); // I18N
                     }
                     
                     newCollection = bldSampleDB.createEmptyCollection(discipline, 

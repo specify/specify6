@@ -63,6 +63,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.config.DisciplineType;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
@@ -222,6 +223,8 @@ public class SpecifyDBSetupWizard extends JPanel
         
         UIFieldFormatterMgr.setDoingLocal(true);
         
+       String accessionFmt = null;
+       
         if (wizardType == WizardType.Institution)
         {
             dbPanel = new DatabasePanel(nextBtn, backBtn, "wizard_mysql_username", true);
@@ -269,11 +272,13 @@ public class SpecifyDBSetupWizard extends JPanel
                     new String[] { "checkbox"},
                     nextBtn, backBtn, true);
             panels.add(accessionPanel);
+
             
             if (wizardType == WizardType.Institution)
             {
-                accessionPickerGbl = new FormatterPickerPanel("ACCNOFMT", "wizard_create_accession_number", nextBtn, backBtn, false);
+                accessionPickerGbl = new FormatterPickerPanel("ACCNOFMT", "wizard_create_accession_number", nextBtn, backBtn, false, null);
                 panels.add(accessionPickerGbl);
+                
             }
 
             storageTDPanel = new TreeDefSetupPanel(StorageTreeDef.class, 
@@ -304,6 +309,27 @@ public class SpecifyDBSetupWizard extends JPanel
                 new String[] { "divName", "divAbbrev"}, 
                 nextBtn, backBtn, true));
         }
+        
+        if (wizardType != WizardType.Institution)
+        {
+            Institution institution = AppContextMgr.getInstance().getClassObject(Institution.class);
+            Division    division    = AppContextMgr.getInstance().getClassObject(Division.class);
+            if (!institution.getIsAccessionsGlobal())
+            {
+                String sql = "SELECT ans.FormatName FROM autonumberingscheme ans  Inner Join autonumsch_div ad ON ans.AutoNumberingSchemeID = ad.AutoNumberingSchemeID " +
+                             "INNER JOIN division d ON ad.DivisionID = d.UserGroupScopeId WHERE d.DivisionID = " + division.getId();
+                log.debug(sql);
+                Vector<Object> rows = BasicSQLUtils.querySingleCol(sql);
+                if (rows.size() == 1)
+                {
+                    accessionFmt = rows.get(0).toString();
+                } else
+                {
+                    log.error("The return "+rows.size());
+                }
+            }
+        }
+
 
         if (wizardType == WizardType.Institution || 
             wizardType == WizardType.Division || 
@@ -343,20 +369,28 @@ public class SpecifyDBSetupWizard extends JPanel
                     new String[] { "collName", "collPrefix", }, 
                     nextBtn, backBtn, true));
         
-        catNumPicker = new FormatterPickerPanel("CATNOFMT", "wizard_create_catalog_number", nextBtn, backBtn, true);
+        catNumPicker = new FormatterPickerPanel("CATNOFMT", "wizard_create_catalog_number", nextBtn, backBtn, true, null);
         panels.add(catNumPicker);
         
         if (wizardType != WizardType.Institution)
         {
-            Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
-            if (inst != null && !inst.getIsAccessionsGlobal())
+            Division division = AppContextMgr.getInstance().getClassObject(Division.class);
+            String sql = "SELECT COUNT(*) FROM division d INNER JOIN collection c ON d.UserGroupScopeId = c.DisciplineID WHERE d.UserGroupScopeId = " + division.getId();
+            log.debug(sql);
+            int numCollectionsByDiv = BasicSQLUtils.getCountAsInt(sql);
+
+            if (numCollectionsByDiv == 0)
             {
-                accessionPickerCol = new FormatterPickerPanel("ACCNOFMT", "wizard_create_accession_number", nextBtn, backBtn, false); 
-                panels.add(accessionPickerCol);
+                Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
+                if (inst != null && !inst.getIsAccessionsGlobal())
+                {
+                    accessionPickerCol = new FormatterPickerPanel("ACCNOFMT", "wizard_create_accession_number", nextBtn, backBtn, false, accessionFmt); 
+                    panels.add(accessionPickerCol);
+                }
             }
         } else
         {
-            accessionPickerCol = new FormatterPickerPanel("ACCNOFMT", "wizard_create_accession_number", nextBtn, backBtn, false); 
+            accessionPickerCol = new FormatterPickerPanel("ACCNOFMT", "wizard_create_accession_number", nextBtn, backBtn, false, null); 
             panels.add(accessionPickerCol);
         }
         

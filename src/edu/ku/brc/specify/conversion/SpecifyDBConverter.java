@@ -33,6 +33,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -327,7 +328,6 @@ public class SpecifyDBConverter
                 for (Object[] tblRow : tables)
                 {
                     String tableName = tblRow[0].toString();
-                    //System.out.println("  ["+tableName+"]  ");
                     if (tableName.equalsIgnoreCase("usysversion"))
                     {
                         fnd = true;
@@ -554,6 +554,11 @@ public class SpecifyDBConverter
         }
         
         log.debug("Preparing new database");
+        frame.setDesc("Gather statistics from " + dbNameDest);
+        frame.turnOffOverAll();
+        frame.getProcessProgress().setIndeterminate(true);
+        
+        UIHelper.centerAndShow(frame);
         
         DBConnection oldDB = DBConnection.createInstance(driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), dbNameDest, oldConnStr, itUsrPwd.first, itUsrPwd.second);
         
@@ -566,6 +571,8 @@ public class SpecifyDBConverter
         }
         
         OldDBStatsDlg dlg = new OldDBStatsDlg(oldDBConn);
+        frame.setVisible(false);
+        
         dlg.setVisible(true);
         if (dlg.isCancelled())
         {
@@ -580,13 +587,24 @@ public class SpecifyDBConverter
         
         convLogger.setIndexTitle("Conversion from "+dbNameSource+" to "+dbNameDest);
         
+        frame.setSize(500, frame.getPreferredSize().height);
+        
+        frame.setDesc("Fixing NULL Timestamps for conversion.");
+        UIHelper.centerAndShow(frame);
+        
         // Makes sure old data has all the TimestampCreated filled in
         SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         Timestamp        now               = new Timestamp(System .currentTimeMillis());
         String           nowStr            = dateTimeFormatter.format(now);
         Vector<Object[]> tables = BasicSQLUtils.query(oldDBConn, "show tables");
+        
+        frame.setProcess(0, tables.size());
+        
+        int cnt = 0;
         for (Object[] tblRow : tables)
         {
+            frame.setProcess(cnt++);
+            
             String tableName = tblRow[0].toString();
             if (!tableName.toLowerCase().startsWith("usys") && 
                 !tableName.toLowerCase().startsWith("web") && 
@@ -596,15 +614,28 @@ public class SpecifyDBConverter
             {
                 try
                 {
-                    if (BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM " + tableName + " WHERE TimestampCreated IS NULL") > 0)
+                    System.out.println("Table: "+tableName);
+                    
+                    List<String> fieldNames = new ArrayList<String>();
+                    BasicSQLUtils.getFieldNamesFromSchema(oldDBConn, tableName, fieldNames, BasicSQLUtils.mySourceServerType);
+                    for (String fieldName : fieldNames)
                     {
-                        BasicSQLUtils.update(oldDBConn, "UPDATE "+tableName+ " SET TimestampCreated='"+nowStr+"' WHERE TimestampCreated IS NULL");
+                        if (fieldName.equals("TimestampCreated"))
+                        {
+                            if (BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM " + tableName + " WHERE TimestampCreated IS NULL") > 0)
+                            {
+                                BasicSQLUtils.update(oldDBConn, "UPDATE "+tableName+ " SET TimestampCreated='"+nowStr+"' WHERE TimestampCreated IS NULL");
+                            }
+                            break;
+                        }
                     }
                 } catch (Exception ex)
                 {
                 }
             }
         }
+        
+        frame.turnOnOverAll();
         
         final GenericDBConversion conversion = new GenericDBConversion(oldDBConn, newDBConn, dbNameSource, convLogger);
         if (!conversion.initialize())

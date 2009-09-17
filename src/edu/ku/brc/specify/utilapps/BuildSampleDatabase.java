@@ -701,7 +701,7 @@ public class BuildSampleDatabase
             }
             
             // The two AutoNumberingSchemes have been committed
-            Pair<AutoNumberingScheme, AutoNumberingScheme> ansPair = localizeDisciplineSchema(discipline, props, isAccGlobal);
+            Pair<AutoNumberingScheme, AutoNumberingScheme> ansPair = localizeDisciplineSchema(division, discipline, props, isAccGlobal);
             
             // These create a new session and persist records in the Schema tables (SpLocaleContainerItem)
             makeFieldVisible(null, discipline);
@@ -750,8 +750,8 @@ public class BuildSampleDatabase
      * @param disciplineType
      * @param userAgent
      * @param preLoadTaxon
-     * @param taxonXML
-     * @param geoXML
+     * @param taxonDefXML
+     * @param geoDefXML
      * @return
      */
     public Discipline createEmptyDiscipline(final Division       division,
@@ -761,8 +761,8 @@ public class BuildSampleDatabase
                                             final boolean        preLoadTaxon, 
                                             final String         taxonFileName,
                                             final boolean        usingOtherTxnFile, 
-                                            final String         taxonXML, 
-                                            final String         geoXML, 
+                                            final String         taxonDefXML, 
+                                            final String         geoDefXML, 
                                             final Properties     props)
     {
         log.debug("In createEmptyDiscipline - createStep: "+createStep);
@@ -858,17 +858,13 @@ public class BuildSampleDatabase
         
         startTx();
         
-        boolean                    taxonWasBuilt = false;
         Hashtable<String, Boolean> colNameHash   = null;
         if (StringUtils.isNotEmpty(taxonFileName))
         {
             colNameHash = getColumnNamesFromXLS(taxonFileName, usingOtherTxnFile);
         }
         
-        if (colNameHash != null)
-        {
-            taxonWasBuilt = createTaxonDefFromXML(taxa, colNameHash, taxonTreeDef, taxonXML);
-        }
+        boolean taxonWasBuilt = createTaxonDefFromXML(taxa, colNameHash, taxonTreeDef, taxonDefXML);
         
         frame.incOverall();
         
@@ -903,7 +899,7 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
         frame.incOverall();
         
-        createGeographyDefFromXML(geos, geoTreeDef, geoXML);
+        createGeographyDefFromXML(geos, geoTreeDef, geoDefXML);
         
         frame.setProcess(++createStep);
         
@@ -1017,9 +1013,7 @@ public class BuildSampleDatabase
      * @param collName
      * @param userAgent
      * @param specifyAdminUser
-     * @param catFormatName
      * @param catNumScheme
-     * @param accANS
      * @param isEmbeddedCE
      * @return
      */
@@ -1136,7 +1130,6 @@ public class BuildSampleDatabase
         if (numFormat != null)
         {
             autoNumScheme = createAutoNumberingScheme(schemeName, "", numFmtName, isNumFmtNumeric, tableId);
-            //persist(autoNumScheme);
         }
 
         return autoNumScheme;
@@ -1148,7 +1141,8 @@ public class BuildSampleDatabase
      * @param isAccGlobal
      * @return
      */
-    public Pair<AutoNumberingScheme, AutoNumberingScheme> localizeDisciplineSchema(final Discipline discipline, 
+    public Pair<AutoNumberingScheme, AutoNumberingScheme> localizeDisciplineSchema(final Division division, 
+                                                                                   final Discipline discipline, 
                                                                                    final Properties props,
                                                                                    final boolean    isAccGlobal)
     {
@@ -1157,15 +1151,38 @@ public class BuildSampleDatabase
         
         // Check to see if we are creating from scratch
         boolean isFromScratch = props.getProperty("instName") != null;
-        /*for (Object key : props.keySet())
+        
+        
+        String postFix = "FROM autonumberingscheme ans INNER JOIN autonumsch_div ad ON ans.AutoNumberingSchemeID = ad.AutoNumberingSchemeID INNER JOIN division d ON ad.DivisionID = d.UserGroupScopeId WHERE d.UserGroupScopeId = " + division.getId();
+        String sql = "SELECT COUNT(*) " + postFix;
+        log.debug(sql);
+        int numOfDivAns = BasicSQLUtils.getCountAsInt(sql);
+        if (numOfDivAns > 1)
         {
-            System.out.println(key+" -> "+props.get(key));
-        }*/
+            // error
+        }
         
         // NOTE: createAutoNumScheme persists the AutoNumberingScheme
         if (!isAccGlobal || isFromScratch)
         {
-            accNumScheme = createAutoNumScheme(props, "accnumfmt", "Accession Numbering Scheme", Accession.getClassTableId()); // I18N
+            if (numOfDivAns == 0)
+            {
+                accNumScheme = createAutoNumScheme(props, "accnumfmt", "Accession Numbering Scheme", Accession.getClassTableId()); // I18N
+                
+            } else
+            {
+                sql = "SELECT ans.AutoNumberingSchemeID " + postFix;
+                log.debug(sql);
+                int ansId = BasicSQLUtils.getCountAsInt(sql);
+                
+                DataProviderSessionIFace hSession = new HibernateDataProviderSession(session);
+                List<?> list = hSession.getDataList("FROM AutoNumberingScheme WHERE id = "+ansId);
+                if (list != null && list.size() == 1)
+                {
+                    accNumScheme = (AutoNumberingScheme)list.get(0);
+                }
+                hSession.close();
+            }
             
         } else
         {
@@ -1175,6 +1192,7 @@ public class BuildSampleDatabase
             {
                 accNumScheme = (AutoNumberingScheme)list.get(0);
             }
+            hSession.close();
         }
         
         startTx();
@@ -1248,27 +1266,27 @@ public class BuildSampleDatabase
      * @param taxonList
      * @param colNameHash
      * @param taxonTreeDef
-     * @param taxonXML
+     * @param taxonDefXML
      * @return
      */
     @SuppressWarnings("unchecked")
     public static boolean createTaxonDefFromXML(final List<Object>               taxonList, 
                                                 final Hashtable<String, Boolean> colNameHash,
                                                 final TaxonTreeDef               taxonTreeDef, 
-                                                final String                     taxonXML)
+                                                final String                     taxonDefXML)
     {
-        if (StringUtils.isNotEmpty(taxonXML))
+        if (StringUtils.isNotEmpty(taxonDefXML))
         {
             XStream xstream = new XStream();
             TreeDefRow.configXStream(xstream);
             
-            Vector<TreeDefRow> treeDefList = (Vector<TreeDefRow>)xstream.fromXML(taxonXML);
+            Vector<TreeDefRow> treeDefList = (Vector<TreeDefRow>)xstream.fromXML(taxonDefXML);
             TaxonTreeDefItem   parent      = null;
             int                cnt         = 0;
             for (TreeDefRow row : treeDefList)
             {
                 if (row.isIncluded() || 
-                    (row.getDefName() != null && colNameHash == null || colNameHash.get(row.getDefName().toLowerCase()) != null))
+                    (row.getDefName() != null && (colNameHash == null || colNameHash.get(row.getDefName().toLowerCase()) != null)))
                 {
                     TaxonTreeDefItem ttdi = new TaxonTreeDefItem();
                     ttdi.initialize();

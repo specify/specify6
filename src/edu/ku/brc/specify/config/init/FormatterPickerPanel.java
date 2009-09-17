@@ -80,6 +80,7 @@ public class FormatterPickerPanel extends BaseSetupPanel
     protected UIFieldFormatterIFace       newFormatter = null;
     protected int                         newFmtInx    = 0;
     protected boolean                     wasUsed      = false;
+    protected String                      currFormatter;
     
     /**
      * @param nextBtn
@@ -89,13 +90,20 @@ public class FormatterPickerPanel extends BaseSetupPanel
                                 final String helpContext,
                                 final JButton nextBtn, 
                                 final JButton prevBtn, 
-                                final boolean doingCatNums)
+                                final boolean doingCatNums,
+                                final String currFormatter)
     {
         super(panelName, helpContext, nextBtn, prevBtn);
         
-        this.doingCatNums = doingCatNums;
+        this.doingCatNums  = doingCatNums;
+        this.currFormatter = currFormatter;
         
         formatterCBX.addActionListener(createFrmCBXAL());
+        
+        if (currFormatter != null && !doingCatNums)
+        {
+            formatterCBX.setEnabled(false);
+        }
         
         loadFormatCbx(null);
 
@@ -246,10 +254,16 @@ public class FormatterPickerPanel extends BaseSetupPanel
             ((DefaultComboBoxModel)formatterCBX.getModel()).addElement(fmt.getName());
         }
 
-        if (selectedFmt != null)
+        if (currFormatter != null)
+        {
+            formatterCBX.setSelectedItem(currFormatter);
+            nextBtn.setEnabled(true);
+            
+        } else if (selectedFmt != null)
         {
             formatterCBX.setSelectedItem(selectedFmt.getName());
             nextBtn.setEnabled(true);
+            
         } else
         {
             formatterCBX.setSelectedIndex(-1);

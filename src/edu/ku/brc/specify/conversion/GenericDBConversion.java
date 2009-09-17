@@ -260,6 +260,27 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             int i = dt.ordinal();
             dispToObjTypeHash.put(dt, new Pair<Integer, Boolean>(objTypes[i], isEmbdded[i]));
         }
+   }
+    
+    /**
+     * @return true if to continue
+     */
+    public boolean initializeNew()
+    {
+        Integer colObjTypeCnt  = getCount(oldDBConn, "SELECT COUNT(*) FROM collectionobject WHERE CollectionObjectTypeID > 8 AND CollectionObjectTypeID < 20 ");
+        if (colObjTypeCnt != null && colObjTypeCnt > 0)
+        {
+            String sql = "SELECT DISTINCT CollectionObjectTypeID FROM collectionobject WHERE CollectionObjectTypeID > 8 AND CollectionObjectTypeID < 20";
+            Vector<TaxonTypeHolder> datas = new Vector<TaxonTypeHolder>();
+            Vector<Object[]> rows = query(oldDBConn, sql); 
+            for (Object[] row : rows)
+            {
+               TaxonTypeHolder tth = new TaxonTypeHolder(row);
+               datas.add(tth);
+            }
+            return true;
+        }
+        return false;
     }
     
     /**
@@ -268,7 +289,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     public boolean initialize()
     {
         Integer txnTypeCnt  = getCount(oldDBConn, "SELECT count(*) FROM taxonomytype WHERE TaxonomyTypeID IN (SELECT distinct TaxonomyTypeID FROM taxonname WHERE RankId <> 0)");
-        if (txnTypeCnt != null)
+        if (txnTypeCnt != null && txnTypeCnt > 0)
         {
             String sql = "SELECT tt.TaxonomyTypeID,TaxonomyTypeName,cnt FROM taxonomytype tt INNER JOIN (SELECT COUNT(*) as cnt, TaxonomyTypeID FROM " +
                          "taxonname WHERE RankId <> 0 GROUP BY TaxonomyTypeID) tx ON tt.TaxonomyTypeID = tx.TaxonomyTypeID";

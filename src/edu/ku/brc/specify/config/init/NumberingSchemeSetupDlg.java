@@ -110,22 +110,6 @@ public class NumberingSchemeSetupDlg extends CustomDialog
         //okLabel = UIRegistry.getResourceString("CLOSE");
     }
     
-    /**
-     * 
-     */
-    public NumberingSchemeSetupDlg(final Division   division, 
-                                   final Discipline discipline,
-                                   final Collection collection)
-    {
-        super((Frame)UIRegistry.getMostRecentWindow(), "", true, OKHELP, null);
-        
-        this.division   = division;
-        this.discipline = discipline;
-        this.collection = collection;
-        
-        okLabel = UIRegistry.getResourceString("CLOSE");
-    }
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CustomDialog#createUI()
      */

@@ -178,6 +178,15 @@ public class ProgressFrame extends JFrame
     /**
      * 
      */
+    public void turnOnOverAll()
+    {
+        overallProgress.setVisible(true);
+        overallLbl.setVisible(true);
+    }
+    
+    /**
+     * 
+     */
     public synchronized void incOverall()
     {
         overallProgress.setValue(overallProgress.getValue() + 1);
