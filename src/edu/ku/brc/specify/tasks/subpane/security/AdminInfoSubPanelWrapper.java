@@ -21,7 +21,6 @@ package edu.ku.brc.specify.tasks.subpane.security;
 
 import java.awt.Component;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
@@ -229,7 +228,7 @@ public class AdminInfoSubPanelWrapper
             agentCBX = (ValComboBoxFromQuery)cbx;
         }
         
-        Agent uiAgent = (Agent)agentCBX.getValue();
+        Agent uiAgent = (Agent)(agentCBX != null ? agentCBX.getValue() : null);
         
         // Couldn't call BuinessRules because of a double session
         // need to look into it later
@@ -244,36 +243,36 @@ public class AdminInfoSubPanelWrapper
             
             busRules.beforeMerge(user, session);
             
+            
             // Get All the Agent Ids for this discipline.
             String sql = "SELECT a.AgentID FROM discipline d INNER JOIN agent_discipline ad ON d.UserGroupScopeId = ad.DisciplineID " +
                          "INNER JOIN agent a ON ad.AgentID = a.AgentID " +
                          "INNER JOIN specifyuser sp ON a.SpecifyUserID = sp.SpecifyUserID " +
-                         "WHERE d.UserGroupScopeId = " + nodesDiscipline.getId();
-            HashSet<Integer> dispAgentIds = new HashSet<Integer>();
-            for (Object objId : BasicSQLUtils.querySingleCol(sql))
-            {
-                dispAgentIds.add((Integer)objId);
-            }
+                         "WHERE d.UserGroupScopeId = " + nodesDiscipline.getId() + " AND a.SpecifyUserID = " + user.getId();
             
-            // Hibernate doesn't seem to be cascading the Merge
-            // when Agent has been edited outside the session.
-            // So this seems to be the only way I can call merge and save.
-            // it is totally bizarre
+            int     prevAgentID   = BasicSQLUtils.getCountAsInt(sql);
+            Integer idToBeRemoved = null;
+            if (prevAgentID != uiAgent.getId())
+            {
+                idToBeRemoved = prevAgentID;
+            }
             
             Set<Agent> set = user.getAgents();
             for (Agent agent : new Vector<Agent>(set))
             {
-                if (dispAgentIds.contains(agent.getId()))
+                if (uiAgent.getId().equals(agent.getId()))
                 {
-                    set.remove(agent);
-                    agent.setSpecifyUser(null);
+                    if (!agent.getVersion().equals(uiAgent.getVersion()))
+                    {
+                        session.refresh(agent);
+                    }
+                } else if (agent.getId().equals(idToBeRemoved))
+                {
                     toBeReleased = agent;
+                    set.add(uiAgent);
+                    uiAgent.setSpecifyUser(user);
                 }
             }
-            
-            Agent agt = session.get(Agent.class, uiAgent.getId());
-            set.add(agt);
-            agt.setSpecifyUser(user);
             
             user = session.merge(user);
             busRules.beforeSave(user, session);
