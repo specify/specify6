@@ -310,6 +310,38 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         return false;
                     }
                     
+                    count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM spexportschemaitem");
+                    rv = BasicSQLUtils.update(conn, "ALTER TABLE spexportschemaitem MODIFY FieldName varchar(64)");
+                    if (rv != count)
+                    {
+                        errMsgList.add("Update count didn't match for update to table: spexportschemaitem");
+                        return false;
+                    }
+                    
+                    count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM agent");
+                    rv = BasicSQLUtils.update(conn, "ALTER TABLE agent MODIFY LastName varchar(128)");
+                    if (rv != count)
+                    {
+                        errMsgList.add("Update count didn't match for update to table: agent");
+                        return false;
+                    }
+                    
+                    count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM spexportschema");
+                    rv = BasicSQLUtils.update(conn, "ALTER TABLE spexportschema MODIFY SchemaName varchar(80)");
+                    if (rv != count)
+                    {
+                        errMsgList.add("Update count didn't match for update to table: spexportschema");
+                        return false;
+                    }
+                    
+                    count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM spexportschema");
+                    rv = BasicSQLUtils.update(conn, "ALTER TABLE spexportschema MODIFY SchemaVersion varchar(80)");
+                    if (rv != count)
+                    {
+                        errMsgList.add("Update count didn't match for update to table: spexportschema");
+                        return false;
+                    }
+                    
                     // Find Accession NumberingSchemes that 'attached' to Collections
                     String postfix = " FROM autonumsch_coll ac Inner Join autonumberingscheme ans ON ac.AutoNumberingSchemeID = ans.AutoNumberingSchemeID WHERE ans.TableNumber = '7'";
                     log.debug("SELECT COUNT(*)" + postfix);
