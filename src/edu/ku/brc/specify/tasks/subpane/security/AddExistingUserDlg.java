@@ -30,6 +30,9 @@ import java.util.Vector;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.ListSelectionModel;
+
+import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -54,6 +57,8 @@ import edu.ku.brc.ui.UIHelper;
 @SuppressWarnings("serial")
 public class AddExistingUserDlg extends CustomDialog
 {
+    private static final Logger log = Logger.getLogger(AddExistingUserDlg.class);
+    
     final private String AED = "AddExistingUserDlg.";
     
     private JList      userList;
@@ -101,38 +106,62 @@ public class AddExistingUserDlg extends CustomDialog
     /**
      * Gets a list of SpecifyUser ids that are in the group or out of the group
      * @param groupId the primary key id of the group
+     * @param groupType the type of group
      * @param inGroup whether the user are in the group or out
      * @return the list of users (never null)
      */
     @SuppressWarnings("unchecked")
-    public static List<SpecifyUser> getUsers(final int groupId, final boolean inGroup)
+    private static List<SpecifyUser> getUsers(final int     groupId, 
+                                              final boolean inGroup)
     {
-        String sql = "SELECT DISTINCT u.SpecifyUserID, u.Name FROM specifyuser u INNER JOIN specifyuser_spprincipal upr ON u.SpecifyUserID = upr.SpecifyUserID " +
-                     "INNER JOIN spprincipal p ON upr.SpPrincipalID = p.SpPrincipalID WHERE p.SpPrincipalID " + (inGroup ? "= " : "<> ") + groupId;
+        String sql = "SELECT DISTINCT u.SpecifyUserID FROM specifyuser u INNER JOIN specifyuser_spprincipal upr ON u.SpecifyUserID = upr.SpecifyUserID " +
+                     "INNER JOIN spprincipal p ON upr.SpPrincipalID = p.SpPrincipalID WHERE p.SpPrincipalID " + 
+                     (inGroup ? "= " : "<> ") + groupId;
         
-        StringBuilder sb = new StringBuilder("FROM SpecifyUser WHERE id in (");
-        Vector<Object[]> rows = BasicSQLUtils.query(sql);
-        int i = 0;
-        for (Object[] row : rows)
+        log.debug(sql);
+        
+        ArrayList<Integer> ids = new ArrayList<Integer>();
+        
+        Vector<Object> rows = BasicSQLUtils.querySingleCol(sql);
+        for (Object objId : rows)
         {
-            if (i != 0) sb.append(',');
-            sb.append(row[0]);
-            i++;
+            sql = "SELECT COUNT(u.SpecifyUserID) FROM specifyuser u INNER JOIN specifyuser_spprincipal upr ON u.SpecifyUserID = upr.SpecifyUserID " +
+                  "INNER JOIN spprincipal p ON upr.SpPrincipalID = p.SpPrincipalID WHERE p.SpPrincipalID = " + groupId + " AND u.SpecifyUserID = " + objId;
+            log.debug(sql);
+            Integer count = BasicSQLUtils.getCount(sql);
+            if (count != null && count == 0)
+            {
+                ids.add((Integer)objId);
+            }
         }
-        sb.append(") ORDER BY name");
         
-        DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();
-        try
+        if (ids.size() > 0)
         {
-            return (List<SpecifyUser>)session.getDataList(sb.toString());
+            StringBuilder sb = new StringBuilder("FROM SpecifyUser WHERE id in (");
+            int i = 0;
+            for (Integer id : ids)
+            {
+                if (i != 0) sb.append(',');
+                sb.append(id);
+                i++;
+            }
+            sb.append(") ORDER BY name");
             
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            
-        } finally
-        {
-            session.close();
+            DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();
+            try
+            {
+                log.debug(sb.toString());
+                
+                return (List<SpecifyUser>)session.getDataList(sb.toString());
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                
+            } finally
+            {
+                session.close();
+            }
         }
         return new ArrayList<SpecifyUser>();
     }
@@ -163,9 +192,12 @@ public class AddExistingUserDlg extends CustomDialog
         if (listEmpty)
         {
             listModel.addElement(getResourceString(AED+"GRP_ALL"));
+            okBtn.setEnabled(false);
         }
         JList usrList = new JList(listModel);
         usrList.setEnabled(!listEmpty);
+        
+        usrList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         
         usrList.addMouseListener(new MouseAdapter()
         {
@@ -186,25 +218,17 @@ public class AddExistingUserDlg extends CustomDialog
      * Returns the selected user, if OK button was clicked. Returns null if no user was selected.
      * @return the selected user, if OK button was clicked. Returns null if no user was selected.
      */
-    public SpecifyUser[] getSelectedUsers() 
+    public SpecifyUser getSelectedUser() 
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-            Object[] objs = userList.getSelectedValues();
-            final int n = objs.length;
-            if (btnPressed == OK_BTN && n > 0) 
+            SpecifyUser selectedUser = (SpecifyUser)userList.getSelectedValue();
+            if (btnPressed == OK_BTN && selectedUser != null) 
             {
-                SpecifyUser[] selectedUsers = new SpecifyUser[n];
-                for (int i = 0; i <  n ; i++) 
-                {
-                    selectedUsers[i] = (SpecifyUser)objs[i];
-                    
-                    session.attach( selectedUsers[i]);
-                    selectedUsers[i].getSpPrincipals().size();
-    
-                }
-                return selectedUsers;
+                session.attach(selectedUser);
+                selectedUser.getSpPrincipals().size(); // Force load of the principals
+                return selectedUser;
             }
         
         } catch (Exception ex)
@@ -215,6 +239,6 @@ public class AddExistingUserDlg extends CustomDialog
         {
             session.close();
         }
-        return new SpecifyUser[0];
+        return null;
     }
 }
