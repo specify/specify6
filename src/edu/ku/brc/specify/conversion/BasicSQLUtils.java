@@ -103,11 +103,6 @@ public class BasicSQLUtils
     
     protected static Pair<String, String> datePair = new Pair<String, String>();
     
-    protected static  Map<Integer, String> fldIntToNameHash = new HashMap<Integer, String>();
-    protected static  Map<String, Integer> fldNameToIntHash = new HashMap<String, Integer>();
-    
-    
-    
     // Missing Mapping File
     protected static PrintWriter missingPW;
     
@@ -121,30 +116,6 @@ public class BasicSQLUtils
         {
             ex.printStackTrace();
         }
-        
-        // Get all field in java.sql.Types
-        StringBuilder sb = new StringBuilder("java.sql.Types[] javaSQLTypes = {");
-        
-        //java.sql.Types[] javaSQLTypes = {java.sql.Types.BIT, java.sql.Types.TINYINT, java.sql.Types.SMALLINT, java.sql.Types.INTEGER, java.sql.Types.BIGINT, java.sql.Types.FLOAT, java.sql.Types.REAL, java.sql.Types.DOUBLE, java.sql.Types.NUMERIC, java.sql.Types.DECIMAL, java.sql.Types.CHAR, java.sql.Types.VARCHAR, java.sql.Types.LONGVARCHAR, java.sql.Types.DATE, java.sql.Types.TIME, java.sql.Types.TIMESTAMP, java.sql.Types.BINARY, java.sql.Types.VARBINARY, java.sql.Types.LONGVARBINARY, java.sql.Types.NULL, java.sql.Types.OTHER, java.sql.Types.JAVA_OBJECT, java.sql.Types.DISTINCT, java.sql.Types.STRUCT, java.sql.Types.ARRAY, java.sql.Types.BLOB, java.sql.Types.CLOB, java.sql.Types.REF, java.sql.Types.DATALINK, java.sql.Types.BOOLEAN, java.sql.Types.ROWID, java.sql.Types.NCHAR, java.sql.Types.NVARCHAR, java.sql.Types.LONGNVARCHAR, java.sql.Types.NCLOB, java.sql.Types.SQLXML, }
-
-        Field[] fields = java.sql.Types.class.getFields();
-        for (int i = 0; i < fields.length; i++) 
-        {
-            try 
-            {
-                String  name  = fields[i].getName();
-                Integer value = (Integer) fields[i].get(null);
-                fldIntToNameHash.put(value, name);
-                fldNameToIntHash.put(name, value);
-                
-                sb.append("java.sql.Types.");
-                sb.append(name);
-                sb.append(", ");
-                
-            } catch (IllegalAccessException e) {}
-        }
-        sb.append("}");
-        System.out.println(sb.toString());
     }
 
     /**

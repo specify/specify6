@@ -32,6 +32,7 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.Transparency;
 import java.awt.event.AWTEventListener;
 import java.awt.event.KeyEvent;
@@ -395,7 +396,7 @@ public class SimpleGlassPane extends ProgressGlassPane implements AWTEventListen
             g2.setColor(Color.WHITE);
             drawBGContainer(g2, true, x, y, tw+expand, th+expand, arc, arc);
             
-            g2.setColor(Color.BLACK);
+            g2.setColor(Color.DARK_GRAY);
             drawBGContainer(g2, false, x, y, tw+expand, th+expand, arc, arc);
             
             g2.setColor(textColor == null ? Color.BLACK : textColor);
@@ -414,14 +415,20 @@ public class SimpleGlassPane extends ProgressGlassPane implements AWTEventListen
      */
     private void drawBGContainer(final Graphics2D g2, final boolean doFill, final int x, final int y, final int w, final int h, final int arcW, final int arcH)
     {
+        Stroke cacheStroke = g2.getStroke();
+        
+        g2.setStroke(UIHelper.getStdLineStroke());
+        
         if (UIHelper.isWindows())
         {
             if (doFill)
             {
-                g2.fillRect(x, y, w, h); // Make ugly for Windows
+                //g2.fillRect(x, y, w, h); // Make ugly for Windows
+                g2.fillRoundRect(x, y, w, h, 4, 4);
             } else
             {
-                g2.drawRect(x, y, w, h); // Make ugly for Windows
+                //g2.drawRect(x, y, w, h); // Make ugly for Windows
+                g2.drawRoundRect(x, y, w, h, 4, 4);
             }
         } else
         {
@@ -433,6 +440,7 @@ public class SimpleGlassPane extends ProgressGlassPane implements AWTEventListen
                 g2.drawRoundRect(x, y, w, h, arcW, arcH);
             }
         }
+        g2.setStroke(cacheStroke);
     }
     
     /* (non-Javadoc)
