@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.conversion;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -187,8 +188,10 @@ public class IdHashMapper implements IdMapperIFace
             {
                frame.setProcess(0, 0); 
             }
-            Statement stmtOld = oldConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-            ResultSet rs      = stmtOld.executeQuery(sql);
+            
+            PreparedStatement pStmt   = newConn.prepareStatement("INSERT INTO "+mapTableName+" VALUES (?,?)");
+            Statement         stmtOld = oldConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet         rs      = stmtOld.executeQuery(sql);
             if (rs.last())
             {
                 if (frame != null)
@@ -202,14 +205,18 @@ public class IdHashMapper implements IdMapperIFace
                 int count = 0;
                 do
                 {
-                    int oldIndex = rs.getInt(1);
-                    int newIndex = rs.getInt(2);
-                    
-                    put(oldIndex, newIndex);
+                    pStmt.setInt(1, rs.getInt(1)); // Old Index
+                    pStmt.setInt(2, rs.getInt(2)); // New Index
+                    if (pStmt.executeUpdate() != 1)
+                    {
+                        String msg = String.format("Error writing to Map table[%s] old: %d  new: %d", mapTableName, rs.getInt(1), rs.getInt(2));
+                        log.error(msg);
+                        throw new RuntimeException(msg);
+                    }
                     
                     if (frame != null)
                     {
-                        if (count % 500 == 0)
+                        if (count % 1000 == 0)
                         {
                             frame.setProcess(count);
                         }
@@ -236,6 +243,9 @@ public class IdHashMapper implements IdMapperIFace
                 log.info("No records to map in "+tableName);
             }
             rs.close();
+            
+            stmtOld.close();
+            pStmt.close();
 
         } catch (SQLException ex)
         {

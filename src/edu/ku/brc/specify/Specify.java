@@ -3000,7 +3000,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                       }
                   } else
                   {
-                      if (!isExtraCheck)
+                      if (!isExtraCheck && StringUtils.isNotEmpty(UIHelper.getInstall4JInstallString()))
                       {
                           UIRegistry.showLocalizedMsg(null, "SpReg.NOT_REGISTERED");
                       }

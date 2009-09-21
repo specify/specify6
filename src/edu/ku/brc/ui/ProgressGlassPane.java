@@ -133,9 +133,9 @@ public class ProgressGlassPane extends JComponent
         if (progress > -1)
         {
             Dimension size = getSize();
-            if (size.width < barWidth)
+            if (size.width < barWidth || barWidth < 10)
             {
-                barWidth = size.width - 20;
+                barWidth = size.width - (size.width / 2);
             }
             
             // enables anti-aliasing

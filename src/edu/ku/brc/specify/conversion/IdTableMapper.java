@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.conversion;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -94,15 +95,17 @@ public class IdTableMapper extends IdHashMapper
         BasicSQLUtils.deleteAllRecordsFromTable(mapTableName, BasicSQLUtils.myDestinationServerType);
         if (frame != null)
         {
-            frame.setDesc("Mapping "+mapTableName);
-            log.debug("Mapping "+mapTableName);
+            String dMsg = "Mapping "+mapTableName;
+            frame.setDesc(dMsg);
+            log.debug(dMsg);
         }
         
         try
         {
             log.debug("Executing: "+sql);
-            Statement stmtOld = oldConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-            ResultSet rs      = stmtOld.executeQuery(sql);
+            PreparedStatement pStmt   = newConn.prepareStatement("INSERT INTO "+mapTableName+" VALUES (?,?)");
+            Statement         stmtOld = oldConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet         rs      = stmtOld.executeQuery(sql);
             
             if (rs.last())
             {
@@ -125,13 +128,20 @@ public class IdTableMapper extends IdHashMapper
                         newIndex = indexIncremeter.getNextIndex();
                     }
                     
-                    put(oldIndex, newIndex);
+                    pStmt.setInt(1, oldIndex); // Old Index
+                    pStmt.setInt(2, newIndex); // New Index
+                    if (pStmt.executeUpdate() != 1)
+                    {
+                        String msg = String.format("Error writing to Map table[%s] old: %d  new: %d", mapTableName, oldIndex, newIndex);
+                        log.error(msg);
+                        throw new RuntimeException(msg);
+                    }
                     
                     newIndex++; // incrementing doesn't matter when there is an indexIncremeter
                     
                     if (frame != null)
                     {
-                        if (newIndex % 500 == 0)
+                        if (newIndex % 1000 == 0)
                         {
                             frame.setProcess(newIndex);
                         }
@@ -152,6 +162,8 @@ public class IdTableMapper extends IdHashMapper
                 log.info("No records to map in "+tableName);
             }
             rs.close();
+            stmtOld.close();
+            pStmt.close();
 
         } catch (SQLException ex)
         {
@@ -193,7 +205,7 @@ public class IdTableMapper extends IdHashMapper
      */
     public void mapAllIds()
     {
-        sql = "select "+idName+" from "+tableName+" order by "+idName;
+        sql = "SELECT "+idName+" FROM "+tableName+" ORDER BY "+idName;
         mapAllIds(sql);
     }
 

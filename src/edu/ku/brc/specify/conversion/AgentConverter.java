@@ -64,10 +64,10 @@ import edu.ku.brc.util.Triple;
 public class AgentConverter
 {
     
-    private enum ParseAgentType {LastNameOnlyLF,  // Last Name Field only with names in Last Name then First Name order
+    /*private enum ParseAgentType {LastNameOnlyLF,  // Last Name Field only with names in Last Name then First Name order
                                  LastNameOnlyFL,  // Last Name Field only with names in First Name then Last Name order
                                  LastThenFirstLF, // The first Last Name is in the First Name Field the rest of the data is in the Last Name field and the order is Last Name, Comma first Name
-    }
+    }*/
     protected static final Logger                           log                    = Logger.getLogger(AgentConverter.class);
     protected static Integer nextAddressId = 0;
 
@@ -160,21 +160,18 @@ public class AgentConverter
 
         StringBuilder sql = new StringBuilder("select ");
         log.debug(sql);
-        List<String> agentAddrFieldNames = new ArrayList<String>();
-        getFieldNamesFromSchema(oldDBConn, "agentaddress", agentAddrFieldNames, BasicSQLUtils.mySourceServerType);
+        List<String> agentAddrFieldNames = getFieldNamesFromSchema(oldDBConn, "agentaddress");
         sql.append(buildSelectFieldList(agentAddrFieldNames, "agentaddress"));
         sql.append(", ");
         GenericDBConversion.addNamesWithTableName(oldFieldNames, agentAddrFieldNames, "agentaddress");
 
-        List<String> agentFieldNames = new ArrayList<String>();
-        getFieldNamesFromSchema(oldDBConn, "agent", agentFieldNames, BasicSQLUtils.mySourceServerType);
+        List<String> agentFieldNames = getFieldNamesFromSchema(oldDBConn, "agent");
         sql.append(buildSelectFieldList(agentFieldNames, "agent"));
         log.debug(sql);
         sql.append(", ");
         GenericDBConversion.addNamesWithTableName(oldFieldNames, agentFieldNames, "agent");
 
-        List<String> addrFieldNames = new ArrayList<String>();
-        getFieldNamesFromSchema(oldDBConn, "address", addrFieldNames, BasicSQLUtils.mySourceServerType);
+        List<String> addrFieldNames = getFieldNamesFromSchema(oldDBConn, "address");
         log.debug(sql);
         sql.append(buildSelectFieldList(addrFieldNames, "address"));
         GenericDBConversion.addNamesWithTableName(oldFieldNames, addrFieldNames, "address");
@@ -642,7 +639,7 @@ public class AgentConverter
             sql.append(buildSelectFieldList(agentAddrFieldNames, "agentaddress"));
             sql.append(", ");
 
-            getFieldNamesFromSchema(oldDBConn, "agent", agentFieldNames, BasicSQLUtils.mySourceServerType);
+            getFieldNamesFromSchema(oldDBConn, "agent", agentFieldNames);
             sql.append(buildSelectFieldList(agentFieldNames, "agent"));
 
             sql.append(" FROM agent Inner Join agentaddress ON agentaddress.AgentID = agent.AgentID where agentaddress.AddressID is null Order By agentaddress.AgentAddressID Asc");
@@ -969,10 +966,8 @@ public class AgentConverter
     {
         log.info("Duplicating [" + oldId + "] to [" + newId + "]");
 
-        List<String> agentAddrFieldNames = new ArrayList<String>();
-        getFieldNamesFromSchema(newDBConnArg, "address", agentAddrFieldNames,
-                BasicSQLUtils.myDestinationServerType);
-        String fieldList = buildSelectFieldList(agentAddrFieldNames, "address");
+        List<String> agentAddrFieldNames = getFieldNamesFromSchema(newDBConnArg, "address");
+        String       fieldList           = buildSelectFieldList(agentAddrFieldNames, "address");
         log.info(fieldList);
 
         StringBuilder sqlStr = new StringBuilder();
@@ -1061,8 +1056,7 @@ public class AgentConverter
         }
         BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "agent", BasicSQLUtils.myDestinationServerType);
 
-        List<String> oldAgentFieldNames = new ArrayList<String>();
-        getFieldNamesFromSchema(oldDBConn, "agent", oldAgentFieldNames, BasicSQLUtils.mySourceServerType);
+        List<String> oldAgentFieldNames = getFieldNamesFromSchema(oldDBConn, "agent");
         
         String oldFieldListStr = buildSelectFieldList(oldAgentFieldNames, "agent");
         sql.append(oldFieldListStr);
@@ -1070,8 +1064,7 @@ public class AgentConverter
 
         //log.info(oldFieldListStr);
 
-        List<String> newAgentFieldNames = new ArrayList<String>();
-        getFieldNamesFromSchema(newDBConn, "agent", newAgentFieldNames, BasicSQLUtils.myDestinationServerType);
+        List<String> newAgentFieldNames = getFieldNamesFromSchema(newDBConn, "agent");
         String newFieldListStr = buildSelectFieldList(newAgentFieldNames, "agent");
 
         //log.info(newFieldListStr);
@@ -1387,7 +1380,7 @@ public class AgentConverter
     protected void fixupForCollectors(final Division    divisionArg,
                                       final Discipline  disciplineArg)
     {
-        ParseAgentType parseType = ParseAgentType.LastNameOnlyLF;
+        //ParseAgentType parseType = ParseAgentType.LastNameOnlyLF;
 
         
         Session     session = HibernateUtil.getNewSession();
@@ -1410,7 +1403,7 @@ public class AgentConverter
             for (AgentInfo agentInfo : agentHash.values())
             {
                 String lastNameText  = agentInfo.getAgentType() != Agent.PERSON ? agentInfo.getName() : agentInfo.getLastName();
-                String firstNameText = agentInfo.getFirstName();
+                //String firstNameText = agentInfo.getFirstName();
 
                 if ((StringUtils.contains(lastNameText, ",") || StringUtils.contains(lastNameText, ";")) && !StringUtils.contains(lastNameText, "'"))
                 {
@@ -1438,7 +1431,7 @@ public class AgentConverter
                         
                         // Now process the multiple Collectors
                         String[] lastNames  = StringUtils.split(lastNameText, ",;");
-                        String[] firstNames = StringUtils.split(firstNameText, ",;");
+                        //String[] firstNames = StringUtils.split(firstNameText, ",;");
                         for (int i=0;i<lastNames.length;i++)
                         {
                             if (parseName(lastNames[i], nameTriple))
@@ -1675,10 +1668,10 @@ public class AgentConverter
     
     public List<AgentNameInfo> parseName(final String    firstName, 
                                          final String    lastName,
-                                         final char      innerSep,
+                                         @SuppressWarnings("unused") final char      innerSep,
                                          final char      nameSep,
                                          final boolean   isLastNameFieldFirst,
-                                         final boolean   isLastNameFirst,
+                                         @SuppressWarnings("unused") final boolean   isLastNameFirst,
                                          final boolean   trimAfterComma)
     {
         recycler.addAll(names);
@@ -1698,10 +1691,10 @@ public class AgentConverter
                 }
             }
             
-            if (StringUtils.contains(name, nameSep))
+            /*if (StringUtils.contains(name, nameSep))
             {
                 String[] nameToks = StringUtils.split(name, innerSep);
-            }
+            }*/
             
         }
         return names;

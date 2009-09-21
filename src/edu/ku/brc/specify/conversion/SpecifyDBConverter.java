@@ -33,7 +33,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -145,6 +144,7 @@ public class SpecifyDBConverter
     protected Pair<String, String> masterUsrPwd = new Pair<String, String>("Master", "Master");
     protected String               hostName     = "localhost";
     
+    protected GenericDBConversion  conversion;
     protected ConversionLogger     convLogger   = new ConversionLogger();
     
     /**
@@ -494,7 +494,52 @@ public class SpecifyDBConverter
         AppContextMgr.getInstance().setHasContext(true);
     }
     
-    
+    /**
+     * @param oldDBConn
+     */
+    private void fixOldTablesTimestamps(final Connection oldDBConn)
+    {
+        // Makes sure old data has all the TimestampCreated filled in
+        SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        Timestamp        now               = new Timestamp(System .currentTimeMillis());
+        String           nowStr            = dateTimeFormatter.format(now);
+        List<String>     tableNames        = BasicSQLUtils.getTableNames(oldDBConn);
+        
+        frame.setProcess(0, tableNames.size());
+        
+        int cnt = 0;
+        for (String tableName : tableNames)
+        {
+            frame.setProcess(cnt++);
+            
+            if (!tableName.toLowerCase().startsWith("usys") && 
+                !tableName.toLowerCase().startsWith("web") && 
+                !tableName.toLowerCase().equals("taxonomytype") && 
+                !tableName.toLowerCase().equals("taxonomicunittype") && 
+                !tableName.toLowerCase().equals("reports"))
+            {
+                try
+                {
+                    System.out.println("Table: "+tableName);
+                    
+                    List<String> fieldNames = BasicSQLUtils.getFieldNamesFromSchema(oldDBConn, tableName);
+                    for (String fieldName : fieldNames)
+                    {
+                        if (fieldName.equals("TimestampCreated"))
+                        {
+                            if (BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM " + tableName + " WHERE TimestampCreated IS NULL") > 0)
+                            {
+                                BasicSQLUtils.update(oldDBConn, "UPDATE "+tableName+ " SET TimestampCreated='"+nowStr+"' WHERE TimestampCreated IS NULL");
+                            }
+                            break;
+                        }
+                    }
+                } catch (Exception ex)
+                {
+                }
+            }
+        }
+    }
     
 
     /**
@@ -592,52 +637,11 @@ public class SpecifyDBConverter
         frame.setDesc("Fixing NULL Timestamps for conversion.");
         UIHelper.centerAndShow(frame);
         
-        // Makes sure old data has all the TimestampCreated filled in
-        SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        Timestamp        now               = new Timestamp(System .currentTimeMillis());
-        String           nowStr            = dateTimeFormatter.format(now);
-        Vector<Object[]> tables = BasicSQLUtils.query(oldDBConn, "show tables");
-        
-        frame.setProcess(0, tables.size());
-        
-        int cnt = 0;
-        for (Object[] tblRow : tables)
-        {
-            frame.setProcess(cnt++);
-            
-            String tableName = tblRow[0].toString();
-            if (!tableName.toLowerCase().startsWith("usys") && 
-                !tableName.toLowerCase().startsWith("web") && 
-                !tableName.toLowerCase().equals("taxonomytype") && 
-                !tableName.toLowerCase().equals("taxonomicunittype") && 
-                !tableName.toLowerCase().equals("reports"))
-            {
-                try
-                {
-                    System.out.println("Table: "+tableName);
-                    
-                    List<String> fieldNames = new ArrayList<String>();
-                    BasicSQLUtils.getFieldNamesFromSchema(oldDBConn, tableName, fieldNames, BasicSQLUtils.mySourceServerType);
-                    for (String fieldName : fieldNames)
-                    {
-                        if (fieldName.equals("TimestampCreated"))
-                        {
-                            if (BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM " + tableName + " WHERE TimestampCreated IS NULL") > 0)
-                            {
-                                BasicSQLUtils.update(oldDBConn, "UPDATE "+tableName+ " SET TimestampCreated='"+nowStr+"' WHERE TimestampCreated IS NULL");
-                            }
-                            break;
-                        }
-                    }
-                } catch (Exception ex)
-                {
-                }
-            }
-        }
+        fixOldTablesTimestamps(oldDBConn);
         
         frame.turnOnOverAll();
         
-        final GenericDBConversion conversion = new GenericDBConversion(oldDBConn, newDBConn, dbNameSource, convLogger);
+        conversion = new GenericDBConversion(oldDBConn, newDBConn, dbNameSource, convLogger);
         if (!conversion.initialize())
         {
             oldDBConn.close();
@@ -676,7 +680,7 @@ public class SpecifyDBConverter
         	GenericDBConversion.setShouldCreateMapTables(startfromScratch);
             GenericDBConversion.setShouldDeleteMapTables(deleteMappingTables);
             
-            frame.setOverall(0, 18);
+            frame.setOverall(0, 19);
             SwingUtilities.invokeLater(new Runnable() {
                 public void run()
                 {
@@ -1282,6 +1286,13 @@ public class SpecifyDBConverter
 
                 frame.incOverall();
                 
+                if (isUsingEmbeddedCEsInSp5())
+                {
+                    DuplicateCollectingEvents dce = new DuplicateCollectingEvents(newDBConn, frame, conversion.getCurAgentCreatorID(), dscp.getId());
+                    dce.performMaint();
+                }
+                    
+                frame.incOverall();
 
                 System.setProperty(AppPreferences.factoryName, "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
                 System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
@@ -1399,6 +1410,16 @@ public class SpecifyDBConverter
                 getSession().close();
             }
         }
+    }
+    
+    private boolean isUsingEmbeddedCEsInSp5()
+    {
+        String sql = String.format("SELECT ControlType FROM usysmetacontrollayout mcl INNER JOIN usysmetacontrol mc ON mc.ControlID = mcl.ControlID " +
+        "WHERE mc.FieldSetSubTypeID = (SELECT FieldSetSubTypeID FROM usysmetafieldsetsubtype sst where sst.FieldSetID = 19 " +
+        "AND sst.FieldValue = %d) AND mc.ObjectID = 10152 AND mcl.FullForm <> 0 ", conversion.getColObjTypeID());
+        Integer controlType = BasicSQLUtils.getCount(conversion.getOldDBConn(), sql);
+        
+        return controlType != null && controlType != 5;
     }
     
     /**
