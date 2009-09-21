@@ -1266,6 +1266,7 @@ public class ResourceImportExportDlg extends CustomDialog
 								SpecifyAppContextMgr mgr = (SpecifyAppContextMgr) AppContextMgr.getInstance();
 								mgr.saveResource(appRes);
 							}
+							setHasChanged(true);
 							
 						} catch (Exception e)
 						{
