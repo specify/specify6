@@ -1209,27 +1209,23 @@ public class ReportsBaseTask extends BaseTask
      */
     public static void deleteReportAndResource(final Integer reportId, final AppResourceIFace appRes)
     {
-        SpAppResource resource = null;
+        Integer resourceId = null;
 
         if (reportId == null)
         {
-            resource = (SpAppResource) appRes;
+            resourceId = ((SpAppResource) appRes).getId();
         }
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
 		boolean transOpen = false;
 		try 
 		{
 			String hql = reportId != null ? "from SpReport where id = "  + reportId : 
-				"from SpReport where appResourceId = " + resource.getId();
+				"from SpReport where appResourceId = " + resourceId;
 			SpReport rep = (SpReport) session.getData(hql);
 			if (rep != null) 
 			{
-				resource = rep.getAppResource();
-				session.beginTransaction();
-				transOpen = true;
-				session.delete(rep);
-				session.commit();
-				transOpen = false;
+	        	((SpecifyAppContextMgr) AppContextMgr.getInstance()).removeAppResourceSp(rep.getAppResource()
+	                    .getSpAppResourceDir(), rep.getAppResource());
 			}
 		} catch (Exception e) 
 		{
@@ -1244,11 +1240,6 @@ public class ReportsBaseTask extends BaseTask
 		{
 			session.close();
 		}
-        if (resource != null)
-        {
-            ((SpecifyAppContextMgr) AppContextMgr.getInstance()).removeAppResourceSp(resource
-                    .getSpAppResourceDir(), resource);
-        }
     }
     
     /**
