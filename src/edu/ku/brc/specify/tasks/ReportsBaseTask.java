@@ -1205,7 +1205,8 @@ public class ReportsBaseTask extends BaseTask
     }
     
     /**
-     * @param recordSet
+     * @param reportId
+     * @param appRes
      */
     public static void deleteReportAndResource(final Integer reportId, final AppResourceIFace appRes)
     {
