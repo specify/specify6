@@ -8,10 +8,6 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.Vector;
@@ -22,11 +18,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.db.DBFieldInfo;
-import edu.ku.brc.af.core.db.DBRelationshipInfo;
-import edu.ku.brc.af.core.db.DBTableIdMgr;
-import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.af.core.db.DBRelationshipInfo.RelationshipType;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -156,93 +147,6 @@ public class CollectingEventsAndAttrsMaint
     }
     
     /**
-     * @param collectionId id of an 'embedded collecting event' collection.
-     * @throws Exception
-     */
-    protected int duplicateCollectingEvents(final int collectionId)
-    {
-        try
-        {
-            PreparedStatement prepStmt   = createPreparedStmt(CollectingEvent.getClassTableId());
-            String            selectSQL  = createSelectStmt(CollectingEvent.getClassTableId(), "CollectingEventID = %d");
-            Statement         stmt       = connection.createStatement();
-            
-            int totalCnt = getCollectingEventsWithManyCollectionObjectsCount(collectionId);
-            fixUpWorker.doFirePropertyChange(CNT, -1, 0);
-            
-            Vector<Object> list = getCollectingEventsWithManyCollectionObjects(collectionId);
-            int cnt      = 0;
-            for (Object ceID : list)
-            {
-                fixUpWorker.doFirePropertyChange(CNT, -1, (int)((cnt*100.0) / (double)totalCnt));
-                cnt += duplicateCollectingEvent(String.format(selectSQL, ceID), (Integer)ceID, stmt, prepStmt);
-                
-                System.out.println((int)((cnt*100.0) / (double)totalCnt) + " "+cnt + "  "+totalCnt);
-                
-            }
-            return cnt;
-            
-        } catch (SQLException ex)
-        {
-            ex.printStackTrace();
-        }
-        return 0;
-    }
-    
-    /**
-     * @param ceid id for a collecting event with many (> 1) collection objects
-     * @throws Exception
-     */
-    protected int duplicateCollectingEvent(final String    selectStr, 
-                                           final int       ceID,
-                                           final Statement stmt,
-                                           final PreparedStatement prepStmt) throws SQLException
-    {
-        try
-        {
-            Statement stmt2 = connection.createStatement();
-            
-            int cnt = 0;
-            
-            ResultSet rs = stmt.executeQuery(selectStr);
-            while (rs.next())
-            {
-                ResultSet coRS = stmt2.executeQuery("SELECT CollectionObjectID FROM collectionobject WHERE CollectingEventID = " + ceID);
-                if (coRS.next()) // skip the first one, that one is already hooked up.
-                {
-                    while (coRS.next())
-                    {
-                        for (int i=1;i<=rs.getMetaData().getColumnCount();i++)
-                        {
-                            prepStmt.setObject(i, rs.getObject(i));
-                        }
-                        if (prepStmt.executeUpdate() != 1)
-                        {
-                            throw new RuntimeException("Couldn't insert row.");
-                        }
-                        
-                        int newCEID = BasicSQLUtils.getInsertedId(prepStmt);
-                        cnt++;
-                        
-                        String sql = String.format("UPDATE collectionobject SET CollectingEventID=%d WHERE CollectionObjectID = %d", newCEID, coRS.getInt(1));
-                        if (BasicSQLUtils.update(sql) != 1)
-                        {
-                            throw new RuntimeException(sql+" didn't update correctly.");
-                        }
-                    }
-                }
-            }
-            
-            return cnt;
-            
-        } catch (SQLException ex)
-        {
-            log.error(ex);
-        }
-        return 0;
-    }
-    
-    /**
      * @throws Exception
      * 
      * Duplicates collecting events for all 'embedded collecting event' collections in the database. 
@@ -297,7 +201,7 @@ public class CollectingEventsAndAttrsMaint
             return;
         }
         
-        int totCnt = getCECountForMaint();
+        int totCnt = 0;
         for (Integer id : collectionsIds)
         {
             totCnt += getCountForMaint(id);  // CollectionID
@@ -319,17 +223,12 @@ public class CollectingEventsAndAttrsMaint
             protected Integer doInBackground() throws Exception
             {
                 int count = 0;
-                glassPane.setText("Fixing Collecting Event Attributes...");
+                glassPane.setText("Fixing Collecting Event Attributes..."); // I18N
                 count += fixDupColEveAttrs();
                 firePropertyChange(CNT, count, (int)( (100.0 * count) / totalCnt));
                 
                 for (Integer id : collectionsIds)
                 {
-                    glassPane.setText("Fixing Collecting Events...");
-                    
-                    count += duplicateCollectingEvents(id);
-                    firePropertyChange(CNT, count, (int)( (100.0 * count) / totalCnt));
-                    
                     glassPane.setText("Fixing Preparation Atttributes...");
                     count += fixDupPrepAttrs(id);
                     firePropertyChange(CNT, count, (int)( (100.0 * count) / totalCnt));
@@ -357,7 +256,6 @@ public class CollectingEventsAndAttrsMaint
                         if (CNT.equals(evt.getPropertyName())) 
                         {
                             int value = (Integer)evt.getNewValue();
-                            System.err.println(value);
                             if (value < 100)
                             {
                                 glassPane.setProgress(value);
@@ -371,77 +269,6 @@ public class CollectingEventsAndAttrsMaint
         
         fixUpWorker.execute();
     }
-    
-    private PreparedStatement createPreparedStmt(final int tableID) throws SQLException
-    {
-        DBTableInfo   tblInfo = DBTableIdMgr.getInstance().getInfoById(tableID);
-        StringBuilder sb      = new StringBuilder("INSERT INTO " + tblInfo.getName() + " (");
-        
-        int fldCnt = 0;
-        String keyName = tblInfo.getIdFieldName();
-        for (DBFieldInfo fi : tblInfo.getFields())
-        {
-            if (!fi.getColumn().equals(keyName))
-            {
-                sb.append(fi.getColumn());
-                sb.append(',');
-                fldCnt++;
-            }
-        }
-        for (DBRelationshipInfo ri : tblInfo.getRelationships())
-        {
-            if (ri.getType() == RelationshipType.ManyToOne)
-            {
-                sb.append(ri.getColName());
-                sb.append(',');
-                fldCnt++;
-            }
-        }
-        sb.setLength(sb.length()-1); // chomp unneeded comma
-        sb.append(") VALUES(");
-        for (int i=0;i<fldCnt;i++)
-        {
-            sb.append("?,");
-        }
-        sb.setLength(sb.length()-1); // chomp unneeded comma
-        sb.append(")");
-        log.debug(sb.toString());
-        
-        return connection.prepareStatement(sb.toString());
-    }
-    
-    private String createSelectStmt(final int tableID, final String whereClauseStr)
-    {
-        DBTableInfo   tblInfo = DBTableIdMgr.getInstance().getInfoById(tableID);
-        StringBuilder sb = new StringBuilder("SELECT ");
-        
-        for (DBFieldInfo fi : tblInfo.getFields())
-        {
-            sb.append(fi.getColumn());
-            sb.append(',');
-        }
-        for (DBRelationshipInfo ri : tblInfo.getRelationships())
-        {
-            if (ri.getType() == RelationshipType.ManyToOne)
-            {
-                sb.append(ri.getColName());
-                sb.append(',');
-            }
-        }
-        sb.setLength(sb.length()-1); // chomp unneeded comma
-        sb.append(" FROM ");
-        sb.append(tblInfo.getName());
-        
-        if (StringUtils.isNotEmpty(whereClauseStr))
-        {
-            sb.append(" WHERE ");
-            sb.append(whereClauseStr);
-        }
-        log.debug(sb.toString());
-        return sb.toString();
-    }
-    
-    
     
     /**
      * @param collectionId
@@ -457,10 +284,7 @@ public class CollectingEventsAndAttrsMaint
         {
             for (Object[] row : rows)
             {
-                System.out.println(localCnt+" / "+(int)(localCnt / (double)rows.size()));
                 localCnt++;
-                System.out.println(localCnt);
-
                 try
                 {
                     int id = (Integer)row[0];
@@ -529,8 +353,6 @@ public class CollectingEventsAndAttrsMaint
             {
                 fixUpWorker.doFirePropertyChange(CNT, -1, (int)(localCnt / (double)rows.size()));
                 localCnt++;
-                System.out.println(localCnt+" / "+(int)(localCnt / (double)rows.size()));
-
                 try
                 {
                     int id = (Integer)row[0];
@@ -597,8 +419,6 @@ public class CollectingEventsAndAttrsMaint
             {
                 fixUpWorker.doFirePropertyChange(CNT, -1, (int)(localCnt / (double)rows.size()));
                 localCnt++;
-                System.out.println(localCnt+" / "+(int)(localCnt / (double)rows.size()));
-
                 try
                 {
                     int id = (Integer)row[0];
