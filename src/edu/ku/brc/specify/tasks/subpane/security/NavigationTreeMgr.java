@@ -23,8 +23,6 @@ import static edu.ku.brc.ui.UIRegistry.getMostRecentWindow;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Frame;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -33,20 +31,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.specify.principal.AdminPrincipal;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
-import edu.ku.brc.af.core.expresssearch.ExpressResultsTableInfo;
-import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigCache;
-import edu.ku.brc.af.ui.ESTermParser;
-import edu.ku.brc.af.ui.SearchTermField;
-import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
-import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.MultiView;
@@ -63,7 +54,6 @@ import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.busrules.SpecifyUserBusRules;
-import edu.ku.brc.specify.datamodel.busrules.TableSearchResults;
 
 /**
  * This class perform operations on the security administration navigation tree, such as 
@@ -304,7 +294,7 @@ public class NavigationTreeMgr
                 wrapper.setDataObj(user);
                 
                 int     numOfGrpsUserBelonedTo = user.getUserGroupCount(); // the number of groups this user belongs to
-                boolean isInAdminGroup         = user.isInAdminGroup();
+                //boolean isInAdminGroup         = user.isInAdminGroup();
 
                 // We can delete a user if that's the only group it belongs to
                 /*if (isInAdminGroup)
@@ -554,8 +544,10 @@ public class NavigationTreeMgr
         }
         
         // discipline to which the user's being added
-        final Discipline parentDiscipline = getParentDiscipline(grpNode);
-        final Division   division         = parentDiscipline.getDivision();
+        Discipline parentDiscipline = getParentDiscipline(grpNode);
+       
+        //final Division   division   = parentDiscipline.getDivision();
+        //final Discipline discipline = parentDiscipline;
         
         DataModelObjBaseWrapper parentWrp = (DataModelObjBaseWrapper)grpNode.getUserObject();
         if (!parentWrp.isGroup())
@@ -585,43 +577,13 @@ public class NavigationTreeMgr
         dlg.setOkLabel(getResourceString("SAVE"));
         dlg.createUI();
         
-        final ValComboBoxFromQuery cbx = (ValComboBoxFromQuery)dlg.getMultiView().getCurrentViewAsFormViewObj().getControlByName("agent");
-        
-        cbx.registerQueryBuilder(new ViewBasedSearchQueryBuilderIFace() 
+        ValComboBoxFromQuery cbx = (ValComboBoxFromQuery)dlg.getMultiView().getCurrentViewAsFormViewObj().getControlByName("agent");
+        if (cbx != null)
         {
-            protected ExpressResultsTableInfo esTblInfo = null;
-            
-            @Override
-            public String buildSQL(final Map<String, Object> dataMap, final List<String> fieldNames)
-            {
-                String searchName = cbx.getSearchName();
-                if (searchName != null)
-                {
-                    esTblInfo = ExpressSearchConfigCache.getTableInfoByName(searchName);
-                    if (esTblInfo != null)
-                    {
-                       String sqlStr = esTblInfo.getViewSql();
-                       return buildSearchString(dataMap, fieldNames, StringUtils.replace(sqlStr, "DSPLNID", parentDiscipline.getId().toString()));
-                    }
-                }
-                return null;
-            }
-            @Override
-            public String buildSQL(String searchText, boolean isForCount)
-            {
-                String newEntryStr = searchText + '%';
-                String sqlTemplate = "SELECT %s1 FROM Agent a LEFT JOIN a.specifyUser s INNER JOIN a.division d WHERE d.id = "+division.getId()+" AND s = null AND LOWER(a.lastName) LIKE '%s2' ORDER BY a.lastName";
-                String sql         = StringUtils.replace(sqlTemplate, "%s1", isForCount ? "count(*)" : "a.lastName, a.firstName, a.agentId"); //$NON-NLS-1$
-                sql = StringUtils.replace(sql, "%s2", newEntryStr); //$NON-NLS-1$
-                log.debug(sql);
-                return sql;
-            }
-            @Override
-            public QueryForIdResultsIFace createQueryForIdResults()
-            {
-                return new TableSearchResults(DBTableIdMgr.getInstance().getInfoById(Agent.getClassTableId()), esTblInfo.getCaptionInfo()); //true => is HQL
-            }
-        });
+            cbx.registerQueryBuilder(new UserAgentVSQBldr(cbx));
+            cbx.setReadOnlyMode();
+        }
+
         
         AppContextMgr acMgr          = AppContextMgr.getInstance();
         Discipline    currDiscipline = acMgr.getClassObject(Discipline.class);
@@ -732,57 +694,6 @@ public class NavigationTreeMgr
     }
     
     /**
-     * @param dataMap
-     * @param fieldNames
-     * @param sqlTemplate
-     * @return
-     */
-    protected String buildSearchString(final Map<String, Object> dataMap, 
-                                       final List<String>        fieldNames,
-                                       final String              sqlTemplate)
-    {
-        StringBuilder orderBy  = new StringBuilder();
-        StringBuilder criteria = new StringBuilder("agent.SpecifyUserID IS NULL AND (");
-        int criCnt = 0;
-        for (String colName : dataMap.keySet())
-        {
-            String data = (String)dataMap.get(colName);
-            if (ESTermParser.getInstance().parse(data.toLowerCase(), true))
-            {
-                if (StringUtils.isNotEmpty(data))
-                {
-                    List<SearchTermField> fields     = ESTermParser.getInstance().getFields();
-                    SearchTermField       firstTerm  = fields.get(0);
-                    
-                    if (criCnt > 0) criteria.append(" OR ");
-                    
-                    String clause = ESTermParser.getInstance().createWhereClause(firstTerm, null, colName);
-                    criteria.append(clause);
-                    
-                    if (criCnt > 0) orderBy.append(',');
-                    
-                    orderBy.append(colName);
-                    
-                    criCnt++;
-                }
-            }
-        }
-        
-        criteria.append(")");
-        
-        StringBuffer sb = new StringBuffer();
-        sb.append(criteria);
-        sb.append(" ORDER BY ");
-        sb.append(orderBy);
-        
-        String sqlStr = StringUtils.replace(sqlTemplate, "(%s)", sb.toString());
-        
-        log.debug(sqlStr);
-        
-        return sqlStr;
-    }
-    
-    /**
      * @param grpNode
      * @return
      */
@@ -821,7 +732,6 @@ public class NavigationTreeMgr
         acMgr.setClassObject(Discipline.class, parentDiscipline);
         
         Division currDivision = parentDiscipline.getDivision();
-
 
         DataProviderSessionIFace session = null;
         try
@@ -937,5 +847,4 @@ public class NavigationTreeMgr
         }
         return null;
     }
-
 }

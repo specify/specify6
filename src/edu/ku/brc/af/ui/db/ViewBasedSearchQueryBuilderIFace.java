@@ -41,7 +41,7 @@ public interface ViewBasedSearchQueryBuilderIFace
      * @param isForCount true if the result is to be used to determine the count of matches.
      * @return the full SQL String
      */
-    public String buildSQL(String searchText, boolean isForCount);
+    public abstract String buildSQL(String searchText, boolean isForCount);
     
     /**
      * Builds and returns the query.
@@ -51,11 +51,11 @@ public interface ViewBasedSearchQueryBuilderIFace
      * @param fieldNames the list of names of the fields in the form.
      * @return the full SQL String
      */
-    public String buildSQL(Map<String, Object> dataMap, List<String> fieldNames);
+    public abstract String buildSQL(Map<String, Object> dataMap, List<String> fieldNames);
     
     /**
      * @return the description of how the results are to be displayed
      */
-    public QueryForIdResultsIFace createQueryForIdResults();
+    public abstract QueryForIdResultsIFace createQueryForIdResults();
     
 }

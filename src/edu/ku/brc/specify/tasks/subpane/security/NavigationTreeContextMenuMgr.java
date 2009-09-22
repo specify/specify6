@@ -32,6 +32,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.ku.brc.af.auth.specify.principal.AdminPrincipal;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -39,6 +41,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * An instance of this class manages the creation of the context (pop-up or right-click) menu that
@@ -178,14 +181,14 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
                     boolean canRemUser = getTreeMgr().canRemoveUserFromGroup(lastClickComp);
                     if (canDelUser)
                     {
-                        toolTip = "Delete User from Group"; // I18N
+                        toolTip = "SEC_DEL_USR_GRP";
                         
                     } else if (canRemUser)
                     {
-                        toolTip = "Remove User from Group (does not delete the user)";
+                        toolTip = "SEC_RM_USR_GRP";
                     }
                     delUserBtn.setEnabled(canDelUser || canRemUser);
-                    delUserBtn.setToolTipText(toolTip);
+                    delUserBtn.setToolTipText(StringUtils.isNotEmpty(toolTip) ? UIRegistry.getResourceString(toolTip) : null);
                 } else
                 {
                     delUserBtn.setEnabled(false);

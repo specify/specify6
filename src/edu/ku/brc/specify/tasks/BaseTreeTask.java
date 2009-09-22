@@ -49,16 +49,19 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
+import edu.ku.brc.specify.ui.treetables.TreeBrowserPanel;
 import edu.ku.brc.specify.ui.treetables.TreeDefinitionEditor;
 import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 import edu.ku.brc.ui.CommandAction;
@@ -97,6 +100,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     protected NavBox                  treeNavBox       = null;
     protected NavBox                  treeDefNavBox    = null;
     protected NavBox                  unlockNavBox     = null;
+    protected NavBox                  browseNavBox     = null;
     protected Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
     
     /** The class of {@link TreeDefIface} handled by this task. */
@@ -116,6 +120,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     protected Action treeEditAction    = null;
     protected Action treeDefEditAction = null;
     protected Action unlockAction      = null;
+    protected Action browseAction      = null;
     
     protected static SubPaneIFace starterPaneTree = null;
 
@@ -159,10 +164,12 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             treeNavBox    = new NavBox(getResourceString("BaseTreeTask.EditTrees"));
             treeDefNavBox = new NavBox(getResourceString("BaseTreeTask.TreeDefs"));
             unlockNavBox  = new NavBox(getResourceString("BaseTreeTask.UNLOCK"));
+            browseNavBox  = new NavBox(getResourceString("BaseTreeTask.BROWSE"));
             
             navBoxes.add(treeNavBox);
             navBoxes.add(treeDefNavBox);
             navBoxes.add(unlockNavBox);
+            //navBoxes.add(browseNavBox);
             
             //if (isTreeOnByDefault())
             {
@@ -180,17 +187,23 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                         treeEditAction = createActionForTreeEditing(treeTI.getTitle(), treePerms.canModify());                        
                     } 
                     
-                    if (tdPerms.canView() && tdPerms.canModify())
+                    if (tdPerms.canView())
                     {
-                        treeDefEditAction = createActionForTreeDefEditing(treeTI.getTitle());
-                        unlockAction      = createActionForTreeUnlocking(treeTI.getTitle(), true);
-                    } 
+                        if (tdPerms.canModify())
+                        {
+                            treeDefEditAction = createActionForTreeDefEditing(treeTI.getTitle());
+                            unlockAction      = createActionForTreeUnlocking(treeTI.getTitle(), true);
+                            browseAction      = createActionForTreeBrowse(treeTI.getTitle());
+                        } 
+                    }
                 } else
                 {
                     treeEditAction    = createActionForTreeEditing(treeTI.getTitle(), true);
                     treeDefEditAction = createActionForTreeDefEditing(treeTI.getTitle());
                     unlockAction      = createActionForTreeUnlocking(treeTI.getTitle(), true);
+                    browseAction      = createActionForTreeBrowse(treeTI.getTitle());
                 }
+                
             }
         }
         isShowDefault = true;
@@ -225,10 +238,11 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         treeNavBox.clear();
         treeDefNavBox.clear();
         unlockNavBox.clear();
+        browseNavBox.clear();
         
         boolean skip = AppContextMgr.isSecurityOn() && !DBTableIdMgr.getInstance().getByShortClassName(treeClass.getSimpleName()).getPermissions().canView();
         
-        TreeTaskMgr.getInstance().fillNavBoxes(treeNavBox, treeDefNavBox, unlockNavBox);
+        TreeTaskMgr.getInstance().fillNavBoxes(treeNavBox, treeDefNavBox, unlockNavBox, browseNavBox);
         
         log.debug(treeClass.getSimpleName()+"  skip "+skip+"  cnt: "+treeNavBox.getComponentCount());
         if (!skip) //if (isTreeOnByDefault())
@@ -267,6 +281,14 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     public Action getTreeUnlockAction()
     {
         return unlockAction;
+    }
+    
+    /**
+     * @return
+     */
+    public Action getTreeBrowseAction()
+    {
+        return browseAction;
     }
     
     /**
@@ -318,7 +340,11 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     	            {
     	                UsageTracker.incrUsageCount("TR.OPEN."+treeDefClass.getSimpleName());
     
+    	                long startTime = System.nanoTime();
     	                treeViewer = createTreeViewer(titleArg, !isViewMode && isEditable);
+    	                long endTime   = System.nanoTime();
+    	                
+    	                System.out.println("Time; " + (endTime - startTime) / 10000);
     	                if (isViewMode)
     	                {
     	                    treeViewer.setDoUnlock(false);
@@ -384,6 +410,34 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             }
         };
     }
+    
+    /**
+     * Creates an ActionListener for Editing the tree.
+     * @param isEditMode whether it is in edit mode
+     * @return the AL
+     */
+    protected Action createActionForTreeBrowse(final String titleArg)
+    {
+        return new AbstractAction()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                String tableName = treeClass.getSimpleName().toLowerCase();
+                String clsName   = treeClass.getSimpleName();
+                
+                String sql = String.format("SELECT %sID FROM %s WHERE RankID = 0 AND %sID = %d ", clsName, tableName, BaseTreeTask.this.currentDef.getClass().getSimpleName(), BaseTreeTask.this.currentDef.getTreeDefId());
+                log.debug(sql);
+                
+                Integer rootId = BasicSQLUtils.getCount(sql);
+                if (rootId != null)
+                {
+                    TreeBrowserPanel browsePanel = new TreeBrowserPanel(tableName, treeClass, BaseTreeTask.this.currentDef.getTreeDefId(), rootId);
+                    SubPaneMgr.getInstance().addPane(new SimpleDescPane(titleArg, BaseTreeTask.this, browsePanel));
+                }
+            }
+        };
+    }
+
     
     /**
      * Creates an ActionListener for Editing the tree.

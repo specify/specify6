@@ -106,7 +106,13 @@ public class WorldWindPanel extends JPanel
     {
         if (world == null)
         {
-            world = new WorldWindowGLCanvas();
+            try
+            {
+                world = new WorldWindowGLCanvas();
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
             
             int radius = 3;
             annoAttrs.setCornerRadius(radius);

@@ -4010,17 +4010,21 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             StringBuilder sql   = new StringBuilder("SELECT ");
             List<String>  names = getFieldNamesFromSchema(oldDBConn, "collectionobject");
 
-            sql.append(buildSelectFieldList(names, "collectionobject"));
+            sql.append(buildSelectFieldList(names, "co"));
             sql.append(", ");
             oldFieldNames.addAll(names);
 
             names = getFieldNamesFromSchema(oldDBConn, "collectionobjectcatalog");
-            sql.append(buildSelectFieldList(names, "collectionobjectcatalog"));
+            sql.append(buildSelectFieldList(names, "cc"));
             oldFieldNames.addAll(names);
 
-            sql.append(" From collectionobject Inner Join collectionobjectcatalog ON collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID ");
-            sql.append("WHERE NOT (collectionobject.DerivedFromID IS NULL) ORDER BY collectionobject.CollectionObjectID");
-
+            String sqlPostfix = " From collectionobject co Inner Join collectionobjectcatalog cc ON co.CollectionObjectID = cc.CollectionObjectCatalogID " +
+                                "WHERE NOT (co.DerivedFromID IS NULL) ORDER BY co.CollectionObjectID";
+            sql.append(sqlPostfix);
+            
+            int totalPrepCount = BasicSQLUtils.getCountAsInt("SELECT COUNT(*)" + sqlPostfix);
+            setProcess(0, totalPrepCount);
+            
             log.info(sql);
 
             List<FieldMetaData> newFieldMetaData = getFieldMetaDataFromSchema(newDBConn, "preparation");
@@ -4048,8 +4052,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     {
                         collection = (Collection)colList.get(0);
                         collection.forceLoad();
-                        
-                        //collection.getPickLists().size(); // This cheating to load the pickLists
                     }
                     
                 } catch (Exception ex)
@@ -4091,12 +4093,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             boolean doDebug = false;
             ResultSet rs = stmt.executeQuery(sqlStr);
 
-            if (rs.last())
-            {
-                setProcess(0, rs.getRow());
-                rs.first();
-
-            } else
+            if (!rs.next())
             {
                 rs.close();
                 stmt.close();

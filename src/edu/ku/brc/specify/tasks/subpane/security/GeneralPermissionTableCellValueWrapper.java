@@ -24,6 +24,7 @@ import java.util.Iterator;
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Wraps in a single object the values of a permission action (whether it's on
@@ -154,7 +155,7 @@ public class GeneralPermissionTableCellValueWrapper
 
         if (isAdmin()) 
         {
-            customCheckbox.setText("Always (Admin)"); // I18N
+            customCheckbox.setText(UIRegistry.getResourceString("SEC_ALWAYS_ADM"));
             customCheckbox.setEnabled(false);
             customCheckbox.setSelected(true);
         }

@@ -86,10 +86,10 @@ public class AddExistingUserDlg extends CustomDialog
         super.createUI();
         
         CellConstraints cc = new CellConstraints();
-        PanelBuilder mainPB = new PanelBuilder( new FormLayout("f:p:g", "p,5px,min(325px;p),2dlu,p"));
+        PanelBuilder mainPB = new PanelBuilder( new FormLayout("f:p:g", "p,5px,f:min(400px;p):g,2dlu,p"));
         
         // lay out controls on panel
-        mainPB.addSeparator(getResourceString(AED+"SEL_ADD"), cc.xy(1, 1)); // I18N
+        mainPB.addSeparator(getResourceString(AED+"SEL_ADD"), cc.xy(1, 1));
 
         userList = createUserList();
         mainPB.add(UIHelper.createScrollPane(userList, true), cc.xy(1, 3));

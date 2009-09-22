@@ -83,6 +83,7 @@ import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.ui.ESTermParser;
+import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
@@ -148,6 +149,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     protected boolean                          hasNewText          = false;
     protected boolean                          wasCleared          = false;
     protected boolean                          ignoreDocChange     = false;
+    protected boolean                          isReadOnlyMode      = false;
     
     protected AtomicBoolean                    isDoingCount        = new AtomicBoolean(false);
     protected Integer                          returnCount         = null;
@@ -321,6 +323,16 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     }
     
     /**
+     * @param isReadOnlyMode the isReadOnlyMode to set
+     */
+    public void setReadOnlyMode()
+    {
+        this.isReadOnlyMode = true;
+        ViewFactory.changeTextFieldUIForDisplay(textField, false);
+        dbBtn.setVisible(false);
+    }
+
+    /**
      * @param ignoreFocusLost the ignoreFocusLost to set
      */
     public void setIgnoreFocusLost(boolean ignoreFocusLost)
@@ -487,6 +499,10 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
      */
     protected void cbxKeyReleased(KeyEvent ev)
     {
+        if (isReadOnlyMode)
+        {
+            return;
+        }
         //log.debug(ev.getKeyCode() +"  "+ KeyEvent.VK_TAB+"   "+ KeyEvent.VK_CONTROL);
         //log.debug(Integer.toHexString(ev.getKeyCode()) +"  "+ KeyEvent.VK_TAB+"  "+ KeyEvent.VK_CONTROL);
         if (ev.getKeyCode() == KeyEvent.VK_TAB || 

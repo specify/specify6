@@ -20,7 +20,6 @@
 package edu.ku.brc.specify.conversion;
 
 import java.io.PrintWriter;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -1573,13 +1572,13 @@ public class BasicSQLUtils
             List<FieldMetaData> newFieldMetaData = getFieldMetaDataFromSchema(toConn, toTableName);
 
             Statement         stmt = fromConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-            System.out.println(sqlStr);
+            //System.out.println(sqlStr);
             ResultSet         rs   = stmt.executeQuery(sqlStr);
             ResultSetMetaData rsmd = rs.getMetaData();
             
             Vector<Integer> dateColumns = new Vector<Integer>();
             
-            System.out.println(toTableName);
+            //System.out.println(toTableName);
             Hashtable<String, Integer> fromHash = new Hashtable<String, Integer>();
             for (int i = 1; i <= rsmd.getColumnCount(); i++)
             {
@@ -1588,7 +1587,9 @@ public class BasicSQLUtils
                 fromHash.put(colName, i);
                 //System.out.println(rsmd.getColumnName(i)+" -> "+i);
                 
-                if (colName.toLowerCase().endsWith("date"))
+                if (rsmd.getColumnType(i) == java.sql.Types.DATE || 
+                    colName.toLowerCase().endsWith("date") || 
+                    colName.toLowerCase().startsWith("date"))
                 {
                 	//System.out.println("Date: "+rsmd.getColumnName(i)+" -> "+i);
                 	dateColumns.add(i);
@@ -1732,8 +1733,8 @@ public class BasicSQLUtils
                 // For each column in the new DB table...
                 for (int i = 0; i < newFieldMetaData.size(); i++)
                 {
-                    FieldMetaData newFieldName     = newFieldMetaData.get(i);
-                    String        newColName       = newFieldName.getName();
+                    FieldMetaData newFldMetaData   = newFieldMetaData.get(i);
+                    String        newColName       = newFldMetaData.getName();
                     String        oldMappedColName = null;
                     
                     //System.out.println("["+newFieldName.getName()+"]");
@@ -1834,41 +1835,41 @@ public class BasicSQLUtils
                         // First check to see if it is null
                         if (dataObj == null)
                         {
-                            if (newFieldName.getName().equals("TimestampCreated"))
+                            if (newFldMetaData.getName().equals("TimestampCreated"))
                             {
                                 if (timestampCreatedInx != null)
                                 {
                                     if (isAccessionTable)
                                     {
                                         Date date = UIHelper.convertIntToDate(rs.getInt(fromHash.get("DateAccessioned")));
-                                        str.append(date != null ? getStrValue(date) : getStrValue(timestampCreatedCached, newFieldName.getType()));
+                                        str.append(date != null ? getStrValue(date) : getStrValue(timestampCreatedCached, newFldMetaData.getType()));
     
                                     } else
                                     {
-                                        str.append(getStrValue(timestampCreatedCached, newFieldName.getType()));
+                                        str.append(getStrValue(timestampCreatedCached, newFldMetaData.getType()));
                                     }
     
                                 } else
                                 {
-                                    str.append(getStrValue(timestampCreatedCached, newFieldName.getType()));
+                                    str.append(getStrValue(timestampCreatedCached, newFldMetaData.getType()));
                                 }
     
-                            } else if (newFieldName.getName().equals("TimestampModified"))
+                            } else if (newFldMetaData.getName().equals("TimestampModified"))
                             {
                                 if (timestampModifiedInx != null)
                                 {
                                     if (isAccessionTable)
                                     {
                                         Date date = UIHelper.convertIntToDate(rs.getInt(fromHash.get("DateAccessioned")));
-                                        str.append(date != null ? getStrValue(date) : getStrValue(timestampCreatedCached, newFieldName.getType()));
+                                        str.append(date != null ? getStrValue(date) : getStrValue(timestampCreatedCached, newFldMetaData.getType()));
     
                                     } else
                                     {
-                                        str.append(getStrValue(timestampModifiedCached, newFieldName.getType()));
+                                        str.append(getStrValue(timestampModifiedCached, newFldMetaData.getType()));
                                     }
                                 } else
                                 {
-                                    str.append(getStrValue(timestampModifiedCached, newFieldName.getType()));
+                                    str.append(getStrValue(timestampModifiedCached, newFldMetaData.getType()));
                                 }
                             } else
                             {
@@ -1876,7 +1877,10 @@ public class BasicSQLUtils
                             }
                                 
 
-                        } else if (dataObj instanceof Integer && newColName.toLowerCase().endsWith("date"))
+                        } else if (dataObj instanceof Integer && 
+                                  (newFldMetaData.getSqlType() == java.sql.Types.DATE ||
+                                   newColName.toLowerCase().endsWith("date") || 
+                                   newColName.toLowerCase().startsWith("date")))
                         {
                         	Pair<String, String> datePr = dateMap.get(newColName);
                         	if (datePr != null)
@@ -1903,7 +1907,7 @@ public class BasicSQLUtils
 
                         } else 
                         {
-                            str.append(getStrValue(dataObj, newFieldName.getType()));
+                            str.append(getStrValue(dataObj, newFldMetaData.getType()));
                         }
 
                     } else if (newColName.endsWith("DatePrecision"))
@@ -1971,7 +1975,7 @@ public class BasicSQLUtils
                         }
                         if (i > 0) str.append(", ");
                         
-                        BasicSQLUtilsMapValueIFace valueMapper = columnValueMapper.get(newFieldName.getName());
+                        BasicSQLUtilsMapValueIFace valueMapper = columnValueMapper.get(newFldMetaData.getName());
                         if (valueMapper != null)
                         {
                             newColValue = valueMapper.mapValue(newColValue);

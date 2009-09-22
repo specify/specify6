@@ -260,6 +260,19 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         
         setOpaque(false);
     }
+    
+    /**
+     * @param isReadOnlyMode the isReadOnlyMode to set
+     */
+    public void setReadOnlyMode()
+    {
+        textWithQuery.setReadOnlyMode();
+        if (editBtn != null)
+        {
+            editBtn.setVisible(false);
+        }
+    }
+    
     /**
      * @param doAdjustQuery
      */
@@ -1211,7 +1224,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         
         if (editBtn != null)
         {
-            editBtn.setEnabled(dataObj != null || textWithQuery.getSelectedId() != null);
+            editBtn.setEnabled(dataObj != null || (textWithQuery != null && textWithQuery.getSelectedId() != null));
         }
         
         if (listSelectionListeners != null)

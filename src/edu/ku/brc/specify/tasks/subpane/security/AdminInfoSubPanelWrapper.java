@@ -72,6 +72,20 @@ public class AdminInfoSubPanelWrapper
     {
         this.displayPanel = displayPanel;
         permissionEditors = new ArrayList<PermissionPanelEditor>();
+        
+        MultiView mv = getMultiView();
+        if (mv != null)
+        {
+            ValComboBoxFromQuery agentCBX = null;
+            FormViewObj          fvo      = mv.getCurrentViewAsFormViewObj();
+            Component            cbx      = fvo.getControlByName("agent");
+            if (cbx != null && cbx instanceof ValComboBoxFromQuery)
+            {
+                agentCBX = (ValComboBoxFromQuery)cbx;
+                agentCBX.setReadOnlyMode();
+                agentCBX.registerQueryBuilder(new UserAgentVSQBldr(agentCBX));
+            }
+        }
     }
 
     /**
