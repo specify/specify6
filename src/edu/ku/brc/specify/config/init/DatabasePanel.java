@@ -700,8 +700,11 @@ public class DatabasePanel extends BaseSetupPanel
         
         switch (isOkToProceed(props))
         {
+            case missingOrEmpty :
             case ok        : return VerifyStatus.OK;
+            
             case cancelled : return VerifyStatus.CANCELLED;
+            
             default        : return VerifyStatus.ERROR;
         }
     }
