@@ -381,27 +381,33 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         } else
         {
             JTextField typeTxt = (JTextField)typeComp;
-            typeTxt.setText(typeTitles[agentType]);
+            if (typeTxt != null)
+            {
+                typeTxt.setText(typeTitles[agentType]);
+            }
         }
         
         boolean shouldBeVisible = agentType == Agent.PERSON || agentType == Agent.ORG;
         final Component addrSubView = formViewObj.getCompById("9");
-        boolean isVisible = addrSubView.isVisible();
-        if (!isVisible != shouldBeVisible)
+        if (addrSubView != null)
         {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run()
-                {
-                    Component topComp = UIHelper.getWindow(addrSubView);
-                    Component topMost = UIRegistry.getTopWindow();
-                    if (topComp != topMost && topComp != null)
+            boolean isVisible = addrSubView.isVisible();
+            if (!isVisible != shouldBeVisible)
+            {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run()
                     {
-                        ((Window)topComp).pack();
+                        Component topComp = UIHelper.getWindow(addrSubView);
+                        Component topMost = UIRegistry.getTopWindow();
+                        if (topComp != topMost && topComp != null)
+                        {
+                            ((Window)topComp).pack();
+                        }
                     }
-                }
-            });
+                });
+            }
+            addrSubView.setVisible(shouldBeVisible);
         }
-        addrSubView.setVisible(shouldBeVisible);
     }
 
     /* (non-Javadoc)
