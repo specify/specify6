@@ -537,7 +537,10 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             if (dataItems != null)
             {
                 ViewIFace view = AppContextMgr.getInstance().getView("Common", viewName);
-                
+                if (view == null)
+                {
+                    view = AppContextMgr.getInstance().getView(null, viewName);
+                }
                 formPane = createFormPanel(tiTitle, 
                                             view.getViewSetName(), 
                                             view.getName(), 
