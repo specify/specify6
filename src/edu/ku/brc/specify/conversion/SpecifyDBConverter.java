@@ -30,6 +30,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -110,6 +111,7 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.dbsupport.PostInsertEventListener;
+import edu.ku.brc.specify.dbsupport.SpecifySchemaUpdateService;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.CustomDialog;
@@ -133,6 +135,10 @@ public class SpecifyDBConverter
     protected static SimpleDateFormat           dateFormatter     = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     protected static StringBuffer               strBuf            = new StringBuffer("");
     protected static Calendar                   calendar          = Calendar.getInstance();
+    
+    protected long                              startTime;
+    protected long                              endTime;
+    protected long                              waitTime;
     
     protected static boolean                    doFixCollectors   = false;
     
@@ -559,7 +565,6 @@ public class SpecifyDBConverter
         boolean startfromScratch    = true; 
         boolean deleteMappingTables = true;
         
-        long startTime = System.currentTimeMillis();
         
         System.out.println("************************************************************");
         System.out.println("From "+dbNameSource+" to "+dbNameDest);
@@ -625,6 +630,8 @@ public class SpecifyDBConverter
             newDBConn.close();
             System.exit(0);
         }
+        
+        startTime = System.currentTimeMillis();
         
         doFixCollectors = dlg.doFixAgents();
         
@@ -1286,99 +1293,36 @@ public class SpecifyDBConverter
 
                 frame.incOverall();
                 
+                long stTime = System.currentTimeMillis();
+
                 String msg = String.format("Will this Collection share Collecting Events?\n(Sp5 was %ssharing them.)", isUsingEmbeddedCEsInSp5() ? "NOT " : "");
-                if (UIHelper.promptForAction("Share", "SKIP", "Duplicate Collecting Events", msg))
+                if (!UIHelper.promptForAction("Share", "Adjust CEs", "Duplicate Collecting Events", msg))
                 {
                     DuplicateCollectingEvents dce = new DuplicateCollectingEvents(newDBConn, frame, conversion.getCurAgentCreatorID(), dscp.getId());
                     dce.performMaint();
                 }
-                    
+                waitTime = System.currentTimeMillis() -stTime;
+                
+                endTime = System.currentTimeMillis();
+                
+                int convertTimeInSeconds = (int)((endTime - startTime - waitTime) / 1000.0);
+                
+                int colObjCnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM collectionobject");
+                ConvertStatSender sender = new ConvertStatSender();
+                sender.senConvertInfo(dbNameDest, colObjCnt, convertTimeInSeconds);
+                
                 frame.incOverall();
+                
+                updateVersionInfo(newConn);
+                
+                log.info("Done - " + dbNameDest + " " + convertTimeInSeconds);
+                frame.setDesc("Done - " + dbNameDest + " " + convertTimeInSeconds);
+
 
                 System.setProperty(AppPreferences.factoryName, "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
                 System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
                 
                 createTableSummaryPage();
-                
-                boolean doFurtherTesting = false;
-                if (doFurtherTesting)
-                {
-                    /*
-                    BasicSQLUtils.deleteAllRecordsFromTable("datatype", BasicSQLUtils.myDestinationServerType);
-                    BasicSQLUtils.deleteAllRecordsFromTable("specifyuser", BasicSQLUtils.myDestinationServerType);
-                    BasicSQLUtils.deleteAllRecordsFromTable("usergroup", BasicSQLUtils.myDestinationServerType);
-                    BasicSQLUtils.deleteAllRecordsFromTable("discipline", BasicSQLUtils.myDestinationServerType);
-
-                    DataType          dataType  = createDataType("Animal");
-                    UserGroup         userGroup = createUserGroup("Fish");
-                    SpecifyUser       user      = createSpecifyUser("rods", "rods@ku.edu", (short)0, new UserGroup[] {userGroup}, SpecifyUserTypes.UserType.Manager.toString());
-
-
-
-                    Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Collection.class);
-                    criteria.add(Restrictions.eq("collectionId", new Integer(0)));
-                    List<?> collectionList = criteria.list();
-
-                    boolean doAddTissues = false;
-                    if (doAddTissues)
-                    {
-                        deleteAllRecordsFromTable("collection", BasicSQLUtils.myDestinationServerType);
-                        try
-                        {
-                            Session session = HibernateUtil.getCurrentSession();
-                            HibernateUtil.beginTransaction();
-
-                            Collection voucherSeries = null;
-                            if (collectionList.size() == 0)
-                            {
-                                voucherSeries = new Collection();
-                               // voucherSeries.setIsTissueSeries(false);
-                                voucherSeries.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-                                voucherSeries.setCollectionId(100);
-                                voucherSeries.setCollectionPrefix("KUFISH");
-                                voucherSeries.setCollectionName("Fish Collection");
-                                session.saveOrUpdate(voucherSeries);
-
-                            } else
-                            {
-                                voucherSeries = (Collection)collectionList.get(0);
-                            }
-
-                            if (voucherSeries != null)
-                            {
-                                Collection tissueSeries = new Collection();
-                               // tissueSeries.setIsTissueSeries(true);
-                                tissueSeries.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-                                tissueSeries.setCollectionId(101);
-                                tissueSeries.setCollectionPrefix("KUTIS");
-                                tissueSeries.setCollectionName("Fish Tissue");
-                                session.saveOrUpdate(tissueSeries);
-
-                                //voucherSeries.setTissue(tissueSeries);
-                                session.saveOrUpdate(voucherSeries);
-
-                                HibernateUtil.commitTransaction();
-                            }
-
-                        } catch (Exception e)
-                        {
-                            log.error("******* " + e);
-                            e.printStackTrace();
-                            HibernateUtil.rollbackTransaction();
-                        }
-                        return;
-                    }
-
-                    Set<Discipline>  disciplineSet = conversion.createDiscipline("Fish", dataType, user, null, null);
-
-
-                    Object obj = disciplineSet.iterator().next();
-                    Discipline discipline = (Discipline)obj;
-
-                    conversion.convertBiologicalAttrs(discipline, null, null);*/
-                }
-                //conversion.showStats();
-                
                 conversion.cleanUp();
             }
 
@@ -1387,10 +1331,6 @@ public class SpecifyDBConverter
                 idMapperMgr.cleanup();
             }
             
-            long endTime = System.currentTimeMillis();
-            
-            log.info("Done - " + dbNameDest + " " + ((endTime - startTime) / 60000));
-            frame.setDesc("Done - " + dbNameDest + " " + ((endTime - startTime) / 60000));
             frame.setTitle("Done - " + dbNameDest);
             frame.incOverall();
             frame.processDone();
@@ -1409,6 +1349,71 @@ public class SpecifyDBConverter
             if (getSession() != null)
             {
                 getSession().close();
+            }
+        }
+    }
+    
+    /**
+     * @param newDBConn
+     * @throws SQLException
+     */
+    private void updateVersionInfo(final Connection newDBConn) throws SQLException
+    {
+        String  appVersion     = null;
+        String  schemaVersion  = SpecifySchemaUpdateService.getDBSchemaVersionFromXML();
+        Integer spverId        = null;
+        Integer recVerNum     = 1;
+        
+        Vector<Object[]> rows = BasicSQLUtils.query(newDBConn, "SELECT AppVersion, SchemaVersion, SpVersionID, Version FROM spversion");
+        if (rows.size() == 1)
+        {
+            Object[] row  = (Object[])rows.get(0);
+            appVersion    = row[0].toString();
+            schemaVersion = row[1].toString();
+            spverId       = (Integer)row[2];
+            recVerNum     = (Integer)row[3];
+        }
+        
+        if (appVersion != null)
+        {
+            appVersion = UIHelper.getInstall4JInstallString();
+            if (appVersion == null)
+            {
+                do
+                {
+                    appVersion = JOptionPane.showInputDialog("Enter Specify App version:"); 
+                } while (StringUtils.isEmpty(appVersion));
+            }
+            
+            PreparedStatement pStmt = newDBConn.prepareStatement("UPDATE spversion SET AppVersion=?, SchemaVersion=?, Version=? WHERE SpVersionID = ?");
+            pStmt.setString(1, appVersion);
+            pStmt.setString(2, SpecifySchemaUpdateService.getDBSchemaVersionFromXML());
+            pStmt.setInt(3, ++recVerNum);
+            pStmt.setInt(4, spverId);
+            if (pStmt.executeUpdate() != 1)
+            {
+                throw new RuntimeException("Problem updating SpVersion");
+            }
+            
+        } else
+        {
+            appVersion = UIHelper.getInstall4JInstallString();
+            if (appVersion == null)
+            {
+                do
+                {
+                    appVersion = JOptionPane.showInputDialog("Enter Specify App version:"); 
+                } while (StringUtils.isEmpty(appVersion));
+            }
+            
+            PreparedStatement pStmt = newDBConn.prepareStatement("INSERT INTO spversion (AppVersion, SchemaVersion, Version, TimestampCreated) VALUES(?,?,?,?)");
+            pStmt.setString(1, appVersion);
+            pStmt.setString(2, schemaVersion);
+            pStmt.setInt(3, 0);
+            pStmt.setTimestamp(4, new Timestamp(Calendar.getInstance().getTime().getTime()));
+            if (pStmt.executeUpdate() != 1)
+            {
+                throw new RuntimeException("Problem inserting SpVersion");
             }
         }
     }

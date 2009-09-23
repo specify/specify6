@@ -6733,18 +6733,19 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                     if (rows == 0)
                     {
-                        if (colSQL.length() > 0)
-                        {
-                            colSQL.append(",");
-                        }
-
                         System.err.println("["+colName+"]");
                         
-                        if (!isGeoCoordDetail && colName.equals("Range"))
+                        if (colName.equals("Range"))
                         {
-                            colSQL.append("RangeDesc");
+                            if (!isGeoCoordDetail)
+                            {
+                                if (colSQL.length() > 0) colSQL.append(",");
+                                colSQL.append("RangeDesc");
+                            }
+                            
                         } else
                         {
+                            if (colSQL.length() > 0) colSQL.append(",");
                             colSQL.append(colName);
                         }
                     }
@@ -6772,14 +6773,20 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         
                     } else if (colName.equals("Range"))
                     {
-                        String range = rs.getString(i);
-                        if (range != null)
+                        if (!isGeoCoordDetail)
                         {
-                            hasData = true;
-                            value = "'" + range + "'";
+                            String range = rs.getString(i);
+                            if (range != null)
+                            {
+                                hasData = true;
+                                value = "'" + range + "'";
+                            } else
+                            {
+                                value = "NULL";
+                            }
                         } else
                         {
-                            value = "NULL";
+                            value = null;
                         }
                     } else
                     {
@@ -6794,11 +6801,14 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     }
                     // log.debug(colName+" ["+value+"]");
 
-                    if (valuesSQL.length() > 0)
+                    if (value != null)
                     {
-                        valuesSQL.append(",");
+                        if (valuesSQL.length() > 0)
+                        {
+                            valuesSQL.append(",");
+                        }
+                        valuesSQL.append(value);
                     }
-                    valuesSQL.append(value);
                 }
 
                 if (hasData)
@@ -6824,6 +6834,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                     } catch (Exception ex)
                     {
+                        System.out.println("isGeoCoordDetail: "+isGeoCoordDetail);
+                        System.out.println(insertSQL);
                         ex.printStackTrace();
                     }
                 }
@@ -7350,8 +7362,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 {
                     if (rs.getObject(1) == null || rs.getObject(2) == null) continue;
                         
-                    int coId = lithoStratIdMapper.get(rs.getInt(1));
-                    int ceId = lithoStratIdMapper.get(rs.getInt(2));
+                    Integer coId = lithoStratIdMapper.get(rs.getInt(1));
+                    Integer ceId = lithoStratIdMapper.get(rs.getInt(2));
+                    
+                    if (coId == null || ceId == null) continue;
+                    
                     try
                     {
                         Integer paleoContextID = ceToPCHash.get(ceId);

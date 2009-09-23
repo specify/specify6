@@ -77,16 +77,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     {
         super();
     }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.dbsupport.SchemaUpdateService#updateSchema(java.lang.String)
+    
+    /**
+     * @return
      */
-    @Override
-    public SchemaUpdateTpe updateSchema(final String appVerNumArg)
+    public static String getDBSchemaVersionFromXML()
     {
-        String  dbVersion = null;
-        String  appVerNum = appVerNumArg;
-        
+        String dbVersion = null;
         Element root;
         try
         {
@@ -106,7 +103,20 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         } catch (Exception e)
         {
             e.printStackTrace();
-        } 
+        }
+        return dbVersion;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.SchemaUpdateService#updateSchema(java.lang.String)
+     */
+    @Override
+    public SchemaUpdateTpe updateSchema(final String appVerNumArg)
+    {
+        String  dbVersion = getDBSchemaVersionFromXML();
+        String  appVerNum = appVerNumArg;
+        
+ 
         
         
         DBConnection dbConn = DBConnection.getInstance();
