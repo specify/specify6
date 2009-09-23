@@ -1370,7 +1370,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         String oldLoanReturnPhysicalObj_Date_FieldName = "Date";
         String oldRefWork_Date_FieldName               = "Date";
         String oldDeaccession_Date_FieldName           = "Date";
-        String oldHabitat_Current_FieldName            = "Current";
+        //String oldHabitat_Current_FieldName            = "Current";
         String oldAuthors_Order_FieldName              = "Order";
         String oldCollectors_Order_FieldName           = "Order";
         String oldGroupPersons_Order_FieldName         = "Order";
@@ -4904,7 +4904,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             }
 
         }
-        int objTypeId  = objTypePair.first;
+        //int objTypeId  = objTypePair.first;
         //boolean isEmbedded = objTypePair.second;
         
         idMapperMgr.dumpKeys();
@@ -4994,7 +4994,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             String tableName = "collectionobject";
 
             Statement newStmt   = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            ResultSet rsLooping = newStmt.executeQuery("SELECT  OldID, NewID FROM collectionobjectcatalog_CollectionObjectCatalogID ORDER BY OldID");
+            ResultSet rsLooping = newStmt.executeQuery("SELECT OldID, NewID FROM collectionobjectcatalog_CollectionObjectCatalogID ORDER BY OldID");
 
             if (hasFrame)
             {
@@ -5026,12 +5026,12 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             int catNumInx      = oldNameIndex.get("CatalogNumber");
             int catDateInx     = oldNameIndex.get("CatalogedDate");
             
-            int     grpPrmtViewInx    = -1;
+            /*int     grpPrmtViewInx    = -1;
             Integer grpPrmtViewInxObj = oldNameIndex.get("GroupPermittedToView");
             if (grpPrmtViewInxObj != null)
             {
                 grpPrmtViewInx = grpPrmtViewInxObj + 1;
-            }
+            }*/
             
             int     colObjAttrsNotMapped = 0;
             int     count                = 0;
@@ -5808,7 +5808,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             String tableName = "loanphysicalobject";
 
-            int quantityIndex   = oldNameIndex.get("Quantity");
+            //int quantityIndex   = oldNameIndex.get("Quantity");
             int lastEditedByInx = oldNameIndex.get("LastEditedBy");
 
             log.info(sqlStr);
@@ -5840,7 +5840,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             int count = 0;
             do
             {
-                int quantity         = getIntValue(rs, quantityIndex);
+                //int quantity         = getIntValue(rs, quantityIndex);
                 String lastEditedBy  = rs.getString(lastEditedByInx);
 
                 str.setLength(0);

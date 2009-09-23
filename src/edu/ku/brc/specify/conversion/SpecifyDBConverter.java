@@ -1286,7 +1286,8 @@ public class SpecifyDBConverter
 
                 frame.incOverall();
                 
-                if (isUsingEmbeddedCEsInSp5())
+                String msg = String.format("Will this Collection share Collecting Events?\n(Sp5 was %ssharing them.)", isUsingEmbeddedCEsInSp5() ? "NOT " : "");
+                if (UIHelper.promptForAction("Share", "SKIP", "Duplicate Collecting Events", msg))
                 {
                     DuplicateCollectingEvents dce = new DuplicateCollectingEvents(newDBConn, frame, conversion.getCurAgentCreatorID(), dscp.getId());
                     dce.performMaint();
