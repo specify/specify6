@@ -16,7 +16,7 @@
               <command type="Workbench" action="WB.SelectedWorkbench" colid="2" class="edu.ku.brc.specify.datamodel.Workbench"/>
         </box>
         <box title="Loans">
-            <item title="Items On Loan">
+            <item title="Items on Loan">
                 <sql>
 			      <tables>
 			        <id>52</id>
@@ -44,7 +44,7 @@
 
    <row>
       <box title="Loans">
-        <item title="Items On Loan">
+        <item title="Items on Loan">
             <sql type="custom" name="ItemsOnLoan"><statement><![CDATA[select count(loanpreparationid) AS ItemsOnLoanCount from loanpreparation as lpo inner join loan on loan.loanid = lpo.loanid where quantityresolved < quantity and (IsClosed = 0 or IsClosed is null)]]></statement></sql>
             <link>ListOnLoan</link>
         </item>
@@ -58,7 +58,7 @@
         </item>
       </box>
        <box title="Overdue Loans" desccol="1" valcol="5" desctitle="Loan Number" valtitle="Agent">
-            <item title="Items On Loan">
+            <item title="Items on Loan">
 		      <tables>
 		        <id>52</id>
 		      </tables>            

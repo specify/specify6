@@ -2,7 +2,7 @@
 <panel>
   <row>
       <box title="Specimen">
-        <item title="Number of Specimens">
+        <item title="Specimens">
             <sql>
                 <tables><id>1</id></tables>            
                 <statement row="1" col="1">
@@ -66,7 +66,7 @@
   </row>
   <row>
       <box title="Loans">
-        <item title="Items On Loan">
+        <item title="Items on Loan">
             <sql>
                 <tables><id>52</id><id>54</id></tables>            
                 <statement><![CDATA[SELECT count(LoanPreparationID) AS ItemsOnLoanCount FROM loanpreparation as lpo inner join loan on loan.loanid = lpo.loanid WHERE loan.DisciplineID = DSPLNID AND quantityresolved < quantity and (IsClosed = false or IsClosed is null)]]></statement>
@@ -88,19 +88,19 @@
         </item>
       </box>
       <box title="Locality/Geography">
-        <item title="Number of Localities">
+        <item title="Localities">
             <sql>
                 <tables><id>2</id></tables>            
                 <statement><![CDATA[SELECT count(*) FROM locality INNER JOIN discipline ON locality.DisciplineID = discipline.DisciplineID WHERE discipline.DisciplineID = DSPLNID]]></statement>
             </sql>
         </item>
-        <item title="Number of Geographies">
+        <item title="Geographies">
             <sql>
                 <tables><id>3</id></tables>            
                 <statement><![CDATA[SELECT count(*) FROM geography WHERE GeographyTreeDefID = GEOTREEDEFID]]></statement>
             </sql>
         </item>
-        <item title="Number of Countries" useprogress="true">
+        <item title="Countries" useprogress="true">
             <sql>
                 <tables><id>2</id><id>3</id></tables>            
                 <statement><![CDATA[SELECT count(Name) FROM (SELECT DISTINCT Name FROM (SELECT g.GeographyID,g.nodenumber FROM locality as l inner join geography as g on l.GeographyID = g.GeographyID) as GEO, geography as g WHERE g.rankid = 200 and GEO.nodenumber between g.nodenumber and g.HighestChildNodeNumber) As GEO2]]></statement>
@@ -116,14 +116,14 @@
     </box>
   </row>
   <row>
-    <box title="Taxonomic Tree Information">
-        <item title="Class">
+    <box title="Taxonomic Tree">
+        <item title="Classes">
             <sql>
                 <tables><id>4</id></tables>            
                 <statement><![CDATA[SELECT count(*) FROM taxon WHERE TaxonTreeDefID = TAXTREEDEFID AND rankid = 60]]></statement>
             </sql>
         </item>
-        <item title="Order">
+        <item title="Orders">
             <sql>
                 <tables><id>4</id></tables>            
                 <statement><![CDATA[SELECT count(*) FROM taxon WHERE TaxonTreeDefID = TAXTREEDEFID AND rankid = 100]]></statement>
@@ -148,7 +148,7 @@
             </sql>
         </item>
     </box>
-      <box title="Taxa Type Counts" desccol="1" valcol="2" desctitle="Taxon" valtitle="Count" noresults="No Type Specimens">
+      <box title="Type Specimen Counts" desccol="1" valcol="2" desctitle="Taxon" valtitle="Count" noresults="No Type Specimens">
         <sql>
             <tables><id>9</id></tables>            
             <statement><![CDATA[SELECT TypeStatusName, count(DeterminationID) AS DeterminationCount FROM determination WHERE CollectionMemberID = COLMEMID AND TypeStatusName is not null group by TypeStatusName]]></statement>
