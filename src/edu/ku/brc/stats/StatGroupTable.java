@@ -117,6 +117,7 @@ public class StatGroupTable extends JPanel
         {
             progressIcon = IconManager.getIcon("Progress", IconManager.IconSize.Std16);
         }
+        setOpaque(false);
     }
 
     /**
@@ -172,11 +173,8 @@ public class StatGroupTable extends JPanel
                 ((SortableJTable)table).installColumnHeaderListeners();
             }
             
-            if (SkinsMgr.hasSkins())
-            {
-                scrollPane.setOpaque(false);
-                scrollPane.getViewport().setOpaque(false);
-            }
+            scrollPane.setOpaque(false);
+            scrollPane.getViewport().setOpaque(false);
         }
 
         if (useSeparator)
