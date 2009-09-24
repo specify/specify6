@@ -466,7 +466,7 @@
   <installerGui installerType="1" suggestPreviousProgramGroup="false" addOnAppId="5397-6897-2502-8965" suggestPreviousLocations="false">
     <customCode useInstalledFiles="false" />
     <applications>
-      <application name="" id="installer" beanClass="com.install4j.runtime.beans.applications.InstallerApplication" enabled="true" commentSet="false" comment="" customicnsFile="icns/specifyE.icns" customIcoFile="">
+      <application name="" id="installer" beanClass="com.install4j.runtime.beans.applications.InstallerApplication" enabled="true" commentSet="false" comment="" customIcnsFile="icns/specifyE.icns" customIcoFile="">
         <serializedBean>
           <java class="java.beans.XMLDecoder">
             <object class="com.install4j.runtime.beans.applications.InstallerApplication">

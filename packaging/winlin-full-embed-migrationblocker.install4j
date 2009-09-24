@@ -1,4 +1,4 @@
- apa<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <install4j version="4.2.3" transformSequenceNumber="2">
   <directoryPresets config="../InstallerFiles/images" />
   <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../Media" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Beta" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" missingFilesStrategy="warn" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.2.76" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" installerName="" javaMinVersion="1.6" javaMaxVersion="1.6" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
@@ -403,7 +403,7 @@
       </customScript>
     </launcher>
   </launchers>
-  <installerGui installerType="1" suggestPreviousProgramGroup="false" addOnAppId="" suggestPreviousLocations="true">
+  <installerGui installerType="1" suggestPreviousProgramGroup="false" addOnAppId="" suggestPreviousLocations="false">
     <customCode useInstalledFiles="false" />
     <applications>
       <application name="" id="installer" beanClass="com.install4j.runtime.beans.applications.InstallerApplication" enabled="true" commentSet="false" comment="" customIcnsFile="../InstallerFiles/images/specify.icns" customIcoFile="">
@@ -485,7 +485,7 @@
                   <java class="java.beans.XMLDecoder">
                     <object class="com.install4j.runtime.beans.formcomponents.MultilineHtmlLabelComponent">
                       <void property="labelHtml">
-                        <string>This Specify update includes an upgrade to the database shema.  This upgrade requires the IT username and password for the MySQL server: if the installation completes without them, you will be unable to login to your database.  &lt;b&gt;Press cancel if you do not have access to these credentials&lt;/b&gt;.
+                        <string>This Specify release updates the structure of any existing MySQL databases to accommodate new software features.  If you already have a Specify 6 database installed either on your local workstation or on a server machine, running the Specify release you are about to install will require you to provide the Specify “IT User” name and password for your MySQL Server installation to complete the database update during your first attempt to login to the database.  Once installed, you will not be able to login to your database unless you have this information.  Cancel this installation now, by clicking on the cancel button, if you do not have your Specify “IT user” name and password (unless someone else can supply this information during your first attempt to login or if you are working in a shared server environment and someone else has already supplied this information from another workstation in which case it will not be required again).
 </string>
                       </void>
                     </object>

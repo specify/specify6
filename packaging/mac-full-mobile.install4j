@@ -31,7 +31,7 @@
   </files>
   <launchers>
     <launcher name="Specify Mobile WorkBench" id="19" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyM.icns" pngIcon16File="../src/edu/ku/brc/specify/images/specify16M.png" pngIcon32File="../src/edu/ku/brc/specify/images/specify32M.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="SpMobileWBmobile" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
+      <executable name="SpMobileWB" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
@@ -61,7 +61,7 @@
       </customScript>
     </launcher>
     <launcher name="Specify Easy Database" id="807" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyM.icns" pngIcon16File="../src/edu/ku/brc/specify/images/specify16M.png" pngIcon32File="../src/edu/ku/brc/specify/images/specify32M.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="SpEZDBmobile" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
+      <executable name="SpEZDB" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
@@ -94,7 +94,7 @@
   <installerGui installerType="1" suggestPreviousProgramGroup="false" addOnAppId="" suggestPreviousLocations="false">
     <customCode useInstalledFiles="false" />
     <applications>
-      <application name="" id="installer" beanClass="com.install4j.runtime.beans.applications.InstallerApplication" enabled="true" commentSet="false" comment="" customicnsFile="icns/specifyM.icns" customIcoFile="">
+      <application name="" id="installer" beanClass="com.install4j.runtime.beans.applications.InstallerApplication" enabled="true" commentSet="false" comment="" customIcnsFile="icns/specifyM.icns" customIcoFile="">
         <serializedBean>
           <java class="java.beans.XMLDecoder">
             <object class="com.install4j.runtime.beans.applications.InstallerApplication">
