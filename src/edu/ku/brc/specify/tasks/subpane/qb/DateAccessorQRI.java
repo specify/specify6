@@ -73,9 +73,12 @@ public class DateAccessorQRI extends FieldQRI
         }
         if (!forWhereClause)
         {
-        	String partialDateExpr = ta.getAbbreviation(table.getTableTree()) + "." + getFieldInfo().getDatePrecisionName();
-        	return "CASE WHEN " + partialDateExpr + " IN" + validPartialDates + " THEN " + sqlFunction + "(" + fldExpr
-        		+ ") ELSE null END";
+        	if (getFieldInfo().getDatePrecisionName() != null)
+        	{
+        		String partialDateExpr = ta.getAbbreviation(table.getTableTree()) + "." + getFieldInfo().getDatePrecisionName();
+        		return "CASE WHEN " + partialDateExpr + " IN" + validPartialDates + " THEN " + sqlFunction + "(" + fldExpr
+        			+ ") ELSE null END";
+        	}
         }
         return sqlFunction + "(" + fldExpr + ")";
         
