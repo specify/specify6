@@ -243,9 +243,13 @@ public class PluginsTask extends BaseTask
                         //    roc.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, "Record_Set", tableId));
                         //}
                         
-                        DataFlavorTableExt df = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), 
-                                                                       RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), tool.getTableIds());
-                        roc.addDropDataFlavor(df);
+                        int[] tableIds = tool.getTableIds();
+                        if (tableIds != null && tableIds.length > 0)
+                        {
+                            DataFlavorTableExt df = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), 
+                                                                           RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), tableIds);
+                            roc.addDropDataFlavor(df);
+                        }
                         
                         toolsNavBoxList.add(nbi);
                     }
