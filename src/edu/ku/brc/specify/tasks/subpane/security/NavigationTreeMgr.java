@@ -577,13 +577,13 @@ public class NavigationTreeMgr
         dlg.setOkLabel(getResourceString("SAVE"));
         dlg.createUI();
         
+        int divCnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM division");
         ValComboBoxFromQuery cbx = (ValComboBoxFromQuery)dlg.getMultiView().getCurrentViewAsFormViewObj().getControlByName("agent");
-        if (cbx != null)
+        if (cbx != null && divCnt > 1)
         {
             cbx.registerQueryBuilder(new UserAgentVSQBldr(cbx));
             cbx.setReadOnlyMode();
         }
-
         
         AppContextMgr acMgr          = AppContextMgr.getInstance();
         Discipline    currDiscipline = acMgr.getClassObject(Discipline.class);
