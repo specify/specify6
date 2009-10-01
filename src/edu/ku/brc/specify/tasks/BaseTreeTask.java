@@ -342,9 +342,9 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     
     	                long startTime = System.nanoTime();
     	                treeViewer = createTreeViewer(titleArg, !isViewMode && isEditable);
-    	                long endTime   = System.nanoTime();
+    	                long endTime =  System.nanoTime();
+    	                System.err.println("Tree opened in "+((endTime-startTime)/100000));
     	                
-    	                System.out.println("Time; " + (endTime - startTime) / 10000);
     	                if (isViewMode)
     	                {
     	                    treeViewer.setDoUnlock(false);

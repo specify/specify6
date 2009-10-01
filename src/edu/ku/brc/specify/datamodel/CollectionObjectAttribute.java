@@ -233,7 +233,7 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
      * @return the relatedTaxon
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "TaxonID", unique = false, nullable = true, insertable = true, updatable = true)
+    @JoinColumn(name = "RelatedTaxonID", unique = false, nullable = true, insertable = true, updatable = true)
     public Taxon getRelatedTaxon()
     {
         return relatedTaxon;

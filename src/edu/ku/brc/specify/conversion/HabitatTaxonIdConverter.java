@@ -26,6 +26,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DatabaseDriverInfo;
+import edu.ku.brc.specify.toycode.CreationChecker;
 
 /**
  * @author rods
@@ -67,45 +72,72 @@ public class HabitatTaxonIdConverter
     /**
      * @return
      */
-    public boolean convert()
+    public boolean convert(final int collectionMemberId)
     {
-        
         //IdMapperIFace coMapper = IdMapperMgr.getInstance().get("collectionobject", "CollectionObjectID");
-        IdMapperIFace txMapper = IdMapperMgr.getInstance().get("taxonname", "TaxonNameID");
-        IdMapperIFace hbMapper = IdMapperMgr.getInstance().get("habitat",   "HabitatID");
+        IdMapperIFace txMapper = IdMapperMgr.getInstance().get("taxonname",       "TaxonNameID");
+        IdMapperIFace hbMapper = IdMapperMgr.getInstance().get("habitat",          "HabitatID");
+        IdMapperIFace coMapper = IdMapperMgr.getInstance().get("collectionobjectcatalog", "CollectionObjectCatalogID");
         
         String sql = "SELECT co.CollectionObjectID, ce.CollectingEventID, h.HabitatID, h.HostTaxonID FROM collectionobject co INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID " + 
                      "INNER JOIN habitat h ON ce.CollectingEventID = h.HabitatID WHERE h.HostTaxonID IS NOT NULL";
-        PreparedStatement insertStmt   = null;
         PreparedStatement updateStmt   = null;
+        PreparedStatement insertStmt   = null;
         PreparedStatement coUpdateStmt = null;
         Statement         stmt  = null;
         try
         {
-            insertStmt   = newDBConn.prepareStatement("UPDATE collectionobjectattribute SET RelatedTaxonID=? WHERE CollectionObjectAttributeID = ?");
-            updateStmt   = newDBConn.prepareStatement("INSERT INTO collectionobjectattribute (TimestampCreated, TimestampModified, Version, RelatedTaxonID, CollectionMemberID) VALUES(?,?,?,?,?) WHERE CollectionObjectAttributeID = ?");
+            updateStmt   = newDBConn.prepareStatement("UPDATE collectionobjectattribute SET RelatedTaxonID=? WHERE CollectionObjectAttributeID = ?");
             coUpdateStmt = newDBConn.prepareStatement("UPDATE collectionobject SET CollectionObjectAttributeID=? WHERE CollectionObjectID = ?");
-            stmt         = newDBConn.createStatement();
+            insertStmt   = newDBConn.prepareStatement("INSERT INTO collectionobjectattribute (TimestampCreated, TimestampModified, Version, RelatedTaxonID, CollectionMemberID) VALUES(?,?,?,?,?)");
+            stmt         = oldDBConn.createStatement();
+            
             
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next())
             {
                 int coId = rs.getInt(1);
-                int ceId = rs.getInt(2);
+                //int ceId = rs.getInt(2);
                 int hbId = rs.getInt(3);
                 int txId = rs.getInt(4);
+                
+                int     newCOId = coMapper.get(coId);
+                boolean hasAttr = BasicSQLUtils.getCountAsInt(newDBConn, "SELECT CollectionObjectAttributeID FROM collectionobject WHERE CollectionObjectAttributeID IS NOT NULL AND CollectionObjectID = " + newCOId) == 1;
                 
                 int newHBId = hbMapper.get(hbId);
                 int newTXId = txMapper.get(txId);
                 
-                insertStmt.setInt(1, newTXId);
-                insertStmt.setInt(2, newHBId);
-                
-                if (insertStmt.executeUpdate() != 1)
+                if (hasAttr)
                 {
-                    throw new RuntimeException("Couldn't update ColObjAttr Id["+newHBId+"] with TaxonId ["+newTXId+"]");
+                    updateStmt.setInt(1, newTXId);
+                    updateStmt.setInt(2, newHBId);
+                    
+                    if (updateStmt.executeUpdate() != 1)
+                    {
+                        throw new RuntimeException("Couldn't update ColObjAttr Id["+newHBId+"] with TaxonId ["+newTXId+"]");
+                    }
+
+                } else
+                {
+                    insertStmt.setTimestamp(1, now);
+                    insertStmt.setTimestamp(2, now);
+                    insertStmt.setInt(3, 0);
+                    insertStmt.setInt(4, newTXId);
+                    insertStmt.setInt(5, collectionMemberId);
+                    
+                    if (insertStmt.executeUpdate() != 1)
+                    {
+                        throw new RuntimeException("Couldn't update ColObjAttr Id["+newHBId+"] with TaxonId ["+newTXId+"]");
+                    }
+                    
+                    int newColObjAttrId = BasicSQLUtils.getInsertedId(insertStmt);
+                    coUpdateStmt.setInt(1, newColObjAttrId);
+                    coUpdateStmt.setInt(2, newCOId);
+                    if (coUpdateStmt.executeUpdate() != 1)
+                    {
+                        throw new RuntimeException("Couldn't update CollectionObject Id["+newCOId+"] with newColObjAttrId ["+newColObjAttrId+"]");
+                    }
                 }
-                
             }
             rs.close();
             
@@ -113,15 +145,51 @@ public class HabitatTaxonIdConverter
             
         } catch (SQLException ex)
         {
+            ex.printStackTrace();
             try
             {
                 if (stmt != null) stmt.close();
-                if (insertStmt != null) insertStmt.close();
                 if (updateStmt != null) updateStmt.close();
+                if (insertStmt != null) insertStmt.close();
+                if (coUpdateStmt != null) coUpdateStmt.close();
             } catch (Exception ex2) {}
         }
          
         return false;
     }
+    
+    public static void main(String[] args)
+    {
+        
+        
+        String dbName           = "ku_invert_dbo"; 
+        String newDBName        = "ku_invert_dbo_6"; 
+        String itUsername       = "root";
+        String itPassword       = "nessie1601";
+        int    collectionMemberId = 1;
+        
+        DBConnection oldDBConn;
+        DBConnection newDBConn;
+        
+        try
+        {
+            DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("MySQL");
+            String             connStr    = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, "localhost", newDBName, itUsername, itPassword, driverInfo.getName());
+            oldDBConn = DBConnection.createInstance(driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), newDBName, connStr, itUsername, itPassword);
+            
+            connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, "localhost", newDBName, itUsername, itPassword, driverInfo.getName());
+            newDBConn  = DBConnection.createInstance(driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), newDBName, connStr, itUsername, itPassword);
+            
+            HabitatTaxonIdConverter converter = new HabitatTaxonIdConverter(oldDBConn.getConnection(), newDBConn.getConnection());
+            
+            converter.convert(collectionMemberId);
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+    }
+
     
 }

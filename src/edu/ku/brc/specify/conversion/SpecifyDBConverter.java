@@ -1293,6 +1293,11 @@ public class SpecifyDBConverter
 
                 frame.incOverall();
                 
+                HabitatTaxonIdConverter habitatConverter = new HabitatTaxonIdConverter(oldDB.getConnection(), newDBConn);
+                habitatConverter.convert(conversion.getCollectionMemberId());
+                
+                frame.incOverall();
+                
                 long stTime = System.currentTimeMillis();
 
                 String msg = String.format("Will this Collection share Collecting Events?\n(Sp5 was %ssharing them.)", isUsingEmbeddedCEsInSp5() ? "NOT " : "");
@@ -1313,7 +1318,10 @@ public class SpecifyDBConverter
                 
                 frame.incOverall();
                 
-                updateVersionInfo(newConn);
+                if (false)
+                {
+                   updateVersionInfo(newConn);
+                }
                 
                 log.info("Done - " + dbNameDest + " " + convertTimeInSeconds);
                 frame.setDesc("Done - " + dbNameDest + " " + convertTimeInSeconds);
