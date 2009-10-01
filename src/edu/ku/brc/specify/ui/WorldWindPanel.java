@@ -438,6 +438,11 @@ public class WorldWindPanel extends JPanel
         layers.add(compassPosition + 1, layer);
     }
 
+    /**
+     * @param wwd
+     * @param layer
+     * @param targetName
+     */
     public static void insertBeforeLayerName(final WorldWindow wwd, final Layer layer, final String targetName)
     {
         // Insert the layer into the layer list just before the target layer.
@@ -452,6 +457,28 @@ public class WorldWindPanel extends JPanel
             }
         }
         layers.add(targetPosition, layer);
+    }
+    
+    /**
+     * @param wwd
+     * @param layer
+     * @param targetName
+     */
+    public static void insertAfterLayerName(final WorldWindow wwd, final Layer layer, final String targetName)
+    {
+        // Insert the layer into the layer list just before the target layer.
+        int targetPosition = 0;
+        LayerList layers = wwd.getModel().getLayers();
+        for (Layer l : layers)
+        {
+            System.out.println(l.getName());
+            if (l.getName().indexOf(targetName) != -1)
+            {
+                targetPosition = layers.indexOf(l);
+                break;
+            }
+        }
+        layers.add(targetPosition + 1, layer);
     }
     
     /**

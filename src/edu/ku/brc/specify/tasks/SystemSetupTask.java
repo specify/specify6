@@ -65,7 +65,6 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
-import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
@@ -94,7 +93,6 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.busrules.PickListBusRules;
 import edu.ku.brc.specify.tools.schemalocale.PickListEditorDlg;
 import edu.ku.brc.specify.tools.schemalocale.SchemaToolsDlg;
-import edu.ku.brc.specify.ui.NumberingSchemeDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
@@ -208,7 +206,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             })); 
             navBoxes.add(collNavBox);
             
-            if (AppPreferences.getLocalPrefs().getBoolean("debug.menu", false))
+            /*if (AppPreferences.getLocalPrefs().getBoolean("debug.menu", false))
             {
                 collNavBox.add(NavBox.createBtnWithTT(getResourceString("ANS_EDITOR"), "AutoNumberingScheme", "", IconManager.STD_ICON_SIZE, new ActionListener() {
                     public void actionPerformed(ActionEvent e)
@@ -220,7 +218,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                     }
                 })); 
                 navBoxes.add(collNavBox);
-            }
+            }*/
             
             
         }
@@ -293,6 +291,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     {
         final String nameStr  = pickList.getName();
         
+        @SuppressWarnings("unused")
         RolloverCommand roc;
         if (pickList.getIsSystem())
         {
