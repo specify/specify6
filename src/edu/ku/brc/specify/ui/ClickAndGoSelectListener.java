@@ -75,7 +75,7 @@ public class ClickAndGoSelectListener  implements SelectListener
             // This is a left click
             if (event.hasObjects() && event.getTopPickedObject().hasPosition())
             {
-                System.err.println(event.getTopObject().getClass());
+                //System.err.println(event.getTopObject().getClass());
                 // There is a picked object with a position
                 if (event.getTopObject().getClass().equals(pickedObjClass)
                         && this.wwd.getView() instanceof OrbitView)

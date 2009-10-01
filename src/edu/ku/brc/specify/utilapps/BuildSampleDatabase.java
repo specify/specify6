@@ -8043,60 +8043,65 @@ public class BuildSampleDatabase
      * @param memoryContainer
      * @param newContainer
      */
-    public static void loadLocalization(final String            disciplineName,
+    public static void loadLocalization(final Integer           disciplineId,
+                                        final String            disciplineName,
                                         final SpLocaleContainer memoryContainer, 
                                         final SpLocaleContainer newContainer,
                                         final boolean           hideGenericFields,
                                         final String            catFmtName,
-                                        final String            accFmtName)
+                                        final String            accFmtName,
+                                        final boolean           isDoingUpdate,
+                                        final DataProviderSessionIFace session)
     {
-        newContainer.setName(memoryContainer.getName());
-        newContainer.setType(memoryContainer.getType());
-        newContainer.setFormat(newContainer.getFormat());
-        newContainer.setIsUIFormatter(newContainer.getIsUIFormatter());
-        newContainer.setPickListName(newContainer.getPickListName());
-        newContainer.setWebLinkName(newContainer.getWebLinkName());
-        newContainer.setIsHidden(newContainer.getIsHidden());
-
         
         boolean isColObj          = memoryContainer.getName().equals("collectionobject");
         boolean isAccession       = memoryContainer.getName().equals("accession");
         boolean isCollectingEvent = memoryContainer.getName().equals("collectingevent");
         boolean isFish            = disciplineName.equals("fish");
-        
-        //debugOn = false;
-       
-        for (SpLocaleItemStr nm : memoryContainer.getNames())
+
+        if (newContainer.getId() == null)
         {
-            SpLocaleItemStr str = new SpLocaleItemStr();
-            str.initialize();
-            
-            String title = nm.getText();
-            if (isCollectingEvent && !isFish)
+            newContainer.setName(memoryContainer.getName());
+            newContainer.setType(memoryContainer.getType());
+            newContainer.setFormat(newContainer.getFormat());
+            newContainer.setIsUIFormatter(newContainer.getIsUIFormatter());
+            newContainer.setPickListName(newContainer.getPickListName());
+            newContainer.setWebLinkName(newContainer.getWebLinkName());
+            newContainer.setIsHidden(newContainer.getIsHidden());
+            //debugOn = false;
+           
+            for (SpLocaleItemStr nm : memoryContainer.getNames())
             {
-                title = "Collecting Information"; // I18N
+                SpLocaleItemStr str = new SpLocaleItemStr();
+                str.initialize();
+                
+                String title = nm.getText();
+                if (isCollectingEvent && !isFish)
+                {
+                    title = "Collecting Information"; // I18N
+                }
+                str.setText(title);
+                str.setLanguage(nm.getLanguage());
+                str.setCountry(nm.getCountry());
+                str.setVariant(nm.getVariant());
+                
+                newContainer.getNames().add(str);
+                str.setContainerName(newContainer);
             }
-            str.setText(title);
-            str.setLanguage(nm.getLanguage());
-            str.setCountry(nm.getCountry());
-            str.setVariant(nm.getVariant());
             
-            newContainer.getNames().add(str);
-            str.setContainerName(newContainer);
-        }
-        
-        for (SpLocaleItemStr desc : memoryContainer.getDescs())
-        {
-            SpLocaleItemStr str = new SpLocaleItemStr();
-            str.initialize();
-            
-            str.setText(desc.getText());
-            str.setLanguage(desc.getLanguage());
-            str.setCountry(desc.getCountry());
-            str.setVariant(desc.getVariant());
-            
-            newContainer.getDescs().add(str);
-            str.setContainerDesc(newContainer);
+            for (SpLocaleItemStr desc : memoryContainer.getDescs())
+            {
+                SpLocaleItemStr str = new SpLocaleItemStr();
+                str.initialize();
+                
+                str.setText(desc.getText());
+                str.setLanguage(desc.getLanguage());
+                str.setCountry(desc.getCountry());
+                str.setVariant(desc.getVariant());
+                
+                newContainer.getDescs().add(str);
+                str.setContainerDesc(newContainer);
+            }
         }
         
         Hashtable<String, SpLocaleContainerItem> dispItemHash = new Hashtable<String, SpLocaleContainerItem>();
@@ -8113,28 +8118,48 @@ public class BuildSampleDatabase
         
         for (SpLocaleContainerItem item : memoryContainer.getItems())
         {
-            SpLocaleContainerItem newItem = new SpLocaleContainerItem();
-            newItem.initialize();
-            
-            newContainer.getItems().add(newItem);
-            newItem.setContainer(newContainer);
-            
-            SpLocaleContainerItem dispItem = dispItemHash.get(item.getName());
-            
-            loadLocalization(memoryContainer.getName(), item, newItem, dispItem, hideGenericFields, isFish);
-            
-            if (isColObj && catFmtName != null && item.getName().equals("catalogNumber"))
+            Integer spcId      = null;
+            boolean okToCreate = true;
+            if (isDoingUpdate)
             {
-                newItem.setFormat(catFmtName);
-                newItem.setIsUIFormatter(true);
+                String sql = String.format(" FROM splocalecontainer c INNER JOIN splocalecontaineritem ci ON c.SpLocaleContainerID = ci.SpLocaleContainerID WHERE ci.Name = '%s' AND c.DisciplineID = %d", memoryContainer.getName(), disciplineId);
+                int cnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(*)"+sql);
+                if (cnt > 0)
+                {
+                    okToCreate = false;
+                    spcId = BasicSQLUtils.getCount("SELECT ci.SpLocaleContainerItemID"+sql);
+                }
             }
             
-            if (isAccession && accFmtName != null && item.getName().equals("accessionNumber"))
+            if (okToCreate)
             {
-                newItem.setFormat(accFmtName);
-                newItem.setIsUIFormatter(true);
-            }
+                SpLocaleContainerItem newItem = new SpLocaleContainerItem();
+                newItem.initialize();
+                
+                newContainer.getItems().add(newItem);
+                newItem.setContainer(newContainer);
+                
+                SpLocaleContainerItem dispItem = dispItemHash.get(item.getName());
             
+                loadLocalization(memoryContainer.getName(), item, newItem, dispItem, hideGenericFields, isFish);
+            
+                if (isColObj && catFmtName != null && item.getName().equals("catalogNumber"))
+                {
+                    newItem.setFormat(catFmtName);
+                    newItem.setIsUIFormatter(true);
+                }
+                
+                if (isAccession && accFmtName != null && item.getName().equals("accessionNumber"))
+                {
+                    newItem.setFormat(accFmtName);
+                    newItem.setIsUIFormatter(true);
+                }
+            } else
+            {
+                SpLocaleContainerItem newItem  = (SpLocaleContainerItem)session.getData("FROM SpLocaleContainerItem WHERE id = "+spcId);
+                SpLocaleContainerItem dispItem = dispItemHash.get(item.getName());
+                loadLocalization(memoryContainer.getName(), item, newItem, dispItem, hideGenericFields, isFish);
+            }
         }
     }
     
@@ -8151,6 +8176,24 @@ public class BuildSampleDatabase
                                        final String       catFmtName,
                                        final String       accFmtName)
     {
+        loadSchemaLocalization(discipline, schemaType, tableMgr, catFmtName, accFmtName, false, null);
+    }
+    
+    /**
+     * @param discipline
+     * @param schemaType
+     * @param tableMgr
+     * @param catFmtName
+     * @param accFmtName
+     */
+    public void loadSchemaLocalization(final Discipline   discipline, 
+                                       final Byte         schemaType, 
+                                       final DBTableIdMgr tableMgr,
+                                       final String       catFmtName,
+                                       final String       accFmtName,
+                                       final boolean      isDoingUpdate,
+                                       final DataProviderSessionIFace session)
+    {
         HiddenTableMgr hiddenTableMgr = new HiddenTableMgr();
 
         SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(schemaType, tableMgr);
@@ -8164,19 +8207,42 @@ public class BuildSampleDatabase
         
         for (SpLocaleContainer table : schemaLocalizer.getSpLocaleContainers())
         {
-            SpLocaleContainer container = new SpLocaleContainer();
-            container.initialize();
-            container.setName(table.getName());
-            container.setType(table.getType());
-            container.setSchemaType(schemaType);
-            container.setDiscipline(discipline);
+            Integer spcId      = null;
+            boolean okToCreate = true;
+            if (isDoingUpdate)
+            {
+                String sql = String.format("FROM splocalecontainer WHERE Name = '%s' AND DisciplineID = %d", table.getName(), discipline.getId());
+                int cnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) "+sql);
+                if (cnt > 0)
+                {
+                    okToCreate = false;
+                    spcId = BasicSQLUtils.getCount("SELECT SpLocaleContainerID "+sql);
+                }
+            }
             
-            container.setIsHidden(hiddenTableMgr.isHidden(discipline.getType(), table.getName()));
+            SpLocaleContainer container = null;
+            if (okToCreate)
+            {
+                container = new SpLocaleContainer();
+                container.initialize();
+                container.setName(table.getName());
+                container.setType(table.getType());
+                container.setSchemaType(schemaType);
+                container.setDiscipline(discipline);
+                
+                container.setIsHidden(hiddenTableMgr.isHidden(discipline.getType(), table.getName()));
+            } else
+            {
+                container = (SpLocaleContainer)session.getData("FROM splocalecontainer WHERE id = "+spcId);
+            }
             
-            loadLocalization(dispName, table, container, hideGenericFields, catFmtName, accFmtName);
+            loadLocalization(discipline.getId(), dispName, table, container, hideGenericFields, catFmtName, accFmtName, isDoingUpdate, session);
             
-            discipline.getSpLocaleContainers().add(container);
-            container.setDiscipline(discipline);
+            if (okToCreate)
+            {
+                discipline.getSpLocaleContainers().add(container);
+                container.setDiscipline(discipline);
+            }
         }
     }
     

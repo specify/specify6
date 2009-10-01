@@ -1099,8 +1099,36 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         dataMenu.add(autoNumCBMI);
         UIRegistry.register("AutoNumbering", autoNumCBMI); //$NON-NLS-1$
         UIRegistry.registerAction("AutoNumbering", autoNumberOnOffAction); //$NON-NLS-1$
-        mb.add(dataMenu);
+
+/*
+        dataMenu.addSeparator();
         
+        AbstractAction vsa = new AbstractAction("Visual Search") {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                WorldWindSearchPanel.getDlg();
+            }
+        };
+        JMenuItem visualSeachMI = new JMenuItem(vsa);
+        dataMenu.add(visualSeachMI);
+        UIRegistry.register("WWVisualSearch", visualSeachMI); //$NON-NLS-1$
+        UIRegistry.registerAction("WWVisualSearch", vsa); //$NON-NLS-1$
+        AbstractAction gpxAction = new AbstractAction("GPS Data") {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                GPXPanel.getDlgInstance().setVisible(true);
+            }
+        };
+        JMenuItem gpxMI = new JMenuItem(gpxAction);
+        dataMenu.add(gpxMI);
+        UIRegistry.register("GPXDlg", gpxMI); //$NON-NLS-1$
+        UIRegistry.registerAction("GPXDlg", gpxAction); //$NON-NLS-1$
+        */
+        
+        mb.add(dataMenu);
+
         //--------------------------------------------------------------------
         //-- System Menu
         //--------------------------------------------------------------------
@@ -2891,7 +2919,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       Font newBaseFont = fontName != null && fontSize != null ? new Font(fontName, Font.PLAIN, fontSize) : sysBaseFont;
       UIRegistry.setBaseFont(newBaseFont);
           
-      SkinsMgr.getInstance().setSkin("Metal");
+      //SkinsMgr.getInstance().setSkin("metal");
       
       BaseTask.setToolbarBtnFont(newBaseFont); // For ToolbarButtons
       RolloverCommand.setDefaultFont(newBaseFont);

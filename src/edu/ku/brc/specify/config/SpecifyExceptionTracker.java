@@ -30,7 +30,6 @@ import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -48,7 +47,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -73,6 +71,7 @@ import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.FeedBackSenderItem;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author rod
@@ -226,9 +225,8 @@ public class SpecifyExceptionTracker extends ExceptionTracker
                     }
                 }
                 
-                StringSelection stsel  = new StringSelection(sb.toString());
-                Clipboard       sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                sysClipboard.setContents(stsel, stsel);
+                // Copy to Clipboard
+                UIHelper.setTextToClipboard(sb.toString());
             }
         });
         

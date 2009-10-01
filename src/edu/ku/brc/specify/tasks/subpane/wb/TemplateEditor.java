@@ -411,9 +411,11 @@ public class TemplateEditor extends CustomDialog
         middlePanel.add(unmapBtn, cc.xy(1, 3));
         
         btnPanel = middlePanel.getPanel();
+        btnPanel.setOpaque(false);
         
         PanelBuilder outerMiddlePanel = new PanelBuilder(new FormLayout("c:p:g", "f:p:g, p, f:p:g"));
         outerMiddlePanel.add(btnPanel, cc.xy(1, 2));
+        outerMiddlePanel.getPanel().setOpaque(false);
         
         // Main Pane Layout
         PanelBuilder    builder = new PanelBuilder(new FormLayout("f:max(200px;p):g, 5px, max(200px;p), 5px, p:g, 5px, f:max(250px;p):g, 2px, p", 
@@ -508,9 +510,7 @@ public class TemplateEditor extends CustomDialog
         panel.add(createLabel(sb.toString()), BorderLayout.CENTER);
         
         // Set into Clipboard
-        StringSelection stsel  = new StringSelection(clipBrdTxt.toString());
-        Clipboard       sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        sysClipboard.setContents(stsel, stsel);
+        UIHelper.setTextToClipboard(clipBrdTxt.toString());
         
         CustomDialog dialog = new CustomDialog((JFrame)UIRegistry.getTopWindow(), "Mappings", true, CustomDialog.OK_BTN, panel);
         dialog.setVisible(true);

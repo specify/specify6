@@ -330,7 +330,7 @@ public class GenericKMLGenerator
                                         final String name, 
                                         final String textColor,
                                         final String htmlDesc, 
-                                        final String iconURL)
+                                        @SuppressWarnings("unused") final String iconURL)
     {
         StringBuilder sb = new StringBuilder();
         sb.append(generateXmlStartTag("Placemark"));

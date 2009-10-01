@@ -24,6 +24,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
@@ -37,11 +38,12 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JViewport;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -62,6 +64,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CurvedBorder;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.JTiledPanel;
 import edu.ku.brc.ui.SortableJTable;
 import edu.ku.brc.ui.SortableTableModel;
 import edu.ku.brc.ui.skin.SkinItem;
@@ -78,7 +81,7 @@ import edu.ku.brc.ui.skin.SkinsMgr;
  *
  */
 @SuppressWarnings("serial")
-public class StatGroupTable extends JPanel
+public class StatGroupTable extends JTiledPanel
 {
     protected static final int    SCROLLPANE_THRESOLD = 10;
     protected static final Cursor handCursor   = new Cursor(Cursor.HAND_CURSOR);
@@ -117,7 +120,14 @@ public class StatGroupTable extends JPanel
         {
             progressIcon = IconManager.getIcon("Progress", IconManager.IconSize.Std16);
         }
-        setOpaque(false);
+        
+        if (this.skinItem != null)
+        {
+            this.skinItem.setupPanel(this);
+        } else
+        {
+            setOpaque(true);
+        }
     }
 
     /**
@@ -140,14 +150,67 @@ public class StatGroupTable extends JPanel
         setBackground(Color.WHITE);
         
         model = new StatGroupTableModel(this, columnNames);
-        table = numRows > SCROLLPANE_THRESOLD ? (new SortableJTable(new SortableTableModel(model))) : (new JTable(model));
+        //table = numRows > SCROLLPANE_THRESOLD ? (new SortableJTable(new SortableTableModel(model))) : (new JTable(model));
+        if (numRows > SCROLLPANE_THRESOLD)
+        {
+            table = new SortableJTable(new SortableTableModel(model))
+            {
+                protected void configureEnclosingScrollPane() {
+                    Container p = getParent();
+                    if (p instanceof JViewport) {
+                        Container gp = p.getParent();
+                        if (gp instanceof JScrollPane) {
+                            JScrollPane scrollPane = (JScrollPane)gp;
+                            // Make certain we are the viewPort's view and not, for
+                            // example, the rowHeaderView of the scrollPane -
+                            // an implementor of fixed columns might do this.
+                            JViewport viewport = scrollPane.getViewport();
+                            if (viewport == null || viewport.getView() != this) {
+                                return;
+                            }
+//                            scrollPane.setColumnHeaderView(getTableHeader());
+                            //scrollPane.getViewport().setBackingStoreEnabled(true);
+                            scrollPane.setBorder(UIManager.getBorder("Table.scrollPaneBorder"));
+                        }
+                    }
+                }
+            };
+        } else
+        {
+            table = new JTable(model)
+            {
+                protected void configureEnclosingScrollPane() {
+                    Container p = getParent();
+                    if (p instanceof JViewport) {
+                        Container gp = p.getParent();
+                        if (gp instanceof JScrollPane) {
+                            JScrollPane scrollPane = (JScrollPane)gp;
+                            // Make certain we are the viewPort's view and not, for
+                            // example, the rowHeaderView of the scrollPane -
+                            // an implementor of fixed columns might do this.
+                            JViewport viewport = scrollPane.getViewport();
+                            if (viewport == null || viewport.getView() != this) {
+                                return;
+                            }
+//                            scrollPane.setColumnHeaderView(getTableHeader());
+                            //scrollPane.getViewport().setBackingStoreEnabled(true);
+                            scrollPane.setBorder(UIManager.getBorder("Table.scrollPaneBorder"));
+                        }
+                    }
+                }
+            };
+        }
         table.setShowVerticalLines(false);
         table.setShowHorizontalLines(false);
         
-        if (!SkinsMgr.shouldBeOpaque(skinItem))
+        if (SkinsMgr.shouldBeOpaque(skinItem))
         {
             table.setOpaque(false);
             setOpaque(false);
+        } else
+        {
+            table.setOpaque(true);
+            setOpaque(true);
         }
 
         table.addMouseMotionListener(new TableMouseMotion());
@@ -175,6 +238,9 @@ public class StatGroupTable extends JPanel
             
             scrollPane.setOpaque(false);
             scrollPane.getViewport().setOpaque(false);
+            
+            scrollPane.setBorder(BorderFactory.createEmptyBorder());
+            //scrollPane.getViewport().setBorder(BorderFactory.createEmptyBorder());
         }
 
         if (useSeparator)

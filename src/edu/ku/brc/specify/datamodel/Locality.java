@@ -112,6 +112,8 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     protected Set<LocalityNameAlias>  localityNameAliass;
     protected Set<LocalityDetail>     localityDetails;
     protected Set<GeoCoordDetail>     geoCoordDetails;
+    
+    protected Set<LatLonPolygon>      latLonpolygons;
 
 
     // Constructors
@@ -173,6 +175,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         localityAttachments = new HashSet<LocalityAttachment>();
         localityDetails     = new HashSet<LocalityDetail>();
         geoCoordDetails     = new HashSet<GeoCoordDetail>();
+        latLonpolygons      = new HashSet<LatLonPolygon>();
     }
     // End Initializer
 
@@ -794,6 +797,24 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     public void setGeoCoordDetails(Set<GeoCoordDetail> geoCoordDetails)
     {
         this.geoCoordDetails = geoCoordDetails;
+    }
+
+    /**
+     * @return the latLonpolygons
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "locality")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<LatLonPolygon> getLatLonpolygons()
+    {
+        return latLonpolygons;
+    }
+
+    /**
+     * @param latLonpolygons the latLonpolygons to set
+     */
+    public void setLatLonpolygons(Set<LatLonPolygon> latLonpolygons)
+    {
+        this.latLonpolygons = latLonpolygons;
     }
 
     /*

@@ -119,6 +119,7 @@ import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandActionWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.IconButton;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.JStatusBar;
@@ -943,6 +944,32 @@ public class ViewFactory
     }
     
     /**
+     * @param fcf
+     * @return
+     */
+    private JButton createFormButton(final FormCellIFace fcf, final String text)
+    {
+        String tooltip  = fcf.getProperty("tooltip");
+        String iconName = fcf.getProperty("icon");
+        String sizeStr  = fcf.getProperty("size");
+        
+        if (StringUtils.isNotEmpty(text))
+        {
+            return createButton(text);
+            
+        } else if (StringUtils.isNotEmpty(iconName))
+        {
+            int iconSize = StringUtils.isNotEmpty(sizeStr) && StringUtils.isNumeric(sizeStr) ? Integer.parseInt(sizeStr) : 16;
+            IconManager.IconSize iSize = IconManager.getIconSize(iconSize, false, false);
+            IconButton iconBtn = new IconButton(IconManager.getIcon(iconName, iSize), true);
+            iconBtn.setEnabled(true);
+            iconBtn.setToolTipText(UIRegistry.getResourceString(tooltip));
+            return iconBtn;
+        }
+        return createButton("?");
+    }
+    
+    /**
      * Creates an ImageDisplay control,
      * @param cellField FormCellField info
      * @param isViewMode indicates whether in Edit or View mode
@@ -1585,7 +1612,7 @@ public class ViewFactory
                 }
                 
                 case button:
-                    JButton btn = createButton(cellField.getProperty("title"));
+                    JButton btn = createFormButton(cellField, cellField.getProperty("title"));
                     bi.compToAdd = btn;
                     break;
                     
@@ -1662,7 +1689,7 @@ public class ViewFactory
         } else if (cell.getType() == FormCellIFace.CellType.command)
         {
             FormCellCommand cellCmd = (FormCellCommand)cell;
-            JButton btn  = createButton(cellCmd.getLabel());
+            JButton btn  = createFormButton(cell, cellCmd.getLabel());
             if (cellCmd.getCommandType().length() > 0)
             {
                 btn.addActionListener(new CommandActionWrapper(new CommandAction(cellCmd.getCommandType(), cellCmd.getAction(), "")));
@@ -2291,7 +2318,7 @@ public class ViewFactory
             viewable.getUIComponent().setBackground(bgColor);
         }
     }
-
+    
     /**
      * Processes the rows for a button bar.
      * @param viewBldObj formViewObj
@@ -2309,8 +2336,9 @@ public class ViewFactory
             {
                 if (cell.getType() == FormCellIFace.CellType.command)
                 {
+                    
                     FormCellCommand cellCmd = (FormCellCommand)cell;
-                    JButton btn  = createButton(cellCmd.getLabel());
+                    JButton btn  = createFormButton(cell, cellCmd.getLabel());
                     if (cellCmd.getCommandType().length() > 0)
                     {
                         btn.addActionListener(new CommandActionWrapper(new CommandAction(cellCmd.getCommandType(), cellCmd.getAction(), "")));

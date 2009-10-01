@@ -35,7 +35,6 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -874,10 +873,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                 sbf.append("\n");
             }
         }
-        StringSelection stsel  = new StringSelection(sbf.toString());
-        Clipboard       sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        sysClipboard.setContents(stsel, stsel);
-        
+        UIHelper.setTextToClipboard(sbf.toString());
     }     
     
     /**

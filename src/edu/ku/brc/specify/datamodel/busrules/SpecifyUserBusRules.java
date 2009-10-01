@@ -20,9 +20,6 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import java.awt.Component;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -44,6 +41,7 @@ import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.DocumentAdaptor;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
@@ -116,9 +114,7 @@ public class SpecifyUserBusRules extends BaseBusRules
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                StringSelection stsel  = new StringSelection(keyTxt.getText());
-                Clipboard       sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                sysClipboard.setContents(stsel, stsel);
+                UIHelper.setTextToClipboard(keyTxt.getText());
             }
         });
         

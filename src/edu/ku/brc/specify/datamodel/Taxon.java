@@ -151,6 +151,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     protected List<Taxon>          ancestors; 
 
     private Set<TaxonAttachment> taxonAttachments;
+    private Set<CollectionObjectAttribute> collectionObjectAttribute;
     
 	/** default constructor */
 	public Taxon()
@@ -226,7 +227,8 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         children                      = new HashSet<Taxon>();
         ancestors                     = null;
         taxonAttachments              = new HashSet<TaxonAttachment>();
-        
+        collectionObjectAttribute     = new HashSet<CollectionObjectAttribute>();
+
         isAccepted                    = true; // null for isAccepted means the same as true.  true is more clear.  So, I put true in here.
         acceptedTaxon                 = null;
         acceptedChildren              = new HashSet<Taxon>();
@@ -939,6 +941,24 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     public void setTaxonAttachments(Set<TaxonAttachment> taxonAttachments)
     {
         this.taxonAttachments = taxonAttachments;
+    }
+
+    /**
+     * @return the collectionObjectAttribute
+     */
+    @OneToMany(mappedBy = "relatedTaxon")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<CollectionObjectAttribute> getCollectionObjectAttribute()
+    {
+        return collectionObjectAttribute;
+    }
+
+    /**
+     * @param collectionObjectAttribute the collectionObjectAttribute to set
+     */
+    public void setCollectionObjectAttribute(Set<CollectionObjectAttribute> collectionObjectAttribute)
+    {
+        this.collectionObjectAttribute = collectionObjectAttribute;
     }
 
     /* (non-Javadoc)

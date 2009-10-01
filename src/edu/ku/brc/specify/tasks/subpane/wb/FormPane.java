@@ -502,11 +502,12 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
                             wbtmi.getFieldType(),
                             wbtmi.getDataFieldLength(), 
                             getColumns(wbtmi),
-                            getRows(wbtmi));
+                            getRows(wbtmi),
+                            wbtmi);
     }
     
     /**
-     * Determinaes whether it is a TextField or whether it SHOULD be a TextField
+     * Determines whether it is a TextField or whether it SHOULD be a TextField
      * @param fieldName the name of the field
      * @param fieldType the type of field
      * @param fieldLen the length of the data 
@@ -598,8 +599,10 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
                                       final Short    fieldType,
                                       final Short    fieldLength, 
                                       final short    columns,
-                                      final short    rows)
+                                      final short    rows,
+                                      final WorkbenchTemplateMappingItem wbtmi)
     {
+        short uiType = WorkbenchTemplateMappingItem.UNKNOWN;
         //System.out.println(wbtmi.getCaption()+" "+wbtmi.getDataType()+" "+wbtmi.getFieldLength());
         Class<?> dbFieldType = dbFieldTypeArg;
         if (dbFieldType == null)
@@ -620,7 +623,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             txt.getDocument().addDocumentListener(docListener);
             comp      = txt;
             focusComp = comp;
-            
+            uiType = WorkbenchTemplateMappingItem.TEXTFIELD_DATE;
         }
         else if (dbFieldType.equals(Boolean.class)) // strings
         {
@@ -628,6 +631,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             checkBox.addChangeListener(changeListener);
             comp      = checkBox;
             focusComp = comp;
+            uiType = WorkbenchTemplateMappingItem.CHECKBOX;
         }
         else if (useTextField(fieldName, fieldType, fieldLength))
         {
@@ -636,6 +640,8 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             txt.setInputVerifier(new LengthInputVerifier(caption, fieldLength));
             comp      = txt;
             focusComp = comp;
+            uiType = WorkbenchTemplateMappingItem.TEXTFIELD;
+
         }
         else
         {
@@ -643,7 +649,10 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             ((JTextArea)taScrollPane.getViewport().getView()).setInputVerifier(new LengthInputVerifier(caption, fieldLength));
             comp = taScrollPane;
             focusComp = taScrollPane.getViewport().getView();
+            uiType = WorkbenchTemplateMappingItem.TEXTAREA;
         }
+        
+        wbtmi.setFieldType(uiType);
         
         focusComp.addFocusListener(new FocusListener() {
             public void focusGained(FocusEvent e)
@@ -708,7 +717,8 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
                                         fieldType, 
                                         wbtmi.getDataFieldLength(), 
                                         fieldLen,
-                                        rows));
+                                        rows,
+                                        wbtmi));
         
         ignoreChanges = true;
         ((JTextComponent)inputPanel.getComp()).setText(oldComp.getText());

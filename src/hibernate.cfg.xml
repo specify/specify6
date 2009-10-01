@@ -115,6 +115,8 @@
 		<mapping class="edu.ku.brc.specify.datamodel.InfoRequest"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Institution"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Journal"/>
+        <mapping class="edu.ku.brc.specify.datamodel.LatLonPolygon"/>
+        <mapping class="edu.ku.brc.specify.datamodel.LatLonPolygonPnt"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LithoStrat"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LithoStratTreeDef"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LithoStratTreeDefItem"/>
@@ -169,8 +171,9 @@
 		<mapping class="edu.ku.brc.specify.datamodel.SpTaskSemaphore"/>
         <mapping class="edu.ku.brc.specify.datamodel.SpVersion"/>
         <mapping class="edu.ku.brc.specify.datamodel.SpViewSetObj"/>
-		
-		
+        
+        <mapping class="edu.ku.brc.specify.datamodel.SpVisualQuery"/>
+        
 		<!--
 		<mapping class="edu.ku.brc.specify.datamodel.SpUIAltView"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpUICell"/>

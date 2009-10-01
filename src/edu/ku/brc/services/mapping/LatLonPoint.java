@@ -33,6 +33,8 @@ import edu.ku.brc.util.Pair;
  */
 public class LatLonPoint implements LatLonPlacemarkIFace
 {
+    protected Integer   index;
+    protected Integer   locId;
     protected Double    latitude;
     protected Double    longitude;
     protected Double    altitude;
@@ -67,14 +69,78 @@ public class LatLonPoint implements LatLonPlacemarkIFace
      */
     public LatLonPoint(Double latitude, Double longitude, Double altitude, String title)
     {
+        this(null, latitude, longitude, altitude, title);
+    }
+
+    /**
+     * @param locId
+     * @param latitude
+     * @param longitude
+     */
+    public LatLonPoint(Integer locId, Double latitude, Double longitude)
+    {
+        this(locId, latitude, longitude, null, null);
+    }
+
+    /**
+     * @param locId
+     * @param latitude
+     * @param longitude
+     * @param altitude
+     * @param title
+     */
+    public LatLonPoint(Integer locId, Double latitude, Double longitude, Double altitude, String title)
+    {
         super();
         
+        this.index     = null;
+        this.locId     = locId;
         this.latitude  = latitude;
         this.longitude = longitude;
         this.altitude  = altitude;
         this.title     = title;
         this.html      = null;
         this.imageIcon = null;
+    }
+
+    /**
+     * @return the index
+     */
+    public Integer getIndex()
+    {
+        return index;
+    }
+
+    /**
+     * @param index the index to set
+     */
+    public void setIndex(Integer index)
+    {
+        this.index = index;
+    }
+
+    /**
+     * @return the locId
+     */
+    public Integer getLocId()
+    {
+        return locId;
+    }
+
+    /**
+     * @param locId the locId to set
+     */
+    public void setLocId(Integer locId)
+    {
+        this.locId = locId;
+    }
+
+    /**
+     * @return the html
+     */
+    public String getHtml()
+    {
+        return html;
     }
 
     /* (non-Javadoc)
@@ -192,6 +258,15 @@ public class LatLonPoint implements LatLonPlacemarkIFace
     public void setTitle(String title)
     {
         this.title = title;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return index != null ? index + " - " + title : title;//StringUtils.abbreviate(title, 30);
     }
 
 }

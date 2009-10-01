@@ -50,9 +50,13 @@ import edu.ku.brc.helpers.XMLHelper;
 @SuppressWarnings("serial")
 public class WorkbenchTemplateMappingItem extends DataModelObjBase implements java.io.Serializable, Comparable<WorkbenchTemplateMappingItem>
 {
-    public final static short UNKNOWN   = 0;
-    public final static short TEXTFIELD = 1;
-    public final static short TEXTAREA  = 2;
+    public final static short UNKNOWN         = 0;
+    public final static short TEXTFIELD       = 1;
+    public final static short TEXTAREA        = 2;
+    public final static short CHECKBOX        = 3;  // Boolean
+    public final static short TEXTFIELD_DATE  = 4;
+    public final static short COMBOBOX        = 5;
+    
     
     // Fields
 

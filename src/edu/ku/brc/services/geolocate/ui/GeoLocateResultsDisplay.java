@@ -196,7 +196,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
                 {
                     if (acceptBtn != null)
                     {
-                        System.out.println(resultsTable.getSelectedRowCount());
+                        //System.out.println(resultsTable.getSelectedRowCount());
                         acceptBtn.setEnabled(resultsTable.getSelectedRowCount() > 0);
                     }
                 }

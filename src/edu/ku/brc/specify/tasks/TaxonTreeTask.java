@@ -157,7 +157,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
 
                     // this call initializes all of the linked objects
                     // it only initializes the immediate links, not objects that are multiple hops away
-                    ttv.initializeNodeAssociations(taxon);
+                    //ttv.initializeNodeAssociations(taxon);
                     
                     if (taxon.getDeterminationCount(false) == 0)
                     {

@@ -33,15 +33,11 @@ import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -507,46 +503,10 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     {
         if (e.getKeyCode() == pasteKeyStroke.getKeyCode())
         {
-            Clipboard sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            for (DataFlavor flavor : sysClipboard.getAvailableDataFlavors())
+            String text = UIHelper.getTextFromClipboard();
+            if (text != null && text.length() <= formatter.getLength())
             {
-                if (flavor.isMimeTypeEqual(DataFlavor.getTextPlainUnicodeFlavor()))
-                {
-                    try
-                    {
-                        StringBuilder sb      = new StringBuilder();
-                        Object        dataObj = sysClipboard.getData(flavor);
-                        if (dataObj instanceof String)
-                        {
-                            sb.append((String)dataObj);
-                            
-                        } else if (dataObj instanceof InputStreamReader)
-                        {
-                            Reader        reader = (InputStreamReader)sysClipboard.getData(flavor);
-                            char[]        buffer = new char[1024];
-                            int           len    = reader.read(buffer);
-                            sb.append(new String(buffer, 0, len));
-                            
-                            while (len > -1)
-                            {
-                                len = reader.read(buffer);
-                                if (len > 0)
-                                {
-                                    sb.append(buffer);
-                                }
-                            }
-                        }
-                        if (sb.length() <= formatter.getLength())
-                        {
-                            setValue(sb.toString(), null);
-                        }
-                        
-                    } catch (Exception ex)
-                    {
-                        ex.printStackTrace();
-                    }
-                    break;
-                }
+                setValue(text, null);
             }
         }
     }

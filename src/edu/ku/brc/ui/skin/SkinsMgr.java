@@ -54,6 +54,8 @@ public class SkinsMgr
      */
     protected SkinsMgr()
     {
+        load();
+        
         File skinsFile = new File(XMLHelper.getConfigDirPath("skins.xml"));
         hasSkins = skinsFile.exists();
     }
@@ -175,13 +177,21 @@ public class SkinsMgr
         {
             Hashtable<String, Skin> skinsHash = new Hashtable<String, Skin>();
             
+            /*
+             giraffe_tile.png
+            giraffe_tile1.png
+            metal.jpg
+            reptile_tiled.jpg
+            reptile_tiled.png
+             */
+            String p = "/Users/rods/workspace/Specify6/";
             Skin skin1 = new Skin("metal", "metal desc");
-            skin1.getItems().put("item1", new SkinItem("n1", "fn", 10, "plain", Color.BLACK, Color.MAGENTA, "path", "desc"));
-            skin1.getItems().put("item2", new SkinItem("n2", "fn", 10, "bold", Color.BLACK, Color.ORANGE, "path", "desc"));
+            skin1.getItems().put("item1", new SkinItem("n1", "fn", 10, "plain", Color.BLACK, Color.MAGENTA, p+"giraffe_tile.png", "desc"));
+            skin1.getItems().put("item2", new SkinItem("n2", "fn", 10, "bold", Color.BLACK, Color.ORANGE, p+"giraffe_tile.png", "desc"));
             
             Skin skin2 = new Skin("giraffe", "metal desc");
-            skin2.getItems().put("item1", new SkinItem("n1", "fn", 10, "bolditalic", Color.GREEN, Color.YELLOW, "path", "desc"));
-            skin2.getItems().put("item2", new SkinItem("n2", "fn", 10, "italic", Color.BLUE, Color.RED, "path", "desc"));
+            skin2.getItems().put("item1", new SkinItem("n1", "fn", 10, "bolditalic", Color.GREEN, Color.YELLOW, p+"metal.jpg", "desc"));
+            skin2.getItems().put("item2", new SkinItem("n2", "fn", 10, "italic", Color.BLUE, Color.RED, p+"metal.jpg", "desc"));
             
             skinsHash.put(skin1.getName(), skin1);
             skinsHash.put(skin2.getName(), skin2);

@@ -2125,6 +2125,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                        SpLocaleContainer.CORE_SCHEMA, 
                                        DBTableIdMgr.getInstance(),
                                        "CatalogNumberNumeric",
+                                       null,
+                                       false,
                                        null);
             localSession.save(discipline);
             trans.commit();

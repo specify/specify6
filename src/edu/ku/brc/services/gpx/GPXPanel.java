@@ -116,7 +116,7 @@ public class GPXPanel extends JPanel
         PanelBuilder    pb = new PanelBuilder(new FormLayout("p,10px,f:p:g", "p,2px,f:p:g,10px,p,2px,f:p:g,10px,p,2px,f:p:g"), this);
         
         int y = 1;
-        pb.add(UIHelper.createLabel("Way Points"), cc.xy(1,y)); y += 2;
+        pb.add(UIHelper.createLabel("Way Points"), cc.xy(1,y)); y += 2; // I18N
         pb.add(UIHelper.createScrollPane(wpList),  cc.xy(1, y)); y += 2;
         
         pb.add(UIHelper.createLabel("Tracks"),     cc.xy(1,y)); y += 2;

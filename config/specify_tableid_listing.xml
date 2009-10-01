@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 135 or 531
+    Last used ID is 137 or 532
     
     126 are available
     
@@ -224,6 +224,10 @@
             <display view="JournalForm" searchdlg="JournalSearch" newobjdlg="JournalDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.JournalBusRules</businessrule>
         </table>
+        
+        <table name="edu.ku.brc.specify.datamodel.LatLonPolygon" abbrev="svqp" id="136"/>
+        <table name="edu.ku.brc.specify.datamodel.LatLonPolygonPnt" abbrev="svqpp" id="137"/>
+        
         <table name="edu.ku.brc.specify.datamodel.LithoStrat" abbrev="ls" id="100" workbench="true" searchable="true">
             <display view="LithoStrat" dataobjformatter="" searchdlg="LithoStratSearch" newobjdlg="LithoStratDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.LithoStratBusRules</businessrule>            
@@ -345,6 +349,9 @@
         <table name="edu.ku.brc.specify.datamodel.SpQuery" abbrev="sq" id="517"/>
         <table name="edu.ku.brc.specify.datamodel.SpQueryField" abbrev="sqf" id="518"/>
         <table name="edu.ku.brc.specify.datamodel.SpReport" abbrev="sr" id="519"/>
+
+        <table name="edu.ku.brc.specify.datamodel.SpVisualQuery" abbrev="svq" id="532"/>
+        
         <!-- 
         <table name="edu.ku.brc.specify.datamodel.SpUIAltView" abbrev="spav" id="507"/>
         <table name="edu.ku.brc.specify.datamodel.SpUICell" abbrev="spc" id="509"/>
