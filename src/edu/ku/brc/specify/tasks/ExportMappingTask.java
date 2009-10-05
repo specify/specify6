@@ -403,7 +403,7 @@ public class ExportMappingTask extends QueryTask
             localPrefs.put(DEF_IMP_PREF, path);
         }
         
-		if (importSchemaDefinition(file))
+		if (importSchemaDefinition(file, null, null))
 		{
 			UIRegistry.displayInfoMsgDlgLocalized("ExportMappingTask.SchemaImportSuccess", (Object[] )null);
 		}
@@ -533,6 +533,7 @@ public class ExportMappingTask extends QueryTask
 		}
 	}
 	
+	
 	/**
 	 * @param xsdFile
 	 * @return true if the schema was imported
@@ -540,7 +541,7 @@ public class ExportMappingTask extends QueryTask
 	 * Reads xsdFile and adds record to SpExportSchema describing the schema 
 	 * and adds a record to SpExportSchemaMappings for each concept in the schema.
 	 */
-	protected boolean importSchemaDefinition(File xsdFile)
+	public static boolean importSchemaDefinition(File xsdFile, String titleText, String versionText)
 	{
 		Element xsd = null;
 		try
@@ -552,48 +553,63 @@ public class ExportMappingTask extends QueryTask
 			UIRegistry.displayErrorDlg(ex.getLocalizedMessage()); //XXX i18n
 			return false;
 		}
+		String theTitle = titleText;
+		String theVersion = versionText;
 		if (xsd != null)
 		{
-			PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, p, 2dlu, p, 5dlu", "p, 2dlu, p, 2dlu, p"));
-			CellConstraints cc = new CellConstraints();
-			JLabel lbl = new JLabel(getResourceString("ExportMappingTask.SchemaDescTitle"));
-			lbl.setHorizontalAlignment(SwingConstants.RIGHT);
-			pb.add(lbl, cc.xy(2, 1));
-			lbl = new JLabel(getResourceString("ExportMappingTask.SchemaTitleTitle"));
-			lbl.setHorizontalAlignment(SwingConstants.RIGHT);
-			pb.add(lbl, cc.xy(2, 3));
-			lbl = new JLabel(getResourceString("ExportMappingTask.SchemaVersionTitle"));
-			lbl.setHorizontalAlignment(SwingConstants.RIGHT);
-			pb.add(lbl, cc.xy(2, 5));
-			JTextField namespace = new JTextField(xsd.attributeValue("targetNamespace"));
-			namespace.setEditable(false);
-			pb.add(namespace, cc.xy(4, 1));
-			JTextField title = new JTextField();
-			pb.add(title, cc.xy(4, 3));
-			JTextField version = new JTextField();
-			pb.add(version, cc.xy(4, 5));
-			CustomDialog cd = new CustomDialog((Frame )UIRegistry.get(UIRegistry.FRAME), 
-					UIRegistry.getResourceString("ExportMappingTask.SchemaInfoTitle"), true,
-					CustomDialog.OKCANCEL, pb.getPanel());
-			
-			boolean tryAgain = true;
-			while (tryAgain)
+			if (titleText == null && versionText == null)
 			{
-				UIHelper.centerAndShow(cd);
-				if (!cd.isCancelled())
+				PanelBuilder pb = new PanelBuilder(new FormLayout(
+						"5dlu, p, 2dlu, p, 5dlu", "p, 2dlu, p, 2dlu, p"));
+				CellConstraints cc = new CellConstraints();
+				JLabel lbl = new JLabel(
+						getResourceString("ExportMappingTask.SchemaDescTitle"));
+				lbl.setHorizontalAlignment(SwingConstants.RIGHT);
+				pb.add(lbl, cc.xy(2, 1));
+				lbl = new JLabel(
+						getResourceString("ExportMappingTask.SchemaTitleTitle"));
+				lbl.setHorizontalAlignment(SwingConstants.RIGHT);
+				pb.add(lbl, cc.xy(2, 3));
+				lbl = new JLabel(
+						getResourceString("ExportMappingTask.SchemaVersionTitle"));
+				lbl.setHorizontalAlignment(SwingConstants.RIGHT);
+				pb.add(lbl, cc.xy(2, 5));
+				JTextField namespace = new JTextField(xsd
+						.attributeValue("targetNamespace"));
+				namespace.setEditable(false);
+				pb.add(namespace, cc.xy(4, 1));
+				JTextField title = new JTextField();
+				pb.add(title, cc.xy(4, 3));
+				JTextField version = new JTextField();
+				pb.add(version, cc.xy(4, 5));
+				CustomDialog cd = new CustomDialog(
+						(Frame) UIRegistry.get(UIRegistry.FRAME),
+						UIRegistry
+								.getResourceString("ExportMappingTask.SchemaInfoTitle"),
+						true, CustomDialog.OKCANCEL, pb.getPanel());
+
+				boolean tryAgain = true;
+				while (tryAgain)
 				{
-					tryAgain = StringUtils.isBlank(title.getText()) || StringUtils.isBlank(version.getText());
-					if (tryAgain)
+					UIHelper.centerAndShow(cd);
+					if (!cd.isCancelled())
 					{
-						UIRegistry.displayInfoMsgDlgLocalized("ExportMappingTask.FillAllFlds", (Object[] )null);
+						tryAgain = StringUtils.isBlank(title.getText())
+								|| StringUtils.isBlank(version.getText());
+						if (tryAgain)
+						{
+							UIRegistry.displayInfoMsgDlgLocalized(
+									"ExportMappingTask.FillAllFlds",
+									(Object[]) null);
+						}
+					} else
+					{
+						return false;
 					}
 				}
-				else
-				{
-					return false;
-				}
+				theTitle = title.getText();
+				theVersion = version.getText();
 			}
-			
 			boolean doRollback = false;
 			DataProviderSessionIFace session = null;
 			try 
@@ -601,8 +617,8 @@ public class ExportMappingTask extends QueryTask
 				SpExportSchema schema = new SpExportSchema();
 				schema.initialize();
 				//XXX possibly need ui here for user to set version or remarks???
-				schema.setSchemaName(title.getText());
-				schema.setSchemaVersion(version.getText());
+				schema.setSchemaName(theTitle);
+				schema.setSchemaVersion(theVersion);
 				schema.setDescription(xsd.attributeValue("targetNamespace"));
 				schema.setDiscipline(AppContextMgr.getInstance().getClassObject(Discipline.class));
 				for (Object itemObj : getNodesForDef(xsd))
@@ -651,7 +667,7 @@ public class ExportMappingTask extends QueryTask
 	}
 	
 	@SuppressWarnings("unchecked")
-	List<Object> getNodesForDef(final Element xsd)
+	protected static List<Object> getNodesForDef(final Element xsd)
 	{
 		List<Object> result = null;
 		try
@@ -836,7 +852,7 @@ public class ExportMappingTask extends QueryTask
 		return pb.getPanel();
 	}
 	
-	protected SpExportSchemaItem createSchemaItem(Element itemElement) throws Exception
+	protected static SpExportSchemaItem createSchemaItem(Element itemElement) throws Exception
 	{
 		SpExportSchemaItem result = new SpExportSchemaItem();
 		result.initialize();

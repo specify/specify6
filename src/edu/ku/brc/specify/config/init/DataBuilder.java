@@ -140,6 +140,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.BaseTask;
+import edu.ku.brc.specify.tasks.ExportMappingTask;
 import edu.ku.brc.specify.tasks.PermissionOptionPersist;
 import edu.ku.brc.util.Pair;
 
@@ -2961,6 +2962,10 @@ public class DataBuilder
             SpExportSchema schema = new SpExportSchema();
             schema.initialize();
             schema.setSchemaName("Darwin Core");
+            //Maybe the version for this should be 1.21 to be consistent with the
+            //VertNet darwin schema? Which Laura says is 1.21. 
+            //The darwin2_core.xsd and darwinCoreVertNet.xsd
+            //files seem to point to the same source.            
             schema.setSchemaVersion("2.0");
             
             discipline.addReference(schema, "spExportSchemas");
@@ -3040,7 +3045,10 @@ public class DataBuilder
             }
             localSession.commit();
             localSession.flush();
-            
+
+            //ExportMappingTask imports don't update the schemaLocale tables
+            ExportMappingTask.importSchemaDefinition(new File(XMLHelper.getConfigDirPath("darwinCoreVertNet.xsd")), "VertNetDarwinCore", "1.21");
+
         } catch (Exception ex)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
