@@ -25,6 +25,7 @@
           <entry location="demo_files/taxonomy" fileType="regular" />
           <entry location="hibernate_libs" fileType="regular" />
           <entry location="iReportLibs" fileType="regular" />
+          <entry location="embedded_libs" fileType="regular />
           <entry location="libs/ant-launcher.jar" fileType="regular" />
           <entry location="libs/ant.jar" fileType="regular" />
           <entry location="libs/commons-beanutils.jar" fileType="regular" />
