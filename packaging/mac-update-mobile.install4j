@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="4.2.3" transformSequenceNumber="2">
+<install4j version="4.2.4" transformSequenceNumber="2">
   <directoryPresets config="../InstallerFiles/images" />
   <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../MacMediaUpdate" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Beta_update_Mobile" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" missingFilesStrategy="warn" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.2.75" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" installerName="" javaMinVersion="1.6" javaMaxVersion="1.6" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
@@ -73,7 +73,7 @@
   </files>
   <launchers>
     <launcher name="Specify Mobile WorkBench" id="19" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyM.icns" pngIcon16File="../src/edu/ku/brc/specify/images/specify16M.png" pngIcon32File="../src/edu/ku/brc/specify/images/specify32M.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="SpMobileWB" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
+      <executable name="SpMobileWB" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
@@ -103,7 +103,7 @@
       </customScript>
     </launcher>
     <launcher name="Specify Easy Database" id="803" external="false" excludeFromMenu="false" menuName="" icnsFile="icns/specifyM.icns" pngIcon16File="../src/edu/ku/brc/specify/images/specify16M.png" pngIcon32File="../src/edu/ku/brc/specify/images/specify32M.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="SpEZDB" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
+      <executable name="SpEZDB" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
@@ -1216,7 +1216,7 @@ if (wizardContext != null) {
     </applications>
   </installerGui>
   <mediaSets>
-    <macosFolder name="Mac OS X Folder" id="24" mediaFileName="" installDir="Specify6Mobile" overridePrincipalLanguage="false" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="">
+    <macosFolder name="Mac OS X Folder" id="24" mediaFileName="" installDir="Specify6Mobile" overridePrincipalLanguage="false" requires64bit="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="">
       <excludedLaunchers />
       <excludedComponents />
       <excludedBeans />
@@ -1233,7 +1233,7 @@ if (wizardContext != null) {
       </exclude>
       <variables />
     </macosFolder>
-    <win32 name="Windows" id="176" mediaFileName="" installDir="SpecifyMobile" overridePrincipalLanguage="false" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="" runAsAdmin="false">
+    <win32 name="Windows" id="176" mediaFileName="" installDir="SpecifyMobile" overridePrincipalLanguage="false" requires64bit="false" jreBitType="32" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="" runAsAdmin="false">
       <excludedLaunchers />
       <excludedComponents />
       <excludedBeans />
@@ -1243,7 +1243,7 @@ if (wizardContext != null) {
       </exclude>
       <variables />
     </win32>
-    <unixInstaller name="Unix Installer" id="179" mediaFileName="" installDir="SpecifyMobile" overridePrincipalLanguage="false" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="">
+    <unixInstaller name="Unix Installer" id="179" mediaFileName="" installDir="SpecifyMobile" overridePrincipalLanguage="false" requires64bit="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="">
       <excludedLaunchers />
       <excludedComponents />
       <excludedBeans />
@@ -1256,9 +1256,26 @@ if (wizardContext != null) {
         <scriptLines />
       </installerScript>
     </unixInstaller>
-      <macosFolderArchive name="Mac OS X Folder Archive" id="1403" mediaFileName="" installDir="SpecifyMobile" overridePrincipalLanguage="false" requires64bit="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false">       <excludedLaunchers />       <excludedComponents />       <excludedBeans />       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />       <exclude>         <entry location="wwlib/gluegen-rt.dll" fileType="regular" />         <entry location="wwlib/jogl.dll" fileType="regular" />         <entry location="wwlib/jogl_awt.dll" fileType="regular" />         <entry location="wwlib/jogl_cg.dll" fileType="regular" />         <entry location="wwlib/libgluegen-rt.so" fileType="regular" />         <entry location="wwlib/libjogl.so" fileType="regular" />         <entry location="wwlib/libjogl_awt.so" fileType="regular" />         <entry location="wwlib/libjogl_cg.so" fileType="regular" />       </exclude>       <variables />     </macosFolderArchive>   </mediaSets>
+    <macosFolderArchive name="Mac OS X Folder Archive" id="1403" mediaFileName="" installDir="SpecifyMobile" overridePrincipalLanguage="false" requires64bit="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false">
+      <excludedLaunchers />
+      <excludedComponents />
+      <excludedBeans />
+      <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
+      <exclude>
+        <entry location="wwlib/gluegen-rt.dll" fileType="regular" />
+        <entry location="wwlib/jogl.dll" fileType="regular" />
+        <entry location="wwlib/jogl_awt.dll" fileType="regular" />
+        <entry location="wwlib/jogl_cg.dll" fileType="regular" />
+        <entry location="wwlib/libgluegen-rt.so" fileType="regular" />
+        <entry location="wwlib/libjogl.so" fileType="regular" />
+        <entry location="wwlib/libjogl_awt.so" fileType="regular" />
+        <entry location="wwlib/libjogl_cg.so" fileType="regular" />
+      </exclude>
+      <variables />
+    </macosFolderArchive>
+  </mediaSets>
   <buildIds buildAll="false">
-    <mediaSet refId="24" />
+    <mediaSet refId="1403" />
   </buildIds>
 </install4j>
 
