@@ -40,15 +40,23 @@ import javax.swing.JOptionPane;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import edu.ku.brc.af.core.SubPaneMgr;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
+import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -68,7 +76,6 @@ import edu.ku.brc.util.Pair;
 public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
-    
     
     /**
      * 
@@ -116,9 +123,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         String  dbVersion = getDBSchemaVersionFromXML();
         String  appVerNum = appVerNumArg;
         
- 
-        
-        
         DBConnection dbConn = DBConnection.getInstance();
         if (dbConn != null)
         {
@@ -134,7 +138,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 Integer spverId        = null;
                 Integer recVerNum     = 1;
                 
-                log.debug("appVerNumArg: ["+appVerNumArg+"] dbVersion from XML["+dbVersion+"] ");
+                log.debug("appVerNumArg:  ["+appVerNumArg+"] dbVersion from XML["+dbVersion+"] ");
 
                 if (dbMgr.doesDBHaveTable("spversion"))
                 {
@@ -495,6 +499,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 
                         }
                     }
+                    
+                    //-----------------------------------------------------------------------------
+                    //-- This will add any new fields to the schema
+                    //-----------------------------------------------------------------------------
+                    //System.setProperty("AddSchemaTablesFields", "TRUE");
+                    
+                    fixLocaleSchema();
+                    
                     return true;
                     
                 } catch (SQLException ex)
@@ -519,6 +531,69 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             dbConn.close();
         }
         return false;
+    }
+    
+    /**
+     * @param sessionArg
+     */
+    protected void fixLocaleSchema()
+    {
+        ProgressFrame            frame     = null;
+        DataProviderSessionIFace session   = null;
+        Session                  hbSession = null;
+        Transaction              trans     = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+                
+            hbSession = ((HibernateDataProviderSession)session).getSession(); // this is a no no
+            trans     = hbSession.beginTransaction();
+            List<Discipline> disciplines = session.getDataList(Discipline.class);
+            
+            frame = new ProgressFrame(getResourceString("UPDATE_SCHEMA_TITLE"));
+            frame.adjustProgressFrame();
+            frame.turnOffOverAll();
+            frame.getCloseBtn().setVisible(false);
+            frame.getProcessProgress().setIndeterminate(false);
+            
+            frame.setProcess(0, disciplines.size());
+            frame.setVisible(true);
+            
+            UIHelper.centerAndShow(frame);
+            
+            int cnt = 1;
+            for (Discipline discipline : disciplines)
+            {
+                BuildSampleDatabase bsd = new BuildSampleDatabase();
+                bsd.setSession(hbSession); 
+                
+                bsd.loadSchemaLocalization(discipline, 
+                                           SpLocaleContainer.CORE_SCHEMA, 
+                                           DBTableIdMgr.getInstance(),
+                                           null,
+                                           null,
+                                           true,
+                                           session);
+                frame.setProcess(cnt++);
+            }
+            
+            trans.commit();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+            try
+            {
+               if (trans != null) trans.rollback();
+            } catch (Exception ex1)
+            {
+                ex1.printStackTrace();
+            }
+        } finally
+        {
+            frame.setVisible(false);
+        }
     }
     
     /**

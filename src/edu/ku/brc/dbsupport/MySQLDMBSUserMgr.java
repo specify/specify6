@@ -377,9 +377,10 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
     {
         try
         {
-            for (Object[] row : BasicSQLUtils.query(connection, "show tables"))
+            for (Object row : BasicSQLUtils.querySingleCol(connection, "show tables"))
             {
-                if (row[0].toString().equalsIgnoreCase(tableName))
+                System.out.println("["+row.toString()+"]["+tableName+"]");
+                if (row.toString().equalsIgnoreCase(tableName))
                 {
                     return true;
                 }

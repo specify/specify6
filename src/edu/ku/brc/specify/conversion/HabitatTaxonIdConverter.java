@@ -26,11 +26,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
-import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.dbsupport.DatabaseDriverInfo;
-import edu.ku.brc.specify.toycode.CreationChecker;
 
 /**
  * @author rods
@@ -157,39 +152,5 @@ public class HabitatTaxonIdConverter
          
         return false;
     }
-    
-    public static void main(String[] args)
-    {
-        
-        
-        String dbName           = "ku_invert_dbo"; 
-        String newDBName        = "ku_invert_dbo_6"; 
-        String itUsername       = "root";
-        String itPassword       = "nessie1601";
-        int    collectionMemberId = 1;
-        
-        DBConnection oldDBConn;
-        DBConnection newDBConn;
-        
-        try
-        {
-            DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("MySQL");
-            String             connStr    = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, "localhost", newDBName, itUsername, itPassword, driverInfo.getName());
-            oldDBConn = DBConnection.createInstance(driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), newDBName, connStr, itUsername, itPassword);
-            
-            connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, "localhost", newDBName, itUsername, itPassword, driverInfo.getName());
-            newDBConn  = DBConnection.createInstance(driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), newDBName, connStr, itUsername, itPassword);
-            
-            HabitatTaxonIdConverter converter = new HabitatTaxonIdConverter(oldDBConn.getConnection(), newDBConn.getConnection());
-            
-            converter.convert(collectionMemberId);
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-
-    }
-
     
 }

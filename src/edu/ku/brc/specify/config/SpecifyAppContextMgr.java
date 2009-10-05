@@ -465,7 +465,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @param alwaysAsk indicates the User should always be asked which Collection to use
      * @return the current Collection or null
      */
-    @SuppressWarnings("unchecked") //$NON-NLS-1$
     protected Collection setupCurrentCollection(final SpecifyUser userArg,
                                                 final boolean startingOver)
     {

@@ -8069,6 +8069,14 @@ public class BuildSampleDatabase
             newContainer.setWebLinkName(newContainer.getWebLinkName());
             newContainer.setIsHidden(newContainer.getIsHidden());
             //debugOn = false;
+            
+            try
+            {
+                session.saveOrUpdate(newContainer);
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
            
             for (SpLocaleItemStr nm : memoryContainer.getNames())
             {
@@ -8118,21 +8126,24 @@ public class BuildSampleDatabase
         
         for (SpLocaleContainerItem item : memoryContainer.getItems())
         {
-            Integer spcId      = null;
             boolean okToCreate = true;
             if (isDoingUpdate)
             {
-                String sql = String.format(" FROM splocalecontainer c INNER JOIN splocalecontaineritem ci ON c.SpLocaleContainerID = ci.SpLocaleContainerID WHERE ci.Name = '%s' AND c.DisciplineID = %d", memoryContainer.getName(), disciplineId);
-                int cnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(*)"+sql);
+                String sql = String.format(" FROM splocalecontainer c INNER JOIN splocalecontaineritem ci ON c.SpLocaleContainerID = ci.SpLocaleContainerID WHERE ci.Name = '%s' AND c.DisciplineID = %d", item.getName(), disciplineId);
+                String fullSQL = "SELECT COUNT(*)" + sql;
+                //log.debug(fullSQL);
+                int cnt = BasicSQLUtils.getCountAsInt(fullSQL);
                 if (cnt > 0)
                 {
                     okToCreate = false;
-                    spcId = BasicSQLUtils.getCount("SELECT ci.SpLocaleContainerItemID"+sql);
+                    fullSQL = "SELECT ci.SpLocaleContainerItemID" + sql;
+                    //log.debug(fullSQL);
                 }
             }
             
             if (okToCreate)
             {
+                log.debug("Adding Item: "+item.getName());
                 SpLocaleContainerItem newItem = new SpLocaleContainerItem();
                 newItem.initialize();
                 
@@ -8154,11 +8165,14 @@ public class BuildSampleDatabase
                     newItem.setFormat(accFmtName);
                     newItem.setIsUIFormatter(true);
                 }
-            } else
-            {
-                SpLocaleContainerItem newItem  = (SpLocaleContainerItem)session.getData("FROM SpLocaleContainerItem WHERE id = "+spcId);
-                SpLocaleContainerItem dispItem = dispItemHash.get(item.getName());
-                loadLocalization(memoryContainer.getName(), item, newItem, dispItem, hideGenericFields, isFish);
+                
+                try
+                {
+                    session.saveOrUpdate(newItem);
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
             }
         }
     }
@@ -8192,7 +8206,7 @@ public class BuildSampleDatabase
                                        final String       catFmtName,
                                        final String       accFmtName,
                                        final boolean      isDoingUpdate,
-                                       final DataProviderSessionIFace session)
+                                       final DataProviderSessionIFace sessionArg)
     {
         HiddenTableMgr hiddenTableMgr = new HiddenTableMgr();
 
@@ -8211,12 +8225,16 @@ public class BuildSampleDatabase
             boolean okToCreate = true;
             if (isDoingUpdate)
             {
-                String sql = String.format("FROM splocalecontainer WHERE Name = '%s' AND DisciplineID = %d", table.getName(), discipline.getId());
-                int cnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) "+sql);
+                String sql     = String.format(" FROM splocalecontainer WHERE Name = '%s' AND DisciplineID = %d", table.getName(), discipline.getId());
+                String fullSQL = "SELECT COUNT(*)"+sql;
+                //log.debug(fullSQL);
+                int cnt = BasicSQLUtils.getCountAsInt(fullSQL);
                 if (cnt > 0)
                 {
                     okToCreate = false;
-                    spcId = BasicSQLUtils.getCount("SELECT SpLocaleContainerID "+sql);
+                    fullSQL = "SELECT SpLocaleContainerID"+sql;
+                    //log.debug(fullSQL);
+                    spcId = BasicSQLUtils.getCount(fullSQL);
                 }
             }
             
@@ -8231,12 +8249,21 @@ public class BuildSampleDatabase
                 container.setDiscipline(discipline);
                 
                 container.setIsHidden(hiddenTableMgr.isHidden(discipline.getType(), table.getName()));
+                
+                try
+                {
+                    sessionArg.saveOrUpdate(container);
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+                
             } else
             {
-                container = (SpLocaleContainer)session.getData("FROM splocalecontainer WHERE id = "+spcId);
+                container = (SpLocaleContainer)sessionArg.getData("FROM SpLocaleContainer WHERE id = "+spcId);
             }
             
-            loadLocalization(discipline.getId(), dispName, table, container, hideGenericFields, catFmtName, accFmtName, isDoingUpdate, session);
+            loadLocalization(discipline.getId(), dispName, table, container, hideGenericFields, catFmtName, accFmtName, isDoingUpdate, sessionArg);
             
             if (okToCreate)
             {
