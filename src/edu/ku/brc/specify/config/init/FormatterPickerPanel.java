@@ -370,6 +370,8 @@ public class FormatterPickerPanel extends BaseSetupPanel
             if (isAccGlobal == null && properties != null)
             {
                 isAccGlobal = (Boolean)properties.get("accglobal");
+                isAccGlobal = isAccGlobal == null ? false : isAccGlobal;
+                
             } else
             {
                 isAccGlobal = false;
