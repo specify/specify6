@@ -45,6 +45,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.AutoNumberIFace;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -55,6 +56,7 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFormatterEditorDlg;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.Pair;
 
@@ -81,28 +83,30 @@ public class FormatterPickerPanel extends BaseSetupPanel
     protected boolean                     wasUsed      = false;
     protected String                      currFormatter;
     
+    protected UIFieldFormatterMgr         uiFldFmtMgr;
+    
     /**
      * @param nextBtn
      * @param doingCatNums
      */
-    public FormatterPickerPanel(final String panelName, 
-                                final String helpContext,
+    public FormatterPickerPanel(final String  panelName, 
+                                final String  helpContext,
                                 final JButton nextBtn, 
                                 final JButton prevBtn, 
                                 final boolean doingCatNums,
-                                final String currFormatter)
+                                final String  currFormatter)
     {
         super(panelName, helpContext, nextBtn, prevBtn);
+        
+        //UIFieldFormatterMgr.setDoingLocal(true);
+        //uiFldFmtMgr = new SpecifyUIFieldFormatterMgr();
+        //UIFieldFormatterMgr.setDoingLocal(false);
+        uiFldFmtMgr = UIFieldFormatterMgr.getInstance();
         
         this.doingCatNums  = doingCatNums;
         this.currFormatter = currFormatter;
         
         formatterCBX.addActionListener(createFrmCBXAL());
-        
-        if (currFormatter != null && !doingCatNums)
-        {
-            formatterCBX.setEnabled(false);
-        }
         
         loadFormatCbx(null);
 
@@ -156,7 +160,7 @@ public class FormatterPickerPanel extends BaseSetupPanel
         }
         
         newFormatter = new UIFieldFormatter();
-        UIFormatterEditorDlg dlg = new UIFormatterEditorDlg(null, fieldInfo, newFormatter, true, false, UIFieldFormatterMgr.getInstance());
+        UIFormatterEditorDlg dlg = new UIFormatterEditorDlg(null, fieldInfo, newFormatter, true, false, uiFldFmtMgr);
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
@@ -229,7 +233,7 @@ public class FormatterPickerPanel extends BaseSetupPanel
             formatterCBX.removeActionListener(al);
         }
         
-        fmtList = new Vector<UIFieldFormatterIFace>(UIFieldFormatterMgr.getInstance().getFormatterList(doingCatNums ? CollectionObject.class : Accession.class));
+        fmtList = new Vector<UIFieldFormatterIFace>(uiFldFmtMgr.getFormatterList(doingCatNums ? CollectionObject.class : Accession.class));
         if (newFormatter != null)
         {
             fmtList.add(newFormatter);
@@ -311,6 +315,8 @@ public class FormatterPickerPanel extends BaseSetupPanel
     @Override
     public void setValues(Properties values)
     {
+        super.setValues(values);
+        doingNext();
     }
     
     /* (non-Javadoc)
@@ -347,6 +353,38 @@ public class FormatterPickerPanel extends BaseSetupPanel
     public void doingNext()
     {
         updateBtnUI();
+        
+        Institution institution = null;
+        Boolean     isAccGlobal = null;
+        if (!doingCatNums)
+        {
+            if (AppContextMgr.getInstance() != null && AppContextMgr.getInstance().hasContext())
+            {
+                institution = AppContextMgr.getInstance().getClassObject(Institution.class);
+                if (institution != null)
+                {
+                    isAccGlobal = institution.getIsAccessionsGlobal();
+                }
+            }
+        
+            if (isAccGlobal == null && properties != null)
+            {
+                isAccGlobal = (Boolean)properties.get("accglobal");
+            } else
+            {
+                isAccGlobal = false;
+            }
+            
+            if (institution != null)
+            {
+                formatterCBX.setEnabled(!isAccGlobal);
+                
+            } else if (currFormatter != null || (isAccGlobal && institution != null))
+            {
+                formatterCBX.setEnabled(false);
+            }
+        }
+
     }
 
     /* (non-Javadoc)
@@ -370,4 +408,6 @@ public class FormatterPickerPanel extends BaseSetupPanel
         list.add(new Pair<String, String>(lbl, value));
         return list;
     }
+    
+    
 }
