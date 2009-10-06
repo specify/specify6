@@ -366,7 +366,10 @@ public class DataEntryTask extends BaseTask
         {
             FormPane  formPane  = (FormPane)subPane;
             MultiView multiView = formPane.getMultiView();
-            if (multiView != null && multiView.isEditable())
+            //Bug 7691. TreeLocks get set when a form is first displayed, even when a recordset is being
+            //displayed and the formview is not yet editable. So the isEditable() condition needs to be removed.
+            //A better fix would be to check locks when view mode is switched.
+            if (multiView != null/* && (multiView.isEditable()*/)
             {
                 ViewIFace view = multiView.getView();
                 
