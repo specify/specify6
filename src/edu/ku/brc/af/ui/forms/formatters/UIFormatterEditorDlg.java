@@ -808,7 +808,7 @@ public class UIFormatterEditorDlg extends CustomDialog
         {
             if (selectedFormat.getAutoNumber() == null)
             {
-                AutoNumberIFace autoNum = UIFieldFormatterMgr.createAutoNumber(AutoNumberGeneric.class.getName(), fieldInfo.getTableInfo().getClassName(), fieldInfo.getName());
+                AutoNumberIFace autoNum = UIFieldFormatterMgr.getInstance().createAutoNumber(AutoNumberGeneric.class.getName(), fieldInfo.getTableInfo().getClassName(), fieldInfo.getName(), fields.size() == 1);
                 selectedFormat.setAutoNumber(autoNum);
             }
         } else

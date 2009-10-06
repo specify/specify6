@@ -502,7 +502,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                 System.setProperty(SchemaI18NService.factoryName,      "edu.ku.brc.specify.config.SpecifySchemaI18NService");  // Needed for Localization and Schema //$NON-NLS-1$
                 System.setProperty(UIFieldFormatterMgr.factoryName,    "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");    // Needed for CatalogNumbering //$NON-NLS-1$
                 System.setProperty(WebLinkMgr.factoryName,             "edu.ku.brc.specify.config.SpecifyWebLinkMgr");         // Needed for WebLnkButton //$NON-NLS-1$
-                System.setProperty(DataObjFieldFormatMgr.factoryName,  "edu.ku.brc.specify.config.SpecifyDataObjFieldFormatMgr");  // Needed for WebLnkButton //$NON-NLS-1$
+                System.setProperty(DataObjFieldFormatMgr.factoryName,   "edu.ku.brc.specify.config.SpecifyDataObjFieldFormatMgr");     // Needed for WebLnkButton //$NON-NLS-1$
 
                 SpecifyDataObjFieldFormatMgr.setDoingLocal(true);
                 SpecifyUIFieldFormatterMgr.setDoingLocal(true);

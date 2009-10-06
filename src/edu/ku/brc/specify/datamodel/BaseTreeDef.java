@@ -462,6 +462,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
             progDlg.setProcess(0,100);
             progDlg.setProcessPercent(true);
             progDlg.setDesc(String.format(UIRegistry.getResourceString("BaseTreeDef.UPDATING_TREE"), getName()));
+            progDlg.setAlwaysOnTop(true);
             treeRebuilder.setProgDlg(progDlg);
         }
         

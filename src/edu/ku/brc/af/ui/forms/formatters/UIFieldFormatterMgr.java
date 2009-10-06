@@ -476,6 +476,45 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
     }
     
     /**
+     * @param formatElement
+     * @param name
+     * @param dataClassName
+     * @param fieldName
+     * @param isSingleField
+     * @return
+     */
+    protected AutoNumberIFace createAutoNum(final Element formatElement, 
+                                            final String  name,
+                                            final String  dataClassName, 
+                                            final String  fieldName, 
+                                            final boolean isSingleField)
+    {
+        AutoNumberIFace autoNumberObj = null;
+        Element autoNumberElement = (Element)formatElement.selectSingleNode("autonumber");
+        if (autoNumberElement != null)
+        {
+            String autoNumberClassName = autoNumberElement.getTextTrim();
+            if (StringUtils.isNotEmpty(autoNumberClassName) &&
+                StringUtils.isNotEmpty(dataClassName) &&
+                StringUtils.isNotEmpty(fieldName))
+            {
+                autoNumberObj = createAutoNumber(autoNumberClassName, dataClassName, fieldName, isSingleField);
+
+            } else
+            {
+                throw new RuntimeException(
+                        "The class cannot be empty for an external formatter! ["
+                                + name
+                                + "] or missing field name ["
+                                + fieldName
+                                + "] or missing data Class name ["
+                                + dataClassName + "]");
+            }
+        }
+        return autoNumberObj;
+    }
+    
+    /**
      * Creates a single UIFieldFormatter from a DOM Element.
      * @param formatElement the element
      * @return the formatter object
@@ -493,29 +532,6 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
         boolean isDefault = XMLHelper.getAttr(formatElement, "default", false);
         boolean isSystem  = XMLHelper.getAttr(formatElement, "system", false);
 
-        AutoNumberIFace autoNumberObj = null;
-        Element autoNumberElement = (Element) formatElement.selectSingleNode("autonumber");
-        if (autoNumberElement != null)
-        {
-            String autoNumberClassName = autoNumberElement.getTextTrim();
-            if (StringUtils.isNotEmpty(autoNumberClassName) &&
-                StringUtils.isNotEmpty(dataClassName) &&
-                StringUtils.isNotEmpty(fieldName))
-            {
-                autoNumberObj = createAutoNumber(autoNumberClassName, dataClassName,fieldName);
-
-            } else
-            {
-                throw new RuntimeException(
-                        "The class cannot be empty for an external formatter! ["
-                                + name
-                                + "] or missing field name ["
-                                + fieldName
-                                + "] or missing data Class name ["
-                                + dataClassName + "]");
-            }
-        }
-        
         Element external = (Element) formatElement.selectSingleNode("external");
         if (external != null)
         {
@@ -526,7 +542,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
                 {
                     formatter = Class.forName(externalClassName).asSubclass(UIFieldFormatterIFace.class).newInstance();
                     formatter.setName(name);
-                    formatter.setAutoNumber(autoNumberObj);
+                    formatter.setAutoNumber(createAutoNum(formatElement, name, dataClassName, fieldName, formatter.getFields().size() == 1));
                     formatter.setDefault(isDefault);
                     
                     hash.put(name, formatter);
@@ -647,7 +663,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
             }
         }
 
-        formatter.setAutoNumber(autoNumberObj);
+        formatter.setAutoNumber(createAutoNum(formatElement, name, dataClassName, fieldName, formatter.getFields().size() == 1));
 
         return formatter;
     }
@@ -798,11 +814,13 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
      * @param autoNumberClassName the class name to be instantiated
      * @param dataClassName the data class name (which the auto number will operate on
      * @param fieldName  the field that will be incremented in the dataClassName object
+     * @param isSingleField whether the formatter is a single field
      * @return the auto number object or null
-     */
-    public static AutoNumberIFace createAutoNumber(final String autoNumberClassName, 
-                                                   final String dataClassName,
-                                                   final String fieldName)
+    */
+    public AutoNumberIFace createAutoNumber(final String autoNumberClassName, 
+                                            final String dataClassName,
+                                            final String fieldName,
+                                            final boolean isSingleField)
     {
         AutoNumberIFace autoNumberObj = null;
         try

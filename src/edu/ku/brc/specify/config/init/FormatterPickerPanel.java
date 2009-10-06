@@ -19,7 +19,6 @@
 */
 package edu.ku.brc.specify.config.init;
 
-import static edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr.createAutoNumber;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createLabel;
@@ -161,10 +160,12 @@ public class FormatterPickerPanel extends BaseSetupPanel
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
-            if (!newFormatter.isUserInputNeeded())
+            if (newFormatter.isIncrementer())
             {
-                AutoNumberIFace autoNum = doingCatNums ? createAutoNumber("edu.ku.brc.specify.dbsupport.CollectionAutoNumber", "edu.ku.brc.specify.datamodel.CollectionObject", "catalogNumber") :
-                                                         createAutoNumber("edu.ku.brc.af.core.db.AutoNumberGeneric", "edu.ku.brc.specify.datamodel.Accession", "accessionNumber");
+                boolean isSingleField = newFormatter.getFields().size() == 1;
+                AutoNumberIFace autoNum = doingCatNums ? 
+                    UIFieldFormatterMgr.getInstance().createAutoNumber("edu.ku.brc.specify.dbsupport.CollectionAutoNumber", "edu.ku.brc.specify.datamodel.CollectionObject", "catalogNumber", isSingleField) :
+                    UIFieldFormatterMgr.getInstance().createAutoNumber("edu.ku.brc.af.core.db.AutoNumberGeneric", "edu.ku.brc.specify.datamodel.Accession", "accessionNumber", isSingleField);
                 newFormatter.setAutoNumber(autoNum);
             }
         } else

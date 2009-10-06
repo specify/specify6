@@ -26,7 +26,6 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
-import org.jfree.util.Log;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.AutoNumberGeneric;
@@ -34,7 +33,6 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Division;
-import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -87,7 +85,7 @@ public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
         
         String ansSQL = "SELECT ans.AutonumberingSchemeID, ans.FormatName, ans.IsNumericOnly, ans.SchemeName, dv.Name, dv.DivisionID FROM autonumberingscheme ans Inner Join autonumsch_div ad ON ans.AutoNumberingSchemeID = ad.AutoNumberingSchemeID Inner Join division dv ON ad.DivisionID = dv.UserGroupScopeId WHERE dv.UserGroupScopeId = %d AND FormatName = '%s'";
         String sql = String.format(ansSQL, currDivision.getId(), formatter.getName());
-        log.debug(sql);
+        //log.debug(sql);
         Vector<Object[]> rows = BasicSQLUtils.query(sql);
         Integer ansID = null;
         if (rows.size() == 1)
@@ -151,7 +149,7 @@ public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
                 sb.append(" substring("+fieldName+","+(pos.first+1)+","+pos.second+") desc");
             }
             
-            System.out.println("AccessionAutoNumberAlphaNum - "+sb.toString());
+            //System.out.println("AccessionAutoNumberAlphaNum - "+sb.toString());
             
             List<?> list = session.createQuery(sb.toString()).setMaxResults(1).list();
             if (list.size() == 1)

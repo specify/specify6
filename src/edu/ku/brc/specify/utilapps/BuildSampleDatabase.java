@@ -1181,7 +1181,8 @@ public class BuildSampleDatabase
                 {
                     accNumScheme = (AutoNumberingScheme)list.get(0);
                 }
-                hSession.close();
+                // Do not close the session it is owned by someone else
+                //hSession.close();
             }
             
         } else
@@ -1192,7 +1193,8 @@ public class BuildSampleDatabase
             {
                 accNumScheme = (AutoNumberingScheme)list.get(0);
             }
-            hSession.close();
+            // Do not close the session it is owned by someone else
+            //hSession.close();
         }
         
         startTx();
@@ -8070,12 +8072,15 @@ public class BuildSampleDatabase
             newContainer.setIsHidden(newContainer.getIsHidden());
             //debugOn = false;
             
-            try
+            if (session != null)
             {
-                session.saveOrUpdate(newContainer);
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
+                try
+                {
+                    session.saveOrUpdate(newContainer);
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
             }
            
             for (SpLocaleItemStr nm : memoryContainer.getNames())
@@ -8165,13 +8170,15 @@ public class BuildSampleDatabase
                     newItem.setFormat(accFmtName);
                     newItem.setIsUIFormatter(true);
                 }
-                
-                try
+                if (session != null)
                 {
-                    session.saveOrUpdate(newItem);
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
+                    try
+                    {
+                        session.saveOrUpdate(newItem);
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
                 }
             }
         }
@@ -8250,12 +8257,15 @@ public class BuildSampleDatabase
                 
                 container.setIsHidden(hiddenTableMgr.isHidden(discipline.getType(), table.getName()));
                 
-                try
+                if (sessionArg != null)
                 {
-                    sessionArg.saveOrUpdate(container);
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
+                    try
+                    {
+                        sessionArg.saveOrUpdate(container);
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
                 }
                 
             } else

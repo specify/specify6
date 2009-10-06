@@ -390,16 +390,17 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr#createAutoNumber(java.lang.String, java.lang.String, java.lang.String)
+     * @see edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr#createAutoNumber(java.lang.String, java.lang.String, java.lang.String, boolean)
      */
-    public static AutoNumberIFace createAutoNumber(final String autoNumberClassName, 
-                                                   final String dataClassName, 
-                                                   final String fieldName)
+    public AutoNumberIFace createAutoNumber(final String  autoNumberClassName, 
+                                            final String  dataClassName, 
+                                            final String  fieldName,
+                                            final boolean isSingleField)
     {
         if (dataClassName.equals("edu.ku.brc.specify.datamodel.CollectionObject") &&  //$NON-NLS-1$
             fieldName.equals("catalogNumber")) //$NON-NLS-1$
         {
-            return new CollectionAutoNumberAlphaNum();
+            return isSingleField ? new CollectionAutoNumber() : new CollectionAutoNumberAlphaNum();
         }
         
         if (dataClassName.equals("edu.ku.brc.specify.datamodel.Accession") &&  //$NON-NLS-1$
@@ -408,7 +409,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
             return new AccessionAutoNumberAlphaNum();
         }
 
-        return UIFieldFormatterMgr.createAutoNumber(autoNumberClassName, dataClassName, fieldName);
+        return super.createAutoNumber(autoNumberClassName, dataClassName, fieldName, isSingleField);
     }
 
     /* (non-Javadoc)

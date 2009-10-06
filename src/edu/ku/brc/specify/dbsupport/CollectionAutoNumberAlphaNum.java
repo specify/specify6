@@ -27,6 +27,7 @@ import org.hibernate.Session;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.AutoNumberGeneric;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -80,7 +81,7 @@ public class CollectionAutoNumberAlphaNum extends AutoNumberGeneric
             yearVal = extractIntegerValue(yearPos, value);
         }
 
-        StringBuilder sb = new StringBuilder(" From CollectionObject c Join c.collection col Join col.numberingScheme cns WHERE cns.numberingSchemeId = ");
+        StringBuilder sb = new StringBuilder(" From CollectionObject c Join c.collection col Join col.numberingSchemes cns WHERE cns.autoNumberingSchemeId = ");
         sb.append(currCollection.getNumberingSchemesByType(CollectionObject.getClassTableId()).getAutoNumberingSchemeId());
         
         if (yearVal != null)
@@ -89,7 +90,8 @@ public class CollectionAutoNumberAlphaNum extends AutoNumberGeneric
             sb.append(yearVal);
             sb.append(" = substring("+fieldName+","+(yearPos.first+1)+","+yearPos.second+")");
         }
-        sb.append(" ORDER BY");
+        
+        sb.append(" AND c.collectionMemberId = COLMEMID ORDER BY");
         
         try
         {
@@ -107,8 +109,10 @@ public class CollectionAutoNumberAlphaNum extends AutoNumberGeneric
                 sb.append(" substring("+fieldName+","+(pos.first+1)+","+pos.second+") desc");
             }
             
-            //System.out.println(sb.toString());
-            List<?> list = session.createQuery(sb.toString()).setMaxResults(1).list();
+            String sql = QueryAdjusterForDomain.getInstance().adjustSQL(sb.toString());
+            
+            //System.out.println(sql);
+            List<?> list = session.createQuery(sql).setMaxResults(1).list();
             if (list.size() == 1)
             {
                 Object[] objArray = (Object[]) list.get(0);
@@ -116,9 +120,9 @@ public class CollectionAutoNumberAlphaNum extends AutoNumberGeneric
             }
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionAutoNumberAlphaNum.class, ex);
-            ex.printStackTrace();
         }
         return null;
     }

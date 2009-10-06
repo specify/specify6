@@ -68,9 +68,10 @@ public class UITextFieldFormatterFactory extends UIFieldFormatterFactory
 				                                    false, 
 				                                    null);
 
-		AutoNumberIFace autoNumber = UIFieldFormatterMgr.createAutoNumber("edu.ku.brc.af.core.db.AutoNumberGeneric", 
+		AutoNumberIFace autoNumber = UIFieldFormatterMgr.getInstance().createAutoNumber("edu.ku.brc.af.core.db.AutoNumberGeneric", 
 				                                                          clazz.getName(), 
-				                                                          fieldInfo.getName());
+				                                                          fieldInfo.getName(),
+				                                                          fmt.getFields().size() == 1);
 		fmt.setAutoNumber(autoNumber);
 
 		// separators and split pattern strings

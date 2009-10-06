@@ -322,8 +322,8 @@ public class UIFormatterListEdtDlg extends CustomDialog
     {
         try
         {
-            UIFieldFormatterIFace tempCopy = isNew ? uif : (UIFieldFormatterIFace)uif.clone();
-            boolean isDefault = tempCopy.isDefault();
+            UIFieldFormatterIFace tempCopy  = isNew ? uif : (UIFieldFormatterIFace)uif.clone();
+            boolean               isDefault = tempCopy.isDefault();
             
             UIFormatterEditorDlg dlg = new UIFormatterEditorDlg(this, fieldInfo, tempCopy, isNew, doProcessSamples, uiFieldFormatterMgrCache);
             dlg.setVisible(true);
@@ -335,7 +335,10 @@ public class UIFormatterListEdtDlg extends CustomDialog
                 if (selectedUIF.isIncrementer() && selectedUIF.getAutoNumber() == null)
                 {
                     
-                    AutoNumberIFace autoNum = UIFieldFormatterMgr.createAutoNumber(AutoNumberGeneric.class.getName(), fieldInfo.getTableInfo().getClassName(), fieldInfo.getName());
+                    AutoNumberIFace autoNum = UIFieldFormatterMgr.getInstance().createAutoNumber(AutoNumberGeneric.class.getName(), 
+                                                                                                 fieldInfo.getTableInfo().getClassName(), 
+                                                                                                 fieldInfo.getName(), 
+                                                                                                 tempCopy.getFields().size() == 1);
                     selectedUIF.setAutoNumber(autoNum);
                 }
                 
