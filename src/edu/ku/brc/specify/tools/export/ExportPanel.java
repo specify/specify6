@@ -1067,7 +1067,11 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
     {
         log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         // This is for Windows and Exe4J, turn the args into System Properties
-        
+ 
+        // Set App Name, MUST be done very first thing!
+        //UIRegistry.setAppName("SchemaExporter");  //$NON-NLS-1$
+        UIRegistry.setAppName("Specify");  //$NON-NLS-1$
+
         UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
         
         for (String s : args)
@@ -1123,10 +1127,6 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         {
             UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
         }
-
-        // Set App Name, MUST be done very first thing!
-        UIRegistry.setAppName("SchemaExporter");  //$NON-NLS-1$
-        //UIRegistry.setAppName("Specify");  //$NON-NLS-1$
         
         // Then set this
         IconManager.setApplicationClass(Specify.class);

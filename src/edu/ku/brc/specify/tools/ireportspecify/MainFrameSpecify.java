@@ -1657,13 +1657,13 @@ public class MainFrameSpecify extends MainFrame
         log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         // This is for Windows and Exe4J, turn the args into System Properties
         
+        // Set App Name, MUST be done very first thing!
+        //UIRegistry.setAppName("iReports4Specify");  //$NON-NLS-1$
+        UIRegistry.setAppName("Specify");  //$NON-NLS-1$
         UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
         
         AppBase.processArgs(args);
 
-        // Set App Name, MUST be done very first thing!
-        UIRegistry.setAppName("iReports4Specify");  //$NON-NLS-1$
-        //UIRegistry.setAppName("Specify");  //$NON-NLS-1$
         
         // Then set this
         IconManager.setApplicationClass(Specify.class);
