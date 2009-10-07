@@ -18,8 +18,12 @@
  */
 package edu.ku.brc.af.ui;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -30,29 +34,73 @@ import edu.ku.brc.ui.UIHelper;
  * 
  * @code_status Alpha
  * 
- *              Jul 24, 2009
+ * Jul 24, 2009
  * 
  */
 public class ProcessListUtil
 {
-    public static List<String> getRunningProcessesWin() 
+    private static String  CSV_PATTERN = "\"([^\"]+?)\",?|([^,]+),?|,";
+    private static Pattern csvRE       = Pattern.compile(CSV_PATTERN);
+
+    public static List<String> parse(final String line) 
     {
-        List<String> processList = new ArrayList<String>();
+        List<String> list = new ArrayList<String>();
+        Matcher m = csvRE.matcher(line);
+        // For each field
+        while (m.find()) 
+        {
+            String match = m.group();
+            if (match == null)
+            {
+                break;
+            }
+            if (match.endsWith(","))  // trim trailing ,
+            {
+                match = match.substring(0, match.length() - 1);
+            }
+            if (match.startsWith("\""))  // assume also ends with
+            {
+                match = match.substring(1, match.length() - 1);
+            }
+            if (match.length() == 0)
+            {
+                match = null;
+            }
+            list.add(match);
+        }
+        return list;
+    }
+    
+    /**
+     * @return
+     */
+    public static List<List<String>> getRunningProcessesWin() 
+    {
+        
+        List<List<String>> processList = new ArrayList<List<String>>();
         try 
         {
-            Process        process = Runtime.getRuntime().exec("tasklist.exe /v /nh");
+        	boolean        doDebug = true;
+            Process        process = Runtime.getRuntime().exec("tasklist.exe /v /nh /FO CSV");
             BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             while ((line = input.readLine()) != null) 
             {
-                if (!line.trim().equals("")) 
+                if (!line.trim().isEmpty()) 
                 {
-                    // keep only the process name
-                    //line = line.substring(1);
-                    //processes.add(line.substring(0, line.indexOf("\"")));
-                    processList.add(line);
+                	if (doDebug && StringUtils.contains(line, "mysql"))
+                	{
+	                	String lineStr = StringUtils.replaceChars(line, '\\', '/');
+	                	System.out.println("\n["+lineStr+"]");
+	                    for (String tok : parse(lineStr))
+	                    {
+	                    	System.out.print("["+tok+"]");
+	                    }
+	                    System.out.println();
+	                    
+                	}
+                    processList.add(parse(StringUtils.replaceChars(line, '\\', '/')));
                 }
-
             }
             input.close();
         }
@@ -66,9 +114,9 @@ public class ProcessListUtil
     /**
      * @return
      */
-    public static List<String> getRunningProcessesUnix() 
+    public static List<List<String>> getRunningProcessesUnix() 
     {
-        List<String> processes = new ArrayList<String>();
+        List<List<String>> processes = new ArrayList<List<String>>();
         try 
         {
             Process        process = Runtime.getRuntime().exec("ps aux");
@@ -78,9 +126,8 @@ public class ProcessListUtil
             {
                 if (!line.trim().equals("")) 
                 {
-                    processes.add(line);
+                    //processes.add(line);
                 }
-
             }
             input.close();
         }
@@ -100,34 +147,29 @@ public class ProcessListUtil
     {
         ArrayList<Integer> ids = new ArrayList<Integer>();
         
-        List<String> processList = ProcessListUtil.getRunningProcesses();
-        for (String line : processList)
+        List<List<String>> processList = ProcessListUtil.getRunningProcesses();
+        for (List<String> line : processList)
         {
-            
-            boolean doCont = false;
-            for (int i=0;i<text.length;i++)
+        	System.out.println("["+line+"]");
+        	int found = 0;
+        	for (String field : line)
             {
-                if (!StringUtils.contains(line.toLowerCase(), text[i].toLowerCase()))
-                {
-                    //System.err.println("*"+line);
-                    doCont = true;
-                    break;
-                }
+	            for (int i=0;i<text.length;i++)
+	            {
+	            	System.out.println("CHK: ["+field.toLowerCase()+"]["+text[i].toLowerCase()+"]");
+	                if (StringUtils.contains(field.toLowerCase(), text[i].toLowerCase()))
+	                {
+	                	System.out.print("FND: ["+field.toLowerCase()+"]["+text[i].toLowerCase()+"]");
+	                	found++;
+	                }
+	            }
             }
-            
-            if (doCont)
-            {
-                continue;
-            }
-            
-            String[] toks = StringUtils.split(line, ' ');
-            if (UIHelper.isWindows())
-            {
-            	ids.add(Integer.parseInt(toks[1]));
-            } else
-            {
-                ids.add(Integer.parseInt(toks[1]));
-            }
+        	
+        	System.out.println("***: fnd["+found+"] toks["+text.length+"]");
+        	if (found == text.length)
+        	{
+        		ids.add(Integer.parseInt(line.get(1)));
+        	}
         }
         return ids;
     }
@@ -136,7 +178,7 @@ public class ProcessListUtil
     /**
      * @return
      */
-    public static List<String> getRunningProcesses() 
+    public static List<List<String>> getRunningProcesses() 
     {
         if (UIHelper.isWindows())
         {
@@ -151,13 +193,13 @@ public class ProcessListUtil
      */
     public static boolean killProcess(final int processId)
     {
-    	String cmd;
+        String cmd;
         if (UIHelper.isWindows())
         {
-        	cmd = "taskkill /PID " + processId;
+            cmd = "taskkill /PID " + processId;
         } else
         {
-        	cmd = "kill " + processId;
+            cmd = "kill " + processId;
         }
         
         try 
@@ -187,12 +229,12 @@ public class ProcessListUtil
             ids = getProcessIdWithText("3337");
         } else
         {
-        	ids = getProcessIdWithText("mysqld-nt.exe", System.getProperty("user.name"));
+            ids = getProcessIdWithText("_data/bin/mysqld");
         }
         for (Integer id : ids)
         {
-            System.out.println(id);
-            killProcess(id);
+            System.out.println("KILLING: "+id);
+            //killProcess(id);
         }
         
         

@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.config.init;
 
+import static edu.ku.brc.af.ui.ProcessListUtil.getProcessIdWithText;
+import static edu.ku.brc.af.ui.ProcessListUtil.killProcess;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.HeadlessException;
@@ -56,7 +58,6 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
-import edu.ku.brc.af.ui.ProcessListUtil;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
@@ -85,6 +86,7 @@ import edu.ku.brc.ui.IconManager.IconSize;
 public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFace
 {
     //private static final Logger  log = Logger.getLogger(SpecifyDBSetupWizardFrame.class);
+    public enum PROC_STATUS {None, FoundAndKilled, FoundNotKilled}
     
     private String               appVersion          = "6.0"; //$NON-NLS-1$
     private String               appBuildVersion     = "(Unknown)"; //$NON-NLS-1$
@@ -179,22 +181,34 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
     }
     
     /**
-     * Check for and kills and existing embedded MySQl processes.
+     * @return a list of process IDs for user spawned MySQL processes.
      */
-    public static void checkForMySQLProcesses()
+    private static List<Integer> checkForMySQLPrc()
     {
-        List<Integer> ids = ProcessListUtil.getProcessIdWithText("3337");
+    	return UIHelper.isWindows() ? getProcessIdWithText("_data/bin/mysqld") : getProcessIdWithText("3337");
+    }
+    
+    /**
+     * Check for and kills and existing embedded MySQl processes.
+     * @return a status as to whether any were found and whether they were killed.
+     */
+    public static PROC_STATUS checkForMySQLProcesses()
+    {
+    	PROC_STATUS status = PROC_STATUS.None;
+        List<Integer> ids = checkForMySQLPrc();
         if (ids.size() > 0)
         {
+        	status = PROC_STATUS.FoundNotKilled;
             if (UIHelper.promptForAction("CONTINUE", "CANCEL", "WARNING", getResourceString("Specify.EMBD_KILL_PROCS")))
             {
                 for (Integer id : ids)
                 {
-                    ProcessListUtil.killProcess(id);
+                    killProcess(id);
                 }
+                status = PROC_STATUS.FoundAndKilled;
             }
             
-            try
+            /*try
             {
                 boolean cont = true;
                 int cnt = 0;
@@ -202,7 +216,7 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
                 {
                     Thread.sleep(2000);
                     
-                    ids = ProcessListUtil.getProcessIdWithText("3337");
+                    ids = checkForMySQLPrc();
                     cont = ids.size() > 0 && cnt < 5;
                     cnt++;
                 }
@@ -210,8 +224,9 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
             } catch (Exception ex)
             {
                 ex.printStackTrace();
-            }
+            }*/
         }
+    	return status;
     }
 
     /* (non-Javadoc)
@@ -354,6 +369,7 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
         }
         
         AppBase.processArgs(args);
+        System.setProperty("appdatadir", "..");
         
         SwingUtilities.invokeLater(new Runnable()
         {
