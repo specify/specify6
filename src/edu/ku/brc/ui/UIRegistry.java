@@ -680,7 +680,11 @@ public class UIRegistry
      */
     public static String getUserHomeAppDir()
     {
-        return getUserHomeDir() + File.separator + instance.appName;
+    	return getUserHomeDir() + File.separator + 
+    		//assume "Specify" if appName has not yet been set. 
+    		//This is a semi fix for bug 7578. When this routine is called by getDefaultEmbeddedDBPath(), 
+    		//an invalid DBPath is returned for Apps not named "Specify" -- Unless tDefaultEmbeddedDBPath() is called before appName is set
+    		(instance.appName != null ? instance.appName : "Specify");
     }
 
     /**
