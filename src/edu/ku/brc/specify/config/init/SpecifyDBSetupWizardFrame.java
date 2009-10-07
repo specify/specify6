@@ -234,11 +234,24 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
      */
     public boolean doExit(boolean doAppExit)
     {
-        DBConnection.setCopiedToMachineDisk(true);
+        if (UIRegistry.isMobile())
+        {
+            DBConnection.setCopiedToMachineDisk(true);
+        }
         DBConnection.shutdown();
         HibernateUtil.shutdown();
         
-        System.exit(0);
+        SwingUtilities.invokeLater(new Runnable() {
+
+            /* (non-Javadoc)
+             * @see java.lang.Runnable#run()
+             */
+            @Override
+            public void run()
+            {
+                System.exit(0);
+            }
+        });
         
         return true;
     }

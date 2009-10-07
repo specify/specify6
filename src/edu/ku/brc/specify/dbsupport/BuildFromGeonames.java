@@ -37,7 +37,6 @@ import org.hibernate.Session;
 import edu.ku.brc.af.core.db.BackupServiceFactory;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
-import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Agent;
@@ -48,9 +47,11 @@ import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
+ * Can't use PrepareStatment because of MySQL boolean bit issue.
+ * 
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Aug 16, 2009
  *
@@ -59,21 +60,19 @@ public class BuildFromGeonames
 {
     private static final Logger  log      = Logger.getLogger(BuildFromGeonames.class);
     
-    private static String      dbName = "geonames";
-             
-    protected GeographyTreeDef geoDef;
-    protected String           nowStr;
-    protected String           insertSQL = null;
-    protected StringBuilder    sql       = new StringBuilder();
-    protected Agent            createdByAgent;
-    protected ProgressFrame    frame;
+    protected GeographyTreeDef           geoDef;
+    protected String                     nowStr;
+    protected String                     insertSQL = null;
+    protected StringBuilder              sql       = new StringBuilder();
+    protected Agent                      createdByAgent;
+    protected ProgressFrame              frame;
     
-    protected String           itUsername;
-    protected String           itPassword;
-    protected Connection       connection = null;
-    protected Connection       currConn;
+    protected String                     itUsername;
+    protected String                     itPassword;
+    protected Connection                 readConn = null;
+    protected Connection                 updateConn;
     
-    protected ArrayList<Object> rowData = new ArrayList<Object>();
+    protected ArrayList<Object>          rowData = new ArrayList<Object>();
     
     protected Hashtable<String, String>  countryToContHash     = new Hashtable<String, String>();
     protected Hashtable<String, Integer> contToIdHash          = new Hashtable<String, Integer>();
@@ -81,19 +80,16 @@ public class BuildFromGeonames
     
     protected Hashtable<String, Hashtable<String, Integer>>  countryStateCodeToIdHash = new Hashtable<String, Hashtable<String, Integer>>();
     
-    
-    
     protected Hashtable<String, String>  stateToCountryHash = new Hashtable<String, String>();
     protected Hashtable<String, Integer> countryCodeToIdHash    = new Hashtable<String, Integer>();
     
-    //protected Hashtable<String, String>  countyToStateHash = new Hashtable<String, String>();
-    //protected Hashtable<String, Integer> stateToIdHash    = new Hashtable<String, Integer>();
-    
     /**
+     * Constructor.
      * @param geoDef
      * @param nowStr
      * @param createdByAgent
-     * @param connection
+     * @param itUsername
+     * @param itPassword
      * @param frame
      */
     public BuildFromGeonames(final GeographyTreeDef   geoDef, 
@@ -116,11 +112,10 @@ public class BuildFromGeonames
                     "TimestampCreated, TimestampModified, Version) VALUES (";
     }
     
-    
     /**
-     * @param session
-     * @param treeDef
-     * @return
+     * Builds the root Geography record (node).
+     * @param session the current session
+     * @return the root
      */
     public Geography buildEarth(final Session session)
     {
@@ -157,34 +152,30 @@ public class BuildFromGeonames
     }
     
     /**
-     * @return
+     * Builds the Geography tree from the geonames table.
+     * @param earthId the id of the root.
+     * @return true on success
      */
     public boolean build(final int earthId)
     {
         sql.setLength(0); // because of debugging
         sql.append(insertSQL);
         
-        DBConnection geoDBConn  = null;
         Statement    stmt       = null;
         Statement    updateStmt = null;
         try
         {
             DBConnection currDBConn = DBConnection.getInstance();
-            if (currConn == null)
+            if (updateConn == null)
             {
-                currConn = currDBConn.createConnection();
+                updateConn = currDBConn.createConnection();
             }
+            readConn = currDBConn.createConnection();
             
-            DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver(currDBConn.getDriverName());
-            String             connStr    = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, currDBConn.getServerName(), dbName, itUsername, itPassword, driverInfo.getName());
+            stmt       = readConn.createStatement();
+            updateStmt = updateConn.createStatement();
             
-            geoDBConn  = DBConnection.createInstance(currDBConn.getDriver(), currDBConn.getDialect(), "geonames", connStr, itUsername, itPassword);
-            connection = geoDBConn.createConnection();
-            
-            stmt       = connection.createStatement();
-            updateStmt = currConn.createStatement();
-            
-            Integer count = BasicSQLUtils.getCount(connection, "SELECT COUNT(*) FROM geoname");
+            Integer count = BasicSQLUtils.getCount(readConn, "SELECT COUNT(*) FROM geoname");
             if (frame != null)
             {
                 frame.setProcess(0, count);
@@ -212,7 +203,7 @@ public class BuildFromGeonames
                 log.debug("Deleted "+delCnt+" geography records.");
             }*/
             
-            currConn.setAutoCommit(false);
+            updateConn.setAutoCommit(false);
             
             if (frame != null)
             {
@@ -242,7 +233,7 @@ public class BuildFromGeonames
                     Integer newId = BasicSQLUtils.getInsertedId(updateStmt);
                     contToIdHash.put(rs.getString(4), newId);
                     
-                    currConn.commit();
+                    updateConn.commit();
                 }
                 sql.setLength(insertSQL.length());
                 
@@ -284,7 +275,7 @@ public class BuildFromGeonames
             rs.close();
             
             // Now create ll the countries in the geoname table
-            sqlStr = "SELECT name, latitude, longitude, country FROM geonames.geoname WHERE fcode = 'PCLI' ORDER BY name";
+            sqlStr = "SELECT name, latitude, longitude, country FROM geoname WHERE fcode = 'PCLI' ORDER BY name";
             rs = stmt.executeQuery(sqlStr);
             while (rs.next())
             {
@@ -295,7 +286,7 @@ public class BuildFromGeonames
                     
                     Integer newId = BasicSQLUtils.getInsertedId(updateStmt);
                     countryCodeToIdHash.put(rs.getString(4), newId);
-                    currConn.commit();
+                    updateConn.commit();
                 }
                 
                 sql.setLength(insertSQL.length());
@@ -329,7 +320,7 @@ public class BuildFromGeonames
                     Integer newId = BasicSQLUtils.getInsertedId(updateStmt);
                     countryCodeToIdHash.put(countryCode, newId);
                     
-                    currConn.commit();
+                    updateConn.commit();
                     sql.setLength(insertSQL.length());
                 }
             }
@@ -343,7 +334,7 @@ public class BuildFromGeonames
             //////////////////////
             // States
             //////////////////////
-            sqlStr = "SELECT name, latitude, longitude, country, admin1 as StateCode FROM geonames.geoname WHERE fcode = 'ADM1' ORDER BY name";
+            sqlStr = "SELECT name, latitude, longitude, country, admin1 as StateCode FROM geoname WHERE fcode = 'ADM1' ORDER BY name";
             rs = stmt.executeQuery(sqlStr);
             while (rs.next())
             {
@@ -368,7 +359,7 @@ public class BuildFromGeonames
                         log.error("****** Error - No State for code ["+stateCode+"]  Country: "+countryCode+"   Name: "+nameStr);
                     }
     
-                    currConn.commit();
+                    updateConn.commit();
                 }
                 
                 sql.setLength(insertSQL.length());
@@ -383,7 +374,7 @@ public class BuildFromGeonames
             rs.close();
             
             // Create States that are referenced by Counties in Countries
-            sqlStr = "SELECT name AS CountyName, latitude, longitude, country, admin1 as StateCode FROM geonames.geoname WHERE fcode = 'ADM2' ORDER BY name";
+            sqlStr = "SELECT name AS CountyName, latitude, longitude, country, admin1 as StateCode FROM geoname WHERE fcode = 'ADM2' ORDER BY name";
             rs = stmt.executeQuery(sqlStr);
             while (rs.next())
             {
@@ -412,7 +403,7 @@ public class BuildFromGeonames
                         
                         stateToIdHash.put(stateCode, newId);
                         
-                        currConn.commit();
+                        updateConn.commit();
                     }
                     sql.setLength(insertSQL.length());
                 }
@@ -433,7 +424,7 @@ public class BuildFromGeonames
             //////////////////////
             // County
             //////////////////////
-            sqlStr = "SELECT name, latitude, longitude, country, admin1 as StateCode FROM geonames.geoname WHERE fcode = 'ADM2' ORDER BY name";
+            sqlStr = "SELECT name, latitude, longitude, country, admin1 as StateCode FROM geoname WHERE fcode = 'ADM2' ORDER BY name";
             rs = stmt.executeQuery(sqlStr);
             while (rs.next())
             {
@@ -441,7 +432,7 @@ public class BuildFromGeonames
                 {
                     @SuppressWarnings("unused")
                     int rv = updateStmt.executeUpdate(sql.toString());
-                    currConn.commit();
+                    updateConn.commit();
                 }
                 
                 sql.setLength(insertSQL.length());
@@ -470,7 +461,7 @@ public class BuildFromGeonames
 
             try
             {
-                currConn.rollback();
+                updateConn.rollback();
                 
             } catch (Exception exr)
             {
@@ -480,10 +471,22 @@ public class BuildFromGeonames
         {
             try
             {
-                stmt.close();
-                connection.close();
-                geoDBConn.close();
-                
+                if (stmt != null)
+                {
+                    stmt.close();
+                }
+                if (updateStmt != null)
+                {
+                    updateStmt.close();
+                }
+                if (readConn != null)
+                {
+                    readConn.close();
+                }
+                if (updateConn != DBConnection.getInstance())
+                {
+                    updateConn.close();
+                }
             } catch (Exception ex)
             {
                 ex.printStackTrace();
@@ -495,7 +498,9 @@ public class BuildFromGeonames
     
     /**
      * @param rs
-     * @param geoDefItemId
+     * @param rankId
+     * @param earthId
+     * @return
      * @throws SQLException
      */
     private boolean buildInsert(final ResultSet rs, 
@@ -511,8 +516,10 @@ public class BuildFromGeonames
     }
     
     /**
-     * @param rs
-     * @param geoDefItemId
+     * @param row
+     * @param rankId
+     * @param earthId
+     * @return
      * @throws SQLException
      */
     private boolean buildInsert(final List<Object> row, 
@@ -685,12 +692,11 @@ public class BuildFromGeonames
         try
         {
             DBConnection currDBConn = DBConnection.getInstance();
-            
+            String       dbName     = currDBConn.getDatabaseName();
             DBMSUserMgr.DBSTATUS status = DBMSUserMgr.checkForDB(dbName, currDBConn.getServerName(), itUsername, itPassword);
             
             if (status == DBMSUserMgr.DBSTATUS.missingOrEmpty)
             {
-                
                 DBMSUserMgr dbMgr = DBMSUserMgr.getInstance();
                 
                 if (dbMgr != null)
@@ -725,27 +731,8 @@ public class BuildFromGeonames
             BackupServiceFactory bsf = BackupServiceFactory.getInstance();
             bsf.setUsernamePassword(itUsername, itPassword);
             
-            //boolean status = bsf.doRestoreInBackground("geonames", unzippedFile.getAbsolutePath(), null, null, null, true, false); // true - does it asynchronously, false - ignore glass pane
-            boolean status = bsf.doRestoreBulkDataInBackground("geonames", null, file.getAbsolutePath(), null, null, null, true); // true - does it asynchronously, false - ignore glass pane
-            
-            // delete the unzipped file
-            /*try
-            {
-                DBConnection currDBConn = DBConnection.getInstance();
-                
-                DBMSUserMgr dbMgr = DBMSUserMgr.getInstance();
-                if (dbMgr.connectToDBMS(itUsername, itPassword, currDBConn.getServerName()))
-                {
-                    if (!DBMSUserMgr.getInstance().dropDatabase(dbName))
-                    {
-                        //return null;
-                    }
-                }
-                
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }*/
+            String dbName = DBConnection.getInstance().getDatabaseName();
+            boolean status = bsf.doRestoreBulkDataInBackground(dbName, null, file.getAbsolutePath(), null, null, null, true, false); // true - does it asynchronously, 
             
             // Clear IT Username and Password
             bsf.setUsernamePassword(null, null);

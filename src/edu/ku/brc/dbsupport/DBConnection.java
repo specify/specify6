@@ -316,7 +316,7 @@ public class DBConnection
         if (debugCnt) System.err.println("DB Connection Cnt: "+(--dbCnt) +"  is Instance: "+(this == getInstance()));
         try
         {
-            if (connections.size() == 1 && this == getInstance())
+            if (connections.size() == 1 && this == instance)
             {
                 connections.remove(this);
                 
@@ -602,7 +602,8 @@ public class DBConnection
         {
             while (!connections.isEmpty())
             {
-                connections.pop().close();
+                DBConnection dbConn = connections.peek();
+                dbConn.close();
             }
             connections.clear();
             

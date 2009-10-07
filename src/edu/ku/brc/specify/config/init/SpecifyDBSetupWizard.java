@@ -42,6 +42,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -57,10 +58,10 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
@@ -838,12 +839,15 @@ public class SpecifyDBSetupWizard extends JPanel
             SpecifyDBSetupWizard.this.listener.hide();
         }
 
-        final SwingWorker worker = new SwingWorker()
+        SwingWorker<Integer, Integer> worker = new SwingWorker<Integer, Integer>()
         {
             protected boolean isOK = false;
             
+            /* (non-Javadoc)
+             * @see javax.swing.SwingWorker#doInBackground()
+             */
             @Override
-            public Object construct()
+            protected Integer doInBackground() throws Exception
             {
                 try
                 {
@@ -877,7 +881,8 @@ public class SpecifyDBSetupWizard extends JPanel
                                            saUserName, 
                                            saPassword))
                     {
-                        return isOK = false;
+                        isOK = false;
+                        return null;
                     }   
                      
                     Session session = HibernateUtil.getCurrentSession();
@@ -925,14 +930,21 @@ public class SpecifyDBSetupWizard extends JPanel
                 }
                 return null;
             }
-    
-            //Runs on the event-dispatching thread.
+
+            /* (non-Javadoc)
+             * @see javax.swing.SwingWorker#done()
+             */
             @Override
-            public void finished()
+            protected void done()
             {
                 if (isOK)
                 {
+                    if (UIRegistry.isMobile())
+                    {
+                        DBConnection.setCopiedToMachineDisk(true);
+                    }
                     HibernateUtil.shutdown();
+                    DBConnection.shutdown();
                 }
                 if (listener != null)
                 {
@@ -941,7 +953,7 @@ public class SpecifyDBSetupWizard extends JPanel
                 }
             }
         };
-        worker.start();
+        worker.execute();
     }
     
     //-------------------------------------------------

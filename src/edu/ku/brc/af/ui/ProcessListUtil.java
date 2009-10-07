@@ -42,7 +42,11 @@ public class ProcessListUtil
     private static String  CSV_PATTERN = "\"([^\"]+?)\",?|([^,]+),?|,";
     private static Pattern csvRE       = Pattern.compile(CSV_PATTERN);
 
-    public static List<String> parse(final String line) 
+    /**
+     * @param line
+     * @return
+     */
+    private static List<String> parse(final String line) 
     {
         List<String> list = new ArrayList<String>();
         Matcher m = csvRE.matcher(line);
@@ -122,11 +126,24 @@ public class ProcessListUtil
             Process        process = Runtime.getRuntime().exec("ps aux");
             BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
+            Integer cmdInx = null;
             while ((line = input.readLine()) != null) 
             {
+                if (cmdInx == null)
+                {
+                    cmdInx = line.indexOf("COMMAND");
+                }
                 if (!line.trim().equals("")) 
                 {
-                    //processes.add(line);
+                    ArrayList<String> fields = new ArrayList<String>();
+                    String[] tokens = StringUtils.split(line.substring(0, cmdInx).trim(), ' ');
+                    for (String tok : tokens)
+                    {
+                        fields.add(tok);
+                    }
+                    fields.add(line.substring(cmdInx, line.length()));
+                    processes.add(fields);
+                    //System.out.println("["+line.substring(0, cmdInx).trim()+"]["+line.substring(cmdInx, line.length())+"]");
                 }
             }
             input.close();
@@ -150,22 +167,22 @@ public class ProcessListUtil
         List<List<String>> processList = ProcessListUtil.getRunningProcesses();
         for (List<String> line : processList)
         {
-        	System.out.println("["+line+"]");
+        	//System.out.println("["+line+"]");
         	int found = 0;
         	for (String field : line)
             {
 	            for (int i=0;i<text.length;i++)
 	            {
-	            	System.out.println("CHK: ["+field.toLowerCase()+"]["+text[i].toLowerCase()+"]");
+	            	//System.out.println("CHK: ["+field.toLowerCase()+"]["+text[i].toLowerCase()+"]");
 	                if (StringUtils.contains(field.toLowerCase(), text[i].toLowerCase()))
 	                {
-	                	System.out.print("FND: ["+field.toLowerCase()+"]["+text[i].toLowerCase()+"]");
+	                	//System.out.print("FND: ["+field.toLowerCase()+"]["+text[i].toLowerCase()+"]");
 	                	found++;
 	                }
 	            }
             }
         	
-        	System.out.println("***: fnd["+found+"] toks["+text.length+"]");
+        	//System.out.println("***: fnd["+found+"] toks["+text.length+"]");
         	if (found == text.length)
         	{
         		ids.add(Integer.parseInt(line.get(1)));

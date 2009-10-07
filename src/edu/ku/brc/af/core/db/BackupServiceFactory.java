@@ -120,6 +120,8 @@ public abstract class BackupServiceFactory
     
     
     /**
+     * Uses the connection first if not null, or otherwise it will create one. Optionally drops and creates a new database.
+     * @param connection the current connection (can be null)
      * @param databaseName
      * @param options
      * @param restoreZipFilePath
@@ -127,6 +129,7 @@ public abstract class BackupServiceFactory
      * @param completionMsgKey
      * @param pcl
      * @param doSynchronously
+     * @param doDropDatabase whether it should drop the database and create a new empty one.
      * @return
      */
     public abstract boolean doRestoreBulkDataInBackground(String                 databaseName,
@@ -135,7 +138,8 @@ public abstract class BackupServiceFactory
                                                           SimpleGlassPane        glassPane,
                                                           String                 completionMsgKey,
                                                           PropertyChangeListener pcl,
-                                                          boolean                doSynchronously);
+                                                          boolean                doSynchronously,
+                                                          boolean                doDropDatabase);
     
     /**
      * Sets the IT Username and Password that should be used instead of the one username and password in the current connection.
