@@ -306,7 +306,7 @@ public class TaskSemaphoreMgr
                 
             } else
             {
-                if (!semaphore.getIsLocked())
+                if (!semaphore.getIsLocked() && !(semaphore.getUsageCount() != null && semaphore.getUsageCount() > 0))
                 {
                     return false;
                 }
