@@ -3013,6 +3013,9 @@
                     <cell type="field" id="8" name="remarks" uitype="textareabrief" rows="2"/>
                 </row>
                 <row>
+                    <cell type="subview" viewname="Address" id="12" name="address" colspan="4" initialize="btn=true"/>
+                </row>
+                <row>
                     <cell type="subview" viewname="DivisionOnly" id="9" name="divisions" colspan="4"/>
                 </row>
             </rows>
