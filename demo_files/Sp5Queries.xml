@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queries>
+    <query name="Form"><![CDATA[
+SELECT FSet.FieldSetName as TableName,  CASE WHEN FullForm <> 0 THEN 'Full' ELSE 'Embedded' END AS FormVersion,
+O.ObjectName as Sp5FieldName, Caption, case CL.ControlType
+when 4 then 'Picklist'
+when 5 then 'QueryCombo'
+when 7 then 'Grid'
+when 8 then 'EmbeddedForm'
+when 9 then 'PopupButton'
+when 20 then 'Memo'
+when 21 then 'MenuItem'
+when 46 then 'URL'
+else 'default' end as ControlType,
+case O.ObjectType
+when 0 then 'Text'
+when 1 then 'Memo - Remarks'
+when 2 then 'Date'
+when 3 then 'Real'
+when 4 then 'YesNo'
+when 5 then 'Integer'
+when 6 then 'ManyToOne'
+when 7 then 'OneToOne'
+when 8 then 'OneToMany'
+else 'other' end as DataType, rfs.FieldSetName as RelatedTableName,
+CL.Left, CL.Top, CL.Width, CL.Height, ThemeName, fst.TextForValue as FormType, fst.FieldValue as TypeIDValue,
+rfs.FieldSetId as RelatedTableId,C.RelatedSubTypeValues, O.ObjectType, CL.ControlType
+FROM ((USYSMetaFieldSet AS FSet INNER JOIN USYSMetaObject AS O ON O.FieldSetID = FSet.FieldSetID)
+INNER JOIN (USYSMetaControl AS C INNER JOIN USYSMetaControlLayout AS CL ON CL.ControlID = C.ControlID) ON C.ObjectID = O.ObjectID)
+LEFT JOIN USYSMetaFieldSetSubType fst on fst.FieldsetSubTypeID = C.FieldSetSubTypeID
+LEFT JOIN USYSMetaObject AS RO ON RO.ObjectID = O.RelatedObjectID
+left join usysmetafieldset rfs on rfs.fieldsetid = ro.fieldsetid
+WHERE
+Visible <> 0 AND CL.ControlType <> 21
+AND (ro.fieldsetid is null or ro.fieldsetid not in(8, 9, 32, 38, 39, 40, 41, 57, 68)) AND (C.fieldsetsubtypeid is null or C.fieldsetsubtypeid not in(78,79,136, 138, 139, 140,148,149,161,166,168,169,174,176,177))
+ ORDER BY FSet.FieldSetName, ThemeName, fst.FieldValue, FullForm DESC, CL.Top, CL.Left]]></query>
+ </queries>
+ 
