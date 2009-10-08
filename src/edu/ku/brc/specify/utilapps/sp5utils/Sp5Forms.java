@@ -53,6 +53,9 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -207,12 +210,14 @@ public class Sp5Forms extends JFrame
      */
     protected Triple<JPanel, Integer, Integer> createPanel(final FormInfo formInfo)
     {
+    	CellConstraints cc = new CellConstraints();
+    	
         JPanel panel = new JPanel(null);
         int maxWidth  = 0;
         int maxHeight = 0;
         for (FormFieldInfo fi : formInfo.getFields())
         {
-            //System.out.println(fi.getControlType()Num);
+            System.out.println(fi.getCaption());
             boolean    addLbl = true;
             JComponent comp   = null;
             switch (fi.getControlTypeNum())
@@ -274,22 +279,20 @@ public class Sp5Forms extends JFrame
                 String toolTip = "Field: "+fi.getSp5FieldName() + (StringUtils.isNotEmpty(fi.getSp6FieldName()) && fi.getSp6FieldName().equalsIgnoreCase(fi.getSp5FieldName()) ? " Sp6: "+fi.getSp6FieldName() : "");
                 comp.setToolTipText(toolTip);
                 
-                JPanel p = new JPanel(new BorderLayout());
-                p.setToolTipText(toolTip);
-                p.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+                PanelBuilder pb = new PanelBuilder(new FormLayout("p,1px,f:p:g", "f:p:g,p,f:p:g"));
+                
+                pb.getPanel().setToolTipText(toolTip);
+                pb.getPanel().setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
                 if (addLbl)
                 {
-                    p.add(createLabel(fi.getCaption()), BorderLayout.WEST);
+                    pb.add(createLabel(fi.getCaption()), cc.xy(1,2));
                 }
-                //p.add(createLabel("XXX"), BorderLayout.CENTER);
-                p.add(comp, BorderLayout.CENTER);
-                panel.add(p);
+                pb.add(comp, cc.xy(3,2));
+                panel.add(pb.getPanel());
                 maxWidth  = Math.max(maxWidth, fi.getLeft()+fi.getWidth());
                 maxHeight = Math.max(maxHeight, fi.getTop()+fi.getHeight());
-                //comp.setBounds(fi.getLeft(), fi.getTop(), fi.getWidth(), fi.getHeight());
-                p.setLocation(fi.getLeft(), fi.getTop());
-                p.setSize(fi.getWidth(), fi.getHeight());
-                //System.out.println(fi.getLeft()+","+fi.getTop()+","+fi.getWidth()+","+fi.getHeight());
+                pb.getPanel().setLocation(fi.getLeft(), fi.getTop());
+                pb.getPanel().setSize(fi.getWidth(), fi.getHeight());
             }
         }
         panel.setPreferredSize(new Dimension(maxWidth, maxHeight));
@@ -682,7 +685,20 @@ public class Sp5Forms extends JFrame
                     frame.startup();
                     
                     frame.createUI();
+                    JMenuBar mb = new JMenuBar();
+                    JMenu menu = new JMenu("File");
+                    JMenuItem mi = new JMenuItem("Exit");
+                    menu.add(mi);
+                    mb.add(menu);
+                    frame.setJMenuBar(mb);
                     
+                    mi.addActionListener(new ActionListener(){
+        				@Override
+        				public void actionPerformed(ActionEvent e) 
+        				{
+        					System.exit(0);
+        				}
+                    });
                     centerAndShow(frame);
                     
 
