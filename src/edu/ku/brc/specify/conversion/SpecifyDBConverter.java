@@ -306,7 +306,7 @@ public class SpecifyDBConverter
      * @return
      * @throws SQLException
      */
-    protected Pair<String, String> chooseTable() throws SQLException
+    public Pair<String, String> chooseTable() throws SQLException
     {
         MySQLDMBSUserMgr mgr = new MySQLDMBSUserMgr();
         
@@ -1688,7 +1688,7 @@ public class SpecifyDBConverter
      * @param hashNames every other one is the new name
      * @return the list of selected DBs
      */
-    protected boolean selectedDBsToConvert()
+    public boolean selectedDBsToConvert()
     {
         final JTextField     itUserNameTF = UIHelper.createTextField("root", 15);
         final JPasswordField itPasswordTF = UIHelper.createPasswordField("", 15);
@@ -1739,6 +1739,24 @@ public class SpecifyDBConverter
         return true;
     }
     
+    
+    
+    /**
+     * @return the itUsrPwd
+     */
+    public Pair<String, String> getItUsrPwd()
+    {
+        return itUsrPwd;
+    }
+
+    /**
+     * @return the hostName
+     */
+    public String getHostName()
+    {
+        return hostName;
+    }
+
     public CustomDBConverterDlg runCustomConverter()
     {       
         return UIHelper.doSpecifyConvert();
