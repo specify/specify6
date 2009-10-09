@@ -213,7 +213,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
          * 
          * Sets the criteria text, modifying the layout if necessary.
          */
-        public void setCriteriaText(final String entry, final OperatorType op)
+        public void setCriteriaText(final String entry, final String entry2, final OperatorType op)
         {
             if (op != null && op.equals(OperatorType.BETWEEN))
             {
@@ -221,7 +221,16 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 //and no commas but the one separating the two limits.
                 //Also assuming (more or less) valid entry. 
                 setShowingPair(true);
-                String[] entries = entry.split(",");
+                String[] entries; 
+                if (StringUtils.isBlank(entry2))
+                {
+                	entries = entry.split(",");
+                } else
+                {
+                	entries = new String[2];
+                	entries[0] = entry;
+                	entries[1] = entry2;
+                }
                 if (entries.length > 0)
                 {
                 	text1.setText(entries[0]);
@@ -528,7 +537,12 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         return queryField;
     }
 
-    protected void setCriteriaText(final String text, final OperatorType op)
+    /**
+     * @param text the criteria
+     * @param text2 the end criteria in case of BETWEEN op
+     * @param op the operator
+     */
+    protected void setCriteriaText(final String text, final String text2, final OperatorType op)
     {
         if (op != null && op.equals(OperatorType.BETWEEN) && !(criteria instanceof CriteriaPair))
         {
@@ -545,7 +559,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         }
         else if (criteria instanceof CriteriaPair)
         {
-            ((CriteriaPair )criteria).setCriteriaText(text, op);
+            ((CriteriaPair )criteria).setCriteriaText(text, text2, op);
         }
         else
         {
@@ -565,7 +579,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             {
                 isNotCheckbox.setSelected(queryField.getIsNot());
                 operatorCBX.setSelectedIndex(queryField.getOperStart());
-                setCriteriaText(queryField.getStartValue(), (OperatorType )operatorCBX.getSelectedItem());
+                setCriteriaText(queryField.getStartValue(), queryField.getEndValue(), (OperatorType )operatorCBX.getSelectedItem());
                 sortCheckbox.setState(queryField.getSortType());
                 sortCheckbox.setEnabled(queryField.getIsDisplay());
                 if (!ownerQuery.isPromptMode())
@@ -725,32 +739,37 @@ public class QueryFieldPanel extends JPanel implements ActionListener
      * @param classObj
      * @return
      */
-    protected SpQueryField.OperatorType[] getComparatorListForClass(final Class<?> classObj)
+    public static SpQueryField.OperatorType[] getComparatorListForClass(final Class<?> classObj)
     {
-        if (classObj.equals(String.class))
-        {
-            return new SpQueryField.OperatorType[] {SpQueryField.OperatorType.CONTAINS,
-                    SpQueryField.OperatorType.LIKE,
-                    SpQueryField.OperatorType.EQUALS,
-                    SpQueryField.OperatorType.IN,
-                    SpQueryField.OperatorType.EMPTY};
-        }
-        if (classObj.equals(Boolean.class))
-        {
-            return new SpQueryField.OperatorType[] {SpQueryField.OperatorType.DONTCARE,
-                    SpQueryField.OperatorType.TRUE,
-                    SpQueryField.OperatorType.FALSE,
-                    SpQueryField.OperatorType.EMPTY};
-        }
-        if (classObj.equals(java.sql.Timestamp.class))
-        {
-            return new SpQueryField.OperatorType[] {SpQueryField.OperatorType.EQUALS,
-            		SpQueryField.OperatorType.GREATERTHAN,
-                    SpQueryField.OperatorType.LESSTHAN,
-                    SpQueryField.OperatorType.BETWEEN,
-                    SpQueryField.OperatorType.EMPTY};
-        }
-        // else
+        if (classObj != null)
+		{
+			if (classObj.equals(String.class))
+			{
+				return new SpQueryField.OperatorType[] {
+						SpQueryField.OperatorType.CONTAINS,
+						SpQueryField.OperatorType.LIKE,
+						SpQueryField.OperatorType.EQUALS,
+						SpQueryField.OperatorType.IN,
+						SpQueryField.OperatorType.EMPTY };
+			}
+			if (classObj.equals(Boolean.class))
+			{
+				return new SpQueryField.OperatorType[] {
+						SpQueryField.OperatorType.DONTCARE,
+						SpQueryField.OperatorType.TRUE,
+						SpQueryField.OperatorType.FALSE,
+						SpQueryField.OperatorType.EMPTY };
+			}
+			if (classObj.equals(java.sql.Timestamp.class))
+			{
+				return new SpQueryField.OperatorType[] {
+						SpQueryField.OperatorType.EQUALS,
+						SpQueryField.OperatorType.GREATERTHAN,
+						SpQueryField.OperatorType.LESSTHAN,
+						SpQueryField.OperatorType.BETWEEN,
+						SpQueryField.OperatorType.EMPTY };
+			}
+		}
         return new SpQueryField.OperatorType[] {SpQueryField.OperatorType.EQUALS,
                 SpQueryField.OperatorType.GREATERTHAN,
                 SpQueryField.OperatorType.LESSTHAN,
@@ -1808,7 +1827,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             {
                 newLabel = getQualifiedLabel(parent, checkParent-- > 0);
                 parent = parent.getParent();
-            } while (parent != null && labels.indexOf(newLabel) != -1);
+            } while (parent != null && labels.indexOf(newLabel) != -1 && !parent.getName().equals("root"));
             
             labelQualified = true;
             fieldLabel.setText(newLabel);

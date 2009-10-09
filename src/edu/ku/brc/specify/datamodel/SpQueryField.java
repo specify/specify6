@@ -22,6 +22,7 @@ package edu.ku.brc.specify.datamodel;
 import static edu.ku.brc.helpers.XMLHelper.addAttr;
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,6 +45,7 @@ import org.hibernate.annotations.CascadeType;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -778,28 +780,69 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         sb.append(" />\n");
     }
     
+    /**
+     * @param tblInfo
+     * @param fieldToSetName
+     * @param fieldToSet
+     * @param value
+     * 
+     * Sets value modifying it if necessary to make it valid. Only check currently is on string lengths.
+     */
+    protected void setValue(DBTableInfo tblInfo, String fieldToSetName, Object value)
+    {
+    	try
+    	{
+    		DBFieldInfo fldInfo = tblInfo.getFieldByName(fieldToSetName);
+    		String fieldSetterName = "set" + UploadTable.capitalize(fieldToSetName);
+    		Method fieldSetter = SpQueryField.class.getMethod(fieldSetterName, fldInfo.getDataClass());
+    		if (fldInfo.getDataClass().equals(String.class) && value != null)
+    		{    			
+    			String strVal = (String )value;
+    			if (strVal.length() > fldInfo.getLength())
+    			{
+    				fieldSetter.invoke(this, ((String )value).substring(0, fldInfo.getLength()));
+    				return;
+    			}
+    		}
+    		fieldSetter.invoke(this, value);
+    	} catch (Exception ex)
+    	{
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpQueryField.class, ex);
+            ex.printStackTrace();
+    	}
+    }
+    
     public void fromXML(Element element)
     {
-        position     = getAttr(element, "position", (short)0);
-        fieldName    = getAttr(element, "fieldName", null);
-        isNot        = getAttr(element, "isNot", false);
-        isDisplay    = getAttr(element, "isDisplay", false);
-        isPrompt     = getAttr(element, "isPrompt", false);
-        isRelFld     = getAttr(element, "isRelFld", false);
-        alwaysFilter = getAttr(element, "alwaysFilter", false);
-        stringId     = getAttr(element, "stringId", null);
-        operStart    = getAttr(element, "operStart", (byte)0);
-        operEnd      = getAttr(element, "operEnd", (byte)0);
+        DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(getTableId());
+    	setValue(tblInfo, "position", getAttr(element, "position", (short)0));
+        setValue(tblInfo, "fieldName", getAttr(element, "fieldName", null));
+        setValue(tblInfo, "isNot", getAttr(element, "isNot", false));
+        setValue(tblInfo, "isDisplay", getAttr(element, "isDisplay", false));
+        setValue(tblInfo, "isPrompt", getAttr(element, "isPrompt", false));
+        setValue(tblInfo, "isRelFld", getAttr(element, "isRelFld", false));
+        setValue(tblInfo, "alwaysFilter", getAttr(element, "alwaysFilter", false));
+		//XXX there is a problem with TreeLevels stringId properties.
+		//Currently, the level 'names' are used in the stringId and there are potential problems with i18n.
+		//If the rankIds are used then there may be problems with 'custom' levels
+		//For the taxon and geography tress, problems will be minimal to nonexistent 
+        //if the Specify6 Standard levels are used.
+		//For Storage and other trees without standards there are likely to be many 
+        //issues with imports/exports
+        setValue(tblInfo, "stringId", getAttr(element, "stringId", null));
+        setValue(tblInfo, "operStart", getAttr(element, "operStart", (byte)0));
+        setValue(tblInfo, "operEnd", getAttr(element, "operEnd", (byte)0));
         if (operEnd.byteValue() == 0)
         {
         	operEnd = null;
         }
-        startValue   = getAttr(element, "startValue", null);
-        endValue     = getAttr(element, "endValue", null);
-        sortType     = getAttr(element, "sortType", (byte)0);
-        tableList    = getAttr(element, "tableList", null);
-        contextTableIdent = getAttr(element, "contextTableIdent", 0);
-        columnAlias  = getAttr(element, "columnAlias", null);
+        setValue(tblInfo, "startValue", getAttr(element, "startValue", null));
+        setValue(tblInfo, "endValue", getAttr(element, "endValue", null));
+        setValue(tblInfo, "sortType", getAttr(element, "sortType", (byte)0));
+        setValue(tblInfo, "tableList", getAttr(element, "tableList", null));
+        setValue(tblInfo, "contextTableIdent", getAttr(element, "contextTableIdent", 0));
+        setValue(tblInfo, "columnAlias", getAttr(element, "columnAlias", null));
     }
 
     protected boolean eq(final Object obj1, final Object obj2, final Object nullVal)
