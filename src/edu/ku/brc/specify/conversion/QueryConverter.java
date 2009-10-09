@@ -121,7 +121,7 @@ public class QueryConverter
 		}
 		if (fiveTableName.equals("LoanAgents"))
 		{
-			if (fiveSubType.equals("Gift"))
+			if (fiveSubType != null && fiveSubType.equals("Gift"))
 			{
 				return "giftagent";
 			}
@@ -428,6 +428,7 @@ public class QueryConverter
 		String sixTblIdList = "";
 		String[] fiveLinks = fiveTblList.split(",");
 		String prevSixTbl = null;
+		String prevSubType = null;
 		for (int l = 0; l < fiveLinks.length; l++)
 		{
 			String fiveLink = preProcessLink(fiveLinks, l);
@@ -442,7 +443,7 @@ public class QueryConverter
 			String[] tblParts = tblPart.split("\\.");
 			String tblName = tblParts[0];
 			String subType = tblParts.length > 1 ? tblParts[1] : null;
-			String sixTbl = getSixTableName(tblName, subType);
+			String sixTbl = getSixTableName(tblName, subType == null ? prevSubType : subType);
 			if (!sixTbl.equals(prevSixTbl))
 			{
 				DBTableInfo prevInfo = prevSixTbl != null 
@@ -481,6 +482,10 @@ public class QueryConverter
 					newContextTblName = specialStuff[1];
 				}
 				prevSixTbl = sixTbl;
+				if (subType != null)
+				{
+					prevSubType = subType;
+				}
 			}
 		}
 		String[] result = new String[3];
