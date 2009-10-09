@@ -27,7 +27,9 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -94,6 +96,7 @@ public class CollectingEventAttribute extends CollectionMember implements Clonea
     protected Boolean yesNo4;
     protected Boolean yesNo5;
 
+    protected Taxon   hostTaxon;  // For Specify 5 backward compatibility (this field came from Habitat.HostTaxonID)
     protected Set<CollectingEvent> collectingEvents;
 
     // Constructors
@@ -339,6 +342,16 @@ public class CollectingEventAttribute extends CollectionMember implements Clonea
     {
         return yesNo5;
     }
+    
+    /**
+     * @return the relatedTaxon
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "HostTaxonID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Taxon getHostTaxon()
+    {
+        return hostTaxon;
+    }
 
     // Initializer
     @Override
@@ -382,6 +395,8 @@ public class CollectingEventAttribute extends CollectionMember implements Clonea
         yesNo3 = null;
         yesNo4 = null;
         yesNo5 = null;
+        hostTaxon = null;
+
         collectingEvents = new HashSet<CollectingEvent>();
     }
     // End Initializer
@@ -574,6 +589,14 @@ public class CollectingEventAttribute extends CollectionMember implements Clonea
     public void setYesNo5(Boolean yesNo5)
     {
         this.yesNo5 = yesNo5;
+    }
+
+    /**
+     * @param relatedTaxon the relatedTaxon to set
+     */
+    public void setHostTaxon(Taxon hostTaxon)
+    {
+        this.hostTaxon = hostTaxon;
     }
     
     /* (non-Javadoc)

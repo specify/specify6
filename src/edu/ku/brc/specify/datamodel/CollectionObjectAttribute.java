@@ -27,9 +27,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -119,7 +117,7 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
     protected Boolean yesNo5;
     protected Boolean yesNo6;
     protected Boolean yesNo7;
-    protected Taxon   relatedTaxon;  // For Specify 5 backward compatibility (this field came from Habitat.HostTaxonID
+    
     protected Set<CollectionObject> collectionObjects;
     
     // Constructors
@@ -206,7 +204,6 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
         yesNo5 = null;
         yesNo6 = null;
         yesNo7 = null;
-        relatedTaxon      = null;
         collectionObjects = new HashSet<CollectionObject>();
     }
     // End Initializer
@@ -229,22 +226,11 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
         return this.collectionObjectAttributeId;
     }
     
-    /**
-     * @return the relatedTaxon
-     */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "RelatedTaxonID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Taxon getRelatedTaxon()
-    {
-        return relatedTaxon;
-    }
-
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectionObjectAttribute")
     public Set<CollectionObject> getCollectionObjects()
     {
         return collectionObjects;
     }
-
 
     @Column(name = "Text11", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getText11()
@@ -639,14 +625,6 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
     public void setCollectionObjects(Set<CollectionObject> collectionObjects)
     {
         this.collectionObjects = collectionObjects;
-    }
-
-    /**
-     * @param relatedTaxon the relatedTaxon to set
-     */
-    public void setRelatedTaxon(Taxon relatedTaxon)
-    {
-        this.relatedTaxon = relatedTaxon;
     }
 
     public void setCollectionObjectAttributeId(Integer collectionObjectAttributeId)
