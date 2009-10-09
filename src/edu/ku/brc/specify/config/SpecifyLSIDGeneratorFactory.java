@@ -24,6 +24,8 @@ import static edu.ku.brc.ui.UIRegistry.showError;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -191,9 +193,8 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
      */
     public void buildLSIDs(final PropertyChangeListener pcl)
     {
-        UIFieldFormatterIFace formatter = null;
-        DBFieldInfo fi = DBTableIdMgr.getInstance().getInfoById(1).getFieldByColumnName("CatalogNumber");
-        formatter = fi.getFormatter();
+        DBFieldInfo           fi        = DBTableIdMgr.getInstance().getInfoById(1).getFieldByColumnName("CatalogNumber");
+        UIFieldFormatterIFace formatter = fi.getFormatter();
         if (!formatter.isInBoundFormatter())
         {
             formatter = null;
@@ -203,7 +204,7 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
         
         if (isReady())
         {
-            boolean doVersioning = AppPreferences.getRemote().getBoolean(PREF_NAME_PREFIX + "UseVersioning", false);
+            boolean doVersioning = true;//AppPreferences.getRemote().getBoolean(PREF_NAME_PREFIX + "UseVersioning", false);
             
             int count = 1;
             for (CATEGORY_TYPE cat : CATEGORY_TYPE.values())
@@ -215,20 +216,14 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
                     pcl.propertyChange(new PropertyChangeEvent(this, "COUNT", 0, count++));
                 }
                 
-                
                 if (AppPreferences.getRemote().getBoolean(pName, false))
                 {
-                    Statement stmt    = null;
-                    Statement updStmt = null;
 
                     try
                     {
-                        stmt    = DBConnection.getInstance().getConnection().createStatement();
-                        updStmt = DBConnection.getInstance().getConnection().createStatement();
-
-                        buildLSIDs(cat, doVersioning, formatter, stmt, updStmt);
+                        buildLSIDs(DBConnection.getInstance().getConnection(), cat, doVersioning, formatter);
                         
-                    } catch (SQLException ex)
+                    } catch (Exception ex)
                     {
                          ex.printStackTrace();
                          
@@ -238,18 +233,7 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
                         {
                             pcl.propertyChange(new PropertyChangeEvent(this, "COUNT", 0, count));
                         }
-                        
-                        try
-                        {
-                            if (stmt != null)
-                            {
-                                stmt.close();
-                            }
-                            if (updStmt != null)
-                            {
-                                updStmt.close();
-                            }
-                        } catch (SQLException e) {}
+
                     }
                 }
                 count++;
@@ -384,11 +368,10 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
      * @param updStmt
      * @return
      */
-    private int buildLSIDs(final CATEGORY_TYPE category, 
+    private int buildLSIDs(final Connection connection,
+                           final CATEGORY_TYPE category, 
                            final boolean       doVersioning,
-                           final UIFieldFormatterIFace formatter,
-                           final Statement     stmt,
-                           final Statement     updStmt)
+                           final UIFieldFormatterIFace formatter)
     {
         boolean isColObj = category == CATEGORY_TYPE.Specimen;
         
@@ -418,9 +401,14 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
                 sb.append(" WHERE GUID IS NULL");
                 
                 //System.err.println(sb.toString());
-                
+                Statement         stmt    = null;
+                PreparedStatement updStmt = null;
+
                 try
                 {
+                    stmt    = connection.createStatement();
+                    updStmt = connection.prepareStatement("UPDATE " + tableInfo.getName() + " SET GUID=? WHERE " + tableInfo.getIdFieldName() + "=?");
+
                     ResultSet rs = stmt.executeQuery(sb.toString());
                     while (rs.next())
                     {
@@ -433,7 +421,7 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
                             String idStr = id.toString();
                             if (isColObj)
                             {
-                                idStr = (String)formatter.formatToUI(catNum);
+                                idStr = formatter != null ? (String)formatter.formatToUI(catNum) : catNum;
                             }
                             
                             String lsid;
@@ -444,19 +432,14 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
                             {
                                 lsid = createLSID(category, idStr);
                             }
-                            sb.setLength(0);
-                            sb.append("UPDATE ");
-                            sb.append(tableInfo.getName());
-                            sb.append(" SET GUID='");
-                            sb.append(lsid);
-                            sb.append("' WHERE ");
-                            sb.append(tableInfo.getIdFieldName());
-                            sb.append(" = ");
-                            sb.append(id);
+                            updStmt.setString(1, lsid);
+                            updStmt.setInt(2, id);
                             
-                            //System.err.println(sb.toString());
-                            
-                            updStmt.executeUpdate(sb.toString());
+                            if (updStmt.executeUpdate() != 1)
+                            {
+                                String msg = "Error updating table["+tableInfo.getName()+"] field["+tableInfo.getIdFieldName()+"] with GUID/LSID.";
+                                System.err.println(msg);
+                            }
                         }
                     }
                     rs.close();
@@ -464,6 +447,21 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
                 } catch (SQLException e)
                 {
                     e.printStackTrace();
+                    
+                } finally
+                {
+                    
+                    try
+                    {
+                        if (stmt != null)
+                        {
+                            stmt.close();
+                        }
+                        if (updStmt != null)
+                        {
+                            updStmt.close();
+                        }
+                    } catch (SQLException e) {}
                 }
             }
         }
