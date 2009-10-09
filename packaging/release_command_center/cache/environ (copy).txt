@@ -1,0 +1,14 @@
+654|the ip address of this computer|thisip
+129.237.201.87|the ip address of the Mac computer used for releases|macip
+winlin|the base string for Windows and Linux Install4j project files|winlinbase
+mac|the base string for Mac Install4j project files|macbase
+../web_launch|the relative path to the web launch directory on the local machine|intdirlocal
+../web_launch_ext|the relative path to the external web launch directory on the local machine|extdirlocal
+web_launch|the relative path to the web launch directory on the Mac machine|intdirmac
+web_launch_ext|the relative path to the external web launch directory on the Mac machine|extdirmac
+../workspace/SpTrunk/packaging|the relative path to the trunk projects on the local machine|trunkdirlocal
+Documents/workspace/Specify6/packaging|the relative path to the trunk projects on the Mac machine|trunkdirmac
+../workspace/SpBranch/packaging|the relative path to the branch projects on the local machine|branchdirlocal
+Documents/workspace/SpecifyBranch7180/packaging|the relative path to the branch projects on the Mac machine|branchdirmac
+specify6-test.nhm.ku.edu|the value (with no http prefix) of the internal update server|intserver
+specifysoftware.org|the value (with no http prefix) of the production server|extserver

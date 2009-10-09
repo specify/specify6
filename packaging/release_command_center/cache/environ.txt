@@ -1,0 +1,19 @@
+129.237.1.1|the ip address of this computer|thisip
+129.237.201.49|the ip address of the Mac computer used for releases|macip
+specify|the username to log into the remote machine with|username
+winlin|the base string for Windows and Linux Install4j project files|winlinbase
+mac|the base string for Mac Install4j project files|macbase
+../web_launch|the relative path to the web launch directory on the local machine|intdirlocal
+../web_launch_ext|the relative path to the external web launch directory on the local machine|extdirlocal
+web_launch|the relative path to the web launch directory on the Mac machine|intdirmac
+web_launch_ext|the relative path to the external web launch directory on the Mac machine|extdirmac
+../workspace/SpTrunk/packaging|the relative path to the trunk projects on the local machine|trunkdirlocal
+Documents/workspace/Specify6/packaging|the relative path to the trunk projects on the Mac machine|trunkdirmac
+../workspace/Specify_7732/packaging|the relative path to the branch projects on the local machine|branchdirlocal
+Documents/workspace/SpBranch/packaging|the relative path to the branch projects on the Mac machine|branchdirmac
+specify6-test.nhm.ku.edu|the value (with no http prefix) of the internal update server|intserver
+specifysoftware.org|the value (with no http prefix) of the production server|extserver
+../install4j/bin|the relative path from configure_environment.sh to the local install4j bin folder|i4jlocal
+/Applications/install4j/bin|the absolute path to the remote install4j bin folder on the mac|i4jmac
+../Install4JUpdater/bin|the relative path from this script up to and including the bin directory of the Install4j updater application|i4jU
+//huxley/specify6/SpecifyAlphaInstallers|the absolute path of the backup folder on the backup server|backupserver
