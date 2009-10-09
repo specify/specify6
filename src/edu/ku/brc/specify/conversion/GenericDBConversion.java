@@ -6683,12 +6683,14 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         {
             localityDetailNames.add(fieldName);
             nameHash.put(fieldName, true);
+            System.out.println("["+fieldName+"]");
         }
 
         String fieldList = buildSelectFieldList(localityDetailNames, null);
         log.info(fieldList);
 
         IdMapperIFace locIdMapper = idMapperMgr.get("locality", "LocalityID");
+        IdMapperIFace agtIdMapper = idMapperMgr.get("agent", "AgentID");
         
         Statement updateStatement = null;
         try
@@ -6722,6 +6724,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 {
                     String colName = metaData.getColumnName(i); // Old Column Name
                     
+                    if (colName.equals("GeoRefDetBy"))
+                    {
+                        colName = "AgentID";
+                    }
+                    
                     if ((nameHash.get(colName) == null || usedFieldHash.get(colName) != null) && !colName.startsWith("Range"))
                     {
                         if (rows == 0)
@@ -6745,7 +6752,15 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                 colSQL.append("RangeDesc");
                             }
                             
-                        } else
+                        } else if (isGeoCoordDetail)
+                        {
+                            if (!colName.equals("RangeDirection"))
+                            {
+                                if (colSQL.length() > 0) colSQL.append(",");
+                                colSQL.append(colName);
+                            }
+                            
+                        } else 
                         {
                             if (colSQL.length() > 0) colSQL.append(",");
                             colSQL.append(colName);
@@ -6773,7 +6788,28 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         Integer dateInt = rs.getInt(i);
                         value = getStrValue(dateInt, "date");
                         
-                    } else if (colName.equals("Range"))
+                    } else if (isGeoCoordDetail && colName.equals("AgentID"))
+                    {
+                        Integer agentID = rs.getInt(i);
+                        if (agentID != null)
+                        {
+                            Integer newID = agtIdMapper.get(agentID);
+                            if (newID != null)
+                            {
+                                value = newID.toString();
+                            } else
+                            {
+                                String msg = "Couldn't map GeoRefDetBY (Agent) oldId[" + agentID + "]";
+                                log.error(msg);
+                                tblWriter.logError(msg);
+                                value = "NULL";
+                            }
+                        } else
+                        {
+                            value = "NULL";
+                        }
+                        
+                    } else if (colName.equals("Range") || colName.equals("RangeDirection"))
                     {
                         if (!isGeoCoordDetail)
                         {
