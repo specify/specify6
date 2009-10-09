@@ -298,12 +298,20 @@ public class HelpMgr
      */
     static private String getCurrentContext()
     {
-        if (ContextMgr.getCurrentContext() != null)
+        try
         {
-            log.debug(ContextMgr.getCurrentContext().getName());
-            return ContextMgr.getCurrentContext().getName();
+            if (ContextMgr.getCurrentContext() != null)
+            {
+                log.debug(ContextMgr.getCurrentContext().getName());
+                return ContextMgr.getCurrentContext().getName();
+            }
+            return null;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
         }
-        return null;
+        return  getDefaultID();
     }
 
     /**
