@@ -412,12 +412,16 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
      */
     protected void addFormatterToMgr(final UIFieldFormatterIFace formatter)
     {
-        
-        Vector<UIFieldFormatterIFace> list = classToListHash.get(formatter.getDataClass());
+        List<UIFieldFormatterIFace> list = classToListHash.get(formatter.getDataClass());
         if (list == null)
         {
-            list = new Vector<UIFieldFormatterIFace>();
-            classToListHash.put(formatter.getDataClass(), list);
+            list = getFormatterList(formatter.getDataClass());
+            if (list == null)
+            {
+                Vector<UIFieldFormatterIFace> newList = new Vector<UIFieldFormatterIFace>();
+                classToListHash.put(formatter.getDataClass(), newList);
+                list = newList;
+            }
         }
         
         list.add(formatter);
