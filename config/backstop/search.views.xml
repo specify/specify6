@@ -234,13 +234,13 @@
         </view>
         
         <view 
-            name="GeologicTimePeriodSearch"
+            name="ChronosStratSearch"
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
             usedefbusrule="false"
             resourcelabels="false">
             <desc><![CDATA[The GeologicTimePeriod Search Form]]></desc>
             <altviews>
-                <altview name="GeologicTimePeriodSearch" viewdef="GeologicTimePeriodSearch" mode="edit" validated="true" default="true"/>
+                <altview name="ChronosStratSearch" viewdef="ChronosStratSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -823,7 +823,7 @@ Good: <cell type="field" name="FieldNum" ...>
         </viewdef>
         
         <viewdef type="form"
-            name="GeologicTimePeriodSearch"
+            name="ChronosStratSearch"
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
             settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
