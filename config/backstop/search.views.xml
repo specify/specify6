@@ -817,7 +817,7 @@ Good: <cell type="field" name="FieldNum" ...>
             <rows>
                 <row>
                     <cell type="label" labelfor="FullName" label="Full Name"/>
-                    <cell type="field" id="FullName" name="storage.FullName" isrequired="true" uitype="text"/>
+                    <cell type="field" id="FullName" name="FullName" isrequired="true" uitype="text"/>
                 </row>
             </rows>
         </viewdef>

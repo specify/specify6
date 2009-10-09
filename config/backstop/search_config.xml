@@ -1153,7 +1153,7 @@ repositoryagreement.RepositoryAgreementNumber,
             </joins>
             <detailView icon="CollectionObject">
                 <sql>
-                    <![CDATA[SELECT Distinct
+                    <![CDATA[SELECT DISTINCT
  collectionobject.CollectionObjectID, 
   collectionobject.CatalogNumber,
  storage.FullName,
@@ -1757,7 +1757,7 @@ repositoryagreement.RepositoryAgreementNumber,
         <table id="109" tableid="58" name="StorageSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT StorageID, FullName FROM location WHERE StorageTreeDefID = STORTREEDEFID AND (%s)]]>
+                    <![CDATA[SELECT StorageID, FullName FROM storage WHERE StorageTreeDefID = STORTREEDEFID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="58" col="StorageID" visible="false"/>
