@@ -193,6 +193,22 @@ public class QueryConverter
 		{
 			result = "taxonid";
 		}
+		if (result.equalsIgnoreCase("current") && sixTblName.equalsIgnoreCase("determination"))
+		{
+			result = "isCurrent";
+		}
+		if (result.equalsIgnoreCase("fulltaxonname"))
+		{
+			result = "fullName";
+		}
+		if (result.equalsIgnoreCase("FullGeographicName"))
+		{
+			result = "fullName";
+		}
+		if (result.equalsIgnoreCase("LastEditedBy"))
+		{
+			result = "lastName"; 
+		}
 		return result; 
 	}
 	
@@ -359,17 +375,17 @@ public class QueryConverter
                 SpQueryField.OperatorType.IN,
                 SpQueryField.OperatorType.EMPTY};
 		}
-		else if (sp5Type.equals("picklist"))
-		{
-			return new SpQueryField.OperatorType[] {
-                    SpQueryField.OperatorType.EQUALS,
-                    SpQueryField.OperatorType.IN,
-                    SpQueryField.OperatorType.EMPTY};
-		}
+//		else if (sp5Type.equals("picklist"))
+//		{
+//			return new SpQueryField.OperatorType[] {
+//                    SpQueryField.OperatorType.EQUALS,
+//                    SpQueryField.OperatorType.IN,
+//                    SpQueryField.OperatorType.EMPTY};
+//		}
 		else
 		{
 			Class<?> cls = null;
-			if (sp5Type.equals("string"))
+			if (sp5Type.equals("string") || sp5Type.equals("picklist"))
 			{
 				cls = String.class;
 			}
@@ -470,7 +486,7 @@ public class QueryConverter
 					}
 					
 				}
-				String[] specialStuff = processSpecialCases(sixLink, sixFldName, sixTblName);
+				String[] specialStuff = processSpecialCases(sixLink, sixFldName, sixTblName, fiveXML.attributeValue("name"));
 				if (sixTblIdList.length() > 0 && specialStuff[0] != null)
 				{
 					sixTblIdList += ",";
@@ -587,14 +603,19 @@ public class QueryConverter
 	 * @return a 2 element array, the first element is the possibly transformed node, the second, if non-null
 	 * is a transformed value for the contextTable for the field being processed.
 	 */
-	protected static String[] processSpecialCases(final String node, final String sixFldName, final String sixTblName)
+	protected static String[] processSpecialCases(final String node, final String sixFldName, final String sixTblName, final String fiveFldName)
 	{
 		String[] result = new String[2];
 		if (sixFldName.equalsIgnoreCase("name") && sixTblName.equalsIgnoreCase("preparation") && node.equalsIgnoreCase("63-preparations"))
 		{
 			result[0] = node + ",65";
 			result[1] = "preptype";
-		} 
+		} else if (sixFldName.equalsIgnoreCase("lastName") && fiveFldName.equalsIgnoreCase("LastEditedBy"))
+		{
+			result[0] = node + ",5-modifiedByAgent";
+			result[1] = "agent";
+		}
+		else
 		{
 			result[0] = node;
 			result[1] = null;
