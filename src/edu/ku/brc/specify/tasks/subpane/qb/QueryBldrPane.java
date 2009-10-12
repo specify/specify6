@@ -3572,7 +3572,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         {
             TableTree kid = tbl.getKid(k);
             boolean checkKid = kid.isAlias() ? fixAliases(kid, ttHash) : true;
-            if (checkKid)
+            if (checkKid && (kid.getTableQRI().getRelationship() == null 
+            		|| !kid.getTableQRI().getRelationship().isHidden()))
             {
             	if (id.equals(new TableTreePathPoint(kid)))
                 {
@@ -3596,7 +3597,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                             return buildFieldQRI(kid.getTableQRI());
                         }
                     }
-                    else
+                    else 
                     {
                         //FieldQRI fi = getFieldQRI(kid, field, tableIds, level + 1, ttHash);
                         FieldQRI fi = getFieldQRI(kid, fieldName, isRelFld, fldStringId, tableIds, level + 1, ttHash);
