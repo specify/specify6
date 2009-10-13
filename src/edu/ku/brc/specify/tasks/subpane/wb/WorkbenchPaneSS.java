@@ -264,6 +264,8 @@ public class WorkbenchPaneSS extends BaseSubPane
      * static to help prevent multiple simultaneous uploads.
      */
     protected static Uploader       datasetUploader            = null; 
+    protected WorkbenchValidator    workbenchValidator         = null;
+    protected boolean 		        doIncrementalValidation    = false;
     
     // XXX PREF
     protected int                   mapSize                    = 500;
@@ -974,6 +976,10 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         });
         //compareSchemas();
+        if (doIncrementalValidation)
+        {
+        	buildValidator();
+        }
     }
     
     /**
@@ -3324,6 +3330,55 @@ public class WorkbenchPaneSS extends BaseSubPane
         return result;
     }
     
+    protected void buildValidator()
+    {
+    	try
+    	{
+    		workbenchValidator = new WorkbenchValidator(this);
+    	} catch (Exception ex)
+    	{
+    		if (ex instanceof WorkbenchValidator.WorkbenchValidatorException)
+    		{
+    			WorkbenchValidator.WorkbenchValidatorException wvEx = 
+    				(WorkbenchValidator.WorkbenchValidatorException )ex;
+    			if (wvEx.getStructureErrors().size() > 0)
+    			{
+    				showStructureErrors(wvEx.getStructureErrors());
+    			}
+    		}
+    		else {
+    			ex.printStackTrace();
+    		}
+    	}
+    }
+    
+    /**
+     * @param structureErrors
+     * 
+     * Display a dialog listing the 'structural' problems with the dataset
+     * that prevent uploading.
+     */
+    protected void showStructureErrors(Vector<UploadMessage> structureErrors)
+    {
+        JPanel pane = new JPanel(new BorderLayout());
+        JLabel lbl = createLabel(getResourceString("WB_UPLOAD_BAD_STRUCTURE_MSG") + ":");
+        lbl.setBorder(new EmptyBorder(3, 1, 2, 0));
+        pane.add(lbl, BorderLayout.NORTH);
+        JPanel lstPane = new JPanel(new BorderLayout());
+        JList lst = new JList(structureErrors);
+        lst.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
+        lstPane.setBorder(new EmptyBorder(1, 1, 10, 1));
+        lstPane.add(lst, BorderLayout.CENTER);
+        pane.add(lstPane, BorderLayout.CENTER);
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
+                getResourceString("WB_UPLOAD_BAD_STRUCTURE_DLG"),
+                true,
+                CustomDialog.OKHELP,
+                pane);
+        UIHelper.centerAndShow(dlg);
+        dlg.dispose();
+    }
+    
     protected void doDatasetUpload()
     {        
         if (datasetUploader != null)
@@ -3419,23 +3474,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             Vector<UploadMessage> structureErrors = datasetUploader.verifyUploadability();
             if (structureErrors.size() > 0) 
             { 
-                JPanel pane = new JPanel(new BorderLayout());
-                JLabel lbl = createLabel(getResourceString("WB_UPLOAD_BAD_STRUCTURE_MSG") + ":");
-                lbl.setBorder(new EmptyBorder(3, 1, 2, 0));
-                pane.add(lbl, BorderLayout.NORTH);
-                JPanel lstPane = new JPanel(new BorderLayout());
-                JList lst = new JList(structureErrors);
-                lst.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
-                lstPane.setBorder(new EmptyBorder(1, 1, 10, 1));
-                lstPane.add(lst, BorderLayout.CENTER);
-                pane.add(lstPane, BorderLayout.CENTER);
-                CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
-                        getResourceString("WB_UPLOAD_BAD_STRUCTURE_DLG"),
-                        true,
-                        CustomDialog.OKHELP,
-                        pane);
-                UIHelper.centerAndShow(dlg);
-                dlg.dispose();
+                showStructureErrors(structureErrors);
                 uploadDone();
                 return;
             }
@@ -3637,7 +3676,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         protected LengthInputVerifier verifier;
         protected JButton             ceSaveBtn;
         protected DocumentListener    docListener;
-        
+        protected int				  editCol = -1;
+        protected int                 editRow = -1;
         //protected UndoManager undoManager = new UndoManager();
 
         public GridCellEditor(final JTextField textField, final String caption, final int length, final JButton gcSaveBtn)
@@ -3646,6 +3686,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             this.textField = textField;
             this.length    = length;
             this.ceSaveBtn = saveBtn;
+     
             
             verifier = new LengthInputVerifier(caption, length);
             textField.setInputVerifier(verifier);
@@ -3692,11 +3733,29 @@ public class WorkbenchPaneSS extends BaseSubPane
                 ceSaveBtn.setEnabled(false);
                 return false;
             }
+            if (doIncrementalValidation && workbenchValidator != null)
+            {
+            	workbenchValidator.endCellEdit(editRow, editCol);
+            }
+            editRow = -1;
+            editCol = -1;
             return super.stopCellEditing();
         }
 
         
+        
         /* (non-Javadoc)
+         * @see javax.swing.DefaultCellEditor#cancelCellEditing()
+         */
+        @Override
+		public void cancelCellEditing()
+		{
+			editRow = -1;
+			editCol = -1;
+			super.cancelCellEditing();
+		}
+
+		/* (non-Javadoc)
          * @see javax.swing.CellEditor#getCellEditorValue()
          */
         @Override
@@ -3762,7 +3821,8 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 // ignore it?
             }
-
+            editCol = column;
+            editRow = row;
             return textField;
         }
 

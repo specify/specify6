@@ -2117,7 +2117,7 @@ public class UploadTable implements Comparable<UploadTable>
      * Validates user-entered fields for the row.
      * Validation issues are added to invalidValues vector.
      */
-    protected void validateRowValues(int row, UploadData uploadData, Vector<UploadTableInvalidValue> invalidValues)
+    public void validateRowValues(int row, UploadData uploadData, Vector<UploadTableInvalidValue> invalidValues)
     {
         
     	if (uploadData.isEmptyRow(row))
@@ -2250,6 +2250,46 @@ public class UploadTable implements Comparable<UploadTable>
                 
             seq++;
         }
+        if (tblClass.equals(Determination.class))
+        {
+            // check that isCurrent is ok. 1 and only one true.
+            boolean isCurrentPresent = false;
+            UploadField anIsCurrentFld = null;
+//            for (int row = 0; row < uploadData.getRows(); row++)
+//            {
+                int trueCount = 0;
+                for (Vector<UploadField> flds : uploadFields)
+                {
+                    for (UploadField fld : flds)
+                    {
+                        if (fld.getField().getName().equalsIgnoreCase("iscurrent"))
+                        {
+                            isCurrentPresent = true;
+                            anIsCurrentFld = fld;
+                            fld.setValue(uploadData.get(row, fld.getIndex()));
+                            try
+                            {
+                                Object[] boolVal = getArgForSetter(fld);
+                                if (boolVal[0] != null && (Boolean) boolVal[0])
+                                {
+                                    trueCount++;
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                // ignore. assuming problem was already caught above.
+                            }
+                        }
+                    }
+              //  }
+                if (isCurrentPresent && trueCount != 1)
+                {
+                	invalidValues.add(new UploadTableInvalidValue(null, this, anIsCurrentFld, row,
+                            new Exception(
+                                    getResourceString("WB_UPLOAD_ONE_CURRENT_DETERMINATION"))));
+                }
+            }
+        }
     }
     
     /**
@@ -2268,46 +2308,6 @@ public class UploadTable implements Comparable<UploadTable>
             for (int row = 0; row < uploadData.getRows(); row++)
             {
                 validateRowValues(row, uploadData, result);
-            }
-            if (tblClass.equals(Determination.class))
-            {
-                // check that isCurrent is ok. 1 and only one true.
-                boolean isCurrentPresent = false;
-                UploadField anIsCurrentFld = null;
-                for (int row = 0; row < uploadData.getRows(); row++)
-                {
-                    int trueCount = 0;
-                    for (Vector<UploadField> flds : uploadFields)
-                    {
-                        for (UploadField fld : flds)
-                        {
-                            if (fld.getField().getName().equalsIgnoreCase("iscurrent"))
-                            {
-                                isCurrentPresent = true;
-                                anIsCurrentFld = fld;
-                                fld.setValue(uploadData.get(row, fld.getIndex()));
-                                try
-                                {
-                                    Object[] boolVal = getArgForSetter(fld);
-                                    if (boolVal[0] != null && (Boolean) boolVal[0])
-                                    {
-                                        trueCount++;
-                                    }
-                                }
-                                catch (Exception e)
-                                {
-                                    // ignore. assuming problem was already caught above.
-                                }
-                            }
-                        }
-                    }
-                    if (isCurrentPresent && trueCount != 1)
-                    {
-                        result.add(new UploadTableInvalidValue(null, this, anIsCurrentFld, row,
-                                new Exception(
-                                        getResourceString("WB_UPLOAD_ONE_CURRENT_DETERMINATION"))));
-                    }
-                }
             }
             return result;
         }

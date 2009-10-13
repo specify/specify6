@@ -1299,16 +1299,26 @@ public class Uploader implements ActionListener, KeyListener
         }
     }
 
-    protected Vector<UploadTableInvalidValue> validateLengths(final UploadTable uploadTable)
+    	
+    /**
+     * @param uploadTable
+     * @param rowToValidate
+     * @param colToValidate
+     * @return
+     */
+    protected Vector<UploadTableInvalidValue> validateLengths(final UploadTable uploadTable, 
+    		final int rowToValidate, final int colToValidate)
     {
         Vector<UploadTableInvalidValue> result = new Vector<UploadTableInvalidValue>();
+        int startRow = rowToValidate != -1 ? rowToValidate : 0;
+        int endRow = rowToValidate != -1 ? rowToValidate + 1 : wbSS.getSpreadSheet().getRowCount();
         for (Vector<UploadField> ufs : uploadTable.getUploadFields())
         {
             for (UploadField uf : ufs)
             {
                 if (uf.getIndex() != -1)
                 {
-                    for (int r = 0; r < wbSS.getSpreadSheet().getRowCount(); r++)
+                    for (int r = startRow; r < endRow; r++)
                     {
                         String value = wbSS.getSpreadSheet().getValueAt(r, uf.getIndex())
                                 .toString();
@@ -1325,6 +1335,24 @@ public class Uploader implements ActionListener, KeyListener
         }
         return result;
     }
+    
+    /**
+     * @param row
+     * @param col
+     * @return list of invalid values
+     */
+    public Vector<UploadTableInvalidValue> validateData(int row, int col)
+    {
+        Vector<UploadTableInvalidValue> result = new Vector<UploadTableInvalidValue>();
+    	//XXX figure out which table is associated with col.
+        for (UploadTable tbl : uploadTables)
+        {
+            result.addAll(validateLengths(tbl, row, col));
+            tbl.validateRowValues(row, uploadData, result);
+        }
+    	return result;
+    }
+    
     /**
      * Validates contents of all cells in dataset.
      */
@@ -1348,7 +1376,7 @@ public class Uploader implements ActionListener, KeyListener
                     for (UploadTable tbl : uploadTables)
                     {
                         setCurrentOpProgress(++progress);
-                        issues.addAll(validateLengths(tbl));
+                        issues.addAll(validateLengths(tbl, -1, -1));
                         issues.addAll(tbl.validateValues(uploadData));
                     }
                     Collections.sort(issues);

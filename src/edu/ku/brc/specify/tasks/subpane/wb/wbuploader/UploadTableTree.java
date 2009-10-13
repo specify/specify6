@@ -848,7 +848,7 @@ public class UploadTableTree extends UploadTable
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#validateRowValues(int, edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadData, java.util.Vector)
      */
     @Override
-    protected void validateRowValues(int row,
+    public void validateRowValues(int row,
                                      UploadData uploadData,
                                      Vector<UploadTableInvalidValue> invalidValues)
     {
