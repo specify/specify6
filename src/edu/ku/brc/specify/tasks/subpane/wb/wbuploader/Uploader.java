@@ -2330,12 +2330,15 @@ public class Uploader implements ActionListener, KeyListener
                     return;
                 }
                 setCurrentOpProgress(val);
-                for (UploadMessage newMsg : newMessages)
+                synchronized (Uploader.this)
                 {
-                    mainPanel.addMsg(newMsg);
-                    messages.add(newMsg);
+                	for (UploadMessage newMsg : newMessages)
+                	{
+                		mainPanel.addMsg(newMsg);
+                		messages.add(newMsg);
+                	}
+                	newMessages.clear();
                 }
-                newMessages.clear();
             }
         });
     }
