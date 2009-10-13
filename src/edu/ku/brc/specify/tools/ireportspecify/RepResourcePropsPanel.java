@@ -87,7 +87,7 @@ public class RepResourcePropsPanel extends JPanel
      *
      *Title/Name pairs for ResourceDir list.
      */
-    private class ResDirItem extends edu.ku.brc.util.Pair<String, String>
+    public class ResDirItem extends edu.ku.brc.util.Pair<String, String>
     {
     	/**
     	 * @param title

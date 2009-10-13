@@ -802,6 +802,22 @@ public class MainFrameSpecify extends MainFrame
     	return null;
     }
     
+    protected static SpAppResourceDir getDirForResource(final String dirName)
+    {
+    	SpecifyAppContextMgr spMgr = (SpecifyAppContextMgr )AppContextMgr.getInstance();
+        if (dirName.equals("Personal"))
+        {        	
+        	for (SpAppResourceDir dir : spMgr.getSpAppResourceList())
+        	{
+        		if (dir.getIsPersonal())
+        		{
+        			return dir;
+        		}
+        	}
+    	}			
+    	return spMgr.getSpAppResourceDirByName(dirName);
+    }
+    
     /**
      * @param repResName
      * @param tableId
@@ -937,14 +953,15 @@ public class MainFrameSpecify extends MainFrame
             AppResourceIFace modifiedRes = null;
             if (appRes == null)
             {
-                //XXX - what level???
-                modifiedRes = AppContextMgr.getInstance().createAppResourceForDir(propPanel.getResDirCombo().getSelectedItem().toString());
+            	String dirName = ((RepResourcePropsPanel.ResDirItem )propPanel.getResDirCombo().getSelectedItem()).getName();                
+            	SpAppResourceDir dir = getDirForResource(dirName);
+            	modifiedRes = ((SpecifyAppContextMgr )AppContextMgr.getInstance()).createAppResourceForDir(dir);
             }
             else
             {
                 modifiedRes = appRes;
-                String dirName = propPanel.getResDirCombo().getSelectedItem().toString();
-                SpAppResourceDir dir = ((SpecifyAppContextMgr) AppContextMgr.getInstance()).getSpAppResourceDirByName(dirName);
+                String dirName = ((RepResourcePropsPanel.ResDirItem )propPanel.getResDirCombo().getSelectedItem()).getName();
+                SpAppResourceDir dir = getDirForResource(dirName);
                 ((SpAppResource )modifiedRes).setSpAppResourceDir(dir);
             }
             modifiedRes.setName(propPanel.getNameTxt().getText().trim());
