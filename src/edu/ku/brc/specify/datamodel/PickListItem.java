@@ -23,6 +23,7 @@ import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -135,7 +136,7 @@ public class PickListItem extends DataModelObjBase implements PickListItemIFace,
         this.title = title;
     }
 
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "PickListID", nullable = false)
     public PickList getPickList()

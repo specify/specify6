@@ -23,6 +23,7 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -93,7 +94,7 @@ public class PermitAttachment extends DataModelObjBase implements ObjectAttachme
         this.permitAttachmentId = permitAttachmentId;
     }
 
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "PermitID", nullable = false)
     public Permit getPermit()
     {
@@ -105,7 +106,7 @@ public class PermitAttachment extends DataModelObjBase implements ObjectAttachme
         this.permit = permit;
     }
 
-    @ManyToOne()
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     @JoinColumn(name = "AttachmentID", nullable = false)
     @OrderBy("ordinal ASC")

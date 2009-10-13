@@ -407,7 +407,7 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
     /**
      *      * Locality where collection took place
      */
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "LocalityID")
     public Locality getLocality() 
     {
@@ -459,7 +459,7 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
    }
 
 
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "CollectingTripID")
     public CollectingTrip getCollectingTrip()
     {

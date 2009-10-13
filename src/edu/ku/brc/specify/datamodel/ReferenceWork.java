@@ -227,7 +227,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
 	/**
      * @return the containedRFParent
      */
-    @ManyToOne
+	@ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "ContainedRFParentID")
     public ReferenceWork getContainedRFParent()
     {

@@ -482,7 +482,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     /**
      *      * of organization
      */
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "ParentOrganizationID")
     public Agent getOrganization() {
         return this.organization;
@@ -496,7 +496,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     /**
      * @return the specifyUser
      */
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "SpecifyUserID", unique = false, nullable = true, insertable = true, updatable = true)
     public SpecifyUser getSpecifyUser()
     {
@@ -671,7 +671,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
    /**
     *  The Division this Agent belongs to.
     */
-   @ManyToOne
+   @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
    @JoinColumn(name = "DivisionID", unique = false, nullable = true, insertable = true, updatable = true)
    public Division getDivision() 
    {
@@ -711,7 +711,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     /**
     *  The Institution for Technical Contact.
     */
-   @ManyToOne
+   @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
    @JoinColumn(name = "InstitutionTCID")
    public Institution getInstTechContact() 
    {
@@ -726,7 +726,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
    /**
     *  The Institution for Technical Contact.
     */
-   @ManyToOne
+   @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
    @JoinColumn(name = "InstitutionCCID")
    public Institution getInstContentContact() 
    {
@@ -741,7 +741,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
    /**
     * @return the collTechContact
     */
-   @ManyToOne
+   @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
    @JoinColumn(name = "CollectionTCID")
    public Collection getCollTechContact()
    {
@@ -759,7 +759,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
    /**
     * @return the collContentContact
     */
-   @ManyToOne
+   @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
    @JoinColumn(name = "CollectionCCID")
    public Collection getCollContentContact()
    {

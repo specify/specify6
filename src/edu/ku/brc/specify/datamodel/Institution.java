@@ -562,7 +562,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     /**
      * 
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     @JoinColumn(name = "StorageTreeDefID")
     public StorageTreeDef getStorageTreeDef()

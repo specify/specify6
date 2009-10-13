@@ -21,6 +21,7 @@ package edu.ku.brc.specify.datamodel;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -194,7 +195,7 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     /**
      * 
      */
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "WorkbenchRowID", nullable = false)
     public WorkbenchRow getWorkbenchRow()
     {
@@ -209,7 +210,7 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     /**
      * 
      */
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "WorkbenchTemplateMappingItemID", nullable = false)
     public WorkbenchTemplateMappingItem getWorkbenchTemplateMappingItem()
     {

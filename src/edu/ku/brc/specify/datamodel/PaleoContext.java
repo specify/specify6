@@ -294,7 +294,7 @@ public class PaleoContext extends CollectionMember implements Cloneable
     /**
      * @return the bioStrat
      */
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name="BioStratID", unique=false, nullable=true, insertable=true, updatable=true)
     public GeologicTimePeriod getBioStrat()
     {
@@ -315,7 +315,7 @@ public class PaleoContext extends CollectionMember implements Cloneable
     /**
     *
     */
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name="ChronosStratID", unique=false, nullable=true, insertable=true, updatable=true)
     public GeologicTimePeriod getChronosStrat()
     {
@@ -333,7 +333,7 @@ public class PaleoContext extends CollectionMember implements Cloneable
     /**
      * @return the lithoStrat
      */
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name="LithoStratID", unique=false, nullable=true, insertable=true, updatable=true)
     public LithoStrat getLithoStrat()
     {

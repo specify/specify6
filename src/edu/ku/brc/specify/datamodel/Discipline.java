@@ -197,7 +197,7 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
     /**
      *
      */
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name="DataTypeID", nullable=false)
     public DataType getDataType() {
         return this.dataType;

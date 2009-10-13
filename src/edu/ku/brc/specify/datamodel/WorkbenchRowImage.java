@@ -23,6 +23,7 @@ import java.lang.ref.SoftReference;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -148,7 +149,7 @@ public class WorkbenchRowImage implements java.io.Serializable, Comparable<Workb
         this.imageOrder = imageOrder;
     }
 
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "WorkbenchRowID", nullable = false)
     public WorkbenchRow getWorkbenchRow()
     {

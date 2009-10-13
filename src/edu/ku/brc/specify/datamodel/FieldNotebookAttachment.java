@@ -23,6 +23,7 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -113,7 +114,7 @@ public class FieldNotebookAttachment extends DataModelObjBase implements ObjectA
         this.remarks = remarks;
     }
 
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "AttachmentID", nullable = false)
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Attachment getAttachment()
@@ -126,7 +127,7 @@ public class FieldNotebookAttachment extends DataModelObjBase implements ObjectA
         this.attachment = attachment;
     }
 
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "FieldNotebookID", nullable = false)
     public FieldNotebook getFieldNotebook()
     {

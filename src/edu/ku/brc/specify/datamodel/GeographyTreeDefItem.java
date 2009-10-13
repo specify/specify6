@@ -221,7 +221,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
         this.fullNameSeparator = fullNameSeparator;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "GeographyTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
 	public GeographyTreeDef getTreeDef()
 	{
@@ -233,7 +233,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		this.treeDef = treeDef;
 	}
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "ParentItemID", unique = false, nullable = true, insertable = true, updatable = true)
 	public GeographyTreeDefItem getParent()
 	{
@@ -257,7 +257,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		this.treeEntries = treeEntries;
 	}
 
-    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "parent")
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "parent")
 	public Set<GeographyTreeDefItem> getChildren()
 	{
 		return this.children;

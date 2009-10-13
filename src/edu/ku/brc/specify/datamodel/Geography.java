@@ -468,7 +468,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
         this.guid = guid;
     }
 
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "AcceptedID")
     public Geography getAcceptedGeography()
     {
@@ -509,7 +509,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "GeographyTreeDefID", nullable = false)
 	public GeographyTreeDef getDefinition()
 	{
@@ -524,7 +524,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "GeographyTreeDefItemID", nullable = false)
 	public GeographyTreeDefItem getDefinitionItem()
 	{
@@ -543,7 +543,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "ParentID")
 	public Geography getParent()
 	{

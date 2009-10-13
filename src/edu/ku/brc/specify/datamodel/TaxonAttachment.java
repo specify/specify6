@@ -23,6 +23,7 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -93,7 +94,7 @@ public class TaxonAttachment extends DataModelObjBase implements ObjectAttachmen
         this.taxonAttachmentId = taxonAttachmentId;
     }
 
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "TaxonID", nullable = false)
     public Taxon getTaxon()
     {
@@ -105,7 +106,7 @@ public class TaxonAttachment extends DataModelObjBase implements ObjectAttachmen
         this.taxon = taxon;
     }
 
-    @ManyToOne()
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     @JoinColumn(name = "AttachmentID", nullable = false)
     @OrderBy("ordinal ASC")

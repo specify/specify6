@@ -31,6 +31,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -545,7 +546,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     /**
      * 
      */
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "WorkbenchID", nullable = false)
     public Workbench getWorkbench()
     {
