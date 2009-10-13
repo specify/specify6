@@ -91,6 +91,7 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpAppResourceData;
@@ -1038,6 +1039,22 @@ public class MainFrameSpecify extends MainFrame
         setActiveReportForm(jrf);    
     }
 
+    protected boolean repResIsEditableByUser(AppResourceIFace repRes)
+    {
+    	//??? SpReport has a SpecifyUserID field too
+    	String sql = "select count(spq.SpQueryID) from spquery spq inner join spreport spr "
+    		+ " on spr.SpQueryID = spq.SpQueryID inner join spappresource spa "
+    		+ "on spa.SpAppResourceID = spr.AppResourceID where spq.SpecifyUserID = "
+    		+ AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId();
+    	try 
+    	{
+    		return BasicSQLUtils.getCount(sql) != 0; 
+    	} catch (Exception ex)
+    	{
+    		return false;
+    	}
+    }
+    
     /*
      * (non-Javadoc) Presents user with list of available report resources iReport report designer
      * frame for the selected report resource.
@@ -1078,7 +1095,10 @@ public class MainFrameSpecify extends MainFrame
                                         && (StringUtils.isNotEmpty(rptType) 
                                         && (rptType.equals("Report") || rptType.equals("Invoice"))))
                                 {
-                                    list.add(ap);
+                                    if (repResIsEditableByUser(ap))
+                                    {
+                                    	list.add(ap);
+                                    }
                                 }
                             }
                             session.evict(ap);
