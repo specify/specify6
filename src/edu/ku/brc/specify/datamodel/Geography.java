@@ -524,7 +524,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "GeographyTreeDefItemID", nullable = false)
 	public GeographyTreeDefItem getDefinitionItem()
 	{

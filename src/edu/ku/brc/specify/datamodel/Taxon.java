@@ -874,7 +874,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.definition = definition;
 	}
 
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "TaxonTreeDefItemID", nullable = false)
 	public TaxonTreeDefItem getDefinitionItem()
 	{

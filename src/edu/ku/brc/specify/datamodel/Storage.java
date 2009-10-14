@@ -365,7 +365,7 @@ public class Storage extends DataModelObjBase implements Serializable, Treeable<
         this.definition = definition;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "StorageTreeDefItemID", nullable = false)
     public StorageTreeDefItem getDefinitionItem()
     {

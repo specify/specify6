@@ -257,7 +257,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		this.treeEntries = treeEntries;
 	}
 
-    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "parent")
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "parent")
 	public Set<GeographyTreeDefItem> getChildren()
 	{
 		return this.children;

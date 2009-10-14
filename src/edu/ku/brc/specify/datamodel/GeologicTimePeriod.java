@@ -415,7 +415,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     /**
      * 
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "GeologicTimePeriodTreeDefItemID", nullable = false)
     public GeologicTimePeriodTreeDefItem getDefinitionItem()
     {
