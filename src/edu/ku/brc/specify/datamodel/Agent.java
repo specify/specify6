@@ -482,7 +482,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     /**
      *      * of organization
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "ParentOrganizationID")
     public Agent getOrganization() {
         return this.organization;
@@ -496,7 +496,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     /**
      * @return the specifyUser
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "SpecifyUserID", unique = false, nullable = true, insertable = true, updatable = true)
     public SpecifyUser getSpecifyUser()
     {
@@ -671,7 +671,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
    /**
     *  The Division this Agent belongs to.
     */
-   @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+   @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
    @JoinColumn(name = "DivisionID", unique = false, nullable = true, insertable = true, updatable = true)
    public Division getDivision() 
    {
@@ -711,7 +711,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     /**
     *  The Institution for Technical Contact.
     */
-   @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+   @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
    @JoinColumn(name = "InstitutionTCID")
    public Institution getInstTechContact() 
    {
@@ -726,7 +726,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
    /**
     *  The Institution for Technical Contact.
     */
-   @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+   @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
    @JoinColumn(name = "InstitutionCCID")
    public Institution getInstContentContact() 
    {
@@ -741,7 +741,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
    /**
     * @return the collTechContact
     */
-   @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+   @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
    @JoinColumn(name = "CollectionTCID")
    public Collection getCollTechContact()
    {
@@ -759,7 +759,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
    /**
     * @return the collContentContact
     */
-   @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+   @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
    @JoinColumn(name = "CollectionCCID")
    public Collection getCollContentContact()
    {

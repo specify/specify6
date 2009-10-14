@@ -93,7 +93,7 @@ public class AgentAttachment extends DataModelObjBase implements ObjectAttachmen
         this.agentAttachmentId = agentAttachmentId;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "AgentID", nullable = false)
     public Agent getAgent()
     {

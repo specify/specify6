@@ -330,7 +330,7 @@ public class Storage extends DataModelObjBase implements Serializable, Treeable<
         this.acceptedChildren = acceptedChildren;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "AcceptedID")
     public Storage getAcceptedStorage()
     {
@@ -353,7 +353,7 @@ public class Storage extends DataModelObjBase implements Serializable, Treeable<
         setAcceptedStorage(acceptedParent);
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "StorageTreeDefID", nullable = false)
     public StorageTreeDef getDefinition()
     {
@@ -365,7 +365,7 @@ public class Storage extends DataModelObjBase implements Serializable, Treeable<
         this.definition = definition;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "StorageTreeDefItemID", nullable = false)
     public StorageTreeDefItem getDefinitionItem()
     {
@@ -381,7 +381,7 @@ public class Storage extends DataModelObjBase implements Serializable, Treeable<
         }
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "ParentID")
     public Storage getParent()
     {

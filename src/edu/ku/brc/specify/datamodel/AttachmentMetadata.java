@@ -124,7 +124,7 @@ public class AttachmentMetadata extends DataModelObjBase implements java.io.Seri
     /**
      * 
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "AttachmentID")
     public Attachment getAttachment()
     {

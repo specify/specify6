@@ -127,7 +127,7 @@ public class FieldNotebookPageSetAttachment extends DataModelObjBase implements 
         this.attachment = attachment;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "FieldNotebookPageSetID", nullable = false)
     public FieldNotebookPageSet getFieldNotebookPageSet()
     {

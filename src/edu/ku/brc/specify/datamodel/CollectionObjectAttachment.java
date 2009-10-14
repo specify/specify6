@@ -102,7 +102,7 @@ public class CollectionObjectAttachment extends CollectionMember implements Obje
         this.collectionObjectAttachmentId = collectionObjectAttachmentId;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "CollectionObjectID", nullable = false)
     public CollectionObject getCollectionObject()
     {
@@ -114,7 +114,7 @@ public class CollectionObjectAttachment extends CollectionMember implements Obje
         this.collectionObject = collectionObject;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     @JoinColumn(name = "AttachmentID", nullable = false)
     @OrderBy("ordinal ASC")

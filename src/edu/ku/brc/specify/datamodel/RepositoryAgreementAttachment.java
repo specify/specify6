@@ -94,7 +94,7 @@ public class RepositoryAgreementAttachment extends DataModelObjBase implements O
         this.repositoryAgreementAttachmentId = repositoryAgreementAttachmentId;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "RepositoryAgreementID", nullable = false)
     public RepositoryAgreement getRepositoryAgreement()
     {

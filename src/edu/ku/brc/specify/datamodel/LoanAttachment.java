@@ -104,7 +104,7 @@ public class LoanAttachment extends DataModelObjBase implements ObjectAttachment
         this.loanAttachmentId = loanAttachmentId;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "LoanID", nullable = false)
     public Loan getLoan()
     {

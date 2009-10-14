@@ -94,7 +94,7 @@ public class ConservDescriptionAttachment extends DataModelObjBase implements Ob
         this.conservDescriptionAttachmentId = conservDescriptionAttachmentId;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "ConservDescriptionID", nullable = false)
     public ConservDescription getConservDescription()
     {

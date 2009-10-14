@@ -127,7 +127,7 @@ public class FieldNotebookAttachment extends DataModelObjBase implements ObjectA
         this.attachment = attachment;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "FieldNotebookID", nullable = false)
     public FieldNotebook getFieldNotebook()
     {

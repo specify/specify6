@@ -99,7 +99,7 @@ public class CollectingEventAttachment extends CollectionMember implements Objec
         this.collectingEventAttachmentId = collectingEventAttachmentId;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "CollectingEventID", nullable = false)
     public CollectingEvent getCollectingEvent()
     {
@@ -111,7 +111,7 @@ public class CollectingEventAttachment extends CollectionMember implements Objec
         this.collectingEvent = collectingEvent;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     @JoinColumn(name = "AttachmentID", nullable = false)
     @OrderBy("ordinal ASC")

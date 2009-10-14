@@ -374,7 +374,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
         this.acceptedChildren = acceptedChildren;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "AcceptedID")
     public GeologicTimePeriod getAcceptedGeologicTimePeriod()
     {
@@ -400,7 +400,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     /**
      * 
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "GeologicTimePeriodTreeDefID", nullable = false)
     public GeologicTimePeriodTreeDef getDefinition()
     {
@@ -415,7 +415,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     /**
      * 
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "GeologicTimePeriodTreeDefItemID", nullable = false)
     public GeologicTimePeriodTreeDefItem getDefinitionItem()
     {
@@ -434,7 +434,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     /**
      * 
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "ParentID")
     public GeologicTimePeriod getParent()
     {

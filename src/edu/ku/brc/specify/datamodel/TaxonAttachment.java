@@ -94,7 +94,7 @@ public class TaxonAttachment extends DataModelObjBase implements ObjectAttachmen
         this.taxonAttachmentId = taxonAttachmentId;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "TaxonID", nullable = false)
     public Taxon getTaxon()
     {

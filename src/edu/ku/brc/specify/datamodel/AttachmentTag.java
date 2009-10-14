@@ -80,7 +80,7 @@ public class AttachmentTag extends DataModelObjBase implements Serializable
         this.tag = tag;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "AttachmentID", nullable = false)
     public Attachment getAttachment()
     {

@@ -98,7 +98,7 @@ public class PreparationAttachment extends CollectionMember implements ObjectAtt
         this.preparationAttachmentId = preparationAttachmentId;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "PreparationID", nullable = false)
     public Preparation getPreparation()
     {

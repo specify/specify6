@@ -238,7 +238,7 @@ public class Container extends CollectionMember implements java.io.Serializable
     /**
      * 
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "ParentID")
     public Container getParent()
     {

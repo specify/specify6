@@ -105,7 +105,7 @@ public class DNASequencingRunAttachment extends DataModelObjBase implements Obje
         this.remarks = remarks;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "DnaSequencingRunID", nullable = false)
     public DNASequencingRun getDnaSequencingRun()
     {
@@ -117,7 +117,7 @@ public class DNASequencingRunAttachment extends DataModelObjBase implements Obje
         this.dnaSequencingRun = dnaSequencingRun;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "AttachmentID", nullable = false)
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Attachment getAttachment()

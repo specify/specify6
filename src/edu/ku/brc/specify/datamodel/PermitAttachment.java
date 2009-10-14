@@ -94,7 +94,7 @@ public class PermitAttachment extends DataModelObjBase implements ObjectAttachme
         this.permitAttachmentId = permitAttachmentId;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "PermitID", nullable = false)
     public Permit getPermit()
     {

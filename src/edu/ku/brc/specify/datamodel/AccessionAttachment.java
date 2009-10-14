@@ -94,7 +94,7 @@ public class AccessionAttachment extends DataModelObjBase implements ObjectAttac
         this.accessionAttachmentId = accessionAttachmentId;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "AccessionID", nullable = false)
     public Accession getAccession()
     {
@@ -106,7 +106,7 @@ public class AccessionAttachment extends DataModelObjBase implements ObjectAttac
         this.accession = accession;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     @JoinColumn(name = "AttachmentID", nullable = false)
     @OrderBy("ordinal ASC")
