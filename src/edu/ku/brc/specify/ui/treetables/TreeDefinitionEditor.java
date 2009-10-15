@@ -744,6 +744,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         try
         {
             displayedDef = (D )session.get(displayedDef.getClass(), displayedDef.getTreeDefId());
+            ((DataModelObjBase )displayedDef).forceLoad();
         }
         finally
         {
