@@ -26,6 +26,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Transient;
 import javax.swing.JDialog;
@@ -745,5 +746,17 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
 		
 	}    
 	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+	 */
+	@Override
+	public void forceLoad() 
+	{
+		Set<I> treeDefItems = getTreeDefItems();
+		for (I tdi : treeDefItems)
+		{
+			tdi.getTreeDef();
+		}
+	}    
     
 }
