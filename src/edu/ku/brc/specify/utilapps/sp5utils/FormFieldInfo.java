@@ -19,6 +19,10 @@
 */
 package edu.ku.brc.specify.utilapps.sp5utils;
 
+import java.awt.Rectangle;
+
+import com.thoughtworks.xstream.XStream;
+
 /**
  * @author rods
  *
@@ -29,6 +33,8 @@ package edu.ku.brc.specify.utilapps.sp5utils;
  */
 public class FormFieldInfo
 {
+    private static int segWidth = 10;
+    
     private String sp5FieldName;
     private String sp6FieldName;
     private String caption;
@@ -87,6 +93,68 @@ public class FormFieldInfo
     }
 
 
+    /**
+     * @param top the top to set
+     */
+    public void setTop(Integer top)
+    {
+        this.top = top;
+    }
+
+
+    /**
+     * @param left the left to set
+     */
+    public void setLeft(Integer left)
+    {
+        this.left = left;
+    }
+
+
+    /**
+     * @param width the width to set
+     */
+    public void setWidth(Integer width)
+    {
+        this.width = width;
+    }
+
+
+    /**
+     * @param height the height to set
+     */
+    public void setHeight(Integer height)
+    {
+        this.height = height;
+    }
+
+
+    public int getCellX()
+    {
+        return left / segWidth;
+    }
+    
+    public int getCellY()
+    {
+        return top / segWidth;
+    }
+    
+    public int getCellWidth()
+    {
+        return width / segWidth;
+    }
+    
+    public int getCellHeight()
+    {
+        return height / segWidth;
+    }
+    
+    public Rectangle getBoundsFromCellDim()
+    {
+        Rectangle r = new Rectangle(getCellX()*segWidth, getCellY()*segWidth, getCellWidth()*segWidth, getCellHeight()*segWidth);
+        return r;
+    }
+    
     /**
      * @param sp6FieldName the sp6FieldName to set
      */
@@ -229,5 +297,50 @@ public class FormFieldInfo
     public FormInfo getParent()
     {
         return parent;
+    }
+    
+
+    /**
+     * @return the segWidth
+     */
+    public static int getSegWidth()
+    {
+        return segWidth;
+    }
+
+
+    /**
+     * @param segWidth the segWidth to set
+     */
+    public static void setSegWidth(int segWidth)
+    {
+        FormFieldInfo.segWidth = segWidth;
+    }
+
+
+    /**
+     * Configures the XStream for I/O.
+     * @param xstream the stream
+     */
+    public static void configXStream(final XStream xstream)
+    {
+        // Aliases
+        xstream.alias("field",        FormFieldInfo.class); //$NON-NLS-1$
+
+        xstream.aliasAttribute(FormFieldInfo.class, "sp5FieldName", "sp5FieldName"); //$NON-NLS-1$ //$NON-NLS-2$
+        xstream.aliasAttribute(FormFieldInfo.class, "sp6FieldName", "sp6FieldName"); //$NON-NLS-1$ //$NON-NLS-2$
+        xstream.aliasAttribute(FormFieldInfo.class, "caption", "caption"); //$NON-NLS-1$ //$NON-NLS-2$
+        xstream.aliasAttribute(FormFieldInfo.class, "controlType", "controlType"); //$NON-NLS-1$ //$NON-NLS-2$
+        xstream.aliasAttribute(FormFieldInfo.class, "dataType", "dataType"); //$NON-NLS-1$ //$NON-NLS-2$
+        xstream.aliasAttribute(FormFieldInfo.class, "relatedTableName", "relatedTableName"); //$NON-NLS-1$ //$NON-NLS-2$
+        xstream.aliasAttribute(FormFieldInfo.class, "top", "top"); //$NON-NLS-1$ //$NON-NLS-2$
+        xstream.aliasAttribute(FormFieldInfo.class, "left", "left"); //$NON-NLS-1$ //$NON-NLS-2$
+        xstream.aliasAttribute(FormFieldInfo.class, "width", "width"); //$NON-NLS-1$ //$NON-NLS-2$
+        xstream.aliasAttribute(FormFieldInfo.class, "height", "height"); //$NON-NLS-1$ //$NON-NLS-2$
+        xstream.aliasAttribute(FormFieldInfo.class, "controlTypeNum", "controlTypeNum"); //$NON-NLS-1$ //$NON-NLS-2$
+        xstream.aliasAttribute(FormFieldInfo.class, "dataTypeNum", "dataTypeNum"); //$NON-NLS-1$ //$NON-NLS-2$
+        
+        // Things to omit
+        xstream.omitField(FormFieldInfo.class,  "parent"); //$NON-NLS-1$
     }
 }

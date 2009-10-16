@@ -35,7 +35,10 @@ public class TableInfoMapping
 {
     private String                  newTableName;
     private String                  oldTableName;
-    private HashMap<String, String> fieldMappings = new HashMap<String, String>();
+    
+    // From Old Name to New Name
+    private HashMap<String, String> oldToNewMapping = new HashMap<String, String>();
+    private HashMap<String, String> newToOldMapping = new HashMap<String, String>();
     
     /**
      * @param newTableName
@@ -43,14 +46,30 @@ public class TableInfoMapping
      * @param fieldMappings
      */
     public TableInfoMapping(final String newTableName, 
-                            final String oldTableName,
-                            final HashMap<String, String> fieldMappings)
+                            final String oldTableName)
     {
         super();
         this.newTableName = newTableName;
         this.oldTableName = oldTableName;
-        this.fieldMappings = fieldMappings;
     }
+    
+    
+    public void addFieldMapping(final String newName, final String oldName)
+    {
+        oldToNewMapping.put(oldName, newName);
+        newToOldMapping.put(newName, oldName);
+    }
+    
+    public String getOldName(final String newName)
+    {
+        return newToOldMapping.get(newName);
+    }
+    
+    public String getNewName(final String oldName)
+    {
+        return oldToNewMapping.get(oldName);
+    }
+    
     /**
      * @return the newTableName
      */
@@ -65,11 +84,5 @@ public class TableInfoMapping
     {
         return oldTableName;
     }
-    /**
-     * @return the fieldMappings
-     */
-    public HashMap<String, String> getFieldMappings()
-    {
-        return fieldMappings;
-    }
+
 }

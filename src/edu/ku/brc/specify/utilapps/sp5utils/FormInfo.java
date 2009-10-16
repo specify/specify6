@@ -23,6 +23,8 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.thoughtworks.xstream.XStream;
+
 /**
  * @author rods
  *
@@ -102,5 +104,19 @@ public class FormInfo
     public static String getUniqueKey(final String tableName, final String formVersion, final String formType)
     {
         return tableName + "/" + formVersion + (StringUtils.isNotEmpty(formType) ? ("/" + formType) : "");
+    }
+    
+    /**
+     * Configures the XStream for I/O.
+     * @param xstream the stream
+     */
+    public static void configXStream(final XStream xstream)
+    {
+        // Aliases
+        xstream.alias("form",       FormInfo.class); //$NON-NLS-1$
+        
+        xstream.aliasAttribute(FormInfo.class, "tableName",   "tableName"); //$NON-NLS-1$ //$NON-NLS-2$
+        xstream.aliasAttribute(FormInfo.class, "formVersion", "formVersion"); //$NON-NLS-1$ //$NON-NLS-2$
+        xstream.aliasAttribute(FormInfo.class, "formType",    "formType"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 }

@@ -84,7 +84,29 @@ public class FieldCellModel extends DefaultTableModel
     @Override
     public boolean isCellEditable(int row, int column)
     {
-        return false;
+        return column == 1 || (column > 5 && column < 10);
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.table.AbstractTableModel#getColumnClass(int)
+     */
+    @Override
+    public Class<?> getColumnClass(int columnIndex)
+    {
+        switch (columnIndex)
+        {
+            case 0: return String.class;
+            case 1: return String.class;
+            case 2: return String.class;
+            case 3: return String.class;
+            case 4: return String.class;
+            case 5: return String.class;
+            case 6: return Integer.class;
+            case 7: return Integer.class;
+            case 8: return Integer.class;
+            case 9: return Integer.class;
+        }
+        return String.class;
     }
 
     /* (non-Javadoc)
@@ -113,4 +135,39 @@ public class FieldCellModel extends DefaultTableModel
         }
         return "x";
     }
+
+    /* (non-Javadoc)
+     * @see javax.swing.table.DefaultTableModel#setValueAt(java.lang.Object, int, int)
+     */
+    @Override
+    public void setValueAt(Object value, int row, int column)
+    {
+        FormFieldInfo fi = null;
+        if (selectedForm != null)
+        {
+            fi = selectedForm.getFields().get(row);
+            if (fi != null)
+            {
+                switch (column)
+                {
+                    case 1 : 
+                        fi.setSp6FieldName(value.toString());
+                        break;
+                    case 6 : 
+                        fi.setTop((Integer)value);
+                        break;
+                    case 7 : 
+                        fi.setLeft((Integer)value);
+                        break;
+                    case 8 : 
+                        fi.setWidth((Integer)value);
+                        break;
+                    case 9 : 
+                        fi.setHeight((Integer)value);
+                        break;
+                }
+            }
+        }
+    }
+    
 }

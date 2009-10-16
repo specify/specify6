@@ -19,6 +19,9 @@
 */
 package edu.ku.brc.specify.utilapps.sp5utils;
 
+import static edu.ku.brc.helpers.XMLHelper.getAttr;
+import static edu.ku.brc.helpers.XMLHelper.getConfigDir;
+import static edu.ku.brc.helpers.XMLHelper.readFileToDOM4J;
 import static edu.ku.brc.specify.utilapps.sp5utils.FormInfo.getUniqueKey;
 import static edu.ku.brc.ui.UIHelper.calcColumnWidths;
 import static edu.ku.brc.ui.UIHelper.centerAndShow;
@@ -33,20 +36,28 @@ import static edu.ku.brc.ui.UIHelper.tryLogin;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FileDialog;
+import java.awt.Frame;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultCellEditor;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -66,7 +77,10 @@ import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -79,7 +93,10 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
+import com.thoughtworks.xstream.XStream;
 
+import edu.ku.brc.af.core.FrameworkAppIFace;
+import edu.ku.brc.af.core.MacOSAppHandler;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableChildIFace;
@@ -87,9 +104,9 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
-import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.SpecifyDBConverter;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.Triple;
@@ -102,7 +119,7 @@ import edu.ku.brc.util.Triple;
  * Aug 26, 2007
  *
  */
-public class Sp5Forms extends JFrame
+public class Sp5Forms extends JFrame implements FrameworkAppIFace
 {
     protected static final Logger log = Logger.getLogger(Sp5Forms.class);
     
@@ -127,6 +144,11 @@ public class Sp5Forms extends JFrame
     protected JFrame                    formFrame = null;
     protected JButton                   reportBtn;
     protected JButton                   showBtn;
+    
+    protected Sp6FieldComboBoxEditor    sp6FieldEditor;
+    protected Sp6FieldComboBoxRenderer  sp6FieldRenderer;
+    
+    protected boolean                   hasChanged = false;
         
     /**
      * 
@@ -153,25 +175,20 @@ public class Sp5Forms extends JFrame
             {
                 if (formsTable.getSelectedRow() > -1)
                 {
-                    selectedForm = forms.get(formsTable.getSelectedRow());
-                    
-                    fieldsTableModel.setSelectedForm(selectedForm);
-                    fieldsTableModel.fireTableDataChanged();
-                    
-                    DefaultListModel model = (DefaultListModel)missingFieldsList.getModel();
-                    model.clear();
-                    for (FormFieldInfo fi : selectedForm.getFields())
-                    {
-                        if (fi.getSp6FieldName() == null)
-                        {
-                            model.addElement(fi.getSp5FieldName());
-                        }
-                    }
+                    formSelected();
                 }
             }
         });
         
         fieldsTable = new JTable(fieldsTableModel = new FieldCellModel());
+        
+        TableColumn col = fieldsTable.getColumnModel().getColumn(1);
+        col.setCellEditor(sp6FieldEditor = new Sp6FieldComboBoxEditor());
+        
+        // If the cell should appear like a combobox in its
+        // non-editing state, also set the combobox renderer
+        //col.setCellRenderer(sp6FieldRenderer = new Sp6FieldComboBoxRenderer());
+
         
         calcColumnWidths(formsTable);
         
@@ -205,6 +222,52 @@ public class Sp5Forms extends JFrame
     }
     
     /**
+     * 
+     */
+    protected void formSelected()
+    {
+        selectedForm = forms.get(formsTable.getSelectedRow());
+        
+        // Missing Fields List
+        DefaultListModel model = (DefaultListModel)missingFieldsList.getModel();
+        model.clear();
+        for (FormFieldInfo fi : selectedForm.getFields())
+        {
+            if (fi.getSp6FieldName() == null)
+            {
+                model.addElement(fi.getSp5FieldName());
+            }
+        }
+
+        DefaultComboBoxModel cbxModel = (DefaultComboBoxModel)((JComboBox)sp6FieldEditor.getComponent()).getModel();
+        cbxModel.removeAllElements();
+        
+        // Setup Sp6 Fields
+        DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(selectedForm.getTableName());
+        if (tblInfo != null)
+        {
+            for (DBFieldInfo fldInfo : tblInfo.getFields())
+            {
+                cbxModel.addElement(fldInfo.getColumn());
+            }
+            for (DBRelationshipInfo relInfo : tblInfo.getRelationships())
+            {
+                cbxModel.addElement(relInfo.getColName());
+            }
+        }
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run()
+            {
+                fieldsTableModel.setSelectedForm(selectedForm);
+                fieldsTableModel.fireTableDataChanged();
+            }
+        });
+
+    }
+    
+    /**
      * @param fi
      * @return
      */
@@ -212,9 +275,11 @@ public class Sp5Forms extends JFrame
     {
     	CellConstraints cc = new CellConstraints();
     	
-        JPanel panel = new JPanel(null);
-        int maxWidth  = 0;
-        int maxHeight = 0;
+        JPanel panel      = new JPanel(null);
+        int maxWidth      = 0;
+        int maxHeight     = 0;
+        int maxCellWidth  = 0;
+        int maxCellHeight = 0;
         for (FormFieldInfo fi : formInfo.getFields())
         {
             System.out.println(fi.getCaption());
@@ -224,6 +289,7 @@ public class Sp5Forms extends JFrame
             {
                 case 4 : comp = createComboBox(); // 'Picklist'
                     break;
+                    
                 case 5 : 
                     {
                         JComboBox cbx = createComboBox(); //new ValComboBoxFromQuery(DBTableIdMgr.getInstance().getInfoById(1), "catalogNumber","CatalogNumber","CatalogNumber"," "," "," "," "," ",ValComboBoxFromQuery.CREATE_ALL);// 'QueryCombo'
@@ -237,8 +303,29 @@ public class Sp5Forms extends JFrame
                         break;
                     }
                     
-                case 7 : comp = new JTable(); // 'Grid'
-                    break;
+                case 7 : 
+                    {
+                        String   uniqueKey = getUniqueKey(fi.getRelatedTableName(), "Embedded", fi.getParent().getFormType());
+                        FormInfo subForm   = formHash.get(uniqueKey);
+                        if (subForm == null)
+                        {
+                            uniqueKey = getUniqueKey(fi.getRelatedTableName(), "Embedded", null);
+                            subForm   = formHash.get(uniqueKey);
+                        }
+                        if (subForm != null)
+                        {
+                            Vector<String> headers = new Vector<String>();
+                            for (int i=0;i<subForm.getFields().size();i++)
+                            {
+                                headers.add(subForm.getFields().get(i).getCaption());
+                            }
+                            JPanel p = new JPanel(new BorderLayout());
+                            p.add(UIHelper.createScrollPane(new JTable(new Vector<Vector<Object>>(), headers)), BorderLayout.CENTER); // 'Grid'
+                            comp = p;
+                            addLbl = false;
+                        }
+                        break;
+                    }
                     
                 case 8 : // 'EmbeddedForm'
                 {
@@ -261,10 +348,13 @@ public class Sp5Forms extends JFrame
                     
                 case 20 : comp = createScrollPane(createTextArea()); // 'Memo'
                     break;
+                    
                 case 21 : comp = null;//createComboBox(); // 'MenuItem'
                     break;
+                    
                 case 46 : comp = createTextField("URL"); // 'URL'
                     break;
+                    
                 default:
                     if (fi.getDataTypeNum() == 4)
                     {
@@ -273,7 +363,8 @@ public class Sp5Forms extends JFrame
                     {
                         comp = createTextField();
                     }
-            }
+            } // switch
+            
             if (comp != null)
             {
                 String toolTip = "Field: "+fi.getSp5FieldName() + (StringUtils.isNotEmpty(fi.getSp6FieldName()) && fi.getSp6FieldName().equalsIgnoreCase(fi.getSp5FieldName()) ? " Sp6: "+fi.getSp6FieldName() : "");
@@ -289,14 +380,45 @@ public class Sp5Forms extends JFrame
                 }
                 pb.add(comp, cc.xy(3,2));
                 panel.add(pb.getPanel());
+                
                 maxWidth  = Math.max(maxWidth, fi.getLeft()+fi.getWidth());
                 maxHeight = Math.max(maxHeight, fi.getTop()+fi.getHeight());
-                pb.getPanel().setLocation(fi.getLeft(), fi.getTop());
-                pb.getPanel().setSize(fi.getWidth(), fi.getHeight());
+                
+                maxCellWidth  = Math.max(maxWidth, fi.getCellX()+fi.getCellWidth());
+                maxCellHeight = Math.max(maxHeight, fi.getCellY()+fi.getCellHeight());
+                
+                boolean newWay = false;
+                if (newWay)
+                {
+                    Rectangle r = fi.getBoundsFromCellDim();
+                    pb.getPanel().setLocation(r.x, r.y);
+                    pb.getPanel().setSize(r.width, r.height);
+                    
+                } else
+                {
+                    pb.getPanel().setLocation(fi.getLeft(), fi.getTop());
+                    pb.getPanel().setSize(fi.getWidth(), fi.getHeight());
+                }
+                
+                System.out.println("MaxW: "+maxWidth+"  "+maxCellWidth);
+                System.out.println("MaxH: "+maxHeight+"  "+maxCellHeight);
             }
         }
-        panel.setPreferredSize(new Dimension(maxWidth, maxHeight));
-        panel.setSize(new Dimension(maxWidth, maxHeight));
+        
+        boolean newWay = false;
+        if (newWay)
+        {
+            int cw = FormFieldInfo.getSegWidth();
+            panel.setPreferredSize(new Dimension(maxCellWidth*cw, maxCellHeight*cw));
+            panel.setSize(new Dimension(maxCellWidth*cw, maxCellHeight*cw));
+        } else
+        {
+            panel.setPreferredSize(new Dimension(maxWidth, maxHeight));
+            panel.setSize(new Dimension(maxWidth, maxHeight));
+        }
+        
+        System.out.println("MaxW: "+maxWidth+"  "+maxCellWidth);
+        System.out.println("MaxH: "+maxHeight+"  "+maxCellHeight);
         
         return new Triple<JPanel, Integer, Integer>(panel, maxWidth, maxHeight);
     }
@@ -354,19 +476,43 @@ public class Sp5Forms extends JFrame
      */
     protected String getFormQuery()
     {
-        File file = XMLHelper.getConfigDir("../demo_files/Sp5Queries.xml");
+        File file = getConfigDir("../demo_files/Sp5ConvInfo.xml");
         try
         {
-            Element root = XMLHelper.readFileToDOM4J(file);
+            Element root = readFileToDOM4J(file);
             if (root != null)
             {
-                // query[@name='Form']
-                for (Iterator<?> i = root.elementIterator("query"); i.hasNext();) //$NON-NLS-1$
+                for (Object tblObj : root.selectNodes("mappings/table")) //$NON-NLS-1$
                 {
-                    Element queryNode = (Element) i.next();
+                    Element tblNode = (Element)tblObj;
+                    TableInfoMapping tblInfoMap = new TableInfoMapping(getAttr(tblNode, "newname", null), getAttr(tblNode, "oldname", null));
+                    
+                    for (Object fldObj : tblNode.selectNodes("field")) //$NON-NLS-1$
+                    {
+                        Element fldNode = (Element)fldObj;
+                        tblInfoMap.addFieldMapping(getAttr(fldNode, "newname", null), getAttr(fldNode, "oldname", null));
+                    }
+                    
+                    tblNameOldToNewHash.put(tblInfoMap.getOldTableName().toLowerCase(), tblInfoMap);
+                    tblNameNewToOldHash.put(tblInfoMap.getNewTableName().toLowerCase(), tblInfoMap);
+                    
+                    for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
+                    {
+                        if (tblNameNewToOldHash.get(ti.getName()) == null)
+                        {
+                            tblNameNewToOldHash.put(ti.getName(), new TableInfoMapping(ti.getName(), ti.getName()));
+                        }
+                    }
+                }
+                
+                // query[@name='Form']
+                for (Object qryObj : root.selectNodes("queries/query")) //$NON-NLS-1$
+                {
+                    Element queryNode = (Element)qryObj;                
                     System.out.println(queryNode.getText());
                     return queryNode.getText();
                 }
+
             }
         } catch (Exception e)
         {
@@ -390,6 +536,8 @@ public class Sp5Forms extends JFrame
      */
     protected void process()
     {
+        forms.clear();
+        
         Connection connection = DBConnection.getInstance().createConnection();
      
         String sql = getFormQuery();
@@ -469,11 +617,14 @@ public class Sp5Forms extends JFrame
      * @param tblName
      * @return
      */
-    protected DBTableInfo getTableInfo(final String tblName)
+    protected DBTableInfo getTableInfo(final String oldTblName)
     {
+        TableInfoMapping timp = tblNameOldToNewHash.get(oldTblName.toLowerCase());
+        String tblName = timp == null ? oldTblName : timp.getNewTableName();
+        
         DBTableIdMgr mgr = DBTableIdMgr.getInstance();
         
-        DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(tblName);
+        DBTableInfo tblInfo = mgr.getByShortClassName(tblName);
         if (tblInfo == null)
         {
             TableInfoMapping tblMapping = tblNameOldToNewHash.get(tblName);
@@ -536,17 +687,17 @@ public class Sp5Forms extends JFrame
                 TableInfoMapping tblMapping = tblNameNewToOldHash.get(tblInfo.getName());
                 if (tblMapping != null)
                 {
-                    String newChildName = tblMapping.getFieldMappings().get(oldFieldName);
+                    String newChildName = tblMapping.getNewName(oldFieldName);
                     if (newChildName != null)
                     {
-                        childInfo = tblInfo.getItemByName(oldFieldName);
+                        childInfo = tblInfo.getItemByName(newChildName);
                         if (childInfo == null)
                         {
-                            log.error("getFieldInfo - New Child Name that was mapped wasn't found in DBTableInfo: "+newChildName);
+                            log.error("getFieldInfo - New Child Name that was mapped wasn't found in DBTableInfo: ["+newChildName + "] tbl: [" + tblInfo.getName()+"]");
                         }
                     } else
                     {
-                        log.error("getFieldInfo - Old Child Name wasn't mapped: "+oldFieldName);
+                        log.error("getFieldInfo - Old Child Name wasn't mapped: ["+oldFieldName + "] tbl: [" + tblInfo.getName()+"]");
                     }
                 } else
                 {
@@ -605,7 +756,98 @@ public class Sp5Forms extends JFrame
             System.exit(0);
         }
     }
+    
+    private void openDB()
+    {
+        startup(); 
         
+        formsTable.setModel(new FormCellModel(forms));
+    }
+    
+    @SuppressWarnings({ "unchecked"})
+    private void openXML()
+    {
+        FileDialog fileDlg = new FileDialog((Frame)UIRegistry.getTopWindow(), "", FileDialog.LOAD);
+        
+        fileDlg.setFilenameFilter(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name)
+            {
+                return name.toLowerCase().endsWith(".xml");
+            }
+        });
+        fileDlg.setVisible(true);
+        
+        String fileName = fileDlg.getFile();
+        if (fileName != null)
+        {
+            File    iFile   = new File(fileDlg.getDirectory() + File.separator + fileName);
+            
+            XStream xstream = new XStream();
+            FormInfo.configXStream(xstream);
+            FormFieldInfo.configXStream(xstream);
+            
+            try
+            {
+                forms = (Vector<FormInfo>)xstream.fromXML(FileUtils.openInputStream(iFile));
+                formsTable.setModel(new FormCellModel(forms));
+                
+            } catch (IOException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+        
+    private void saveXML()
+    {
+        XStream xstream = new XStream();
+        FormInfo.configXStream(xstream);
+        FormFieldInfo.configXStream(xstream);
+        
+        try
+        {
+            String dbName = DBConnection.getInstance().getDatabaseName() + ".xml";
+            PrintWriter pw = new PrintWriter(new File(dbName));
+            xstream.toXML(forms, pw);
+            
+        } catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    
+    //----------------------------------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.FrameworkAppIFace#doAbout()
+     */
+    @Override
+    public void doAbout()
+    {
+        
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.FrameworkAppIFace#doExit(boolean)
+     */
+    @Override
+    public boolean doExit(boolean doAppExit)
+    {
+        System.exit(0);
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.FrameworkAppIFace#doPreferences()
+     */
+    @Override
+    public void doPreferences()
+    {
+    }
+    
     /**
      * @param args
      */
@@ -669,7 +911,6 @@ public class Sp5Forms extends JFrame
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
-        
                 try
                 {
                     if (!System.getProperty("os.name").equals("Mac OS X"))
@@ -678,41 +919,116 @@ public class Sp5Forms extends JFrame
                         PlasticLookAndFeel.setPlasticTheme(new DesertBlue());
                     }
                     
-                    Sp5Forms frame = new Sp5Forms();
+                    
+                    final Sp5Forms frame = new Sp5Forms();
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     frame.setBounds(0, 0, 800, 800);
+                    
+                    new MacOSAppHandler(frame);
                     
                     frame.startup();
                     
                     frame.createUI();
-                    JMenuBar mb = new JMenuBar();
-                    JMenu menu = new JMenu("File");
-                    JMenuItem mi = new JMenuItem("Exit");
-                    menu.add(mi);
-                    mb.add(menu);
+                    JMenuBar mb       = new JMenuBar();
+                    JMenu    fileMenu = new JMenu("File");
+                    
+                    JMenuItem openMI = new JMenuItem("Open XML File");
+                    fileMenu.add(openMI);
+                    openMI.addActionListener(new ActionListener(){
+                        @Override
+                        public void actionPerformed(ActionEvent e) 
+                        {
+                            frame.openXML();
+                        }
+                    });
+                    
+                    JMenuItem openDBMI = new JMenuItem("Open Database");
+                    fileMenu.add(openDBMI);
+                    openDBMI.addActionListener(new ActionListener(){
+                        @Override
+                        public void actionPerformed(ActionEvent e) 
+                        {
+                            frame.openDB();
+                        }
+                    });
+                    
+                    JMenuItem saveMI = new JMenuItem("Save");
+                    fileMenu.add(saveMI);
+                    saveMI.addActionListener(new ActionListener(){
+                        @Override
+                        public void actionPerformed(ActionEvent e) 
+                        {
+                            frame.saveXML();
+                        }
+                    });
+                    
+                    if (!UIHelper.isMacOS())
+                    {
+                        fileMenu.addSeparator();
+                        JMenuItem mi = new JMenuItem("Exit");
+                        fileMenu.add(mi);
+                        
+                        
+                        mi.addActionListener(new ActionListener(){
+            				@Override
+            				public void actionPerformed(ActionEvent e) 
+            				{
+            					System.exit(0);
+            				}
+                        });
+                    }
+                    
+                    mb.add(fileMenu);
                     frame.setJMenuBar(mb);
                     
-                    mi.addActionListener(new ActionListener(){
-        				@Override
-        				public void actionPerformed(ActionEvent e) 
-        				{
-        					System.exit(0);
-        				}
-                    });
                     centerAndShow(frame);
-                    
-
                 }
                 catch (Exception e)
                 {
                     log.error("Can't change L&F: ", e);
                 }
-                
-
-                
             }
         });
+    }
+    
+    
+    //------------------------------------------------------------------------------
+    public class Sp6FieldComboBoxRenderer extends JComboBox implements TableCellRenderer
+    {
+        public Sp6FieldComboBoxRenderer()
+        {
+            super(new DefaultComboBoxModel());
+        }
 
+        public Component getTableCellRendererComponent(JTable table,
+                                                       Object value,
+                                                       boolean isSelected,
+                                                       boolean hasFocus,
+                                                       int row,
+                                                       int column)
+        {
+            if (isSelected)
+            {
+                setForeground(table.getSelectionForeground());
+                super.setBackground(table.getSelectionBackground());
+            } else
+            {
+                setForeground(table.getForeground());
+                setBackground(table.getBackground());
+            }
+
+            // Select the current value
+            setSelectedItem(value);
+            return this;
+        }
+    }
+
+    public class Sp6FieldComboBoxEditor extends DefaultCellEditor
+    {
+        public Sp6FieldComboBoxEditor()
+        {
+            super(new JComboBox(new DefaultComboBoxModel()));
+        }
     }
 }
 
