@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<conv>
+	<queries>
+	    <query name="Form"><![CDATA[
+	SELECT FSet.FieldSetName as TableName,  CASE WHEN FullForm <> 0 THEN 'Full' ELSE 'Embedded' END AS FormVersion,
+	O.ObjectName as Sp5FieldName, Caption, case CL.ControlType
+	when 4 then 'Picklist'
+	when 5 then 'QueryCombo'
+	when 7 then 'Grid'
+	when 8 then 'EmbeddedForm'
+	when 9 then 'PopupButton'
+	when 20 then 'Memo'
+	when 21 then 'MenuItem'
+	when 46 then 'URL'
+	else 'default' end as ControlType,
+	case O.ObjectType
+	when 0 then 'Text'
+	when 1 then 'Memo - Remarks'
+	when 2 then 'Date'
+	when 3 then 'Real'
+	when 4 then 'YesNo'
+	when 5 then 'Integer'
+	when 6 then 'ManyToOne'
+	when 7 then 'OneToOne'
+	when 8 then 'OneToMany'
+	else 'other' end as DataType, rfs.FieldSetName as RelatedTableName,
+	CL.Left, CL.Top, CL.Width, CL.Height, ThemeName, fst.TextForValue as FormType, fst.FieldValue as TypeIDValue,
+	rfs.FieldSetId as RelatedTableId,C.RelatedSubTypeValues, O.ObjectType, CL.ControlType
+	FROM ((USYSMetaFieldSet AS FSet INNER JOIN USYSMetaObject AS O ON O.FieldSetID = FSet.FieldSetID)
+	INNER JOIN (USYSMetaControl AS C INNER JOIN USYSMetaControlLayout AS CL ON CL.ControlID = C.ControlID) ON C.ObjectID = O.ObjectID)
+	LEFT JOIN USYSMetaFieldSetSubType fst on fst.FieldsetSubTypeID = C.FieldSetSubTypeID
+	LEFT JOIN USYSMetaObject AS RO ON RO.ObjectID = O.RelatedObjectID
+	left join usysmetafieldset rfs on rfs.fieldsetid = ro.fieldsetid
+	WHERE
+	Visible <> 0 AND CL.ControlType <> 21
+	AND (ro.fieldsetid is null or ro.fieldsetid not in(8, 9, 32, 38, 39, 40, 41, 57, 68)) AND (C.fieldsetsubtypeid is null or C.fieldsetsubtypeid not in(78,79,136, 138, 139, 140,148,149,161,166,168,169,174,176,177))
+	 ORDER BY FSet.FieldSetName, ThemeName, fst.FieldValue, FullForm DESC, CL.Top, CL.Left]]>
+	     </query>
+	</queries>
+	<mappings>
+	   <table newname="Accession" oldname="Accession" >
+	       <field newname="AccessionNumber" oldname="Number"/>
+	       <field newname="AccessionDate" oldname="Date"/>
+	   </table>
+       <table newname="CollectingEventAttribute" oldname="Habitat" >
+           <field newname="CollectingEventAttributeID" oldname="HabitatID"/> 
+           <field newname="Number9" oldname="AirTempC"/>
+           <field newname="Number10" oldname="WaterTempC"/> 
+           <field newname="Number11" oldname="WaterpH"/> 
+           <field newname="Text12" oldname="Turbidity"/> 
+           <field newname="Text16" oldname="Clarity"/> 
+           <field newname="Text14" oldname="Salinity"/> 
+           <field newname="Text6" oldname="SoilType"/> 
+           <field newname="Number6" oldname="SoilPh"/>
+           <field newname="Number7" oldname="SoilTempC"/> 
+           <field newname="Text7" oldname="SoilMoisture"/> 
+           <field newname="Text15" oldname="Slope"/> 
+           <field newname="Text13" oldname="Vegetation"/> 
+           <field newname="Text17" oldname="HabitatType"/> 
+           <field newname="Text8" oldname="oldHabitatAttribute_Current_FieldName"/>
+           <field newname="Text9" oldname="Substrate"/> 
+           <field newname="Text10" oldname="SubstrateMoisture"/> 
+           <field newname="Number8" oldname="HeightAboveGround"/> 
+           <field newname="Text11" oldname="NearestNeighbor"/>
+           <field newname="Number13" oldname="minDepth"/> 
+           <field newname="Number12" oldname="maxDepth"/>
+       </table>	   
+       <table newname="Determination" oldname="Determination" >
+           <field newname="Taxon" oldname="TaxonName"/>
+           <field newname="DeterminedDate" oldname="Date"/>
+           <field newname="IsCurrent" oldname="Current"/>
+           <field newname="DeterminedBy" oldname="Agent"/>
+           <field newname="mMdifiedByAgent" oldname="LastEditedBy"/>
+       </table>
+       <table newname="CollectionObjectAttribute" oldname="BiologicalAttributes" >
+	       <field newname="CollectionObjectAttributeID" oldname="BiologicalObjectAttributesID"/>
+	       <field newname="Text10" oldname="Sex"/> 
+	       <field newname="Number11" oldname="Age"/> 
+	       <field newname="Number12" oldname="Stage"/> 
+	       <field newname="Number37" oldname="Weight"/>
+	       <field newname="Number38" oldname="Length"/> 
+	       <field newname="Number8" oldname="GosnerStage"/> 
+	       <field newname="Number9" oldname="SnoutVentLength"/>
+	       <field newname="Text8" oldname="Activity"/> 
+	       <field newname="Number10" oldname="LengthTail"/> 
+	       <field newname="Text13" oldname="ReproductiveCondition"/>
+	       <field newname="Text14" oldname="ObjCondition"/> 
+	       <field newname="Number11" oldname="LengthTarsus"/> 
+	       <field newname="Number12" oldname="LengthWing"/>
+	       <field newname="Number13" oldname="LengthHead"/> 
+	       <field newname="Number14" oldname="LengthBody"/> 
+	       <field newname="Number15" oldname="LengthMiddleToe"/>
+	       <field newname="Number16" oldname="LengthBill"/> 
+	       <field newname="Number17" oldname="TotalExposedCulmen"/> 
+	       <field newname="Number39" oldname="MaxLength"/> 
+	       <field newname="Number40" oldname="MinLength"/> 
+	       <field newname="Number18" oldname="LengthHindFoot"/> 
+	       <field newname="Number19" oldname="LengthForeArm"/> 
+	       <field newname="Number20" oldname="LengthTragus"/> 
+	       <field newname="Number21" oldname="LengthEar"/> 
+	       <field newname="Number22" oldname="EarFromNotch"/> 
+	       <field newname="Number23" oldname="Wingspan"/> 
+	       <field newname="Number24" oldname="LengthGonad"/> 
+	       <field newname="Number25" oldname="WidthGonad"/> 
+	       <field newname="Number26" oldname="LengthHeadBody"/> 
+	       <field newname="Number41" oldname="Width"/> 
+	       <field newname="Number27" oldname="HeightFinalWhorl"/> 
+	       <field newname="Number28" oldname="InsideHeightAperture"/> 
+	       <field newname="Number29" oldname="InsideWidthAperture"/> 
+	       <field newname="Number30" oldname="NumberWhorls"/> 
+	       <field newname="Number31" oldname="OuterLipThickness"/>
+	       <field newname="Number32" oldname="Mantle"/> 
+	       <field newname="Number42" oldname="Height"/> 
+	       <field newname="Number33" oldname="Diameter"/> 
+	       <field newname="Text9"    oldname="DBranchingAt"/>
+	   </table>
+	   <table newname="PreparationAttribute" oldname="Preparation" >
+	       <field newname="PreparationAttributeID" oldname="PreparationID"/> 
+	       <field newname="AttrDate" oldname="PreparedDate"/> 
+	       <field newname="Number3" oldname="MediumID"/> 
+	       <field newname="Text3" oldname="PartInformation"/> 
+	       <field newname="Text4" oldname="StartBoxNumber"/> 
+	       <field newname="Text5" oldname="EndBoxNumber"/> 
+	       <field newname="Text6" oldname="StartSlideNumber"/> 
+	       <field newname="Text7" oldname="EndSlideNumber"/> 
+	       <field newname="Text8" oldname="SectionOrientation"/> 
+	       <field newname="Text9" oldname="SectionWidth"/> 
+	       <field newname="Text26" oldname="size"/> 
+	       <field newname="Text10" oldname="URL"/> 
+	       <field newname="Text11" oldname="Identifier"/> 
+	       <field newname="Text12" oldname="NestLining"/> 
+	       <field newname="Text13" oldname="NestMaterial"/> 
+	       <field newname="Text14" oldname="NestLocation"/> 
+	       <field newname="Text15" oldname="SetMark"/> 
+	       <field newname="Number4" oldname="CollectedEggCount"/> 
+	       <field newname="Number5" oldname="CollectedParasiteEggCount"/> 
+	       <field newname="Number6" oldname="FieldEggCount"/> 
+	       <field newname="Number7" oldname="FieldParasiteEggCount"/> 
+	       <field newname="Text17" oldname="EggIncubationStage"/> 
+	       <field newname="Text18" oldname="EggDescription"/> 
+	       <field newname="Text19" oldname="Format"/> 
+	       <field newname="Text25" oldname="StorageInfo"/> 
+	       <field newname="Text22" oldname="preparationType"/>
+	       <field newname="Text23" oldname="ContainerType"/> 
+	       <field newname="Text24" oldname="Medium"/>
+	       <field newname="Text20" oldname="DNAConcentration"/> 
+	       <field newname="Text21" oldname="Volume"/>
+	       <field newname="Number9" oldname="NestCollected"/>
+	   </table>
+       <table newname="ReferenceWork" oldname="referencework" >
+           <field newname="IsPublished" oldname="Published"/>
+           <field newname="WorkDate" oldname="Date"/>
+       </table>
+       <table newname="Taxon" oldname="TaxonName" >
+           <field newname="FullName" oldname="FullTaxonName"/>
+       </table>
+	   
+	</mappings>
+</conv>
