@@ -226,11 +226,14 @@ public class DataBuilder
     
     public static GroupPerson createGroupPerson(final Agent group, 
                                                 final Agent agent, 
-                                                final int order)
+                                                final int order,
+                                                final Division division)
     {
         GroupPerson groupPerson = new GroupPerson();
         groupPerson.initialize();
         groupPerson.setOrderIndex(order);
+        
+        groupPerson.setDivision(division);
         
         if (true)
         {

@@ -19,9 +19,11 @@
 */
 package edu.ku.brc.af.core.db;
 
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -73,6 +75,7 @@ public class DBTableInfo extends DBInfoBase
     // Transient 
     protected Hashtable<String, DBFieldInfo>        fieldsHash = null;
     protected Hashtable<String, DBRelationshipInfo> relsHash   = null;
+    protected HashMap<String, String>               tblIndexHash = null;
     
 
     public DBTableInfo(final int    tableId, 
@@ -117,6 +120,24 @@ public class DBTableInfo extends DBInfoBase
     {
         relationships.clear();
         fields.clear();
+    }
+    
+    public void addTableIndex(final String indexName, final String columnNames)
+    {
+        if (tblIndexHash == null)
+        {
+            tblIndexHash = new HashMap<String, String>();
+        }
+        
+        if (StringUtils.isNotEmpty(indexName) && StringUtils.isNotEmpty(columnNames))
+        {
+            tblIndexHash.put(indexName, columnNames);
+        }
+    }
+    
+    public Map<String, String> getTableIndexMap()
+    {
+        return tblIndexHash;
     }
 
     /**

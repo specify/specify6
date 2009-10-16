@@ -43,9 +43,9 @@ import org.hibernate.annotations.Index;
         @UniqueConstraint(columnNames = { "Role", "GiftID", "AgentID" }) 
         })
 @org.hibernate.annotations.Table(appliesTo="giftagent", indexes =
-    {   @Index (name="GiftAgColMemIDX", columnNames={"CollectionMemberID"})
+    {   @Index (name="GiftAgDspMemIDX", columnNames={"DisciplineID"})
     })
-public class GiftAgent extends CollectionMember implements java.io.Serializable {
+public class GiftAgent extends DisciplineMember implements java.io.Serializable {
 
     // Fields    
 

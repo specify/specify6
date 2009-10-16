@@ -50,6 +50,7 @@ import static edu.ku.brc.specify.conversion.BasicSQLUtils.setShowErrors;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.setTblWriter;
 import static edu.ku.brc.ui.UIRegistry.showError;
 
+import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.io.File;
 import java.sql.Connection;
@@ -64,12 +65,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FileUtils;
@@ -124,8 +129,6 @@ import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.StorageTreeDefItem;
-import edu.ku.brc.specify.datamodel.TaxonTreeDef;
-import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeFactory;
@@ -135,6 +138,7 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
@@ -207,6 +211,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     protected Hashtable<String, Integer>                    catNumSchemeHash       = new Hashtable<String, Integer>();
     
     protected Hashtable<STD_DISCIPLINES, Pair<Integer, Boolean>> dispToObjTypeHash = new Hashtable<STD_DISCIPLINES, Pair<Integer, Boolean>>();
+    
+    // New Multi-Collection data members
+    protected Vector<CollectionInfo>                        collectionInfoList;
+    protected HashMap<Integer, AutoNumberingScheme>         catSeriesToAtuoNumSchemeHash = new HashMap<Integer, AutoNumberingScheme>();
+    
 
     protected Session                                       session;
 
@@ -306,70 +315,42 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     }
     
     /**
-     * @return true if to continue
+     * @return
      */
     public boolean initialize()
     {
-        colObjTypeID = findColObjTypeID();
+        collectionInfoList = CollectionInfo.getCollectionInfoList(oldDBConn);
         
-        Integer txnTypeCnt  = getCount(oldDBConn, "SELECT count(*) FROM taxonomytype WHERE TaxonomyTypeID IN (SELECT distinct TaxonomyTypeID FROM taxonname WHERE RankId <> 0)");
-        if (txnTypeCnt != null && txnTypeCnt > 0)
+        if (collectionInfoList != null && collectionInfoList.size() > 0)
         {
-            String sql = "SELECT tt.TaxonomyTypeID,TaxonomyTypeName,cnt FROM taxonomytype tt INNER JOIN (SELECT COUNT(*) as cnt, TaxonomyTypeID FROM " +
-                         "taxonname WHERE RankId <> 0 GROUP BY TaxonomyTypeID) tx ON tt.TaxonomyTypeID = tx.TaxonomyTypeID";
-            Vector<TaxonTypeHolder> datas = new Vector<TaxonTypeHolder>();
-            Vector<Object[]> rows = query(oldDBConn, sql); 
-            for (Object[] row : rows)
-            {
-                TaxonTypeHolder tth = new TaxonTypeHolder(row);
-                datas.add(tth);
-            }
+            JPanel panel = new JPanel(new BorderLayout());
+            JTable table = new JTable(CollectionInfo.getCollectionInfoTableModel());
             
-            if (rows.size() > 1)
+            panel.add(UIHelper.createLabel("Available Specify 5 Taxononmic Types", SwingConstants.CENTER), BorderLayout.NORTH);
+            panel.add(UIHelper.createScrollPane(table), BorderLayout.CENTER);
+            
+            CustomDialog dlg = new CustomDialog(null, "Taxononic Types", true, panel);
+            dlg.createUI();
+           
+            dlg.setSize(1024, 800);
+            
+            UIHelper.centerWindow(dlg);
+            dlg.setVisible(true);
+            
+            Pair<CollectionInfo, DisciplineType> pair = CollectionInfo.getDisciplineType(oldDBConn);
+            if (pair == null || pair.second == null)
             {
-                ToggleButtonChooserDlg<TaxonTypeHolder> dlg = new ToggleButtonChooserDlg<TaxonTypeHolder>((Frame)null, 
-                                                                                            "Choose a Taxonomy Type", 
-                                                                                            datas, 
-                                                                                            ToggleButtonChooserPanel.Type.RadioButton);
-                dlg.setVisible(true);
-                if (!dlg.isCancelled())
-                {
-                    taxonTypeHolder = dlg.getSelectedObject();
-                }
-            } else if (datas == null || datas.size() == 0)
-            {
-                UIRegistry.displayErrorDlg("There are no records in the Specify 5 TaxonomyTypeName table.\nThe converter will exit.");
-                try
-                {
-                    newDBConn.close();
-                    oldDBConn.close();
-                } catch (Exception ex) {}
-                HibernateUtil.shutdown();
-                System.exit(0);
-                
+                disciplineType = getStandardDisciplineName(pair.first.getTaxonomyTypeName());
             } else
             {
-                taxonTypeHolder = datas.get(0);
+                disciplineType = pair.second;
             }
-        } else
-        {
-            UIRegistry.showError("There are no taxonomytype in use. The Converter must exit.");
-            System.exit(1);
-        }
-
-        if (taxonTypeHolder != null)
-        {
-            disciplineType = getStandardDisciplineName(taxonTypeHolder.getName());
-            if (disciplineType == null)
-            {
-                String msg = "**** disciplineType couldn't be found in our DisciplineType lookup in SpecifyAppContextMgr["+ taxonTypeHolder.getName() + "]";
-                log.error(msg);
-                return false;
-            }
-            return true;
+            
+            return disciplineType != null;
         }
         return false;
     }
+    
     /**
      * @param newDBConn the newDBConn to set
      */
@@ -601,7 +582,15 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     public void mapIds() throws SQLException
     {
         log.debug("mapIds()");
-
+        
+        boolean skipRestOfMappings = false;
+        
+        // These are the names as they occur in the old datamodel
+        String[] tableNamesXXX = {
+                "CollectionObjectType",
+                "CollectionTaxonomyTypes",
+        };
+        
         // These are the names as they occur in the old datamodel
         String[] tableNames = {
                 "Accession",
@@ -655,9 +644,13 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "OtherIdentifier",
                 "Permit",
                 "Preparation", 
-                "Project", "ProjectCollectionObjects", "ReferenceWork", "Shipment", "Sound",
-                "SoundEventStorage", "Stratigraphy", "TaxonCitation", "TaxonName",
-                "TaxonomicUnitType", "TaxonomyType" };
+                "Project", 
+                "ProjectCollectionObjects", 
+                "ReferenceWork", 
+                "Shipment", 
+                "Sound",
+                "SoundEventStorage", 
+                "Stratigraphy", }; // NOTE: the TAXON tables are done in ConvertTaxonHelper
 
         // shouldCreateMapTables = false;
 
@@ -672,111 +665,112 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             }
         }
 
-        // This mapping is used by Discipline
-        idMapper = idMapperMgr.addTableMapper("TaxonomyType", "TaxonomyTypeID",
-                        "select TaxonomyTypeID, TaxonomyTypeName from taxonomytype where TaxonomyTypeID in (SELECT distinct TaxonomyTypeID from taxonname where RankId <> 0)");
-        if (shouldCreateMapTables)
+        if (!skipRestOfMappings)
         {
-            idMapper.setIndexIncremeter(this);
-            idMapper.mapAllIdsWithSQL();
-            idMapper.setIndexIncremeter(null);
+            //---------------------------------
+            // This mapping is used by Loans
+            //---------------------------------
+            idMapper = idMapperMgr.addTableMapper("Loan", "LoanID", "SELECT LoanID FROM loan WHERE Category = 0 ORDER BY LoanID");
+            if (shouldCreateMapTables)
+            {
+                idMapper.mapAllIdsWithSQL();
+            }
+    
+            //---------------------------------
+            // This mapping is used by Loans Preps
+            //---------------------------------
+            idMapper = idMapperMgr.addTableMapper("LoanPhysicalObject", "LoanPhysicalObjectID", "SELECT LoanPhysicalObjectID FROM loanphysicalobject lpo INNER JOIN loan l ON l.LoanID = lpo.LoanID WHERE l.Category = 0 ORDER BY l.LoanID");
+            if (shouldCreateMapTables)
+            {
+                idMapper.mapAllIdsWithSQL();
+            }
+    
+            //---------------------------------
+            // Map all the Logical IDs
+            //---------------------------------
+            idMapper = idMapperMgr.addTableMapper("collectionobjectcatalog", "CollectionObjectCatalogID");
+            if (shouldCreateMapTables)
+            {
+                idMapper.mapAllIds("select CollectionObjectID from collectionobject Where collectionobject.DerivedFromID Is Null order by CollectionObjectID");
+            }
+    
+            //---------------------------------
+            // Map all the Physical IDs
+            //---------------------------------
+            idMapper = idMapperMgr.addTableMapper("collectionobject", "CollectionObjectID");
+            if (shouldCreateMapTables)
+            {
+                idMapper.mapAllIds("select CollectionObjectID From collectionobject co WHERE co.CollectionObjectTypeID > 20 ORDER BY CollectionObjectID");
+            }
+
+            // meg commented out because it was blowing away map table created above
+            // // Map all the Physical IDs
+            // idMapper = idMapperMgr.addTableMapper("preparation", "PreparationID");
+            // if (shouldCreateMapTables)
+            // {
+            // idMapper.mapAllIds("select CollectionObjectID from collectionobject Where not
+            // (collectionobject.DerivedFromID Is Null) order by CollectionObjectID");
+            // }
+    
+            // Map all the Physical IDs
+            // Meg working copy, completely commented out.
+            //        idMapper = idMapperMgr.addTableMapper("geography", "GeographyID");
+            //        if (shouldCreateMapTables)
+            //        {
+            //            idMapper.mapAllIds("SELECT DISTINCT GeographyID,ContinentOrOcean,Country,State,County" +
+            //                  "FROM demo_fish2.geography" +
+            //                  "WHERE( (ContinentOrOcean IS NOT NULL) OR (Country IS NOT NULL) OR (State IS NOT NULL) OR (County IS NOT NULL) )" +
+            //                  "AND ( (IslandGroup IS NULL) AND (Island IS NULL) AND (WaterBody IS NULL) AND (Drainage IS NULL) ) " +
+            //                  "GROUP BY ContinentOrOcean,Country,State,County" );
+            //        }
+            
+            // idMapper = idMapperMgr.addTableMapper("geography", "GeographyID");
+            // if (shouldCreateMapTables)
+            // {
+            // idMapper.mapAllIds("SELECT DISTINCT GeographyID,ContinentOrOcean,Country,State,County" +
+            // "FROM demo_fish2.geography" +
+            // "WHERE( (ContinentOrOcean IS NOT NULL) OR (Country IS NOT NULL) OR (State IS NOT NULL) OR
+            // (County IS NOT NULL) )" +
+            // "AND ( (IslandGroup IS NULL) AND (Island IS NULL) AND (WaterBody IS NULL) AND (Drainage
+            // IS NULL) ) " +
+            // "GROUP BY ContinentOrOcean,Country,State,County" );
+            // }
+    
+            // Meg had to added conditional for Current field
+            String oldDetermination_Current      = "Current";
+            String oldDetermination_CurrentValue = "1";
+    
+            /*if (BasicSQLUtils.mySourceServerType == BasicSQLUtils.SERVERTYPE.MySQL)
+            {
+                oldDetermination_Current = "IsCurrent";
+                oldDetermination_CurrentValue = "-1";
+            }*/
+            // Map all the CollectionObject to its TaxonomyType
+            // Meg had to add taxonname.TaxonomyTypeID to the GroupBy clause for SQL Server, ugh.
+            // IdHashMapper idHashMapper = idMapperMgr.addHashMapper("ColObjCatToTaxonType", "Select
+            // collectionobjectcatalog.CollectionObjectCatalogID, taxonname.TaxonomyTypeID From
+            // collectionobjectcatalog Inner Join determination ON determination.BiologicalObjectID =
+            // collectionobjectcatalog.CollectionObjectCatalogID Inner Join taxonname ON
+            // taxonname.TaxonNameID = determination.TaxonNameID Where determination.IsCurrent = '-1'
+            // group by collectionobjectcatalog.CollectionObjectCatalogID, taxonname.TaxonomyTypeID");
+            IdHashMapper idHashMapper = idMapperMgr.addHashMapper(
+                            "ColObjCatToTaxonType",
+                            "Select collectionobjectcatalog.CollectionObjectCatalogID, taxonname.TaxonomyTypeID From collectionobjectcatalog " +
+                            "Inner Join determination ON determination.BiologicalObjectID = collectionobjectcatalog.CollectionObjectCatalogID " +
+                            "Inner Join taxonname ON taxonname.TaxonNameID = determination.TaxonNameID Where determination."
+                                    + oldDetermination_Current
+                                    + " = '"
+                                    + oldDetermination_CurrentValue
+                                    + "'  group by collectionobjectcatalog.CollectionObjectCatalogID, taxonname.TaxonomyTypeID");
+    
+            if (shouldCreateMapTables)
+            {
+                idHashMapper.mapAllIds();
+                log.info("colObjTaxonMapper: " + idHashMapper.size());
+    
+            }
         }
-
-        // This mapping is used by Loans
-        idMapper = idMapperMgr.addTableMapper("Loan", "LoanID", "SELECT LoanID FROM loan WHERE Category = 0 ORDER BY LoanID");
-        if (shouldCreateMapTables)
-        {
-            idMapper.mapAllIdsWithSQL();
-        }
-
-        // This mapping is used by Loans Preps
-        idMapper = idMapperMgr.addTableMapper("LoanPhysicalObject", "LoanPhysicalObjectID", "SELECT LoanPhysicalObjectID FROM loanphysicalobject lpo INNER JOIN loan l ON l.LoanID = lpo.LoanID WHERE l.Category = 0 ORDER BY l.LoanID");
-        if (shouldCreateMapTables)
-        {
-            idMapper.mapAllIdsWithSQL();
-        }
-
-        // Map all the Logical IDs
-        idMapper = idMapperMgr.addTableMapper("collectionobjectcatalog", "CollectionObjectCatalogID");
-        if (shouldCreateMapTables)
-        {
-            idMapper.mapAllIds("select CollectionObjectID from collectionobject Where collectionobject.DerivedFromID Is Null order by CollectionObjectID");
-        }
-
-        // Map all the Physical IDs
-        idMapper = idMapperMgr.addTableMapper("collectionobject", "CollectionObjectID");
-        if (shouldCreateMapTables)
-        {
-            idMapper.mapAllIds("select CollectionObjectID From collectionobject co WHERE co.CollectionObjectTypeID > 20 ORDER BY CollectionObjectID");
-        }
-
-        // meg commented out because it was blowing away map table created above
-        // // Map all the Physical IDs
-        // idMapper = idMapperMgr.addTableMapper("preparation", "PreparationID");
-        // if (shouldCreateMapTables)
-        // {
-        // idMapper.mapAllIds("select CollectionObjectID from collectionobject Where not
-        // (collectionobject.DerivedFromID Is Null) order by CollectionObjectID");
-        // }
-
-        // Map all the Physical IDs
-        // Meg working copy, completely commented out.
-        //        idMapper = idMapperMgr.addTableMapper("geography", "GeographyID");
-        //        if (shouldCreateMapTables)
-        //        {
-        //            idMapper.mapAllIds("SELECT DISTINCT GeographyID,ContinentOrOcean,Country,State,County" +
-        //                  "FROM demo_fish2.geography" +
-        //                  "WHERE( (ContinentOrOcean IS NOT NULL) OR (Country IS NOT NULL) OR (State IS NOT NULL) OR (County IS NOT NULL) )" +
-        //                  "AND ( (IslandGroup IS NULL) AND (Island IS NULL) AND (WaterBody IS NULL) AND (Drainage IS NULL) ) " +
-        //                  "GROUP BY ContinentOrOcean,Country,State,County" );
-        //        }
         
-        // idMapper = idMapperMgr.addTableMapper("geography", "GeographyID");
-        // if (shouldCreateMapTables)
-        // {
-        // idMapper.mapAllIds("SELECT DISTINCT GeographyID,ContinentOrOcean,Country,State,County" +
-        // "FROM demo_fish2.geography" +
-        // "WHERE( (ContinentOrOcean IS NOT NULL) OR (Country IS NOT NULL) OR (State IS NOT NULL) OR
-        // (County IS NOT NULL) )" +
-        // "AND ( (IslandGroup IS NULL) AND (Island IS NULL) AND (WaterBody IS NULL) AND (Drainage
-        // IS NULL) ) " +
-        // "GROUP BY ContinentOrOcean,Country,State,County" );
-        // }
-
-        // Meg had to added conditional for Current field
-        String oldDetermination_Current      = "Current";
-        String oldDetermination_CurrentValue = "1";
-
-        /*if (BasicSQLUtils.mySourceServerType == BasicSQLUtils.SERVERTYPE.MySQL)
-        {
-            oldDetermination_Current = "IsCurrent";
-            oldDetermination_CurrentValue = "-1";
-        }*/
-        // Map all the CollectionObject to its TaxonomyType
-        // Meg had to add taxonname.TaxonomyTypeID to the GroupBy clause for SQL Server, ugh.
-        // IdHashMapper idHashMapper = idMapperMgr.addHashMapper("ColObjCatToTaxonType", "Select
-        // collectionobjectcatalog.CollectionObjectCatalogID, taxonname.TaxonomyTypeID From
-        // collectionobjectcatalog Inner Join determination ON determination.BiologicalObjectID =
-        // collectionobjectcatalog.CollectionObjectCatalogID Inner Join taxonname ON
-        // taxonname.TaxonNameID = determination.TaxonNameID Where determination.IsCurrent = '-1'
-        // group by collectionobjectcatalog.CollectionObjectCatalogID, taxonname.TaxonomyTypeID");
-        IdHashMapper idHashMapper = idMapperMgr.addHashMapper(
-                        "ColObjCatToTaxonType",
-                        "Select collectionobjectcatalog.CollectionObjectCatalogID, taxonname.TaxonomyTypeID From collectionobjectcatalog " +
-                        "Inner Join determination ON determination.BiologicalObjectID = collectionobjectcatalog.CollectionObjectCatalogID " +
-                        "Inner Join taxonname ON taxonname.TaxonNameID = determination.TaxonNameID Where determination."
-                                + oldDetermination_Current
-                                + " = '"
-                                + oldDetermination_CurrentValue
-                                + "'  group by collectionobjectcatalog.CollectionObjectCatalogID, taxonname.TaxonomyTypeID");
-
-        if (shouldCreateMapTables)
-        {
-            idHashMapper.mapAllIds();
-            log.info("colObjTaxonMapper: " + idHashMapper.size());
-
-        }
-
         // When you run in to this table1.field, go to that table2 and look up the id
         String[] mappings = {
                 // "DeaccessionCollectionObject", "DeaccessionCollectionObjectID",
@@ -926,15 +920,17 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 // XXX "Permit", "IssueeID", "AgentAddress", "AgentAddressID",
                 // XXX "Sound", "RecordedByID", "Agent", "AgentID",
                 
-                "TaxonCitation",
-                "ReferenceWorkID",
-                "ReferenceWork",
-                "ReferenceWorkID",
+                // done in ConvertTaxonHelper
+                //"TaxonCitation", 
+                //"ReferenceWorkID",
+                //"ReferenceWork",
+                //"ReferenceWorkID",
                 
-                "TaxonCitation",
-                "TaxonNameID",
-                "TaxonName",
-                "TaxonNameID",
+                //"TaxonCitation",
+                //"TaxonNameID",
+                //"TaxonName",
+                //"TaxonNameID",
+                
                 // XXX "Determination", "DeterminerID", "Agent", "AgentID",
                 
                 "Determination",
@@ -995,17 +991,19 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "LoanAgents", "LoanID", "Loan", "LoanID",
                 // XXX "LoanAgents", "AgentAddressID", "AgentAddress", "AgentAddressID",
 
+                // done in ConvertTaxonHelper
                 // taxonname ID mappings
-                "TaxonName", "ParentTaxonNameID", "TaxonName", "TaxonNameID", "TaxonName",
-                "TaxonomicUnitTypeID", "TaxonomicUnitType", "TaxonomicUnitTypeID", "TaxonName",
-                "TaxonomyTypeID", "TaxonomyType", "TaxonomyTypeID", "TaxonName", "AcceptedID",
-                "TaxonName", "TaxonNameID",
+                //"TaxonName", "ParentTaxonNameID", "TaxonName", "TaxonNameID", "TaxonName",
+                //"TaxonomicUnitTypeID", "TaxonomicUnitType", "TaxonomicUnitTypeID", "TaxonName",
+                //"TaxonomyTypeID", "TaxonomyType", "TaxonomyTypeID", "TaxonName", "AcceptedID",
+                //"TaxonName", "TaxonNameID",
 
                 // taxonomytype ID mappings
                 // NONE
 
                 // taxonomicunittype ID mappings
-                "TaxonomicUnitType", "TaxonomyTypeID", "TaxonomyType", "TaxonomyTypeID" };
+                //"TaxonomicUnitType", "TaxonomyTypeID", "TaxonomyType", "TaxonomyTypeID" 
+                };
 
         for (int i = 0; i < mappings.length; i += 4)
         {
@@ -1604,7 +1602,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             {
                 toTableName = "loanreturnpreparation";
                 
-                String[] ignoredFields = { "QuantityReturned", "Version", "CreatedByAgentID",  "ModifiedByAgentID", "CollectionMemberID" };
+                String[] ignoredFields = { "QuantityReturned", "Version", "CreatedByAgentID",  "ModifiedByAgentID", "DisciplineID" };
                 setFieldsToIgnoreWhenMappingNames(ignoredFields);
                 errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for
                                                                 // DeaccessionPhysicalObjectID
@@ -1631,7 +1629,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                                                 // ContainingReferenceWorkID
             } else if (fromTableName.equals("shipment"))
             {
-                String[] ignoredFields = { "GUID", "Version", "CreatedByAgentID", "ModifiedByAgentID", "CollectionMemberID" };
+                String[] ignoredFields = { "GUID", "Version", "CreatedByAgentID", "ModifiedByAgentID", "DisciplineID" };
                 setFieldsToIgnoreWhenMappingNames(ignoredFields);
                 setFieldsToIgnoreWhenMappingIDs(new String[] { "ShipmentMethodID" });
 
@@ -2036,7 +2034,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      * @param taxonomyTypeName the name
      * @return the ID (record id) of the data type
      */
-    public int createDataType(final String taxonomyTypeName)
+    public int createDataType()
     {
         int    dataTypeId = -1;
         String dataTypeName = "Biota";//getStandardDataTypeName(taxonomyTypeName);
@@ -2210,7 +2208,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             
             curDivisionID = getNextIndex();
             
-            Statement     updateStatement = newDBConn.createStatement();
+            Statement updateStatement = newDBConn.createStatement();
             
             // Adding Institution
             strBuf.append("INSERT INTO division (DivisionID, InstitutionID, TimestampModified, DisciplineType, Name, AltName, Abbrev, TimestampCreated, ");
@@ -2226,6 +2224,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             strBuf.append(getCreatorAgentId(null) + "," + getModifiedByAgentId(null) + ",0, ");
             strBuf.append(curDivisionID); // UserGroupScopeID
             strBuf.append(")");
+            
             log.info(strBuf.toString());
 
             updateStatement.executeUpdate(strBuf.toString());
@@ -2284,9 +2283,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      * @param specifyUserId
      * @return true on success, false on failure
      */
-    public boolean convertCollectionObjectDefs(final int   specifyUserId,
-                                               final int   catSeriesId,
-                                               final Agent userAgent)
+    public boolean convertCollectionObjectTypes(final int   specifyUserId,
+                                                final Agent userAgent)
     {
         try
         {
@@ -2302,229 +2300,164 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             Hashtable<Integer, Integer> newColObjIDTotaxonomyTypeID = new Hashtable<Integer, Integer>();
             Hashtable<Integer, String> taxonomyTypeIDToTaxonomyName = new Hashtable<Integer, String>();
             
-            TableWriter tblWriter = convLogger.getWriter("convertCollectionObjectDefs.html", "Collection Object Defs");
+            TableWriter tblWriter = convLogger.getWriter("convertCollectionObjectTypes.html", "Collection Object Type");
 
-            String  taxonomyTypeName = taxonTypeHolder.getName();
-            Integer taxonomyTypeID   = taxonTypeHolder.getId();
-            String  lastEditedBy     = null;
-            
-            String msg = "Creating a new Discipline for taxonomyTypeName[" + taxonomyTypeName + "] disciplineType[" + disciplineType.getTitle() + "]";
-            log.info(msg);
-            tblWriter.log(msg);
-            
-            STD_DISCIPLINES dspType = disciplineType.getDisciplineType();
-            
-            boolean isEmbeddedCE = dspType != STD_DISCIPLINES.fish;
-
-            taxonomyTypeName = disciplineType.getName();
-
-            // Figure out what type of standard data type this is from the
-            // CollectionObjectTypeName
-            setIdentityInsertOFFCommandForSQLServer(newDBConn, "datatype", BasicSQLUtils.myDestinationServerType);
-
-            int dataTypeId = createDataType(taxonomyTypeName);
-            if (dataTypeId == -1)
+            int collectionCnt      = 0;
+            int prevTaxonomyTypeID = -1;
+            for (CollectionInfo info : collectionInfoList)
             {
-                msg = "**** Had to Skip record because of DataType mapping error[" + taxonomyTypeName + "]";
-                log.error(msg);
-                tblWriter.logError(msg);
-                System.exit(1);
-            }
+                String  taxonomyTypeName = info.getTaxonomyTypeName();
+                Integer taxonomyTypeID   = info.getTaxonomyTypeId();
+                String  lastEditedBy     = null;
+                
+                String msg = "Creating a new Discipline for taxonomyTypeName[" + taxonomyTypeName + "] disciplineType[" + disciplineType.getTitle() + "]";
+                log.info(msg);
+                tblWriter.log(msg);
+                
+                DisciplineType  disciplineTypeObj = getStandardDisciplineName(info.getTaxonomyTypeName());
+                STD_DISCIPLINES dspType           = disciplineTypeObj.getDisciplineType();
+                boolean         isEmbeddedCE      = dspType != STD_DISCIPLINES.fish;
 
-            taxonomyTypeIDToTaxonomyName.put(taxonomyTypeID, taxonomyTypeName);
+                taxonomyTypeName = disciplineTypeObj.getName();
 
-            /*
-             * Discipline
-                +-----------------------------+-------------+------+-----+---------+----------------+
-                | Field                       | Type        | Null | Key | Default | Extra          |
-                +-----------------------------+-------------+------+-----+---------+----------------+
-                | DisciplineID                | int(11)     | NO   | PRI | NULL    | auto_increment | 
-                | TimestampCreated            | datetime    | NO   |     |         |                | 
-                | TimestampModified           | datetime    | YES  |     | NULL    |                | 
-                | Version                     | int(11)     | YES  |     | NULL    |                | 
-                | Name                        | varchar(64) | YES  | MUL | NULL    |                | 
-                | Title                       | varchar(64) | YES  |     | NULL    |                | 
-                | LithoStratTreeDefID         | int(11)     | YES  | MUL | NULL    |                | 
-                | DivisionID                  | int(11)     | NO   | MUL |         |                | 
-                | ModifiedByAgentID           | int(11)     | YES  | MUL | NULL    |                | 
-                | DataTypeID                  | int(11)     | NO   | MUL |         |                | 
-                | GeographyTreeDefID          | int(11)     | NO   | MUL |         |                | 
-                | GeologicTimePeriodTreeDefID | int(11)     | NO   | MUL |         |                | 
-                | CreatedByAgentID            | int(11)     | YES  | MUL | NULL    |                | 
-                | TaxonTreeDefID              | int(11)     | YES  | MUL | NULL    |                | 
-                | StorageTreeDefID            | int(11)     | YES  | MUL | NULL    |                | 
-                +-----------------------------+-------------+------+-----+---------+----------------+
-             */
-
-            // use the old CollectionObjectTypeName as the new Discipline name
-            setIdentityInsertONCommandForSQLServer(newDBConn, "discipline", BasicSQLUtils.myDestinationServerType);
-            Statement     updateStatement = newDBConn.createStatement();
-            StringBuilder strBuf2         = new StringBuilder();
-            
-            curDisciplineID = taxonomyTypeMapper.get(taxonomyTypeID);
-            
-            // adding DivisioniID
-            strBuf2.append("INSERT INTO discipline (DisciplineID, TimestampModified, Type, Name, TimestampCreated, ");
-            strBuf2.append("DataTypeID, GeographyTreeDefID, GeologicTimePeriodTreeDefID, TaxonTreeDefID, DivisionID, ");
-            strBuf2.append("CreatedByAgentID, ModifiedByAgentID, Version, UserGroupScopeId) VALUES (");
-            strBuf2.append(curDisciplineID + ",");
-            strBuf2.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampModified
-            strBuf2.append("'" + disciplineType.getName() + "',");
-            strBuf2.append("'" + disciplineType.getTitle() + "',");
-            strBuf2.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampCreated
-            strBuf2.append(dataTypeId + ",");
-            strBuf2.append("1,"); // GeographyTreeDefID
-            strBuf2.append("1,"); // GeologicTimePeriodTreeDefID
-            strBuf2.append("1,"); // TaxonTreeDefID
-
-            strBuf2.append(division.getDivisionId() + ","); // DivisionID
-            strBuf2.append(getCreatorAgentId(null) + "," + getModifiedByAgentId(lastEditedBy) + ",0, ");
-            strBuf2.append(curDisciplineID);  // UserGroupScopeId
-            strBuf2.append(")");
-            // strBuf2.append("NULL)");// UserPermissionID//User/Security changes
-            log.info(strBuf2.toString());
-
-            removeForeignKeyConstraints(newDBConn, BasicSQLUtils.myDestinationServerType);
-            updateStatement.executeUpdate(strBuf2.toString());
-            
-            addAgentDisciplineJoin(userAgent.getAgentId(), curDisciplineID);
-            
-            updateStatement.clearBatch();
-            updateStatement.close();
-            updateStatement = null;
-            setIdentityInsertOFFCommandForSQLServer(newDBConn, "discipline", BasicSQLUtils.myDestinationServerType);
-            Integer disciplineID = getHighestId(newDBConn, "DisciplineID", "discipline");
-
-            newColObjIDTotaxonomyTypeID.put(disciplineID, taxonomyTypeID);
-
-            msg = "Created new discipline[" + taxonomyTypeName + "] is dataType ["  + dataTypeId + "]";
-            log.info(msg);
-            tblWriter.log(msg);
-        
-            //String msg = "Discipline Records: " + recordCnt;
-            //log.info(msg);
-            //tblWriter.log(msg);
-
-            if (taxonomyTypeMapper.size() > 0)
-            {
-                // Now convert over all Collection
-
-                String sql = "SELECT catalogseries.CatalogSeriesID, catalogseries.SeriesName, taxonomytype.TaxonomyTypeName, "
-                        + "catalogseries.CatalogSeriesPrefix, catalogseries.Remarks, catalogseries.LastEditedBy, catalogseriesdefinition.CatalogSeriesDefinitionID, "
-                        + "taxonomytype.TaxonomyTypeID From catalogseries Inner Join catalogseriesdefinition ON "
-                        + "catalogseries.CatalogSeriesID = catalogseriesdefinition.CatalogSeriesID Inner Join collectiontaxonomytypes ON "
-                        + "catalogseriesdefinition.ObjectTypeID = collectiontaxonomytypes.BiologicalObjectTypeID Inner Join taxonomytype ON "
-                        + "collectiontaxonomytypes.TaxonomyTypeID = taxonomytype.TaxonomyTypeID  WHERE catalogseries.CatalogSeriesID = "+ catSeriesId +" order by catalogseries.CatalogSeriesID";
-                log.info(sql);
-
-                Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-                ResultSet rs   = stmt.executeQuery(sql.toString());
-
-                Hashtable<String, Boolean> seriesNameHash = new Hashtable<String, Boolean>();
-
-                int recordCnt = 0;
-                while (rs.next())
+                // Figure out what type of standard data type this is from the
+                // CollectionObjectTypeName
+                setIdentityInsertOFFCommandForSQLServer(newDBConn, "datatype", BasicSQLUtils.myDestinationServerType);
+    
+                int dataTypeId = createDataType();
+                if (dataTypeId == -1)
                 {
-                    int catalogSeriesID = rs.getInt(1);
-                    String seriesName   = rs.getString(2);
-                    String taxTypeName  = rs.getString(3);
-                    String prefix       = rs.getString(4);
-                    String remarks      = rs.getString(5);
-                    
-                    lastEditedBy        = rs.getString(6);
-                    taxonomyTypeID      = rs.getInt(8);
-                    
-                    String newSeriesName = seriesName + " " + taxTypeName;
-                    if (seriesNameHash.get(newSeriesName) != null)
+                    msg = "**** Had to Skip record because of DataType mapping error[" + taxonomyTypeName + "]";
+                    log.error(msg);
+                    tblWriter.logError(msg);
+                    System.exit(1);
+                }
+            
+                Integer catalogSeriesID = info.getCatSeriesId();
+                String seriesName       = info.getCatSeriesName();
+                String taxTypeName      = info.getTaxonomyTypeName();
+                String prefix           = info.getCatSeriesPrefix();
+                String remarks          = info.getCatSeriesRemarks();
+                
+                lastEditedBy            = info.getCatSeriesLastEditedBy();
+                taxonomyTypeID          = info.getTaxonomyTypeId();
+                
+                AutoNumberingScheme cns = null;
+                if (catalogSeriesID != null && StringUtils.isNotEmpty(seriesName))
+                {
+                    cns = catSeriesToAtuoNumSchemeHash.get(catalogSeriesID);
+                    if (cns == null)
                     {
-                        msg = "Rebuilt Collection Name [" + newSeriesName + "] is not unique.";
-                        log.error(msg);
-                        tblWriter.logError(msg);
-
-                    } else
-                    {
-                        seriesNameHash.put(seriesName, true);
+                        Session localSession = HibernateUtil.getNewSession();
+                        cns = new AutoNumberingScheme();
+                        cns.initialize();
+                        cns.setIsNumericOnly(true);
+                        cns.setSchemeClassName("");
+                        cns.setSchemeName(seriesName);
+                        cns.setTableNumber(CollectionObject.getClassTableId());
+                        Transaction trans = localSession.beginTransaction();
+                        localSession.save(cns);
+                        trans.commit();
+                        catSeriesToAtuoNumSchemeHash.put(catalogSeriesID, cns);
                     }
+                } else
+                {
+                    seriesName = taxTypeName;
+                }
+                
+                Integer catNumSchemeId = cns != null ? cns.getAutoNumberingSchemeId() : null;
+                
+                String dateTimeNow = dateTimeFormatter.format(now);
+                //---------------------------------------------------------------------------------
+                //-- Create Discipline
+                //---------------------------------------------------------------------------------
+                int newColObjdefID = taxonomyTypeMapper.get(taxonomyTypeID);
+                
+                taxonomyTypeIDToTaxonomyName.put(taxonomyTypeID, taxonomyTypeName);
 
-                    Session localSession = HibernateUtil.getNewSession();
-                    AutoNumberingScheme cns = new AutoNumberingScheme();
-                    cns.initialize();
-                    cns.setIsNumericOnly(true);
-                    cns.setSchemeClassName("");
-                    cns.setSchemeName(newSeriesName);
-                    cns.setTableNumber(CollectionObject.getClassTableId());
-                    Transaction trans = localSession.beginTransaction();
-                    localSession.save(cns);
-                    trans.commit();
-
-                    Integer catNumSchemeId = cns.getAutoNumberingSchemeId();
+                // use the old CollectionObjectTypeName as the new Discipline name
+                setIdentityInsertONCommandForSQLServer(newDBConn, "discipline", BasicSQLUtils.myDestinationServerType);
+                Statement     updateStatement = newDBConn.createStatement();
+                StringBuilder strBuf2         = new StringBuilder();
+                
+                if (taxonomyTypeID != prevTaxonomyTypeID)
+                {
+                    curDisciplineID = taxonomyTypeMapper.get(taxonomyTypeID);
+                    info.setDisciplineId(curDisciplineID);
                     
-                    // catNumSchemeHash.put(hashKey, catNumSchemeId);
-                    // localSession.close();
-
-                    // Now create the proper record in the Join Table
-                    /*
-                        +---------------------------+-------------+------+-----+---------+----------------+
-                        | Field                     | Type        | Null | Key | Default | Extra          |
-                        +---------------------------+-------------+------+-----+---------+----------------+
-                        | CollectionID              | int(11)     | NO   | PRI | NULL    | auto_increment | 
-                        | DisciplineID              | int(11)     | NO   | MUL |         |                | 
-                        | CollectionName            | varchar(50) | YES  | MUL | NULL    |                | 
-                        | CollectionPrefix          | varchar(50) | YES  |     | NULL    |                | 
-                        | Remarks                   | text        | YES  |     | NULL    |                | 
-                        | CatalogNumberingSchemeID  | int(11)     | NO   | MUL |         |                | 
-                        | IsEmbeddedCollectingEvent | bit(1)      | NO   |     |         |                | 
-                        | TimestampCreated          | datetime    | NO   |     |         |                | 
-                        | TimestampModified         | datetime    | YES  |     | NULL    |                | 
-                        | CreatedByAgentID          | int(11)     | YES  | MUL | NULL    |                | 
-                        | ModifiedByAgentID         | int(11)     | YES  | MUL | NULL    |                | 
-                        | Version                   | int(11)     | YES  |     | NULL    |                |
-                         
-                        | CollectionType            | varchar(32) | YES  |     | NULL    |                | 
-                        | Description               | text        | YES  |     | NULL    |                | 
-                        | DevelopmentStatus         | varchar(32) | YES  |     | NULL    |                | 
-                        | InstitutionType           | varchar(32) | YES  |     | NULL    |                | 
-                        | KingdomCoverage           | varchar(32) | YES  |     | NULL    |                | 
-                        | PreservationMethodType    | varchar(32) | YES  |     | NULL    |                | 
-                        | PrimaryFocus              | varchar(32) | YES  |     | NULL    |                | 
-                        | PrimaryPurpose            | varchar(32) | YES  |     | NULL    |                | 
-                        | ContactID                 | int(11)     | YES  | MUL | NULL    |                | 
-                        | CuratorID                 | int(11)     | YES  | MUL | NULL    |                | 
-                        +---------------------------+-------------+------+-----+---------+----------------+
-                     */
-
-                    int newColObjdefID = taxonomyTypeMapper.get(taxonomyTypeID);
+                    // adding DivisioniID
+                    strBuf2.setLength(0);
+                    strBuf2.append("INSERT INTO discipline (DisciplineID, TimestampModified, Type, Name, TimestampCreated, ");
+                    strBuf2.append("DataTypeID, GeographyTreeDefID, GeologicTimePeriodTreeDefID, TaxonTreeDefID, DivisionID, ");
+                    strBuf2.append("CreatedByAgentID, ModifiedByAgentID, Version, UserGroupScopeId) VALUES (");
+                    strBuf2.append(info.getDisciplineId() + ",");
+                    strBuf2.append("'" + dateTimeNow + "',"); // TimestampModified
+                    strBuf2.append("'" + disciplineTypeObj.getName() + "',");
+                    strBuf2.append("'" + disciplineTypeObj.getTitle() + "',");
+                    strBuf2.append("'" + dateTimeNow + "',"); // TimestampCreated
+                    strBuf2.append(dataTypeId + ",");
+                    strBuf2.append("1,"); // GeographyTreeDefID
+                    strBuf2.append("1,"); // GeologicTimePeriodTreeDefID
+                    strBuf2.append("1,"); // TaxonTreeDefID
+        
+                    strBuf2.append(division.getDivisionId() + ","); // DivisionID
+                    strBuf2.append(getCreatorAgentId(null) + "," + getModifiedByAgentId(lastEditedBy) + ",0, ");
+                    strBuf2.append(curDisciplineID);  // UserGroupScopeId
+                    strBuf2.append(")");
+                    // strBuf2.append("NULL)");// UserPermissionID//User/Security changes
+                    log.info(strBuf2.toString());
+        
+                    removeForeignKeyConstraints(newDBConn, BasicSQLUtils.myDestinationServerType);
+                    updateStatement.executeUpdate(strBuf2.toString());
                     
-                    curCollectionID = getNextIndex();
-
-                    updateStatement = newDBConn.createStatement();
-                    strBuf.setLength(0);
-                    strBuf.append("INSERT INTO collection (CollectionID, DisciplineID, CollectionName, Code, Remarks, CatalogFormatNumName, ");
-                    strBuf.append("IsEmbeddedCollectingEvent, TimestampCreated, TimestampModified, CreatedByAgentID, ModifiedByAgentID, ");
-                    strBuf.append("Version, UserGroupScopeId) VALUES (");
-                    strBuf.append(curCollectionID + ",");
-                    strBuf.append(newColObjdefID + ",");
-                    strBuf.append(getStrValue(newSeriesName) + ",");
-                    strBuf.append(getStrValue(prefix) + ",");
-                    strBuf.append(getStrValue(remarks) + ",");
-                    strBuf.append("'CatalogNumberNumeric',");
-                    strBuf.append((isEmbeddedCE ? 1 : 0)  + ",");
-                    strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampModified
-                    strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampCreated
-                    strBuf.append(getCreatorAgentId(null) + "," + getModifiedByAgentId(lastEditedBy) + ", 0, ");
-                    strBuf.append(curCollectionID);  // UserGroupScopeId
-                    strBuf.append(")");
-
-                    log.debug(strBuf.toString());
-
-                    updateStatement.executeUpdate(strBuf.toString());
-                    
-                    //curCollectionID = getInsertedId(updateStatement);
+                    addAgentDisciplineJoin(userAgent.getAgentId(), curDisciplineID);
                     
                     updateStatement.clearBatch();
                     updateStatement.close();
                     updateStatement = null;
+                    setIdentityInsertOFFCommandForSQLServer(newDBConn, "discipline", BasicSQLUtils.myDestinationServerType);
+                    //Integer disciplineID = getHighestId(newDBConn, "DisciplineID", "discipline");
+                }
+    
+                newColObjIDTotaxonomyTypeID.put(curDisciplineID, taxonomyTypeID);
+    
+                msg = "Created new discipline[" + taxonomyTypeName + "] is dataType ["  + dataTypeId + "]";
+                log.info(msg);
+                tblWriter.log(msg);
+                
+                info.setCollectionId(getNextIndex());
+                curCollectionID = info.getCollectionId();
+                
+                updateStatement = newDBConn.createStatement();
+                strBuf.setLength(0);
+                strBuf.append("INSERT INTO collection (CollectionID, DisciplineID, CollectionName, Code, Remarks, CatalogFormatNumName, ");
+                strBuf.append("IsEmbeddedCollectingEvent, TimestampCreated, TimestampModified, CreatedByAgentID, ModifiedByAgentID, ");
+                strBuf.append("Version, UserGroupScopeId) VALUES (");
+                strBuf.append(curCollectionID + ",");
+                strBuf.append(newColObjdefID + ",");
+                strBuf.append(getStrValue(seriesName) + ",");
+                strBuf.append(getStrValue(prefix) + ",");
+                strBuf.append(getStrValue(remarks) + ",");
+                strBuf.append("'CatalogNumberNumeric',");
+                strBuf.append((isEmbeddedCE ? 1 : 0)  + ",");
+                strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampModified
+                strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampCreated
+                strBuf.append(getCreatorAgentId(null) + "," + getModifiedByAgentId(lastEditedBy) + ", 0, ");
+                strBuf.append(curCollectionID);  // UserGroupScopeId
+                strBuf.append(")");
 
+                log.debug(strBuf.toString());
+    
+                updateStatement.executeUpdate(strBuf.toString());
+                
+                //curCollectionID = getInsertedId(updateStatement);
+                
+                updateStatement.clearBatch();
+                updateStatement.close();
+                updateStatement = null;
+
+                if (catNumSchemeId != null)
+                {
                     joinCollectionAndAutoNum(curCollectionID, catNumSchemeId);
 
                     String hashKey = catalogSeriesID + "_" + taxonomyTypeID;
@@ -2537,26 +2470,27 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     }
 
                     msg = "Collection New[" + newCatSeriesID + "] [" + seriesName + "] [" + prefix + "] [" + newColObjdefID + "]";
-                    log.info(msg);
-                    tblWriter.log(msg);
-
-                    recordCnt++;
-
-                } // while
-
-                msg = "Collection Join Records: " + recordCnt;
+                } else
+                {
+                    msg = "Collection New[" + seriesName + "] [" + prefix + "] [" + newColObjdefID + "]";
+                }
                 log.info(msg);
                 tblWriter.log(msg);
 
+                //recordCnt++;
+                //msg = "Collection Join Records: " + recordCnt;
+                //log.info(msg);
+                //tblWriter.log(msg);
+
                 tblWriter.close();
                 
-                rs.close();
-                stmt.close();
+                //rs.close();
+                //stmt.close();
                 
-            } else
-            {
-                log.warn("taxonomyTypeMapper is empty.");
-            }
+                collectionCnt++;
+                
+                prevTaxonomyTypeID = taxonomyTypeID;
+            } // for loop 
 
         } catch (SQLException e)
         {
@@ -2567,6 +2501,33 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         }
         
         return false;
+    }
+    
+    /**
+     * 
+     */
+    public void loadDisciplineObjects()
+    {
+        try
+        {
+            for (CollectionInfo ci : collectionInfoList)
+            {
+                List<?> list = (List<?>)HibernateUtil.getCurrentSession().createQuery("FROM Discipline WHERE id = " + ci.getDisciplineId()).list();
+                if (list != null && list.size() == 1)
+                {
+                    ci.setDiscipline((Discipline)list.get(0));
+                } else
+                {
+                    log.error("Couldn't load discipline["+ci.getDisciplineId()+"]");
+                }
+            }
+
+        } catch (Exception ex)
+        {
+            log.error("******* " + ex);
+            throw new RuntimeException("Couldn't load disciplines");
+        }
+
     }
     
     /**
@@ -3927,8 +3888,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             	String tsStr = timestampCr == null ? nowStr : dateTimeFormatter.format(timestampMd);
             	String tmStr = timestampMd == null ? nowStr : dateTimeFormatter.format(timestampCr);
             	
-            	String insertSQLFmt = "INSERT INTO %s (%s, Role, Remarks, %s, AgentID, TimestampCreated, TimestampModified, Version, CollectionMemberID) VALUES(%d, '%s', '%s', %d, %d, '%s', '%s', 0, %d)";
-            	String insertSql    = String.format(insertSQLFmt, newTableName, idName, refName, newId, role, remarks, newLoanId, newAgentId, tsStr, tmStr, getCollectionMemberId());
+            	String insertSQLFmt = "INSERT INTO %s (%s, Role, Remarks, %s, AgentID, TimestampCreated, TimestampModified, Version, DisciplineID) VALUES(%d, '%s', '%s', %d, %d, '%s', '%s', 0, %d)";
+            	String insertSql    = String.format(insertSQLFmt, newTableName, idName, refName, newId, role, remarks, newLoanId, newAgentId, tsStr, tmStr, getDisciplineId());
 
                 if (hasFrame)
                 {
@@ -4867,6 +4828,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         
         UIFieldFormatterIFace formatter0 = UIFieldFormatterMgr.getInstance().getFormatter("CatalogNumber");
         log.debug(formatter0);
+        
         UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getInstance().getFormatter("CatalogNumberNumeric");
         log.debug(formatter);
         
@@ -5592,9 +5554,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     {
                         str.append("0");
 
-                    } else if (newFieldName.equalsIgnoreCase("CollectionMemberID"))
+                    } else if (newFieldName.equalsIgnoreCase("DisciplineID"))
                     {
-                        str.append(getCollectionMemberId());
+                        str.append(getDisciplineId());
 
                     } else if (newFieldName.equalsIgnoreCase("ModifiedByAgentID"))
                     {
@@ -5878,9 +5840,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     {
                         str.append("0");
 
-                    } else if (newFieldName.equalsIgnoreCase("CollectionMemberID"))
+                    } else if (newFieldName.equalsIgnoreCase("DisciplineID"))
                     {
-                        str.append(getCollectionMemberId());
+                        str.append(getDisciplineId());
 
                     } else if (newFieldName.equalsIgnoreCase("ModifiedByAgentID"))
                     {
@@ -6058,431 +6020,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         return retDataType;
     }
 
-    /**
-     * @throws SQLException
-     */
-    public void convertAllTaxonTreeDefs() throws SQLException
-    {
-        Statement st = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,  ResultSet.CONCUR_READ_ONLY);
-
-        TaxonTreeDef ttd = new TaxonTreeDef();
-        ttd.initialize();
-
-        ResultSet rs = st.executeQuery("SELECT TaxonomyTypeID FROM taxonomytype");
-        Vector<Integer> ttIds = new Vector<Integer>();
-        while (rs.next())
-        {
-            ttIds.add(rs.getInt(1));
-        }
-
-        for (Integer id : ttIds)
-        {
-            convertTaxonTreeDefinition(id);
-        }
-        rs.close();
-        st.close();
-    }
-
-    /**
-     * Converts the taxonomy tree definition from the old taxonomicunittype table to the new table
-     * pair: TaxonTreeDef & TaxonTreeDefItems.
-     * 
-     * @param taxonomyTypeId the tree def id in taxonomicunittype
-     * @return the TaxonTreeDef object
-     * @throws SQLException
-     */
-    @SuppressWarnings("unchecked")
-    public TaxonTreeDef convertTaxonTreeDefinition(int taxonomyTypeId) throws SQLException
-    {
-        Statement st = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-
-        TaxonTreeDef ttd = new TaxonTreeDef();
-        ttd.initialize();
-
-
-        ResultSet rs = st.executeQuery("SELECT TaxonomyTypeName FROM taxonomytype WHERE TaxonomyTypeID = " + taxonomyTypeId);
-        rs.next();
-        String taxonomyTypeName = rs.getString(1);
-
-        ttd.setName(taxonomyTypeName + " taxonomy tree");
-        ttd.setRemarks("Tree converted from " + oldDBName);
-        ttd.setFullNameDirection(TreeDefIface.FORWARD);
-
-        rs = st.executeQuery("SELECT DISTINCT RankID,RankName,RequiredParentRankID FROM taxonomicunittype WHERE TaxonomyTypeID = " + taxonomyTypeId + " ORDER BY RankID");
-
-        int rank;
-        String name;
-        int requiredRank;
-
-        Vector<TaxonTreeDefItem> items = new Vector<TaxonTreeDefItem>();
-        Vector<Integer> enforcedRanks = new Vector<Integer>();
-
-        while (rs.next())
-        {
-            rank         = rs.getInt(1);
-            name         = rs.getString(2);
-            requiredRank = rs.getInt(3);
-            
-            log.debug(rank + "  " + name);
-            
-            TaxonTreeDefItem i = new TaxonTreeDefItem();
-            i.initialize();
-            i.setName(name);
-            i.setFullNameSeparator(" ");
-            i.setRankId(rank);
-            i.setTreeDef(ttd);
-            ttd.getTreeDefItems().add(i);
-
-            // setup the parent/child relationship
-            if (items.isEmpty())
-            {
-                i.setParent(null);
-            } else
-            {
-                i.setParent(items.lastElement());
-            }
-            items.add(i);
-            enforcedRanks.add(requiredRank);
-        }
-
-        for (TaxonTreeDefItem i : items)
-        {
-            if (enforcedRanks.contains(i.getRankId()))
-            {
-                i.setIsEnforced(true);
-            } else
-            {
-                i.setIsEnforced(false);
-            }
-        }
-        return ttd;
-    }
-
-    /**
-     * 
-     */
-    public void copyTaxonTreeDefs(final TableWriter tblWriter)
-    {
-        log.debug("copyTaxonTreeDefs");
-        deleteAllRecordsFromTable(newDBConn, "taxontreedef", BasicSQLUtils.myDestinationServerType);
-        setIdentityInsertONCommandForSQLServer(newDBConn, "taxontreedef", BasicSQLUtils.myDestinationServerType);
-        
-        // Meg had to removed the inner order by statement, becuase SQL Server does not allow order
-        // bys in subqueries. it is assumed that this is okay because we are calling an
-        // "in" function on the result of subquery so the order should not matter
-        // String sql = "select * from taxonomytype where taxonomytype.TaxonomyTypeId in (SELECT
-        // DISTINCT t.TaxonomyTypeId FROM taxonname t WHERE t.RankId<> 0 ORDER BY TaxonomyTypeId)";
-        
-        String sql = "select * from taxonomytype where taxonomytype.TaxonomyTypeId in (SELECT DISTINCT t.TaxonomyTypeId FROM taxonname t WHERE t.RankId <> 0)";
-        log.debug("convertTaxonTreeDefItems - created sql string: " + sql);
-        Hashtable<String, String> newToOldColMap = new Hashtable<String, String>();
-        newToOldColMap.put("TaxonTreeDefID", "TaxonomyTypeID");
-        newToOldColMap.put("Name", "TaxonomyTypeName");
-
-        // Since these columns don't exist in the old DB, setup some default values for them
-        Map<String, String> timestampValues = new Hashtable<String, String>();
-        timestampValues.put("TimestampCreated", "'" + nowStr + "'");
-        timestampValues.put("TimestampModified", "'" + nowStr + "'");
-
-        String[] ignoredFields = { "Remarks", "FullNameDirection", "LastEditedBy",
-                                   "TimestampCreated", "TimestampModified", "CreatedByAgentID", "ModifiedByAgentID",
-                                   "Version", "CollectionMemberID" };
-        setFieldsToIgnoreWhenMappingNames(ignoredFields);
-
-        log.info("Copying taxonomy tree definitions from 'taxonomytype' table:" + sql);
-        
-        if (!copyTable(oldDBConn, newDBConn, sql, "taxonomytype", "taxontreedef", newToOldColMap,
-                       null, timestampValues, BasicSQLUtils.mySourceServerType,
-                       BasicSQLUtils.myDestinationServerType))
-        {
-        	String msg = "Table 'taxonomytype' didn't copy correctly";
-            log.error(msg);
-            tblWriter.logError(msg);
-        }
-
-        setFieldsToIgnoreWhenMappingNames(null);
-        setIdentityInsertOFFCommandForSQLServer(newDBConn, "taxontreedef", BasicSQLUtils.myDestinationServerType);
-    }
-
-    /**
-     * Converts the old taxonomy records to the new schema.  
-     * In general, the process is...
-     *  1. Copy all columns that don't require any modification (other than col. name)
-     *  2. Set the proper values in the IsEnforced column
-     *  3. Set the proper values in the ParentItemID column
-     *
-     * @throws SQLException
-     */
-    public void convertTaxonTreeDefItems(final TableWriter tblWriter) throws SQLException
-    {
-        log.debug("convertTaxonTreeDefItems");
-        
-        deleteAllRecordsFromTable(newDBConn, "taxontreedefitem", BasicSQLUtils.myDestinationServerType);
-        setIdentityInsertONCommandForSQLServer(newDBConn, "taxontreedefitem", BasicSQLUtils.myDestinationServerType);
-        
-        // Meg had to removed the inner order by statement, becuase SQL Server does not allow order
-        // bys in subqueries. it is assumed that this is okay because we are calling an
-        // "in" function on the result of subquery so the order should not matter
-        // String sqlStr = "SELECT * FROM taxonomicunittype where taxonomicunittype.TaxonomyTypeID
-        // in (SELECT DISTINCT t.TaxonomyTypeId FROM taxonname t WHERE t.RankId<> 0 ORDER BY
-        // TaxonomyTypeId)";
-        String sqlStr = "SELECT * FROM taxonomicunittype where taxonomicunittype.TaxonomyTypeID in (SELECT DISTINCT t.TaxonomyTypeId FROM taxonname t WHERE t.RankId <> 0)";
-        
-        log.debug("convertTaxonTreeDefItems - created sql string: " + sqlStr);
-
-        Hashtable<String, String> newToOldColMap = new Hashtable<String, String>();
-        newToOldColMap.put("TaxonTreeDefItemID", "TaxonomicUnitTypeID");
-        newToOldColMap.put("Name",               "RankName");
-        newToOldColMap.put("TaxonTreeDefID",     "TaxonomyTypeID");
-
-        // since these columns don't exist in the old DB, setup some default values for them
-        Map<String, String> timestampValues = new Hashtable<String, String>();
-        timestampValues.put("TimestampCreated", "'" + nowStr + "'");
-        timestampValues.put("TimestampModified", "'" + nowStr + "'");
-
-        String[] ignoredFields = { "IsEnforced", "ParentItemID", "Remarks", "IsInFullName",
-                                   "FullNameSeparator", "TextBefore", "TextAfter", "TimestampCreated",
-                                   "TimestampModified", "LastEditedBy", "FormatToken", "CreatedByAgentID",
-                                   "ModifiedByAgentID", "Version", "CollectionMemberID" };
-        setFieldsToIgnoreWhenMappingNames(ignoredFields);
-
-        // Copy over most of the columns in the old table to the new one
-        log.info("Copying taxonomy tree definition items from 'taxonomicunittype' table");
-        if (!copyTable(oldDBConn, 
-                newDBConn, 
-                sqlStr, 
-                "taxonomicunittype", 
-                "taxontreedefitem",
-                newToOldColMap, 
-                null, 
-                timestampValues, BasicSQLUtils.mySourceServerType, BasicSQLUtils.myDestinationServerType))
-        {
-            String msg = "Table 'taxonomicunittype' didn't copy correctly";
-            log.error(msg);
-            tblWriter.logError(msg);
-        }
-
-        setFieldsToIgnoreWhenMappingNames(null);
-
-        // JDBC Statments for use throughout process
-        Statement oldDbStmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-        Statement newDbStmt = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-
-        // Meg had to removed the inner order by statement, becuase SQL Server does not allow order
-        // bys in subqueries. it is assumed that this is okay because we are calling an
-        // "in" function on the result of subquery so the order should not matter
-        // sqlStr = "SELECT DISTINCT TaxonomyTypeID from taxonomicunittype where
-        // taxonomicunittype.TaxonomyTypeId in (SELECT DISTINCT t.TaxonomyTypeId FROM taxonname t
-        // WHERE t.RankId<> 0 ORDER BY TaxonomyTypeId)";
-
-        // get each individual TaxonomyTypeID value
-        sqlStr = "SELECT DISTINCT TaxonomyTypeID from taxonomicunittype where taxonomicunittype.TaxonomyTypeId in (SELECT DISTINCT t.TaxonomyTypeId FROM taxonname t WHERE t.RankId <> 0)";
-
-        ResultSet rs = oldDbStmt.executeQuery(sqlStr);
-
-        // will be used to map old TaxonomyTypeID values to TreeDefID values
-
-        Vector<Integer> typeIds = new Vector<Integer>();
-        while (rs.next())
-        {
-            Integer typeId = rs.getInt(1);
-            if (!rs.wasNull())
-            {
-                typeIds.add(typeId);
-            }
-        }
-
-        // will be used to map old TaxonomyTypeID values to TreeDefID values
-        IdMapperIFace typeIdMapper = idMapperMgr.get("taxonomytype", "TaxonomyTypeID");
-
-        // for each value of TaxonomyType...
-        for (Integer typeId : typeIds)
-        {
-            // get all of the values of RequiredParentRankID (the enforced ranks)
-            sqlStr = "SELECT DISTINCT RequiredParentRankID from taxonomicunittype WHERE TaxonomyTypeID = " + typeId;
-            rs = oldDbStmt.executeQuery(sqlStr);
-
-            Vector<Integer> enforcedIds = new Vector<Integer>();
-            while (rs.next())
-            {
-                Integer reqId = rs.getInt(1);
-                if (!rs.wasNull())
-                {
-                    enforcedIds.add(reqId);
-                }
-            }
-            // make sure the root item is always enforced
-            if (!enforcedIds.contains(0))
-            {
-                enforcedIds.add(0);
-            }
-            // now we have a vector of the required/enforced rank IDs
-            // fix the new DB values accordingly
-
-            // what is the corresponding TreeDefID?
-            int treeDefId = typeIdMapper.get(typeId);
-
-            StringBuilder sqlUpdate = new StringBuilder("UPDATE taxontreedefitem SET IsEnforced=1 WHERE TaxonTreeDefID = " + treeDefId + " AND RankID IN (");
-            // add all the enforced ranks
-            for (int i = 0; i < enforcedIds.size(); ++i)
-            {
-                sqlUpdate.append(enforcedIds.get(i));
-                if (i < enforcedIds.size() - 1)
-                {
-                    sqlUpdate.append(",");
-                }
-            }
-            sqlUpdate.append(")");
-
-            log.info(sqlUpdate);
-
-            int rowsUpdated = newDbStmt.executeUpdate(sqlUpdate.toString());
-            log.info(rowsUpdated + " rows updated");
-
-            StringBuilder fullNameUpdate = new StringBuilder("UPDATE taxontreedefitem SET IsInFullName = 1 WHERE TaxonTreeDefID = " + treeDefId +
-                                                             " AND Name IN ('Genus','Species','Subspecies','Variety','Subvariety','Forma','Subforma')");
-            log.info(fullNameUpdate);
-
-            rowsUpdated = newDbStmt.executeUpdate(fullNameUpdate.toString());
-            log.info(fullNameUpdate);
-        }
-
-        // at this point, we've set all the IsEnforced fields that need to be TRUE
-        // now we need to set the others to FALSE
-        String setToFalse = "UPDATE taxontreedefitem SET IsEnforced = 0 WHERE IsEnforced IS NULL";
-        int rowsUpdated = newDbStmt.executeUpdate(setToFalse);
-        log.info("IsEnforced set to FALSE in " + rowsUpdated + " rows");
-
-        // we still need to fix the ParentItemID values to point at each row's parent
-
-        // we'll work with the items in sets as determined by the TreeDefID
-        for (Integer typeId : typeIds)
-        {
-            int treeDefId = typeIdMapper.get(typeId);
-            sqlStr = "SELECT TaxonTreeDefItemID FROM taxontreedefitem WHERE TaxonTreeDefID = " + treeDefId + " ORDER BY RankID";
-            rs = newDbStmt.executeQuery(sqlStr);
-
-            boolean atLeastOneRecord = rs.next();
-            if (!atLeastOneRecord)
-            {
-                continue;
-            }
-            int prevTreeDefItemId = rs.getInt(1);
-            Vector<Pair<Integer, Integer>> idAndParentIdPairs = new Vector<Pair<Integer, Integer>>();
-            while (rs.next())
-            {
-                int treeDefItemId = rs.getInt(1);
-                idAndParentIdPairs.add(new Pair<Integer, Integer>(treeDefItemId, prevTreeDefItemId));
-                prevTreeDefItemId = treeDefItemId;
-            }
-
-            // now we have all the pairs (ID,ParentID) in a Vector of Pair objects
-            rowsUpdated = 0;
-            for (Pair<Integer, Integer> idPair : idAndParentIdPairs)
-            {
-                sqlStr = "UPDATE taxontreedefitem SET ParentItemID=" + idPair.second + " WHERE TaxonTreeDefItemID=" + idPair.first;
-                rowsUpdated += newDbStmt.executeUpdate(sqlStr);
-                
-                tblWriter.log(sqlStr);
-            }
-
-            String msg = "Fixed parent pointers on " + rowsUpdated + " rows";
-            log.info(msg);
-            tblWriter.log(msg);
-        }
-        setIdentityInsertOFFCommandForSQLServer(newDBConn, "taxontreedefitem", BasicSQLUtils.myDestinationServerType);
-    }
-
-    /**
-     * 
-     */
-    public void convertTaxonRecords(final TableWriter tblWriter)
-    {
-        deleteAllRecordsFromTable(newDBConn, "taxon", BasicSQLUtils.myDestinationServerType);
-        setIdentityInsertONCommandForSQLServer(newDBConn, "taxon", BasicSQLUtils.myDestinationServerType);
-        
-        // Meg had to removed the inner order by statement, becuase SQL Server does not allow order
-        // bys in subqueries. it is assumed that this is okay because we are calling an
-        // "in" function on the result of subquery so the order should not matter
-        // String sql = "SELECT * FROM taxonname where taxonname.TaxonomyTypeId in (SELECT DISTINCT
-        // t.TaxonomyTypeId FROM taxonname t WHERE t.RankId <> 0 ORDER BY TaxonomyTypeId)";
-        String sql = "SELECT * FROM taxonname WHERE TaxonName IS NOT NULL AND taxonname.TaxonomyTypeId IN (SELECT DISTINCT t.TaxonomyTypeId FROM taxonname t WHERE t.RankId <> 0) AND RankId IS NOT NULL";
-
-
-        Hashtable<String, String> newToOldColMap = new Hashtable<String, String>();
-        newToOldColMap.put("TaxonID",            "TaxonNameID");
-        newToOldColMap.put("ParentID",           "ParentTaxonNameID");
-        newToOldColMap.put("TaxonTreeDefID",     "TaxonomyTypeID");
-        newToOldColMap.put("TaxonTreeDefItemID", "TaxonomicUnitTypeID");
-        newToOldColMap.put("Name",               "TaxonName");
-        newToOldColMap.put("FullName",           "FullTaxonName");
-        newToOldColMap.put("IsAccepted",         "Accepted");
-
-        // Ignore new fields
-        // These were added for supporting the new security model and hybrids
-        String[] ignoredFields = { "GUID", "Visibility", "VisibilitySetBy", "IsHybrid",
-                                    "HybridParent1ID", "HybridParent2ID", "EsaStatus", "CitesStatus", "UsfwsCode",
-                                    "IsisNumber", "Text1", "Text2", "NcbiTaxonNumber", "Number1", "Number2",
-                                    "CreatedByAgentID", "ModifiedByAgentID", "Version", "CultivarName", "LabelFormat", 
-                                    "COLStatus", "VisibilitySetByID"};
-
-        setFieldsToIgnoreWhenMappingNames(ignoredFields);
-
-        // AcceptedID is typically NULL unless they are using synonimies
-        Integer cnt               = getCount(oldDBConn, "SELECT count(AcceptedID) FROM taxonname where AcceptedID IS NOT null");
-        boolean showMappingErrors = cnt != null && cnt > 0;
-
-        int errorsToShow = (BasicSQLUtils.SHOW_NAME_MAPPING_ERROR | BasicSQLUtils.SHOW_VAL_MAPPING_ERROR);
-        if (showMappingErrors)
-        {
-            errorsToShow = errorsToShow | BasicSQLUtils.SHOW_PM_LOOKUP | BasicSQLUtils.SHOW_NULL_PM;
-        }
-        setShowErrors(errorsToShow);
-        
-        tblWriter.append("<H3>Taxon with null RankIDs</H3>");
-        tblWriter.startTable();
-        String missingRankSQL = "SELECT * FROM taxonname WHERE RankID IS NULL";
-        Vector<Object[]> rows = query(oldDBConn, missingRankSQL);
-        for (Object[] row : rows)
-        {
-            tblWriter.append("<TR>");
-            for (Object obj : row)
-            {
-                tblWriter.append("<TD>");
-                tblWriter.append(obj != null ? obj.toString() : "null");
-                tblWriter.append("</TD>");
-            }
-            tblWriter.append("</TR>");
-        }
-        tblWriter.endTable();
-        tblWriter.append("<BR>");
-        
-        IdHashMapper.setTblWriter(tblWriter);
-
-        log.info("Copying taxon records from 'taxonname' table");
-        if (!copyTable(oldDBConn, newDBConn, sql, "taxonname", "taxon", newToOldColMap, null, BasicSQLUtils.mySourceServerType, BasicSQLUtils.myDestinationServerType))
-        {
-            String msg = "Table 'taxonname' didn't copy correctly";
-            log.error(msg);
-            tblWriter.logError(msg);
-        }
-        
-        IdMapperIFace txMapper = IdMapperMgr.getInstance().get("taxonname", "TaxonNameID");
-        if (txMapper instanceof IdHashMapper)
-        {
-            for (Integer oldId : ((IdHashMapper)txMapper).getOldIdNullList())
-            {
-                tblWriter.println(ConvertVerifier.dumpSQL(oldDBConn, "SELECT * FROM taxonname WHERE ParentTaxonNameId = "+oldId));
-            }
-        }
-        
-
-        setFieldsToIgnoreWhenMappingNames(null);
-        setIdentityInsertOFFCommandForSQLServer(newDBConn, "taxon", BasicSQLUtils.myDestinationServerType);
-        
-        IdHashMapper.setTblWriter(null);
-    }
-
+ 
     /**
      * @return
      */

@@ -1978,7 +1978,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                                     
                                 }
                                 
-                                FormViewObj.deleteItemsInDelList(session, deletedItems/*, null, null, true*/);
+                                FormViewObj.deleteItemsInDelList(session, deletedItems, null, null, true);
                             }
                             
                             Vector<Object> toBeSavedItems = mvParent != null ? mvParent.getToBeSavedItems() : null;

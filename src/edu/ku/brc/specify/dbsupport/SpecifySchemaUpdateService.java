@@ -237,6 +237,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 }
                                 frame.setVisible(false);
                                 
+                                fixLocaleSchema();
+                                
                             } else
                             {
                                 CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
@@ -310,7 +312,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 try
                 {
                     stmt = conn.createStatement();
-                    int rv = BasicSQLUtils.update(conn, "ALTER TABLE localitydetail CHANGE getUtmDatum UtmDatum varchar(32)");
+                    int rv = BasicSQLUtils.update(conn, "ALTER TABLE localitydetail CHANGE getUtmDatum UtmDatum varchar(255)");
                     if (rv != 0)
                     {
                         errMsgList.add("Unable to alter table: localitydetail");
@@ -353,6 +355,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     if (rv != count)
                     {
                         errMsgList.add("Update count didn't match for update to table: spexportschema");
+                        return false;
+                    }
+                    
+                    SpecifySchemaUpdateScopeFixer collectionMemberFixer = new SpecifySchemaUpdateScopeFixer();
+                    if (!collectionMemberFixer.fix(conn))
+                    {
+                        errMsgList.add("Error fixing CollectionMember tables");
                         return false;
                     }
                     
@@ -505,7 +514,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-----------------------------------------------------------------------------
                     //System.setProperty("AddSchemaTablesFields", "TRUE");
                     
-                    fixLocaleSchema();
+                    //fixLocaleSchema();
                     
                     return true;
                     
@@ -538,6 +547,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      */
     protected void fixLocaleSchema()
     {
+        PostInsertEventListener.setAuditOn(false);
+        
         ProgressFrame            frame     = null;
         DataProviderSessionIFace session   = null;
         Session                  hbSession = null;
@@ -593,6 +604,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         } finally
         {
             frame.setVisible(false);
+            
+            PostInsertEventListener.setAuditOn(true);
+
         }
     }
     

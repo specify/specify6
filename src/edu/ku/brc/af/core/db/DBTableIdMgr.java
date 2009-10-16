@@ -32,7 +32,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -200,6 +199,14 @@ public class DBTableIdMgr
                         tblInfo.setIdColumnName(getAttr(idElement, "column", null)); //$NON-NLS-1$
                         tblInfo.setIdFieldName(getAttr(idElement,  "name", null)); //$NON-NLS-1$
                         tblInfo.setIdType(getAttr(idElement,       "type", null)); //$NON-NLS-1$
+                    }
+                    
+                    for (Iterator<?> ir = tableNode.elementIterator("tableindex"); ir.hasNext();) //$NON-NLS-1$
+                    {
+                        Element irNode     = (Element) ir.next();
+                        String inxName     = getAttr(irNode, "indexName", null);
+                        String inxColNames = getAttr(irNode, "columnNames", null);
+                        tblInfo.addTableIndex(inxName, inxColNames);
                     }
                     
                     Element displayElement = (Element)tableNode.selectSingleNode("display"); //$NON-NLS-1$

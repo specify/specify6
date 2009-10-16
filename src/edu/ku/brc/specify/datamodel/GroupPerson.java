@@ -32,8 +32,8 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.util.Orderable;
 
 /**
@@ -45,10 +45,7 @@ import edu.ku.brc.util.Orderable;
 @Table(name = "groupperson", uniqueConstraints = { 
         @UniqueConstraint(columnNames = { "OrderNumber", "GroupID" }) 
        })
-@org.hibernate.annotations.Table(appliesTo="groupperson", indexes =
-    {   @Index (name="GPColMemIDX", columnNames={"CollectionMemberID"})
-    })
-public class GroupPerson extends CollectionMember implements java.io.Serializable,
+public class GroupPerson extends DataModelObjBase implements java.io.Serializable,
                                                              Orderable,
                                                              Comparable<GroupPerson>
                                                              
@@ -61,6 +58,8 @@ public class GroupPerson extends CollectionMember implements java.io.Serializabl
      protected String  remarks;
      protected Agent   group;
      protected Agent   member;
+     
+     protected Division division;
 
 
     // Constructors
@@ -85,6 +84,9 @@ public class GroupPerson extends CollectionMember implements java.io.Serializabl
         remarks       = null;
         group         = null;
         member        = null;
+        
+        division = AppContextMgr.getInstance().hasContext() ? AppContextMgr.getInstance().getClassObject(Division.class) : null;
+        
     }
     // End Initializer
 
@@ -185,7 +187,25 @@ public class GroupPerson extends CollectionMember implements java.io.Serializabl
     {
         this.member = agentByMember;
     }
+    
+    /**
+     * @return the division
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "DivisionID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Division getDivision()
+    {
+        return division;
+    }
 
+    /**
+     * @param division the division to set
+     */
+    public void setDivision(Division division)
+    {
+        this.division = division;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
@@ -195,7 +215,8 @@ public class GroupPerson extends CollectionMember implements java.io.Serializabl
     {
         return getClassTableId();
     }
-    
+
+
     /**
      * @return the Table ID for the class.
      */

@@ -107,9 +107,6 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.StorageTreeDefItem;
-import edu.ku.brc.specify.datamodel.TaxonTreeDef;
-import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
-import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.dbsupport.PostInsertEventListener;
 import edu.ku.brc.specify.dbsupport.SpecifySchemaUpdateService;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
@@ -146,12 +143,12 @@ public class SpecifyDBConverter
     
     protected static ProgressFrame              frame             = null;
     
-    protected Pair<String, String> itUsrPwd     = new Pair<String, String>(null, null);
-    protected Pair<String, String> masterUsrPwd = new Pair<String, String>("Master", "Master");
-    protected String               hostName     = "localhost";
+    protected Pair<String, String>              itUsrPwd     = new Pair<String, String>(null, null);
+    protected Pair<String, String>              masterUsrPwd = new Pair<String, String>("Master", "Master");
+    protected String                            hostName     = "localhost";
     
-    protected GenericDBConversion  conversion;
-    protected ConversionLogger     convLogger   = new ConversionLogger();
+    protected GenericDBConversion               conversion;
+    protected ConversionLogger                  convLogger   = new ConversionLogger();
     
     /**
      * Constructor.
@@ -542,9 +539,11 @@ public class SpecifyDBConverter
                     }
                 } catch (Exception ex)
                 {
+                    ex.printStackTrace();
                 }
             }
         }
+        log.debug("Done setting Timestamps");
     }
     
 
@@ -653,7 +652,7 @@ public class SpecifyDBConverter
         {
             oldDBConn.close();
             newDBConn.close();
-            System.exit(0);
+            throw new RuntimeException("There are not collections!");
         }
         
         SwingUtilities.invokeLater(new Runnable() {
@@ -664,6 +663,7 @@ public class SpecifyDBConverter
                 frame.setDesc("Building Database Schema...");
                 frame.adjustProgressFrame();
                 frame.getProcessProgress().setIndeterminate(true);
+                frame.getProcessProgress().setString("");
                 UIHelper.centerAndShow(frame);
 
             }
@@ -762,12 +762,17 @@ public class SpecifyDBConverter
                 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 // Need to ask for Discipline here or get it from the Sp5 DB
                 
+                boolean debugTaxon = false;
                 conversion.convertDivision(institutionId);
                 frame.incOverall();
                 
                 /////////////////////////////////////////////////////////////
                 // Really need to create or get a proper Discipline Record
                 /////////////////////////////////////////////////////////////
+                ConversionLogger.TableWriter taxonTblWriter = convLogger.getWriter("FullTaxon.html", "Taxon Conversion");
+                ConvertTaxonHelper taxonHelper = new ConvertTaxonHelper(oldDBConn, newDBConn, dbNameDest, taxonTblWriter, conversion);
+                taxonHelper.createTaxonIdMappings();
+                taxonHelper.doForeignKeyMappings();
                 
                 frame.setDesc("Converting CollectionObjectDefs.");
                 log.info("Converting CollectionObjectDefs.");
@@ -788,40 +793,42 @@ public class SpecifyDBConverter
                     
                     if (startfromScratch)
                     {
-                        Transaction trans = getSession().beginTransaction();
-                        
-                        //BasicSQLUtils.deleteAllRecordsFromTable(newConn, "usergroup", BasicSQLUtils.myDestinationServerType);
-                        BasicSQLUtils.deleteAllRecordsFromTable(newConn, "specifyuser", BasicSQLUtils.myDestinationServerType);
-                        //SpPrincipal userGroup = createUserGroup("admin2");
-                        
-                        Criteria criteria = getSession().createCriteria(Agent.class);
-                        criteria.add(Restrictions.eq("lastName", lastName));
-                        criteria.add(Restrictions.eq("firstName", firstName));
-                        
-                        
-                        List<?> list = criteria.list();
-                        if (list != null && list.size() == 1)
-                        { 
-                            userAgent = (Agent)list.get(0);
-                        } else
+                        if (!debugTaxon)
                         {
-                            userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
+                            Transaction trans = getSession().beginTransaction();
+                            
+                            //BasicSQLUtils.deleteAllRecordsFromTable(newConn, "usergroup", BasicSQLUtils.myDestinationServerType);
+                            BasicSQLUtils.deleteAllRecordsFromTable(newConn, "specifyuser", BasicSQLUtils.myDestinationServerType);
+                            //SpPrincipal userGroup = createUserGroup("admin2");
+                            
+                            Criteria criteria = getSession().createCriteria(Agent.class);
+                            criteria.add(Restrictions.eq("lastName", lastName));
+                            criteria.add(Restrictions.eq("firstName", firstName));
+                            
+                            
+                            List<?> list = criteria.list();
+                            if (list != null && list.size() == 1)
+                            { 
+                                userAgent = (Agent)list.get(0);
+                            } else
+                            {
+                                userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
+                            }
+                            
+                            Institution institution = (Institution)getSession().createQuery("FROM Institution").list().get(0);
+                            
+                            String encrypted = Encryption.encrypt(password, password);
+                            specifyUser = createAdminGroupAndUser(getSession(), institution,  username, email, encrypted, userType);
+                            specifyUser.addReference(userAgent, "agents");
+                            
+                            getSession().saveOrUpdate(institution);
+                            
+                            userAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
+                            getSession().saveOrUpdate(userAgent);
+                            
+                            trans.commit();
+                            getSession().flush();
                         }
-                        
-                        //specifyUser = createSpecifyUser(username, email, password, userType);
-                        Institution institution = (Institution)getSession().createQuery("FROM Institution").list().get(0);
-                        
-                        String encrypted = Encryption.encrypt(password, password);
-                        specifyUser = createAdminGroupAndUser(getSession(), institution,  username, email, encrypted, userType);
-                        specifyUser.addReference(userAgent, "agents");
-                        
-                        getSession().saveOrUpdate(institution);
-                        
-                        userAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
-                        getSession().saveOrUpdate(userAgent);
-                        
-                        trans.commit();
-                        getSession().flush();
                         
                     } else
                     {
@@ -830,17 +837,19 @@ public class SpecifyDBConverter
                         userAgent   = specifyUser.getAgents().iterator().next();
                     }
                     
-                    if (startfromScratch)
+                    if (!debugTaxon)
                     {
-                        int     catSeriesId = 0;
-                        conversion.convertCollectionObjectDefs(specifyUser.getSpecifyUserId(), catSeriesId, userAgent);
-                        
-                    } else
-                    {
-                        AppContextMgr.getInstance().setClassObject(SpecifyUser.class, specifyUser);
-                        // XXX Works for a Single Convert
-                        Collection collection = (Collection)getSession().createCriteria(Collection.class).list().get(0);
-                        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
+                        if (startfromScratch)
+                        {
+                            conversion.convertCollectionObjectTypes(specifyUser.getSpecifyUserId(), userAgent);
+                            
+                        } else
+                        {
+                            AppContextMgr.getInstance().setClassObject(SpecifyUser.class, specifyUser);
+                            // XXX Works for a Single Convert
+                            Collection collection = (Collection)getSession().createCriteria(Collection.class).list().get(0);
+                            AppContextMgr.getInstance().setClassObject(Collection.class, collection);
+                        }
                     }
 
                 } else
@@ -889,8 +898,21 @@ public class SpecifyDBConverter
                     BasicSQLUtils.setFieldsToIgnoreWhenMappingIDs(null);
                 }
                 frame.incOverall();
-
-
+                
+                frame.setDesc("Converting Geography");
+                log.info("Converting Geography");
+                boolean doGeography = true;
+                if (!dbNameDest.startsWith("accessions") && (doGeography || doAll))
+                {
+                    GeographyTreeDef treeDef = conversion.createStandardGeographyDefinitionAndItems();
+                    conversion.convertGeography(treeDef);
+                    frame.incOverall();
+                    
+                } else
+                {
+                    frame.incOverall();
+                }
+                
                 frame.setDesc("Converting Geologic Time Period.");
                 log.info("Converting Geologic Time Period.");
                 // GTP needs to be converted here so the stratigraphy conversion can use
@@ -906,8 +928,24 @@ public class SpecifyDBConverter
                     idMapperMgr.addTableMapper("geologictimeperiod", "GeologicTimePeriodID");
                     idMapperMgr.mapForeignKey("Stratigraphy", "GeologicTimePeriodID", "GeologicTimePeriod", "GeologicTimePeriodID");
                 }
-
                 frame.incOverall();
+                
+                frame.setDesc("Converting Taxonomy");
+                log.info("Converting Taxonomy");
+                boolean doTaxonomy = true;
+                if (doTaxonomy || doAll )
+                {
+                    BasicSQLUtils.setTblWriter(taxonTblWriter);
+                    taxonHelper.doConvert();
+                    BasicSQLUtils.setTblWriter(null);
+                }
+                frame.incOverall();
+
+                //-------------------------------------------------------------------------------
+                // Get the Discipline Objects and put them into the CollectionInfo Objects
+                //-------------------------------------------------------------------------------
+                conversion.loadDisciplineObjects();
+                
                 
                 frame.setDesc("Converting Determinations Records");
                 log.info("Converting Determinations Records");
@@ -923,6 +961,7 @@ public class SpecifyDBConverter
                     frame.incOverall();
                 }
                 frame.incOverall();
+
                 
                 frame.setDesc("Copying Tables");
                 log.info("Copying Tables");
@@ -935,6 +974,19 @@ public class SpecifyDBConverter
 
                 frame.incOverall();
 
+
+                frame.setDesc("Converting Locality");
+                log.info("Converting Locality");
+                if (!dbNameDest.startsWith("accessions") && (doGeography || doAll))
+                {
+                    conversion.convertLocality();
+                    frame.incOverall();
+                    
+                } else
+                {
+                    frame.incOverall();
+                    frame.incOverall();
+                }
                 
                 frame.setDesc("Converting DeaccessionCollectionObject");
                 log.info("Converting DeaccessionCollectionObject");
@@ -1023,80 +1075,6 @@ public class SpecifyDBConverter
                     frame.incOverall();
                     frame.incOverall();
                 }
-                
-                frame.setDesc("Converting Geography");
-                log.info("Converting Geography");
-                boolean doGeography = true;
-                if (!dbNameDest.startsWith("accessions") && (doGeography || doAll))
-                {
-                    GeographyTreeDef treeDef = conversion.createStandardGeographyDefinitionAndItems();
-                    conversion.convertGeography(treeDef);
-                    frame.incOverall();
-                    conversion.convertLocality();
-                    frame.incOverall();
-                    
-                } else
-                {
-                    frame.incOverall();
-                    frame.incOverall();
-                }
- 
-                frame.setDesc("Converting Taxonomy");
-                log.info("Converting Taxonomy");
-                boolean doTaxonomy = true;
-                if (doTaxonomy || doAll )
-                {
-                	 ConversionLogger.TableWriter tblWriter = convLogger.getWriter("FullTaxon.html", "Taxon Conversion");
-                	
-                	conversion.copyTaxonTreeDefs(tblWriter);
-                	conversion.convertTaxonTreeDefItems(tblWriter);
-                	BasicSQLUtils.setTblWriter(tblWriter);
-                    
-                    // fix the fullNameDirection field in each of the converted tree defs
-                    Session session = HibernateUtil.getCurrentSession();
-                    Query q = session.createQuery("FROM TaxonTreeDef");
-                    List<?> allTTDs = q.list();
-                    HibernateUtil.beginTransaction();
-                    for(Object o: allTTDs)
-                    {
-                        TaxonTreeDef ttd = (TaxonTreeDef)o;
-                        ttd.setFullNameDirection(TreeDefIface.FORWARD);
-                        session.saveOrUpdate(ttd);
-                    }
-                    try
-                    {
-                        HibernateUtil.commitTransaction();
-                    }
-                    catch(Exception e)
-                    {
-                        log.error("Error while setting the fullname direction of taxonomy tree definitions.");
-                    }
-                    
-                    // fix the fullNameSeparator field in each of the converted tree def items
-                    session = HibernateUtil.getCurrentSession();
-                    q = session.createQuery("FROM TaxonTreeDefItem");
-                    List<?> allTTDIs = q.list();
-                    HibernateUtil.beginTransaction();
-                    for(Object o : allTTDIs)
-                    {
-                        TaxonTreeDefItem ttdi = (TaxonTreeDefItem)o;
-                        ttdi.setFullNameSeparator(" ");
-                        session.saveOrUpdate(ttdi);
-                    }
-                    try
-                    {
-                        HibernateUtil.commitTransaction();
-                    }
-                    catch(Exception e)
-                    {
-                        log.error("Error while setting the fullname separator of taxonomy tree definition items.");
-                    }
-                    
-                	conversion.convertTaxonRecords(tblWriter);
-                	
-                	BasicSQLUtils.setTblWriter(null);
-                }
-                frame.incOverall();
                 
                 frame.setDesc("Converting Straigraphy");
                 log.info("Converting Straigraphy");
@@ -1298,6 +1276,10 @@ public class SpecifyDBConverter
                 
                 frame.incOverall();
                 
+                ConversionLogger.TableWriter tblWriter = convLogger.getWriter("ScopeUpdater.html", "Updating Scope Summary");
+                ConvScopeFixer convScopeFixer = new ConvScopeFixer(oldDBConn, newDBConn, dbNameDest, tblWriter);
+                convScopeFixer.doFixTables();
+                
                 long stTime = System.currentTimeMillis();
 
                 String msg = String.format("Will this Collection share Collecting Events?\n(Sp5 was %ssharing them.)", isUsingEmbeddedCEsInSp5() ? "NOT " : "");
@@ -1306,7 +1288,7 @@ public class SpecifyDBConverter
                     DuplicateCollectingEvents dce = new DuplicateCollectingEvents(newDBConn, frame, conversion.getCurAgentCreatorID(), dscp.getId());
                     dce.performMaint();
                 }
-                waitTime = System.currentTimeMillis() -stTime;
+                waitTime = System.currentTimeMillis() - stTime;
                 
                 endTime = System.currentTimeMillis();
                 

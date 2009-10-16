@@ -1549,6 +1549,34 @@ public class BasicSQLUtils
                                     final SERVERTYPE sourceServerType,
                                     final SERVERTYPE destServerType)
     {
+        return copyTable(fromConn, toConn, sql, null, fromTableName, toTableName, colNewToOldMap, verbatimDateMapper, newColDefValues, sourceServerType, destServerType);
+    }
+
+    /**
+     * @param fromConn
+     * @param toConn
+     * @param sql
+     * @param fromTableName
+     * @param toTableName
+     * @param colNewToOldMap
+     * @param verbatimDateMapper
+     * @param newColDefValues
+     * @param sourceServerType
+     * @param destServerType
+     * @return
+     */
+    public static boolean copyTable(final Connection fromConn,
+                                    final Connection toConn,
+                                    final String     sql,
+                                    final String     countSQL,
+                                    final String     fromTableName,
+                                    final String     toTableName,
+                                    final Map<String, String> colNewToOldMap,
+                                    final Map<String, String> verbatimDateMapper,
+                                    final Map<String, String> newColDefValues,
+                                    final SERVERTYPE sourceServerType,
+                                    final SERVERTYPE destServerType)
+    {
         //Timestamp now = new Timestamp(System.currentTimeMillis());
 
         IdMapperMgr idMapperMgr = IdMapperMgr.getInstance();
@@ -1563,7 +1591,16 @@ public class BasicSQLUtils
 
         String sqlStr = sql + " ORDER BY " +  fromTableName + "." + fromFieldNameList.get(0);
         log.debug(sqlStr);
-        setProcess(0, getNumRecords(fromConn, fromTableName));
+        
+        int numRecs;
+        if (countSQL == null)
+        {
+            numRecs = getNumRecords(fromConn, fromTableName);
+        } else
+        {
+            numRecs = getCountAsInt(fromConn, countSQL);
+        }
+        setProcess(0, numRecs);
 
         String id = "";
         try
@@ -1609,6 +1646,8 @@ public class BasicSQLUtils
 
             Map<String, String>               vertbatimDateMap = UIHelper.createMap();
             Map<String, Pair<String, String>> dateMap          = new Hashtable<String, Pair<String, String>>();
+            
+            String insertSQL = null;
 
             // Get the columns that have dates in case we get a TimestampCreated date that is null
             // and then we can go looking for an older date to try to figure it out
@@ -1711,21 +1750,30 @@ public class BasicSQLUtils
                     }
                 }
                     
-                StringBuffer fieldList = new StringBuffer();
-                fieldList.append("( ");
-                for (int i = 0; i< newFieldMetaData.size();i++)
-                {
-                    if ((i > 0) &&  (i < newFieldMetaData.size()))
-                    {
-                        fieldList.append(", ");
-                    }
-                    String newFieldName = newFieldMetaData.get(i).getName();
-                    fieldList.append(newFieldName + " ");
-                }
-                fieldList.append(")");
-                
                 str.setLength(0);
-                str.append("INSERT INTO " + toTableName + " "+ fieldList+ " VALUES (");
+                if (insertSQL == null)
+                {
+                    StringBuffer fieldList = new StringBuffer();
+                    fieldList.append("( ");
+                    for (int i = 0; i< newFieldMetaData.size();i++)
+                    {
+                        if ((i > 0) &&  (i < newFieldMetaData.size()))
+                        {
+                            fieldList.append(", ");
+                        }
+                        String newFieldName = newFieldMetaData.get(i).getName();
+                        fieldList.append(newFieldName + " ");
+                    }
+                    fieldList.append(")");
+                    
+                    
+                    str.append("INSERT INTO " + toTableName + " "+ fieldList+ " VALUES (");
+                    
+                    insertSQL = str.toString();
+                } else
+                {
+                    str.append(insertSQL);
+                }
                 
                 id = rs.getString(1);
 
@@ -1763,6 +1811,8 @@ public class BasicSQLUtils
                     {
                         oldMappedColName = newColName;
                     }
+                    
+                    //System.out.println("new["+newColName+"]  old["+oldMappedColName+"]");
 
                     if (columnIndex != null)
                     {
@@ -1821,7 +1871,7 @@ public class BasicSQLUtils
                                     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                                     if (!oldMappedColName.equals("RankID"))
                                     {
-                                        idMapperMgr.dumpKeys();
+                                        //idMapperMgr.dumpKeys();
                                         String msg = "No ID Map for ["+fromTableName+"] Old Column Name["+oldMappedColName+"]";
                                         log.error(msg);
                                         writeErrLog(msg);

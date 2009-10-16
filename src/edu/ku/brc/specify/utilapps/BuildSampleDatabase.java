@@ -2119,8 +2119,8 @@ public class BuildSampleDatabase
 
             agents.add(groupAgent);
             
-            gpList.add(createGroupPerson(groupAgent, gm1, 0));
-            gpList.add(createGroupPerson(groupAgent, gm2, 1));
+            gpList.add(createGroupPerson(groupAgent, gm1, 0, division));
+            gpList.add(createGroupPerson(groupAgent, gm2, 1, division));
         }
 
         startTx();
@@ -2733,8 +2733,8 @@ public class BuildSampleDatabase
 
             agents.add(groupAgent);
             
-            gpList.add(createGroupPerson(groupAgent, gm1, 0));
-            gpList.add(createGroupPerson(groupAgent, gm2, 1));
+            gpList.add(createGroupPerson(groupAgent, gm1, 0, division));
+            gpList.add(createGroupPerson(groupAgent, gm2, 1, division));
         }
 
         startTx();
@@ -3229,8 +3229,8 @@ public class BuildSampleDatabase
             
             agents.add(groupAgent);
             
-            gpList.add(createGroupPerson(groupAgent, gm1, 0));
-            gpList.add(createGroupPerson(groupAgent, gm2, 1));
+            gpList.add(createGroupPerson(groupAgent, gm1, 0, division));
+            gpList.add(createGroupPerson(groupAgent, gm2, 1, division));
         }
 
         startTx();
@@ -4438,8 +4438,8 @@ public class BuildSampleDatabase
 
             agents.add(groupAgent);
             
-            gpList.add(createGroupPerson(groupAgent, gm1, 0));
-            gpList.add(createGroupPerson(groupAgent, gm2, 1));
+            gpList.add(createGroupPerson(groupAgent, gm1, 0, division));
+            gpList.add(createGroupPerson(groupAgent, gm2, 1, division));
         }
 
         startTx();
@@ -5635,8 +5635,8 @@ public class BuildSampleDatabase
                 
                 agents.add(groupAgent);
                 
-                gpList.add(createGroupPerson(groupAgent, gm1, 0));
-                gpList.add(createGroupPerson(groupAgent, gm2, 1));
+                gpList.add(createGroupPerson(groupAgent, gm1, 0, division));
+                gpList.add(createGroupPerson(groupAgent, gm2, 1, division));
             }
             
             globalAgents.addAll(agents);
