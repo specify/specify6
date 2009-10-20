@@ -3397,7 +3397,7 @@ public class Uploader implements ActionListener, KeyListener
                         // Need extra progress info...
                         for (UploadTable t : uploadTables)
                         {
-                        	t.finishUpload(cancelled && paused);
+                        	t.finishUpload(cancelled && !paused);
                         }
                     }
                     catch (Exception ex)
