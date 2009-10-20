@@ -466,7 +466,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @return the current Collection or null
      */
     protected Collection setupCurrentCollection(final SpecifyUser userArg,
-                                                final boolean startingOver)
+                                                final boolean     startingOver,
+                                                final boolean     promptForCollection)
     {
         DataProviderSessionIFace session = null;
         try
@@ -499,7 +500,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
     
             Pair<String, Integer> currColl = null;
-            String         recentIds = askForColl ? null : remotePrefs.get(prefName, null);
+            String         recentIds = askForColl && promptForCollection ? null : remotePrefs.get(prefName, null);
             if (StringUtils.isNotEmpty(recentIds))
             {
                 Vector<Object[]> rows = BasicSQLUtils.query("SELECT cln.CollectionName, cln.UserGroupScopeId FROM collection AS cln WHERE UserGroupScopeId = " + recentIds); //$NON-NLS-1$
@@ -521,7 +522,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
             
             
-            if (currColl == null || startingOver)
+            if (currColl == null || (askForColl && promptForCollection))
             {
                 if (collectionHash.size() == 1)
                 {
@@ -1077,29 +1078,14 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return strBuf.toString();
     }
 
-    
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.AppContextMgr#setContext(java.lang.String, java.lang.String, boolean)
+     * @see edu.ku.brc.af.core.AppContextMgr#setContext(java.lang.String, java.lang.String, boolean, boolean)
      */
     @Override
     public CONTEXT_STATUS setContext(final String  databaseName,
                                      final String  userName,
-                                     final boolean startingOver)
-    {
-        return setContext(databaseName, userName, startingOver, startingOver);
-    }
-
-    /**
-     * @param databaseName
-     * @param userName
-     * @param startingOver
-     * @param promptForCollection
-     * @return
-     */
-    public CONTEXT_STATUS setContext(final String  databaseName,
-                                     final String  userName,
                                      final boolean startingOver,
-                                     final boolean promptForCollection)
+                                     final boolean doPrompt)
     {
         if (debug)  log.debug("setting context - databaseName: [" + databaseName + "] userName: [" + userName + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         
@@ -1200,7 +1186,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             AppContextMgr.getInstance().setClassObject(SpecifyUser.class, user);
 
             // Ask the User to choose which Collection they will be working with
-            Collection collection = setupCurrentCollection(user, promptForCollection);
+            Collection collection = setupCurrentCollection(user, startingOver, doPrompt);
             if (collection == null)
             {
                 // Return false but don't mess with anything that has been set up so far

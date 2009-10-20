@@ -2390,7 +2390,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         //
         // NOTE: AppPreferences.startup(); is called inside setContext's implementation.
         //
-        AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseNameArg, userNameArg, startOver);
+        AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseNameArg, userNameArg, startOver, true);
         if (status == AppContextMgr.CONTEXT_STATUS.OK)
         {
             // XXX Temporary Fix!

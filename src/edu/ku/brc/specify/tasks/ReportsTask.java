@@ -136,7 +136,8 @@ public class ReportsTask extends ReportsBaseTask
                         //this is probably overkill, but doesn't seem to hurt anything and is not slow.
                         ((SpecifyAppContextMgr) AppContextMgr.getInstance()).setContext(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getDatabaseName(), 
                                 ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getUserName(), 
-                                true, false);
+                                true,    // startOver
+                                false);  // promptForCollection
                         refreshCommands();
                     }
                 }));

@@ -43,7 +43,7 @@ public class SchemaLocaleUpdater extends CustomDialog
      * @param contentPanel
      * @throws HeadlessException
      */
-    public SchemaLocaleUpdater(Frame frame) throws HeadlessException
+    public SchemaLocaleUpdater(final Frame frame) throws HeadlessException
     {
         super(frame, "Update Schema Localizer", true, OKCANCEL, null);
     }

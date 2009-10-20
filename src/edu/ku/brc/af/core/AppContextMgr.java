@@ -29,8 +29,6 @@ import org.dom4j.Element;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewSetIFace;
-import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.Discipline;
 
 /**
  * Abstract class for setting application context. It is designed that each application should implement its own.<br>
@@ -171,12 +169,14 @@ public abstract class AppContextMgr
      * @param databaseName the name of the database 
      * @param userName the user name
      * @param startingOver indicates that the context should "start over" which means it may want to ask the user for specific things
+     * @param doPrompt suggests for the a prompt for for the Context
      * (this may be ignored by some implementations) it is merely a suggestion.
      * @return  the status enum for what happened
      */
     public abstract CONTEXT_STATUS setContext(final String databaseName, 
                                               final String userName,
-                                              final boolean startingOver);
+                                              final boolean startingOver,
+                                              final boolean doPrompt);
     
     /**
      * @return the hastable of ViewSetIFace objects
@@ -257,17 +257,11 @@ public abstract class AppContextMgr
     
     /**
      * Sets (registers) a single object so others can get it globally.
-     * @param clazz the class of object being set
+     * @param clazz the class of object being sets
      * @param object the object.
      */
     public void setClassObject(final Class<?> clazz, final Object object)
     {
-        //System.out.println(clazz+" "+object);
-        if (clazz == Discipline.class || clazz == Collection.class)
-        {
-            int x= 0;
-            x++;
-        }
         if (!hasContext)
         {
             throw new RuntimeException("No context has been set.");
