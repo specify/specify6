@@ -19,6 +19,10 @@
 */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import java.sql.SQLException;
+
+import org.apache.log4j.Logger;
+
 
 /**
  * @author timbo
@@ -28,6 +32,7 @@ package edu.ku.brc.specify.tasks.subpane.qb;
  */
 public class ERTICaptionInfoTreeLevel extends ERTICaptionInfoQB
 {
+    protected static final Logger log = Logger.getLogger(ERTICaptionInfoTreeLevel.class);
     protected final ERTICaptionInfoTreeLevelGrp group;
     protected final int rank;
     protected int rankIdx;
@@ -50,8 +55,14 @@ public class ERTICaptionInfoTreeLevel extends ERTICaptionInfoQB
     @Override
     public Object processValue(Object value)
     {
-        // TODO Auto-generated method stub
-        return group.processValue(value, rankIdx);
+        try
+        {
+        	return group.processValue(value, rankIdx);
+        } catch (SQLException ex)
+        {
+        	log.error(ex);
+        	return null;
+        }
     }
 
     /**

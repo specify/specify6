@@ -38,6 +38,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -2015,7 +2016,16 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
         for (ERTICaptionInfoTreeLevelGrp tg : treeGrps)
         {
-            tg.setUp();
+            try 
+            {
+            	tg.setUp();
+            } catch (SQLException ex)
+            {
+                UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
+                ex.printStackTrace();
+                throw new RuntimeException(ex);
+            }
         }
         return result;
     }
@@ -2343,6 +2353,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     public void resultsComplete()
     {
+        //debug
+    	//System.out.println((System.nanoTime() - startTime.get()) / 1000000000L);
+    	
         completedResults.set(runningResults.get());
         runningResults.set(null);
         if (completedResults.get() != null && !completedResults.get().getCancelled())

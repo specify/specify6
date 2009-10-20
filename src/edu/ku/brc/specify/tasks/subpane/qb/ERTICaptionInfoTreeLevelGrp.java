@@ -19,6 +19,10 @@
 */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -26,6 +30,7 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
@@ -52,8 +57,12 @@ public class ERTICaptionInfoTreeLevelGrp
     protected final LookupsCache                     lookupCache;
     protected final boolean                          useCache;
     
+    protected static boolean                         useHibernate = false;
+    
     protected QueryIFace                             query = null;
-
+    protected Statement                              statement = null;
+    protected String                                 querySQL = null;
+    
     protected String[]                               currentRanks = null;
     protected Object                                 currentVal   = null;
 
@@ -90,7 +99,7 @@ public class ERTICaptionInfoTreeLevelGrp
      * @param rankIdx
      * @return
      */
-    public Object processValue(final Object value, final int rankIdx)
+    public Object processValue(final Object value, final int rankIdx) throws SQLException
     {
         if (!isSetup)
         {
@@ -127,7 +136,7 @@ public class ERTICaptionInfoTreeLevelGrp
     
     
     
-    protected void newValue(final Object value)
+    protected void newValue(final Object value) throws SQLException
     {
         if (useCache)
         {
@@ -147,11 +156,57 @@ public class ERTICaptionInfoTreeLevelGrp
                 currentRanks[r] = null;
             }
         }
+        ResultSet ancestorRows = null;
+        Iterator<?> ancestors = null;
+        Pair<Integer, String> ancestor = null;
+        if (useHibernate)
+        {
+            query.setParameter("descendantArg", value);
+        	ancestors = query.list().iterator();
+        } else 
+        {
+        	String sql = setupQuery(value);
+        	final ResultSet rows = statement.executeQuery(sql);
+        	ancestorRows = rows;
+        	ancestors = new Iterator<?>() {
+
+				@Override
+				public boolean hasNext() 
+				{
+					try 
+					{
+						return rows.next();
+					} catch (SQLException ex)
+					{
+						return false;
+					}
+				}
+
+				@Override public Object next()
+				{
+					try
+					{
+						Object[] result = new Object[2];
+						result[0] = rows.getString(1);
+						result[1] = Integer.valueOf(rows.getString(2));
+						return result;
+					} catch (SQLException ex)
+					{
+						return null;
+					}
+				}
+
+				@Override
+				public void remove()
+				{
+					// ignore					
+				}
+        		
+        	};
+
+        }
         
-        query.setParameter("descendantArg", value);
-        Iterator<?> ancestors = query.list().iterator();
-        Pair<Integer, String> ancestor = ancestors.hasNext() ? getAncestorInfo(ancestors.next()) : null;
-        
+    	ancestor = ancestors.hasNext() ? getAncestorInfo(ancestors.next()) : null;
         //members are ordered by rank
         for (ERTICaptionInfoTreeLevel member : members)
         {
@@ -168,6 +223,10 @@ public class ERTICaptionInfoTreeLevelGrp
                 currentRanks[member.getRankIdx()] = null;
             }
         }
+        if (ancestorRows != null)
+        {
+        	ancestorRows.close();
+        }
         
         if (useCache)
         {
@@ -175,6 +234,11 @@ public class ERTICaptionInfoTreeLevelGrp
         }
     }
 
+    protected String setupQuery(Object value)
+    {
+    	return querySQL.replace(":descendantArg", value.toString());
+    }
+    
     
     /**
      * @return the name of the 'name' field for nodes in the tree.
@@ -211,6 +275,10 @@ public class ERTICaptionInfoTreeLevelGrp
         if (session != null)
         {
             session.close();
+        }
+        if (statement != null)
+        {
+        	statement.close();
         }
     }
 
@@ -267,7 +335,7 @@ public class ERTICaptionInfoTreeLevelGrp
      * Prepares group to process a result set.
      * MUST be called after all members have been added to the group.
      */
-    public void setUp()
+    public void setUp() throws SQLException
     {
         if (isSetup)
         {
@@ -310,19 +378,35 @@ public class ERTICaptionInfoTreeLevelGrp
             rankStr += member.getRank();
         }
         
-        //leave session open all the time for better performance
-        session = DataProviderFactory.getInstance().createSession();
+        if (useHibernate)
+        {
+        	//leave session open all the time for better performance
+        	session = DataProviderFactory.getInstance().createSession();
 
-        String ancestorSQL = "select "
-            + getNodeNameFld()
-            + ", rankId from "
-            + getNodeTblName()
-            + " where "
-            + ":descendantArg between nodenumber and highestchildnodenumber and "
-            + getNodeTreeFldName() + "=" + this.treeDefId + " and rankId in(" + rankStr + ") order by rankId ";
-        query = session.createQuery(ancestorSQL, true);
+        	String ancestorSQL = "select "
+        		+ getNodeNameFld()
+        		+ ", rankId from "
+        		+ getNodeTblName()
+        		+ " where "
+        		+ ":descendantArg between nodenumber and highestchildnodenumber and "
+        		+ getNodeTreeFldName() + "=" + this.treeDefId + " and rankId in(" + rankStr + ") order by rankId ";
+        	query = session.createQuery(ancestorSQL, true);
 
-        isSetup = true;
+        }
+        else 
+        {
+        	querySQL = "select "
+        		+ getNodeNameFld()
+        		+ ", rankId from "
+        		+ getNodeTblName().toLowerCase()
+        		+ " where "
+        		+ ":descendantArg between nodenumber and highestchildnodenumber and "
+        		+ getNodeTreeFldName() + "=" + this.treeDefId + " and rankId in(" + rankStr + ") order by rankId ";
+        	Connection connection = DBConnection.getInstance().getConnection();
+        	statement = connection.createStatement();
+        }
+        
+    	isSetup = true;
     }
     
 }
