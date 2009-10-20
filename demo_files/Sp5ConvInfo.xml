@@ -26,14 +26,14 @@
 	else 'other' end as DataType, rfs.FieldSetName as RelatedTableName,
 	CL.Left, CL.Top, CL.Width, CL.Height, ThemeName, fst.TextForValue as FormType, fst.FieldValue as TypeIDValue,
 	rfs.FieldSetId as RelatedTableId,C.RelatedSubTypeValues, O.ObjectType, CL.ControlType
-	FROM ((USYSMetaFieldSet AS FSet INNER JOIN USYSMetaObject AS O ON O.FieldSetID = FSet.FieldSetID)
-	INNER JOIN (USYSMetaControl AS C INNER JOIN USYSMetaControlLayout AS CL ON CL.ControlID = C.ControlID) ON C.ObjectID = O.ObjectID)
-	LEFT JOIN USYSMetaFieldSetSubType fst on fst.FieldsetSubTypeID = C.FieldSetSubTypeID
-	LEFT JOIN USYSMetaObject AS RO ON RO.ObjectID = O.RelatedObjectID
-	left join usysmetafieldset rfs on rfs.fieldsetid = ro.fieldsetid
+	FROM ((usysmetafieldset AS FSet INNER JOIN usysmetaobject AS O ON O.FieldSetID = FSet.FieldSetID)
+	INNER JOIN (usysmetacontrol AS C INNER JOIN usysmetacontrollayout AS CL ON CL.ControlID = C.ControlID) ON C.ObjectID = O.ObjectID)
+	LEFT JOIN usysmetafieldsetsubtype fst on fst.FieldsetSubTypeID = C.FieldSetSubTypeID
+	LEFT JOIN usysmetaobject AS RO ON RO.ObjectID = O.RelatedObjectID
+	left join usysmetafieldset rfs on rfs.fieldsetid = RO.fieldsetid
 	WHERE
 	Visible <> 0 AND CL.ControlType <> 21
-	AND (ro.fieldsetid is null or ro.fieldsetid not in(8, 9, 32, 38, 39, 40, 41, 57, 68)) AND (C.fieldsetsubtypeid is null or C.fieldsetsubtypeid not in(78,79,136, 138, 139, 140,148,149,161,166,168,169,174,176,177))
+	AND (RO.fieldsetid is null or RO.fieldsetid not in(8, 9, 32, 38, 39, 40, 41, 57, 68)) AND (C.fieldsetsubtypeid is null or C.fieldsetsubtypeid not in(78,79,136, 138, 139, 140,148,149,161,166,168,169,174,176,177))
 	 ORDER BY FSet.FieldSetName, ThemeName, fst.FieldValue, FullForm DESC, CL.Top, CL.Left]]>
 	     </query>
 	</queries>

@@ -143,6 +143,7 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
     protected JPanel                    mainPanel;
     protected JFrame                    formFrame = null;
     protected JButton                   reportBtn;
+    protected JButton                   schemaBtn;
     protected JButton                   showBtn;
     
     protected Sp6FieldComboBoxEditor    sp6FieldEditor;
@@ -192,11 +193,13 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
         
         calcColumnWidths(formsTable);
         
-        PanelBuilder pbBtn = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,p,f:p:g", "p"));
+        PanelBuilder pbBtn = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,p,f:p:g,p,f:p:g", "p"));
         reportBtn = createButton("Report");
         showBtn   = createButton("Show");
+        schemaBtn = createButton("Schema");
         pbBtn.add(reportBtn, cc.xy(2, 1));
-        pbBtn.add(showBtn, cc.xy(4, 1));
+        pbBtn.add(schemaBtn, cc.xy(4, 1));
+        pbBtn.add(showBtn, cc.xy(6, 1));
         
         pb.add(createLabel("Forms", SwingConstants.CENTER),          cc.xy(1, 1));
         pb.add(createLabel("Missing Fields", SwingConstants.CENTER), cc.xy(3, 1));
@@ -219,6 +222,22 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
                 showForm();
             }
         });
+        schemaBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                doSchema();
+            }
+        });
+    }
+    
+    protected void doSchema()
+    {
+        SchemaLocaleUpdater dlg = new SchemaLocaleUpdater(selectedForm);
+        dlg.createUI();
+        dlg.setSize(800, 550);
+        dlg.pack();
+        UIHelper.centerAndShow(dlg);
     }
     
     /**
@@ -241,18 +260,25 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
 
         DefaultComboBoxModel cbxModel = (DefaultComboBoxModel)((JComboBox)sp6FieldEditor.getComponent()).getModel();
         cbxModel.removeAllElements();
+        cbxModel.addElement("");
         
         // Setup Sp6 Fields
-        DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(selectedForm.getTableName());
+        DBTableInfo tblInfo = selectedForm.getTblInfo();
         if (tblInfo != null)
         {
             for (DBFieldInfo fldInfo : tblInfo.getFields())
             {
-                cbxModel.addElement(fldInfo.getColumn());
+                if (StringUtils.isNotEmpty(fldInfo.getColumn()))
+                {
+                    cbxModel.addElement(fldInfo.getColumn());
+                }
             }
             for (DBRelationshipInfo relInfo : tblInfo.getRelationships())
             {
-                cbxModel.addElement(relInfo.getColName());
+                if (StringUtils.isNotEmpty(relInfo.getColName()))
+                {
+                    cbxModel.addElement(relInfo.getColName());
+                }
             }
         }
         
@@ -557,7 +583,7 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
                 {
                     tblInfo = getTableInfo(tableName);
 
-                    formInfo = new FormInfo(tableName, getStr(row[1]), getStr(row[12]));
+                    formInfo = new FormInfo(tableName, getStr(row[1]), getStr(row[12]), tblInfo);
                     forms.add(formInfo);
                     curTblName = uniqueKey;
                     formHash.put(uniqueKey, formInfo);
@@ -717,9 +743,9 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
         try
         {
             final SpecifyDBConverter converter = new  SpecifyDBConverter();
-            if (converter.selectedDBsToConvert())
+            if (converter.selectedDBsToConvert(true))
             {
-                namePair = converter.chooseTable();
+                namePair = converter.chooseTable("Select a DB for Forms", true);
                 hostName = converter.getHostName();
                 itUsrPwd = converter.getItUsrPwd();
             }
@@ -755,6 +781,55 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
             JOptionPane.showConfirmDialog(null, "The Converter was unable to login.", "Error", JOptionPane.CLOSED_OPTION);
             System.exit(0);
         }
+    }
+    
+    protected static DBConnection getNewDBConnection()
+    {
+        Pair<String, String> namePair = null;
+        Pair<String, String> usrNmPwd = null; 
+        final SpecifyDBConverter converter = new  SpecifyDBConverter();
+        try
+        {
+           
+            if (converter.selectedDBsToConvert(true))
+            {
+                namePair = converter.chooseTable("Select Specify 6 Database", false);
+                usrNmPwd = converter.getItUsrPwd();
+            }
+               
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+            JOptionPane.showConfirmDialog(null, "The Sp5Forms was unable to login.", "Error", JOptionPane.CLOSED_OPTION);
+        }
+        
+        if (namePair != null)
+        {
+            DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("MySQL");
+            String oldConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, converter.getHostName(), namePair.second, usrNmPwd.first, usrNmPwd.second, driverInfo.getName());
+            
+            DBConnection dbConn = DBConnection.createInstance(driverInfo.getDriverClassName(), 
+                    driverInfo.getDialectClassName(), 
+                    namePair.second, 
+                    oldConnStr,
+                    usrNmPwd.first, 
+                    usrNmPwd.second);
+
+            Connection connection = dbConn.createConnection();
+            if (connection != null)
+            {
+                try
+                {
+                    connection.close();
+                    return dbConn;
+                    
+                } catch (SQLException ex)
+                {
+                    // do nothing
+                }
+            }
+        }
+        return null;
     }
     
     private void openDB()

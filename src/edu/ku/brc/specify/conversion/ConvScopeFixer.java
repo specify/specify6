@@ -324,7 +324,7 @@ public class ConvScopeFixer
      */
     protected boolean fixCollectionObjects()
     {
-        String cntSQL = "SELECT COUNT(*) FROM collectionObjectcatalog WHERE CollectionObjectTypeID > 8 AND CollectionObjectTypeID < 20";
+        String cntSQL = "SELECT COUNT(*) FROM collectionobjectcatalog WHERE CollectionObjectTypeID > 8 AND CollectionObjectTypeID < 20";
                 
         String qrySQL = "SELECT CollectionObjectCatalogID, CatalogSeriesID FROM collectionobjectcatalog WHERE CollectionObjectTypeID > 8 AND CollectionObjectTypeID < 20";
                 
@@ -338,11 +338,11 @@ public class ConvScopeFixer
     {
         String cntSQL = "SELECT COUNT(cit.CollectionObjectCitationID) FROM collectionobjectcatalog AS c " + 
                         "Inner Join collectionobjectcitation AS cit ON c.CollectionObjectCatalogID = cit.BiologicalObjectID " + 
-                        "WHERE c.CollectionObjectTypeID >  8 AND c.CollectionObjectTypeID <  20";
+                        "WHERE c.CollectionObjectTypeID > 8 AND c.CollectionObjectTypeID < 20";
             
         String qrySQL = "SELECT cit.CollectionObjectCitationID, c.CatalogSeriesID FROM collectionobjectcatalog AS c " + 
                         "Inner Join collectionobjectcitation AS cit ON c.CollectionObjectCatalogID = cit.BiologicalObjectID " + 
-                        "WHERE c.CollectionObjectTypeID >  8 AND c.CollectionObjectTypeID <  20";
+                        "WHERE c.CollectionObjectTypeID > 8 AND c.CollectionObjectTypeID < 20";
             
         return fixTableWithColMemId(cntSQL, qrySQL, "CollectionObjectCitation", "CollectionObjectCitationID", null);
     }
@@ -354,11 +354,11 @@ public class ConvScopeFixer
     {
         String cntSQL = "SELECT COUNT(b.BiologicalObjectAttributesID) FROM collectionobjectcatalog AS cc " + 
                         "Inner Join biologicalobjectattributes AS b ON cc.CollectionObjectCatalogID = b.BiologicalObjectTypeID " + 
-                        "WHERE c.CollectionObjectTypeID >  8 AND c.CollectionObjectTypeID <  20";
+                        "WHERE cc.CollectionObjectTypeID > 8 AND cc.CollectionObjectTypeID < 20";
         
         String qrySQL = "SELECT b.BiologicalObjectAttributesID, cc.CatalogSeriesID FROM collectionobjectcatalog AS cc " + 
                         "Inner Join biologicalobjectattributes AS b ON cc.CollectionObjectCatalogID = b.BiologicalObjectTypeID " + 
-                        "WHERE c.CollectionObjectTypeID >  8 AND c.CollectionObjectTypeID <  20";
+                        "WHERE cc.CollectionObjectTypeID > 8 AND cc.CollectionObjectTypeID < 20";
         
         return fixTableWithColMemId(cntSQL, qrySQL, "BiologicalObjectAttributes", "BiologicalObjectTypeID", "CollectionObjectAttribute");
     }
@@ -384,11 +384,11 @@ public class ConvScopeFixer
     {
         String cntSQL = "SELECT COUNT(b.BiologicalObjectAttributesID) FROM collectionobjectcatalog AS cc " + 
                         "Inner Join biologicalobjectattributes AS b ON cc.CollectionObjectCatalogID = b.BiologicalObjectTypeID " + 
-                        "WHERE c.CollectionObjectTypeID >  8 AND c.CollectionObjectTypeID <  20";
+                        "WHERE cc.CollectionObjectTypeID >  8 AND cc.CollectionObjectTypeID <  20";
         
         String qrySQL = "SELECT b.BiologicalObjectAttributesID, cc.CatalogSeriesID FROM collectionobjectcatalog AS cc " + 
                         "Inner Join biologicalobjectattributes AS b ON cc.CollectionObjectCatalogID = b.BiologicalObjectTypeID " + 
-                        "WHERE c.CollectionObjectTypeID >  8 AND c.CollectionObjectTypeID <  20";
+                        "WHERE cc.CollectionObjectTypeID >  8 AND cc.CollectionObjectTypeID <  20";
         
         return fixTableWithColMemId(cntSQL, qrySQL, "BiologicalObjectAttributes", "BiologicalObjectTypeID", "CollectionObjectAttribute");
     }
@@ -429,7 +429,7 @@ public class ConvScopeFixer
         
         String cntSQL = "SELECT COUNT(PaleoContextID) FROM collectionobject WHERE PaleoContextID IS NOT NULL";
         
-        int cnt = BasicSQLUtils.getCountAsInt(oldDBConn, cntSQL);
+        int cnt = BasicSQLUtils.getCountAsInt(newDBConn, cntSQL);
         if (cnt == 0)
         {
            return true;

@@ -8385,22 +8385,28 @@ public class BuildSampleDatabase
             String sql = "FROM SpLocaleContainer as sp INNER JOIN sp.discipline as d WHERE sp.name = '" + tableName + "' AND d.id = "+discipline.getId();
             System.err.println(sql);
             Object[] cols = (Object[])localSession.getData(sql);
-            SpLocaleContainer container = (SpLocaleContainer)cols[0];
-            if (container != null)
+            if (cols != null && cols.length > 0)
             {
-                for (SpLocaleContainerItem item : container.getItems())
+                SpLocaleContainer container = (SpLocaleContainer)cols[0];
+                if (container != null)
                 {
-                    //System.out.println(fieldName+" "+ item.getName());
-                    if (item.getName().equals(fieldName))
+                    for (SpLocaleContainerItem item : container.getItems())
                     {
-                        item.setIsHidden(false);
-                        localSession.beginTransaction();
-                        localSession.save(item);
-                        localSession.commit();
-                        localSession.flush();
-                        return;
+                        //System.out.println(fieldName+" "+ item.getName());
+                        if (item.getName().equals(fieldName))
+                        {
+                            item.setIsHidden(false);
+                            localSession.beginTransaction();
+                            localSession.save(item);
+                            localSession.commit();
+                            localSession.flush();
+                            return;
+                        }
                     }
                 }
+            } else
+            {
+                System.err.println("Couldn't find Table ["+tableName+"] for discipline["+discipline.getId()+"]");
             }
         } catch (Exception ex)
         {

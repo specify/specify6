@@ -46,10 +46,14 @@ public class FormFieldInfo
     private Integer width;
     private Integer height;
     
+    
     private Integer controlTypeNum;
     private Integer dataTypeNum;
-    
+    private Boolean isHidden;
+
+    // Transient
     private FormInfo parent;
+    private boolean  hasChanged = false;
     
     
     /**
@@ -90,6 +94,75 @@ public class FormFieldInfo
         this.height = height;
         this.controlTypeNum = controlTypeNum;
         this.dataTypeNum = dataTypeNum;
+    }
+
+    /**
+     * @param sp6FieldName
+     * @param caption
+     * @param isHidden
+     */
+    public FormFieldInfo(String sp6FieldName, 
+                         String caption,
+                         Boolean isHidden)
+    {
+        super();
+        this.sp5FieldName = null;
+        this.sp6FieldName = sp6FieldName;
+        this.caption = caption;
+        this.controlType = null;
+        this.dataType = null;
+        this.relatedTableName = null;
+        this.top = null;
+        this.left = null;
+        this.width = null;
+        this.height = null;
+        this.controlTypeNum = null;
+        this.dataTypeNum = null;
+        this.isHidden = isHidden;
+    }
+    
+    /**
+     * @return the hasChanged
+     */
+    public boolean hasChanged()
+    {
+        return hasChanged;
+    }
+
+    /**
+     * @param hasChanged the hasChanged to set
+     */
+    public void setHasChanged(boolean hasChanged)
+    {
+        this.hasChanged = hasChanged;
+    }
+
+    /**
+     * @param caption the caption to set
+     */
+    public void setCaption(String caption)
+    {
+        this.caption = caption;
+        hasChanged = true;
+    }
+
+
+    /**
+     * @return the isHidden
+     */
+    public Boolean getIsHidden()
+    {
+        return isHidden;
+    }
+
+
+    /**
+     * @param isHidden the isHidden to set
+     */
+    public void setIsHidden(Boolean isHidden)
+    {
+        this.isHidden = isHidden;
+        hasChanged = true;
     }
 
 
@@ -161,6 +234,7 @@ public class FormFieldInfo
     public void setSp6FieldName(String sp6FieldName)
     {
         this.sp6FieldName = sp6FieldName;
+        hasChanged = true;
     }
 
 
@@ -339,6 +413,7 @@ public class FormFieldInfo
         xstream.aliasAttribute(FormFieldInfo.class, "height", "height"); //$NON-NLS-1$ //$NON-NLS-2$
         xstream.aliasAttribute(FormFieldInfo.class, "controlTypeNum", "controlTypeNum"); //$NON-NLS-1$ //$NON-NLS-2$
         xstream.aliasAttribute(FormFieldInfo.class, "dataTypeNum", "dataTypeNum"); //$NON-NLS-1$ //$NON-NLS-2$
+        xstream.aliasAttribute(FormFieldInfo.class, "isHidden", "isHidden"); //$NON-NLS-1$ //$NON-NLS-2$
         
         // Things to omit
         xstream.omitField(FormFieldInfo.class,  "parent"); //$NON-NLS-1$

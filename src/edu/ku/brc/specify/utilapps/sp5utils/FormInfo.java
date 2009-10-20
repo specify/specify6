@@ -25,6 +25,8 @@ import org.apache.commons.lang.StringUtils;
 
 import com.thoughtworks.xstream.XStream;
 
+import edu.ku.brc.af.core.db.DBTableInfo;
+
 /**
  * @author rods
  *
@@ -39,6 +41,8 @@ public class FormInfo
     private String formVersion;
     private String formType;
     
+    protected DBTableInfo tblInfo;
+    
     ArrayList<FormFieldInfo> fields = new ArrayList<FormFieldInfo>();
 
     /**
@@ -46,14 +50,26 @@ public class FormInfo
      * @param formVersion
      * @param formType
      */
-    public FormInfo(String tableName, String formVersion, String formType)
+    public FormInfo(final String tableName, final String formVersion, final String formType, final DBTableInfo tblInfo)
     {
         super();
+        
         this.tableName   = tableName;
         this.formVersion = formVersion;
         this.formType    = formType;
+        this.tblInfo     = tblInfo;
     }
     
+    
+    /**
+     * @return the tblInfo
+     */
+    public DBTableInfo getTblInfo()
+    {
+        return tblInfo;
+    }
+
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */

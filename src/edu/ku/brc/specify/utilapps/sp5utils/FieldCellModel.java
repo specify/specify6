@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.utilapps.sp5utils;
 
+import java.util.List;
+
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -41,6 +43,11 @@ public class FieldCellModel extends DefaultTableModel
     public FieldCellModel()
     {
         super();
+    }
+    
+    public List<FormFieldInfo> getFields()
+    {
+        return selectedForm.getFields();
     }
 
     /**
@@ -151,17 +158,21 @@ public class FieldCellModel extends DefaultTableModel
                 switch (column)
                 {
                     case 1 : 
-                        fi.setSp6FieldName(value.toString());
+                        fi.setSp6FieldName(value != null ? (String)value : "");
                         break;
+                        
                     case 6 : 
                         fi.setTop((Integer)value);
                         break;
+                        
                     case 7 : 
                         fi.setLeft((Integer)value);
                         break;
+                        
                     case 8 : 
                         fi.setWidth((Integer)value);
                         break;
+                        
                     case 9 : 
                         fi.setHeight((Integer)value);
                         break;

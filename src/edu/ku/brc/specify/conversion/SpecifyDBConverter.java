@@ -242,9 +242,9 @@ public class SpecifyDBConverter
                 Pair<String, String> namePair = null;
                 try
                 {
-                    if (converter.selectedDBsToConvert())
+                    if (converter.selectedDBsToConvert(false))
                     {
-                        namePair = converter.chooseTable();
+                        namePair = converter.chooseTable("Select a DB to Convert", true);
                     }
                        
                 } catch (SQLException ex)
@@ -303,7 +303,7 @@ public class SpecifyDBConverter
      * @return
      * @throws SQLException
      */
-    public Pair<String, String> chooseTable() throws SQLException
+    public Pair<String, String> chooseTable(final String title, final boolean doSp5DBs) throws SQLException
     {
         MySQLDMBSUserMgr mgr = new MySQLDMBSUserMgr();
         
@@ -318,33 +318,34 @@ public class SpecifyDBConverter
             for (Object[] row : dbNames)
             {
                 String dbName = row[0].toString();
-                if (dbName.equalsIgnoreCase("kui_fish_dbo"))
-                {
-                    System.out.println("xxx");
-                }
                 
                 System.out.print("Database Found ["+dbName+"]  ");
                 conn.setCatalog(dbName);
                 
-                boolean fnd = false;
+                boolean isSp5DB = false;
                 Vector<Object[]> tables = BasicSQLUtils.query(conn, "show tables");
                 for (Object[] tblRow : tables)
                 {
                     String tableName = tblRow[0].toString();
                     if (tableName.equalsIgnoreCase("usysversion"))
                     {
-                        fnd = true;
+                        isSp5DB = true;
                         System.out.println(" is Sp5");
                         break;
                     }
                 }
                 
-                if (!fnd)
+                if (!isSp5DB)
                 {
                     System.out.println(" is NOT Sp5");
+                }
+                
+                if ((!isSp5DB && doSp5DBs) || (isSp5DB && !doSp5DBs))
+                {
                     continue;
                 }
                 
+                // make all table names lowercase
                 try
                 {
                     Integer count = BasicSQLUtils.getCount(conn, "select COUNT(*) FROM collection");
@@ -362,10 +363,10 @@ public class SpecifyDBConverter
                     ex.printStackTrace();
                 }
                 
-                Vector<Object[]> tableDesc = BasicSQLUtils.query(conn, "select CollectionName FROM collection");
+                Vector<Object> tableDesc = BasicSQLUtils.querySingleCol(conn, "select CollectionName FROM collection");
                 if (tableDesc.size() > 0)
                 {
-                    String collName =  tableDesc.get(0)[0].toString();
+                    String collName =  tableDesc.get(0).toString();
                     availPairs.add(new DBNamePair(collName, row[0].toString()));
                 }
             }
@@ -387,7 +388,7 @@ public class SpecifyDBConverter
             pb.add(UIHelper.createScrollPane(list, true), cc.xy(1,1));
             pb.setDefaultDialogBorder();
             
-            final CustomDialog dlg = new CustomDialog(null, "Select a DB to Convert", true, pb.getPanel());
+            final CustomDialog dlg = new CustomDialog(null, title, true, pb.getPanel());
             list.addListSelectionListener(new ListSelectionListener() {
                 @Override
                 public void valueChanged(ListSelectionEvent e)
@@ -1670,7 +1671,7 @@ public class SpecifyDBConverter
      * @param hashNames every other one is the new name
      * @return the list of selected DBs
      */
-    public boolean selectedDBsToConvert()
+    public boolean selectedDBsToConvert(final boolean useITOnly)
     {
         final JTextField     itUserNameTF = UIHelper.createTextField("root", 15);
         final JPasswordField itPasswordTF = UIHelper.createPasswordField("", 15);
@@ -1681,7 +1682,7 @@ public class SpecifyDBConverter
         final JTextField     hostNameTF = UIHelper.createTextField("localhost", 15);
 
         CellConstraints cc = new CellConstraints();
-        PanelBuilder pb = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,2px,p,2px,p,4px,p,2px,p,2px,p,8px,p,4px"));
+        PanelBuilder pb = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,2px,p,2px,p,4px," + (useITOnly ? "" : "p,2px,p,2px,") + "p,8px,p,4px"));
         
         int y = 1;
         pb.addSeparator("IT User", cc.xyw(1, y, 4)); y += 2;
@@ -1691,12 +1692,15 @@ public class SpecifyDBConverter
         pb.add(UIHelper.createLabel("Password:", SwingConstants.RIGHT), cc.xy(1, y));
         pb.add(itPasswordTF, cc.xy(3, y)); y += 2;
 
-        pb.addSeparator("Master User", cc.xyw(1, y, 4)); y += 2;
-        pb.add(UIHelper.createLabel("Username:", SwingConstants.RIGHT), cc.xy(1, y));
-        pb.add(masterUserNameTF, cc.xy(3, y)); y += 2;
-
-        pb.add(UIHelper.createLabel("Password:", SwingConstants.RIGHT), cc.xy(1, y));
-        pb.add(masterPasswordTF, cc.xy(3, y)); y += 2;
+        if (!useITOnly)
+        {
+            pb.addSeparator("Master User", cc.xyw(1, y, 4)); y += 2;
+            pb.add(UIHelper.createLabel("Username:", SwingConstants.RIGHT), cc.xy(1, y));
+            pb.add(masterUserNameTF, cc.xy(3, y)); y += 2;
+    
+            pb.add(UIHelper.createLabel("Password:", SwingConstants.RIGHT), cc.xy(1, y));
+            pb.add(masterPasswordTF, cc.xy(3, y)); y += 2;
+        }
 
         pb.add(UIHelper.createLabel("Host Name:", SwingConstants.RIGHT), cc.xy(1, y));
         pb.add(hostNameTF, cc.xy(3, y)); y += 2;
