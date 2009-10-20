@@ -1989,20 +1989,24 @@ public class WorkbenchPaneSS extends BaseSubPane
                 String lon2 = row.getData((short)lon2Index);
                 Double latitude2 = null;
                 Double longitude2 = null;
+               
                 try
                 {
                     latitude2 = new Double(lat2);
                     longitude2 = new Double(lon2);
-                    newLoc = new SimpleMapLocation(latitude,longitude,latitude2,longitude2);
                 }
                 catch (Exception e)
                 {
-                    UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchPaneSS.class, e);
                     // this could be a number format exception
                     // or a null pointer exception if the field was empty
                     // either way, we'll just treat this record as though it only has lat1 and lon1
                 }
+                if ((latitude2 == null) ^ (longitude2 == null))
+                {
+                	latitude2 = null;
+                	longitude2 = null;
+                }
+                newLoc = new SimpleMapLocation(latitude,longitude,latitude2,longitude2);
             }
             else // use just the point
             {
@@ -2032,7 +2036,8 @@ public class WorkbenchPaneSS extends BaseSubPane
                 else
                 {
                     // in the future, we may want a different message for non-connection exceptions
-                    errorMsg = getResourceString("WB_MAP_SERVICE_CONNECTION_FAILURE");
+                    //errorMsg = getResourceString("WB_MAP_SERVICE_CONNECTION_FAILURE");
+                	errorMsg = e.getLocalizedMessage();
                 }
                 JStatusBar statusBar = UIRegistry.getStatusBar();
                 statusBar.setErrorMessage(errorMsg,e);
