@@ -30,8 +30,8 @@ import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
@@ -71,12 +71,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
     @Override
     protected TaxonTreeDef getCurrentTreeDef()
     {
-        Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
-        if (discipline != null)
-        {
-            return discipline.getTaxonTreeDef();
-        }
-        return null;
+        return (TaxonTreeDef )((SpecifyAppContextMgr )AppContextMgr.getInstance()).getTreeDefForClass(Taxon.class);
     }
     
     /**

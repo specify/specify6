@@ -25,6 +25,7 @@ import javax.persistence.Transient;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.specify.config.DisciplineType;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
@@ -66,9 +67,7 @@ public class LithoStratTreeTask extends BaseTreeTask<LithoStrat,LithoStratTreeDe
     @Override
     protected LithoStratTreeDef getCurrentTreeDef()
     {
-        Discipline disp = AppContextMgr.getInstance().getClassObject(Discipline.class);
-        
-        return disp != null ? disp.getLithoStratTreeDef() : null;
+        return (LithoStratTreeDef )((SpecifyAppContextMgr )AppContextMgr.getInstance()).getTreeDefForClass(LithoStrat.class);
     }
     
 

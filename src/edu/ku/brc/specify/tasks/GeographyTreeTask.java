@@ -34,8 +34,8 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
@@ -78,8 +78,7 @@ public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,G
     @Override
     protected GeographyTreeDef getCurrentTreeDef()
     {
-        Discipline disicpline = AppContextMgr.getInstance().getClassObject(Discipline.class);
-        return disicpline != null ? disicpline.getGeographyTreeDef() : null;
+        return (GeographyTreeDef )((SpecifyAppContextMgr )AppContextMgr.getInstance()).getTreeDefForClass(Geography.class);
     }
     
     /**
