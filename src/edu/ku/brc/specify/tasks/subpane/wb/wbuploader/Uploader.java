@@ -3083,7 +3083,7 @@ public class Uploader implements ActionListener, KeyListener
                {
                    mainPanel.showUploadTblTbl();
                }
-               else if (uploadedObjects == 0)
+               else if (uploadedObjects == 0 || op.equals(Uploader.READY_TO_UPLOAD))
                {
                    mainPanel.showUploadTblList();
                }
