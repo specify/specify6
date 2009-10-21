@@ -136,6 +136,11 @@ public class ERTICaptionInfoTreeLevelGrp
     
     
     
+    /**
+     * @param value
+     * @throws SQLException
+     */
+    @SuppressWarnings("unchecked")
     protected void newValue(final Object value) throws SQLException
     {
         if (useCache)
@@ -157,18 +162,18 @@ public class ERTICaptionInfoTreeLevelGrp
             }
         }
         ResultSet ancestorRows = null;
-        Iterator<?> ancestors = null;
+        Iterator<Object> ancestors = null;
         Pair<Integer, String> ancestor = null;
         if (useHibernate)
         {
             query.setParameter("descendantArg", value);
-        	ancestors = query.list().iterator();
+        	ancestors = (Iterator<Object> )query.list().iterator();
         } else 
         {
         	String sql = setupQuery(value);
         	final ResultSet rows = statement.executeQuery(sql);
         	ancestorRows = rows;
-        	ancestors = new Iterator<?>() {
+        	ancestors = new Iterator<Object>() {
 
 				@Override
 				public boolean hasNext() 
