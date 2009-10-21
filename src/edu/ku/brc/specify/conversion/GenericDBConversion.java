@@ -54,6 +54,7 @@ import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.io.File;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -1695,7 +1696,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         return new String[] { "BiologicalObjectTypeId", "BiologicalObjectAttributesID", "SexId",
                 "StageId", "Text8", "Number34", "Number35", "Number36", "Text8", "Version",
                 "CreatedByAgentID", "ModifiedByAgentID", "CollectionMemberID", "Text11",
-                "Text12", "Text13", "Text14", "CollectionObjectAttributeID"};
+                "Text12", "Text13", "Text14", "CollectionObjectAttributeID", "RelatedTaxonID"};
     }
 
     protected String[] getCollectionObjectAttributeMappings()
@@ -1708,8 +1709,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         //}
 
         return new String[] {
-                "CollectionObjectAttributeID",
-                "BiologicalObjectAttributesID",
+                "CollectionObjectAttributeID", "BiologicalObjectAttributesID",
                 // "biologicalObjectTypeId", ??? "Number36"
                 "Text10", "Sex", 
                 "Number11", "Age", 
@@ -1818,7 +1818,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "Text18", "EggDescription", 
                 "Text19", "Format", 
                 "Text25", "StorageInfo", 
-                "Text22", "preparationType",
+                "Text22", "PreparationType",
                 // "preparationTypeId", "Number8", ?????
                 "Text23", "ContainerType", 
                 "Text24", "Medium",
@@ -3859,7 +3859,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             int count = 0;
             while (rs.next())
             {
-            	System.out.println(count);
             	Integer   id          = rs.getInt(1);
                 String    role        = rs.getString(2);
                 String    remarks     = escapeStringLiterals(rs.getString(3));
@@ -3947,6 +3946,92 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         setIdentityInsertOFFCommandForSQLServer(newDBConn, "loanagents", BasicSQLUtils.myDestinationServerType);
 
         return true;
+    }
+    
+    /**
+     * 
+     */
+    public void convertHostTaxonId()
+    {
+        int total = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM habitat WHERE HostTaxonID IS NOT NULL");
+        if (total > 0)
+        {
+            setProcess(0, total);
+            
+            String sql = "SELECT h.HabitatID, co.CollectionObjectID FROM habitat h " + 
+                         "INNER JOIN collectingevent ce ON h.HabitatID = ce.CollectingEventID " +
+                         "INNER JOIN collectionobject co ON ce.CollectingEventID = co.CollectingEventID WHERE h.HostTaxonID IS NOT NULL";
+            
+            String lookupSql = "SELECT ca.CollectionObjectAttributeID FROM collectionobject co " + 
+                               "INNER JOIN collectionobjectattribute ca ON co.CollectionObjectAttributeID = ca.CollectionObjectAttributeID WHERE co.CollectionObjectID";
+
+            try
+            {
+                IdMapperIFace coMapper = IdMapperMgr.getInstance().get("collectionobject", "CollectionObjectID");
+                IdMapperIFace txMapper = IdMapperMgr.getInstance().get("taxonname",        "TaxonNameID");
+                
+                Statement         stmt       = oldDBConn.createStatement();
+                PreparedStatement updateStmt = newDBConn.prepareStatement("UPDATE collectionobjectattribute SET RelatedTaxonID=? WHERE CollectionObjectAttributeID = ?");
+                PreparedStatement insertStmt = newDBConn.prepareStatement("INSERT INTO collectionobjectattribute (RelatedTaxonID) VALUES(?)");
+                
+                int count = 0;
+                ResultSet rs = stmt.executeQuery(sql);
+                while (rs.next())
+                {
+                    setProcess(count++);
+                    
+                    boolean isErr = false;
+                    Integer newTXId = txMapper.get(rs.getInt(1));
+                    if (newTXId == null)
+                    {
+                        String msg = "Couldn't map old Taxon Id " + rs.getInt(1);
+                        log.error(msg);
+                        isErr = true;
+                    }
+                    Integer newCOId = coMapper.get(rs.getInt(2));
+                    if (newCOId == null)
+                    {
+                        String msg = "Couldn't map old CO Id " + rs.getInt(2);
+                        log.error(msg);
+                        isErr = true;
+                    }
+                    
+                    if (isErr)
+                    {
+                        continue;
+                    }
+                    
+                    Integer coAttrId = BasicSQLUtils.getCount(newDBConn, lookupSql + newCOId);
+                    if (coAttrId == null)
+                    {
+                        insertStmt.setInt(1, newTXId);
+                        
+                        if (insertStmt.executeUpdate() != 1)
+                        {
+                            String msg = "Error inserting CO Attr record for CO Id: " + newCOId + " and TxId: " + newTXId;
+                            log.error(msg);
+                        }
+                        coAttrId = BasicSQLUtils.getInsertedId(insertStmt);
+                    }
+                    
+                    updateStmt.setInt(1, newTXId);
+                    updateStmt.setInt(2, newCOId); 
+                    
+                    if (updateStmt.executeUpdate() != 1)
+                    {
+                        String msg = "Error updating CO RelatedTaxonId record for CO Id: " + newCOId + " and TxId: " + newTXId;
+                        log.error(msg);
+                    }
+                }
+                
+                rs.close();
+                stmt.close();
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
     }
 
 

@@ -1077,6 +1077,8 @@ public class SpecifyDBConverter
                     frame.incOverall();
                 }
                 
+                conversion.convertHostTaxonId();
+                
                 frame.setDesc("Converting Straigraphy");
                 log.info("Converting Straigraphy");
                 boolean doStrat = false;
