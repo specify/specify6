@@ -129,13 +129,7 @@ public class TableModel2Excel
     {
         if (toFile == null)
         {
-            UIRegistry.showLocalizedMsg("FILE_NO_EXISTS", toFile != null ? toFile.getAbsolutePath() : "");
-            return null;
-        }
-        
-        if (!toFile.canWrite())
-        {
-            UIRegistry.showLocalizedMsg("FILE_NO_WRITE", toFile != null ? toFile.getAbsolutePath() : "");
+            UIRegistry.showLocalizedMsg("WARNING", "FILE_NO_EXISTS", toFile != null ? toFile.getAbsolutePath() : "");
             return null;
         }
         
@@ -151,7 +145,7 @@ public class TableModel2Excel
                     
                 } catch (FileNotFoundException ex)
                 {
-                    UIRegistry.showLocalizedMsg("FILE_NO_WRITE", toFile != null ? toFile.getAbsolutePath() : "");
+                    UIRegistry.showLocalizedMsg("WARNING", "FILE_NO_WRITE", toFile != null ? toFile.getAbsolutePath() : "");
                     return null;
                 }
                 
