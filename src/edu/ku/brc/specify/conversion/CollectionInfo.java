@@ -212,7 +212,9 @@ public class CollectionInfo
                         info.setColObjDetTaxCnt(BasicSQLUtils.getCountAsInt(oldDBConn, cntColObjForTaxon + taxonomyTypeID));
                         info.setColObjCnt(BasicSQLUtils.getCountAsInt(oldDBConn, cntColObj + info.getColObjTypeId()));
                         
-                        Vector<Object> ttNames = BasicSQLUtils.querySingleCol(oldDBConn, hostTaxonID + taxonomyTypeID);
+                        s = hostTaxonID + taxonomyTypeID;
+                        log.debug(s);
+                        Vector<Object> ttNames = BasicSQLUtils.querySingleCol(oldDBConn, s);
                         if (ttNames != null && ttNames.size() > 0 && ((Long)ttNames.get(0)) > 0)
                         {
                             info.setSrcHostTaxonCnt((Long)ttNames.get(0));
