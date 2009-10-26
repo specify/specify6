@@ -552,7 +552,12 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
         {
             rows.get(i).setRowNumber((short)(i));
         }
-        //deletedRows.add(wbRow);
+        
+        if (wbRow.getWorkbenchRowImages() != null)
+        {
+        	//This fixes bug #7721 (for mysterious reasons)
+        	wbRow.getWorkbenchRowImages().clear();
+        }
         workbenchRows.remove(wbRow);
         return wbRow;
     }
