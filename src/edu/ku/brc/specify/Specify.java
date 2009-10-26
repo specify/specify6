@@ -279,7 +279,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     public Specify()
     {
-        
+        isWorkbenchOnly = UIRegistry.isMobile();
     }
     
     /**
@@ -621,7 +621,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             return;
         }
  
-        TaskMgr.readRegistry();
+        TaskMgr.readRegistry(UIRegistry.isMobile());
         
         TaskMgr.initializePlugins();
         
@@ -980,43 +980,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     });
             mi.setEnabled(true);
         }
-                
-
-
-        /*JMenuItem mi2;
-        JMenu fileMenu2 = (JMenu) mb.add(new JMenu("Log off"));
-
-
-        fileMenu2.setMnemonic('O');
-        mi2 = UIHelper.createMenuItem(fileMenu2, "Log off", "O", "Log off database", false, null);
-        mi2.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        if (hasChanged)
-                        {
-
-                        }
-                        try {
-                            if (mSessionFactory != null)
-                            {
-                                mSessionFactory.close();
-                            }
-                            if (mSession != null)
-                            {
-                                mSession.close();
-                            }
-                        } catch (Exception e)
-                        {
-                            log.error("UIHelper.createMenus - ", e);
-                        }
-                        //frame.dispose();
-                        final Window parentWindow = SwingUtilities.getWindowAncestor(Specify.this);
-                        parentWindow.dispose();
-                        Specify ha = new Specify(grc);
-                    }
-                });
-        */
         
         //--------------------------------------------------------------------
         //-- Data Menu
@@ -1081,24 +1044,27 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         UIRegistry.registerAction("CarryForward", carryForwardAction); //$NON-NLS-1$
         mb.add(dataMenu);
         
-        //---------------------------------------
-        // AutoNumber Menu Item (On / Off)
-        Action autoNumberOnOffAction = new AbstractAction(getResourceString("FormViewObj.SET_AUTONUMBER_ONOFF")) { //$NON-NLS-1$
-            public void actionPerformed(ActionEvent e)
-            {
-                FormViewObj fvo = getCurrentFVO();
-                if (fvo != null)
+        if (!isWorkbenchOnly)
+        {
+            //---------------------------------------
+            // AutoNumber Menu Item (On / Off)
+            Action autoNumberOnOffAction = new AbstractAction(getResourceString("FormViewObj.SET_AUTONUMBER_ONOFF")) { //$NON-NLS-1$
+                public void actionPerformed(ActionEvent e)
                 {
-                    fvo.toggleAutoNumberOnOffState();
-                    ((JCheckBoxMenuItem)e.getSource()).setSelected(fvo.isAutoNumberOn());
+                    FormViewObj fvo = getCurrentFVO();
+                    if (fvo != null)
+                    {
+                        fvo.toggleAutoNumberOnOffState();
+                        ((JCheckBoxMenuItem)e.getSource()).setSelected(fvo.isAutoNumberOn());
+                    }
                 }
-            }
-        };
-        autoNumberOnOffAction.setEnabled(false);
-        JCheckBoxMenuItem autoNumCBMI = new JCheckBoxMenuItem(autoNumberOnOffAction);
-        dataMenu.add(autoNumCBMI);
-        UIRegistry.register("AutoNumbering", autoNumCBMI); //$NON-NLS-1$
-        UIRegistry.registerAction("AutoNumbering", autoNumberOnOffAction); //$NON-NLS-1$
+            };
+            autoNumberOnOffAction.setEnabled(false);
+            JCheckBoxMenuItem autoNumCBMI = new JCheckBoxMenuItem(autoNumberOnOffAction);
+            dataMenu.add(autoNumCBMI);
+            UIRegistry.register("AutoNumbering", autoNumCBMI); //$NON-NLS-1$
+            UIRegistry.registerAction("AutoNumbering", autoNumberOnOffAction); //$NON-NLS-1$
+        }
 
 /*
         dataMenu.addSeparator();
@@ -1129,39 +1095,42 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         mb.add(dataMenu);
 
+        SubPaneMgr.getInstance(); // force creating of the Mgr so the menu Actions are created.
+
         //--------------------------------------------------------------------
         //-- System Menu
         //--------------------------------------------------------------------
         
-        // TODO This needs to be moved into the SystemTask, but right now there is no way
-        // to ask a task for a menu.
-        menu = UIHelper.createLocalizedMenu(mb, "Specify.SYSTEM_MENU", "Specify.SYSTEM_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
-        
-        JMenu treesMenu = UIHelper.createLocalizedMenu(mb, "Specify.TREES_MENU", "Specify.TREES_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
-        menu.insert(treesMenu, 0); 
-        
-        JMenu formsMenu = UIHelper.createLocalizedMenu(mb, "Specify.FORMS_MENU", "Specify.FORMS_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
-        menu.insert(formsMenu, 0); 
-        
-        JMenu setupMenu = UIHelper.createLocalizedMenu(mb, "Specify.COLSETUP_MENU", "Specify.COLSETUP_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
-        menu.insert(setupMenu, 0); // insert at the top
-        
-
-        /*if (true)
+        if (!isWorkbenchOnly)
         {
-            menu = UIHelper.createMenu(mb, "Forms", "o");
-            Action genForms = new AbstractAction()
+            // TODO This needs to be moved into the SystemTask, but right now there is no way
+            // to ask a task for a menu.
+            menu = UIHelper.createLocalizedMenu(mb, "Specify.SYSTEM_MENU", "Specify.SYSTEM_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
+            
+            JMenu treesMenu = UIHelper.createLocalizedMenu(mb, "Specify.TREES_MENU", "Specify.TREES_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
+            menu.insert(treesMenu, 0); 
+            
+            JMenu formsMenu = UIHelper.createLocalizedMenu(mb, "Specify.FORMS_MENU", "Specify.FORMS_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
+            menu.insert(formsMenu, 0); 
+            
+            JMenu setupMenu = UIHelper.createLocalizedMenu(mb, "Specify.COLSETUP_MENU", "Specify.COLSETUP_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
+            menu.insert(setupMenu, 0); // insert at the top
+            
+    
+            /*if (true)
             {
-                public void actionPerformed(ActionEvent ae)
+                menu = UIHelper.createMenu(mb, "Forms", "o");
+                Action genForms = new AbstractAction()
                 {
-                    FormGenerator fg = new FormGenerator();
-                    fg.generateForms();
-                }
-            };
-            mi = UIHelper.createMenuItemWithAction(menu, "Generate All Forms", "G", "", true, genForms);
-        }*/
-
-        SubPaneMgr.getInstance(); // force creating of the Mgr so the menu Actions are created.
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        FormGenerator fg = new FormGenerator();
+                        fg.generateForms();
+                    }
+                };
+                mi = UIHelper.createMenuItemWithAction(menu, "Generate All Forms", "G", "", true, genForms);
+            }*/
+        }
         
         //--------------------------------------------------------------------
         //-- Tab Menu

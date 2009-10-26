@@ -515,7 +515,7 @@ public class TaskMgr implements CommandListener
      * Reads the plugins registry and loads them
      *
      */
-    public static void readRegistry()
+    public static void readRegistry(final boolean isMobile)
     {
         // Only read in the XML if there are no tasks
         if (instance.tasks.size() == 0)
@@ -524,7 +524,7 @@ public class TaskMgr implements CommandListener
             {
                 Element root  = readDOMFromConfigDir("plugin_registry.xml"); //$NON-NLS-1$
     
-                List<?> boxes = root.selectNodes("/plugins/core/plugin"); //$NON-NLS-1$
+                List<?> boxes = root.selectNodes("/plugins/"+(isMobile ? "mobilecore" : "core") + "/plugin"); //$NON-NLS-1$
                 for ( Iterator<?> iter = boxes.iterator(); iter.hasNext(); )
                 {
                     org.dom4j.Element pluginElement = (org.dom4j.Element)iter.next();

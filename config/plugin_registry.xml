@@ -45,6 +45,14 @@
 		
 	</core>
 	
+	<mobilecore>
+	    <plugin class="edu.ku.brc.specify.tasks.StartUpTask" addui="true" default="true"/>
+        <plugin class="edu.ku.brc.specify.tasks.ReportsTask" addui="true"/>
+        <plugin class="edu.ku.brc.specify.tasks.RecordSetTask" addui="false"/>
+        <plugin class="edu.ku.brc.specify.tasks.WorkbenchTask" addui="true"/>
+        <plugin class="edu.ku.brc.specify.tasks.StatsTrackerTask" addui="false"/>
+	</mobilecore>
+	
 	<uiplugins>
 		<plugin name="WebLinkButton"        class="edu.ku.brc.af.ui.weblink.WebLinkButton"/>
 		<plugin name="PartialDateUI"        class="edu.ku.brc.specify.plugins.PartialDateUI"/>
