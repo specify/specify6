@@ -3436,6 +3436,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				{
 					BaseQRI qri = qfp.getFieldQRI() instanceof RelQRI ? qfp
 							.getFieldQRI().getTable() : qfp.getFieldQRI();
+					//BaseQRI qri = qfp.getFieldQRI(); 
 					boolean done = false;
 					for (JList lb : listBoxList)
 					{
@@ -3446,9 +3447,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 							{
 								BaseQRI qriI = (BaseQRI )((DefaultListModel) lb.getModel()).getElementAt(i);
 								boolean match = qriI == qri;
-								if (!match && qriI instanceof FieldQRI && qri instanceof FieldQRI)
+								if (!match)
 								{
-									match = ((FieldQRI )qriI).getStringId().equals(((FieldQRI)qri).getStringId());
+									match = buildFieldQRI(qri).getStringId().equals(buildFieldQRI(qriI).getStringId());
 								}
 								if (match)
 								{
