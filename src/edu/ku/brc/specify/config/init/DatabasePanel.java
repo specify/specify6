@@ -700,8 +700,10 @@ public class DatabasePanel extends BaseSetupPanel
         
         switch (isOkToProceed(props))
         {
-            case missingOrEmpty :
+            case missingDB :
             case ok        : return VerifyStatus.OK;
+            
+            case error     : return VerifyStatus.ERROR;
             
             case cancelled : return VerifyStatus.CANCELLED;
             
@@ -721,6 +723,8 @@ public class DatabasePanel extends BaseSetupPanel
         String itPassword = props.getProperty(DBPWD);
         String hostName   = props.getProperty(HOSTNAME);
             
+        // if db exists (whether it has tables or not) this next call will return ok or cancelled
+        // or it will return missingDB or error
         return DBMSUserMgr.isOkToProceed(dbName, hostName, itUsername, itPassword);
     }
     

@@ -39,7 +39,12 @@ public abstract class DBMSUserMgr
 {
     public static String factoryName = "edu.ku.brc.dbsupport.DBMSUserMgr"; //$NON-NLS-1$
     
-    public enum DBSTATUS { ok, hasTables, missingOrEmpty, error, cancelled }
+    public enum DBSTATUS { ok, 
+                           hasTables, 
+                           missingDB,
+                           emptyDB, 
+                           error,
+                           cancelled }
     
     public static final int PERM_NONE        = 0;
     public static final int PERM_SELECT      = 1;
@@ -211,7 +216,7 @@ public abstract class DBMSUserMgr
                                          final String itPassword)
     {
         DBSTATUS status = checkForDB(dbName, hostName, itUsername,itPassword);
-        if (status == status.hasTables)
+        if (status == status.hasTables || status == status.emptyDB)
         {
             status = UIHelper.promptForAction("PROCEED", "CANCEL", "DEL_CUR_DB_TITLE", UIRegistry.getLocalizedMessage("DEL_CUR_DB", dbName)) ? DBSTATUS.ok : DBSTATUS.cancelled;
         }
@@ -227,7 +232,7 @@ public abstract class DBMSUserMgr
      * @param itPassword the IT password
      * @return returns hasTables when there are table, 
      * or missingOrEmpty when db is missing or there are no tables in it, 
-     * or error when the user couldn't get logged in
+     * or error when the user couldn't get logged in (does not return 'ok' instead it returns 'emptyDB' or 'hasTables')
      */
     public static DBSTATUS checkForDB(final String dbName, 
                                       final String hostName, 
@@ -241,7 +246,7 @@ public abstract class DBMSUserMgr
             File dbDataDir = DBConnection.getEmbeddedDataDir();
             if (dbDataDir != null)
             {
-                return dbDataDir.exists() ? DBSTATUS.hasTables : DBSTATUS.missingOrEmpty;
+                return dbDataDir.exists() ? DBSTATUS.hasTables : DBSTATUS.missingDB;
                 
             }
             return DBSTATUS.error;
@@ -260,7 +265,7 @@ public abstract class DBMSUserMgr
                     
                     if (mgr.connect(itUsername, itPassword, hostName, dbName)) // it exists, but can we open it?
                     {
-                        return mgr.doesDBHaveTables() ? DBSTATUS.hasTables : DBSTATUS.missingOrEmpty;
+                        return mgr.doesDBHaveTables() ? DBSTATUS.hasTables : DBSTATUS.emptyDB;
                     }
                     
                     // We are here because the database exists, but we cannot open it
@@ -268,7 +273,7 @@ public abstract class DBMSUserMgr
                     
                 } else
                 {
-                    return DBSTATUS.missingOrEmpty;
+                    return DBSTATUS.missingDB;
                 }
             }
             

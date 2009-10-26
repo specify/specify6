@@ -695,7 +695,7 @@ public class BuildFromGeonames
             String       dbName     = currDBConn.getDatabaseName();
             DBMSUserMgr.DBSTATUS status = DBMSUserMgr.checkForDB(dbName, currDBConn.getServerName(), itUsername, itPassword);
             
-            if (status == DBMSUserMgr.DBSTATUS.missingOrEmpty)
+            if (status == DBMSUserMgr.DBSTATUS.missingDB)
             {
                 DBMSUserMgr dbMgr = DBMSUserMgr.getInstance();
                 
