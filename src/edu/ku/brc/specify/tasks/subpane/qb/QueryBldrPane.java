@@ -1309,6 +1309,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
 
         List<Pair<String,Object>> paramsToSet = new LinkedList<Pair<String, Object>>();
+        boolean visibleFldExists = false;
         for (QueryFieldPanel qfi : qfps)
         {
             if (qfi.getFieldQRI() == null)
@@ -1318,7 +1319,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             
         	if (qfi.isForDisplay())
             {
-                String fldSpec = qfi.getFieldQRI().getSQLFldSpec(tableAbbreviator, false, isSchemaExport);
+                visibleFldExists = true;
+        		String fldSpec = qfi.getFieldQRI().getSQLFldSpec(tableAbbreviator, false, isSchemaExport);
                 if (StringUtils.isNotEmpty(fldSpec))
                 {
                     if (fieldsStr.length() > 0)
@@ -1346,6 +1348,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
             }
         }
+        if (!visibleFldExists) 
+        {
+        	throw new ParseException(getResourceString("QueryBldrPane.NoVisibleColumns"), -1);
+        }
+        
         sqlStr.append(fieldsStr);
 
         sqlStr.append(" from ");
@@ -1455,10 +1462,31 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
         
         String result = sqlStr.toString();
+        if (!checkHQL(result)) return null;
+        
         log.info(result);
         return new HQLSpecs(result, paramsToSet, sortElements);
     }
   
+    /**
+     * @param hql
+     * @return
+     */
+    protected static boolean checkHQL(String hql) {
+		DataProviderSessionIFace session = DataProviderFactory.getInstance()
+				.createSession();
+		try {
+			try {
+				session.createQuery(hql, false);
+				return true;
+			} catch (Exception ex) {
+				return false;
+			}
+		} finally {
+			session.close();
+		}
+	}
+    
     /**
      * @param hql
      * @return true if each record in the query defined by hql has
@@ -2356,7 +2384,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         //debug
     	//System.out.println((System.nanoTime() - startTime.get()) / 1000000000L);
     	
-        completedResults.set(runningResults.get());
+    	completedResults.set(runningResults.get());
         runningResults.set(null);
         if (completedResults.get() != null && !completedResults.get().getCancelled())
 		{
