@@ -221,18 +221,21 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
     @Override
     public boolean doesDBExists(final String dbName)
     {
-        try
+        if (dbName != null)
         {
-            for (Object[] row : BasicSQLUtils.query(connection, "show databases"))
+            try
             {
-                if (dbName.equals(row[0].toString()))
+                for (Object[] row : BasicSQLUtils.query(connection, "show databases"))
                 {
-                    return true;
+                    if (row[0] != null && dbName.equalsIgnoreCase(row[0].toString()))
+                    {
+                        return true;
+                    }
                 }
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
             }
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
         }
         return false;
     }
