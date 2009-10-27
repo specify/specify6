@@ -254,7 +254,7 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
             
             if (!colName.startsWith(tableName+"."))
             {
-                columnName = tableName + "." + colName;
+                //columnName = tableName + "." + colName;
                 fieldName = "n." + columnName.substring(0, 1).toLowerCase().concat(columnName.substring(1));
             }
             else
@@ -302,7 +302,7 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
                     
                     if (!colName.startsWith(tableName+"."))
                     {
-                         fieldName = "n." + colName.substring(0, 1).toLowerCase().concat(defMemberName.substring(1));
+                         fieldName = "n." + colName.substring(0, 1).toLowerCase().concat(colName.substring(1));
                     }
                     else
                     {
