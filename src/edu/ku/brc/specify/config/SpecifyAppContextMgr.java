@@ -500,7 +500,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
     
             Pair<String, Integer> currColl = null;
-            String         recentIds = askForColl && promptForCollection ? null : remotePrefs.get(prefName, null);
+            String         recentIds = askForColl || promptForCollection ? null : remotePrefs.get(prefName, null);
             if (StringUtils.isNotEmpty(recentIds))
             {
                 Vector<Object[]> rows = BasicSQLUtils.query("SELECT cln.CollectionName, cln.UserGroupScopeId FROM collection AS cln WHERE UserGroupScopeId = " + recentIds); //$NON-NLS-1$

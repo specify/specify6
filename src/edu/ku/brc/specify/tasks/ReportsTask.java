@@ -34,6 +34,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.ui.CommandAction;
@@ -133,11 +134,18 @@ public class ReportsTask extends ReportsBaseTask
                     // @Override
                     public void actionPerformed(ActionEvent e)
                     {
+                    	String  alwaysAskPref = "ALWAYS.ASK.COLL"; //$NON-NLS-1$
+                    	boolean askForColl    = AppPreferences.getRemote().getBoolean(alwaysAskPref, false);
+                    	AppPreferences.getRemote().putBoolean(alwaysAskPref, false);
+                    	
                         //this is probably overkill, but doesn't seem to hurt anything and is not slow.
                         ((SpecifyAppContextMgr) AppContextMgr.getInstance()).setContext(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getDatabaseName(), 
                                 ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getUserName(), 
                                 true,    // startOver
                                 false);  // promptForCollection
+                        
+                        AppPreferences.getRemote().putBoolean(alwaysAskPref, askForColl);
+                        
                         refreshCommands();
                     }
                 }));
