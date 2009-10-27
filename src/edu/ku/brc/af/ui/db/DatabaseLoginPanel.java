@@ -1135,7 +1135,7 @@ public class DatabaseLoginPanel extends JTiledPanel
      */
     public String getServerName()
     {
-        return servers.getTextField().getText();
+        return servers.getTextField().getText().trim();
     }
 
     /**
@@ -1143,7 +1143,7 @@ public class DatabaseLoginPanel extends JTiledPanel
      */
     public String getDatabaseName()
     {
-        return doLoginWithDB ? databases.getTextField().getText() : null;
+        return doLoginWithDB ? databases.getTextField().getText().trim() : null;
     }
 
     /**
@@ -1152,7 +1152,7 @@ public class DatabaseLoginPanel extends JTiledPanel
      */
     public String getUserName()
     {
-        return username.getText();
+        return username.getText().trim();
     }
 
     /**
