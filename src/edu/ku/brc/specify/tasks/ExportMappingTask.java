@@ -3,6 +3,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -22,6 +23,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
@@ -56,6 +58,10 @@ import edu.ku.brc.specify.datamodel.SpExportSchema;
 import edu.ku.brc.specify.datamodel.SpExportSchemaItem;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpQuery;
+import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCallerIFace;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.USER_ACTION;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CustomDialog;
@@ -77,6 +83,9 @@ public class ExportMappingTask extends QueryTask
 	
 	//protected static final String[] unSupportedsubstitutionGroups = {"dwc"
 	
+	/**
+	 * 
+	 */
 	public ExportMappingTask()
 	{
 		super("ExportMappingTask",
@@ -85,6 +94,9 @@ public class ExportMappingTask extends QueryTask
 
 	
 	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.QueryTask#getToolBarItems()
+	 */
 	@Override
 	public List<ToolBarItemDesc> getToolBarItems() 
 	{
@@ -93,6 +105,9 @@ public class ExportMappingTask extends QueryTask
 
 
 
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.tasks.BaseTask#getMenuItems()
+	 */
 	@Override
 	public List<MenuItemDesc> getMenuItems() 
 	{
@@ -119,6 +134,102 @@ public class ExportMappingTask extends QueryTask
 	        }
 	        return menuItems;
 
+	}
+
+	/**
+	 * @param map
+	 * @return true if everything is OK.
+	 * 
+	 * Locks map if it is unlocked.
+	 * If it is already locked, presents dialog to user with options to cancel or override lock.
+	 */
+	public static boolean checkMappingLock(final SpExportSchemaMapping map)
+	{
+		if (map == null)
+		{
+			return true;
+		}
+		final TaskSemaphoreMgrCallerIFace callface = new TaskSemaphoreMgrCallerIFace() {
+
+			@Override
+			public USER_ACTION resolveConflict(SpTaskSemaphore semaphore,
+					boolean previouslyLocked, String prevLockBy) 
+			{
+				if (previouslyLocked) 
+				{
+                    int      options      = JOptionPane.YES_NO_OPTION;
+                    Object[] optionLabels = new String[] { getResourceString("CANCEL"),  //$NON-NLS-1$
+                                                           getResourceString("SpecifyAppContextMgr.OVERRIDE")//$NON-NLS-1$
+                                                         };
+					int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                            getLocalizedMessage("ExportMappingTask.LockedMsg", map.getMappingName(), prevLockBy),
+                            getResourceString("ExportMappingTask.LockedDlgTitle"),  //$NON-NLS-1$
+                            options,
+                            JOptionPane.QUESTION_MESSAGE, null, optionLabels, 0);
+					if (userChoice == JOptionPane.YES_OPTION)
+					{
+						return USER_ACTION.Cancel;
+					}
+					if (userChoice == JOptionPane.NO_OPTION)
+					{
+						if (unlockMapping(map))
+						{
+							//return USER_ACTION.OK;
+							// XXX ??? !!!
+							return TaskSemaphoreMgr.lock(getLockTitle(map), getLockName(map), null, 
+									TaskSemaphoreMgr.SCOPE.Global, false, this, false);
+						}
+					}
+					return USER_ACTION.Cancel;
+				}
+				return USER_ACTION.OK;
+			}
+			
+		};
+		return TaskSemaphoreMgr.lock(getLockTitle(map), getLockName(map), null, 
+				TaskSemaphoreMgr.SCOPE.Global, false, callface, false) == TaskSemaphoreMgr.USER_ACTION.OK;
+		
+	}
+
+	/**
+	 * @param map
+	 * @return name for semaphore lock for map
+	 */
+	protected static String getLockName(SpExportSchemaMapping map)
+	{
+		return "ExportMapping" + (map == null ? "" : map.getId()); //map will probably never be null.				
+	}
+	
+	/**
+	 * @param map
+	 * @return title for semaphore lock for map
+	 */
+	protected static String getLockTitle(SpExportSchemaMapping map)
+	{
+		return map.getMappingName();
+	}
+	
+	/**
+	 * @param map
+	 * @return true if semaphore for map was unlocked
+	 */
+	public static boolean unlockMapping(SpExportSchemaMapping map)
+	{
+		if (map != null)
+		{
+			return TaskSemaphoreMgr.unlock(getLockTitle(map), "ExportMapping" + map.getId().toString(), TaskSemaphoreMgr.SCOPE.Global);
+		}
+		return true;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.QueryTask#checkLock(edu.ku.brc.specify.datamodel.SpQuery)
+	 */
+	@Override
+	protected boolean checkLock(SpQuery query) 
+	{
+		boolean result = checkMappingLock(query.getMapping());
+		return result;
 	}
 
 

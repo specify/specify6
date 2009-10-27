@@ -77,6 +77,7 @@ import edu.ku.brc.specify.datamodel.SpExportSchemaItemMapping;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
+import edu.ku.brc.specify.tasks.ExportMappingTask;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.subpane.qb.ERTICaptionInfoQB;
 import edu.ku.brc.specify.tasks.subpane.qb.HQLSpecs;
@@ -179,25 +180,32 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					mapUpdating = row;
 					stupid = 1;
 					SpExportSchemaMapping map = maps.get(row);
-					updater = exportToTable(map, rebuildForRow(row));
-					if (updater != null)
+					if (checkLock(map)) 
 					{
-						updater.execute();
-						exportToDbTblBtn.setEnabled(false);
-						exportToTabDelimBtn.setEnabled(false);
-					
-						SwingUtilities.invokeLater(new Runnable() {
+						updater = exportToTable(map, rebuildForRow(row));
+						if (updater != null) 
+						{
+							updater.execute();
+							exportToDbTblBtn.setEnabled(false);
+							exportToTabDelimBtn.setEnabled(false);
 
-							/* (non-Javadoc)
-							 * @see java.lang.Runnable#run()
-							 */
-							@Override
-							public void run()
+							SwingUtilities.invokeLater(new Runnable() 
 							{
-								((CardLayout )progPane.getLayout()).last(progPane);
-							}
-						
-						});
+
+								/*
+								 * (non-Javadoc)
+								 * 
+								 * @see java.lang.Runnable#run()
+								 */
+								@Override
+								public void run() 
+								{
+									((CardLayout) progPane.getLayout())
+											.last(progPane);
+								}
+
+							});
+						}
 					}
 				}
 				else 
@@ -322,6 +330,29 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
     	pbb.add(progPane, cc.xyw(2, 2, 6));
     	//prog.setVisible(false);
     	add(pbb.getPanel(), BorderLayout.SOUTH);
+	}
+	
+	/**
+	 * @param map
+	 * @return true if map lock status is ok.
+	 */
+	protected boolean checkLock(SpExportSchemaMapping map)
+	{
+		boolean result = ExportMappingTask.checkMappingLock(map);
+		return result;
+	}
+	
+	/**
+	 * @param mapUpdating
+	 * 
+	 * Unlocks tasksemaphore for map
+	 */
+	protected void unlock(int mapUpdating)
+	{
+		if (mapUpdating != -1)
+		{
+			ExportMappingTask.unlockMapping(maps.get(mapUpdating));
+		}
 	}
 	
 	/**
@@ -764,6 +795,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	@Override
 	public void done(long rows)
 	{
+		unlock(mapUpdating);
 		if (rows == -1 || (stupid == 0 && mapUpdating != -1))
 		{
 			final long frows = rows;

@@ -1096,7 +1096,7 @@ public class QueryTask extends BaseTask
     /**
      * @param queryId
      */
-    protected void editQuery(Integer queryId)
+    protected boolean editQuery(Integer queryId)
     {
         UsageTracker.incrUsageCount("QB.EDT");
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -1106,14 +1106,15 @@ public class QueryTask extends BaseTask
             if (dataObj != null)
             {
                 ((SpQuery )dataObj).forceLoad(true);
-            	editQuery((SpQuery)dataObj);
+            	return editQuery((SpQuery)dataObj);
             }
+            return false;
         } catch (Exception ex)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryTask.class, ex);
             ex.printStackTrace();
-            
+            return false;
         }
         finally
         {
@@ -1172,21 +1173,37 @@ public class QueryTask extends BaseTask
     
     /**
      * @param query
+     * @return true if query is not locked.
+     * 
+     * Locks query if necessary. 
+     * 
      */
-    protected void editQuery(final SpQuery query)
+    protected boolean checkLock(final SpQuery query)
     {
-        QueryBldrPane newPane = getNewQbPane(query);
-        
-        if (starterPane != null)
-        {
-            SubPaneMgr.getInstance().replacePane(starterPane, newPane);
-            starterPane = null;
-        }
-        else if (queryBldrPane != null)
-        {
-            SubPaneMgr.getInstance().replacePane(queryBldrPane, newPane);
-        }
-        queryBldrPane = newPane;
+    	return true;
+    }
+    
+    /**
+     * @param query
+     */
+    protected boolean editQuery(final SpQuery query)
+    {
+    	if (checkLock(query)) 
+    	{
+			QueryBldrPane newPane = getNewQbPane(query);
+
+			if (starterPane != null) 
+			{
+				SubPaneMgr.getInstance().replacePane(starterPane, newPane);
+				starterPane = null;
+			} else if (queryBldrPane != null) 
+			{
+				SubPaneMgr.getInstance().replacePane(queryBldrPane, newPane);
+			}
+			queryBldrPane = newPane;
+			return true;
+		}
+    	return false;
     }
 
     /*
@@ -2218,9 +2235,11 @@ public class QueryTask extends BaseTask
             super.finished();
             if (queryBldrPane == null || queryBldrPane.aboutToShutdown())
             {
-                editQuery(queryId);
-                queryNavBtn.setEnabled(false);
-                queryBldrPane.setQueryNavBtn(queryNavBtn);
+                if (editQuery(queryId))
+                {
+                	queryNavBtn.setEnabled(false);
+                	queryBldrPane.setQueryNavBtn(queryNavBtn);
+                }
             }
         }
         

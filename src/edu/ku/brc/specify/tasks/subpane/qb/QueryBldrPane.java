@@ -135,6 +135,7 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
+import edu.ku.brc.specify.tasks.ExportMappingTask;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
@@ -4184,6 +4185,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     public boolean aboutToShutdown()
     {
         boolean result = true;
+        unlock();
         if (isChanged())
         {
             String msg = String.format(getResourceString("SaveChanges"), getTitle());
@@ -4209,6 +4211,16 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return result;
     }
     
+    /**
+     * Frees mapping lock if necessary
+     */
+    protected void unlock()
+    {
+    	if (query != null && query.getMapping() != null)
+    	{
+    		ExportMappingTask.unlockMapping(query.getMapping());
+    	}
+    }
     /**
      * @return true if there are unsaved changes to the query.
      */
