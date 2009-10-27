@@ -2470,8 +2470,11 @@ public class Uploader implements ActionListener, KeyListener
     public void refresh()
     {
         //wbSS.getWorkbench().forceLoad();
-        uploadData.refresh(wbSS.getWorkbench().getWorkbenchRowsAsList());
-        validateData();
+    	if (currentOp.equals(USER_INPUT)) 
+    	{
+    		uploadData.refresh(wbSS.getWorkbench().getWorkbenchRowsAsList());
+    		validateData();
+    	}
     }
 
     /**
