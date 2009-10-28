@@ -140,7 +140,7 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
     {
         if (isReady() && category != null && StringUtils.isNotEmpty(id))
         {
-            return String.format("urn:lsid:%s:%s-%s-%s:%s", lsidAuthority, instCode, colCode, category.toString(), id);
+            return String.format("urn:lsid:%s:%s-%s:%s:%s", lsidAuthority, instCode, colCode, category.toString(), id);
         }
         return null;
     }
@@ -153,7 +153,7 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
     {
         if (isReady() && category != null && StringUtils.isNotEmpty(id))
         {
-            return String.format("urn:lsid:%s:%s-%s-%s:%s:%d", lsidAuthority, instCode, colCode, category.toString(), id, version);
+            return String.format("urn:lsid:%s:%s-%s:%s:%s:%d", lsidAuthority, instCode, colCode, category.toString(), id, version);
         }
         return super.createLSID(category, id, version);
     }
@@ -383,7 +383,7 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
             StringBuilder sb = new StringBuilder();
             sb.append("SELECT COUNT(*) FROM ");
             sb.append(tableInfo.getName());
-            sb.append(" WHERE GUID IS NULL");
+            sb.append(" WHERE GUID IS NULL OR GUID = 'null' OR GUID = ''");
             
             count = BasicSQLUtils.getCount(sb.toString());
             if (count != null && count > 0)
@@ -398,7 +398,7 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
                 }
                 sb.append(" FROM ");
                 sb.append(tableInfo.getName());
-                sb.append(" WHERE GUID IS NULL");
+                sb.append(" WHERE GUID IS NULL OR GUID = 'null' OR GUID = ''");
                 
                 //System.err.println(sb.toString());
                 Statement         stmt    = null;

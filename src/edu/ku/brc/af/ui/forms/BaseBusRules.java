@@ -902,7 +902,7 @@ public class BaseBusRules implements BusinessRulesIFace
             String lsid = GenericLSIDGeneratorFactory.getInstance().setLSIDOnId(data, doVersioning, formatter);
             if (lsid != null)
             {
-                FormHelper.setValue(data, "GUID", lsid);
+                FormHelper.setValue(data, "guid", lsid);
             }
         }
     }
