@@ -51,6 +51,17 @@ public class QueryConverter
     protected final static int scAfter = 13; 
     protected final static int scPartial = 14;
 	
+    protected static String[] localityDetailFlds = {
+    		"BaseMeridian", 
+    		"NationalParkName",
+    		"Range",
+    		"RangeDirection",
+    		"Section",
+    		"SectionPart",
+    		"Township",
+    		"TownshipDirection"
+    };
+    
     /**
      * @param sp5QueryOp
      * @return the SpQueryField operator equivalent to sp5QueryOp
@@ -93,13 +104,13 @@ public class QueryConverter
 	 * @param fiveSubType
 	 * @return name of the Specify6 table equivalent to the supplied Specify5 tablename and type 
 	 */
-	protected static String getSixTableName(final String fiveTableName, final String fiveSubType) throws Exception
+	protected static String getSixTableName(final String fiveTableName, final String fiveSubType, final String fiveFldName) throws Exception
 	{
 		if (fiveTableName.equalsIgnoreCase("taxonname"))
 		{
 			return "taxon";
 		}
-		if (fiveTableName.equals("BorrowAgents"))
+		if (fiveTableName.equalsIgnoreCase("BorrowAgents"))
 		{
 			return "borrowagent";
 		}
@@ -107,11 +118,11 @@ public class QueryConverter
 		{
 			return "collector";
 		}
-		if (fiveTableName.equals("CollectionObjectCatalog"))
+		if (fiveTableName.equalsIgnoreCase("CollectionObjectCatalog"))
 		{
 			return "collectionobject"; //XXX not sure about this
 		}
-		if (fiveTableName.equals("CollectionObject"))
+		if (fiveTableName.equalsIgnoreCase("CollectionObject"))
 		{
 			if (fiveSubType != null && fiveSubType.endsWith("Preparation"))
 			{
@@ -119,7 +130,7 @@ public class QueryConverter
 			}
 			return "collectionobject";
 		}
-		if (fiveTableName.equals("LoanAgents"))
+		if (fiveTableName.equalsIgnoreCase("LoanAgents"))
 		{
 			if (fiveSubType != null && fiveSubType.equals("Gift"))
 			{
@@ -127,29 +138,39 @@ public class QueryConverter
 			}
 			return "loanagent";
 		}
-		if (fiveTableName.equals("Habitat"))
+		if (fiveTableName.equalsIgnoreCase("Habitat"))
 		{
 			return "collectingeventattribute";
 		}
-		if (fiveTableName.equals("BiologicalObjectAttributes"))
+		if (fiveTableName.equalsIgnoreCase("BiologicalObjectAttributes"))
 		{
 			return "collectionobjectattribute";
 		}
-		if (fiveTableName.equals("LoanPhysicalObject"))
+		if (fiveTableName.equalsIgnoreCase("LoanPhysicalObject"))
 		{
-			if (fiveSubType.equals("Gift"))
+			if (fiveSubType.equalsIgnoreCase("Gift"))
 			{
 				return "giftpreparation";
 			}
 			return "loanpreparation";
 		}
-		if (fiveTableName.equals("Loan") && fiveSubType.equals("Gift"))
+		if (fiveTableName.equalsIgnoreCase("Loan") && fiveSubType.equalsIgnoreCase("Gift"))
 		{
 			return "gift";
 		}
-		if (fiveTableName.equals("CatalogSeries"))
+		if (fiveTableName.equalsIgnoreCase("CatalogSeries"))
 		{
 			throw new Exception(fiveTableName);
+		}
+		if (fiveTableName.equalsIgnoreCase("locality") || fiveTableName.equals("geography"))
+		{
+			for (String fld : localityDetailFlds)
+			{
+				if (fld.equalsIgnoreCase(fiveFldName))
+				{
+					return "localitydetail";
+				}
+			}
 		}
 		//XXX lots more conditions...
 		
@@ -201,6 +222,10 @@ public class QueryConverter
 		{
 			result = "fullName";
 		}
+		if (result.equalsIgnoreCase("taxonname"))
+		{
+			result = "name";
+		}
 		if (result.equalsIgnoreCase("FullGeographicName"))
 		{
 			result = "fullName";
@@ -208,6 +233,38 @@ public class QueryConverter
 		if (result.equalsIgnoreCase("LastEditedBy"))
 		{
 			result = "lastName"; 
+		}
+		if (result.equalsIgnoreCase("range"))
+		{
+			result = "rangeDesc";
+		}
+		if (result.equalsIgnoreCase("closed"))
+		{
+			result = "isClosed";
+		}
+		if (result.equalsIgnoreCase("accepted"))
+		{
+			result = "isAccepted";
+		}
+		if (result.equalsIgnoreCase("groupPermittedToView"))
+		{
+			result = "visibility";
+		}
+		if (result.equalsIgnoreCase("date") && fiveTblName.equalsIgnoreCase("deaccession"))
+		{
+			result = "deaccessionDate";
+		}
+		if (result.equalsIgnoreCase("date") && fiveTblName.equalsIgnoreCase("determination"))
+		{
+			result = "determinedDate";
+		}
+		if (result.equalsIgnoreCase("loandate") && sixTblName.equalsIgnoreCase("gift"))
+		{
+			result = "giftDate";
+		}
+		if (result.equalsIgnoreCase("count") && sixTblName.equalsIgnoreCase("preparation"))
+		{
+			result = "countAmt";
 		}
 		return result; 
 	}
@@ -225,7 +282,7 @@ public class QueryConverter
 		addAttr(querySb, "name", queryName);
 		String fiveTblName = fiveQueryXML.attributeValue("contextName");
 		String fiveSubType = fiveQueryXML.attributeValue("subType", null);
-		String contextName = getSixTableName(fiveTblName, fiveSubType);
+		String contextName = getSixTableName(fiveTblName, fiveSubType, null);
 		addAttr(querySb, "contextName", contextName);
 		addAttr(querySb, "contextTableId", DBTableIdMgr.getInstance().getIdByShortName(contextName));
 		addAttr(querySb, "isFavorite", fiveQueryXML.attributeValue("isFavorite"));
@@ -294,7 +351,7 @@ public class QueryConverter
 
 			String fiveTblName = fiveXML.attributeValue("contextTable");
 			String fiveSubType = fiveXML.attributeValue("subType", null);
-			String contextTable = getSixTableName(fiveTblName, fiveSubType);
+			String contextTable = getSixTableName(fiveTblName, fiveSubType, fiveXML.attributeValue("name"));
 			addAttr(fldSb, "contextTableIdent", DBTableIdMgr.getInstance().getIdByShortName(contextTable));
 			String sixFldName = getSixFldName(contextTable, fiveTblName, fiveXML.attributeValue("name"));
 			if (!isRelFld)
@@ -459,7 +516,7 @@ public class QueryConverter
 			String[] tblParts = tblPart.split("\\.");
 			String tblName = tblParts[0];
 			String subType = tblParts.length > 1 ? tblParts[1] : null;
-			String sixTbl = getSixTableName(tblName, subType == null ? prevSubType : subType);
+			String sixTbl = getSixTableName(tblName, subType == null ? prevSubType : subType, null);
 			if (!sixTbl.equals(prevSixTbl))
 			{
 				DBTableInfo prevInfo = prevSixTbl != null 
@@ -614,6 +671,10 @@ public class QueryConverter
 		{
 			result[0] = node + ",5-modifiedByAgent";
 			result[1] = "agent";
+		} else if (sixTblName.equalsIgnoreCase("localitydetail") && node.equals("2"))
+		{
+			result[0] = node + ",124-localityDetails";
+			result[1] = null;
 		}
 		else
 		{
