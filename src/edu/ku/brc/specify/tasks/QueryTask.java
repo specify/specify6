@@ -1710,23 +1710,7 @@ public class QueryTask extends BaseTask
                 try
                 {
                    SpecifyAppContextMgr mgr = (SpecifyAppContextMgr )AppContextMgr.getInstance();
-                   //XXX It is no longer to reload the the TreeDefs from the AppContextMgr, Right??
-                   TreeDefIface<?, ?, ?> deadTreeDef = mgr.getTreeDefForClass((Class<? extends Treeable<?,?,?>>) tableInfo.getClassObj());
-                   TreeDefIface<?,?,?> treeDef = null;
-                   DataProviderSessionIFace session = null;
-                   try
-                   {
-                       session = DataProviderFactory.getInstance().createSession();
-                       Object tdObj = session.get(deadTreeDef.getClass(), deadTreeDef.getTreeDefId());
-                       treeDef = (TreeDefIface )tdObj;
-                   }
-                   finally
-                   {
-                	   if (session != null)
-                	   {
-                		   session.close();
-                	   }
-                   }
+                   TreeDefIface<?, ?, ?> treeDef = mgr.getTreeDefForClass((Class<? extends Treeable<?,?,?>>) tableInfo.getClassObj());
                    
                    SortedSet<TreeDefItemIface<?, ?, ?>> defItems = new TreeSet<TreeDefItemIface<?, ?, ?>>(
                             new Comparator<TreeDefItemIface<?, ?, ?>>()
