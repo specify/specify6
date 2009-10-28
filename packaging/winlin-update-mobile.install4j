@@ -104,37 +104,6 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="Specify Easy Database" id="792" external="false" excludeFromMenu="false" menuName="" icnsFile="" pngIcon16File="../src/edu/ku/brc/specify/images/spwizard16M.png" pngIcon32File="../src/edu/ku/brc/specify/images/spwizard32M.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="SpEZDB" type="1" iconSet="true" iconFile="ico/spwizardM.ico" executableDir="bin" redirectStderr="true" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
-        <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
-      </executable>
-      <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
-        <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2009 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
-          <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
-        </text>
-      </splashScreen>
-      <java mainClass="edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame" vmParameters="-Xmx1024m" arguments="-Dappdir=.. -Dmobile" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
-        <classPath>
-          <archive location="specify.jar" failOnError="true" />
-          <scanDirectory location="libs" failOnError="true" />
-          <scanDirectory location="hibernate_libs" failOnError="true" />
-          <scanDirectory location="iReportLibs" failOnError="true" />
-          <scanDirectory location="wwlib" failOnError="true" />
-          <archive location="non-mac-application-adapter.jar" failOnError="true" />
-          <directory location="help" failOnError="false" />
-          <scanDirectory location="embedded_libs" failOnError="true" />
-        </classPath>
-        <nativeLibraryDirectories>
-          <directory name="wwlib" />
-        </nativeLibraryDirectories>
-      </java>
-      <includedFiles />
-      <unextractableFiles />
-      <customScript mode="1" file="">
-        <scriptLines />
-      </customScript>
-    </launcher>
   </launchers>
   <installerGui installerType="1" suggestPreviousProgramGroup="false" addOnAppId="5397-6897-2502-8965" suggestPreviousLocations="false">
     <customCode useInstalledFiles="false" />
