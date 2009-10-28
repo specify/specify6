@@ -394,7 +394,9 @@ public class DatabaseLoginPanel extends JTiledPanel
             public void focusGained(FocusEvent e)
             {
                 super.focusGained(e);
-                ((JTextField)e.getSource()).selectAll();
+                
+                JTextField tf = (JTextField)e.getSource();
+                tf.selectAll();
             }
         };
         username.addFocusListener(focusAdp);
@@ -734,8 +736,18 @@ public class DatabaseLoginPanel extends JTiledPanel
                         .getTextField().getText())
                         && (databases.getSelectedIndex() != -1 || StringUtils.isNotEmpty(databases
                                 .getTextField().getText())));
-
-        if (dbDriverCBX.getSelectedIndex() == -1)
+        
+        if (shouldEnable && StringUtils.contains(username.getText(), ' '))
+        {
+            shouldEnable = false;
+            setMessage(getResourceString("NO_SPC_USRNAME"), true); //$NON-NLS-1$
+            
+        } else if (shouldEnable && StringUtils.contains(databases.getTextField().getText(), ' '))
+        {
+            shouldEnable = false;
+            setMessage(getResourceString("NO_SPC_DBNAME"), true); //$NON-NLS-1$
+            
+        } else if (dbDriverCBX.getSelectedIndex() == -1)
         {
             shouldEnable = false;
             setMessage(getResourceString("MISSING_DRIVER"), true); //$NON-NLS-1$
@@ -1030,7 +1042,7 @@ public class DatabaseLoginPanel extends JTiledPanel
                             sb.append(getResourceString("APP_EXIT")); // 18N
                             UIRegistry.showError(sb.toString());
                             
-                        } else if (status == status.Success)
+                        } else if (status == SchemaUpdateTpe.Success)
                         {
                             UIRegistry.showLocalizedMsg(JOptionPane.QUESTION_MESSAGE, "", "SCHEMA_UP_OK");
                         }

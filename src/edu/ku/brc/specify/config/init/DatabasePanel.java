@@ -584,12 +584,27 @@ public class DatabasePanel extends BaseSetupPanel
         }
         
         isOKForCreateBtn = true;
-        String text = dbNameTxt.getText();
-        if (!text.isEmpty() && !StringUtils.isAlpha(text.substring(0, 1)))
+        
+        String dbName = dbNameTxt.getText();
+        if (!dbName.isEmpty())
         {
-            DatabasePanel.this.label.setForeground(Color.RED);
-            label.setText(getResourceString("ERR_BAD_DBNAME"));
-            return isOKForCreateBtn = false;
+            if (!StringUtils.isAlpha(dbName.substring(0, 1)))
+            {
+                DatabasePanel.this.label.setForeground(Color.RED);
+                label.setText(getResourceString("ERR_BAD_DBNAME"));
+                return isOKForCreateBtn = false;
+                
+            } else if (StringUtils.contains(dbName, ' '))
+            {
+                DatabasePanel.this.label.setForeground(Color.RED);
+                label.setText(getResourceString("NO_SPC_DBNAME"));
+            }
+        }
+        
+        String usrName = usernameTxt.getText();
+        if (!usrName.isEmpty() && StringUtils.contains(usrName, ' '))
+        {
+            label.setText(getResourceString("NO_SPC_USRNAME"));
         }
         
         return (isOK != null && isOK) || manualLoginOK;
