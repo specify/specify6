@@ -1473,17 +1473,25 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param hql
      * @return
      */
-    protected static boolean checkHQL(String hql) {
+    protected static boolean checkHQL(String hql)
+	{
 		DataProviderSessionIFace session = DataProviderFactory.getInstance()
 				.createSession();
-		try {
-			try {
+		try
+		{
+			try
+			{
 				session.createQuery(hql, false);
 				return true;
-			} catch (Exception ex) {
+			} catch (Exception ex)
+			{
+				log.error(ex);
+                UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);				
 				return false;
 			}
-		} finally {
+		} finally
+		{
 			session.close();
 		}
 	}
