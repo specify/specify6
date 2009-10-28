@@ -458,7 +458,7 @@ public class AgentConverter
                             
                             int    lastNameLen = 50;
                             String lastName    = namePair.second;
-                            lastName = lastName == null ? "" : lastName.length() <= lastNameLen ? lastName : lastName.substring(0, lastNameLen);
+                            lastName = lastName == null ? null : lastName.length() <= lastNameLen ? lastName : lastName.substring(0, lastNameLen);
                             sqlStr.append(BasicSQLUtils.getStrValue(lastName));
 
                         } else if (agentColumns[i].equals("agent.FirstName") || agentColumns[i].equals("FirstName"))
