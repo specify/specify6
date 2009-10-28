@@ -76,6 +76,7 @@ public class BasicSQLUtils
     public static final int SHOW_FK_LOOKUP          =  8;  // Show Error when Foreign Key is not null but couldn't be mapped to a new value
     public static final int SHOW_NULL_PM            = 16;  // Show Error When a Primary Key is Null and shouldn't be
     public static final int SHOW_PM_LOOKUP          = 32;  // Show Error when Primary Key is not null but couldn't be mapped to a new value
+    public static final int SHOW_COPY_TABLE         = 64;  // Show Errors during copy table
     public static final int SHOW_ALL                = SHOW_NAME_MAPPING_ERROR | SHOW_VAL_MAPPING_ERROR | SHOW_FK_LOOKUP | SHOW_NULL_FK | SHOW_NULL_PM | SHOW_PM_LOOKUP;
     
     protected static    int showErrors           = SHOW_ALL;
@@ -1854,7 +1855,7 @@ public class BasicSQLUtils
                                     
                                     if (dataObj == null && isOptionOn(showFkLookUpOption))
                                     {
-                                        String msg = "Unable to Map Primary Id["+oldPrimaryKeyId+"] old Name["+oldMappedColName+"]";
+                                        String msg = "Unable to Map Primary Id["+oldPrimaryKeyId+"] old Name["+oldMappedColName+"] table["+fromTableName+"]";
                                         log.error(msg);
                                         writeErrLog(msg);
                                         skipRecord = true;
@@ -2069,7 +2070,10 @@ public class BasicSQLUtils
                // updateStatement.close();
                 if (!skipRecord)
                 {
-                
+                    if (isOptionOn(SHOW_COPY_TABLE))
+                    {
+                        log.debug("executing: " + str);
+                    }
 	                int retVal = exeUpdateCmd(updateStatement, str.toString());
 	                updateStatement.clearBatch();
 	                updateStatement.close();

@@ -365,7 +365,7 @@ public class ConvertTaxonHelper
             int errorsToShow = (BasicSQLUtils.SHOW_NAME_MAPPING_ERROR | BasicSQLUtils.SHOW_VAL_MAPPING_ERROR);
             if (showMappingErrors)
             {
-                errorsToShow = errorsToShow | BasicSQLUtils.SHOW_PM_LOOKUP | BasicSQLUtils.SHOW_NULL_PM;
+                errorsToShow = errorsToShow | BasicSQLUtils.SHOW_PM_LOOKUP | BasicSQLUtils.SHOW_NULL_PM | BasicSQLUtils.SHOW_COPY_TABLE;
             }
             setShowErrors(errorsToShow);
             

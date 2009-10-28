@@ -922,8 +922,8 @@ public class SpecifyDBConverter
                 if (doGTP || doAll )
                 {
                     ConversionLogger.TableWriter tblWriter = convLogger.getWriter("GTP.html", "Geologic Time Period");
-                    GeologicTimePeriodTreeDef treeDef = conversion.convertGTPDefAndItems();
-                    conversion.convertGTP(tblWriter, treeDef);
+                    GeologicTimePeriodTreeDef treeDef = conversion.convertGTPDefAndItems(conversion.isPaleo());
+                    conversion.convertGTP(tblWriter, treeDef, conversion.isPaleo());
                 } else
                 {
                     idMapperMgr.addTableMapper("geologictimeperiod", "GeologicTimePeriodID");
@@ -1077,7 +1077,9 @@ public class SpecifyDBConverter
                     frame.incOverall();
                 }
                 
-                conversion.convertHostTaxonId();
+                conversion.convertHabitat();
+                
+                //conversion.convertHostTaxonId();
                 
                 frame.setDesc("Converting Straigraphy");
                 log.info("Converting Straigraphy");
@@ -1086,7 +1088,7 @@ public class SpecifyDBConverter
                 {
                      ConversionLogger.TableWriter tblWriter = convLogger.getWriter("FullStrat.html", "Straigraphy Conversion");
                      
-                     conversion.convertStrat(tblWriter);
+                     conversion.convertStrat(tblWriter, conversion.isPaleo());
                 }
                 
                 //-------------------------------------------

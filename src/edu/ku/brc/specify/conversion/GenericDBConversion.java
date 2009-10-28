@@ -71,8 +71,10 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
+import javax.mail.internet.InternetAddress;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -341,7 +343,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             Pair<CollectionInfo, DisciplineType> pair = CollectionInfo.getDisciplineType(oldDBConn);
             if (pair == null || pair.second == null)
             {
-                disciplineType = getStandardDisciplineName(pair.first.getTaxonomyTypeName());
+                disciplineType = getStandardDisciplineName(pair.first.getTaxonomyTypeName(), null);
             } else
             {
                 disciplineType = pair.second;
@@ -360,6 +362,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         this.newDBConn = newDBConn;
     }
 
+    public boolean isPaleo()
+    {
+        return disciplineType.isPaleo();
+    }
+    
     /**
      * 
      */
@@ -630,7 +637,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "GeologicTimeBoundary",
                 // "GeologicTimePeriod",
                 "GroupPersons",
-                "Habitat", 
+                //"Habitat", // done as part of Taxon
                 // XXX "ImageAgents",
                 "ImageCollectionObjects", 
                 "ImageLocalities",
@@ -1972,10 +1979,50 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
     /**
      * Convert a taxonomyTypeName to a Discipline name
+     * @param taxonDefName the name
+     * @return the Standard DataType
+     */
+    public DisciplineType getStandardDisciplineName(final String taxonDefName, final String catSeriesName)
+    {
+        DisciplineType dispType = getStandardDisciplineName(taxonDefName);
+        if (dispType == null && catSeriesName != null)
+        {
+            StringTokenizer st = new StringTokenizer(catSeriesName, " ,"); //$NON-NLS-1$
+            while (st.hasMoreTokens())
+            {
+                String name = st.nextToken().trim();
+                dispType = getStandardDisciplineName(name);
+                if (dispType != null)
+                {
+                    return dispType;
+                }
+            }
+        }
+        
+        String msg = String.format("<html>Unable to automap type '%s' <BR>Catalog Series: '%s'", taxonDefName, catSeriesName);
+        ToggleButtonChooserDlg<DisciplineType> dlg = new ToggleButtonChooserDlg<DisciplineType>(null, 
+                                                               "Choose a Discipline", 
+                                                               msg,
+                                                               DisciplineType.getDisciplineList(), 
+                                                               CustomDialog.OKCANCEL,
+                                                               ToggleButtonChooserPanel.Type.RadioButton);
+        dlg.setUseScrollPane(true);
+        dlg.setVisible(true);
+
+        if (!dlg.isCancelled())
+        {
+            return (DisciplineType)dlg.getSelectedObject();
+        }
+        
+        return null;
+    }
+
+    /**
+     * Convert a taxonomyTypeName to a Discipline name
      * @param name the name
      * @return the Standard DataType
      */
-    public DisciplineType getStandardDisciplineName(final String name)
+    private DisciplineType getStandardDisciplineName(final String name)
     {
         DisciplineType dispType = DisciplineType.getDiscipline(name.toLowerCase());
         
@@ -2012,20 +2059,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             return DisciplineType.getDiscipline(type);
         }
         
-        String msg = "Unable to automap type '" + name + "'";
-        ToggleButtonChooserDlg<DisciplineType> dlg = new ToggleButtonChooserDlg<DisciplineType>(null, 
-                                                               "Choose a Discipline", 
-                                                               msg,
-                                                               DisciplineType.getDisciplineList(), 
-                                                               CustomDialog.OKCANCEL,
-                                                               ToggleButtonChooserPanel.Type.RadioButton);
-        dlg.setUseScrollPane(true);
-        dlg.setVisible(true);
-
-        if (!dlg.isCancelled())
-        {
-            return (DisciplineType)dlg.getSelectedObject();
-        }
         return null;
     }
     
@@ -2314,7 +2347,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 log.info(msg);
                 tblWriter.log(msg);
                 
-                DisciplineType  disciplineTypeObj = getStandardDisciplineName(info.getTaxonomyTypeName());
+                DisciplineType  disciplineTypeObj = getStandardDisciplineName(info.getTaxonomyTypeName(), info.getCatSeriesName());
                 STD_DISCIPLINES dspType           = disciplineTypeObj.getDisciplineType();
                 boolean         isEmbeddedCE      = dspType != STD_DISCIPLINES.fish;
 
@@ -5068,6 +5101,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 }
             }
 
+            int boaCnt = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM biologicalobjectattributes");
+            
             Pair<String, String> datePair = new Pair<String, String>();
             
             Statement stmt2 = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -5275,7 +5310,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                 str.append(getStrValue(newId));
                             } else
                             {
-                                colObjAttrsNotMapped++;
+                                if (boaCnt > 0) colObjAttrsNotMapped++;
                                 str.append("NULL");
                             }
                         } else
@@ -5443,9 +5478,12 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
             } while (rsLooping.next());
 
-            msg = "CollectionObjectAttributes not mapped: " + colObjAttrsNotMapped;
-            log.info(msg);
-            tblWriter.logError(msg);
+            if (boaCnt > 0)
+            {
+                msg = "CollectionObjectAttributes not mapped: " + colObjAttrsNotMapped + " out of "+boaCnt;
+                log.info(msg);
+                tblWriter.logError(msg);
+            }
             
             stmt2.close();
 
@@ -6413,7 +6451,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         
                     } else if (isGeoCoordDetail && colName.equals("AgentID"))
                     {
-                        Integer agentID = rs.getInt(i);
+                        Integer agentID = (Integer)rs.getObject(i);
                         if (agentID != null)
                         {
                             Integer newID = agtIdMapper.get(agentID);
@@ -6830,6 +6868,38 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         return newGeo;
     }
 
+    /**
+     * @return
+     */
+    public boolean convertHabitat()
+    {
+        deleteAllRecordsFromTable("collectingeventattribute", BasicSQLUtils.myDestinationServerType);
+
+        if (getNumRecords(oldDBConn, "habitat") == 0) 
+        { 
+            return true; 
+        }
+
+        setFieldsToIgnoreWhenMappingNames(getHabitatAttributeToIgnore());
+        
+        setIdentityInsertONCommandForSQLServer(newDBConn, "collectingeventattribute", BasicSQLUtils.myDestinationServerType);
+        
+        // Need to add Fields to ignore!
+        
+        if (copyTable(oldDBConn, newDBConn, "habitat", "collectingeventattribute", 
+                createFieldNameMap(getHabitatAttributeMappings()), null, BasicSQLUtils.mySourceServerType, BasicSQLUtils.myDestinationServerType))
+        {
+            log.info("habitat copied ok.");
+        } else
+        {
+            log.error("problems coverting habitat");
+        }
+        setIdentityInsertOFFCommandForSQLServer(newDBConn, "collectingeventattribute", BasicSQLUtils.myDestinationServerType);
+        setFieldsToIgnoreWhenMappingNames(null);
+
+        return true;
+    }
+    
     /**
      * @param treeDef
      * @throws SQLException
@@ -7414,7 +7484,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      * @return the new tree def
      * @throws SQLException on any error while contacting the old database
      */
-    public GeologicTimePeriodTreeDef convertGTPDefAndItems() throws SQLException
+    public GeologicTimePeriodTreeDef convertGTPDefAndItems(final boolean isPaleo) throws SQLException
     {
         deleteAllRecordsFromTable("geologictimeperiodtreedef", BasicSQLUtils.myDestinationServerType);
         deleteAllRecordsFromTable("geologictimeperiodtreedefitem", BasicSQLUtils.myDestinationServerType);
@@ -7446,22 +7516,24 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         newItems.add(rootItem);
         ++count;
 
-        while (oldGtpRecords.next())
-        {
-            // we're modifying the rank since the originals were 1,2,3,...
-            // to make them 100, 200, 300, ... (more like the other trees)
-            Integer rankCode = oldGtpRecords.getInt(1) * 100;
-            String rankName = oldGtpRecords.getString(2);
-            GeologicTimePeriodTreeDefItem newItem = addGtpDefItem(rankCode, rankName, def);
-            if (newItem != null)
+        if (isPaleo)
+        {        while (oldGtpRecords.next())
             {
-                newItem.setFullNameSeparator(", ");
-                localSession.save(newItem);
-                newItems.add(newItem);
-            }
-            if (++count % 1000 == 0)
-            {
-                log.info(count + " geologic time period records processed");
+                // we're modifying the rank since the originals were 1,2,3,...
+                // to make them 100, 200, 300, ... (more like the other trees)
+                Integer rankCode = oldGtpRecords.getInt(1) * 100;
+                String rankName = oldGtpRecords.getString(2);
+                GeologicTimePeriodTreeDefItem newItem = addGtpDefItem(rankCode, rankName, def);
+                if (newItem != null)
+                {
+                    newItem.setFullNameSeparator(", ");
+                    localSession.save(newItem);
+                    newItems.add(newItem);
+                }
+                if (++count % 1000 == 0)
+                {
+                    log.info(count + " geologic time period records processed");
+                }
             }
         }
 
@@ -7516,10 +7588,12 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     }
 
     /**
+     * @param tblWriter
      * @param treeDef
+     * @param isPaleo
      * @throws SQLException
      */
-    public void convertGTP(final TableWriter tblWriter, final GeologicTimePeriodTreeDef treeDef) throws SQLException
+    public void convertGTP(final TableWriter tblWriter, final GeologicTimePeriodTreeDef treeDef, final boolean isPaleo) throws SQLException
     {
         deleteAllRecordsFromTable("geologictimeperiod", BasicSQLUtils.myDestinationServerType);
 
@@ -7556,92 +7630,96 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         
         boolean needsTbl = true;
 
-        while (rs.next())
+        if (isPaleo)
         {
-            Integer   id       = rs.getInt(1);
-            Integer   rank     = rs.getInt(2) * 100;
-            String    name     = rs.getString(3);
-            String    std      = rs.getString(4);
-            String    rem      = rs.getString(5);
-            Date      modTDate = rs.getDate(6);
-            Date      creTDate = rs.getDate(7);
-            Timestamp modT     = (modTDate != null) ? new Timestamp(modTDate.getTime()) : null;
-            Timestamp creT     = (creTDate != null) ? new Timestamp(creTDate.getTime()) : null;
-            Float     upper    = rs.getFloat(8);
-            Float     uError   = (Float)rs.getObject(9);
-            Float     lower    = rs.getFloat(10);
-            Float     lError   = (Float)rs.getObject(11);
-            
-            if (StringUtils.isEmpty(name))
+            while (rs.next())
             {
-                if (needsTbl)
-                {
-                    tblWriter.startTable();
-                    tblWriter.logHdr("ID", "Rank Name", "Name", "Reason");
-                    needsTbl = false;
-                }
-                tblWriter.log(id.toString(), rank.toString(), name, "Name is null, Name set to 'XXXX'");
-                log.error("The Name is empty (or null) for GTP ID["+id+"]  Rank["+rank+"]");
-                name = "XXXX";
-            }
-
-            if (modT == null && creT == null)
-            {
-                creT = now;
-                modT = now;
-
-            } else if (modT == null && creT != null)
-            {
-                modT = new Timestamp(creT.getTime());
+                Integer   id       = rs.getInt(1);
+                Integer   rank     = rs.getInt(2) * 100;
+                String    name     = rs.getString(3);
+                String    std      = rs.getString(4);
+                String    rem      = rs.getString(5);
+                Date      modTDate = rs.getDate(6);
+                Date      creTDate = rs.getDate(7);
+                Timestamp modT     = (modTDate != null) ? new Timestamp(modTDate.getTime()) : null;
+                Timestamp creT     = (creTDate != null) ? new Timestamp(creTDate.getTime()) : null;
+                Float     upper    = rs.getFloat(8);
+                Float     uError   = (Float)rs.getObject(9);
+                Float     lower    = rs.getFloat(10);
+                Float     lError   = (Float)rs.getObject(11);
                 
-            } else if (modT != null && creT == null)
-            {
-                creT = new Timestamp(modT.getTime());
-            }
-            // else (neither are null, so do nothing)
-
-            GeologicTimePeriod gtp = new GeologicTimePeriod();
-            gtp.initialize();
-            gtp.setName(name);
-            gtp.setFullName(name);
-            GeologicTimePeriodTreeDefItem defItem = treeDef.getDefItemByRank(rank);
-            gtp.setDefinitionItem(defItem);
-            gtp.setRankId(rank);
-            gtp.setDefinition(treeDef);
-            gtp.setStartPeriod(lower);
-            gtp.setStartUncertainty(lError);
-            gtp.setEndPeriod(upper);
-            gtp.setEndUncertainty(uError);
-            gtp.setStandard(std);
-            gtp.setRemarks(rem);
-            gtp.setTimestampCreated(creT);
-            gtp.setTimestampModified(modT);
-
-            newItems.add(gtp);
-
-            oldIdToGTPMap.put(id, gtp);
-
-            if (++count % 500 == 0)
-            {
-                log.info(count + " geologic time period records converted");
-            }
-        }
-
-        // now we need to fix the parent/pointers
-        for (int i = 0; i < newItems.size(); ++i)
-        {
-            GeologicTimePeriod gtp = newItems.get(i);
-            for (int j = 0; j < newItems.size(); ++j)
-            {
-                GeologicTimePeriod child = newItems.get(j);
-                if (isParentChildPair(gtp, child))
+                if (StringUtils.isEmpty(name))
                 {
-                    gtp.addChild(child);
+                    if (needsTbl)
+                    {
+                        tblWriter.startTable();
+                        tblWriter.logHdr("ID", "Rank Name", "Name", "Reason");
+                        needsTbl = false;
+                    }
+                    tblWriter.log(id.toString(), rank.toString(), name, "Name is null, Name set to 'XXXX'");
+                    log.error("The Name is empty (or null) for GTP ID["+id+"]  Rank["+rank+"]");
+                    name = "XXXX";
+                }
+    
+                if (modT == null && creT == null)
+                {
+                    creT = now;
+                    modT = now;
+    
+                } else if (modT == null && creT != null)
+                {
+                    modT = new Timestamp(creT.getTime());
+                    
+                } else if (modT != null && creT == null)
+                {
+                    creT = new Timestamp(modT.getTime());
+                }
+                // else (neither are null, so do nothing)
+    
+                GeologicTimePeriod gtp = new GeologicTimePeriod();
+                gtp.initialize();
+                gtp.setName(name);
+                gtp.setFullName(name);
+                GeologicTimePeriodTreeDefItem defItem = treeDef.getDefItemByRank(rank);
+                gtp.setDefinitionItem(defItem);
+                gtp.setRankId(rank);
+                gtp.setDefinition(treeDef);
+                gtp.setStartPeriod(lower);
+                gtp.setStartUncertainty(lError);
+                gtp.setEndPeriod(upper);
+                gtp.setEndUncertainty(uError);
+                gtp.setStandard(std);
+                gtp.setRemarks(rem);
+                gtp.setTimestampCreated(creT);
+                gtp.setTimestampModified(modT);
+    
+                newItems.add(gtp);
+    
+                oldIdToGTPMap.put(id, gtp);
+    
+                if (++count % 500 == 0)
+                {
+                    log.info(count + " geologic time period records converted");
                 }
             }
+    
+            // now we need to fix the parent/pointers
+            for (int i = 0; i < newItems.size(); ++i)
+            {
+                GeologicTimePeriod gtp = newItems.get(i);
+                for (int j = 0; j < newItems.size(); ++j)
+                {
+                    GeologicTimePeriod child = newItems.get(j);
+                    if (isParentChildPair(gtp, child))
+                    {
+                        gtp.addChild(child);
+                    }
+                }
+            }
+    
+            TreeHelper.fixFullnameForNodeAndDescendants(allTime);
         }
-
-        TreeHelper.fixFullnameForNodeAndDescendants(allTime);
+        
         // fix node number, child node number stuff
         allTime.setNodeNumber(1);
         fixNodeNumbersFromRoot(allTime);
@@ -7674,7 +7752,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     /**
      * @param tblWriter
      */
-    public void convertStrat(final TableWriter tblWriter) throws SQLException
+    public void convertStrat(final TableWriter tblWriter, final boolean isPaleo) throws SQLException
     {
         try
         {
@@ -7722,7 +7800,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             
             HibernateUtil.commitTransaction();
             
-            convertLithoStrat(lithoStratTreeDef, earthNode, tblWriter);
+            if (isPaleo)
+            {
+                convertLithoStrat(lithoStratTreeDef, earthNode, tblWriter);
+            }
             
         } catch (Exception ex)
         {

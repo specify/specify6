@@ -231,6 +231,7 @@ public class ConvScopeFixer
                   "FROM (select * from collectingevent WHERE CollectingEventID in (select HabitatID from habitat)) T1 " +
                   "Left Join collectionobject ON T1.CollectingEventID = collectionobject.CollectingEventID " +
                   "WHERE collectionobject.CollectionObjectID IS NULL";
+            rs = stmt.executeQuery(sql);
             count = 0;
             while (rs.next())
             {
@@ -328,7 +329,7 @@ public class ConvScopeFixer
                 
         String qrySQL = "SELECT CollectionObjectCatalogID, CatalogSeriesID FROM collectionobjectcatalog WHERE CollectionObjectTypeID > 8 AND CollectionObjectTypeID < 20";
                 
-        return fixTableWithColMemId(cntSQL, qrySQL, "CollectionObjectCatalog", "CollectionObjectCatalogID", null);
+        return fixTableWithColMemId(cntSQL, qrySQL, "CollectionObject", "CollectionObjectID", null);
     }
     
     /**

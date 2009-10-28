@@ -78,12 +78,8 @@ public class Sp5CollectionCleaner
             HashSet<Integer> habIds        = new HashSet<Integer>();
             HashSet<Integer> ceIds         = new HashSet<Integer>();
             HashSet<Integer> preps         = new HashSet<Integer>();
-            HashSet<Integer> dets          = new HashSet<Integer>();
-            HashSet<Integer> locs          = new HashSet<Integer>();
-            HashSet<Integer> bas           = new HashSet<Integer>();
-            HashSet<Integer> cltrs         = new HashSet<Integer>();
             HashSet<Integer> taxs          = new HashSet<Integer>();
-            HashSet<Integer> coCis          = new HashSet<Integer>(); // Col Obj Citations
+            HashSet<Integer> loans         = new HashSet<Integer>();
             
             for (Object idObj : querySingleCol(connection, sql))
             {
@@ -127,6 +123,8 @@ public class Sp5CollectionCleaner
                 colObjIds.add(coId);
             }
             
+            addToSet(colObjIds, "SELECT co.CollectionObjectID FROM collectionobjectcitation AS ci Inner Join collectionobject  AS co ON ci.BiologicalObjectID = co.CollectionObjectID LIMIT 0,5");
+            
             String ids;
             for (Integer colId : colObjIds)
             {
@@ -137,7 +135,21 @@ public class Sp5CollectionCleaner
                     System.out.println("Adding prep["+((Integer)idObj)+"]");
                 }
             }
-
+            
+            sql = "SELECT co.DerivedFromID AS CoID, co.CollectionObjectID AS PrepID, lp.LoanID FROM collectionobject AS co Inner Join loanphysicalobject AS lp ON co.CollectionObjectID = lp.PhysicalObjectID LIMIT 0,5";
+            for (Object[] row : query(connection, sql))
+            {
+                Integer coId   = (Integer)row[0];
+                Integer prepId = (Integer)row[1];
+                Integer loanId = (Integer)row[2];
+                
+                System.out.println("Adding co["+coId+"]   p["+prepId+"]   l["+loanId+"]");
+                
+                loans.add(loanId);
+                preps.add(prepId);
+                colObjIds.add(coId);
+            }
+            
             boolean doNonTaxon = true;
             if (doNonTaxon)
             {
@@ -166,6 +178,8 @@ public class Sp5CollectionCleaner
                 total += count;
                 System.out.println("Deleted ["+count+"] CEs");
                 
+                total += cleanTable(sql, "collectingevent", "CollectingEventID");
+                
                 // Delete Habitats
                 ids = getIdStrFromSet(habIds);
                 sql = "DELETE FROM habitat WHERE HabitatID NOT IN (" + ids + ")";
@@ -175,91 +189,35 @@ public class Sp5CollectionCleaner
                 total += count;
                 System.out.println("Deleted ["+count+"] Habs");
                 
+                //------------------------------------------------------------------------------
+                //-- Simple cleaning
+                //------------------------------------------------------------------------------
+                
                 // Determinations
                 sql = "SELECT d.DeterminationID FROM determination  AS d " + 
                        "Left Join collectionobject  AS co ON d.BiologicalObjectID = co.CollectionObjectID " + 
                        "WHERE co.CollectionObjectID IS NOT NULL ";
-                for (Object idObj : querySingleCol(connection, sql))
-                {
-                    Integer id = (Integer)idObj;
-                    dets.add(id);
-                }
-                
-                ids = getIdStrFromSet(dets);
-                sql = "DELETE FROM determination WHERE DeterminationID NOT IN (" + ids + ")";
-                
-                System.out.println("Deleting DTs[\n"+sql+"\n]");
-                count = update(connection, sql);
-                total += count;
-                System.out.println("Deleted ["+count+"] DTs");
+                total += cleanTable(sql, "determination", "DeterminationID");
                 
                 
                 // Localities
                 sql = "SELECT l.LocalityID, ce.CollectingEventID FROM locality AS l Left Join collectingevent AS ce ON l.LocalityID = ce.LocalityID WHERE ce.CollectingEventID IS NOT NULL";
-                for (Object idObj : querySingleCol(connection, sql))
-                {
-                    Integer id = (Integer)idObj;
-                    locs.add(id);
-                }
-                
-                ids = getIdStrFromSet(locs);
-                sql = "DELETE FROM locality WHERE LocalityID NOT IN (" + ids + ")";
-                
-                System.out.println("Deleting LOCs[\n"+sql+"\n]");
-                count = update(connection, sql);
-                total += count;
-                System.out.println("Deleted ["+count+"] LOCs");
+                total += cleanTable(sql, "locality", "LocalityID");
+
                 
                 // BiologicalObjectAttributes
                 sql = "SELECT ba.BiologicalObjectAttributesID FROM biologicalobjectattributes AS ba Left Join collectionobject AS co ON ba.BiologicalObjectAttributesID = co.CollectionObjectID " +
                       "WHERE co.CollectionObjectID IS NOT NULL";
-                for (Object idObj : querySingleCol(connection, sql))
-                {
-                    Integer id = (Integer)idObj;
-                    bas.add(id);
-                }
-                
-                ids = getIdStrFromSet(bas);
-                sql = "DELETE FROM biologicalobjectattributes WHERE BiologicalObjectAttributesID NOT IN (" + ids + ")";
-                
-                System.out.println("Deleting BAs[\n"+sql+"\n]");
-                count = update(connection, sql);
-                total += count;
-                System.out.println("Deleted ["+count+"] BAs");
+                total += cleanTable(sql, "biologicalobjectattributes", "BiologicalObjectAttributesID");
                 
                 // Collectors
                 sql = "SELECT c.CollectorsID FROM collectors AS c  Left Join collectingevent AS ce ON c.CollectingEventID = ce.CollectingEventID WHERE ce.CollectingEventID IS NOT NULL";
-                for (Object idObj : querySingleCol(connection, sql))
-                {
-                    Integer id = (Integer)idObj;
-                    cltrs.add(id);
-                }
+                total += cleanTable(sql, "collectors", "CollectorsID");
                 
-                ids = getIdStrFromSet(cltrs);
-                sql = "DELETE FROM collectors WHERE CollectorsID NOT IN (" + ids + ")";
-                
-                System.out.println("Deleting CLs[\n"+sql+"\n]");
-                count = update(connection, sql);
-                total += count;
-                System.out.println("Deleted ["+count+"] CLs");
+                // CO Citations
+                sql = "SELECT ci.CollectionObjectCitationID FROM collectionobjectcitation ci LEFT JOIN collectionobject co ON ci.BiologicalObjectID = co.CollectionObjectID WHERE co.CollectionObjectID IS NOT NULL";
+                total += cleanTable(sql, "collectionobjectcitation", "CollectionObjectCitationID");
             }
-            
-            // CO Citations
-            sql = "SELECT ci.CollectionObjectCitationID FROM collectionobjectcitation ci LEFT JOIN collectionobject co ON ci.BiologicalObjectID = co.CollectionObjectID WHERE co.CollectionObjectID IS NULL";
-            for (Object idObj : querySingleCol(connection, sql))
-            {
-                Integer id = (Integer)idObj;
-                coCis.add(id);
-            }
-            
-            ids = getIdStrFromSet(coCis);
-            sql = "DELETE FROM collectionobjectcitation WHERE CollectionObjectCitationID NOT IN (" + ids + ")";
-            
-            System.out.println("Deleting CIs[\n"+sql+"\n]");
-            count = update(connection, sql);
-            total += count;
-            System.out.println("Deleted ["+count+"] CIs");
-            
             
             boolean doTaxon = false;
             if (doTaxon)
@@ -340,6 +298,30 @@ public class Sp5CollectionCleaner
         {
             ex.printStackTrace();
         }
+    }
+    
+    protected int cleanTable(final String gatherSQL, final String tableName, final String idFieldName)
+    {
+        HashSet<Integer> setOfIds = new HashSet<Integer>();
+        
+        addToSet(setOfIds, gatherSQL);
+         
+         String ids = getIdStrFromSet(setOfIds);
+         String sql = String.format("DELETE FROM %s WHERE %s NOT IN (%s)", tableName, idFieldName, ids);
+         
+         System.out.println(String.format("Deleting %s[\n%s\n]", tableName, sql));
+         int count = update(connection, sql);
+         System.out.println(String.format("Deleted [%d] %s", count, tableName));
+         return count;
+    }
+    
+    protected void addToSet(final HashSet<Integer> setOfIds, final String sql)
+    {
+         for (Object idObj : querySingleCol(connection, sql))
+         {
+             Integer id = (Integer)idObj;
+             setOfIds.add(id);
+         }
     }
     
     protected String getIdStrFromSet(final HashSet<Integer> set)

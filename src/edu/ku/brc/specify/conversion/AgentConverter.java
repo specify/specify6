@@ -378,7 +378,7 @@ public class AgentConverter
             int lastNameInx  = indexFromNameMap.get("agent.LastName");
             int firstNameInx = indexFromNameMap.get("agent.FirstName");
             
-            Pair<String, String> namePair = new Pair<String, String>();
+            //Pair<String, String> namePair = new Pair<String, String>();
             
             int recordCnt = 0;
             while (rs.next())
@@ -458,7 +458,7 @@ public class AgentConverter
                             
                             int    lastNameLen = 50;
                             String lastName    = namePair.second;
-                            lastName = lastName.length() <= lastNameLen ? lastName : lastName.substring(0, lastNameLen);
+                            lastName = lastName == null ? "" : lastName.length() <= lastNameLen ? lastName : lastName.substring(0, lastNameLen);
                             sqlStr.append(BasicSQLUtils.getStrValue(lastName));
 
                         } else if (agentColumns[i].equals("agent.FirstName") || agentColumns[i].equals("FirstName"))
