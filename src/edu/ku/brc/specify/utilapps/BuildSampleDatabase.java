@@ -90,6 +90,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -122,6 +123,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -246,6 +248,7 @@ import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
 import edu.ku.brc.specify.treeutils.NodeNumberer;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeHelper;
+import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
@@ -332,6 +335,9 @@ public class BuildSampleDatabase
     
     protected LinkedList<Pair<String, Integer>> recycler = new LinkedList<Pair<String, Integer>>();
     protected StringBuilder gSQLStr = new StringBuilder();
+    
+    protected NumberFormat     numFmt = NumberFormat.getInstance();
+    protected SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     
     /**
@@ -342,6 +348,10 @@ public class BuildSampleDatabase
         dateTimeFormatter  = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         dateFormatter      = new SimpleDateFormat("yyyy-MM-dd");
         nowStr              = "'" + dateTimeFormatter.format(now) + "'";
+        
+        numFmt.setMinimumFractionDigits(0);
+        numFmt.setMaximumFractionDigits(20);
+        numFmt.setGroupingUsed(false); //gets rid of commas
     }
     
     /**
@@ -8545,6 +8555,74 @@ public class BuildSampleDatabase
         return nameHash;
     }
     
+    /**
+     * @param cell
+     * @return
+     */
+    public String getXLSCellValueAsStr(final HSSFCell cell)
+    {
+        String value = null;
+        // if cell is blank, set value to ""
+        if (cell == null)
+        {
+            value = "";
+        }
+        else
+        {
+            switch (cell.getCellType())
+            {
+                case HSSFCell.CELL_TYPE_NUMERIC:
+                    // The best I can do at this point in the app is to guess if a
+                    // cell is a date.
+                    // Handle dates carefully while using HSSF. Excel stores all
+                    // dates as numbers, internally.
+                    // The only way to distinguish a date is by the formatting of
+                    // the cell. (If you
+                    // have ever formatted a cell containing a date in Excel, you
+                    // will know what I mean.)
+                    // Therefore, for a cell containing a date, cell.getCellType()
+                    // will return
+                    // HSSFCell.CELL_TYPE_NUMERIC. However, you can use a utility
+                    // function,
+                    // HSSFDateUtil.isCellDateFormatted(cell), to check if the cell
+                    // can be a date.
+                    // This function checks the format against a few internal
+                    // formats to decide the issue,
+                    // but by its very nature it is prone to false negatives.
+                    if (HSSFDateUtil.isCellDateFormatted(cell))
+                    {
+                        DateWrapper      scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
+                        SimpleDateFormat simpDateFmt   = scrDateFormat != null && scrDateFormat.getSimpleDateFormat() != null ? scrDateFormat.getSimpleDateFormat() : sdf;
+                        value = simpDateFmt.format(cell.getDateCellValue());
+                    }
+                    else
+                    {
+                        double numeric = cell.getNumericCellValue();
+                        value = numFmt.format(numeric);
+                    }
+                    break;
+
+                case HSSFCell.CELL_TYPE_STRING:
+                    value = cell.getRichStringCellValue().getString();
+                    break;
+
+                case HSSFCell.CELL_TYPE_BLANK:
+                    value = "";
+                    break;
+
+                case HSSFCell.CELL_TYPE_BOOLEAN:
+                    value = Boolean.toString(cell.getBooleanCellValue());
+                    break;
+
+                default:
+                    value = "";
+                    log.error("unsuported cell type");
+                    break;
+            }
+        }
+        return value;
+    }
+    
 
     /**
      * @param treeDef
@@ -8648,7 +8726,7 @@ public class BuildSampleDatabase
                         HSSFCell cell = (HSSFCell)cellsIter.next();
                         if (cell != null)
                         {
-                            cells[i] = StringUtils.trim(cell.getRichStringCellValue().getString());
+                            cells[i] = getXLSCellValueAsStr(cell);
                             header[i] = cells[i];
                             i++;
                         }
@@ -8705,13 +8783,7 @@ public class BuildSampleDatabase
                     HSSFCell cell = (HSSFCell)cellsIter.next();
                     if (cell != null)
                     {
-                        cells[i] = StringUtils.trim(cell.getRichStringCellValue().getString());
-                        if (i == 12 && StringUtils.isNotEmpty(cells[i]))
-                        {
-                            int x = 0;
-                            x++;
-                        }
-                        i++;
+                        cells[i] = getXLSCellValueAsStr(cell);
                     }
                 }
 
