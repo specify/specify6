@@ -385,7 +385,9 @@ public class SpecifyDBSetupWizard extends JPanel
                 Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
                 if (inst != null && !inst.getIsAccessionsGlobal())
                 {
-                    accessionPickerCol = new FormatterPickerPanel("ACCNOFMT", "wizard_create_accession_number", nextBtn, backBtn, false, accessionFmt); 
+                    if (wizardType != WizardType.Institution)
+                    accessionPickerCol = new FormatterPickerPanel("ACCNOFMT", "wizard_create_accession_number", nextBtn, backBtn, false, accessionFmt);
+                    accessionPickerCol.setDoingDisciplineCollection(wizardType != WizardType.Division);
                     panels.add(accessionPickerCol);
                 }
             }

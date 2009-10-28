@@ -82,7 +82,8 @@ public class FormatterPickerPanel extends BaseSetupPanel
     protected int                         newFmtInx    = 0;
     protected boolean                     wasUsed      = false;
     protected String                      currFormatter;
-    
+    protected boolean                     doingDisciplineCollection = false;
+
     protected UIFieldFormatterMgr         uiFldFmtMgr;
     
     /**
@@ -141,6 +142,14 @@ public class FormatterPickerPanel extends BaseSetupPanel
 
         nextBtn.setEnabled(false);
 
+    }
+    
+    /**
+     * @param doingDisciplineColl
+     */
+    public void setDoingDisciplineCollection(final boolean doingDisciplineColl)
+    {
+        this.doingDisciplineCollection = doingDisciplineColl;
     }
     
     /**
@@ -377,11 +386,11 @@ public class FormatterPickerPanel extends BaseSetupPanel
                 isAccGlobal = false;
             }
             
-            if (institution != null)
+            if (institution != null && !doingDisciplineCollection)
             {
                 formatterCBX.setEnabled(!isAccGlobal);
                 
-            } else if (currFormatter != null || (isAccGlobal && institution != null))
+            } else if (currFormatter != null || (isAccGlobal && institution != null) || doingDisciplineCollection)
             {
                 formatterCBX.setEnabled(false);
             }
