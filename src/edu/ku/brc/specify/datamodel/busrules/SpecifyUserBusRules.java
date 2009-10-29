@@ -33,6 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.ui.PasswordStrengthUI;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.EditViewCompSwitcherPanel;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
@@ -188,6 +189,33 @@ public class SpecifyUserBusRules extends BaseBusRules
         }
     }
     
+    /**
+     * NOTE: This is being called when editing an existing person.
+     * @param id
+     * @param keyName
+     * @param isPwd
+     * @return
+     */
+    private boolean isFieldOK(final String id, final String keyName, final boolean isPwd)
+    {
+        JTextField tf = null;
+        Component comp = formViewObj.getCompById(id);
+        if (comp instanceof EditViewCompSwitcherPanel)
+        {
+            tf = (JTextField)((EditViewCompSwitcherPanel)comp).getCurrentComp();
+        } else
+        {
+            tf = (JTextField)comp;
+        }
+        String value = tf.getText().trim();
+        if (StringUtils.contains(value, ' ') || (!isPwd && StringUtils.contains(value, ',')))
+        {
+            UIRegistry.showLocalizedError(keyName);
+            return false;
+        }
+        return false;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object)
      */
@@ -205,6 +233,16 @@ public class SpecifyUserBusRules extends BaseBusRules
                                                       (FormDataObjIFace)dataObj, 
                                                       SpecifyUser.class, 
                                                       "specifyUserId");
+        
+        if (isFieldOK("1", "NO_SPC_USRNAME", false))
+        {
+            return STATUS.Error;
+        }
+        
+        if (isFieldOK("3", "NO_SPC_PWDNAME", true))
+        {
+            return STATUS.Error;
+        }
         
         return nameStatus != STATUS.OK ? STATUS.Error : STATUS.OK;
     }

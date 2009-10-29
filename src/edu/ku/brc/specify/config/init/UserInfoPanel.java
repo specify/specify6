@@ -127,6 +127,14 @@ public class UserInfoPanel extends GenericFormPanel
             String dbUsername  = properties.getProperty("dbUserName");
             String saUserName  = properties.getProperty("saUserName");
             String usrUserName = ((JTextField)comps.get("usrUsername")).getText();
+            String usrPassword = ((JTextField)comps.get("usrPassword")).getText();
+            
+            if (!DatabasePanel.checkForValidText(statusLbl, usrUserName, "ERR_BAD_USRNAME", "NO_SPC_USRNAME", false) ||
+                !DatabasePanel.checkForValidText(statusLbl, usrPassword,  null,             "NO_SPC_PWDNAME", false))
+            {
+                nextBtn.setEnabled(false);
+                return false;
+            }
             
             if (usrUserName.equals(saUserName))
             {

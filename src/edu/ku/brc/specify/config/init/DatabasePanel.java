@@ -271,11 +271,12 @@ public class DatabasePanel extends BaseSetupPanel
     protected boolean skipDBCreate()
     {
         getValues(properties);
-        DBMSUserMgr mgr   = DBMSUserMgr.getInstance();
-        String dbUserName = usernameTxt.getText();
-        String dbPwd      = passwordTxt.getText();
-        String hostName   = hostNameTxt.getText();
-        String dbName     = dbNameTxt.getText();
+        
+        DBMSUserMgr mgr     = DBMSUserMgr.getInstance();
+        String dbUserName   = usernameTxt.getText();
+        String dbPwd        = passwordTxt.getText();
+        String hostName     = hostNameTxt.getText();
+        String databaseName = dbNameTxt.getText();
         
         // Set up the DBConnection for later
         DatabaseDriverInfo driverInfo = (DatabaseDriverInfo)drivers.getSelectedItem();
@@ -286,7 +287,7 @@ public class DatabasePanel extends BaseSetupPanel
         {
             if (mgr.connectToDBMS(dbUserName, dbPwd, hostName))
             {
-                newConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName, dbUserName, dbPwd, driverInfo.getName());
+                newConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, databaseName, dbUserName, dbPwd, driverInfo.getName());
                 
                 DBConnection dbc = DBConnection.getInstance();
                 dbc.setConnectionStr(newConnStr);
@@ -295,7 +296,7 @@ public class DatabasePanel extends BaseSetupPanel
                 dbc.setDriverName(driverInfo.getName());
                 dbc.setServerName(hostName);
                 dbc.setUsernamePassword(dbUserName, dbPwd);
-                dbc.setDatabaseName(dbName);
+                dbc.setDatabaseName(databaseName);
                 
                 nextBtn.setEnabled(isOK == null || isOK || manualLoginOK);
                 mgr.close();
@@ -315,20 +316,20 @@ public class DatabasePanel extends BaseSetupPanel
     {
         getValues(properties);
         
-        final String dbName     = dbNameTxt.getText();
-        final String dbUserName = usernameTxt.getText();
-        final String dbPwd      = passwordTxt.getText();
-        final String hostName   = hostNameTxt.getText();
+        final String databaseName = dbNameTxt.getText();
+        final String dbUserName   = usernameTxt.getText();
+        final String dbPwd        = passwordTxt.getText();
+        final String hostName     = hostNameTxt.getText();
         
         if (UIRegistry.isMobile())
         {
             DBConnection.clearMobileTempDir();
-            File tmpDir = DBConnection.getMobileTempDir(dbName);
+            File tmpDir = DBConnection.getMobileTempDir(databaseName);
             UIRegistry.setEmbeddedDBDir(tmpDir.getAbsolutePath());
         }
 
         final DatabaseDriverInfo driverInfo = (DatabaseDriverInfo)drivers.getSelectedItem();
-        String connStrInitial = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName, dbUserName, dbPwd, driverInfo.getName());
+        String connStrInitial = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, databaseName, dbUserName, dbPwd, driverInfo.getName());
         //System.err.println(connStrInitial);
         
         DBConnection.checkForEmbeddedDir("createDB - "+connStrInitial);
@@ -382,7 +383,7 @@ public class DatabasePanel extends BaseSetupPanel
                             }
                         }
                         
-                        String newConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName, dbUserName, dbPwd, driverInfo.getName());
+                        String newConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, databaseName, dbUserName, dbPwd, driverInfo.getName());
                         if (driverInfo.isEmbedded())
                         {
                             //System.err.println(newConnStr);
@@ -391,7 +392,7 @@ public class DatabasePanel extends BaseSetupPanel
                                 Class.forName(driverInfo.getDriverClassName());
                                 
                                 // This call will create the database if it doesn't exist
-                                DBConnection testDB = DBConnection.createInstance(driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), dbName, newConnStr, dbUserName, dbPwd);
+                                DBConnection testDB = DBConnection.createInstance(driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), databaseName, newConnStr, dbUserName, dbPwd);
                                 testDB.getConnection(); // Opens the connection
                                 
                                 if (testDB != null)
@@ -420,14 +421,14 @@ public class DatabasePanel extends BaseSetupPanel
                         {
                             SpecifySchemaGenerator.generateSchema(driverInfo, 
                                                                   hostName,
-                                                                  dbName,
+                                                                  databaseName,
                                                                   dbUserName, 
                                                                   dbPwd); // false means create new database, true means update
                             
-                            String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, hostName, dbName);
+                            String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, hostName, databaseName);
                             if (connStr == null)
                             {
-                                connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName,  dbName);
+                                connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName,  databaseName);
                             }
                             
                             firePropertyChange(PROPNAME, 0, 2);
@@ -565,6 +566,33 @@ public class DatabasePanel extends BaseSetupPanel
         }
     }
     
+    public static  boolean checkForValidText(final JLabel label,
+                                             final String text, 
+                                             final String badKeyArg, 
+                                             final String errKeyArg, 
+                                             final boolean isPwd)
+    {
+        String errKey = null;
+        if (!isPwd && !text.isEmpty() && !StringUtils.isAlpha(text.substring(0, 1)))
+        {
+            errKey = badKeyArg;
+            
+        } else if (StringUtils.contains(text, ' ') || StringUtils.contains(text, ','))
+        {
+            errKey = errKeyArg;
+        }
+        
+        if (errKey != null)
+        {
+            label.setForeground(Color.RED);
+            label.setText(getResourceString(errKeyArg));
+            label.setVisible(true);
+            return false;
+        }
+        
+        return true;
+    }
+    
     /**
      * Checks all the textfields to see if they have text
      * @return true of all fields have text
@@ -585,26 +613,12 @@ public class DatabasePanel extends BaseSetupPanel
         
         isOKForCreateBtn = true;
         
-        String dbName = dbNameTxt.getText();
-        if (!dbName.isEmpty())
+        if (!checkForValidText(label, dbNameTxt.getText(),   "ERR_BAD_DBNAME",  "NO_SPC_DBNAME", false) ||
+            !checkForValidText(label, usernameTxt.getText(), "ERR_BAD_USRNAME", "NO_SPC_USRNAME", false) ||
+            !checkForValidText(label, passwordTxt.getText(),  null,             "NO_SPC_PWDNAME", false))
         {
-            if (!StringUtils.isAlpha(dbName.substring(0, 1)))
-            {
-                DatabasePanel.this.label.setForeground(Color.RED);
-                label.setText(getResourceString("ERR_BAD_DBNAME"));
-                return isOKForCreateBtn = false;
-                
-            } else if (StringUtils.contains(dbName, ' '))
-            {
-                DatabasePanel.this.label.setForeground(Color.RED);
-                label.setText(getResourceString("NO_SPC_DBNAME"));
-            }
-        }
-        
-        String usrName = usernameTxt.getText();
-        if (!usrName.isEmpty() && StringUtils.contains(usrName, ' '))
-        {
-            label.setText(getResourceString("NO_SPC_USRNAME"));
+            isOK             = false;
+            isOKForCreateBtn = false;
         }
         
         return (isOK != null && isOK) || manualLoginOK;
@@ -660,8 +674,8 @@ public class DatabasePanel extends BaseSetupPanel
      */
     protected VerifyStatus verifyDatabase(final Properties props)
     {
-        boolean      isEmbedded = DBConnection.getInstance().isEmbedded();
-        String       dbName     = props.getProperty(DBNAME);
+        boolean      isEmbedded   = DBConnection.getInstance().isEmbedded();
+        String       databaseName = props.getProperty(DBNAME);
         if (isEmbedded)
         {
             File specifyDataDir = null;
@@ -674,7 +688,7 @@ public class DatabasePanel extends BaseSetupPanel
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskSemaphoreMgr.class, new RuntimeException("DBConnection.getMobileTempDir() return null"));
                 }
                 
-                UIRegistry.setMobileEmbeddedDBDir(UIRegistry.getDefaultMobileEmbeddedDBPath(dbName));
+                UIRegistry.setMobileEmbeddedDBDir(UIRegistry.getDefaultMobileEmbeddedDBPath(databaseName));
             } else
             {
                 specifyDataDir = DBConnection.getEmbeddedDataDir(); 
@@ -684,8 +698,8 @@ public class DatabasePanel extends BaseSetupPanel
             {
                 if (specifyDataDir.exists())
                 {
-                    boolean isOK = UIHelper.promptForAction("PROCEED", "CANCEL", "DEL_CUR_DB_TITLE", UIRegistry.getLocalizedMessage("DEL_CUR_DB", dbName));
-                    if (isOK)
+                    boolean isOKay = UIHelper.promptForAction("PROCEED", "CANCEL", "DEL_CUR_DB_TITLE", UIRegistry.getLocalizedMessage("DEL_CUR_DB", databaseName));
+                    if (isOKay)
                     {
                         try
                         {
@@ -733,14 +747,14 @@ public class DatabasePanel extends BaseSetupPanel
      */
     private DBSTATUS isOkToProceed(final Properties props)
     {
-        String dbName     = props.getProperty(DBNAME);
-        String itUsername = props.getProperty(DBUSERNAME);
-        String itPassword = props.getProperty(DBPWD);
-        String hostName   = props.getProperty(HOSTNAME);
+        String databaseName = props.getProperty(DBNAME);
+        String itUsername   = props.getProperty(DBUSERNAME);
+        String itPassword   = props.getProperty(DBPWD);
+        String hostName     = props.getProperty(HOSTNAME);
             
         // if db exists (whether it has tables or not) this next call will return ok or cancelled
         // or it will return missingDB or error
-        return DBMSUserMgr.isOkToProceed(dbName, hostName, itUsername, itPassword);
+        return DBMSUserMgr.isOkToProceed(databaseName, hostName, itUsername, itPassword);
     }
     
     /**
@@ -750,7 +764,7 @@ public class DatabasePanel extends BaseSetupPanel
      */
     protected boolean checkEngineCharSet(final Properties props)
     {
-        final String dbName = props.getProperty(DBNAME);
+        final String databaseName = props.getProperty(DBNAME);
         
         DBMSUserMgr mgr = null;
         try
@@ -765,7 +779,7 @@ public class DatabasePanel extends BaseSetupPanel
                 
                 if (mgr.connectToDBMS(itUsername, itPassword, hostName))
                 {
-                    if (!mgr.verifyEngineAndCharSet(dbName))
+                    if (!mgr.verifyEngineAndCharSet(databaseName))
                     {
                         String errMsg = mgr.getErrorMsg();
                         if (errMsg != null)

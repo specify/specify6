@@ -21,6 +21,7 @@ package edu.ku.brc.specify.config.init;
 
 import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -238,9 +239,19 @@ public class MasterUserPanel extends GenericFormPanel
         {
             String dbUsername = properties.getProperty("dbUserName");
             String saUserName = ((JTextField)comps.get("saUserName")).getText();
+            String saPassword = ((JTextField)comps.get("saPassword")).getText();
+            
+            if (!DatabasePanel.checkForValidText(label, saUserName, "ERR_BAD_USRNAME", "NO_SPC_USRNAME", false) ||
+                !DatabasePanel.checkForValidText(label, saPassword,  null,             "NO_SPC_PWDNAME", false))
+            {
+                isOK = false;
+                createMUBtn.setEnabled(false);
+                return false;
+            }
             
             if (dbUsername.equals(saUserName) && !isEmbedded)
             {
+                label.setForeground(Color.RED);
                 label.setText(UIRegistry.getResourceString("DB_SA_USRNAME_MATCH"));
                 createMUBtn.setEnabled(false);
                 return false;
@@ -311,6 +322,8 @@ public class MasterUserPanel extends GenericFormPanel
                 @Override
                 protected Object doInBackground() throws Exception
                 {
+                    MasterUserPanel.this.label.setForeground(Color.BLACK);
+                    
                     isOK = false;
                     if (!isEmbedded)
                     {

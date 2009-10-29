@@ -730,19 +730,26 @@ public class DatabaseLoginPanel extends JTiledPanel
             return;
         }
 
-        boolean shouldEnable = StringUtils.isNotEmpty(username.getText())
-                && StringUtils.isNotEmpty(new String(password.getPassword()))
-                && (servers.getSelectedIndex() != -1 || StringUtils.isNotEmpty(servers
-                        .getTextField().getText())
-                        && (databases.getSelectedIndex() != -1 || StringUtils.isNotEmpty(databases
-                                .getTextField().getText())));
+        String dbName = databases.getTextField().getText();
+        String uName  = username.getText();
+        String pwd    = new String(password.getPassword());
         
-        if (shouldEnable && StringUtils.contains(username.getText(), ' '))
+        boolean shouldEnable = StringUtils.isNotEmpty(uName) &&
+                StringUtils.isNotEmpty(pwd) &&
+                (servers.getSelectedIndex() != -1 || StringUtils.isNotEmpty(servers.getTextField().getText())
+                        && (databases.getSelectedIndex() != -1 || StringUtils.isNotEmpty(dbName)));
+        
+        if (shouldEnable && (StringUtils.contains(uName, ' ') || StringUtils.contains(uName, ',')))
         {
             shouldEnable = false;
             setMessage(getResourceString("NO_SPC_USRNAME"), true); //$NON-NLS-1$
             
-        } else if (shouldEnable && StringUtils.contains(databases.getTextField().getText(), ' '))
+        } else if (shouldEnable && (StringUtils.contains(pwd, ' ') || StringUtils.contains(pwd, ',')))
+        {
+            shouldEnable = false;
+            setMessage(getResourceString("NO_SPC_PWDNAME"), true); //$NON-NLS-1$
+            
+        } else if (shouldEnable && (StringUtils.contains(dbName, ' ') || StringUtils.contains(dbName, ',')))
         {
             shouldEnable = false;
             setMessage(getResourceString("NO_SPC_DBNAME"), true); //$NON-NLS-1$
@@ -755,7 +762,6 @@ public class DatabaseLoginPanel extends JTiledPanel
             {
                 moreBtn.doClick();
             }
-
         }
 
         loginBtn.setEnabled(shouldEnable);
