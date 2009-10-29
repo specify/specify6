@@ -79,7 +79,7 @@ public class AccessionAgentBusRules extends BaseBusRules
                     @Override
                     public void valueChanged(ListSelectionEvent e)
                     {
-                        if (!e.getValueIsAdjusting())
+                        if (e != null && !e.getValueIsAdjusting())  // Specify sometimes send a null event for updating the display
                         {
                             checkForDuplicate();
                         }
@@ -175,7 +175,10 @@ public class AccessionAgentBusRules extends BaseBusRules
             } 
         }
         
-        String key = agent.getId() + "_" + role;
+        String key = agent.getId() + "_";
+        hash.remove(key);
+        key += (role == null ? "" : role);
+        
         if (hash.get(key) != null)
         {
             UIRegistry.showLocalizedError("ACCESSION_DUP_AGENTROLE", agent.getIdentityTitle(), role);
