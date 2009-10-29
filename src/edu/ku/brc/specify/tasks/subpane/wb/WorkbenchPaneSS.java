@@ -64,11 +64,13 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -165,6 +167,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DB;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadData;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDef;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTableInvalidValue;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.WorkbenchUploadMapper;
 import edu.ku.brc.specify.ui.HelpMgr;
@@ -321,6 +324,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         model       = new GridTableModel(workbench);
         spreadSheet = new WorkbenchSpreadSheet(model);
         spreadSheet.setReadOnly(isReadOnly);
+        //spreadSheet.setC
         model.setSpreadSheet(spreadSheet);
         
         //add key mappings for cut, copy, paste
@@ -743,6 +747,17 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         });
         
+        
+        for (int c = 0; c < spreadSheet.getTableHeader().getColumnModel()
+				.getColumnCount(); c++)
+		{
+			// TableColumn column =
+			// spreadSheet.getTableHeader().getColumnModel().getColumn(spreadSheet.getTableHeader().getColumnModel().getColumnCount()-1);
+			TableColumn column = spreadSheet.getTableHeader().getColumnModel()
+					.getColumn(c);
+			column.setCellRenderer(new WbCellRenderer());
+		}
+
         // setup the JFrame to show images attached to WorkbenchRows
         imageFrame = new ImageFrame(mapSize, this, this.workbench, (WorkbenchTask)task, isReadOnly);
         
@@ -1560,27 +1575,11 @@ public class WorkbenchPaneSS extends BaseSubPane
                 spreadSheet.scrollToRow(Math.min(currentRow+4, model.getRowCount()));
             }
             
-            TableColumn column = spreadSheet.getTableHeader().getColumnModel().getColumn(spreadSheet.getTableHeader().getColumnModel().getColumnCount()-1);
-            column.setCellRenderer(new DefaultTableCellRenderer()
-            {
-                @Override
-                public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int tblRow, int tblColumn)
-                {
-                    JLabel lbl = (JLabel)super.getTableCellRendererComponent(table, value, isSelected, hasFocus, tblRow, tblColumn);
-                    int modelRow = spreadSheet.convertRowIndexToModel(tblRow);
-                    WorkbenchRow wbRow = workbench.getRow(modelRow);
-                    String cardImageFullPath = wbRow.getCardImageFullPath();
-                    if (cardImageFullPath != null)
-                    {
-                        String filename = FilenameUtils.getBaseName(cardImageFullPath);
-                        filename = FilenameUtils.getName(cardImageFullPath);
-                        lbl.setText(filename);
-                        lbl.setHorizontalAlignment(SwingConstants.CENTER);
-                    }
-                    return lbl;
-                }
-
-            });
+            TableColumn column = spreadSheet.getTableHeader().getColumnModel()
+					.getColumn(
+							spreadSheet.getTableHeader().getColumnModel()
+									.getColumnCount() - 1);
+			column.setCellRenderer(new WbCellRenderer());
             spreadSheet.repaint();
         }
     }
@@ -2742,8 +2741,17 @@ public class WorkbenchPaneSS extends BaseSubPane
                 log.error("Can't find table ["+wbtmi.getSrcTableId()+"]");
             }
             columnMaxWidths[i] = new Integer(fieldWidth);
-            GridCellEditor cellEditor = new GridCellEditor(new JTextField(), wbtmi.getCaption(), fieldWidth, theSaveBtn);
-            
+            GridCellEditor cellEditor = null;
+//            if (i == 1)
+//            {
+//            	JComboBox cb = new JComboBox();
+//            	cb.setEditable(true);
+//            	cellEditor = new GridCellListEditor(cb, wbtmi.getCaption(), fieldWidth, theSaveBtn); 
+//            }
+//            else
+            {
+            	cellEditor = new GridCellEditor(new JTextField(), wbtmi.getCaption(), fieldWidth, theSaveBtn);
+            }
             column = tableArg.getColumnModel().getColumn(i);
 
             comp = headerRenderer.getTableCellRendererComponent(
@@ -3688,7 +3696,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         public GridCellEditor(final JTextField textField, final String caption, final int length, final JButton gcSaveBtn)
         {
             super(textField);
-            this.textField = textField;
+        	this.textField = textField;
             this.length    = length;
             this.ceSaveBtn = saveBtn;
      
@@ -3733,18 +3741,44 @@ public class WorkbenchPaneSS extends BaseSubPane
         @Override
         public boolean stopCellEditing()
         {
-            if (!verifier.verify(textField))
+            boolean result = super.stopCellEditing();
+        	if (result)
             {
-                ceSaveBtn.setEnabled(false);
-                return false;
+            	if (!verifier.verify(textField))
+            	{
+            		ceSaveBtn.setEnabled(false);
+            		return false;
+            	}
+            	if (doIncrementalValidation && workbenchValidator != null)
+            	{
+            		WorkbenchRow wbRow = workbench.getRow(spreadSheet.convertRowIndexToModel(editRow));
+            		for (WorkbenchDataItem wbItem : wbRow.getWorkbenchDataItems())
+            		{
+            			wbItem.setStatusText(null);
+            			wbItem.setValidationStatus(WorkbenchDataItem.VAL_OK);
+            		}
+            		List<UploadTableInvalidValue> issues = workbenchValidator.endCellEdit(editRow, editCol);
+            		if (issues != null && issues.size() > 0)
+            		{
+            			for (UploadTableInvalidValue issue : issues)
+            			{
+            				WorkbenchDataItem wbItem = wbRow.getItems().get((short )issue.getCol());
+            				if (wbItem != null)
+            				{
+            					wbItem.setStatusText(issue.getDescription());
+            					wbItem.setValidationStatus(WorkbenchDataItem.VAL_ERROR);
+            				}
+            				else
+            				{
+            					log.error("couldn't find workbench item for col " + issue.getCol());
+            				}
+            			}
+            		}
+            	}
+            	editRow = -1;
+            	editCol = -1;
             }
-            if (doIncrementalValidation && workbenchValidator != null)
-            {
-            	workbenchValidator.endCellEdit(editRow, editCol);
-            }
-            editRow = -1;
-            editCol = -1;
-            return super.stopCellEditing();
+        	return result;
         }
 
         
@@ -3860,6 +3894,72 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
      }
 
+    /**
+     * @author timo
+     *
+     *Cell Editor for pick lists (and possibly lookups)
+     */
+    public class GridCellListEditor extends GridCellEditor
+    {
+        final JComboBox combo;
+        
+    	/**
+    	 * @param combo
+    	 * @param caption
+    	 * @param length
+    	 * @param gcSaveBtn
+    	 */
+    	public GridCellListEditor(final JComboBox combo, final String caption, final int length, final JButton gcSaveBtn)
+        {
+        	//XXX - no good.
+    		super(null, caption, length, gcSaveBtn);
+        	this.combo = combo;
+        }
+    	
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS.GridCellEditor#getTableCellEditorComponent(javax.swing.JTable, java.lang.Object, boolean, int, int)
+         */
+        @Override
+        public Component getTableCellEditorComponent(JTable  table, 
+                                                     Object  value,
+                                                     boolean isSelected,
+                                                     int     row, 
+                                                     int     column)
+        {
+            editCol = column;
+            editRow = row;
+            //return textField;
+            DefaultComboBoxModel model = new DefaultComboBoxModel();
+            fillModel(model, column);
+            combo.setModel(model);
+            return combo;
+        }
+   	
+        /**
+         * @param model
+         * @param column
+         * 
+         * Fills list with values appropriate for column.
+         */
+        protected void fillModel(DefaultComboBoxModel model, int column)
+        {
+        	//XXX 
+        	model.addElement("one");
+        	model.addElement("two");
+        	model.addElement("three");
+        }
+        
+		/* (non-Javadoc)
+         * @see javax.swing.CellEditor#getCellEditorValue()
+         */
+        @Override
+        public Object getCellEditorValue() 
+        {
+            return combo.getSelectedItem().toString();
+        }
+
+    	
+    }
     //------------------------------------------------------------
     // Switches between the Grid View and the Form View
     //------------------------------------------------------------
@@ -3874,6 +3974,55 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             showPanel(((DropDownButtonStateful)ae.getSource()).getCurrentIndex() == 0 ? PanelType.Spreadsheet : PanelType.Form);
         }
+    }
+    
+    /**
+     * @author timo
+     *
+     *Renderer for workbench cells that checks cells validation status and status text.
+     */
+    public class WbCellRenderer extends DefaultTableCellRenderer
+    {
+		/* (non-Javadoc)
+		 * @see javax.swing.table.DefaultTableCellRenderer#getTableCellRendererComponent(javax.swing.JTable, java.lang.Object, boolean, boolean, int, int)
+		 */
+		@Override
+		public Component getTableCellRendererComponent(JTable table,
+				Object value, boolean isSelected, boolean hasFocus,
+				int tblRow, int tblColumn)
+		{
+			JLabel lbl = (JLabel) super.getTableCellRendererComponent(
+					table, value, isSelected, hasFocus, tblRow,
+					tblColumn);
+			int modelRow = spreadSheet.convertRowIndexToModel(tblRow);
+			WorkbenchRow wbRow = workbench.getRow(modelRow);
+			String cardImageFullPath = wbRow.getCardImageFullPath();
+			if (cardImageFullPath != null)
+			{
+				String filename = FilenameUtils
+						.getBaseName(cardImageFullPath);
+				filename = FilenameUtils.getName(cardImageFullPath);
+				lbl.setText(filename);
+				lbl.setHorizontalAlignment(SwingConstants.CENTER);
+			}
+			int modelCol = spreadSheet
+					.convertColumnIndexToModel(tblColumn);
+			WorkbenchDataItem wbCell = wbRow.getItems().get(
+					(short) modelCol);
+			//XXX lots more to do with rendering cell states
+			if (wbCell != null && wbCell.getValidationStatus() == WorkbenchDataItem.VAL_ERROR)
+			{
+				lbl.setToolTipText(wbCell.getStatusText());
+				lbl.setForeground(Color.RED);
+				lbl.setFont(lbl.getFont().deriveFont(Font.ITALIC));
+			}
+			else 
+			{
+				lbl.setToolTipText(null);
+			}
+
+			return lbl;
+		}
     }
     
     //------------------------------------------------------------

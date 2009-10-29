@@ -61,6 +61,9 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     protected WorkbenchRow workbenchRow;
     protected WorkbenchTemplateMappingItem workbenchTemplateMappingItem;
 
+    //Transient
+    protected String	   statusText = null;
+    
     // Constructors
 
     /** default constructor */
@@ -191,6 +194,7 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     {
         this.validationStatus = validationStatus;
     }
+    
 
     /**
      * 
@@ -236,5 +240,22 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
 	public static int getCellDataLength()
 	{
 		return cellDataLength;
+	}
+	
+	/**
+	 * @return the statusText
+	 */
+	@Transient
+	public String getStatusText()
+	{
+		return statusText;
+	}
+	
+	/**
+	 * @param statusText
+	 */
+	public void setStatusText(String statusText)
+	{
+		this.statusText = statusText;
 	}
 }

@@ -3,6 +3,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import java.util.List;
 import java.util.Vector;
 
 import edu.ku.brc.specify.datamodel.Workbench;
@@ -67,7 +68,7 @@ public class WorkbenchValidator
 	 * 
 	 * Perform validation after a cell is edited.
 	 */
-	public void endCellEdit(int row, int col)
+	public List<UploadTableInvalidValue> endCellEdit(int row, int col)
 	{
 		Vector<UploadTableInvalidValue> issues = uploader.validateData(row, col);
 		if (issues.size() > 0)
@@ -77,6 +78,7 @@ public class WorkbenchValidator
 				System.out.println(i.getMsg());
 			}
 		}
+		return issues;
 	}
 	
 	
