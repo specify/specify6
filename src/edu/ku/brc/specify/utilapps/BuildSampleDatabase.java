@@ -232,6 +232,7 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonCitation;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
+import edu.ku.brc.specify.datamodel.TreeDefItemStandardEntry;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
@@ -868,7 +869,7 @@ public class BuildSampleDatabase
         
         startTx();
         
-        Hashtable<String, Boolean> colNameHash   = null;
+        HashSet<String> colNameHash   = null;
         if (StringUtils.isNotEmpty(taxonFileName))
         {
             colNameHash = getColumnNamesFromXLS(taxonFileName, usingOtherTxnFile);
@@ -1282,10 +1283,10 @@ public class BuildSampleDatabase
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static boolean createTaxonDefFromXML(final List<Object>               taxonList, 
-                                                final Hashtable<String, Boolean> colNameHash,
-                                                final TaxonTreeDef               taxonTreeDef, 
-                                                final String                     taxonDefXML)
+    public static boolean createTaxonDefFromXML(final List<Object>    taxonList, 
+                                                final HashSet<String> colNameHash,
+                                                final TaxonTreeDef    taxonTreeDef, 
+                                                final String          taxonDefXML)
     {
         if (StringUtils.isNotEmpty(taxonDefXML))
         {
@@ -1293,12 +1294,71 @@ public class BuildSampleDatabase
             TreeDefRow.configXStream(xstream);
             
             Vector<TreeDefRow> treeDefList = (Vector<TreeDefRow>)xstream.fromXML(taxonDefXML);
+            
+            if (colNameHash != null)
+            {
+                Hashtable<String, TreeDefItemStandardEntry> stdTreeLevelsHash = new Hashtable<String, TreeDefItemStandardEntry>();
+                for (TreeDefItemStandardEntry entry : TaxonTreeDef.getStandardLevelsStatic())
+                {
+                    stdTreeLevelsHash.put(entry.getName().toLowerCase(), entry);
+                }
+                
+                Hashtable<String, TreeDefRow> xmlTreeLevelsHash = new Hashtable<String, TreeDefRow>();
+                for (TreeDefRow row : treeDefList)
+                {
+                    xmlTreeLevelsHash.put(row.getDefName().toLowerCase(), row);
+                }
+                
+                for (String columnName : colNameHash)
+                {
+                    String colName = columnName.toLowerCase();
+                    
+                    TreeDefRow treeDefRow = xmlTreeLevelsHash.get(colName);
+                    if (treeDefRow == null)
+                    {
+                        log.debug(colName+" NOT found in XML, checking std.");
+                        TreeDefItemStandardEntry entry = stdTreeLevelsHash.get(colName);
+                        if (entry != null)
+                        {
+                            for (int i=0;i<treeDefList.size();i++)
+                            {
+                                if (i < treeDefList.size() && entry.getRank() < treeDefList.get(i).getRank())
+                                {
+                                    log.debug(String.format("Adding '%s' as rank %d.", colName, entry.getRank()));
+                                    TreeDefRow newRow = new TreeDefRow(entry.getTitle(), 
+                                                                        entry.getRank(),
+                                                                        true,   // included
+                                                                        false,  // enforced
+                                                                        false,  // is in Full Name 
+                                                                        false,  // is required 
+                                                                        ",");
+                                    treeDefList.insertElementAt(newRow, i);
+                                    break;
+                                }
+                            }
+                        } else 
+                        {
+                            //UIRegistry.showLocalizedError("The wizard was unable to find '%s' as a standard Taxonomy level.", colName);
+                            log.debug(String.format("The wizard was unable to find '%s' as a standard Taxonomy level.", colName));
+                        }
+                    } else
+                    {
+                        log.debug(colName+" found in XML");
+                    }
+                }
+                
+                for (TreeDefRow row : treeDefList)
+                {
+                    log.debug(row.getDefName()+"  "+ row.getRank());
+                }
+            }
+            
             TaxonTreeDefItem   parent      = null;
             int                cnt         = 0;
             for (TreeDefRow row : treeDefList)
             {
                 if (row.isIncluded() || 
-                    (row.getDefName() != null && (colNameHash == null || colNameHash.get(row.getDefName().toLowerCase()) != null)))
+                    (row.getDefName() != null && (colNameHash == null || colNameHash.contains(row.getDefName().toLowerCase()))))
                 {
                     TaxonTreeDefItem ttdi = new TaxonTreeDefItem();
                     ttdi.initialize();
@@ -3697,6 +3757,12 @@ public class BuildSampleDatabase
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BackupServiceFactory.class, ex);
 
                 return null;
+            }
+            
+            System.err.println(DBConnection.getInstance().getDatabaseName());
+            for (String nm : BasicSQLUtils.getTableNames(DBConnection.getInstance().getConnection()))
+            {
+                System.err.println(nm);
             }
             
             if (bldGeoNames.loadGeoNamesDB())
@@ -8158,7 +8224,7 @@ public class BuildSampleDatabase
             
             if (okToCreate)
             {
-                log.debug("Adding Item: "+item.getName());
+                //log.debug("Adding Item: "+item.getName());
                 SpLocaleContainerItem newItem = new SpLocaleContainerItem();
                 newItem.initialize();
                 
@@ -8510,7 +8576,7 @@ public class BuildSampleDatabase
      * @param fileName
      * @return
      */
-    public Hashtable<String, Boolean> getColumnNamesFromXLS(final String fileName, final boolean usingOtherTxnFile)
+    public HashSet<String> getColumnNamesFromXLS(final String fileName, final boolean usingOtherTxnFile)
     {
         File file = getFileForTaxon(fileName, usingOtherTxnFile);
         if (file == null)
@@ -8518,7 +8584,7 @@ public class BuildSampleDatabase
             return null;
         }
         
-        Hashtable<String, Boolean> nameHash = new Hashtable<String, Boolean>();
+        HashSet<String> nameHash = new HashSet<String>();
         try
         {
             String[]        cells    = new String[35];
@@ -8543,7 +8609,7 @@ public class BuildSampleDatabase
                     HSSFCell cell = (HSSFCell)cellsIter.next();
                     if (cell != null)
                     {
-                        nameHash.put(StringUtils.trim(cell.getRichStringCellValue().getString()), true);
+                        nameHash.add(StringUtils.trim(cell.getRichStringCellValue().getString()));
                     }
                 }
             }
@@ -8760,8 +8826,11 @@ public class BuildSampleDatabase
                         {
                             if (hdr.equalsIgnoreCase(item.getName()))
                             {
-                                System.err.println(hdr+" -> "+inx);
+                                log.debug("Header: "+hdr+" -> "+inx);
                                 taxonIndexes.put(hdr, inx);
+                            } else
+                            {
+                                log.debug("Header: "+hdr+" -> skipped.");
                             }
                             inx++;
                         }
