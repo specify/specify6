@@ -685,6 +685,47 @@ public class QueryConverter
 	}
 	
 	/**
+	 * @param fiveQueryFile
+	 * @param sixQueryFile
+	 * @param logFile
+	 * @throws Exception
+	 * 
+	 * Converts all Specify5 queries defined in fiveQueryFile to Specify6 xml format queries
+	 * and saves them to sixQueryFile.
+	 */
+	public static void convert(final String fiveQueryFile, final String sixQueryFile, final String logFile) throws Exception
+	{
+		Element fiveXML = XMLHelper.readFileToDOM4J(new File(fiveQueryFile));
+		StringBuilder sb = new StringBuilder();
+		sb.append("<queries>\r\n");
+		Vector<String> unconvertable = new Vector<String>();
+		Vector<String> allUnconvertables = new Vector<String>();
+		for (Object fiveQ : fiveXML.selectNodes("/queries/sp5query"))
+		{
+			Element fiveQE = (Element )fiveQ;
+			System.out.println("processing " + fiveQE.attributeValue("name", "unknown"));
+			try 
+			{
+				getSixQueryXML(sb, fiveQE, unconvertable);
+			} catch (Exception ex)
+			{
+				System.out.println("  " + ex.getClass().getName() + " - " + ex.getMessage());
+				unconvertable.clear();
+				allUnconvertables.add("unabled to convert query: " + fiveQE.attributeValue("name", "unknown"));
+			}
+			if (unconvertable.size() > 0)
+			{
+				allUnconvertables.addAll(unconvertable);
+				unconvertable.clear();
+			}	
+			sb.append("\r\n");
+		}
+		sb.append("</queries>");
+		FileUtils.writeStringToFile(new File(sixQueryFile), sb.toString());
+		FileUtils.writeLines(new File(logFile), allUnconvertables);
+	}
+	
+	/**
 	 * @param args: InputFileName OutputFileName LogFileName
 	 * 
 	 * Reads an xml file containing Sp 5 query definitions,
@@ -701,60 +742,13 @@ public class QueryConverter
 	        	System.out.println("Usage: QueryConverter InputFileName OutputFileName LogFileName");
 	        	System.exit(1);
 	        }
-//			for (String s : args)
-//	        {
-//	            String[] pairs = s.split("="); //$NON-NLS-1$
-//	            if (pairs.length == 2)
-//	            {
-//	                if (pairs[0].startsWith("-D")) //$NON-NLS-1$
-//	                {
-//	                    //System.err.println("["+pairs[0].substring(2, pairs[0].length())+"]["+pairs[1]+"]");
-//	                    System.setProperty(pairs[0].substring(2, pairs[0].length()), pairs[1]);
-//	                } 
-//	            } else
-//	            {
-//	                String symbol = pairs[0].substring(2, pairs[0].length());
-//	                //System.err.println("["+symbol+"]");
-//	                System.setProperty(symbol, symbol);
-//	            }
-//	        }
 
 	        String fiveQueryFile = args[0];
 	        String sixQueryFile = args[1];
 	        String logFile = args[2];
 	        
-			//Element fiveXML = XMLHelper.readFileToDOM4J(new File("C:\\SpecifyFiveSix\\sp5qtest.xml"));
-			//Element fiveXML = XMLHelper.readFileToDOM4J(new File("C:\\SpecifyFiveSix\\KUI_FishQueries.xml"));
-			Element fiveXML = XMLHelper.readFileToDOM4J(new File(fiveQueryFile));
-			StringBuilder sb = new StringBuilder();
-			sb.append("<queries>\r\n");
-			Vector<String> unconvertable = new Vector<String>();
-			Vector<String> allUnconvertables = new Vector<String>();
-			for (Object fiveQ : fiveXML.selectNodes("/queries/sp5query"))
-			{
-				Element fiveQE = (Element )fiveQ;
-				System.out.println("processing " + fiveQE.attributeValue("name", "unknown"));
-				try 
-				{
-					getSixQueryXML(sb, fiveQE, unconvertable);
-				} catch (Exception ex)
-				{
-					System.out.println("  " + ex.getClass().getName() + " - " + ex.getMessage());
-					unconvertable.clear();
-					allUnconvertables.add("unabled to convert query: " + fiveQE.attributeValue("name", "unknown"));
-				}
-				if (unconvertable.size() > 0)
-				{
-					allUnconvertables.addAll(unconvertable);
-					unconvertable.clear();
-				}	
-				sb.append("\r\n");
-			}
-			sb.append("</queries>");
-			//FileUtils.writeStringToFile(new File("C:\\SpecifyFiveSix\\convertedSp5Q.xml"), sb.toString());
-			FileUtils.writeStringToFile(new File(sixQueryFile), sb.toString());
-			//FileUtils.writeLines(new File("C:\\SpecifyFiveSix\\UnconvertedFields.txt"), allUnconvertables);
-			FileUtils.writeLines(new File(logFile), allUnconvertables);
+	        convert(fiveQueryFile, sixQueryFile, logFile);
+	        
 		} catch (Exception ex)
 		{
 			ex.printStackTrace();

@@ -31,9 +31,11 @@ import java.lang.ref.SoftReference;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -1794,6 +1796,92 @@ public class QueryTask extends BaseTask
     {
     	return "/queries/query"; 
     }
+    
+    /**
+     * @param filePath
+     * @param topNode
+     * @return list queries defined in file.
+     */
+    protected static Vector<SpQuery> getQueriesFromFile(final String filePath, final String topNode)
+    {
+        Vector<SpQuery> queries = new Vector<SpQuery>();
+        try
+        {
+            Element root = XMLHelper.readFileToDOM4J(new File(filePath));
+            for (Object obj : root.selectNodes(topNode))
+            {
+                Element el = (Element)obj;
+                SpQuery query = new SpQuery();
+                query.initialize();
+                query.fromXML(el);
+                query.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
+                queries.add(query);
+            }
+            return queries;
+        } catch (Exception ex)
+        {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryTask.class, ex);
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    
+    /**
+     * @param importedQueries
+     * @param existingQueries
+     * 
+     * Modifies imported query names if necessary to ensure uniqueness.
+     */
+    protected static void adjustImportedQueryNames(List<SpQuery> importedQueries, List<String> existingQueries)
+    {
+    	Set<String> names = new HashSet<String>();
+    	names.addAll(existingQueries);
+    	for (SpQuery query : importedQueries)
+        {
+            String origName = query.getName();
+            int    cnt      = 0;
+            String qName    = origName;
+            while (names.contains(qName))
+            {
+                cnt++;
+                qName = origName + cnt;
+            }
+            query.setName(qName);
+            names.add(qName);
+        }
+    }
+    
+    /**
+     * @param filePath
+     * @return true if successful
+     * 
+     * imports all queries from file
+     */
+    protected static boolean importQueries(final String filePath)
+    {
+    	Vector<SpQuery> queries = getQueriesFromFile(filePath, "/queries/query");
+        Vector<String> names = new Vector<String>(); 
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+        	List<SpQuery> qs = session.getDataList(SpQuery.class);
+        	for (SpQuery q : qs)
+        	{
+        		names.add(q.getName());
+        	}
+        } finally 
+        {
+        	if (session != null)
+        	{
+        		session.close();
+        	}
+        }
+        adjustImportedQueryNames(queries, names);
+        return DataModelObjBase.save(true, queries);
+    }
+    
     /**
      * 
      */
@@ -1818,27 +1906,7 @@ public class QueryTask extends BaseTask
         path = dirStr + fileName;
         AppPreferences.getLocalPrefs().put(XML_PATH_PREF, path);
         
-        Vector<SpQuery> queries = new Vector<SpQuery>();
-        try
-        {
-        
-            Element root = XMLHelper.readFileToDOM4J(new File(path));
-            for (Object obj : root.selectNodes(getTopLevelNodeSelector()))
-            {
-                Element el = (Element)obj;
-                SpQuery query = new SpQuery();
-                query.initialize();
-                query.fromXML(el);
-                query.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
-                queries.add(query);
-            }
-        } catch (Exception ex)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryTask.class, ex);
-            ex.printStackTrace();
-            return;
-        }
+        Vector<SpQuery> queries = getQueriesFromFile(path, getTopLevelNodeSelector());
         
         ToggleButtonChooserDlg<SpQuery> dlg = new ToggleButtonChooserDlg<SpQuery>((Frame)UIRegistry.getMostRecentWindow(),
                 "QY_IMPORT_QUERIES",
@@ -1857,24 +1925,12 @@ public class QueryTask extends BaseTask
             return;
         }
         
-        Hashtable<String, Boolean> namesHash = new Hashtable<String, Boolean>();
+        Vector<String> names = new Vector<String>();
         for (NavBoxItemIFace nbi : navBox.getItems())
         {
-            namesHash.put(nbi.getTitle(), true);
+            names.add(nbi.getTitle());
         }
-        
-        for (SpQuery query : queriesList)
-        {
-            String origName = query.getName();
-            int    cnt      = 0;
-            String qName    = origName;
-            while (namesHash.get(qName) != null)
-            {
-                cnt++;
-                qName = origName + cnt;
-            }
-            query.setName(qName);
-        }
+        adjustImportedQueryNames(queries, names);
         
         if (saveImportedQueries(queriesList))
         {
