@@ -60,10 +60,11 @@ public class UserInfoPanel extends GenericFormPanel
                          final String[] labels, 
                          final String[] fields, 
                          final boolean[] isReq, 
+                         final Integer[] numColumns, 
                          final JButton  nextBtn, 
                          final JButton  prevBtn)
     {
-        super(name, title, helpContext, labels, fields, isReq, nextBtn, prevBtn, true);
+        super(name, title, helpContext, labels, fields, isReq,  numColumns, nextBtn, prevBtn, true);
     }
 
     /* (non-Javadoc)
@@ -82,9 +83,10 @@ public class UserInfoPanel extends GenericFormPanel
     protected void init(final String    title, 
                         final String[]  fields, 
                         final boolean[] required,
-                        final String[] types)
+                        final String[] types,
+                        final Integer[] numColumns)
     {
-        super.init(title, fields, required, types);
+        super.init(title, fields, required, types, numColumns);
         
         statusLbl = UIHelper.createLabel("");
         

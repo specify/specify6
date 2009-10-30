@@ -20,8 +20,6 @@
 package edu.ku.brc.specify.config.init;
 
 import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
-import static edu.ku.brc.ui.UIHelper.createPasswordField;
-import static edu.ku.brc.ui.UIHelper.createTextField;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -42,6 +40,8 @@ import javax.swing.event.DocumentEvent;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 
+import edu.ku.brc.af.ui.forms.validation.ValPasswordField;
+import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -204,9 +204,28 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
      * @param row the row to place it on
      * @return the create JTextField (or JPasswordField)
      */
-    protected JTextField createField(final PanelBuilder builder, final String label, final boolean isReq, final int row)
+    protected JTextField createField(final PanelBuilder builder, 
+                                     final String label, 
+                                     final boolean isReq, 
+                                     final int row)
     {
-        return createField(builder, label, isReq, row, false);
+        return createField(builder, label, isReq, row, false, null);
+    }
+    
+    /**
+     * Helper function for creating the UI.
+     * @param builder builder
+     * @param label the string label
+     * @param row the row to place it on
+     * @return the create JTextField (or JPasswordField)
+     */
+    protected JTextField createField(final PanelBuilder builder, 
+                                     final String label, 
+                                     final boolean isReq, 
+                                     final int row, 
+                                     final Integer numCols)
+    {
+        return createField(builder, label, isReq, row, false, numCols);
     }
     
     /**
@@ -221,11 +240,24 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
                                      final String       label, 
                                      final boolean      isRequired,
                                      final int          row, 
-                                     final boolean      isPassword)
+                                     final boolean      isPassword,
+                                     final Integer      numColmns)
     {
         CellConstraints cc = new CellConstraints();
         
-        final JTextField txt = isPassword ? createPasswordField(15) : createTextField(15);
+        JTextField tf = null;
+        if (isPassword)
+        {
+            tf = new ValPasswordField(15);
+        } else
+        {
+            ValTextField vtf = new ValTextField(15);
+            if (numColmns != null)
+            {
+                vtf.setLimit(numColmns);
+            }
+            tf = vtf;
+        }
         
         JLabel lbl = createI18NFormLabel(label, SwingConstants.RIGHT);
         if (isRequired)
@@ -233,16 +265,14 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
             lbl.setFont(bold);
         }
         builder.add(lbl, cc.xy(1, row));
-        builder.add(txt, cc.xyw(3, row, makeStretchy ? 2 : 1));
+        builder.add(tf, cc.xyw(3, row, makeStretchy ? 2 : 1));
         if (isRequired)
         {
-            txt.setBackground(new Color(215, 230, 253)); // required Color
+            tf.setBackground(new Color(215, 230, 253)); // required Color
         }
-        //txt.addFocusListener(this);
-        //txt.addKeyListener(keyAdapter);
         
-        txt.getDocument().addDocumentListener(createDocChangeAdaptor(txt));
-        return txt;
+        tf.getDocument().addDocumentListener(createDocChangeAdaptor(tf));
+        return tf;
     }
     
     /**

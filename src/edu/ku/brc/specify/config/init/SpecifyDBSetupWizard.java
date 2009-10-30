@@ -237,6 +237,7 @@ public class SpecifyDBSetupWizard extends JPanel
                     "wizard_master_username",
                     new String[] { "SA_USERNAME", "SA_PASSWORD"}, 
                     new String[] { "saUserName", "saPassword"}, 
+                    new Integer[] { 32, 32}, 
                     nextBtn, backBtn, true));
             
             panels.add(new GenericFormPanel("SECURITY", 
@@ -254,6 +255,7 @@ public class SpecifyDBSetupWizard extends JPanel
                     new String[] { "FIRSTNAME", "LASTNAME", "MIDNAME",       "EMAIL",  null,  "USERLOGININFO", "USERNAME",    "PASSWORD"}, 
                     new String[] { "firstName", "lastName", "middleInitial", "email",  " ",   "-",             "usrUsername",  "usrPassword"}, 
                     new boolean[] { true,       true,       false,            true,    true,  false,           true,           true},
+                    new Integer[] { 50,         120,        50,               50,      null,  null,            64,             32},
                     nextBtn, backBtn);
             panels.add(userInfoPanel);
             
@@ -263,6 +265,7 @@ public class SpecifyDBSetupWizard extends JPanel
                     new String[]  { "NAME",     "ABBREV",     null,  "INST_ADDR", "ADDR1", "ADDR2", "CITY",  "STATE", "COUNTRY", "ZIP", "PHONE"}, 
                     new String[]  { "instName", "instAbbrev", " ",   "-",         "addr1", "addr2", "city",  "state", "country", "zip", "phone"}, 
                     new boolean[] { true,       true,         false,  false,      true,    false,   true,    true,    true,      true,  true},
+                    new Integer[] { 255,        32,           50,     null,       255,      255,    64,      64,      64,        32,    50},
                     nextBtn, backBtn, true));
 
             accessionPanel = new GenericFormPanel("ACCESSIONGLOBALLY", 
@@ -295,8 +298,9 @@ public class SpecifyDBSetupWizard extends JPanel
             panels.add(new InstSetupPanel("CREATEINST", 
                     "CREATEINST",
                     "wizard_configure_storage_tree",
-                    new String[] { }, 
-                    new String[] { },
+                    new String[] { "NAME",    "PREFIX"}, 
+                    new String[] { "instName", "instAbbrev"}, 
+                    new Integer[] { 255,       64}, 
                     nextBtn, backBtn, true));
         }
         
@@ -308,6 +312,7 @@ public class SpecifyDBSetupWizard extends JPanel
                 "wizard_enter_division",
                 new String[] { "NAME",    "ABBREV"}, 
                 new String[] { "divName", "divAbbrev"}, 
+                new Integer[] { 255,       64}, 
                 nextBtn, backBtn, true));
         }
         
@@ -368,6 +373,7 @@ public class SpecifyDBSetupWizard extends JPanel
                     "wizard_create_collection",
                     new String[] { "NAME",     "PREFIX", }, 
                     new String[] { "collName", "collPrefix", }, 
+                    new Integer[] { 50,        50}, 
                     nextBtn, backBtn, true));
         
         catNumPicker = new FormatterPickerPanel("CATNOFMT", "wizard_create_catalog_number", nextBtn, backBtn, true, null);

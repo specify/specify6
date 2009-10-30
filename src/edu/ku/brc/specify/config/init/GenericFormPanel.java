@@ -116,7 +116,7 @@ public class GenericFormPanel extends BaseSetupPanel
                             final JButton  prevBtn,
                             final boolean makeStretchy)
     {
-        this(null, name, title, helpContext, labels, fields, (boolean[])null, nextBtn, prevBtn, makeStretchy);
+        this(null, name, title, helpContext, labels, fields, (boolean[])null, (Integer[])null, nextBtn, prevBtn, makeStretchy);
     }
     
     /**
@@ -139,7 +139,32 @@ public class GenericFormPanel extends BaseSetupPanel
                             final JButton prevBtn,
                             final boolean makeStretchy)
     {
-        this(null, name, title, helpContext, labels, fields, required, nextBtn, prevBtn, makeStretchy);
+        this(null, name, title, helpContext, labels, fields, required, null, nextBtn, prevBtn, makeStretchy);
+        
+    }
+    
+    /**
+     * @param name
+     * @param title
+     * @param helpContext
+     * @param labels
+     * @param fields
+     * @param required
+     * @param nextBtn
+     * @param makeStretchy
+     */
+    public GenericFormPanel(final String   name,
+                            final String   title,
+                            final String   helpContext,
+                            final String[] labels,
+                            final String[] fields, 
+                            final boolean[] required, 
+                            final Integer[] lengths, 
+                            final JButton  nextBtn,
+                            final JButton prevBtn,
+                            final boolean makeStretchy)
+    {
+        this(null, name, title, helpContext, labels, fields, required, lengths, nextBtn, prevBtn, makeStretchy);
         
     }
     
@@ -162,6 +187,7 @@ public class GenericFormPanel extends BaseSetupPanel
                             final String[] labels,
                             final String[] fields, 
                             final boolean[] required, 
+                            final Integer[] lengths,
                             final JButton  nextBtn,
                             final JButton  prevBtn,
                             final boolean makeStretchy)
@@ -173,7 +199,7 @@ public class GenericFormPanel extends BaseSetupPanel
         this.makeStretchy = makeStretchy;
         this.labels       = labels;
         
-        init(title, fields, required, null);
+        init(title, fields, required, null, lengths);
     }
     
     /**
@@ -203,7 +229,37 @@ public class GenericFormPanel extends BaseSetupPanel
         this.makeStretchy = makeStretchy;
         this.labels       = labels;
         
-        init(title, fields, null, types);
+        init(title, fields, null, types, null);
+    }
+    
+    /**
+     * @param name
+     * @param title
+     * @param helpContext
+     * @param labels
+     * @param fields
+     * @param types
+     * @param nextBtn
+     * @param makeStretchy
+     */
+    public GenericFormPanel(final String   name,
+                            final String   title,
+                            final String   helpContext,
+                            final String[] labels,
+                            final String[] fields, 
+                            final Integer[] lengths, 
+                            final JButton  nextBtn,
+                            final JButton  prevBtnBtn,
+                            final boolean makeStretchy)
+    {
+        super(name, helpContext, nextBtn, prevBtnBtn);
+        
+        this.dataObj      = null;
+        this.fieldsNames  = fields;
+        this.makeStretchy = makeStretchy;
+        this.labels       = labels;
+        
+        init(title, fields, null, null, lengths);
     }
     
     /**
@@ -214,7 +270,8 @@ public class GenericFormPanel extends BaseSetupPanel
     protected void init(final String    title, 
                         final String[]  fields, 
                         final boolean[] required, 
-                        final String[]  types)
+                        final String[]  types,
+                        final Integer[] lens)
     {
         
         Pair<String, String> rowCol = getRowColDefs();
@@ -257,7 +314,7 @@ public class GenericFormPanel extends BaseSetupPanel
 
                 } else
                 {
-                    comp = createField(builder, labels[i], required != null ? required[i] : true, row);
+                    comp = createField(builder, labels[i], required != null ? required[i] : true, row, lens != null ? lens[i] : null);
                 }
                 compList.add(comp);
                 comps.put(fName, comp);

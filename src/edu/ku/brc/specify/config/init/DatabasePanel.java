@@ -129,7 +129,7 @@ public class DatabasePanel extends BaseSetupPanel
         builder.add(createLabel(header, SwingConstants.CENTER), cc.xywh(1,row,3,1));row += 2;
         
         usernameTxt     = createField(builder, "IT_USERNAME",  true, row);      row += 2;
-        passwordTxt     = createField(builder, "IT_PASSWORD",  true, row, true);row += 2;
+        passwordTxt     = createField(builder, "IT_PASSWORD",  true, row, true, null);row += 2;
         dbNameTxt       = createField(builder, "DB_NAME",   true, row);         row += 2;
         hostNameTxt     = createField(builder, "HOST_NAME", true, row);         row += 2;
 

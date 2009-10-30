@@ -102,7 +102,7 @@ public class DisciplinePanel extends BaseSetupPanel
         row += 2;
         
         makeStretchy = true;
-        disciplineName = createField(builder, "DISP_NAME",  true, row); row += 2;
+        disciplineName = createField(builder, "DISP_NAME",  true, row, 64); row += 2;
         
         updateBtnUI();
         

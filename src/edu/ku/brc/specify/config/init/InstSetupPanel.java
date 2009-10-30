@@ -80,20 +80,25 @@ public class InstSetupPanel extends GenericFormPanel
                           String helpContext, 
                           String[] labels,
                           String[] fields, 
+                          Integer[] numCols, 
                           JButton nextBtn, 
                           JButton prevBtn,
                           boolean makeStretchy)
     {
-        super(name, title, helpContext, labels, fields, nextBtn, prevBtn, makeStretchy);
+        super(name, title, helpContext, labels, fields, numCols, nextBtn, prevBtn, makeStretchy);
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.config.init.GenericFormPanel#init(java.lang.String, java.lang.String[], boolean[], java.lang.String[])
+     * @see edu.ku.brc.specify.config.init.GenericFormPanel#init(java.lang.String, java.lang.String[], boolean[], java.lang.String[], java.lang.Integer[])
      */
     @Override
-    protected void init(String title, String[] fields, boolean[] required, String[] types)
+    protected void init(final String    title, 
+                        final String[]  fields, 
+                        final boolean[] required,
+                        final String[] types,
+                        final Integer[] numColumns)
     {
-        super.init(title, fields, required, types);
+        super.init(title, fields, required, types, numColumns);
 
         label   = UIHelper.createLabel("", SwingConstants.CENTER);
         testBtn = UIHelper.createI18NButton("CREATEINST_BTN");
