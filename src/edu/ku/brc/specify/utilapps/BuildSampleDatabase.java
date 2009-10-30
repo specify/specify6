@@ -1283,7 +1283,7 @@ public class BuildSampleDatabase
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static boolean createTaxonDefFromXML(final List<Object>    taxonList, 
+    public boolean createTaxonDefFromXML(final List<Object>    taxonList, 
                                                 final HashSet<String> colNameHash,
                                                 final TaxonTreeDef    taxonTreeDef, 
                                                 final String          taxonDefXML)
@@ -1353,6 +1353,9 @@ public class BuildSampleDatabase
                 }
             }
             
+            TaxonTreeDefItem ttdiRoot = null;
+            Taxon            txRoot   = null;
+            
             TaxonTreeDefItem   parent      = null;
             int                cnt         = 0;
             for (TreeDefRow row : treeDefList)
@@ -1375,6 +1378,8 @@ public class BuildSampleDatabase
                     
                     if (cnt == 0)
                     {
+                        ttdiRoot = ttdi;
+                        
                         Taxon tx = new Taxon();
                         tx.initialize();
                         tx.setDefinition(taxonTreeDef);
@@ -1384,6 +1389,8 @@ public class BuildSampleDatabase
                         tx.setFullName("Life"); //I18N
                         tx.setNodeNumber(1);
                         tx.setHighestChildNodeNumber(1);
+                        
+                        txRoot = tx;
                     }
                    
                     if (parent != null)
@@ -1394,6 +1401,10 @@ public class BuildSampleDatabase
                     cnt++;
                 }
             }
+            
+            if (ttdiRoot != null) persist(ttdiRoot);
+            if (txRoot != null) persist(txRoot);
+            
         }
         return true;
     }
@@ -8690,6 +8701,8 @@ public class BuildSampleDatabase
     }
     
 
+    int recCnt = 0;
+    
     /**
      * @param treeDef
      * @param fileName
@@ -8774,9 +8787,13 @@ public class BuildSampleDatabase
             //conn.setAutoCommit(false);
             stmt = conn.createStatement();
             
+            int rowCnt = 0;
             rows = sheet.rowIterator();
             while (rows.hasNext())
             {
+                System.out.println(rowCnt);
+                rowCnt++;
+                
                 for (int i=0;i<cells.length;i++)
                 {
                     cells[i] = null;
@@ -9075,6 +9092,9 @@ public class BuildSampleDatabase
         {
             throw new RuntimeException("Couldn't get the Taxon's inserted ID");
         }
+        
+        recCnt++;
+        System.out.println("rec: "+recCnt);
         
         if (recycler.size() > 0)
         {
