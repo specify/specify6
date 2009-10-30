@@ -22,31 +22,81 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.Vector;
+
+import edu.ku.brc.ui.UIRegistry;
 
 public class UploadTableInvalidValue extends BaseUploadMessage implements Comparable<UploadTableInvalidValue>
 {
     protected final UploadTable uploadTbl;
-    protected final UploadField uploadFld;
+    protected final List<UploadField> uploadFlds = new Vector<UploadField>();
     protected final Integer     rowNum;
     protected final Exception   cause;
 
     /**
+     * @param baseMsg
      * @param uploadTbl
      * @param uploadFld
      * @param rowNum
-     * @param issueName
-     * @param description
+     * @param cause
      */
     public UploadTableInvalidValue(final String baseMsg, final UploadTable uploadTbl, final UploadField uploadFld, int rowNum,
             final Exception cause) 
     {
-        super(baseMsg);
-        this.uploadTbl = uploadTbl;
-        this.uploadFld = uploadFld;
-        this.rowNum = new Integer(rowNum);
-        this.cause = cause;
+        this(baseMsg, uploadTbl, uploadFld, null, rowNum, cause);
     }
 
+    /**
+     * @param baseMsg
+     * @param uploadTbl
+     * @param uploadFlds
+     * @param rowNum
+     * @param cause
+     */
+    public UploadTableInvalidValue(final String baseMsg, final UploadTable uploadTbl, List<UploadField> uploadFlds, int rowNum,
+            final Exception cause) 
+    {
+        this(baseMsg, uploadTbl, null, uploadFlds, rowNum, cause);
+    }
+
+    /**
+     * @param baseMsg
+     * @param uploadTbl
+     * @param rowNum
+     * @param cause
+     */
+    public UploadTableInvalidValue(final String baseMsg, final UploadTable uploadTbl, int rowNum,
+            final Exception cause) 
+    {
+        this(baseMsg, uploadTbl, null, null, rowNum, cause);
+    }
+    
+    /**
+     * @param baseMsg
+     * @param uploadTbl
+     * @param uploadFld
+     * @param uploadFlds
+     * @param rowNum
+     * @param cause
+     */
+    protected UploadTableInvalidValue(final String baseMsg, final UploadTable uploadTbl, UploadField uploadFld, List<UploadField> uploadFlds, int rowNum,
+            final Exception cause)
+    {
+    	super(baseMsg);
+        this.uploadTbl = uploadTbl;
+        if (uploadFld != null)
+        {
+        	this.uploadFlds.add(uploadFld);
+        }
+        if (uploadFlds != null)
+        {
+        	this.uploadFlds.addAll(uploadFlds);
+        }
+        this.rowNum = new Integer(rowNum);
+        this.cause = cause;    	
+    }
+    
     /**
      * @return the description
      */
@@ -105,7 +155,11 @@ public class UploadTableInvalidValue extends BaseUploadMessage implements Compar
      */
     public UploadField getUploadFld()
     {
-        return uploadFld;
+        if (uploadFlds.size() > 0)
+        {
+        	return uploadFlds.get(0);
+        }
+        return null;
     }
 
     /**
@@ -124,9 +178,9 @@ public class UploadTableInvalidValue extends BaseUploadMessage implements Compar
     @Override
     public String getMsg()
     {
-        if (uploadFld != null)
+        if (getUploadFld() != null)
         {
-            return uploadFld.getWbFldName() + " (row " + Integer.toString(rowNum + 1) + "): "
+            return getUploadFld().getWbFldName() + " (row " + Integer.toString(rowNum + 1) + "): "
                 + getDescription();
         }
         return super.getMsg();
@@ -140,9 +194,28 @@ public class UploadTableInvalidValue extends BaseUploadMessage implements Compar
     @Override
     public int getCol()
     {
-        return getUploadFld().getIndex();
+        if (getUploadFld() != null)
+        {
+        	return getUploadFld().getIndex();
+        }
+        return -1;
     }
 
+    /**
+     * @return column indexes associated with the invalid condition.
+     */
+    public List<Integer> getCols()
+    {
+    	if (uploadFlds.size() == 0) return null;
+    	
+    	Vector<Integer> result = new Vector<Integer>(uploadFlds.size());
+    	for (int f = 0; f < uploadFlds.size(); f++)
+    	{
+    		result.add(uploadFlds.get(f).getIndex());
+    	}
+    	return result;
+    }
+    
     /*
      * (non-Javadoc)
      * 
@@ -166,14 +239,21 @@ public class UploadTableInvalidValue extends BaseUploadMessage implements Compar
             if (result != 0)
                 return result;
         }
-        if (uploadFld != null && o.uploadFld != null)
+        if (getUploadFld() != null && o.getUploadFld() != null)
         {
-            if (uploadFld.getIndex() < o.uploadFld.getIndex())
+            if (getUploadFld().getIndex() < o.getUploadFld().getIndex())
                 return -1;
-            if (uploadFld.getIndex() > o.uploadFld.getIndex())
+            if (getUploadFld().getIndex() > o.getUploadFld().getIndex())
                 return 1;
         }
         return 0;
     }
     
+    /**
+     * @return true if invalid null value.
+     */
+    public boolean isInvalidNull()
+    {
+    	return cause != null && cause.getMessage().equals(UIRegistry.getResourceString("WB_UPLOAD_FIELD_MUST_CONTAIN_DATA"));
+    }
 }

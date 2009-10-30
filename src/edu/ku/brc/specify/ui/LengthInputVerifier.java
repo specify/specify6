@@ -24,6 +24,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.Toolkit;
 
 import javax.swing.InputVerifier;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.text.JTextComponent;
 
@@ -60,7 +61,15 @@ public class LengthInputVerifier extends InputVerifier
     @Override
     public boolean verify(JComponent comp)
     {
-        boolean isOK = ((JTextComponent)comp).getText().length() <= maxLength;
+        String text = null;
+        if (comp instanceof JTextComponent)
+        {
+        	text = ((JTextComponent )comp).getText();
+        } else if (comp instanceof JComboBox)
+        {
+        	text = ((JComboBox )comp).getSelectedItem().toString();
+        }
+    	boolean isOK = text == null || text.length() <= maxLength;
         if (!isOK)
         {
             String msg = String.format(getResourceString("UI_NEWDATA_TOO_LONG"), new Object[] { caption, maxLength } );

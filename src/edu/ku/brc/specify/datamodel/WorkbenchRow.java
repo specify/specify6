@@ -589,6 +589,14 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     @Transient
     public Hashtable<Short, WorkbenchDataItem> getItems()
     {
+        if (items.size() != workbenchDataItems.size())
+        {
+            items.clear();
+            for (WorkbenchDataItem wbdi : workbenchDataItems)
+            {
+                items.put(wbdi.getColumnNumber(), wbdi);
+            }
+        }
         return items;
     }
 
@@ -599,42 +607,64 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
      */
     public String getData(final int col)
     {
-        if (items.size() != workbenchDataItems.size())
-        {
-            items.clear();
-            for (WorkbenchDataItem wbdi : workbenchDataItems)
-            {
-                items.put(wbdi.getColumnNumber(), wbdi);
-            }
-        }
-        WorkbenchDataItem wbdi = items.get((short)col);
+        WorkbenchDataItem wbdi = getItems().get((short)col);
         if (wbdi != null)
         {
             return wbdi.getCellData();
         }
         // else
+//        WorkbenchTemplateMappingItem wbtmi = workbench.getMappingFromColumn((short )col);
+//        if (wbtmi != null && wbtmi.getIsRequired())
+//        {
+//        	//include empty items for required columns to make validation easier, and besides they will be needed eventually (unless wb is never uploaded)
+//        	wbdi = new WorkbenchDataItem(this, workbench.getMappingFromColumn((short )col), null, rowNumber); // adds it to the row also
+//        	items.put((short )col, wbdi);
+//        	workbenchDataItems.add(wbdi);
+//        }
         return "";
     }
+    
+//    /**
+//     * @param wbdi
+//     * @return true if the mapping item for wbdi is required.
+//     */
+//    protected boolean colIsRequired(WorkbenchTemplateMappingItem wbtmi)
+//    {
+//    	boolean required = false;
+//    	if (wbtmi != null)
+//    	{
+//    		required = wbtmi.getIsRequired() || (wbtmi.getFieldInfo() != null && wbtmi.getFieldInfo().isRequired());
+//    	}
+//    	return required;
+//    }
     
     /**
      * Sets the string data into the column items.
      * @param dataStr the string data
      * @param col the column index to be set
      */
-    public WorkbenchDataItem setData(final String dataStr, final short col, final boolean updateGeoRefInfo)
+   public WorkbenchDataItem setData(final String dataStr, final short col, final boolean updateGeoRefInfo)
     {
-        WorkbenchDataItem wbdi = items.get(col);
+    	return setData(dataStr, col, updateGeoRefInfo, false);
+    }
+    /**
+     * Sets the string data into the column items.
+     * @param dataStr the string data
+     * @param col the column index to be set
+     */
+    public WorkbenchDataItem setData(final String dataStr, final short col, final boolean updateGeoRefInfo, final boolean isRequired)
+    {
+        WorkbenchDataItem wbdi = getItems().get(col);
         if (wbdi != null)
         {
-            // XXX we may actually want to remove and 
-            // delete the item if it is set to empty
-            
-            //if nothing has changed return null. (Mostly to prevent unnecessary updates of Georef texts).
-            if (dataStr == null && wbdi.getCellData() == null)
+            // remove the item if it is set to empty and is not required
+            if (StringUtils.isEmpty(dataStr) && (wbdi.isRequired()))
             {
-                return null; 
+                items.remove(col);
+                workbenchDataItems.remove(wbdi);
             }
-            if (dataStr != null && dataStr.equals(wbdi.getCellData()))
+            //if nothing has changed return null. (Mostly to prevent unnecessary updates of Georef texts).
+            else if (dataStr.equals(wbdi.getCellData()))
             {
                 return null;
             }
@@ -642,10 +672,14 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
             wbdi.setCellData(dataStr);
         } else // the cell doesn't exist so create one
         {
-            if (StringUtils.isNotEmpty(dataStr))
+        	if (StringUtils.isNotEmpty(dataStr) || isRequired)
             {
-                Short inx = (short)col;
+        		Short inx = (short)col;
                 wbdi = new WorkbenchDataItem(this, workbench.getMappingFromColumn(col), dataStr, rowNumber); // adds it to the row also
+                if (isRequired)
+                {
+                	wbdi.setRequired(true);
+                }
                 items.put(inx, wbdi);
                 workbenchDataItems.add(wbdi);
             }

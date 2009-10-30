@@ -64,7 +64,6 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
@@ -88,8 +87,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.border.SoftBevelBorder;
-import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -125,6 +124,7 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
+import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.af.ui.forms.ResultSetController;
 import edu.ku.brc.af.ui.forms.ResultSetControllerListener;
@@ -172,6 +172,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.WorkbenchUploadMapper;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.specify.ui.LengthInputVerifier;
+import edu.ku.brc.specify.ui.db.PickListDBAdapterFactory;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
@@ -994,6 +995,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         if (doIncrementalValidation)
         {
         	buildValidator();
+        	validateRows(0, workbench.getWorkbenchRows().size()-1);
         }
     }
     
@@ -2741,17 +2743,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 log.error("Can't find table ["+wbtmi.getSrcTableId()+"]");
             }
             columnMaxWidths[i] = new Integer(fieldWidth);
-            GridCellEditor cellEditor = null;
-//            if (i == 1)
-//            {
-//            	JComboBox cb = new JComboBox();
-//            	cb.setEditable(true);
-//            	cellEditor = new GridCellListEditor(cb, wbtmi.getCaption(), fieldWidth, theSaveBtn); 
-//            }
-//            else
-            {
-            	cellEditor = new GridCellEditor(new JTextField(), wbtmi.getCaption(), fieldWidth, theSaveBtn);
-            }
+            GridCellEditor cellEditor = getCellEditor(wbtmi, fieldWidth, theSaveBtn);
             column = tableArg.getColumnModel().getColumn(i);
 
             comp = headerRenderer.getTableCellRendererComponent(
@@ -2786,6 +2778,38 @@ public class WorkbenchPaneSS extends BaseSubPane
         //tableArg.setCellEditor(cellEditor);
     }
     
+    /**
+     * @param wbtmi
+     * @return
+     */
+    protected GridCellEditor getCellEditor(WorkbenchTemplateMappingItem wbtmi, int fieldWidth, JButton theSaveBtn)
+    {
+    	PickListDBAdapterIFace pickList = null;
+    	//XXX wbtmi.getFieldInfo() doesn't work -- returned object's pickList is always null???
+    	DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoByTableName(wbtmi.getTableName());
+    	if (tblInfo != null)
+    	{
+    		DBFieldInfo fldInfo = tblInfo.getFieldByName(wbtmi.getFieldName());
+    		if (fldInfo != null)
+    		{
+    			if (!StringUtils.isEmpty(fldInfo.getPickListName()))
+    			{
+    				pickList = PickListDBAdapterFactory.getInstance().create(
+    						fldInfo.getPickListName(), false);
+    			} else if (RecordTypeCodeBuilder.isTypeCodeField(fldInfo))
+    			{
+    				pickList = RecordTypeCodeBuilder.getTypeCode(fldInfo);
+    			}
+    		}
+    	}
+     	if (pickList == null)
+    	{
+    		return new GridCellEditor(new JTextField(), wbtmi.getCaption(), fieldWidth, theSaveBtn);	
+    	}
+    	JComboBox comboBox = new JComboBox(pickList.getList());
+    	comboBox.setEditable(true);
+    	return new GridCellListEditor(comboBox, wbtmi.getCaption(), fieldWidth, theSaveBtn); 
+    }
     /**
      * Carry forward configuration.
      */
@@ -3343,6 +3367,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         return result;
     }
     
+    /**
+     * builds validator
+     */
     protected void buildValidator()
     {
     	try
@@ -3678,13 +3705,90 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
     	return datasetUploader == null && isUploadPermitted();
     }
+    
+    /**
+     * @param editRow
+     * @param editCol (use -1 to validate entire row)
+     */
+    protected void updateRowValidationStatus(int editRow, int editCol)
+    {
+		WorkbenchRow wbRow = workbench.getRow(editRow);
+		for (WorkbenchDataItem wbItem : wbRow.getWorkbenchDataItems())
+		{
+			//WorkbenchDataItems can be updated by GridCellEditor or by background validation initiated at load time or after find/replace ops			
+			synchronized(wbItem)
+			{
+				wbItem.setStatusText(null);
+				wbItem.setValidationStatus(WorkbenchDataItem.VAL_OK);
+				wbItem.setRequired(false);
+			}
+		}
+		List<UploadTableInvalidValue> issues = workbenchValidator.endCellEdit(editRow, editCol);
+		if (issues != null && issues.size() > 0)
+		{
+			for (UploadTableInvalidValue issue : issues)
+			{
+				for (Integer col : issue.getCols())
+				{
+					WorkbenchDataItem wbItem = wbRow.getItems().get(col.shortValue());
+					if (wbItem == null)
+					{
+						//need to force creation of empty wbItem for blank cell
+						wbItem = wbRow.setData("", col.shortValue(), false, true);
+					}
+					if (wbItem != null)
+					{
+						//WorkbenchDataItems can be updated by GridCellEditor or by background validation initiated at load time or after find/replace ops			
+						synchronized(wbItem)
+						{
+							wbItem.setStatusText(issue.getDescription());
+							wbItem.setValidationStatus(WorkbenchDataItem.VAL_ERROR);
+						}
+					}
+					else
+					{
+						log.error("couldn't find workbench item for col " + col);
+					}
+				}
+			}
+		}
+    }
+    
+    /**
+     * @param startRow
+     * @param endRow
+     * 
+     * Validates all rows between startRow and endRow
+     * startRow and endRow are assumed to be model indices, 
+     *  convertRowIndexToModel() must be called if necessary. 
+     */
+    protected void validateRows(final int startRow, final int endRow)
+    {
+    	new javax.swing.SwingWorker<Object, Object>() {
+
+			/* (non-Javadoc)
+			 * @see javax.swing.SwingWorker#doInBackground()
+			 */
+			@Override
+			protected Object doInBackground() throws Exception
+			{
+				for (int row = startRow; row <= endRow; row++)
+				{
+					updateRowValidationStatus(row, -1);
+				}
+				return null;
+			}
+    		
+    	}.execute();
+    }
+    
     //------------------------------------------------------------
     // Inner Classes
     //------------------------------------------------------------
 
     public class GridCellEditor extends DefaultCellEditor implements TableCellEditor//, UndoableTextIFace
     {
-        protected JTextField          textField;
+        protected JComponent          uiComponent;
         protected int                 length;
         protected LengthInputVerifier verifier;
         protected JButton             ceSaveBtn;
@@ -3696,32 +3800,43 @@ public class WorkbenchPaneSS extends BaseSubPane
         public GridCellEditor(final JTextField textField, final String caption, final int length, final JButton gcSaveBtn)
         {
             super(textField);
-        	this.textField = textField;
+            init(textField, caption, length, gcSaveBtn);
+         }
+        
+        public GridCellEditor(final JComboBox combo, final String caption, final int length, final JButton gcSaveBtn)
+        {
+        	super(combo);
+        	init(combo, caption, length, gcSaveBtn);
+        }
+        
+        protected void init(final JComponent comp, final String caption, final int length, final JButton gcSaveBtn)
+        {
+           	this.uiComponent = comp;
             this.length    = length;
             this.ceSaveBtn = saveBtn;
      
             
             verifier = new LengthInputVerifier(caption, length);
-            textField.setInputVerifier(verifier);
+            uiComponent.setInputVerifier(verifier);
 
-            textField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-            docListener = new DocumentListener() {
-                public void changedUpdate(DocumentEvent e)
-                {
-                    validateDoc();
-                }
-                
-                public void insertUpdate(DocumentEvent e)
-                {
-                    validateDoc();
-                }
-                
-                public void removeUpdate(DocumentEvent e) 
-                {
-                    validateDoc();
-                }
-            };
-            textField.getDocument().addDocumentListener(docListener);
+            uiComponent.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+//            docListener = new DocumentListener() {
+//                public void changedUpdate(DocumentEvent e)
+//                {
+//                    validateDoc();
+//                }
+//                
+//                public void insertUpdate(DocumentEvent e)
+//                {
+//                    validateDoc();
+//                }
+//                
+//                public void removeUpdate(DocumentEvent e) 
+//                {
+//                    validateDoc();
+//                }
+//            };
+            //textField.getDocument().addDocumentListener(docListener);
         }
         
         /**
@@ -3729,7 +3844,7 @@ public class WorkbenchPaneSS extends BaseSubPane
          */
         protected void validateDoc()
         {
-            if (!verifier.verify(textField))
+            if (!verifier.verify(uiComponent))
             {
                 ceSaveBtn.setEnabled(false);
             }
@@ -3741,39 +3856,25 @@ public class WorkbenchPaneSS extends BaseSubPane
         @Override
         public boolean stopCellEditing()
         {
-            boolean result = super.stopCellEditing();
+        	boolean result = super.stopCellEditing();
+            if (editCol == -1 || editRow == -1)
+            {
+            	editRow = -1;
+            	editCol = -1;
+            	return result; //a 'superfluous' re-call of this method.
+            }
         	if (result)
             {
-            	if (!verifier.verify(textField))
+            	if (!verifier.verify(uiComponent))
             	{
             		ceSaveBtn.setEnabled(false);
+                	editRow = -1;
+                	editCol = -1;
             		return false;
             	}
             	if (doIncrementalValidation && workbenchValidator != null)
             	{
-            		WorkbenchRow wbRow = workbench.getRow(spreadSheet.convertRowIndexToModel(editRow));
-            		for (WorkbenchDataItem wbItem : wbRow.getWorkbenchDataItems())
-            		{
-            			wbItem.setStatusText(null);
-            			wbItem.setValidationStatus(WorkbenchDataItem.VAL_OK);
-            		}
-            		List<UploadTableInvalidValue> issues = workbenchValidator.endCellEdit(editRow, editCol);
-            		if (issues != null && issues.size() > 0)
-            		{
-            			for (UploadTableInvalidValue issue : issues)
-            			{
-            				WorkbenchDataItem wbItem = wbRow.getItems().get((short )issue.getCol());
-            				if (wbItem != null)
-            				{
-            					wbItem.setStatusText(issue.getDescription());
-            					wbItem.setValidationStatus(WorkbenchDataItem.VAL_ERROR);
-            				}
-            				else
-            				{
-            					log.error("couldn't find workbench item for col " + issue.getCol());
-            				}
-            			}
-            		}
+            		updateRowValidationStatus(spreadSheet.convertRowIndexToModel(editRow), spreadSheet.convertColumnIndexToModel(editCol));
             	}
             	editRow = -1;
             	editCol = -1;
@@ -3800,7 +3901,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         @Override
         public Object getCellEditorValue() 
         {
-            return textField.getText();
+            return ((JTextField )uiComponent).getText();
         }
 
         /* (non-Javadoc)
@@ -3833,21 +3934,21 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 JComponent jcomp = (JComponent)table.getCellRenderer(row, column);
                 Font cellFont = jcomp.getFont();
-                Font txtFont  = textField.getFont();
+                Font txtFont  = uiComponent.getFont();
                 if (cellFont != txtFont)
                 {
-                    textField.setFont(cellFont);
+                    uiComponent.setFont(cellFont);
                 }
             }            
             
-            textField.setText(value != null ? value.toString() : "");
+            ((JTextField )uiComponent).setText(value != null ? value.toString() : "");
             try
             {
                 SwingUtilities.invokeLater(new Runnable()
                 {
                     public void run()
                     {            
-                        Caret c = textField.getCaret();
+                        Caret c = ((JTextField )uiComponent).getCaret();
 
                         // for keyboard
                         c.setVisible(true);
@@ -3862,7 +3963,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
             editCol = column;
             editRow = row;
-            return textField;
+            return uiComponent;
         }
 
         /* (non-Javadoc)
@@ -3878,7 +3979,7 @@ public class WorkbenchPaneSS extends BaseSubPane
          */
         public JTextComponent getTextComponent()
         {
-            return textField;
+            return (JTextComponent )uiComponent;
         }
         
         /**
@@ -3886,9 +3987,9 @@ public class WorkbenchPaneSS extends BaseSubPane
          */
         public void cleanUp()
         {
-            textField.setInputVerifier(null);
-            textField.getDocument().removeDocumentListener(docListener);
-            textField = null;
+            uiComponent.setInputVerifier(null);
+            //textField.getDocument().removeDocumentListener(docListener);
+            uiComponent = null;
             verifier  = null;
             ceSaveBtn = null;
         }
@@ -3900,9 +4001,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      *Cell Editor for pick lists (and possibly lookups)
      */
     public class GridCellListEditor extends GridCellEditor
-    {
-        final JComboBox combo;
-        
+    {        
     	/**
     	 * @param combo
     	 * @param caption
@@ -3911,9 +4010,9 @@ public class WorkbenchPaneSS extends BaseSubPane
     	 */
     	public GridCellListEditor(final JComboBox combo, final String caption, final int length, final JButton gcSaveBtn)
         {
-        	//XXX - no good.
-    		super(null, caption, length, gcSaveBtn);
-        	this.combo = combo;
+    		super(combo, caption, length, gcSaveBtn);
+    		//model = new DefaultComboBoxModel(pickList.getList());
+    		//combo.setModel(model);
         }
     	
         /* (non-Javadoc)
@@ -3929,37 +4028,21 @@ public class WorkbenchPaneSS extends BaseSubPane
             editCol = column;
             editRow = row;
             //return textField;
-            DefaultComboBoxModel model = new DefaultComboBoxModel();
-            fillModel(model, column);
-            combo.setModel(model);
-            return combo;
+            //DefaultComboBoxModel model = new DefaultComboBoxModel(pickList.getList());
+            //((JComboBox )uiComponent).setModel(model);
+            return uiComponent;
         }
-   	
-        /**
-         * @param model
-         * @param column
-         * 
-         * Fills list with values appropriate for column.
-         */
-        protected void fillModel(DefaultComboBoxModel model, int column)
-        {
-        	//XXX 
-        	model.addElement("one");
-        	model.addElement("two");
-        	model.addElement("three");
-        }
-        
+   	        
 		/* (non-Javadoc)
          * @see javax.swing.CellEditor#getCellEditorValue()
          */
         @Override
         public Object getCellEditorValue() 
         {
-            return combo.getSelectedItem().toString();
-        }
-
-    	
+            return ((JComboBox )uiComponent).getSelectedItem().toString();
+        }    	
     }
+    
     //------------------------------------------------------------
     // Switches between the Grid View and the Form View
     //------------------------------------------------------------
@@ -4010,15 +4093,26 @@ public class WorkbenchPaneSS extends BaseSubPane
 			WorkbenchDataItem wbCell = wbRow.getItems().get(
 					(short) modelCol);
 			//XXX lots more to do with rendering cell states
-			if (wbCell != null && wbCell.getValidationStatus() == WorkbenchDataItem.VAL_ERROR)
+			if (doIncrementalValidation && wbCell != null)
 			{
-				lbl.setToolTipText(wbCell.getStatusText());
-				lbl.setForeground(Color.RED);
-				lbl.setFont(lbl.getFont().deriveFont(Font.ITALIC));
+				//XXX WorkbenchDataItems can be updated by GridCellEditor or by background validation initiated at load time or after find/replace ops
+				// but probably not necessary to synchronize here?
+				synchronized(wbCell)
+				{
+					if (wbCell.getValidationStatus() == WorkbenchDataItem.VAL_ERROR)
+					{
+						lbl.setToolTipText(wbCell.getStatusText());
+						//lbl.setForeground(Color.RED);
+						//lbl.setBackground(Color.RED);
+						lbl.setBorder(new LineBorder(Color.RED));
+						//lbl.setFont(lbl.getFont().deriveFont(Font.ITALIC));
+					}
+				}
 			}
 			else 
 			{
 				lbl.setToolTipText(null);
+				lbl.setBorder(null);
 			}
 
 			return lbl;

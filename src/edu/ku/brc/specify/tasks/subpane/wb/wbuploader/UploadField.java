@@ -277,6 +277,10 @@ public class UploadField
         return wbFldName;
     }
     
+    /**
+      * @return list valid values for this field's picklist,
+     * or null if no picklist is defined for this field.
+    */
     public Map<String, PickListItemIFace> getValidValues()
     {
         if (!validValuesChecked)
@@ -287,6 +291,10 @@ public class UploadField
         return validValues;
     }
     
+    /**
+     * @return list valid values for this field's picklist,
+     * or null if no picklist is defined for this field.
+     */
     protected Map<String, PickListItemIFace> buildValidValues()
     {
         if (getIndex() != -1 && getField().getFieldInfo() != null)

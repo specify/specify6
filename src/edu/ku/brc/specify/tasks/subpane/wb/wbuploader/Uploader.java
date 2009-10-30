@@ -3160,7 +3160,7 @@ public class Uploader implements ActionListener, KeyListener
                mainPanel.clearMsgs(new Class<?>[]{UploadTableInvalidValue.class});
                if (op.equals(USER_INPUT))
                {
-                   mainPanel.addMsg(new UploadTableInvalidValue(statText, null, null, -1, null));
+                   mainPanel.addMsg(new UploadTableInvalidValue(statText, null, -1, null));
                }
                else
                {

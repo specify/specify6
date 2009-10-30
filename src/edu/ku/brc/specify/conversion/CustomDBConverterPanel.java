@@ -632,7 +632,7 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
 
     /**
      * Creates a Document dbConverterListener so the UI is updated when the doc changes
-     * @param textField the text field to be changed
+     * @param uiComponent the text field to be changed
      */
     protected void addKeyListenerFor(final JComponent comp, final boolean checkForRet)
     {

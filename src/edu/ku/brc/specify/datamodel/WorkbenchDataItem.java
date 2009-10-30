@@ -46,6 +46,7 @@ import org.hibernate.annotations.Index;
     {   
         @Index (name="DataItemRowNumberIDX", columnNames={"rowNumber"})
     })
+@SuppressWarnings("serial")
 public class WorkbenchDataItem implements java.io.Serializable, Comparable<WorkbenchDataItem>
 {
     public static final short VAL_NONE       = 0;
@@ -63,6 +64,7 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
 
     //Transient
     protected String	   statusText = null;
+    protected boolean	   required = false;
     
     // Constructors
 
@@ -258,4 +260,23 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
 	{
 		this.statusText = statusText;
 	}
+
+	/**
+	 * @return the required
+	 */
+	@Transient
+	public boolean isRequired()
+	{
+		return required;
+	}
+
+	/**
+	 * @param required the required to set
+	 */
+	public void setRequired(boolean required)
+	{
+		this.required = required;
+	}
+	
+	
 }

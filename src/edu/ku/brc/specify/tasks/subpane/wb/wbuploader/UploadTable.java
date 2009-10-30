@@ -2102,11 +2102,35 @@ public class UploadTable implements Comparable<UploadTable>
     	{
     		return !Uploader.currentUpload.getUploadTableByName("Preparation").isBlankRow(row, uploadData, seq);
     	}
-    	if (tblClass.equals(Accession.class) || tblClass.equals(Permit.class)) 
+    	if (hasChildren &&
+    			(tblClass.equals(Accession.class) || tblClass.equals(Permit.class) || tblClass.equals(Locality.class) 
+    			|| tblClass.equals(CollectingEvent.class))) 
     	{
     		return !isBlankRow(row, uploadData, seq);
     	}
     	return true;
+    }
+    
+    /**
+     * @return a list of the latlong flds in the table.
+     */
+    protected List<UploadField> getLatLongFlds()
+    {
+        Vector<UploadField> result = new Vector<UploadField>();
+    	for (Vector<UploadField> flds : uploadFields)
+        {
+             for (UploadField fld : flds)
+             {
+             	String fldName = fld.getField().getName();
+                if (fldName.equalsIgnoreCase("latitude1") || fldName.equalsIgnoreCase("latitude2")
+                        || fldName.equalsIgnoreCase("longitude1") || fldName.equalsIgnoreCase("longitude2"))
+                {
+                	result.add(fld);
+                }
+            	 
+             }
+        }
+    	return result;
     }
     
     /**
@@ -2182,7 +2206,7 @@ public class UploadTable implements Comparable<UploadTable>
                 }
                 if (tblClass.equals(Locality.class))
                 {
-                    //Check each row to see that lat/long formats are the same.
+                    //Check row to see that lat/long formats are the same.
                 	String fldName = fld.getField().getName();
                     if (fldName.equalsIgnoreCase("latitude1") || fldName.equalsIgnoreCase("latitude2")
                             || fldName.equalsIgnoreCase("longitude1") || fldName.equalsIgnoreCase("longitude2"))
@@ -2205,7 +2229,7 @@ public class UploadTable implements Comparable<UploadTable>
                         {
                             if (!llFmt.equals(fmt))
                             {
-                                invalidValues.add(new UploadTableInvalidValue(null, this, null, row, 
+                                invalidValues.add(new UploadTableInvalidValue(null, this, getLatLongFlds(), row, 
                                         new Exception(UIRegistry.getResourceString("WB_UPLOADER_INVALID_LATLONG"))));
                             }
                         }
