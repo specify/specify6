@@ -2095,6 +2095,7 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected boolean shouldEnforceNonNullConstraint(final int row, final UploadData uploadData, final int seq)
     {
+    	
     	//This is a rather lame implementation.
     	//Generally, if all fields in a table are blank, and related tables don't require a record,
     	//then there is no need to enforce not-null constraints.
@@ -2106,9 +2107,51 @@ public class UploadTable implements Comparable<UploadTable>
     			(tblClass.equals(Accession.class) || tblClass.equals(Permit.class) || tblClass.equals(Locality.class) 
     			|| tblClass.equals(CollectingEvent.class))) 
     	{
-    		return !isBlankRow(row, uploadData, seq);
+    		boolean isBlank = isBlankRow(row, uploadData, seq);
+        	//XXX Really need to access the upload graph to do this correctly - what about (CO-COAttribute, CE-CEAttr, ...
+    		if (isBlank && tblClass.equals(Locality.class))
+    		{
+    			UploadTable locDetail = Uploader.currentUpload.getUploadTableByName("LocalityDetail");
+    			if (locDetail != null)
+    			{
+    				isBlank = locDetail.isBlankRow(row, uploadData, seq);
+    			}
+    		}
+    		if (!isBlank)
+    		{
+    			return true;
+    		}
+    		return parentTableIsNonBlank(row, uploadData);
     	}
     	return true;
+    }
+    
+    /**
+     * @param row
+     * @param uploadData
+     * @return
+     */
+    protected boolean parentTableIsNonBlank(final int row, final UploadData uploadData)
+    {
+    	for (Vector<ParentTableEntry> parents : parentTables)
+    	{
+    		for (ParentTableEntry pte : parents)
+    		{
+    			UploadTable ut = pte.getImportTable();
+    			for (int seq = 0; seq < ut.getUploadFields().size(); seq++)
+    			{
+    				if (!ut.isBlankRow(row, uploadData, seq))
+    				{
+    					return true;
+    				}
+    			}
+    			if (ut.parentTableIsNonBlank(row, uploadData))
+    			{
+    				return true;
+    			}
+    		}
+     	}
+    	return false;
     }
     
     /**
