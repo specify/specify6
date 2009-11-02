@@ -34,6 +34,7 @@ import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.specify.tools.ireportspecify.IReportLauncher;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -250,6 +251,7 @@ public class SchemaExportLauncher implements DatabaseLoginListener
                     	frame.setTitle(UIRegistry.getResourceString("SchemaExportLauncher.DlgTitle"));
                     	frame.setContentPane(ep);
                     	frame.pack();
+                    	frame.setIconImage(IconManager.getImage(IconManager.makeIconName("SpecifyWhite32")).getImage());
                     	UIHelper.centerAndShow(frame);
                     }
                 }
