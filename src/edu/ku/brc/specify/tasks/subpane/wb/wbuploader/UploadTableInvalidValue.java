@@ -183,6 +183,10 @@ public class UploadTableInvalidValue extends BaseUploadMessage implements Compar
             return getUploadFld().getWbFldName() + " (row " + Integer.toString(rowNum + 1) + "): "
                 + getDescription();
         }
+        if (cause != null)
+        {
+        	return "(row " + Integer.toString(rowNum + 1) + "): " + getDescription();
+        }
         return super.getMsg();
     }
 

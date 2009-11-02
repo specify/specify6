@@ -60,6 +60,7 @@ public class LatLonConverter
     public static DecimalFormat    decFormatter    = new DecimalFormat("#0.0000000#");
     protected static StringBuffer  zeroes          = new StringBuffer(64);
     
+    //patched
     
     protected static BigDecimal    minusOne        = new BigDecimal("-1.0");
     protected static DecimalFormat decFormatter2   = new DecimalFormat("#0");
@@ -957,10 +958,23 @@ public class LatLonConverter
     public static BigDecimal convertDirectionalDDMMSSToDDDD(final String str)
     {
         String[] parts = StringUtils.split(str," d°'\"" + DEGREES_SYMBOL);
+        
+        String dir = null;
+        if (parts.length < 4)
+        {
+            parts[2] = parts[2].replaceAll("[NSEW]", "");
+            
+            int beginIndex = str.indexOf(parts[2]) + parts[2].length();
+            dir = str.substring(beginIndex, beginIndex + 1);
+        }
+        else
+        {
+            dir = parts[3].substring(0, 1);
+        }
+        
         double p0 =  Double.parseDouble(parts[0]);
         double p1 =  Double.parseDouble(parts[1]);
         double p2 =  Double.parseDouble(parts[2]);
-        String dir = parts[3].substring(0, 1);
 
         BigDecimal val = new BigDecimal(p0 + ((p1 + (p2 / 60.0)) / 60.0));
 
@@ -979,9 +993,22 @@ public class LatLonConverter
     public static BigDecimal convertDirectionalDDMMMMToDDDD(final String dm)
     {
         String[] parts = StringUtils.split(dm," d°'\"" + DEGREES_SYMBOL);
+        
+        String dir = null;
+        if (parts.length < 3)
+        {
+            parts[1] = parts[1].replaceAll("[NSEW]", "");
+            
+            int beginIndex = dm.indexOf(parts[1]) + parts[1].length();
+            dir = dm.substring(beginIndex, beginIndex + 1);
+        }
+        else
+        {
+            dir = parts[2].substring(0, 1);
+        }
+        
         double p0 =  Double.parseDouble(parts[0]);
         double p1 =  Double.parseDouble(parts[1]);
-        String dir = parts[2].substring(0, 1);
 
         BigDecimal val = new BigDecimal(p0 + (p1 / 60.0));
 
@@ -1000,8 +1027,21 @@ public class LatLonConverter
     public static BigDecimal convertDirectionalDDDDToDDDD(final String str)
     {
         String[] parts = StringUtils.split(str," d°'\"" + DEGREES_SYMBOL);
+        
+        String dir = null;
+        if (parts.length < 2)
+        {
+            parts[0] = parts[0].replaceAll("[NSEW]", "");
+            
+            int beginIndex = str.indexOf(parts[0]) + parts[0].length();
+            dir = str.substring(beginIndex, beginIndex + 1);
+        }
+        else
+        {
+            dir = parts[1].substring(0, 1);
+        }
+        
         double p0  = Double.parseDouble(parts[0]);
-        String dir = parts[1].substring(0, 1);
         
         BigDecimal val = new BigDecimal(p0);
 

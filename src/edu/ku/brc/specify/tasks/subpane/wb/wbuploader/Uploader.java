@@ -2862,10 +2862,11 @@ public class Uploader implements ActionListener, KeyListener
                     wbSS.getSpreadSheet().scrollToRow(msg.getRow());
                     wbSS.getSpreadSheet().getSelectionModel().clearSelection();
                     wbSS.getSpreadSheet().getSelectionModel().setSelectionInterval(
-                            msg.getRow() - 1, msg.getRow() - 1);
+                            msg.getRow(), msg.getRow());
                 }
                 else
                 {
+                    wbSS.getSpreadSheet().getSelectionModel().clearSelection();
                     Rectangle rect = wbSS.getSpreadSheet().getCellRect(msg.getRow(), msg.getCol(),
                             false);
                     wbSS.getSpreadSheet().scrollRectToVisible(rect);
