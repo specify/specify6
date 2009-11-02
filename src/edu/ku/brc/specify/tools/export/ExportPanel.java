@@ -1320,7 +1320,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
                 };
                 String nameAndTitle = UIRegistry.getResourceString("SchemaExportLauncher.DlgTitle"); // I18N
                 UIRegistry.setRelease(true);
-                UIHelper.doLogin(usrPwdProvider, true, false, false, new SchemaExportLauncher(), "Specify", nameAndTitle, nameAndTitle, "SpecifyWhite32", "login"); // true
+                UIHelper.doLogin(usrPwdProvider, true, false, false, new SchemaExportLauncher(), Specify.getLargeIconName(), nameAndTitle, nameAndTitle, "SpecifyWhite32", "login"); // true
 																																	// means
 																																	// do
 																																	// auto
