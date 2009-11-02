@@ -215,7 +215,7 @@ public class ExportMappingTask extends QueryTask
 	 */
 	public static boolean unlockMapping(SpExportSchemaMapping map)
 	{
-		if (map != null)
+		if (map != null && map.getId() != null)
 		{
 			return TaskSemaphoreMgr.unlock(getLockTitle(map), "ExportMapping" + map.getId().toString(), TaskSemaphoreMgr.SCOPE.Global);
 		}

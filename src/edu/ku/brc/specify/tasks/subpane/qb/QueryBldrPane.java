@@ -507,22 +507,35 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 	return;
                 }
                 
-                FieldQRI fieldQRI = buildFieldQRI(qri);
-            	SpQueryField qf = new SpQueryField();
-            	qf.initialize();
-            	qf.setFieldName(fieldQRI.getFieldName());
-            	qf.setStringId(fieldQRI.getStringId());
-            	query.addReference(qf, "fields");
-            	
-                if (exportSchema == null)
-                {
-                	addQueryFieldItem(fieldQRI, qf, false);
-                }
-                else
-                {
-                	addNewMapping(fieldQRI, qf, selectedQFP);
-                }
-            }
+                try
+				{
+					FieldQRI fieldQRI = buildFieldQRI(qri);
+					if (fieldQRI == null)
+					{
+						throw new Exception("null FieldQRI");
+					}
+					SpQueryField qf = new SpQueryField();
+					qf.initialize();
+					qf.setFieldName(fieldQRI.getFieldName());
+					qf.setStringId(fieldQRI.getStringId());
+					query.addReference(qf, "fields");
+
+					if (exportSchema == null)
+					{
+						addQueryFieldItem(fieldQRI, qf, false);
+					} else
+					{
+						addNewMapping(fieldQRI, qf, selectedQFP);
+					}
+				} catch (Exception ex)
+				{
+					log.error(ex);
+					UsageTracker.incrHandledUsageCount();
+					edu.ku.brc.exceptions.ExceptionTracker.getInstance()
+							.capture(QueryBldrPane.class, ex);
+					return;
+				}
+             }
         });
 
         contextPanel = new JPanel(new BorderLayout());
@@ -3224,20 +3237,42 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                                     else
                                     {
                                         // add the field
-                                        FieldQRI fieldQRI = buildFieldQRI(qri);
-                                        SpQueryField qf = new SpQueryField();
-                                        qf.initialize();
-                                        qf.setFieldName(fieldQRI.getFieldName());
-                                    	qf.setStringId(fieldQRI.getStringId());
-                                    	query.addReference(qf, "fields");
-                                        if (exportSchema == null)
-                                        {
-                                        	addQueryFieldItem(fieldQRI, qf, false);
-                                        }
-                                        else
-                                        {
-                                        	addNewMapping(fieldQRI, qf, selectedQFP);
-                                        }
+										try
+										{
+											FieldQRI fieldQRI = buildFieldQRI(qri);
+											if (fieldQRI == null)
+											{
+												throw new Exception(
+														"null FieldQRI");
+											}
+											SpQueryField qf = new SpQueryField();
+											qf.initialize();
+											qf.setFieldName(fieldQRI
+													.getFieldName());
+											qf.setStringId(fieldQRI
+													.getStringId());
+											query.addReference(qf, "fields");
+											if (exportSchema == null)
+											{
+												addQueryFieldItem(fieldQRI, qf,
+														false);
+											} else
+											{
+												addNewMapping(fieldQRI, qf,
+														selectedQFP);
+											}
+										} catch (Exception ex)
+										{
+											log.error(ex);
+											UsageTracker
+													.incrHandledUsageCount();
+											edu.ku.brc.exceptions.ExceptionTracker
+													.getInstance()
+													.capture(
+															QueryBldrPane.class,
+															ex);
+											return;
+										}
                                     }
                                 }
                             }
@@ -3346,7 +3381,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param qri
      * @return qri if it is already a FieldQRI, else constructs a RelQRI and returns it.
      */
-    protected static FieldQRI buildFieldQRI(final BaseQRI qri)
+    protected static FieldQRI buildFieldQRI(final BaseQRI qri) 
     {
         if (qri instanceof FieldQRI) { return (FieldQRI) qri; }
         if (qri instanceof TableQRI)
@@ -3358,7 +3393,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
             throw new RuntimeException(QueryBldrPane.class.getName() + ": unable to determine relationship.");
         }
-        throw new RuntimeException("invalid argument: " + qri);
+        return null;
     }
 
     /**
@@ -3415,6 +3450,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				removeSchemaItemMapping(qfp.getItemMapping());
 			}
 		}
+		final FieldQRI qfpqri = qfp.getFieldQRI();
 		if (exportSchema == null || qfp.isConditionForSchema())
 		{
 			queryFieldItems.remove(qfp);
@@ -3443,8 +3479,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
 				try
 				{
-					BaseQRI qri = qfp.getFieldQRI() instanceof RelQRI ? qfp
-							.getFieldQRI().getTable() : qfp.getFieldQRI();
+					BaseQRI qri = qfpqri instanceof RelQRI ? qfpqri.getTable() : qfpqri;
 					//BaseQRI qri = qfp.getFieldQRI(); 
 					boolean done = false;
 					for (JList lb : listBoxList)
@@ -3455,17 +3490,23 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 									.getModel()).getSize(); i++)
 							{
 								BaseQRI qriI = (BaseQRI )((DefaultListModel) lb.getModel()).getElementAt(i);
-								boolean match = qriI == qri;
-								if (!match)
+								if (qriI != null)
 								{
-									match = buildFieldQRI(qri).getStringId().equals(buildFieldQRI(qriI).getStringId());
-								}
-								if (match)
-								{
-									qriI.setIsInUse(false);
-									lb.repaint();
-									done = true;
-									break;
+									boolean match = qriI == qri;
+									if (!match)
+									{
+										match = buildFieldQRI(qri)
+												.getStringId().equals(
+														buildFieldQRI(qriI)
+																.getStringId());
+									}
+									if (match)
+									{
+										qriI.setIsInUse(false);
+										lb.repaint();
+										done = true;
+										break;
+									}
 								}
 							}
 						}
@@ -3474,7 +3515,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 							break;
 						}
 					}
-				} catch (ArrayIndexOutOfBoundsException ex)
+				} catch (Exception ex)
 				{
 					UsageTracker.incrHandledUsageCount();
 					edu.ku.brc.exceptions.ExceptionTracker.getInstance()
