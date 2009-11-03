@@ -322,7 +322,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         } 
         
-        model       = new GridTableModel(workbench);
+        model       = new GridTableModel(this);
         spreadSheet = new WorkbenchSpreadSheet(model);
         spreadSheet.setReadOnly(isReadOnly);
         //spreadSheet.setC
@@ -3757,31 +3757,89 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * @param startRow
      * @param endRow
+     * return true if validating
      * 
      * Validates all rows between startRow and endRow
      * startRow and endRow are assumed to be model indices, 
-     *  convertRowIndexToModel() must be called if necessary. 
      */
-    protected void validateRows(final int startRow, final int endRow)
+    protected boolean validateRows(final int startRow, final int endRow)
     {
-    	new javax.swing.SwingWorker<Object, Object>() {
+    	if (doIncrementalValidation)
+		{
+			validateRows(null, startRow, endRow);
+			return true;
+		}
+    	return false;
+    }
+    
+    /**
+     * @param rows
+     * return true if validating
+     * 
+     * Validates rows 
+     * rows assumed to contain model indices, 
+     */
+    public boolean validateRows(final int[] rows)
+    {
+    	if (doIncrementalValidation)
+		{
+			validateRows(rows, -1, -1);
+    		return true;
+		}
+    	return false;
+    }
+    
+    /**
+     * @param rows
+     * @param startRow
+     * @param endRow
+     */
+    protected void validateRows(final int[] rows, final int startRow, final int endRow)
+    {
+		new javax.swing.SwingWorker<Object, Object>() {
 
-			/* (non-Javadoc)
+			/*
+			 * (non-Javadoc)
+			 * 
 			 * @see javax.swing.SwingWorker#doInBackground()
 			 */
 			@Override
 			protected Object doInBackground() throws Exception
 			{
-				for (int row = startRow; row <= endRow; row++)
+				if (rows != null)
 				{
-					updateRowValidationStatus(row, -1);
+					for (int row : rows)
+					{
+						updateRowValidationStatus(row, -1);
+					}
+				} else
+				{
+					for (int row = startRow; row <= endRow; row++)
+					{
+						updateRowValidationStatus(row, -1);
+					}
 				}
 				return null;
 			}
-    		
-    	}.execute();
+
+			/* (non-Javadoc)
+			 * @see javax.swing.SwingWorker#done()
+			 */
+			@Override
+			protected void done()
+			{
+				super.done();
+				if (rows == null)
+				{
+					model.fireTableRowsUpdated(startRow, endRow); //XXX model vs table rows??
+				}
+				else
+				{
+					model.fireDataChanged();
+				}
+			}			
+		}.execute();
     }
-    
     //------------------------------------------------------------
     // Inner Classes
     //------------------------------------------------------------

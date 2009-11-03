@@ -77,7 +77,7 @@ import edu.ku.brc.ui.UIRegistry;
 @SuppressWarnings("serial")
 public class SearchReplacePanel extends JPanel
 {
-    private final String          FIND                    = "Find"; //i18n
+    private final String          FIND                    = "Find";
 
     protected SpreadSheet         table;
 
