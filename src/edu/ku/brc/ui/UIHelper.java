@@ -3574,7 +3574,11 @@ public final class UIHelper
                             
 			            } finally
 			            {
-			                localPrefs.putBoolean(HAS_OPENGL_PREF, hasOpenGL != null ? hasOpenGL : UIHelper.isMacOS());
+			                if (hasOpenGL == null)
+			                {
+			                    hasOpenGL = UIHelper.isMacOS();
+			                }
+			                localPrefs.putBoolean(HAS_OPENGL_PREF, hasOpenGL);
 			                if (initialUseWordWind == null || (initialHasOpenGL != null && hasOpenGL != initialHasOpenGL))
                             {
 			                    localPrefs.putBoolean(USE_WORLDWIND, hasOpenGL);    

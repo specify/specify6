@@ -63,6 +63,7 @@ import java.util.prefs.BackingStoreException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JEditorPane;
@@ -549,6 +550,66 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             
         };
         
+        if (UIRegistry.isMobile())
+        {
+            DBConnection.setShutdownUI(new DBConnection.ShutdownUIIFace() 
+            {
+                CustomDialog processDlg;
+                
+                /* (non-Javadoc)
+                 * @see edu.ku.brc.dbsupport.DBConnection.ShutdownUIIFace#displayInitialDlg()
+                 */
+                @Override
+                public void displayInitialDlg()
+                {
+                    UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "MOBILE_INFO", "MOBILE_INTRO");
+                }
+    
+                /* (non-Javadoc)
+                 * @see edu.ku.brc.dbsupport.DBConnection.ShutdownUIIFace#displayFinalShutdownDlg()
+                 */
+                @Override
+                public void displayFinalShutdownDlg()
+                {
+                    processDlg.setVisible(false);
+                    UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "MOBILE_INFO", "MOBILE_FINI");
+                }
+    
+                /* (non-Javadoc)
+                 * @see edu.ku.brc.dbsupport.DBConnection.ShutdownUIIFace#displayShutdownAskDlg()
+                 */
+                @Override
+                public void displayShutdownAskDlg()
+                {
+                    JPanel panel = new JPanel(new BorderLayout());
+                    panel.setBorder(BorderFactory.createEmptyBorder(14, 14, 14, 14));
+                    panel.add(new JLabel(IconManager.getIcon(getLargeIconName()), SwingConstants.CENTER), BorderLayout.WEST);
+                    panel.add(UIHelper.createI18NLabel("MOBILE_INTRO", SwingConstants.CENTER), BorderLayout.CENTER);
+                    CustomDialog dlg = new CustomDialog((Frame)null, "Shutdown", true, CustomDialog.OK_BTN, panel);
+                    dlg.setAlwaysOnTop(true);
+                    UIHelper.centerAndShow(dlg);
+                }
+    
+                /* (non-Javadoc)
+                 * @see edu.ku.brc.dbsupport.DBConnection.ShutdownUIIFace#displayShutdownMsgDlg()
+                 */
+                @Override
+                public void displayShutdownMsgDlg()
+                {
+                    JPanel panel = new JPanel(new BorderLayout());
+                    panel.setBorder(BorderFactory.createEmptyBorder(14, 14, 14, 14));
+                    
+                    panel.add(new JLabel(IconManager.getIcon(getLargeIconName()), SwingConstants.CENTER), BorderLayout.WEST);
+                    panel.add(UIHelper.createI18NLabel("MOBILE_SHUTTING_DOWN", SwingConstants.CENTER), BorderLayout.CENTER);
+                    processDlg = new CustomDialog((Frame)null, "Shutdown", false, CustomDialog.NONE_BTN, panel);
+                    processDlg.setAlwaysOnTop(true);
+                    
+                    UIHelper.centerAndShow(processDlg);
+                    
+                }
+            });
+        }
+        
         /*long lastSaved = AppPreferences.getLocalPrefs().getLong("update_time", 0L);
         if (lastSaved > 0)
         {
@@ -563,7 +624,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 System.exit(0);
             }
         }*/
-        
+        UIRegistry.dumpPaths();
+
         dbLoginPanel = UIHelper.doLogin(usrPwdProvider, true, false, false, this, getLargeIconName(), getTitle(), null, getOpaqueIconName(), "login"); // true means do auto login if it can, second bool means use dialog instead of frame
         localPrefs.load();
     }
@@ -2346,6 +2408,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             checkAndSendStats();
         }
         
+        UIRegistry.dumpPaths();
+        
         try
         {
             AppPreferences.getLocalPrefs().flush();
@@ -2980,10 +3044,13 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     	 com.install4j.api.launcher.SplashScreen.hide();
                          ApplicationLauncher.Callback callback = new ApplicationLauncher.Callback()
                          {
+                             @Override
                              public void exited(int exitValue)
                              {
                                  startApp();
                              }
+                             
+                             @Override
                              public void prepareShutdown()
                              {
                                  

@@ -7401,7 +7401,7 @@ public class BuildSampleDatabase
     {
         boolean doEmptyBuild   = false;
         
-        UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
+        UIRegistry.setEmbeddedDBPath(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
         
         if (args != null && args.length > 0)
         {
@@ -7423,11 +7423,11 @@ public class BuildSampleDatabase
                         
                     } else if (option.equals("-Dembeddeddbdir"))
                     {
-                        UIRegistry.setEmbeddedDBDir(value);
+                        UIRegistry.setEmbeddedDBPath(value);
                         
                     } else if (option.equals("-Dmobile"))
                     {
-                        UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultMobileEmbeddedDBPath());
+                        UIRegistry.setEmbeddedDBPath(UIRegistry.getDefaultMobileEmbeddedDBPath());
                     }
                 }
             }

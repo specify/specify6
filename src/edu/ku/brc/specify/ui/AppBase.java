@@ -982,7 +982,7 @@ public class AppBase extends JPanel implements DatabaseLoginListener, CommandLis
     {
         log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-        UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
+        UIRegistry.setEmbeddedDBPath(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
         
         for (String s : args)
         {
@@ -1030,10 +1030,10 @@ public class AppBase extends JPanel implements DatabaseLoginListener, CommandLis
         String embeddeddbdir = System.getProperty("embeddeddbdir");
         if (StringUtils.isNotEmpty(embeddeddbdir))
         {
-            UIRegistry.setEmbeddedDBDir(embeddeddbdir);
+            UIRegistry.setEmbeddedDBPath(embeddeddbdir);
         } else
         {
-            UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
+            UIRegistry.setEmbeddedDBPath(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
         }
     }
 

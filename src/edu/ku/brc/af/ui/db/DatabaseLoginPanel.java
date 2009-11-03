@@ -161,7 +161,8 @@ public class DatabaseLoginPanel extends JTiledPanel
     protected String                      ssPassword     = null;
     protected MasterPasswordProviderIFace masterUsrPwdProvider = null;
     
-    protected boolean                     doSaveUPPrefs  = true;
+    protected boolean                     doSaveUPPrefs     = true;
+    protected boolean                     checkForProcesses = true;
     
     //--------------------------------------------------------------------
     public interface MasterPasswordProviderIFace
@@ -965,32 +966,36 @@ public class DatabaseLoginPanel extends JTiledPanel
             @Override
             public Object construct()
             {
-                if (DBConnection.getInstance().isEmbedded() || UIRegistry.isMobile()) // isEmbdded may not be setup yet
+                if (checkForProcesses && (DBConnection.getInstance().isEmbedded() || UIRegistry.isMobile())) // isEmbdded may not be setup yet
                 {
                     SpecifyDBSetupWizardFrame.checkForMySQLProcesses();
+                    checkForProcesses = false;
                 }
                 
                 if (UIRegistry.isMobile())
                 {
-                    File mobileTmpDir = DBConnection.getMobileTempDir(getDatabaseName());
+                    File mobileTmpDir = DBConnection.getMobileMachineDir(getDatabaseName());
                     if (mobileTmpDir == null)
                     {
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, new RuntimeException("Couldn't get MobileTempDir"));
                     }
                     
-                    UIRegistry.setEmbeddedDBDir(mobileTmpDir.getAbsolutePath());
+                    UIRegistry.setEmbeddedDBPath(mobileTmpDir.getAbsolutePath());
                     log.debug(UIRegistry.getEmbeddedDBPath());
                     
                     if (UIRegistry.getMobileEmbeddedDBPath() == null)
                     {
-                        UIRegistry.setMobileEmbeddedDBDir(UIRegistry.getDefaultMobileEmbeddedDBPath(getDatabaseName()));
+                        UIRegistry.setMobileEmbeddedDBPath(UIRegistry.getDefaultMobileEmbeddedDBPath(getDatabaseName()));
                         log.debug(UIRegistry.getMobileEmbeddedDBPath());
                     }
                 }
                 
                 String connStr = getConnectionStr();
+                
                 DBConnection.checkForEmbeddedDir(connStr);
+                
+                UIRegistry.dumpPaths();
                 
                 eTime = System.currentTimeMillis();
                 
@@ -1014,7 +1019,7 @@ public class DatabaseLoginPanel extends JTiledPanel
                 }
 
                 if (isLoggedIn)
-                {          
+                {
                     if (StringUtils.isNotEmpty(appName))
                     {
                         SwingUtilities.invokeLater(new Runnable(){

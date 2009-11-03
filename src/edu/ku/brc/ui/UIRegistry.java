@@ -559,6 +559,16 @@ public class UIRegistry
         instance.statusBar = statusBar;
     }
 
+    /**
+     * Set the working directory. It is not recommended to use this because the working directory will automatically be created.
+     * @param defaultWorkingPath the new and different working directory.
+     */
+    public static void setDefaultWorkingPath(final String defaultWorkingPath)
+    {
+        dumpCanonicalPath("setDefaultWorkingPath", defaultWorkingPath);
+        instance.defaultWorkingPath = defaultWorkingPath;
+    }
+    
 	/**
      * Returns the "working" directory which is platform specific. It will create one if one is not created
      * <b>NOTE: The application name must be set first.</b><br>
@@ -606,16 +616,6 @@ public class UIRegistry
         return newDir;
     }
 
-    /**
-     * Set the working directory. It is not recommended to use this because the working directory will automatically be created.
-     * @param defaultWorkingPath the new and different working directory.
-     */
-    public static void setDefaultWorkingPath(final String defaultWorkingPath)
-    {
-        dumpCanonicalPath("setDefaultWorkingPath", defaultWorkingPath);
-        instance.defaultWorkingPath = defaultWorkingPath;
-    }
-	
 	/**
 	 * @param appDataDir
 	 */
@@ -688,7 +688,9 @@ public class UIRegistry
      * @return the string to a platform specify user data directory
      */
     /**
-     * Get the "user" based working directory that is platform specific. 
+     * Get the "user" based working directory that is platform specific. When in Mobile 'mode'
+     * it returns the DefaultWorkingPath, when in Standard app mode it uses the 'Default User Home Dir"
+     * which is the platform specific true home directory.
      * @return the string to a platform specify user data directory
      */
     public static String getUserHomeDir()
@@ -715,6 +717,7 @@ public class UIRegistry
         } else if (osType == UIHelper.OSTYPE.MacOSX)
         {
             String docPath = homeDir + File.separator + "Documents"; // Not Localized
+            
             if (new File(docPath).exists())
             {
                 return docPath;
@@ -722,6 +725,30 @@ public class UIRegistry
         }
         // else
         return homeDir;
+    }
+    
+    /**
+     * 
+     */
+    public static void dumpPaths()
+    {
+        String mobile = "";
+        try
+        {
+            if (StringUtils.isNotEmpty(getMobileEmbeddedDBPath()))
+            {
+                mobile = (new File(getMobileEmbeddedDBPath())).getCanonicalPath();
+            }
+        } catch (IOException ex) {}
+            System.err.println("AppDataDir:                  "+getAppDataDir());
+            System.err.println("UserHomeAppDir:              "+getUserHomeAppDir());
+            System.err.println("UserHomeDir:                 "+getUserHomeDir());
+            
+            System.err.println("DefaultEmbeddedDBPath:       "+getDefaultEmbeddedDBPath());
+            System.err.println("DefaultMobileEmbeddedDBPath: "+getEmbeddedDBPath());
+            System.err.println("MobileEmbeddedDBPath:        "+mobile);
+            System.err.println("DefaultWorkingPath:          "+getDefaultWorkingPath());
+            //System.err.println("MobileMachineDir:            "+DBConnection.getMobileMachineDir("<database name>"));
     }
 
     /**
@@ -1702,7 +1729,7 @@ public class UIRegistry
      * Sets the path to the embedded DB.
      * @param path the path.
      */
-    public static void setEmbeddedDBDir(final String path)
+    public static void setEmbeddedDBPath(final String path)
     {
         dumpCanonicalPath("setEmbeddedDBDir", path);
 
@@ -1738,7 +1765,7 @@ public class UIRegistry
         if (debugPaths)
         {
             try {
-                log.debug("************************ "+desc+": ["+path.getCanonicalPath()+"]");
+                log.debug("***** dumpCanonicalPath: "+desc+": ["+path.getCanonicalPath()+"]");
             } catch (Exception ex) {}
         }
     }
@@ -1758,7 +1785,7 @@ public class UIRegistry
      */
     public static String getDefaultMobileEmbeddedDBPath()
     {
-        dumpCanonicalPath("getMobileEmbeddedDBPath", UIRegistry.getDefaultWorkingPath() + File.separator + EMBEDDED_DB_DIR);
+        dumpCanonicalPath("getDefaultMobileEmbeddedDBPath", UIRegistry.getDefaultWorkingPath() + File.separator + EMBEDDED_DB_DIR);
         return UIRegistry.getDefaultWorkingPath() + File.separator + EMBEDDED_DB_DIR;
     }
     
@@ -1768,17 +1795,30 @@ public class UIRegistry
      */
     public static String getDefaultMobileEmbeddedDBPath(final String dbName)
     {
-        dumpCanonicalPath("getMobileEmbeddedDBPath", UIRegistry.getDefaultWorkingPath() + File.separator + dbName);
-        return UIRegistry.getDefaultWorkingPath() + File.separator + dbName;
+        dumpCanonicalPath("getDefaultMobileEmbeddedDBPath", UIRegistry.getDefaultWorkingPath() + File.separator + dbName);
+        
+        String path = UIRegistry.getDefaultWorkingPath();
+        
+        String mobileRelativePath = System.getProperty("mobilesrcdir");
+        if (StringUtils.isNotEmpty(mobileRelativePath))
+        {
+            if (!path.endsWith(File.separator) && !mobileRelativePath.startsWith(File.separator))
+            {
+                path += File.separator;
+            }
+            path += mobileRelativePath;
+        }
+        
+        return path + File.separator + dbName;
     }
     
     /**
      * Sets the path to the embedded DB.
      * @param path the path.
      */
-    public static void setMobileEmbeddedDBDir(final String path)
+    public static void setMobileEmbeddedDBPath(final String path)
     {
-        dumpCanonicalPath("setMobileEmbeddedDBDir", path);
+        dumpCanonicalPath("setMobileEmbeddedDBPath", path);
 
         if (StringUtils.isNotEmpty(path))
         {

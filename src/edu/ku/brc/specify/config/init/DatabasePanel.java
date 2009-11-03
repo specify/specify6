@@ -105,6 +105,8 @@ public class DatabasePanel extends BaseSetupPanel
     protected JButton                 skipStepBtn;
     protected boolean                 manualLoginOK = false;
     protected JLabel                  advLabel;
+    
+    protected boolean                 checkForProcesses = true;
 
     /**
      * Creates a dialog for entering database name and selecting the appropriate driver.
@@ -323,9 +325,9 @@ public class DatabasePanel extends BaseSetupPanel
         
         if (UIRegistry.isMobile())
         {
-            DBConnection.clearMobileTempDir();
-            File tmpDir = DBConnection.getMobileTempDir(databaseName);
-            UIRegistry.setEmbeddedDBDir(tmpDir.getAbsolutePath());
+            DBConnection.clearMobileMachineDir();
+            File tmpDir = DBConnection.getMobileMachineDir(databaseName);
+            UIRegistry.setEmbeddedDBPath(tmpDir.getAbsolutePath());
         }
 
         final DatabaseDriverInfo driverInfo = (DatabaseDriverInfo)drivers.getSelectedItem();
@@ -365,12 +367,15 @@ public class DatabasePanel extends BaseSetupPanel
                     boolean dbmsOK = false;
                     if (driverInfo.isEmbedded())
                     {
-                        
-                        SpecifyDBSetupWizardFrame.checkForMySQLProcesses();
+                        if (checkForProcesses)
+                        {
+                            SpecifyDBSetupWizardFrame.checkForMySQLProcesses();
+                            checkForProcesses = false;
+                        }
                         
                         if (UIRegistry.isMobile())
                         {
-                            File mobileTmpDir = DBConnection.getMobileTempDir();
+                            File mobileTmpDir = DBConnection.getMobileMachineDir();
                             if (!mobileTmpDir.exists())
                             {
                                 if (!mobileTmpDir.mkdirs())
@@ -378,9 +383,8 @@ public class DatabasePanel extends BaseSetupPanel
                                     System.err.println("Dir["+mobileTmpDir.getAbsolutePath()+"] didn't get created!");
                                     // throw exception
                                 }
-                                
                                 DBConnection.setCopiedToMachineDisk(true);
-                            }
+                            } 
                         }
                         
                         String newConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, databaseName, dbUserName, dbPwd, driverInfo.getName());
@@ -681,14 +685,14 @@ public class DatabasePanel extends BaseSetupPanel
             File specifyDataDir = null;
             if (UIRegistry.isMobile())
             {
-                specifyDataDir = DBConnection.getMobileTempDir();
+                specifyDataDir = DBConnection.getMobileMachineDir();
                 if (specifyDataDir == null)
                 {
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskSemaphoreMgr.class, new RuntimeException("DBConnection.getMobileTempDir() return null"));
                 }
                 
-                UIRegistry.setMobileEmbeddedDBDir(UIRegistry.getDefaultMobileEmbeddedDBPath(databaseName));
+                UIRegistry.setMobileEmbeddedDBPath(UIRegistry.getDefaultMobileEmbeddedDBPath(databaseName));
             } else
             {
                 specifyDataDir = DBConnection.getEmbeddedDataDir(); 

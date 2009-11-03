@@ -1104,7 +1104,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         //UIRegistry.setAppName("SchemaExporter");  //$NON-NLS-1$
         UIRegistry.setAppName("Specify");  //$NON-NLS-1$
 
-        UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
+        UIRegistry.setEmbeddedDBPath(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
         
         for (String s : args)
         {
@@ -1154,10 +1154,10 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         String embeddeddbdir = System.getProperty("embeddeddbdir");
         if (StringUtils.isNotEmpty(embeddeddbdir))
         {
-            UIRegistry.setEmbeddedDBDir(embeddeddbdir);
+            UIRegistry.setEmbeddedDBPath(embeddeddbdir);
         } else
         {
-            UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
+            UIRegistry.setEmbeddedDBPath(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
         }
         
         // Then set this

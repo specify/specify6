@@ -29,6 +29,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -38,6 +39,7 @@ import com.mysql.management.driverlaunched.ServerLauncherSocketFactory;
 
 import edu.ku.brc.specify.config.init.SpecifyDBSetupWizard;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -81,9 +83,14 @@ public class DBConnection
     protected static File                embeddedDataDir;
     protected static Stack<DBConnection> connections;
     protected static boolean             isShuttingDown;
-    protected static File                mobileTmpDir = null;
+    protected static File                mobileMachineDir = null;
     protected static boolean             isCopiedToMachineDisk = false;
-    protected static boolean             isCopiedToMobileDisk  = false;
+    protected static boolean             hasCopiedToMobileDisk  = false;
+    protected static AtomicBoolean       finalShutdownComplete  = new AtomicBoolean(false);
+    
+    protected static ShutdownUIIFace     shutdownUI             = null;
+    protected static boolean             firstTime              = true;
+    protected static boolean             connectionCreated      = false;
     
     
     static
@@ -102,20 +109,9 @@ public class DBConnection
                     @Override
                     public void run() 
                     {
-                        if (isEmbeddedDB != null && isEmbeddedDB)
+                        if (connectionCreated)
                         {
-                            ServerLauncherSocketFactory.shutdown(embeddedDataDir, null);
-                        }
-                        
-                        // Give it a little time to shutdown
-                        /*try
-                        {
-                            Thread.sleep(3000);
-                        } catch (Exception ex) {}*/
-                        
-                        if (UIRegistry.isMobile())
-                        {
-                            copyToMobileDisk();
+                            shutdownFinalConnection();
                         }
                     }
                 });
@@ -163,6 +159,104 @@ public class DBConnection
                     embeddedDataDir = new File(connectionStr.substring(inx, eInx));
                 }
             }
+        }
+    }
+    
+    /**
+     * @param shutdownUI the shutdownUI to set
+     */
+    public static void setShutdownUI(ShutdownUIIFace shutdownUI)
+    {
+        DBConnection.shutdownUI = shutdownUI;
+    }
+
+    /**
+     * Shuts down the Embedded process.
+     */
+    private static void shutdownFinalConnection()
+    {
+        if (!finalShutdownComplete.get())
+        {
+            
+            if (shutdownUI != null)
+            {
+                shutdownUI.displayShutdownMsgDlg();
+                
+                shutdownUI.displayShutdownAskDlg();
+            }
+            
+            // Give it a little time to shutdown
+            try
+            {
+                Thread.sleep(3000);
+                
+            } catch (Exception ex) {}
+            
+            if (isEmbeddedDB != null && isEmbeddedDB)
+            {
+                ServerLauncherSocketFactory.shutdown(embeddedDataDir, null);
+            }
+            
+            // Give it a little time to shutdown
+            try
+            {
+                Thread.sleep(3000);
+                
+            } catch (Exception ex) {}
+            
+            if (UIRegistry.isMobile())
+            {
+                copyToMobileDisk();
+            }
+            
+            finalShutdownComplete.set(true);
+            
+            if (shutdownUI != null)
+            {
+                shutdownUI.displayFinalShutdownDlg();
+            }
+        }
+    }
+    
+    /**
+     * Removes the current embedded bin directory so the right executable will be.
+     */
+    public static void clearEmbeddedBinDir()
+    {
+        try
+        {
+            boolean rmDir = true;
+            try
+            {
+                File mobileEmbeddedDir = new File(UIRegistry.getMobileEmbeddedDBPath());
+                if (mobileEmbeddedDir.exists())
+                {
+                    File osFile = new File(UIRegistry.getMobileEmbeddedDBPath()+File.separator+ "os.txt");
+                    if (osFile.exists())
+                    {
+                        String os = FileUtils.readFileToString(osFile);
+                        if (UIHelper.getOSType().toString().equals(os))
+                        {
+                            rmDir = false;
+                        }
+                    }
+                }
+            } catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
+            
+            if (rmDir)
+            {
+                File binDir = new File(UIRegistry.getMobileEmbeddedDBPath() + File.separator + "bin");
+                if (binDir.exists())
+                {
+                    FileUtils.deleteDirectory(binDir);
+                }
+            }
+        } catch (IOException ex) 
+        {
+            ex.printStackTrace();
         }
     }
     
@@ -238,10 +332,35 @@ public class DBConnection
     public Connection createConnection()
     {
         //ensureEmbddedDirExists();
+        
+        connectionCreated = true;
+        if (shutdownUI != null && firstTime)
+        {
+            shutdownUI.displayInitialDlg();
+            firstTime = false;
+        }
 
         if (UIRegistry.isMobile() && this == getInstance())
         {
-            copyToMachineDisk();
+            if (!isCopiedToMachineDisk)
+            {
+                clearEmbeddedBinDir();
+            }
+            
+            if (copyToMachineDisk())
+            {
+                try
+                {
+                    if (mobileMachineDir.exists())
+                    {
+                        File osFile = new File(mobileMachineDir+File.separator+ "os.txt");
+                        FileUtils.writeStringToFile(osFile, UIHelper.getOSType().toString());
+                    }
+                } catch (IOException ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
         }
         
         Connection con = null;
@@ -339,6 +458,11 @@ public class DBConnection
                     log.error(msg);
                     UIRegistry.showError(msg);
                 }
+            }
+            
+            if (connections.isEmpty())
+            {
+                shutdownFinalConnection();    
             }
             
             // This is primarily for Derby non-networked database. 
@@ -619,38 +743,38 @@ public class DBConnection
         }*/
     }
     
-    public static void clearMobileTempDir()
+    public static void clearMobileMachineDir()
     {
-        mobileTmpDir = null;
+        mobileMachineDir = null;
     }
     
     /**
      * @return
      * @throws IOException
      */
-    public static File getMobileTempDir(final String dbName)
+    public static File getMobileMachineDir(final String dbName)
     {
-        if (mobileTmpDir == null && StringUtils.isNotEmpty(dbName))
+        if (mobileMachineDir == null && StringUtils.isNotEmpty(dbName))
         {
             String path = UIRegistry.getDefaultUserHomeDir();
             
-            mobileTmpDir = new File(path + File.separator + dbName + "_data_" + Long.toString(System.currentTimeMillis()));
+            mobileMachineDir = new File(path + File.separator + dbName + "_data_" + Long.toString(System.currentTimeMillis()));
             
-        } else if (StringUtils.isEmpty(dbName) && mobileTmpDir == null)
+        } else if (StringUtils.isEmpty(dbName) && mobileMachineDir == null)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskSemaphoreMgr.class, new RuntimeException("dbName was null"));
         }
-        return mobileTmpDir;
+        return mobileMachineDir;
     }
     
     /**
      * @return
      * @throws IOException
      */
-    public static File getMobileTempDir()
+    public static File getMobileMachineDir()
     {
-        return getMobileTempDir(null);
+        return getMobileMachineDir(null);
     }
 
     /**
@@ -662,7 +786,8 @@ public class DBConnection
     }
 
     /**
-     * @return
+     * Copies from the MobileEmbeddedDir to MobileMachineDir 
+     * @return true on success
      */
     private static boolean copyToMachineDisk()
     {
@@ -670,23 +795,23 @@ public class DBConnection
         {
             try
             {
-                mobileTmpDir = getMobileTempDir();
-                if (!mobileTmpDir.exists())
+                mobileMachineDir = getMobileMachineDir();
+                if (!mobileMachineDir.exists())
                 {
-                    mobileTmpDir.mkdirs();
+                    mobileMachineDir.mkdirs();
                 }
                 
-                System.out.println("********************* copyToMachineDisk - getMobileEmbeddedDBPath["+(new File(UIRegistry.getMobileEmbeddedDBPath()).getCanonicalPath())+"] to mobileTmpDir["+mobileTmpDir.getCanonicalPath()+"]");
+                System.out.println("****** copyToMachineDisk - getMobileEmbeddedDBPath["+(new File(UIRegistry.getMobileEmbeddedDBPath()).getCanonicalPath())+"] to mobileTmpDir["+mobileMachineDir.getCanonicalPath()+"]");
                 
                 File mobileEmbeddedDir = new File(UIRegistry.getMobileEmbeddedDBPath());
                 if (mobileEmbeddedDir.exists())
                 {
-                    FileUtils.copyDirectory(mobileEmbeddedDir, mobileTmpDir, true);
-                    UIRegistry.setEmbeddedDBDir(mobileTmpDir.getCanonicalPath());
+                    FileUtils.copyDirectory(mobileEmbeddedDir, mobileMachineDir, true);
+                    UIRegistry.setEmbeddedDBPath(mobileMachineDir.getCanonicalPath());
                     
                     isCopiedToMachineDisk = true;
                     
-                    for (Object fObj : FileUtils.listFiles(mobileTmpDir, null, true))
+                    for (Object fObj : FileUtils.listFiles(mobileMachineDir, null, true))
                     {
                         File f = (File)fObj;
                         if (f.getName().endsWith("DS_Store"))
@@ -712,7 +837,7 @@ public class DBConnection
      */
     public static void setCopiedToMobileDisk(boolean isCopiedToMobileDisk)
     {
-        DBConnection.isCopiedToMobileDisk = isCopiedToMobileDisk;
+        DBConnection.hasCopiedToMobileDisk = isCopiedToMobileDisk;
     }
 
     /**
@@ -720,18 +845,18 @@ public class DBConnection
      */
     private static boolean copyToMobileDisk()
     {
-        System.out.println("########################  copyToMobileDisk  -  mobileTmpDir["+mobileTmpDir+"] isCopiedToMachineDisk ["+isCopiedToMachineDisk+"]");
-        if (!isCopiedToMobileDisk && mobileTmpDir != null && isCopiedToMachineDisk)
+        System.out.println("######  copyToMobileDisk  -  mobileTmpDir["+mobileMachineDir+"] isCopiedToMachineDisk ["+isCopiedToMachineDisk+"]");
+        if (!hasCopiedToMobileDisk && mobileMachineDir != null && isCopiedToMachineDisk)
         {
-            isCopiedToMobileDisk = true;
+            hasCopiedToMobileDisk = true;
             try
             {
                 File mobileDir = new File(UIRegistry.getMobileEmbeddedDBPath());
                 FileUtils.deleteDirectory(mobileDir);
                 
-                System.out.println("###################################### copyToMobileDisk  -  mobileTmpDir["+mobileTmpDir+"] to mobileDir["+mobileDir.getCanonicalPath()+"]");
+                System.out.println("###### copyToMobileDisk  -  mobileTmpDir["+mobileMachineDir+"] to mobileDir["+mobileDir.getCanonicalPath()+"]");
                 
-                FileUtils.copyDirectory(mobileTmpDir, mobileDir, true);
+                FileUtils.copyDirectory(mobileMachineDir, mobileDir, true);
                 for (Object fObj : FileUtils.listFiles(mobileDir, null, true))
                 {
                     File f = (File)fObj;
@@ -741,7 +866,7 @@ public class DBConnection
                     }
                 }
                 
-                for (Object fObj : FileUtils.listFiles(mobileTmpDir, null, true))
+                for (Object fObj : FileUtils.listFiles(mobileMachineDir, null, true))
                 {
                     File f = (File)fObj;
                     if (f.exists() && !f.getName().equals("mysql.sock"))
@@ -757,6 +882,36 @@ public class DBConnection
             }
         }
         return false;
+    }
+    
+    
+    //-------------------------------------------------------------------------------------
+    //-- 
+    //-------------------------------------------------------------------------------------
+    public interface ShutdownUIIFace 
+    {
+        
+        /**
+         * This should display a modal dialog telling the user that they will need to be notified that the app shutdown.
+         */
+        public abstract void displayInitialDlg();
+        
+        /**
+         * This should display a non-modal dialog with a shutdown message (i.e. an in progress like message)
+         */
+        public abstract void displayShutdownMsgDlg();
+        
+        /**
+         * This is a modal message dialog so make the user aware that they should wait.
+         */
+        public abstract void displayShutdownAskDlg();
+        
+        /**
+         * This is a final modal dialog that tells them that they can remove the USB key.
+         */
+        public abstract void displayFinalShutdownDlg();
+        
+        
     }
 
 }
