@@ -269,7 +269,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected static Uploader       datasetUploader            = null; 
     protected WorkbenchValidator    workbenchValidator         = null;
-    protected boolean 		        doIncrementalValidation    = false;
+    protected boolean 		        doIncrementalValidation    = true;
     
     // XXX PREF
     protected int                   mapSize                    = 500;
@@ -4093,28 +4093,28 @@ public class WorkbenchPaneSS extends BaseSubPane
 			WorkbenchDataItem wbCell = wbRow.getItems().get(
 					(short) modelCol);
 			//XXX lots more to do with rendering cell states
-			if (doIncrementalValidation && wbCell != null)
+			if (doIncrementalValidation)
 			{
-				//XXX WorkbenchDataItems can be updated by GridCellEditor or by background validation initiated at load time or after find/replace ops
-				// but probably not necessary to synchronize here?
-				synchronized(wbCell)
+				String toolTip = null;
+				LineBorder border = null;
+				if (wbCell != null)
 				{
-					if (wbCell.getValidationStatus() == WorkbenchDataItem.VAL_ERROR)
+					// XXX WorkbenchDataItems can be updated by GridCellEditor
+					// or by background validation initiated at load time or
+					// after find/replace ops
+					// but probably not necessary to synchronize here?
+					synchronized (wbCell)
 					{
-						lbl.setToolTipText(wbCell.getStatusText());
-						//lbl.setForeground(Color.RED);
-						//lbl.setBackground(Color.RED);
-						lbl.setBorder(new LineBorder(Color.RED));
-						//lbl.setFont(lbl.getFont().deriveFont(Font.ITALIC));
+						if (wbCell.getValidationStatus() == WorkbenchDataItem.VAL_ERROR)
+						{
+							toolTip = wbCell.getStatusText();
+							border = new LineBorder(Color.RED);
+						} 	
 					}
-				}
+				} 				
+				lbl.setToolTipText(toolTip);
+				lbl.setBorder(border);
 			}
-			else 
-			{
-				lbl.setToolTipText(null);
-				lbl.setBorder(null);
-			}
-
 			return lbl;
 		}
     }
