@@ -157,11 +157,15 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         log.debug("Getting mySearchPanel");
         if (findPanel == null)
         {
-            findPanel = new SearchReplacePanel(this);
+            findPanel = createSearchReplacePanel();
         }
         return findPanel;
     }
 
+    protected SearchReplacePanel createSearchReplacePanel()
+    {
+    	return new SearchReplacePanel(this);
+    }
     
     /* (non-Javadoc)
 	 * @see javax.swing.JTable#changeSelection(int, int, boolean, boolean)

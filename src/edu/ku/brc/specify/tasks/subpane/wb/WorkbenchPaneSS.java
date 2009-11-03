@@ -323,7 +323,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         } 
         
         model       = new GridTableModel(this);
-        spreadSheet = new WorkbenchSpreadSheet(model);
+        spreadSheet = new WorkbenchSpreadSheet(model, this);
         spreadSheet.setReadOnly(isReadOnly);
         //spreadSheet.setC
         model.setSpreadSheet(spreadSheet);

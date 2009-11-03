@@ -36,9 +36,10 @@ public class TableSearcher
     
     protected static final Logger   log                = Logger.getLogger(TableSearcher.class);
     
-    protected int                   initialRow;//         = -1;
-    protected int                   initialCol;//         = -1;
-    protected boolean               isFirstPassOnTable;// = true;
+    protected int                   initialRow;
+    protected int                   initialCol;
+    protected boolean               isFirstPassOnTable;
+    protected int                   replacementCount;
     protected SpreadSheet           table;
     protected SearchReplacePanel    findPanel;
     
@@ -51,7 +52,16 @@ public class TableSearcher
         this.findPanel = findPanel;
         this.initialRow         = -1;
         this.initialCol         = -1;
-        this.isFirstPassOnTable = true;
+        reset();
+    }
+    
+    /**
+     * sets first pass to true and clears replacement count
+     */
+    protected void reset()
+    {
+    	isFirstPassOnTable = true;
+    	replacementCount = 0;
     }
     
     /**
@@ -201,8 +211,10 @@ public class TableSearcher
     /**
    * replaces the contents of cell where part of the cell contains the string found with the string
    * that is provided for replacement.
+   * 
+   * returns true if a replacement was actually made.
    */
-    public void replace(final TableSearcherCell cell, 
+    public boolean replace(final TableSearcherCell cell, 
                         final String findValue, 
                         final String replaceValue, 
                         final boolean isMtchCaseOn,
@@ -213,8 +225,8 @@ public class TableSearcher
             log.debug("replace() called");
         }
         
-        if (!isTableValid()) { return; }
-        if (cell == null) { return; }
+        if (!isTableValid()) { return false; }
+        if (cell == null) { return false; }
         stopTableEditing();  
         
         
@@ -236,13 +248,13 @@ public class TableSearcher
             {
                 log.info("replace () The value  value=[ " + o.toString() + "] is not a String and cannot be replaced");
             }
-            return;
+            return false;
         }
         
         if (row == -1 || col == -1)
         {
             findPanel.setStatusLabelWithFailedFind();
-            return;
+            return false;
         }
         
         String newValue = "";
@@ -268,7 +280,9 @@ public class TableSearcher
                 log.info("                col=[" + col + "] ");
             }
             table.setValueAt(newValue, row, col);
+            return true;
         } 
+        return false;
     }
 
 
@@ -323,7 +337,8 @@ public class TableSearcher
             }
             if (valueInTable.contains(searchString))
             {
-                isFirstPassOnTable = true;
+                //XXX is the next line below necessary?? Be sure to thoroughly test wrap and next->replace and previous...
+            	isFirstPassOnTable = true;
                 return new TableSearcherCell(row, column, true, cellValue.toString());
             }
         }
@@ -411,7 +426,7 @@ public class TableSearcher
             numOfCols--;
             return searchTableForValueBkwds(searchString, numOfRows, numOfCols, isMatchCaseOn, isWrapOn, isSearchSelection);
         }
-        isFirstPassOnTable = true;
+        reset();
         return new TableSearcherCell(-1, -1, false, null);
     }
 
@@ -535,6 +550,26 @@ public class TableSearcher
         isFirstPassOnTable = true;
         return new TableSearcherCell(-1, -1, false, null);
     }
+    
+    /**
+     * called to finalize replacements.
+     */
+    public void replacementCleanup()
+    {
+    	if (replacementCount > 0)
+    	{
+    		table.getModel().fireTableDataChanged();
+    	}
+    }
+
+	/**
+	 * @return the replacementCount
+	 */
+	public int getReplacementCount()
+	{
+		return replacementCount;
+	}
+    
     
 //  /**
 //  * replaces all of the values where a cell contains the string

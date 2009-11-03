@@ -18,6 +18,9 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
+import edu.ku.brc.ui.TableSearcher;
+import edu.ku.brc.ui.TableSearcherCell;
+import edu.ku.brc.ui.tmanfe.SearchReplacePanel;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
 import edu.ku.brc.ui.tmanfe.SpreadSheetModel;
 import edu.ku.brc.util.DateConverter;
@@ -31,7 +34,7 @@ import edu.ku.brc.util.GeoRefConverter;
 @SuppressWarnings("serial")
 public class WorkbenchSpreadSheet extends SpreadSheet
 {
-
+	protected WorkbenchPaneSS       workbenchPaneSS;
 	//for sorting
 	protected DateConverter         dateConverter       = new DateConverter(); 
 	protected GeoRefConverter       geoRefConverter     = new GeoRefConverter();
@@ -43,13 +46,89 @@ public class WorkbenchSpreadSheet extends SpreadSheet
      * Constructor for Spreadsheet from model
      * @param model
      */
-    public WorkbenchSpreadSheet(final SpreadSheetModel model)
+    public WorkbenchSpreadSheet(final SpreadSheetModel model, final WorkbenchPaneSS workbenchPaneSS)
     {
         super(model);
+        this.workbenchPaneSS = workbenchPaneSS;
         buildComparators();
     }
     
-    /**
+    
+    /* (non-Javadoc)
+	 * @see edu.ku.brc.ui.tmanfe.SpreadSheet#createSearchReplacePanel()
+	 */
+	@Override
+	protected SearchReplacePanel createSearchReplacePanel()
+	{
+		return new SearchReplacePanel(this) {
+
+			final Vector<Integer> replacedRows = new Vector<Integer>();
+			/* (non-Javadoc)
+			 * @see edu.ku.brc.ui.tmanfe.SearchReplacePanel#createTableSearcher()
+			 */
+			@Override
+			protected TableSearcher createTableSearcher()
+			{
+				return new TableSearcher(table, this) {
+
+					/* (non-Javadoc)
+					 * @see edu.ku.brc.ui.TableSearcher#replace(edu.ku.brc.ui.TableSearcherCell, java.lang.String, java.lang.String, boolean, boolean)
+					 */
+					@Override
+					public boolean replace(TableSearcherCell cell,
+							String findValue, String replaceValue,
+							boolean isMtchCaseOn, boolean isSearchSelection)
+					{
+						
+						boolean result = super.replace(cell, findValue, replaceValue, isMtchCaseOn,
+								isSearchSelection);
+						if (result)
+						{
+							replacedRows.add(cell.getRow());
+						}
+						return result;
+					}
+
+					/* (non-Javadoc)
+					 * @see edu.ku.brc.ui.TableSearcher#replacementCleanup()
+					 */
+					@Override
+					public void replacementCleanup()
+					{
+						//This is not good.
+						//I have avoided making WorkbenchPaneSS a table model listener
+						//because lots of unnecessary validation would have been performed.
+						//But this is not so efficient either...
+						int[] rows = new int[replacedRows.size()];
+						for (int r = 0; r < rows.length; r++)
+						{
+							rows[r] = convertRowIndexToModel(replacedRows.get(r));
+						}
+						if (!workbenchPaneSS.validateRows(rows))
+						{
+							model.fireTableDataChanged();
+						}
+					}
+
+					/* (non-Javadoc)
+					 * @see edu.ku.brc.ui.TableSearcher#reset()
+					 */
+					@Override
+					protected void reset()
+					{
+						super.reset();
+						replacedRows.clear();
+					}
+					
+					
+				};
+			}
+			
+		};
+	}
+
+
+	/**
      * Builds custom comparators for columns that requre them.
      */
     protected void buildComparators()

@@ -357,7 +357,7 @@ public class GridTableModel extends SpreadSheetModel
         Object value = getValueAt(valueRowInx, colInx);
         try
         {
-        	setBatchMode(rowInxs.length > 500); 
+        	setBatchMode(rowInxs.length > 50); 
         	for (int rowInx : rowInxs)
         	{
         		setValueAt(value, rowInx, colInx);
