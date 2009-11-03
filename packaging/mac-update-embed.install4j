@@ -665,7 +665,7 @@
                   <java class="java.beans.XMLDecoder">
                     <object class="com.install4j.runtime.beans.actions.desktop.CreateProgramGroupAction">
                       <void property="programGroupName">
-                        <string>${compiler:sys.fullName}</string>
+                        <string>${compiler:sys.fullName}EZDB</string>
                       </void>
                     </object>
                   </java>
