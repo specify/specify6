@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -46,6 +47,7 @@ import org.hibernate.annotations.Index;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.AttributeProviderIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
 /**
 
@@ -94,6 +96,7 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
     protected Set<CollectingEventAttachment>    collectingEventAttachments;
 
 
+    private static String ceCOSQL = " FROM collectingevent ce INNER JOIN collectionobject c ON ce.CollectingEventID = c.CollectingEventID WHERE c.CollectingEventID = ";
 
     // Constructors
 
@@ -511,7 +514,8 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
             return CollectingTrip.getClassTableId();
         }
         
-        if (collectionObjects != null && collectionObjects.size() > 0)
+        int cnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(c.CollectionObjectID)" + ceCOSQL + collectingEventId);
+        if (cnt > 1)
         {
             return CollectionObject.getClassTableId();
         }
@@ -529,9 +533,15 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         {
             return collectingTrip.getId();
         }
-        if (collectionObjects != null && collectionObjects.size() == 1)
+        
+        // Here is a non-Hibernate fix
+        String postSQL = ceCOSQL + collectingEventId;
+        
+        int cnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(c.CollectionObjectID)" + postSQL);
+        if (cnt == 1)
         {
-            return ((CollectionObject)collectionObjects.toArray()[0]).getId();
+            Vector<Object> ids = BasicSQLUtils.querySingleCol("SELECT c.CollectionObjectID" + postSQL);
+            return (Integer)ids.get(0);
         }
         return null;
     }
