@@ -42,6 +42,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -129,6 +130,7 @@ import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.StatsTrackerTask;
+import edu.ku.brc.af.tasks.StatsTrackerTask.StatsSwingWorker;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.ui.ProcessListUtil;
 import edu.ku.brc.af.ui.db.DatabaseLoginListener;
@@ -562,7 +564,13 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 @Override
                 public void displayInitialDlg()
                 {
-                    UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "MOBILE_INFO", "MOBILE_INTRO");
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run()
+                        {
+                            UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "MOBILE_INFO", "MOBILE_INTRO");
+                        }
+                    });
                 }
     
                 /* (non-Javadoc)
@@ -581,13 +589,19 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 @Override
                 public void displayShutdownAskDlg()
                 {
-                    JPanel panel = new JPanel(new BorderLayout());
-                    panel.setBorder(BorderFactory.createEmptyBorder(14, 14, 14, 14));
-                    panel.add(new JLabel(IconManager.getIcon(getLargeIconName()), SwingConstants.CENTER), BorderLayout.WEST);
-                    panel.add(UIHelper.createI18NLabel("MOBILE_INTRO", SwingConstants.CENTER), BorderLayout.CENTER);
-                    CustomDialog dlg = new CustomDialog((Frame)null, "Shutdown", true, CustomDialog.OK_BTN, panel);
-                    dlg.setAlwaysOnTop(true);
-                    UIHelper.centerAndShow(dlg);
+                    /*SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run()
+                        {
+                            JPanel panel = new JPanel(new BorderLayout());
+                            panel.setBorder(BorderFactory.createEmptyBorder(14, 14, 14, 14));
+                            panel.add(new JLabel(IconManager.getIcon(getLargeIconName()), SwingConstants.CENTER), BorderLayout.WEST);
+                            panel.add(UIHelper.createI18NLabel("MOBILE_INTRO", SwingConstants.CENTER), BorderLayout.CENTER);
+                            CustomDialog dlg = new CustomDialog((Frame)null, "Shutdown", true, CustomDialog.OK_BTN, panel);
+                            dlg.setAlwaysOnTop(true);
+                            UIHelper.centerAndShow(dlg);
+                        }
+                    });*/
                 }
     
                 /* (non-Javadoc)
@@ -963,7 +977,13 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         //--------------------------------------------------------------------
         //-- File Menu
         //--------------------------------------------------------------------
-        JMenu menu = UIHelper.createLocalizedMenu(mb, "Specify.FILE_MENU", "Specify.FILE_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
+        
+        JMenu menu = null;
+        
+        if (!UIHelper.isMacOS() || !isWorkbenchOnly)
+        {
+            menu = UIHelper.createLocalizedMenu(mb, "Specify.FILE_MENU", "Specify.FILE_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
+        }
 
         if (!isWorkbenchOnly)
         {
@@ -988,10 +1008,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     
             
             menu.addMenuListener(new MenuListener() {
-                @Override
-                public void menuCanceled(MenuEvent e) {}
-                @Override
-                public void menuDeselected(MenuEvent e) {}
+                @Override public void menuCanceled(MenuEvent e) {}
+                @Override public void menuDeselected(MenuEvent e) {}
                 @Override
                 public void menuSelected(MenuEvent e)
                 {
@@ -1026,6 +1044,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
        
         menu = UIRegistry.getInstance().createEditMenu();
         mb.add(menu);
+        
         //menu = UIHelper.createMenu(mb, "EditMenu", "EditMneu");
         if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
         {
@@ -1908,27 +1927,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     {
         if (false)
         {
-            if (GenericLSIDGeneratorFactory.getInstance().isReady())
-            {
-                System.err.println("["+
-                        GenericLSIDGeneratorFactory.getInstance().createLSID(GenericLSIDGeneratorFactory.CATEGORY_TYPE.Specimen, "1001") + "]");
-                return;
-            } else
-            {
-                System.err.println(GenericLSIDGeneratorFactory.getInstance().getErrorMsg());
-                GenericLSIDGeneratorFactory.getInstance().reset();
-            }
-        }
-        
-        if (false)
-        {
-            StatsTrackerTask statsTrackerTask = (StatsTrackerTask)TaskMgr.getTask(StatsTrackerTask.STATS_TRACKER);
-            statsTrackerTask.sendStats(false, false); // false means don't do it silently
-            return;
-        }
-        
-        if (false)
-        {
             ViewToSchemaReview.checkViews();
         }
         
@@ -2155,7 +2153,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     
                 } catch (Exception ex)
                 {
-                    
+                    log.error(ex);
                 }
                 
                 // Returns false if it isn't doing a backup.
@@ -2237,11 +2235,16 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     {
                         UIRegistry.getTopWindow().setVisible(false);
                         statsTrackerTask.setSendSecondaryStatsAllowed(canSendISAStats);
-                        statsTrackerTask.sendStats(true, false); // false means don't do it silently
+                        statsTrackerTask.sendStats(!UIRegistry.isMobile(), false, UIRegistry.isMobile()); // false means don't do it silently
                         return false;
                     }
                     DataProviderFactory.getInstance().shutdown();
                     DBConnection.shutdown();
+                    
+                } else if (UIRegistry.isMobile())
+                {
+                    // Fake like we sent stats
+                    CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, "STATS_SEND_DONE", null));
                     
                 } else
                 {
@@ -2358,7 +2361,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     }
     
     /**
-     * 
+     * This is called when switching Collections and NOT logging off.
      */
     protected void checkAndSendStats()
     {
@@ -2378,7 +2381,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             if (statsTrackerTask != null)
             {
                 statsTrackerTask.setSendSecondaryStatsAllowed(canSendISAStats);
-                statsTrackerTask.sendStats(false, true);
+                statsTrackerTask.sendStats(false, true, false);
             }
         }
     }
@@ -2770,10 +2773,50 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             } else if (cmdAction.isAction("CheckForUpdates"))
             {
                 checkForUpdates();
+            } else if (cmdAction.isAction("STATS_SEND_DONE"))
+            {
+                if (UIRegistry.isMobile())
+                {
+                    shutdownMobileDB();
+                    
+                } else
+                {
+                    DataProviderFactory.getInstance().shutdown();
+                    DBConnection.shutdown();
+                    System.exit(0);
+                }
             }
         }
     }
+    
+    /**
+     * 
+     */
+    private void shutdownMobileDB()
+    {
+        javax.swing.SwingWorker<Object, Object> worker = new javax.swing.SwingWorker<Object, Object>()
+        {
+            @Override
+            protected Object doInBackground() throws Exception
+            {
+                DBConnection.shutdownFinalConnection();
+                return null;
+            }
 
+            @Override
+            protected void done()
+            {
+                super.done();
+                
+                DataProviderFactory.getInstance().shutdown();
+                DBConnection.shutdown();
+                System.exit(0);
+            }
+            
+        };
+        
+        worker.execute();
+    }
 
     // *******************************************************
     // *****************   Static Methods  *******************

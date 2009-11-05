@@ -133,10 +133,14 @@ public class StatsTrackerTask extends BaseTask
     }
     
     /**
-     * @param doExit
-     * @param doSilent
+     * When it is done sending the statistics: if doExit is true it will shutdown the Hibernate and the DBConnections
+     * and call System.exit(0), if doSendDoneEvent is true then it send a CommandAction(APP_CMD_TYPE, "STATS_SEND_DONE", null)
+     * for someone else to shut everything down.
+     * @param doExit call exit
+     * @param doSilent don't show any UI while sending stats
+     * @param doSendDoneEvent send a STATS_SEND_DONE command on the UI thread.
      */
-    public void sendStats(final boolean doExit, final boolean doSilent)
+    public void sendStats(final boolean doExit, final boolean doSilent, final boolean doSendDoneEvent)
     {
         if (!doSilent)
         {
@@ -167,6 +171,10 @@ public class StatsTrackerTask extends BaseTask
                         DataProviderFactory.getInstance().shutdown();
                         DBConnection.shutdown();
                         System.exit(0);
+                        
+                    } else if (doSendDoneEvent)
+                    {
+                        CommandDispatcher.dispatch(new CommandAction(APP_CMD_TYPE, "STATS_SEND_DONE", null));
                     }
                 }
                 

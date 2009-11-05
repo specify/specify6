@@ -173,7 +173,7 @@ public class DBConnection
     /**
      * Shuts down the Embedded process.
      */
-    private static void shutdownFinalConnection()
+    public static void shutdownFinalConnection()
     {
         if (!finalShutdownComplete.get())
         {
@@ -460,10 +460,10 @@ public class DBConnection
                 }
             }
             
-            if (connections.isEmpty())
-            {
-                shutdownFinalConnection();    
-            }
+            //if (connections.isEmpty())
+            //{
+            //    shutdownFinalConnection();    
+            //}
             
             // This is primarily for Derby non-networked database. 
             if (dbCloseConnectionStr != null)
