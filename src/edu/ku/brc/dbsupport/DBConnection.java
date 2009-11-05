@@ -111,7 +111,7 @@ public class DBConnection
                     {
                         if (connectionCreated)
                         {
-                            shutdownFinalConnection();
+                            shutdownFinalConnection(false);
                         }
                     }
                 });
@@ -173,48 +173,65 @@ public class DBConnection
     /**
      * Shuts down the Embedded process.
      */
-    public static void shutdownFinalConnection()
+    public static void shutdownFinalConnection(final boolean doExit)
     {
         if (!finalShutdownComplete.get())
         {
-            
             if (shutdownUI != null)
             {
                 shutdownUI.displayShutdownMsgDlg();
-                
-                shutdownUI.displayShutdownAskDlg();
             }
             
-            // Give it a little time to shutdown
-            try
+            javax.swing.SwingWorker<Object, Object> worker = new javax.swing.SwingWorker<Object, Object>()
             {
-                Thread.sleep(3000);
-                
-            } catch (Exception ex) {}
-            
-            if (isEmbeddedDB != null && isEmbeddedDB)
-            {
-                ServerLauncherSocketFactory.shutdown(embeddedDataDir, null);
-            }
-            
-            // Give it a little time to shutdown
-            try
-            {
-                Thread.sleep(3000);
-                
-            } catch (Exception ex) {}
-            
-            if (UIRegistry.isMobile())
-            {
-                copyToMobileDisk();
-            }
-            
-            finalShutdownComplete.set(true);
-            
-            if (shutdownUI != null)
-            {
-                shutdownUI.displayFinalShutdownDlg();
-            }
+                @Override
+                protected Object doInBackground() throws Exception
+                {
+                    try
+                    {
+                        Thread.sleep(1000);
+                        
+                    } catch (Exception ex) {}
+                    
+                    return null;
+                }
+
+                @Override
+                protected void done()
+                {
+                    super.done();
+                    
+                    if (isEmbeddedDB != null && isEmbeddedDB)
+                    {
+                        ServerLauncherSocketFactory.shutdown(embeddedDataDir, null);
+                    }
+                    
+                    // Give it a little time to shutdown
+                    try
+                    {
+                        Thread.sleep(1000);
+                        
+                    } catch (Exception ex) {}
+                    
+                    if (UIRegistry.isMobile())
+                    {
+                        copyToMobileDisk();
+                    }
+                    
+                    finalShutdownComplete.set(true);
+                    
+                    if (shutdownUI != null)
+                    {
+                        shutdownUI.displayFinalShutdownDlg();
+                    }
+                    
+                    if (doExit)
+                    {
+                        System.exit(0);
+                    }
+                }
+            };
+            worker.execute();
         }
     }
     
@@ -890,7 +907,6 @@ public class DBConnection
     //-------------------------------------------------------------------------------------
     public interface ShutdownUIIFace 
     {
-        
         /**
          * This should display a modal dialog telling the user that they will need to be notified that the app shutdown.
          */
@@ -900,11 +916,6 @@ public class DBConnection
          * This should display a non-modal dialog with a shutdown message (i.e. an in progress like message)
          */
         public abstract void displayShutdownMsgDlg();
-        
-        /**
-         * This is a modal message dialog so make the user aware that they should wait.
-         */
-        public abstract void displayShutdownAskDlg();
         
         /**
          * This is a final modal dialog that tells them that they can remove the USB key.

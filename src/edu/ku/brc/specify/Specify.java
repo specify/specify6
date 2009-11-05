@@ -42,7 +42,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -130,7 +129,6 @@ import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.StatsTrackerTask;
-import edu.ku.brc.af.tasks.StatsTrackerTask.StatsSwingWorker;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.ui.ProcessListUtil;
 import edu.ku.brc.af.ui.db.DatabaseLoginListener;
@@ -581,27 +579,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 {
                     processDlg.setVisible(false);
                     UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "MOBILE_INFO", "MOBILE_FINI");
-                }
-    
-                /* (non-Javadoc)
-                 * @see edu.ku.brc.dbsupport.DBConnection.ShutdownUIIFace#displayShutdownAskDlg()
-                 */
-                @Override
-                public void displayShutdownAskDlg()
-                {
-                    /*SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run()
-                        {
-                            JPanel panel = new JPanel(new BorderLayout());
-                            panel.setBorder(BorderFactory.createEmptyBorder(14, 14, 14, 14));
-                            panel.add(new JLabel(IconManager.getIcon(getLargeIconName()), SwingConstants.CENTER), BorderLayout.WEST);
-                            panel.add(UIHelper.createI18NLabel("MOBILE_INTRO", SwingConstants.CENTER), BorderLayout.CENTER);
-                            CustomDialog dlg = new CustomDialog((Frame)null, "Shutdown", true, CustomDialog.OK_BTN, panel);
-                            dlg.setAlwaysOnTop(true);
-                            UIHelper.centerAndShow(dlg);
-                        }
-                    });*/
                 }
     
                 /* (non-Javadoc)
@@ -2777,7 +2754,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             {
                 if (UIRegistry.isMobile())
                 {
-                    shutdownMobileDB();
+                    
+                    DataProviderFactory.getInstance().shutdown();
+                    DBConnection.shutdown();
+                    DBConnection.shutdownFinalConnection(true); // true means System.exit
                     
                 } else
                 {
@@ -2787,35 +2767,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 }
             }
         }
-    }
-    
-    /**
-     * 
-     */
-    private void shutdownMobileDB()
-    {
-        javax.swing.SwingWorker<Object, Object> worker = new javax.swing.SwingWorker<Object, Object>()
-        {
-            @Override
-            protected Object doInBackground() throws Exception
-            {
-                DBConnection.shutdownFinalConnection();
-                return null;
-            }
-
-            @Override
-            protected void done()
-            {
-                super.done();
-                
-                DataProviderFactory.getInstance().shutdown();
-                DBConnection.shutdown();
-                System.exit(0);
-            }
-            
-        };
-        
-        worker.execute();
     }
 
     // *******************************************************
