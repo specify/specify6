@@ -2888,184 +2888,185 @@ public class DataBuilder
     public static void buildDarwinCoreSchema(final Discipline disciplineArg)
     {
         
-        XStream xstream = new XStream();
-        xstream.alias("field",     FieldMap.class);
-        
-        xstream.useAttributeFor(FieldMap.class, "name");
-        xstream.useAttributeFor(FieldMap.class, "table");
-        xstream.useAttributeFor(FieldMap.class, "field");
-        xstream.useAttributeFor(FieldMap.class, "formatter");
-        
-        DataProviderSessionIFace localSession = null;
-        
+//        XStream xstream = new XStream();
+//        xstream.alias("field",     FieldMap.class);
+//        
+//        xstream.useAttributeFor(FieldMap.class, "name");
+//        xstream.useAttributeFor(FieldMap.class, "table");
+//        xstream.useAttributeFor(FieldMap.class, "field");
+//        xstream.useAttributeFor(FieldMap.class, "formatter");
+//        
+//        DataProviderSessionIFace localSession = null;
+//        
         try
         {
-            localSession = DataProviderFactory.getInstance().createSession();
+//            localSession = DataProviderFactory.getInstance().createSession();
+//            
+//            if (false)
+//            {
+//                localSession.beginTransaction();
+//                
+//                List<SpExportSchema> schemaList = localSession.getDataList(SpExportSchema.class);
+//                if (schemaList != null)
+//                {
+//                    for (SpExportSchema s : schemaList)
+//                    {
+//                        for (SpExportSchemaItem item : s.getSpExportSchemaItems())
+//                        {
+//                            if (item.getSpLocaleContainerItem() != null)
+//                            {
+//                                item.getSpLocaleContainerItem().removeReference(item, "spExportSchemaItems");
+//                            }
+//                        }
+//                        localSession.delete(s);
+//                    }
+//                }
+//                localSession.commit();
+//                localSession.flush();
+//            }
+//            
+//            
+//            File           mapFile   = new File(XMLHelper.getConfigDirPath("darwin_core_map.xml"));
+//            List<FieldMap> fieldList = (List<FieldMap>)xstream.fromXML(FileUtils.readFileToString(mapFile));
+//            Hashtable<String, FieldMap> fieldMap = new Hashtable<String, FieldMap>();
+//            for (FieldMap fm : fieldList)
+//            {
+//                fieldMap.put(fm.getName(), fm);
+//            }
+//            Element root = null;
+//            if (true)
+//            {
+//                root = XMLHelper.readDOMFromConfigDir("darwin2_core.xsd");
+//                
+//            } else
+//            {
+//                String url = "http://www.digir.net/schema/conceptual/darwin/2003/1.0/darwin2.xsd";
+//                HTTPGetter getter = new HTTPGetter();
+//                byte[] bytes = getter.doHTTPRequest(url);
+//                if (getter.getStatus() == HTTPGetter.ErrorCode.NoError)
+//                {
+//                    String xml = new String(bytes);
+//                    //System.out.println(xml);
+//                    root = XMLHelper.readStrToDOM4J(xml);
+//                }
+//            }
+//            
+//            Discipline disciplineTmp;
+//            if (disciplineArg == null)
+//            {
+//                disciplineTmp = AppContextMgr.getInstance().getClassObject(Discipline.class);
+//            } else
+//            {
+//                disciplineTmp = disciplineArg; 
+//            }
+//            
+//            Discipline discipline = (Discipline)localSession.getData("FROM Discipline WHERE disciplineId = " + disciplineTmp.getId());
+//            
+//            SpExportSchema schema = new SpExportSchema();
+//            schema.initialize();
+//            schema.setSchemaName("Darwin Core");
+//            //Maybe the version for this should be 1.21 to be consistent with the
+//            //VertNet darwin schema? Which Laura says is 1.21. 
+//            //The darwin2_core.xsd and darwinCoreVertNet.xsd
+//            //files seem to point to the same source.            
+//            schema.setSchemaVersion("2.0");
+//            
+//            discipline.addReference(schema, "spExportSchemas");
+//            
+//            StringBuilder sb = new StringBuilder();
+//            for (Object obj : root.selectNodes("/xsd:schema/xsd:annotation/xsd:documentation"))
+//            {
+//                Element e = (Element)obj;
+//                sb.append(e.getTextTrim());
+//            }
+//            schema.setDescription(sb.toString().substring(0, Math.min(sb.length(), 255)));
+//            
+//            localSession.beginTransaction();
+//            
+//            localSession.saveOrUpdate(discipline);
+//            localSession.save(schema);
+//            
+//            for (Object obj : root.selectNodes("/xsd:schema/xsd:element"))
+//            {
+//                Element e = (Element)obj;
+//                String  name      = XMLHelper.getAttr(e, "name", null);
+//                String  type      = XMLHelper.getAttr(e, "type", null);
+//                
+//                FieldMap fm = fieldMap.get(name);
+//                
+//                if (name != null && type != null && fm != null && StringUtils.isNotEmpty(fm.getField()))
+//                {
+//                    SpExportSchemaItem item = new SpExportSchemaItem();
+//                    item.initialize();
+//                    item.setFieldName(name);
+//                    item.setDataType(type.substring(4));
+//                    item.setFormatter(fm.getFormatter());
+//                    
+//                    schema.addReference(item, "spExportSchemaItems");
+//                    
+//                    //System.out.println(type.substring(4)+"  "+type.substring(4).length());
+//                    
+//                    localSession.save(item);
+//                    
+//                    String sql = "FROM SpLocaleContainerItem spi INNER JOIN spi.container spc INNER JOIN spc.discipline dsp WHERE spc.name='%s' AND spi.name='%s' AND dsp.disciplineId = %s";
+//                    sql = String.format(sql, fm.getTable(), fm.getField(), discipline.getDisciplineId().toString());
+//                    Object[] cols = (Object[])localSession.getData(sql);
+//                    if (cols != null)
+//                    {
+//                        System.out.println(name);
+//                        SpLocaleContainerItem spItem = (SpLocaleContainerItem)cols[0];
+//                        if (spItem != null)
+//                        {
+//                            item.setSpLocaleContainerItem(spItem);
+//                            spItem.getSpExportSchemaItems().add(item);
+//                            
+//                            localSession.saveOrUpdate(item);
+//                            localSession.saveOrUpdate(spItem);
+//                            
+//                        } else
+//                        {
+//                            System.err.println("Couldn't find ["+sql+"]");
+//                        }
+//                    }
+//                }
+//                
+//                /*if (name != null && type != null)
+//                {
+//                    System.out.println("    <field name=\""+name+"\" table=\"\" field=\"\" formatter=\"\"/>");
+//                    //System.out.println("<field name=\""+name+"\" type=\""+ type.substring(4)+"\" table=\"\" field=\"\"/>");
+//                    Object node = e.selectObject("xsd:annotation/xsd:documentation");
+//                    if (node instanceof Element)
+//                    {
+//                        Element descEl = (Element)node;
+//                        if (descEl != null)
+//                        {
+//                            String  desc = descEl.getTextTrim();
+//                            //System.out.println(desc+"\n");
+//                        }
+//                    }
+//                }*/
+//            }
+//            localSession.commit();
+//            localSession.flush();
             
-            if (false)
-            {
-                localSession.beginTransaction();
-                
-                List<SpExportSchema> schemaList = localSession.getDataList(SpExportSchema.class);
-                if (schemaList != null)
-                {
-                    for (SpExportSchema s : schemaList)
-                    {
-                        for (SpExportSchemaItem item : s.getSpExportSchemaItems())
-                        {
-                            if (item.getSpLocaleContainerItem() != null)
-                            {
-                                item.getSpLocaleContainerItem().removeReference(item, "spExportSchemaItems");
-                            }
-                        }
-                        localSession.delete(s);
-                    }
-                }
-                localSession.commit();
-                localSession.flush();
-            }
-            
-            
-            File           mapFile   = new File(XMLHelper.getConfigDirPath("darwin_core_map.xml"));
-            List<FieldMap> fieldList = (List<FieldMap>)xstream.fromXML(FileUtils.readFileToString(mapFile));
-            Hashtable<String, FieldMap> fieldMap = new Hashtable<String, FieldMap>();
-            for (FieldMap fm : fieldList)
-            {
-                fieldMap.put(fm.getName(), fm);
-            }
-            Element root = null;
-            if (true)
-            {
-                root = XMLHelper.readDOMFromConfigDir("darwin2_core.xsd");
-                
-            } else
-            {
-                String url = "http://www.digir.net/schema/conceptual/darwin/2003/1.0/darwin2.xsd";
-                HTTPGetter getter = new HTTPGetter();
-                byte[] bytes = getter.doHTTPRequest(url);
-                if (getter.getStatus() == HTTPGetter.ErrorCode.NoError)
-                {
-                    String xml = new String(bytes);
-                    //System.out.println(xml);
-                    root = XMLHelper.readStrToDOM4J(xml);
-                }
-            }
-            
-            Discipline disciplineTmp;
-            if (disciplineArg == null)
-            {
-                disciplineTmp = AppContextMgr.getInstance().getClassObject(Discipline.class);
-            } else
-            {
-                disciplineTmp = disciplineArg; 
-            }
-            
-            Discipline discipline = (Discipline)localSession.getData("FROM Discipline WHERE disciplineId = " + disciplineTmp.getId());
-            
-            SpExportSchema schema = new SpExportSchema();
-            schema.initialize();
-            schema.setSchemaName("Darwin Core");
-            //Maybe the version for this should be 1.21 to be consistent with the
-            //VertNet darwin schema? Which Laura says is 1.21. 
-            //The darwin2_core.xsd and darwinCoreVertNet.xsd
-            //files seem to point to the same source.            
-            schema.setSchemaVersion("2.0");
-            
-            discipline.addReference(schema, "spExportSchemas");
-            
-            StringBuilder sb = new StringBuilder();
-            for (Object obj : root.selectNodes("/xsd:schema/xsd:annotation/xsd:documentation"))
-            {
-                Element e = (Element)obj;
-                sb.append(e.getTextTrim());
-            }
-            schema.setDescription(sb.toString().substring(0, Math.min(sb.length(), 255)));
-            
-            localSession.beginTransaction();
-            
-            localSession.saveOrUpdate(discipline);
-            localSession.save(schema);
-            
-            for (Object obj : root.selectNodes("/xsd:schema/xsd:element"))
-            {
-                Element e = (Element)obj;
-                String  name      = XMLHelper.getAttr(e, "name", null);
-                String  type      = XMLHelper.getAttr(e, "type", null);
-                
-                FieldMap fm = fieldMap.get(name);
-                
-                if (name != null && type != null && fm != null && StringUtils.isNotEmpty(fm.getField()))
-                {
-                    SpExportSchemaItem item = new SpExportSchemaItem();
-                    item.initialize();
-                    item.setFieldName(name);
-                    item.setDataType(type.substring(4));
-                    item.setFormatter(fm.getFormatter());
-                    
-                    schema.addReference(item, "spExportSchemaItems");
-                    
-                    //System.out.println(type.substring(4)+"  "+type.substring(4).length());
-                    
-                    localSession.save(item);
-                    
-                    String sql = "FROM SpLocaleContainerItem spi INNER JOIN spi.container spc INNER JOIN spc.discipline dsp WHERE spc.name='%s' AND spi.name='%s' AND dsp.disciplineId = %s";
-                    sql = String.format(sql, fm.getTable(), fm.getField(), discipline.getDisciplineId().toString());
-                    Object[] cols = (Object[])localSession.getData(sql);
-                    if (cols != null)
-                    {
-                        System.out.println(name);
-                        SpLocaleContainerItem spItem = (SpLocaleContainerItem)cols[0];
-                        if (spItem != null)
-                        {
-                            item.setSpLocaleContainerItem(spItem);
-                            spItem.getSpExportSchemaItems().add(item);
-                            
-                            localSession.saveOrUpdate(item);
-                            localSession.saveOrUpdate(spItem);
-                            
-                        } else
-                        {
-                            System.err.println("Couldn't find ["+sql+"]");
-                        }
-                    }
-                }
-                
-                /*if (name != null && type != null)
-                {
-                    System.out.println("    <field name=\""+name+"\" table=\"\" field=\"\" formatter=\"\"/>");
-                    //System.out.println("<field name=\""+name+"\" type=\""+ type.substring(4)+"\" table=\"\" field=\"\"/>");
-                    Object node = e.selectObject("xsd:annotation/xsd:documentation");
-                    if (node instanceof Element)
-                    {
-                        Element descEl = (Element)node;
-                        if (descEl != null)
-                        {
-                            String  desc = descEl.getTextTrim();
-                            //System.out.println(desc+"\n");
-                        }
-                    }
-                }*/
-            }
-            localSession.commit();
-            localSession.flush();
-
             //ExportMappingTask imports don't update the schemaLocale tables
             ExportMappingTask.importSchemaDefinition(new File(XMLHelper.getConfigDirPath("darwinCoreVertNet.xsd")), "VertNetDarwinCore", "1.21");
             ExportMappingTask.importSchemaDefinition(new File(XMLHelper.getConfigDirPath("tdwg_dw_core.xsd")), "DarwinCoreTDWG", "1.4");
-
+            
         } catch (Exception ex)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataBuilder.class, ex);
             ex.printStackTrace();
             
-        } finally
-        {
-            if (localSession != null)
-            {
-                localSession.close();
-            }
-        }
+        } 
+//        finally
+//        {
+//            if (localSession != null)
+//            {
+//                localSession.close();
+//            }
+//        }
     }
     
     // USed for Mapping from Export Schema to the Specify Schema
