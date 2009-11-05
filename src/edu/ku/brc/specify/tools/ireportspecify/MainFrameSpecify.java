@@ -29,6 +29,7 @@ import it.businesslogic.ireport.gui.JReportFrame;
 import it.businesslogic.ireport.gui.MainFrame;
 import it.businesslogic.ireport.gui.ReportPropertiesFrame;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.Toolkit;
@@ -53,11 +54,15 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -82,6 +87,7 @@ import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -1871,6 +1877,58 @@ public class MainFrameSpecify extends MainFrame
                     	return result;
                    }
                 };
+                
+                if (UIRegistry.isMobile())
+                {
+                    DBConnection.setShutdownUI(new DBConnection.ShutdownUIIFace() 
+                    {
+                        CustomDialog processDlg;
+                        
+                        /* (non-Javadoc)
+                         * @see edu.ku.brc.dbsupport.DBConnection.ShutdownUIIFace#displayInitialDlg()
+                         */
+                        @Override
+                        public void displayInitialDlg()
+                        {
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run()
+                                {
+                                    UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "MOBILE_INFO", "MOBILE_INTRO");
+                                }
+                            });
+                        }
+            
+                        /* (non-Javadoc)
+                         * @see edu.ku.brc.dbsupport.DBConnection.ShutdownUIIFace#displayFinalShutdownDlg()
+                         */
+                        @Override
+                        public void displayFinalShutdownDlg()
+                        {
+                            processDlg.setVisible(false);
+                            UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "MOBILE_INFO", "MOBILE_FINI");
+                        }
+            
+                        /* (non-Javadoc)
+                         * @see edu.ku.brc.dbsupport.DBConnection.ShutdownUIIFace#displayShutdownMsgDlg()
+                         */
+                        @Override
+                        public void displayShutdownMsgDlg()
+                        {
+                            JPanel panel = new JPanel(new BorderLayout());
+                            panel.setBorder(BorderFactory.createEmptyBorder(14, 14, 14, 14));
+                            
+                            panel.add(new JLabel(IconManager.getIcon(Specify.getLargeIconName()), SwingConstants.CENTER), BorderLayout.WEST);
+                            panel.add(UIHelper.createI18NLabel("MOBILE_SHUTTING_DOWN", SwingConstants.CENTER), BorderLayout.CENTER);
+                            processDlg = new CustomDialog((Frame)null, "Shutdown", false, CustomDialog.NONE_BTN, panel);
+                            processDlg.setAlwaysOnTop(true);
+                            
+                            UIHelper.centerAndShow(processDlg);
+                            
+                        }
+                    });
+                }
+                
                 String nameAndTitle = "Specify iReport"; // I18N
                 UIRegistry.setRelease(true);
                 UIHelper.doLogin(usrPwdProvider, true, false, false, new IReportLauncher(), 

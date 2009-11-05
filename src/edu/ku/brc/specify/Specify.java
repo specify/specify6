@@ -1002,7 +1002,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 
         if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
         {
-            menu.addSeparator();
+            if (!UIRegistry.isMobile())
+            {
+                menu.addSeparator();
+            }
             String title = "Specify.EXIT"; //$NON-NLS-1$
             String mnu = "Specify.Exit_MNEU"; //$NON-NLS-1$
             mi = UIHelper.createLocalizedMenuItem(menu, title, mnu, title, true, null);
