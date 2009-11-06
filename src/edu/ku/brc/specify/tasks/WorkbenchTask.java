@@ -357,7 +357,7 @@ public class WorkbenchTask extends BaseTask
             updateNavBoxUI(dataSetCount);
         }
         
-        MAX_ROWS = AppPreferences.getRemote().getInt("MAX_ROWS", 2000);
+        MAX_ROWS = AppPreferences.getRemote().getInt("MAX_ROWS", MAX_ROWS);
         isShowDefault = true;
     }
     
@@ -895,6 +895,11 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     {
                         WorkbenchTemplateMappingItem wbItem = items.get(i);
                         int origIdx = wbItem.getOrigImportColumnIndex().intValue();
+                        if (origIdx == -1)
+                        {
+                        	//try the viewOrder
+                        	origIdx = wbItem.getViewOrder().intValue();
+                        }
                         ImportColumnInfo fileItem = origIdx > -1 && origIdx < colInfo.size() ? colInfo.get(origIdx) : null;
                         // Check to see if there is an exact match by name
                         if (colsMatchByName(wbItem, fileItem))
