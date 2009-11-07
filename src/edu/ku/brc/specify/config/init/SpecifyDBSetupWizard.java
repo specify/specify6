@@ -298,9 +298,9 @@ public class SpecifyDBSetupWizard extends JPanel
             panels.add(new InstSetupPanel("CREATEINST", 
                     "CREATEINST",
                     "wizard_configure_storage_tree",
-                    new String[] { "NAME",    "PREFIX"}, 
-                    new String[] { "instName", "instAbbrev"}, 
-                    new Integer[] { 255,       64}, 
+                    new String[] { }, 
+                    new String[] { },
+                    new Integer[] { }, 
                     nextBtn, backBtn, true));
         }
         
