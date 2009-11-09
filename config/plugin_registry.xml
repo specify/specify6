@@ -51,6 +51,7 @@
         <plugin class="edu.ku.brc.specify.tasks.RecordSetTask" addui="false"/>
         <plugin class="edu.ku.brc.specify.tasks.WorkbenchTask" addui="true"/>
         <plugin class="edu.ku.brc.specify.tasks.StatsTrackerTask" addui="false"/>
+        <plugin class="edu.ku.brc.specify.tasks.PluginsTask" addui="false"/>
 	</mobilecore>
 	
 	<uiplugins>
