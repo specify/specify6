@@ -19,6 +19,7 @@ package edu.ku.brc.specify.dbsupport;
 
 import java.sql.Connection;
 import java.util.HashMap;
+import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
@@ -39,14 +40,14 @@ public class SpecifySchemaUpdateScopeFixer
     protected static final Logger log = Logger.getLogger(SpecifySchemaUpdateScopeFixer.class);
     protected HashMap<Integer, Integer> colToDspHash = new HashMap<Integer, Integer>();
     protected HashMap<Integer, Integer> colToDivHash = new HashMap<Integer, Integer>();
-    
+    protected final String databaseName;
     /**
      * 
      */
-    public SpecifySchemaUpdateScopeFixer()
+    public SpecifySchemaUpdateScopeFixer(final String databaseName)
     {
         super();
-        // TODO Auto-generated constructor stub
+        this.databaseName = databaseName;
     }
 
     
@@ -140,11 +141,31 @@ public class SpecifySchemaUpdateScopeFixer
         };*/
     }
     
+    /**
+     * @param conn
+     * @param tableName
+     * @param fieldName
+     * @return true if there is a field named fieldName in the table named tableName.
+     */
+    protected boolean fieldExists(final Connection conn,  final String tableName, final String fieldName)
+    {
+        //XXX portability. This is MySQL -specific.
+    	Vector<Object[]>rows = BasicSQLUtils.query(conn, "SELECT CHARACTER_MAXIMUM_LENGTH FROM `information_schema`.`COLUMNS` where TABLE_SCHEMA = '" +
+        		databaseName + "' and TABLE_NAME = '" + tableName + "' and COLUMN_NAME = '" + fieldName + "'");                    
+        return rows.size() > 0;
+    }
+    
     protected boolean fixCollectionMember(final Connection conn, 
                                           final String tableName,
                                           final String oldIndexName)
     {
         log.info(tableName + " - " + oldIndexName);
+        
+        //check to see if the fix has already been done
+        if (!fieldExists(conn, tableName, "CollectionMemberID")) 
+        {
+        	return true; //successfully did nothing
+        }
         
         DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(tableName);
         if (tblInfo != null && tblInfo.getTableIndexMap() != null)
@@ -233,7 +254,12 @@ public class SpecifySchemaUpdateScopeFixer
 
     public boolean fixGroupPerson(final Connection conn)
     {
-        String dropOldInx   = "DROP INDEX GPColMemIDX on groupperson";
+        if (!fieldExists(conn, "groupperson", "CollectionMemberID"))
+        {
+        	return true; //already fixed
+        }
+        
+    	String dropOldInx   = "DROP INDEX GPColMemIDX on groupperson";
         String dropOldCol   = "ALTER TABLE groupperson DROP COLUMN CollectionMemberID";
         String createNewCol = "ALTER TABLE groupperson Add COLUMN DivisionID int(11)";
         String createNewInx = "CREATE INDEX GPDivMemIDX ON groupperson (DivisionID)";

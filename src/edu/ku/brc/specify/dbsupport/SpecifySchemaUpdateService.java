@@ -114,6 +114,30 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         return dbVersion;
     }
 
+    /**
+     * @param appVerNumArg
+     * @return true if appVerNumArg seems to be an internal version
+     */
+    protected boolean isInternalVerNum(final String appVerNumArg)
+    {
+    	if (appVerNumArg != null)
+		{
+			String[] pieces = StringUtils.split(appVerNumArg, ".");
+			for (int p = 0; p < pieces.length; p++)
+			{
+				try
+				{
+					new Integer(pieces[p]);
+				} catch (NumberFormatException ex)
+				{
+					return true;
+				}
+			}
+		}
+    	return false;
+    }
+    
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.SchemaUpdateService#updateSchema(java.lang.String)
      */
@@ -122,6 +146,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     {
         String  dbVersion = getDBSchemaVersionFromXML();
         String  appVerNum = appVerNumArg;
+        boolean internalVerNum = isInternalVerNum(appVerNum);
         
         DBConnection dbConn = DBConnection.getInstance();
         if (dbConn != null)
@@ -137,6 +162,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 String  schemaVersion  = null;
                 Integer spverId        = null;
                 Integer recVerNum     = 1;
+                
                 
                 log.debug("appVerNumArg:  ["+appVerNumArg+"] dbVersion from XML["+dbVersion+"] ");
 
@@ -154,12 +180,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         log.debug("appVerNumArg: ["+appVerNumArg+"] dbVersion from XML["+dbVersion+"] appVersion["+appVersion+"] schemaVersion["+schemaVersion+"]  spverId["+spverId+"]  recVerNum["+recVerNum+"] ");
 
                         
-                        if (appVerNum == null) // happens for developers
+                        if (appVerNum == null /*happens for developers*/ || internalVerNum) 
                         {
                             appVerNum = appVersion;
                         }
                         
-                        if (appVersion == null && schemaVersion == null)
+                        if (appVersion == null || schemaVersion == null)
                         {
                             doUpdateAppVer = true;
                             
@@ -186,6 +212,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 return SchemaUpdateTpe.Error;
                             }
                         }
+                    } else
+                    {
+                    	//If somebody somehow got a hold of an 'internal' version (via a conversion, or possibly by manually checking for updates.
+                    	doUpdateAppVer = true;
+                    	doSchemaUpdate = true;
                     }
                 } else
                 {
@@ -280,6 +311,26 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     }
 
     /**
+     * @param conn
+     * @param databaseName
+     * @param tableName
+     * @param fieldName
+     * @return length of field or null if field does not exist.
+     */
+    Integer getFieldLength(final Connection conn, final String databaseName, final String tableName, final String fieldName)
+    {
+        //XXX portability. This is MySQL -specific.
+        Vector<Object[]> rows = BasicSQLUtils.query(conn, "SELECT CHARACTER_MAXIMUM_LENGTH FROM `information_schema`.`COLUMNS` where TABLE_SCHEMA = '" +
+        		databaseName + "' and TABLE_NAME = '" + tableName + "' and COLUMN_NAME = '" + fieldName + "'");                    
+        if (rows.size() == 0)
+        {
+        	return null; //the field doesn't even exits
+        } else 
+        {
+        	return((Number )rows.get(0)[0]).intValue();
+        }
+    }
+    /**
      * @param dbdriverInfo
      * @param hostname
      * @param databaseName
@@ -311,54 +362,118 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 Statement  stmt = null;
                 try
                 {
-                    stmt = conn.createStatement();
-                    int rv = BasicSQLUtils.update(conn, "ALTER TABLE localitydetail CHANGE getUtmDatum UtmDatum varchar(255)");
-                    if (rv != 0)
+                    Integer count = null;
+                	stmt = conn.createStatement();
+                    int rv = 0;
+                    Integer len = getFieldLength(conn, databaseName, "localitydetail", "UtmDatum");
+                    if (len == null)
                     {
-                        errMsgList.add("Unable to alter table: localitydetail");
-                        return false;
+                    	count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM localitydetail");
+                    	rv = BasicSQLUtils.update(conn, "ALTER TABLE localitydetail CHANGE getUtmDatum UtmDatum varchar(255)");
+                        if (rv != count)
+                        {
+                            errMsgList.add("Unable to alter table: localitydetail");
+                            return false;
+                        }
+                    } else 
+                    {
+                    	if (len.intValue() != 255) 
+                    	{
+                        	count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM localitydetail");
+                        	rv = BasicSQLUtils.update(conn, "ALTER TABLE localitydetail MODIFY UtmDatum varchar(255)");
+                            if (rv != count)
+                            {
+                                errMsgList.add("Unable to alter table: localitydetail");
+                                return false;
+                            }
+                    	}
                     }
-                    Integer count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM specifyuser");
-                    rv = BasicSQLUtils.update(conn, "ALTER TABLE specifyuser MODIFY Password varchar(255)");
-                    if (rv != count)
+                    
+                    len = getFieldLength(conn, databaseName, "specifyuser", "Password");
+                    if (len == null)
                     {
                         errMsgList.add("Update count didn't match for update to table: specifyuser");
                         return false;
                     }
+                    if (len.intValue() != 255)
+                    {
+                    	count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM specifyuser");
+                    	rv = BasicSQLUtils.update(conn, "ALTER TABLE specifyuser MODIFY Password varchar(255)");
+                    	if (rv != count)
+                    	{
+                    		errMsgList.add("Update count didn't match for update to table: specifyuser");
+                    		return false;
+                    	}
+                    }
                     
-                    count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM spexportschemaitem");
-                    rv = BasicSQLUtils.update(conn, "ALTER TABLE spexportschemaitem MODIFY FieldName varchar(64)");
-                    if (rv != count)
+                    len = getFieldLength(conn, databaseName, "spexportschemaitem", "FieldName");
+                    if (len == null)
                     {
                         errMsgList.add("Update count didn't match for update to table: spexportschemaitem");
                         return false;
                     }
+                    if (len.intValue() != 64)
+                    {
+                    	count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM spexportschemaitem");
+                    	rv = BasicSQLUtils.update(conn, "ALTER TABLE spexportschemaitem MODIFY FieldName varchar(64)");
+                    	if (rv != count)
+                    	{
+                    		errMsgList.add("Update count didn't match for update to table: spexportschemaitem");
+                    		return false;
+                    	}
+                    }
                     
-                    count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM agent");
-                    rv = BasicSQLUtils.update(conn, "ALTER TABLE agent MODIFY LastName varchar(128)");
-                    if (rv != count)
+                    len = getFieldLength(conn, databaseName, "agent", "LastName");
+                    if (len == null)
                     {
                         errMsgList.add("Update count didn't match for update to table: agent");
                         return false;
                     }
+                    if (len.intValue() != 128)
+                    {
+                    	count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM agent");
+                    	rv = BasicSQLUtils.update(conn, "ALTER TABLE agent MODIFY LastName varchar(128)");
+                    	if (rv != count)
+                    	{
+                    		errMsgList.add("Update count didn't match for update to table: agent");
+                    		return false;
+                    	}
+                    }
                     
-                    count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM spexportschema");
-                    rv = BasicSQLUtils.update(conn, "ALTER TABLE spexportschema MODIFY SchemaName varchar(80)");
-                    if (rv != count)
+                    len = getFieldLength(conn, databaseName, "spexportschema", "SchemaName");
+                    if (len == null)
                     {
                         errMsgList.add("Update count didn't match for update to table: spexportschema");
                         return false;
                     }
+                    if (len.intValue() != 80)
+                    {
+                    	count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM spexportschema");
+                    	rv = BasicSQLUtils.update(conn, "ALTER TABLE spexportschema MODIFY SchemaName varchar(80)");
+                    	if (rv != count)
+                    	{
+                    		errMsgList.add("Update count didn't match for update to table: spexportschema");
+                    		return false;
+                    	}
+                    }
                     
-                    count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM spexportschema");
-                    rv = BasicSQLUtils.update(conn, "ALTER TABLE spexportschema MODIFY SchemaVersion varchar(80)");
-                    if (rv != count)
+                    len = getFieldLength(conn, databaseName, "spexportschema", "SchemaVersion");
+                    if (len == null)
                     {
                         errMsgList.add("Update count didn't match for update to table: spexportschema");
                         return false;
                     }
-                    
-                    SpecifySchemaUpdateScopeFixer collectionMemberFixer = new SpecifySchemaUpdateScopeFixer();
+                    if (len.intValue() != 80)
+                    {
+                    	count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM spexportschema");
+                    	rv = BasicSQLUtils.update(conn, "ALTER TABLE spexportschema MODIFY SchemaVersion varchar(80)");
+                    	if (rv != count)
+                    	{
+                    		errMsgList.add("Update count didn't match for update to table: spexportschema");
+                    		return false;
+                    	}
+                    }
+                    SpecifySchemaUpdateScopeFixer collectionMemberFixer = new SpecifySchemaUpdateScopeFixer(databaseName);
                     if (!collectionMemberFixer.fix(conn))
                     {
                         errMsgList.add("Error fixing CollectionMember tables");
@@ -648,7 +763,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             log.debug("App - Prev["+prevVersionArg+"] New["+newVersionArg+"]");
             
             Integer prevVersion = Integer.parseInt(StringUtils.replace(StringUtils.deleteWhitespace(prevVersionArg), ".", ""));
-            Integer newVersion  = Integer.parseInt(StringUtils.replace(StringUtils.deleteWhitespace(newVerBadErrKey), ".", ""));
+            Integer newVersion  = Integer.parseInt(StringUtils.replace(StringUtils.deleteWhitespace(newVersionArg), ".", ""));
             log.debug("App - Prev["+prevVersion+"] New["+newVersion+"]");
             
             if (prevVersion > newVersion)
