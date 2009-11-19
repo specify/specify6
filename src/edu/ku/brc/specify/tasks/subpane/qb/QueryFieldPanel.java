@@ -578,7 +578,14 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             if (queryField.getSpQueryFieldId() != null)
             {
                 isNotCheckbox.setSelected(queryField.getIsNot());
-                operatorCBX.setSelectedIndex(queryField.getOperStart());
+                try
+                {
+                	operatorCBX.setSelectedIndex(queryField.getOperStart());
+                } catch(IllegalArgumentException ex)
+                {
+                	log.error("unable to set operator index for " + queryField.getStringId() + ": " + ex);
+                	operatorCBX.setSelectedIndex(0);
+                }
                 setCriteriaText(queryField.getStartValue(), queryField.getEndValue(), (OperatorType )operatorCBX.getSelectedItem());
                 sortCheckbox.setState(queryField.getSortType());
                 sortCheckbox.setEnabled(queryField.getIsDisplay());
@@ -729,7 +736,11 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         if (field.getFieldInfo() != null && field.getFieldInfo().getName().equalsIgnoreCase("catalognumber") 
                 && field.getTableInfo().getClassObj().equals(CollectionObject.class))
         {
-            return getComparatorListForClass(Number.class);
+            if (field.getFieldInfo().getFormatter().isNumeric())
+            {
+            	return getComparatorListForClass(Number.class);
+            }
+            return getComparatorListForClass(String.class);
         }
         //else
         return getComparatorListForClass(field.getDataClass());

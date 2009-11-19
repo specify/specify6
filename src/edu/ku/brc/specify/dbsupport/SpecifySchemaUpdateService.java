@@ -392,7 +392,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     len = getFieldLength(conn, databaseName, "specifyuser", "Password");
                     if (len == null)
                     {
-                        errMsgList.add("Update count didn't match for update to table: specifyuser");
+                        errMsgList.add("Unable to update table: specifyuser");
                         return false;
                     }
                     if (len.intValue() != 255)
