@@ -55,6 +55,14 @@ import edu.ku.brc.util.Pair;
  * @author rods
  *
  */
+/**
+ * @author rods
+ *
+ * @code_status Alpha
+ *
+ * Created Date: Nov 24, 2009
+ *
+ */
 public abstract class SchemaUpdateService
 {
     public static final String factoryName = "edu.ku.brc.af.core.db.SchmeaUpdateService"; //$NON-NLS-1$
@@ -149,6 +157,12 @@ public abstract class SchemaUpdateService
      * @return the view
      */
     public abstract SchemaUpdateTpe updateSchema(String versionNumber);
+    
+    
+    /**
+     * @return a string with the version number for the database schema
+     */
+    public abstract String getDBSchemaVersionFromXML();
     
     /**
      * Returns the instance of the AppContextMgr.

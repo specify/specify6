@@ -28,8 +28,6 @@ import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -55,6 +53,7 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
+import edu.ku.brc.specify.datamodel.SpVersion;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.ChooseFromListDlg;
@@ -85,10 +84,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         super();
     }
     
-    /**
-     * @return
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.SchemaUpdateService#getDBSchemaVersionFromXML()
      */
-    public static String getDBSchemaVersionFromXML()
+    public String getDBSchemaVersionFromXML()
     {
         String dbVersion = null;
         Element root;
@@ -144,8 +143,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     @Override
     public SchemaUpdateTpe updateSchema(final String appVerNumArg)
     {
-        String  dbVersion = getDBSchemaVersionFromXML();
-        String  appVerNum = appVerNumArg;
+        String  dbVersion      = getDBSchemaVersionFromXML();
+        String  appVerNum      = appVerNumArg;
         boolean internalVerNum = isInternalVerNum(appVerNum);
         
         DBConnection dbConn = DBConnection.getInstance();
@@ -216,16 +215,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     {
                     	//If somebody somehow got a hold of an 'internal' version (via a conversion, or possibly by manually checking for updates.
                     	doUpdateAppVer = true;
-                    	doSchemaUpdate = true;
+                    	doSchemaUpdate = appVerNumArg != null && !appVerNumArg.equals("6.1.02") && !appVerNumArg.equals("6.1.00");
                     }
                 } else
                 {
                     doInsert = true;
                 }
                 
-                SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                Timestamp        now               = new Timestamp(System.currentTimeMillis());
-
                 try
                 {
                     if (doSchemaUpdate || doInsert || doUpdateAppVer)
@@ -279,17 +275,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         
                         if (doInsert || (appVersion == null && schemaVersion == null))
                         {
-                            String sql = "INSERT INTO spversion (AppName, AppVersion, SchemaVersion, TimestampCreated, TimestampModified, Version) VALUES('Specify', '"+appVerNum+"', '"+dbVersion+"', '" + 
-                                                                 dateTimeFormatter.format(now) + "', '" + dateTimeFormatter.format(now) + "', "+recVerNum+")";
-                            //System.err.println(sql);
-                            BasicSQLUtils.update(dbConn.getConnection(), sql);
+                            SpVersion.createInitialRecord(dbConn.getConnection(), appVerNum, dbVersion);
                             
                         } else if (doSchemaUpdate || doUpdateAppVer)
                         {
                             recVerNum++;
-                            String sql = "UPDATE spversion SET AppVersion='"+appVerNum+"', SchemaVersion='"+dbVersion+"', Version="+recVerNum+" WHERE SpVersionID = "+ spverId;
-                            //System.err.println(sql);
-                            BasicSQLUtils.update(dbConn.getConnection(), sql);
+                            SpVersion.updateRecord(dbConn.getConnection(), appVerNum, dbVersion, recVerNum, spverId);
                         }
                         return SchemaUpdateTpe.Success;
                     } else

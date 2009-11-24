@@ -26,6 +26,8 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -65,9 +67,12 @@ import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.SpVersion;
 import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.IconManager;
@@ -234,6 +239,11 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
      */
     public boolean doExit(boolean doAppExit)
     {
+        // Create Version Record
+        String  appVerNum = UIHelper.getInstall4JInstallString();
+        String  dbVersion = SchemaUpdateService.getInstance().getDBSchemaVersionFromXML();
+        SpVersion.createInitialRecord(DBConnection.getInstance().getConnection(), appVerNum, dbVersion);
+
         if (UIRegistry.isMobile())
         {
             DBConnection.setCopiedToMachineDisk(true);
@@ -249,7 +259,14 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
             @Override
             public void run()
             {
-                System.exit(0);
+                if (UIRegistry.isEmbedded() || UIRegistry.isMobile())
+                {
+                    DBConnection.shutdownFinalConnection(true, false); // true means System.exit
+                } else
+                {
+                    System.exit(0);
+                }
+
             }
         });
         
@@ -346,6 +363,8 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
         System.setProperty(DBTableIdMgr.factoryName,                    "edu.ku.brc.specify.config.SpecifyDBTableIdMgr");              // Needed for Tree Field Names //$NON-NLS-1$
         System.setProperty(SecurityMgr.factoryName,                     "edu.ku.brc.af.auth.specify.SpecifySecurityMgr");              // Needed for Tree Field Names //$NON-NLS-1$
         System.setProperty(BackupServiceFactory.factoryName,            "edu.ku.brc.af.core.db.MySQLBackupService");                   // Needed for Backup and Restore //$NON-NLS-1$
+        System.setProperty(SchemaUpdateService.factoryName,             "edu.ku.brc.specify.dbsupport.SpecifySchemaUpdateService");   // needed for updating the schema
+
     }
     
     /**

@@ -19,12 +19,18 @@
 */
 package edu.ku.brc.specify.datamodel;
 
+import java.sql.Connection;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
 /**
 
@@ -189,6 +195,43 @@ public class SpVersion extends DataModelObjBase implements java.io.Serializable
     public static int getClassTableId()
     {
         return 529;
+    }
+    
+    /**
+     * @param conn
+     * @param appVerNum
+     * @param dbVersion
+     * @return
+     */
+    public static boolean createInitialRecord(final Connection conn, final String appVerNum, final String dbVersion)
+    {
+        // Create Version Record
+        SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        Timestamp        now               = new Timestamp(System.currentTimeMillis());
+
+        String sql = "INSERT INTO spversion (AppName, AppVersion, SchemaVersion, TimestampCreated, TimestampModified, Version) VALUES('Specify', '"+appVerNum+"', '"+dbVersion+"', '" + 
+                     dateTimeFormatter.format(now) + "', '" + dateTimeFormatter.format(now) + "', 1)";
+        
+        return BasicSQLUtils.update(conn, sql) == 1;
+        
+    }
+
+    /**
+     * @param conn
+     * @param appVerNum
+     * @param dbVersion
+     * @param recVerNum
+     * @param spverId
+     * @return
+     */
+    public static boolean updateRecord(final Connection conn, final String appVerNum, final String dbVersion, final int recVerNum, final int spverId)
+    {
+        // Create Version Record
+
+        String sql = "UPDATE spversion SET AppVersion='"+appVerNum+"', SchemaVersion='"+dbVersion+"', Version="+recVerNum+" WHERE SpVersionID = "+ spverId;
+        
+        return BasicSQLUtils.update(conn, sql) == 1;
+        
     }
 
 }

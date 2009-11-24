@@ -2760,7 +2760,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     
                     DataProviderFactory.getInstance().shutdown();
                     DBConnection.shutdown();
-                    DBConnection.shutdownFinalConnection(true); // true means System.exit
+                    DBConnection.shutdownFinalConnection(true, false); // true means System.exit
                     
                 } else
                 {

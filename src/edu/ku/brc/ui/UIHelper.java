@@ -2800,6 +2800,30 @@ public final class UIHelper
                 }
             }
         }
+        
+        // This is for testing and Debugging
+        try
+        {
+            File parmsFile = new File(UIRegistry.getUserHomeDir() + File.separator + "i4jparams.conf");
+            log.debug(parmsFile.getAbsolutePath());
+            if (parmsFile.exists())
+            {
+                root = XMLHelper.readFileToDOM4J(parmsFile);
+                if (root != null)
+                {
+                    for (Object obj : root.selectNodes("/config/variables/variable")) //$NON-NLS-1$
+                    {
+                        Element varObj = (Element)obj;
+                        String name = XMLHelper.getAttr(varObj, "name", null); //$NON-NLS-1$
+                        if (name.equals("sys.version"))
+                        {
+                            return XMLHelper.getAttr(varObj, "value", null); //$NON-NLS-1$
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {}
+        
         return null;
     }
     

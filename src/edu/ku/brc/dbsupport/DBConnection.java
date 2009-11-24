@@ -111,7 +111,7 @@ public class DBConnection
                     {
                         if (connectionCreated)
                         {
-                            shutdownFinalConnection(false);
+                            shutdownFinalConnection(false, true);
                         }
                     }
                 });
@@ -165,7 +165,7 @@ public class DBConnection
     /**
      * @param shutdownUI the shutdownUI to set
      */
-    public static void setShutdownUI(ShutdownUIIFace shutdownUI)
+    public static void setShutdownUI(final ShutdownUIIFace shutdownUI)
     {
         DBConnection.shutdownUI = shutdownUI;
     }
@@ -173,7 +173,7 @@ public class DBConnection
     /**
      * Shuts down the Embedded process.
      */
-    public static void shutdownFinalConnection(final boolean doExit)
+    public static void shutdownFinalConnection(final boolean doExit, final boolean doImmediately)
     {
         if (!finalShutdownComplete.get())
         {
@@ -182,56 +182,71 @@ public class DBConnection
                 shutdownUI.displayShutdownMsgDlg();
             }
             
-            javax.swing.SwingWorker<Object, Object> worker = new javax.swing.SwingWorker<Object, Object>()
+            if (doImmediately)
             {
-                @Override
-                protected Object doInBackground() throws Exception
+                doingShutdownFinalConnection(doExit);
+                
+            } else
+            {
+                javax.swing.SwingWorker<Object, Object> worker = new javax.swing.SwingWorker<Object, Object>()
                 {
-                    try
+                    @Override
+                    protected Object doInBackground() throws Exception
                     {
-                        Thread.sleep(1000);
+                        try
+                        {
+                            Thread.sleep(1000);
+                            
+                        } catch (Exception ex) {}
                         
-                    } catch (Exception ex) {}
-                    
-                    return null;
-                }
-
-                @Override
-                protected void done()
-                {
-                    super.done();
-                    
-                    if (isEmbeddedDB != null && isEmbeddedDB)
-                    {
-                        ServerLauncherSocketFactory.shutdown(embeddedDataDir, null);
+                        return null;
                     }
-                    
-                    // Give it a little time to shutdown
-                    try
+    
+                    @Override
+                    protected void done()
                     {
-                        Thread.sleep(1000);
+                        super.done();
                         
-                    } catch (Exception ex) {}
-                    
-                    if (UIRegistry.isMobile())
-                    {
-                        copyToMobileDisk();
+                        doingShutdownFinalConnection(doExit);
                     }
-                    
-                    finalShutdownComplete.set(true);
-                    
-                    if (shutdownUI != null)
-                    {
-                        shutdownUI.displayFinalShutdownDlg();
-                    }
-                    
-                    if (doExit)
-                    {
-                        System.exit(0);
-                    }
-                }
-            };
-            worker.execute();
+                };
+                worker.execute();
+            }
+        }
+    }
+    
+    /**
+     * 
+     */
+    private static void doingShutdownFinalConnection(final boolean doExit)
+    {
+        if (isEmbeddedDB != null && isEmbeddedDB)
+        {
+            ServerLauncherSocketFactory.shutdown(embeddedDataDir, null);
+        }
+        
+        // Give it a little time to shutdown
+        try
+        {
+            Thread.sleep(1000);
+            
+        } catch (Exception ex) {}
+        
+        if (UIRegistry.isMobile())
+        {
+            copyToMobileDisk();
+        }
+        
+        finalShutdownComplete.set(true);
+        
+        if (shutdownUI != null)
+        {
+            shutdownUI.displayFinalShutdownDlg();
+        }
+        
+        if (doExit)
+        {
+            System.exit(0);
         }
     }
     

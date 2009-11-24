@@ -89,6 +89,7 @@ import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.MySQLDMBSUserMgr;
 import edu.ku.brc.dbsupport.ResultsPager;
+import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.SpecifyUserTypes;
@@ -108,7 +109,6 @@ import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.StorageTreeDefItem;
 import edu.ku.brc.specify.dbsupport.PostInsertEventListener;
-import edu.ku.brc.specify.dbsupport.SpecifySchemaUpdateService;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.CustomDialog;
@@ -1355,7 +1355,7 @@ public class SpecifyDBConverter
     private void updateVersionInfo(final Connection newDBConn) throws SQLException
     {
         String  appVersion     = null;
-        String  schemaVersion  = SpecifySchemaUpdateService.getDBSchemaVersionFromXML();
+        String  schemaVersion  = SchemaUpdateService.getInstance().getDBSchemaVersionFromXML();
         Integer spverId        = null;
         Integer recVerNum     = 1;
         
@@ -1382,7 +1382,7 @@ public class SpecifyDBConverter
             
             PreparedStatement pStmt = newDBConn.prepareStatement("UPDATE spversion SET AppVersion=?, SchemaVersion=?, Version=? WHERE SpVersionID = ?");
             pStmt.setString(1, appVersion);
-            pStmt.setString(2, SpecifySchemaUpdateService.getDBSchemaVersionFromXML());
+            pStmt.setString(2, SchemaUpdateService.getInstance().getDBSchemaVersionFromXML());
             pStmt.setInt(3, ++recVerNum);
             pStmt.setInt(4, spverId);
             if (pStmt.executeUpdate() != 1)
