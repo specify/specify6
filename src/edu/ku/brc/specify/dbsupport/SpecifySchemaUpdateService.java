@@ -157,8 +157,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 boolean doUpdateAppVer = false;
                 boolean doSchemaUpdate = false;
                 boolean doInsert       = false;
-                String  appVersion     = null;
-                String  schemaVersion  = null;
+                String  appVerFromDB   = null;
+                String  schemaVerFromDB  = null;
                 Integer spverId        = null;
                 Integer recVerNum     = 1;
                 
@@ -171,26 +171,28 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     if (rows.size() == 1)
                     {
                         Object[] row  = (Object[])rows.get(0);
-                        appVersion    = row[0].toString();
-                        schemaVersion = row[1].toString();
+                        appVerFromDB    = row[0].toString();
+                        schemaVerFromDB = row[1].toString();
                         spverId       = (Integer)row[2];
                         recVerNum     = (Integer)row[3];
                         
-                        log.debug("appVerNumArg: ["+appVerNumArg+"] dbVersion from XML["+dbVersion+"] appVersion["+appVersion+"] schemaVersion["+schemaVersion+"]  spverId["+spverId+"]  recVerNum["+recVerNum+"] ");
+                        log.debug("appVerNumArg: ["+appVerNumArg+"] dbVersion from XML["+dbVersion+"] appVersion["+appVerFromDB+"] schemaVersion["+schemaVerFromDB+"]  spverId["+spverId+"]  recVerNum["+recVerNum+"] ");
 
                         
                         if (appVerNum == null /*happens for developers*/ || internalVerNum) 
                         {
-                            appVerNum = appVersion;
+                            appVerNum = appVerFromDB;
                         }
                         
-                        if (appVersion == null || schemaVersion == null)
+                        if (appVerFromDB == null || schemaVerFromDB == null)
                         {
                             doUpdateAppVer = true;
                             
-                        } else if (!appVersion.equals(appVerNum))
+                        } else if (!appVerFromDB.equals(appVerNum))
                         {
-                            if (checkVersion(appVersion, appVerNum, "SpecifySchemaUpdateService.APP_VER_ERR", "SpecifySchemaUpdateService.APP_VER_NEQ"))
+                            if (checkVersion(appVerFromDB, appVerNum, "SpecifySchemaUpdateService.APP_VER_ERR", 
+                                                                      "SpecifySchemaUpdateService.APP_VER_NEQ_OLD", 
+                                                                      "SpecifySchemaUpdateService.APP_VER_NEQ_NEW"))
                             {
                                 doUpdateAppVer = true;
                             } else
@@ -200,9 +202,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             }
                         }
                         
-                        if (dbVersion != null && !schemaVersion.equals(dbVersion))
+                        if (dbVersion != null && !schemaVerFromDB.equals(dbVersion))
                         {
-                            if (checkVersion(schemaVersion, dbVersion, "SpecifySchemaUpdateService.DB_VER_ERR", "SpecifySchemaUpdateService.DB_VER_NEQ"))
+                            String errKey = "SpecifySchemaUpdateService.DB_VER_NEQ";
+                            if (checkVersion(schemaVerFromDB, dbVersion, 
+                                             "SpecifySchemaUpdateService.DB_VER_ERR", errKey, errKey))
                             {
                                 doSchemaUpdate = true;
                             } else
@@ -273,7 +277,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             }
                         }
                         
-                        if (doInsert || (appVersion == null && schemaVersion == null))
+                        if (doInsert || (appVerFromDB == null && schemaVerFromDB == null))
                         {
                             SpVersion.createInitialRecord(dbConn.getConnection(), appVerNum, dbVersion);
                             
@@ -738,28 +742,35 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     
     /**
      * Check to make sure two version number are double and the new one is greater or equals to the existing one.
-     * @param prevVersionArg the existing version number
-     * @param newVersionArg the new version number
+     * @param versionFromDB the existing version number
+     * @param localVersionNum the new version number
      * @param notNumericErrKey I18N localization key
-     * @param newVerBadErrKey  I18N localization key
+     * @param localVerTooOldKey I18N localization key
+     * @param localVerTooNewKey I18N localization key
      * @return true if OK
      */
-    protected boolean checkVersion(final String prevVersionArg, 
-                                   final String newVersionArg,
+    protected boolean checkVersion(final String versionFromDB, 
+                                   final String localVersionNum,
                                    final String notNumericErrKey,
-                                   final String newVerBadErrKey)
+                                   final String localVerTooOldKey,
+                                   final String localVerTooNewKey)
     {
         try
         {
-            log.debug("App - Prev["+prevVersionArg+"] New["+newVersionArg+"]");
+            log.debug("App - Prev["+versionFromDB+"] New["+localVersionNum+"]");
             
-            Integer prevVersion = Integer.parseInt(StringUtils.replace(StringUtils.deleteWhitespace(prevVersionArg), ".", ""));
-            Integer newVersion  = Integer.parseInt(StringUtils.replace(StringUtils.deleteWhitespace(newVersionArg), ".", ""));
-            log.debug("App - Prev["+prevVersion+"] New["+newVersion+"]");
+            Integer dbVerNum     = Integer.parseInt(StringUtils.replace(StringUtils.deleteWhitespace(versionFromDB), ".", ""));
+            Integer localVerNum  = Integer.parseInt(StringUtils.replace(StringUtils.deleteWhitespace(localVersionNum), ".", ""));
+            log.debug("App - Prev["+dbVerNum+"] New["+localVerNum+"]");
             
-            if (prevVersion > newVersion)
+            if (dbVerNum > localVerNum)
             {
-                UIRegistry.showLocalizedError(newVerBadErrKey, newVersionArg, prevVersionArg);
+                UIRegistry.showLocalizedError(localVerTooOldKey, localVersionNum, versionFromDB);
+                
+                return false;
+            } else if (dbVerNum < localVerNum)
+            {
+                UIRegistry.showLocalizedError(localVerTooNewKey, localVersionNum, versionFromDB);
                 return false;
             } 
             return true;
