@@ -517,31 +517,7 @@ public class Address extends DataModelObjBase implements Orderable,
     {
         this.divisions = divisions;
     }
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
-     */
-    @Override
-    @Transient
-    public Integer getParentTableId()
-    {
-        if (agent != null)
-        {
-            return Agent.getClassTableId();
-        }
-        
-        Vector<Object> ids = BasicSQLUtils.querySingleCol("SELECT InstitutionID FROM institution WHERE AddressID = "+ addressId);
-        if (ids.size() == 1)
-        {
-            return Institution.getClassTableId();
-        }
-        
-        ids = BasicSQLUtils.querySingleCol("SELECT DivisionID FROM division WHERE AddressID = "+ addressId);
-        if (ids.size() == 1)
-        {
-            Division.getClassTableId();
-        }
-        return null;
-    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
@@ -552,20 +528,24 @@ public class Address extends DataModelObjBase implements Orderable,
     {
         if (agent != null)
         {
+            parentTblId = Agent.getClassTableId();
             return agent.getId();
         }
         
         Vector<Object> ids = BasicSQLUtils.querySingleCol("SELECT InstitutionID FROM institution WHERE AddressID = "+ addressId);
         if (ids.size() == 1)
         {
+            parentTblId = Institution.getClassTableId();
             return (Integer)ids.get(0);
         }
         
         ids = BasicSQLUtils.querySingleCol("SELECT DivisionID FROM division WHERE AddressID = "+ addressId);
         if (ids.size() == 1)
         {
+            parentTblId = Division.getClassTableId();
             return (Integer)ids.get(0);
         }
+        parentTblId = null;
         return null;
     }
     

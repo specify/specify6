@@ -216,6 +216,7 @@ public class LatLonPolygon extends DataModelObjBase
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
      */
     @Override
+    @Transient
     public Integer getParentId()
     {
         if (visualQuery != null)
