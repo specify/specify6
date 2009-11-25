@@ -907,7 +907,7 @@
                         <boolean>false</boolean>
                       </void>
                       <void property="updateDescriptorUrl">
-                        <string>http://specify6-test.nhm.ku.edu/specifydownloads/specify6/alpha/updates.xml</string>
+                        <string>http://specify6-test.nhm.ku.edu/specifydownloads/specify6/alpha/updates-plain.xml</string>
                       </void>
                       <void property="variable">
                         <string>updateDescriptor</string>
