@@ -777,7 +777,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             
         } catch (NumberFormatException ex)
         {
-            UIRegistry.showLocalizedError(notNumericErrKey);
+            UIRegistry.showLocalizedError(notNumericErrKey, localVersionNum, versionFromDB);
         }
         
         return false;
