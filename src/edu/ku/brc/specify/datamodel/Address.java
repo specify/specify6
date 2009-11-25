@@ -22,6 +22,7 @@ package edu.ku.brc.specify.datamodel;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,7 +40,7 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.util.Orderable;
 
 /**
@@ -527,13 +528,17 @@ public class Address extends DataModelObjBase implements Orderable,
         {
             return Agent.getClassTableId();
         }
-        if (insitutions != null && insitutions.size() == 1)
+        
+        Vector<Object> ids = BasicSQLUtils.querySingleCol("SELECT InstitutionID FROM institution WHERE AddressID = "+ addressId);
+        if (ids.size() == 1)
         {
             return Institution.getClassTableId();
         }
-        if (divisions != null && divisions.size() == 1)
+        
+        ids = BasicSQLUtils.querySingleCol("SELECT DivisionID FROM division WHERE AddressID = "+ addressId);
+        if (ids.size() == 1)
         {
-            return Division.getClassTableId();
+            Division.getClassTableId();
         }
         return null;
     }
@@ -549,13 +554,17 @@ public class Address extends DataModelObjBase implements Orderable,
         {
             return agent.getId();
         }
-        if (insitutions != null && insitutions.size() == 1)
+        
+        Vector<Object> ids = BasicSQLUtils.querySingleCol("SELECT InstitutionID FROM institution WHERE AddressID = "+ addressId);
+        if (ids.size() == 1)
         {
-            return ((FormDataObjIFace)insitutions.toArray()[0]).getId();
+            return (Integer)ids.get(0);
         }
-        if (divisions != null && divisions.size() == 1)
+        
+        ids = BasicSQLUtils.querySingleCol("SELECT DivisionID FROM division WHERE AddressID = "+ addressId);
+        if (ids.size() == 1)
         {
-            return ((FormDataObjIFace)divisions.toArray()[0]).getId();
+            return (Integer)ids.get(0);
         }
         return null;
     }

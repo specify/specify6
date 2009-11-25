@@ -21,6 +21,7 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,7 +35,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
 /**
  * @author rod
@@ -333,36 +334,6 @@ public class AddressOfRecord extends DataModelObjBase
     {
         return AddressOfRecord.class;
     }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
-     */
-    @Override
-    @Transient
-    public Integer getParentTableId()
-    {
-        if (accessions != null && accessions.size() == 1)
-        {
-            return Accession.getClassTableId();
-        }
-        if (repositoryAgreements != null && repositoryAgreements.size() == 1)
-        {
-            return RepositoryAgreement.getClassTableId();
-        }
-        if (loans != null && loans.size() == 1)
-        {
-            return Loan.getClassTableId();
-        }
-        if (exchangeIns != null && exchangeIns.size() == 1)
-        {
-            return ExchangeIn.getClassTableId();
-        }
-        if (exchangeOuts != null && exchangeOuts.size() == 1)
-        {
-            return ExchangeOut.getClassTableId();
-        }
-        return null;
-    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
@@ -371,26 +342,37 @@ public class AddressOfRecord extends DataModelObjBase
     @Transient
     public Integer getParentId()
     {
-        if (accessions != null && accessions.size() == 1)
+        Vector<Object> ids = BasicSQLUtils.querySingleCol("SELECT AccessionID FROM accession WHERE AddressOfRecordID = "+ addressOfRecordId);
+        if (ids.size() == 1)
         {
-            return ((FormDataObjIFace)accessions.toArray()[0]).getId();
+            parentTblId = Accession.getClassTableId();
+            return (Integer)ids.get(0);
         }
-        if (repositoryAgreements != null && repositoryAgreements.size() == 1)
+        ids = BasicSQLUtils.querySingleCol("SELECT RepositoryAgreementID FROM repositoryagreement WHERE AddressOfRecordID = "+ addressOfRecordId);
+        if (ids.size() == 1)
         {
-            return ((FormDataObjIFace)repositoryAgreements.toArray()[0]).getId();
+            parentTblId = RepositoryAgreement.getClassTableId();
+            return (Integer)ids.get(0);
         }
-        if (loans != null && loans.size() == 1)
+        ids = BasicSQLUtils.querySingleCol("SELECT LoanID FROM loan WHERE AddressOfRecordID = "+ addressOfRecordId);
+        if (ids.size() == 1)
         {
-            return ((FormDataObjIFace)loans.toArray()[0]).getId();
+            parentTblId = Loan.getClassTableId();
+            return (Integer)ids.get(0);
         }
-        if (exchangeIns != null && exchangeIns.size() == 1)
+        ids = BasicSQLUtils.querySingleCol("SELECT ExchangeInID FROM exchangein WHERE AddressOfRecordID = "+ addressOfRecordId);
+        if (ids.size() == 1)
         {
-            return ((FormDataObjIFace)exchangeIns.toArray()[0]).getId();
+            parentTblId = ExchangeIn.getClassTableId();
+            return (Integer)ids.get(0);
         }
-        if (exchangeOuts != null && exchangeOuts.size() == 1)
+        ids = BasicSQLUtils.querySingleCol("SELECT ExchangeOutID FROM exchangeout WHERE AddressOfRecordID = "+ addressOfRecordId);
+        if (ids.size() == 1)
         {
-            return ((FormDataObjIFace)exchangeOuts.toArray()[0]).getId();
+            parentTblId = ExchangeOut.getClassTableId();
+            return (Integer)ids.get(0);
         }
+        parentTblId = null;
         return null;
     }
 

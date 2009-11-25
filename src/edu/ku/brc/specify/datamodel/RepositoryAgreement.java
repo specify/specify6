@@ -22,6 +22,7 @@ package edu.ku.brc.specify.datamodel;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,7 +43,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
-import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
 /**
 
@@ -426,19 +427,6 @@ public class RepositoryAgreement extends DataModelObjBase implements AttachmentO
     {
         this.division = division;
     }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
-     */
-    @Override
-    @Transient
-    public Integer getParentTableId()
-    {
-        // Throws exception when inlined
-        Integer tblId = accessions != null && accessions.size() > 0 ? Accession.getClassTableId() : null;
-        tblId = tblId != null ? tblId : division != null ? Division.getClassTableId() : null;
-        return tblId;
-    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
@@ -450,12 +438,18 @@ public class RepositoryAgreement extends DataModelObjBase implements AttachmentO
         
         if (division != null)
         {
+            parentTblId = Division.getClassTableId();
             return division.getId();
         }
-        if (accessions != null && accessions.size() == 1)
+        
+        Vector<Object> ids = BasicSQLUtils.querySingleCol("SELECT AccessionID FROM accession WHERE RepositoryAgreementID = "+ repositoryAgreementId);
+        if (ids.size() == 1)
         {
-            return ((FormDataObjIFace)accessions.toArray()[0]).getId();
+            parentTblId = Accession.getClassTableId();
+            return (Integer)ids.get(0);
         }
+        
+        parentTblId = null;
         return null;
     }
     

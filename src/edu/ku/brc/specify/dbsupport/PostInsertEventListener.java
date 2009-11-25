@@ -90,10 +90,14 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
                         spal.setRecordId(dObj.getId());
                         spal.setTableNum((short)dObj.getTableId());
                         
+                        Integer pId           = dObj.getParentId();
+                        Integer parentTableId = null;
                         spal.setParentRecordId(dObj.getParentId());
-                        
-                        Integer parentId = dObj.getParentTableId();
-                        spal.setParentTableNum(parentId != null ? parentId.shortValue() : null);
+                        if (pId != null)
+                        {
+                            parentTableId = dObj.getParentTableId();
+                        }
+                        spal.setParentTableNum(parentTableId != null ? parentTableId.shortValue() : null);
                         
                         spal.setRecordVersion(dObj.getVersion() == null ? 0 : dObj.getVersion());
                         spal.setAction(action);

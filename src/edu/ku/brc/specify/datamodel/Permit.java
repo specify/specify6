@@ -22,6 +22,7 @@ package edu.ku.brc.specify.datamodel;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,7 +43,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
-import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
 /**
 
@@ -391,9 +392,10 @@ public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<Per
     @Transient
     public Integer getParentId()
     {
-        if (accessionAuthorizations != null && accessionAuthorizations.size() == 1)
+        Vector<Object> ids = BasicSQLUtils.querySingleCol("SELECT AccessionAuthorizationID FROM accessionauthorization WHERE PermitID = "+ permitId);
+        if (ids.size() == 1)
         {
-            return ((FormDataObjIFace)accessionAuthorizations.toArray()[0]).getId();
+            return (Integer)ids.get(0);
         }
         return null;
     }

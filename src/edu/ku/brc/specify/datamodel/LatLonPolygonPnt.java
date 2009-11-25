@@ -271,7 +271,7 @@ public class LatLonPolygonPnt implements FormDataObjIFace
     @Override
     public Integer getParentId()
     {
-        return null;
+        return latLonPolygon != null ? latLonPolygon.getId() : null;
     }
 
     /* (non-Javadoc)
@@ -281,7 +281,7 @@ public class LatLonPolygonPnt implements FormDataObjIFace
     @Override
     public Integer getParentTableId()
     {
-        return null;
+        return LatLonPolygon.getClassTableId();
     }
 
     /* (non-Javadoc)
@@ -295,11 +295,19 @@ public class LatLonPolygonPnt implements FormDataObjIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.ui.forms.FormDataObjIFace#getTableId()
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
-    @Transient
     @Override
+    @Transient
     public int getTableId()
+    {
+        return getClassTableId();
+    }
+    
+    /**
+     * @return the Table ID for the class.
+     */
+    public static int getClassTableId()
     {
         return 137;
     }

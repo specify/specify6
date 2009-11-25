@@ -191,6 +191,7 @@ public interface FormDataObjIFace
     public abstract Integer getParentTableId();
     
     /**
+     * NOTE: This MUST be called before calling 'getParentTableId' this method sets the table table number.
      * @return The parent data object's primary record id at the time the object is inserted, updated, or deleted.
      */
     public abstract Integer getParentId();

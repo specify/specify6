@@ -77,8 +77,11 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
     protected int       version;
     
     // Transient
+    protected Integer   parentTblId = null;
+   
+    // Transient Static
     protected static String errMsg = null;
-    
+     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#initialize()
      */
@@ -619,7 +622,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
     @Transient
     public Integer getParentId()
     {
-        return null;
+        return parentTblId;
     }
 
     /* (non-Javadoc)

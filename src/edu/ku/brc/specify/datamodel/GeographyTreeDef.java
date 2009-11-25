@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,7 +38,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
 @SuppressWarnings("serial") //$NON-NLS-1$
 @Entity
@@ -211,9 +212,10 @@ public class GeographyTreeDef extends BaseTreeDef<Geography, GeographyTreeDef, G
     @Transient
     public Integer getParentId()
     {
-        if (disciplines != null && disciplines.size() == 1)
+        Vector<Object> ids = BasicSQLUtils.querySingleCol("SELECT DisciplineID FROM discipline WHERE GeographyTreeDefID = "+ geographyTreeDefId);
+        if (ids.size() == 1)
         {
-            return ((FormDataObjIFace)disciplines.toArray()[0]).getId();
+            return (Integer)ids.get(0);
         }
         return null;
     }

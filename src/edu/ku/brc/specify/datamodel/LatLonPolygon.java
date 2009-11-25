@@ -213,6 +213,23 @@ public class LatLonPolygon extends DataModelObjBase
 
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    public Integer getParentId()
+    {
+        if (visualQuery != null)
+        {
+            return visualQuery.getId();
+        }
+        if (locality != null)
+        {
+            return locality.getId();
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getDataClass()
      */
     @Transient
@@ -233,11 +250,19 @@ public class LatLonPolygon extends DataModelObjBase
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getTableId()
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
-    @Transient
     @Override
+    @Transient
     public int getTableId()
+    {
+        return getClassTableId();
+    }
+    
+    /**
+     * @return the Table ID for the class.
+     */
+    public static int getClassTableId()
     {
         return 136;
     }

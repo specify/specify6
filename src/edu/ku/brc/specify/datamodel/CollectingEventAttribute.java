@@ -21,6 +21,7 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,6 +36,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Index;
+
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
 /**
  * @author rod
@@ -651,9 +654,10 @@ public class CollectingEventAttribute extends CollectionMember implements Clonea
     @Transient
     public Integer getParentId()
     {
-        if (collectingEvents != null && collectingEvents.size() == 1)
+        Vector<Object> ids = BasicSQLUtils.querySingleCol("SELECT CollectingEventID FROM collectingevent WHERE CollectingEventAttributeID = "+ collectingEventAttributeId);
+        if (ids.size() == 1)
         {
-            return ((CollectionObject)collectingEvents.toArray()[0]).getId();
+            return (Integer)ids.get(0);
         }
         return null;
     }

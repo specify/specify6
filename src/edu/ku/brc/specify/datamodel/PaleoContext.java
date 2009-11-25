@@ -21,6 +21,7 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,7 +36,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Index;
 
-import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
 /**
  * @author rods
@@ -384,10 +385,10 @@ public class PaleoContext extends CollectionMember implements Cloneable
     @Transient
     public Integer getParentId()
     {
-        
-        if (collectionObjects != null && collectionObjects.size() == 1)
+        Vector<Object> ids = BasicSQLUtils.querySingleCol("SELECT CollectionObjectID FROM collectionobject WHERE PaleoContextID = "+ paleoContextId);
+        if (ids.size() == 1)
         {
-            return ((FormDataObjIFace)collectionObjects.toArray()[0]).getId();
+            return (Integer)ids.get(0);
         }
         return null;
     }

@@ -21,6 +21,7 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -35,7 +36,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
 /**
  * @author rods
@@ -272,28 +273,6 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
         this.collectionObjectAttrs.remove(collectionObjectAttr);
         collectionObjectAttr.setCollectionObject(null);
     }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
-     */
-    @Override
-    @Transient
-    public Integer getParentTableId()
-    {
-        if (collectingEventAttrs != null && collectingEventAttrs.size() > 0)
-        {
-            return CollectingEventAttr.getClassTableId();
-        }
-        if (preparationAttrs != null && collectingEventAttrs.size() > 0)
-        {
-            return PreparationAttr.getClassTableId();
-        }
-        if (collectionObjectAttrs != null && collectingEventAttrs.size() > 0)
-        {
-            return CollectionObjectAttr.getClassTableId();
-        }
-        return null;
-    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
@@ -303,18 +282,27 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
     public Integer getParentId()
     {
         
-        if (collectingEventAttrs != null && collectingEventAttrs.size() == 1)
+        Vector<Object> ids = BasicSQLUtils.querySingleCol("SELECT AttributeDefID FROM collectingeventattr WHERE AttributeDefID = "+ attributeDefId);
+        if (ids.size() == 1)
         {
-            return ((FormDataObjIFace)collectingEventAttrs.toArray()[0]).getId();
+            parentTblId = CollectingEventAttr.getClassTableId();
+            return (Integer)ids.get(0);
         }
-        if (preparationAttrs != null && collectingEventAttrs.size() == 1)
+        
+        ids = BasicSQLUtils.querySingleCol("SELECT AttributeDefID FROM preparationattr WHERE AttributeDefID = "+ attributeDefId);
+        if (ids.size() == 1)
         {
-            return ((FormDataObjIFace)preparationAttrs.toArray()[0]).getId();
+            parentTblId = PreparationAttr.getClassTableId();
+            return (Integer)ids.get(0);
         }
-        if (collectionObjectAttrs != null && collectingEventAttrs.size() == 1)
+        
+        ids = BasicSQLUtils.querySingleCol("SELECT AttributeDefID FROM collectionobjectattr WHERE AttributeDefID = "+ attributeDefId);
+        if (ids.size() == 1)
         {
-            return ((FormDataObjIFace)collectionObjectAttrs.toArray()[0]).getId();
+            parentTblId = CollectionObjectAttr.getClassTableId();
+            return (Integer)ids.get(0);
         }
+        parentTblId = null;
         return null;
     }
     

@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -43,7 +44,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
-import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
 /**
  * @author rod
@@ -288,24 +289,6 @@ public class Appraisal extends DataModelObjBase
     {
         return appraisalId;
     }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
-     */
-    @Override
-    @Transient
-    public Integer getParentTableId()
-    {
-        if (accession != null)
-        {
-            return Accession.getClassTableId();
-        }
-        if (collectionObjects != null && collectionObjects.size() > 0)
-        {
-            return CollectionObject.getClassTableId();
-        }
-        return null;
-    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
@@ -316,13 +299,17 @@ public class Appraisal extends DataModelObjBase
     {
         if (accession != null)
         {
+            parentTblId = Accession.getClassTableId();
             return accession.getId();
         } 
         
-        if (collectionObjects != null && collectionObjects.size() == 1)
+        Vector<Object> ids = BasicSQLUtils.querySingleCol("SELECT CollectionObjectID FROM collectionobject WHERE AppraisalID = "+ appraisalId);
+        if (ids.size() == 1)
         {
-            return ((FormDataObjIFace)collectionObjects.toArray()[0]).getId();
+            parentTblId = CollectionObject.getClassTableId();
+            return (Integer)ids.get(0);
         }
+        parentTblId = null;
         return null;
     }
     

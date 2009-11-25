@@ -22,6 +22,7 @@ package edu.ku.brc.specify.datamodel;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,7 +36,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Index;
 
-import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
 /**
  * @author rod
@@ -926,9 +927,10 @@ public class PreparationAttribute extends CollectionMember implements Cloneable
     @Transient
     public Integer getParentId()
     {
-        if (preparations != null && preparations.size() == 1)
+        Vector<Object> ids = BasicSQLUtils.querySingleCol("SELECT PreparationID FROM preparation WHERE PreparationAttributeID = "+ preparationAttributeId);
+        if (ids.size() == 1)
         {
-            return ((FormDataObjIFace)preparations.toArray()[0]).getId();
+            return (Integer)ids.get(0);
         }
         return null;
     }

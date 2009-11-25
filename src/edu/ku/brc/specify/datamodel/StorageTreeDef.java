@@ -21,6 +21,7 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,7 +36,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
 @SuppressWarnings("serial")
 @Entity
@@ -337,10 +338,12 @@ public class StorageTreeDef extends BaseTreeDef<Storage, StorageTreeDef, Storage
     @Transient
     public Integer getParentId()
     {
-        if (institutions != null && institutions.size() == 1)
+        Vector<Object> ids = BasicSQLUtils.querySingleCol("SELECT InstitutionID FROM institution WHERE StorageTreeDefID = "+ storageTreeDefId);
+        if (ids.size() == 1)
         {
-            return ((FormDataObjIFace)institutions.toArray()[0]).getId();
+            return (Integer)ids.get(0);
         }
+        
         return null;
     }
     
