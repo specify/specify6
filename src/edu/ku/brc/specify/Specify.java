@@ -2668,7 +2668,9 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     public void cancelled()
     {
-        System.exit(0);
+        DataProviderFactory.getInstance().shutdown();
+        DBConnection.shutdown();
+        DBConnection.shutdownFinalConnection(true, false); // true means System.exit
     }
     
     /**

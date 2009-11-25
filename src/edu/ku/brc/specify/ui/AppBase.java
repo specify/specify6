@@ -1019,12 +1019,14 @@ public class AppBase extends JPanel implements DatabaseLoginListener, CommandLis
         if (StringUtils.isNotEmpty(mobile))
         {
             UIRegistry.setMobile(true);
+            DBConnection.setIsEmbeddedDB(true);
         }
         
         String embeddedStr = System.getProperty("embedded");
         if (StringUtils.isNotEmpty(embeddedStr))
         {
             UIRegistry.setEmbedded(true);
+            DBConnection.setIsEmbeddedDB(true);
         }
         
         String embeddeddbdir = System.getProperty("embeddeddbdir");
