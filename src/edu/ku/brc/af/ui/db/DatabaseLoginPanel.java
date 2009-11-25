@@ -1117,6 +1117,14 @@ public class DatabaseLoginPanel extends JTiledPanel
                     {
                         String msg = DBConnection.getInstance().getErrorMsg();
                         setMessage(StringUtils.isEmpty(msg) ? getResourceString("INVALID_LOGIN") : msg, true);
+                        
+                        if (DBConnection.getInstance().isEmbedded() || UIRegistry.isMobile())
+                        {
+                            DataProviderFactory.getInstance().shutdown();
+                            DBConnection.shutdown();
+                            DBConnection.shutdownFinalConnection(false, true);
+                            DBConnection.startOver();
+                        }
                     }
                     
                     enableUI(true);

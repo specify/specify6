@@ -177,6 +177,14 @@ public class DBConnection
     {
         DBConnection.shutdownUI = shutdownUI;
     }
+    
+    /**
+     * Enable a another login to be called.
+     */
+    public static void startOver()
+    {
+        finalShutdownComplete.set(false);
+    }
 
     /**
      * Shuts down the Embedded process.
