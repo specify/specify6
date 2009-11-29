@@ -192,7 +192,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         {
                             if (checkVersion(appVerFromDB, appVerNum, "SpecifySchemaUpdateService.APP_VER_ERR", 
                                                                       "SpecifySchemaUpdateService.APP_VER_NEQ_OLD", 
-                                                                      "SpecifySchemaUpdateService.APP_VER_NEQ_NEW"))
+                                                                      "SpecifySchemaUpdateService.APP_VER_NEQ_NEW",
+                                                                      false))
                             {
                                 doUpdateAppVer = true;
                             } else
@@ -206,7 +207,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         {
                             String errKey = "SpecifySchemaUpdateService.DB_VER_NEQ";
                             if (checkVersion(schemaVerFromDB, dbVersion, 
-                                             "SpecifySchemaUpdateService.DB_VER_ERR", errKey, errKey))
+                                             "SpecifySchemaUpdateService.DB_VER_ERR", errKey, errKey, true))
                             {
                                 doSchemaUpdate = true;
                             } else
@@ -753,22 +754,25 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                    final String localVersionNum,
                                    final String notNumericErrKey,
                                    final String localVerTooOldKey,
-                                   final String localVerTooNewKey)
+                                   final String localVerTooNewKey,
+                                   final boolean checkForTooNew)
     {
         try
         {
             log.debug("App - Prev["+versionFromDB+"] New["+localVersionNum+"]");
             
-            Integer dbVerNum     = Integer.parseInt(StringUtils.replace(StringUtils.deleteWhitespace(versionFromDB), ".", ""));
+            Integer verNumFromDB = Integer.parseInt(StringUtils.replace(StringUtils.deleteWhitespace(versionFromDB), ".", ""));
             Integer localVerNum  = Integer.parseInt(StringUtils.replace(StringUtils.deleteWhitespace(localVersionNum), ".", ""));
-            log.debug("App - Prev["+dbVerNum+"] New["+localVerNum+"]");
             
-            if (dbVerNum > localVerNum)
+            log.debug("App - Prev["+verNumFromDB+"] New["+localVerNum+"]");
+            
+            if (verNumFromDB > localVerNum)
             {
                 UIRegistry.showLocalizedError(localVerTooOldKey, localVersionNum, versionFromDB);
                 
                 return false;
-            } else if (dbVerNum < localVerNum)
+                
+            } else if (checkForTooNew && verNumFromDB < localVerNum)
             {
                 UIRegistry.showLocalizedError(localVerTooNewKey, localVersionNum, versionFromDB);
                 return false;
