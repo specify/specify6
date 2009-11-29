@@ -21,6 +21,7 @@ package edu.ku.brc.specify.tools.schemalocale;
 
 import static edu.ku.brc.specify.config.init.DataBuilder.createPickList;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileReader;
@@ -995,12 +996,14 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getContainer(edu.ku.brc.specify.tools.schemalocale.LocalizableJListItem)
      */
     @Override
-    public void getContainer(final LocalizableJListItem item, final LocalizableIOIFaceListener l)
+    public LocalizableContainerIFace getContainer(final LocalizableJListItem item, final LocalizableIOIFaceListener l)
     {
         if (l != null)
         {
             l.containterRetrieved(tableHash.get(item.getName()));
+            return tableHash.get(item.getName());
         }
+        return null;
     }
 
 
@@ -1211,11 +1214,15 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#copyLocale(java.util.Locale, java.util.Locale, java.beans.PropertyChangeListener)
      */
     @Override
-    public void copyLocale(final Locale srcLocale, final Locale dstLocale, final PropertyChangeListener pcl)
+    public void copyLocale(final LocalizableIOIFaceListener lclIOListener, final Locale srcLocale, final Locale dstLocale, final PropertyChangeListener pcl)
     {
-        /*for (LocalizableJListItem listItem : getContainerDisplayItems())
+        double cnt = 0.0;
+        Vector<LocalizableJListItem> items = getContainerDisplayItems();
+        
+        double inc = 100.0 / items.size();
+        for (LocalizableJListItem listItem : items)
         {
-            LocalizableContainerIFace table = getContainer(listItem);
+            LocalizableContainerIFace table = getContainer(listItem, lclIOListener);
             
             copyLocale(table, srcLocale, dstLocale);
             
@@ -1223,7 +1230,18 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             {
                 copyLocale(field, srcLocale, dstLocale);
             }
-        }*/
+            if (pcl != null)
+            {
+                pcl.propertyChange(new PropertyChangeEvent(listItem, "count", -1, (int)cnt));
+                System.out.println(cnt);
+            }
+            cnt += inc;
+        }
+        
+        if (pcl != null)
+        {
+            pcl.propertyChange(new PropertyChangeEvent(this, "count", -1, 100));
+        }
     }
 
     /* (non-Javadoc)

@@ -52,7 +52,7 @@ public interface LocalizableIOIFace
      * @param item
      * @param l
      */
-    public abstract void getContainer(LocalizableJListItem item, LocalizableIOIFaceListener l);
+    public abstract LocalizableContainerIFace getContainer(LocalizableJListItem item, LocalizableIOIFaceListener l);
     
     /**
      * @param container
@@ -94,7 +94,7 @@ public interface LocalizableIOIFace
      * @param dst the destination locale
      * @param pcl listener for changes made during copy
      */
-    public abstract void copyLocale(Locale src, Locale dst, PropertyChangeListener pcl);
+    public abstract void copyLocale(LocalizableIOIFaceListener lclIOListener, Locale src, Locale dst, PropertyChangeListener pcl);
     
     /**
      * @return true on save, false on failure

@@ -29,6 +29,7 @@ import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Frame;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -46,6 +47,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -739,18 +741,28 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         
         UIRegistry.getStatusBar().setIndeterminate(progressName, true);
         
-        final CustomDialog parentDlg = (CustomDialog)UIRegistry.getMostRecentWindow();
+        final Window parentWin = (Window)UIRegistry.getMostRecentWindow();
         final SimpleGlassPane glassPane = new SimpleGlassPane("Copying Locale...", 18);
-        parentDlg.setGlassPane(glassPane);
         glassPane.setVisible(true);
-        parentDlg.getOkBtn().setEnabled(false);
+        if (parentWin instanceof JFrame)
+        {
+            JFrame parentDlg = (JFrame)UIRegistry.getMostRecentWindow();
+            parentDlg.setGlassPane(glassPane);
+            //parentDlg.getOkBtn().setEnabled(false);
+            
+        } else
+        {
+            CustomDialog parentFrm = (CustomDialog)UIRegistry.getMostRecentWindow();
+            parentFrm.setGlassPane(glassPane);
+            parentFrm.getOkBtn().setEnabled(false);
+        }
         
         SwingWorker workerThread = new SwingWorker()
         {
             @Override
             public Object construct()
             {
-                localizableIO.copyLocale(srcLocale, dstLocale, new PropertyChangeListener()
+                localizableIO.copyLocale(SchemaLocalizerPanel.this, srcLocale, dstLocale, new PropertyChangeListener()
                 {
                     @Override
                     public void propertyChange(final PropertyChangeEvent evt)
@@ -780,9 +792,20 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
                     listener.propertyChange(new PropertyChangeEvent(this, "copyEnd", null, null));
                 }
                 glassPane.setVisible(false);
-                parentDlg.getOkBtn().setEnabled(true);
+                
+                if (parentWin instanceof JFrame)
+                {
+                    //CustomFrame parentDlg = (CustomFrame)UIRegistry.getMostRecentWindow();
+                    //parentDlg.getOkBtn().setEnabled(true);
+                    
+                } else
+                {
+                    CustomDialog parentFrm = (CustomDialog)UIRegistry.getMostRecentWindow();
+                    parentFrm.getOkBtn().setEnabled(true);
+                }
                 UIRegistry.getStatusBar().setProgressDone(progressName);
                 UIRegistry.getStatusBar().setText("");
+                setTableInfoChanged(true);
             }
         };
         
@@ -791,7 +814,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     }
     
     /**
-     * Geta ll the data from the UI for both the container and the field.
+     * Get all the data from the UI for both the container and the field.
      */
     protected void getAllDataFromUI()
     {

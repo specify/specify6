@@ -21,12 +21,13 @@ package edu.ku.brc.specify.tools;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
 import org.apache.axis.utils.StringUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.tools.StrLocaleEntry.STATUS;
 
@@ -40,14 +41,16 @@ import edu.ku.brc.specify.tools.StrLocaleEntry.STATUS;
  */
 public class StrLocaleFile
 {
-    protected String path;
-    protected String srcPath;
-    protected Vector<StrLocaleEntry>            items      = new Vector<StrLocaleEntry>();
-    protected Hashtable<Integer, Integer>       mapper     = new Hashtable<Integer, Integer>();
-    protected Hashtable<String, StrLocaleEntry> itemHash   = new Hashtable<String, StrLocaleEntry>();
-    protected Hashtable<String, String>         chkHash    = new Hashtable<String, String>();
-    protected boolean                           isDestination;
-    protected Hashtable<String, Integer>        keyToInxMap = new Hashtable<String, Integer>();
+    private static final Logger  log                = Logger.getLogger(StrLocaleFile.class);
+            
+    protected String                          path;
+    protected String                          srcPath;
+    protected Vector<StrLocaleEntry>          items      = new Vector<StrLocaleEntry>();
+    protected HashMap<Integer, Integer>       mapper     = new HashMap<Integer, Integer>();
+    protected HashMap<String, StrLocaleEntry> itemHash   = new HashMap<String, StrLocaleEntry>();
+    protected HashMap<String, String>         chkHash    = new HashMap<String, String>();
+    protected boolean                         isDestination;
+    protected HashMap<String, Integer>        keyToInxMap = new HashMap<String, Integer>();
 
     /**
      * @param path
@@ -106,7 +109,8 @@ public class StrLocaleFile
                         
                         if (itemHash.get(key) != null)
                         {
-                            System.err.println("Key '"+key+"' on Line "+count+" is a duplicate.");
+                            log.error("Key '"+key+"' on Line "+count+" is a duplicate.");
+                            
                         } else
                         {
                             StrLocaleEntry entry = new StrLocaleEntry(key, value, null, StringUtils.isEmpty(value) ? STATUS.IsNew : STATUS.IsOK);
@@ -249,13 +253,21 @@ public class StrLocaleFile
      */
     public StrLocaleEntry get(final int index)
     {
-        return items.get(mapper.get(index));
+        System.out.println(index);
+        
+        Integer itemIndex = mapper.get(index);
+        if (itemIndex != null)
+        {
+            return items.get(itemIndex);
+        }
+        log.error("mapper index["+index+"] returned null");
+        return null;
     }
     
     /**
      * @return
      */
-    public Hashtable<String, StrLocaleEntry> getItemHash()
+    public HashMap<String, StrLocaleEntry> getItemHash()
     {
         return itemHash;
     }
@@ -271,7 +283,7 @@ public class StrLocaleFile
     /**
      * @return the chkHash
      */
-    public Hashtable<String, String> getChkHash()
+    public HashMap<String, String> getChkHash()
     {
         return chkHash;
     }

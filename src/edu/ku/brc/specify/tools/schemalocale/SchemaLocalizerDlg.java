@@ -305,6 +305,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#createResourceFiles()
      */
+    @Override
     public boolean createResourceFiles()
     {
         return false;
@@ -314,6 +315,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#didModelChangeDuringLoad()
      */
+    @Override
     public boolean didModelChangeDuringLoad()
     {
         return false;
@@ -322,6 +324,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getContainerDisplayItems()
      */
+    @Override
     public Vector<LocalizableJListItem> getContainerDisplayItems()
     {
         Connection connection = null;
@@ -392,14 +395,17 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getContainer(edu.ku.brc.specify.tools.schemalocale.LocalizableJListItem, edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFaceListener)
      */
-    public void getContainer(LocalizableJListItem item, LocalizableIOIFaceListener l)
+    @Override
+    public LocalizableContainerIFace getContainer(LocalizableJListItem item, LocalizableIOIFaceListener l)
     {
         loadTable(item.getId(), item.getName(), l);
+        return null;
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getDisplayItems(edu.ku.brc.specify.tools.schemalocale.LocalizableJListItem)
      */
+    @Override
     public Vector<LocalizableJListItem> getDisplayItems(LocalizableJListItem containerArg)
     {
         Vector<LocalizableJListItem> items = itemJListItemsHash.get(containerArg);
@@ -433,6 +439,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getItem(edu.ku.brc.specify.tools.schemalocale.LocalizableContainerIFace, edu.ku.brc.specify.tools.schemalocale.LocalizableJListItem)
      */
+    @Override
     public LocalizableItemIFace getItem(LocalizableContainerIFace containerArg, LocalizableJListItem item)
     {
         SpLocaleContainer container = (SpLocaleContainer)containerArg;
@@ -458,6 +465,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#load()
      */
+    @Override
     public boolean load()
     {
         enabledDlgBtns(true);
@@ -465,6 +473,11 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         return true;
     }
     
+    /**
+     * @param sessionArg
+     * @param containerId
+     * @return
+     */
     protected SpLocaleContainer loadTable(final DataProviderSessionIFace sessionArg,
                                           final int    containerId)
     {
@@ -560,6 +573,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#save()
      */
+    @Override
     public boolean save()
     {
         schemaLocPanel.getAllDataFromUI();
@@ -661,6 +675,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#containerChanged(edu.ku.brc.specify.tools.schemalocale.LocalizableContainerIFace)
      */
+    @Override
     public void containerChanged(LocalizableContainerIFace container)
     {
         if (container instanceof SpLocaleContainer)
@@ -676,6 +691,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#isLocaleInUse(java.util.Locale)
      */
+    @Override
     public boolean isLocaleInUse(final Locale locale)
     {
         // First check the aDatabase because the extra locales are not loaded automatically.
@@ -700,6 +716,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getLocalesInUse()
      */
+    @Override
     public Vector<Locale> getLocalesInUse()
     {
         Hashtable<String, Boolean> localeHash = new Hashtable<String, Boolean>();
@@ -861,7 +878,9 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
      * @param srcLocale
      * @param dstLocale
      */
-    public void copyLocale(final LocalizableItemIFace item, final Locale srcLocale, final Locale dstLocale)
+    public void copyLocale(final LocalizableItemIFace item, 
+                           final Locale srcLocale, 
+                           final Locale dstLocale)
     {
         item.fillNames(namesList);
         
@@ -896,13 +915,16 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         {
             LocalizableStrIFace desc = localizableStrFactory.create(srcDesc.getText(), dstLocale);
             item.addDesc(desc);
-        }                 
+        } 
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#copyLocale(java.util.Locale, java.util.Locale, java.beans.PropertyChangeListener)
      */
-    public void copyLocale(Locale srcLocale, Locale dstLocale, final PropertyChangeListener pcl)
+    @Override
+    public void copyLocale(final LocalizableIOIFaceListener lcl, 
+                           Locale srcLocale, Locale dstLocale, 
+                           final PropertyChangeListener pcl)
     {
         UIRegistry.getStatusBar().setProgressRange(SCHEMALOCDLG, 0, getContainerDisplayItems().size());
 
@@ -963,6 +985,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getPickLists(java.lang.String)
      */
     @SuppressWarnings("unchecked")
+    @Override
     public List<PickList> getPickLists(final String disciplineName)
     {
         if (StringUtils.isNotEmpty(disciplineName))
@@ -1019,6 +1042,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#exportToDirectory(java.io.File)
      */
+    @Override
     public boolean exportToDirectory(File expportDir)
     {
         throw new RuntimeException("Export is not implemented.");
@@ -1027,6 +1051,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#hasUpdatablePickLists()
      */
+    @Override
     public boolean hasUpdatablePickLists()
     {
         return true;
@@ -1035,6 +1060,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     /* (non-Javadoc)
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
+    @Override
     public void propertyChange(PropertyChangeEvent evt)
     {
         if (evt.getPropertyName().equals("copyStart"))
@@ -1046,7 +1072,4 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             enabledDlgBtns(true);
         }
     }
-    
-
-
 }

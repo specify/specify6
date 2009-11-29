@@ -27,7 +27,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InputStream;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -265,7 +265,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace
      */
     private void mergeToSrc(final StrLocaleFile src, final StrLocaleFile dst)
     {
-        Hashtable<String, StrLocaleEntry> dstHash = dst.getItemHash();
+        HashMap<String, StrLocaleEntry> dstHash = dst.getItemHash();
         
         int cnt = 0;
         for (StrLocaleEntry srcEntry : src.getItems())
@@ -305,8 +305,8 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace
      */
     private void mergeToDst(final StrLocaleFile src, final StrLocaleFile dst)
     {
-        //Hashtable<String, StrLocaleEntry> srcHash = src.getItemHash();
-        Hashtable<String, StrLocaleEntry> dstHash = dst.getItemHash();
+        //HashMap<String, StrLocaleEntry> srcHash = src.getItemHash();
+        HashMap<String, StrLocaleEntry> dstHash = dst.getItemHash();
         
         Vector<StrLocaleEntry> srcItems = src.getItems();
         Vector<StrLocaleEntry> dstItems = dst.getItems();
@@ -753,8 +753,12 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace
         @Override
         public Object getElementAt(int index)
         {
-            StrLocaleEntry entry = file.get(index);
-            return entry != null ? entry.getKey() : "";
+            if (file != null && index < file.size())
+            {
+                StrLocaleEntry entry = file.get(index);
+                return entry != null ? entry.getKey() : "";
+            }
+            return "";
         }
 
         /* (non-Javadoc)

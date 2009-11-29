@@ -255,6 +255,10 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
         }
     }
     
+    /**
+     * @param fromItems
+     * @param toItems
+     */
     protected void copyItems(Set<SpLocaleItemStr> fromItems, Set<SpLocaleItemStr> toItems)
     {
         for (SpLocaleItemStr str : fromItems)
@@ -300,9 +304,10 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#copyLocale(java.util.Locale, java.util.Locale, java.beans.PropertyChangeListener)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#copyLocale(edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFaceListener, java.util.Locale, java.util.Locale, java.beans.PropertyChangeListener)
      */
-    public void copyLocale(final Locale src, final Locale dst, final PropertyChangeListener pcl)
+    @Override
+    public void copyLocale(final LocalizableIOIFaceListener lcl, final Locale src, final Locale dst, final PropertyChangeListener pcl)
     {
         // no op
     }
@@ -310,6 +315,7 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#createResourceFiles()
      */
+    @Override
     public boolean createResourceFiles()
     {
         return false;
@@ -318,6 +324,7 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#didModelChangeDuringLoad()
      */
+    @Override
     public boolean didModelChangeDuringLoad()
     {
         return false;
@@ -326,6 +333,7 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#exportToDirectory(java.io.File)
      */
+    @Override
     public boolean exportToDirectory(File expportFile)
     {
         return false;
@@ -334,17 +342,20 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getContainer(edu.ku.brc.specify.tools.schemalocale.LocalizableJListItem, edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFaceListener)
      */
-    public void getContainer(LocalizableJListItem item, final LocalizableIOIFaceListener l)
+    @Override
+    public LocalizableContainerIFace getContainer(LocalizableJListItem item, final LocalizableIOIFaceListener l)
     {
         if (l != null)
         {
             l.containterRetrieved(currentBaselineContainer);
         }
+        return currentBaselineContainer;
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getContainerDisplayItems()
      */
+    @Override
     public Vector<LocalizableJListItem> getContainerDisplayItems()
     {
         return null;
@@ -353,6 +364,7 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getDisplayItems(edu.ku.brc.specify.tools.schemalocale.LocalizableJListItem)
      */
+    @Override
     public Vector<LocalizableJListItem> getDisplayItems(LocalizableJListItem container)
     {
         return listItems;
@@ -361,6 +373,7 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getItem(edu.ku.brc.specify.tools.schemalocale.LocalizableContainerIFace, edu.ku.brc.specify.tools.schemalocale.LocalizableJListItem)
      */
+    @Override
     public LocalizableItemIFace getItem(LocalizableContainerIFace container, LocalizableJListItem item)
     {
         return items.get(listItems.indexOf(item));
@@ -369,6 +382,7 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getLocalesInUse()
      */
+    @Override
     public Vector<Locale> getLocalesInUse()
     {
         return null;
@@ -377,6 +391,7 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#isLocaleInUse(java.util.Locale)
      */
+    @Override
     public boolean isLocaleInUse(Locale locale)
     {
         return false;
@@ -385,6 +400,7 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#load()
      */
+    @Override
     public boolean load()
     {
         return false;
@@ -393,6 +409,7 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#containerChanged(edu.ku.brc.specify.tools.schemalocale.LocalizableContainerIFace)
      */
+    @Override
     public void containerChanged(LocalizableContainerIFace container)
     {
     }
@@ -400,6 +417,7 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#save()
      */
+    @Override
     public boolean save()
     {
         return false;
@@ -408,6 +426,7 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
     /* (non-Javadoc)
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
+    @Override
     public void propertyChange(PropertyChangeEvent evt)
     {
         
@@ -416,6 +435,7 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#hasUpdatablePickLists()
      */
+    @Override
     public boolean hasUpdatablePickLists()
     {
         return false;
@@ -455,6 +475,7 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getPickLists(java.lang.String)
      */
+    @Override
     public List<PickList> getPickLists(final String disciplineName)
     {
         List<PickList> pickLists = new Vector<PickList>();
