@@ -562,8 +562,9 @@ public class ExportToMySQLDB
 						|| type == java.sql.Types.NCHAR)// hopefully don't need
 														// to worry about blobs.
 				{
-					val.replace("\t", " ");
-					val.replace("\n", " ");
+					val = val.replace("\t", " ");
+					val = val.replace("\n", " ");
+					val = val.replace("\r", " ");
 				}
 				result.append(val);
 			}
