@@ -59,6 +59,9 @@ public class ConvertTaxonHelper
     protected ConversionLogger.TableWriter   tblWriter;
     protected IdMapperIndexIncrementerIFace  indexIncremeter;
     
+    protected Vector<CollectionInfo>         collectionInfoList;
+    HashMap<Integer, Vector<CollectionInfo>> collDispHash;
+    
     protected HashMap<Integer, Integer>      taxonTypesInUse = new HashMap<Integer, Integer>();
     protected HashMap<Integer, TaxonTreeDef> taxonTreeDefHash = new HashMap<Integer, TaxonTreeDef>(); // Key is old TaxonTreeTypeID
     
@@ -81,6 +84,22 @@ public class ConvertTaxonHelper
         this.tblWriter = tblWriter;
         this.indexIncremeter = indexIncremeter;
         
+        
+        collectionInfoList = CollectionInfo.getCollectionInfoList(oldDBConn);
+        
+        // Create a Hashed List of CollectionInfo for each unique TaxonomyTypeId
+        // where the TaxonomyTypeId is a Discipline
+        collDispHash = new HashMap<Integer, Vector<CollectionInfo>>();
+        for (CollectionInfo info : collectionInfoList)
+        {
+            Vector<CollectionInfo> colInfoList = collDispHash.get(info.getTaxonomyTypeId());
+            if (colInfoList == null)
+            {
+                colInfoList = new Vector<CollectionInfo>();
+                collDispHash.put(info.getTaxonomyTypeId(), colInfoList);
+            }
+            colInfoList.add(info);
+        }
     }
     
     /**
@@ -146,9 +165,9 @@ public class ConvertTaxonHelper
         // TaxonomyType
         //---------------------------------
         StringBuilder sb = new StringBuilder("SELECT TaxonomyTypeID FROM taxonomytype WHERE TaxonomyTypeId in (");
-        for (CollectionInfo ci : CollectionInfo.getCollectionInfoList(oldDBConn))
+        for (Integer txTypeId : collDispHash.keySet())
         {
-            sb.append(ci.getTaxonomyTypeId());
+            sb.append(txTypeId);
             sb.append(',');
         }
         sb.setLength(sb.length()-1); // Chomp
@@ -354,8 +373,12 @@ public class ConvertTaxonHelper
                                     "CreatedByAgentID", "ModifiedByAgentID", "Version", "CultivarName", "LabelFormat", 
                                     "COLStatus", "VisibilitySetByID"};
 
-        for (CollectionInfo ci : CollectionInfo.getCollectionInfoList(oldDBConn))
+        for (Integer txTypeId : collDispHash.keySet())
         {
+            Vector<CollectionInfo> collInfoList = collDispHash.get(txTypeId);
+            
+            CollectionInfo ci = collInfoList.get(0);
+            
             setFieldsToIgnoreWhenMappingNames(ignoredFields);
             
             // AcceptedID is typically NULL unless they are using synonimies
@@ -372,6 +395,7 @@ public class ConvertTaxonHelper
             IdHashMapper.setTblWriter(tblWriter);
     
             log.info("Copying taxon records from 'taxonname' table");
+            log.info("SQL: "+ (sql + ci.getTaxonomyTypeId()));
             if (!copyTable(oldDBConn, newDBConn, 
                            sql + ci.getTaxonomyTypeId(), cntSQL + ci.getTaxonomyTypeId(), 
                            "taxonname", "taxon", 

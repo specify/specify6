@@ -131,12 +131,12 @@ public class CollectionInfo
         if (collectionInfoList.isEmpty())
         {        
             
-            String hostTaxonID = "SELECT Count(taxonname.TaxonomicUnitTypeID), taxonname.TaxonName FROM habitat " + 
+            String hostTaxonID = "SELECT Count(taxonname.TaxonomicUnitTypeID) FROM habitat " + 
                                  "Inner Join taxonname ON habitat.HostTaxonID = taxonname.TaxonNameID WHERE taxonname.TaxonomyTypeId = ";
             
-            String sql = "SELECT cot.CollectionObjectTypeID, cot.CollectionObjectTypeName, csd.CatalogSeriesDefinitionID, csd.CatalogSeriesID " + 
-                         "FROM collectionobjecttype cot INNER JOIN catalogseriesdefinition csd on " + 
-                         "csd.ObjectTypeId = cot.CollectionObjectTypeId WHERE cot.Category =  'Biological'";
+            String sql = "SELECT cot.CollectionObjectTypeID, cot.CollectionObjectTypeName, csd.CatalogSeriesDefinitionID, csd.CatalogSeriesID FROM collectionobjecttype cot " +
+                         "INNER JOIN catalogseriesdefinition csd on " + 
+                         "csd.ObjectTypeId = cot.CollectionObjectTypeId WHERE cot.Category = 'Biological'";
             
             String catSeriesSQL = "SELECT SeriesName, CatalogSeriesPrefix, Remarks, LastEditedBy FROM catalogseries WHERE CatalogSeriesID = ";
             
@@ -179,7 +179,7 @@ public class CollectionInfo
                     String s = catSeriesSQL + info.getCatSeriesId();
                     log.debug(s);
                     Vector<Object[]> rows = BasicSQLUtils.query(oldDBConn, s);
-                    if (rows != null)
+                    if (rows != null && rows.size() == 1)
                     {
                         Object[] row = rows.get(0);
                         
@@ -190,7 +190,7 @@ public class CollectionInfo
                         
                     } else
                     {
-                        log.error("Error getting CollectionInfo for CollectionObjectTypeID: " + rs.getInt(1));
+                        log.error("Error getting CollectionInfo for CollectionObjectTypeID: " + rs.getInt(1)+" number of CatlogSeries: " + rows.size());
                     }
                     
                     s = sqlTx + rs.getInt(1);
@@ -211,6 +211,8 @@ public class CollectionInfo
                         info.setTaxonNameCnt(BasicSQLUtils.getCountAsInt(oldDBConn, cntTaxonName + taxonomyTypeID));
                         info.setColObjDetTaxCnt(BasicSQLUtils.getCountAsInt(oldDBConn, cntColObjForTaxon + taxonomyTypeID));
                         info.setColObjCnt(BasicSQLUtils.getCountAsInt(oldDBConn, cntColObj + info.getColObjTypeId()));
+                        
+                        log.debug("TaxonomyTypeName: "+ info.getTaxonomyTypeName()+"  TaxonName: "+info.getTaxonName()+"  TaxonomyTypeId: "+info.getTaxonomyTypeId());
                         
                         s = hostTaxonID + taxonomyTypeID;
                         log.debug(s);

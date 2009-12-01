@@ -649,11 +649,18 @@ public class SpecifyDBConverter
         frame.turnOnOverAll();
         
         conversion = new GenericDBConversion(oldDBConn, newDBConn, dbNameSource, convLogger);
-        if (!conversion.initialize())
+        GenericDBConversion.CollectionResultType collInitStatus = conversion.initialize();
+        if (collInitStatus == GenericDBConversion.CollectionResultType.eError)
         {
             oldDBConn.close();
             newDBConn.close();
-            throw new RuntimeException("There are not collections!");
+            throw new RuntimeException("There are no collections!");
+            
+        } else if (collInitStatus == GenericDBConversion.CollectionResultType.eCancel)
+        {
+            oldDBConn.close();
+            newDBConn.close();
+            System.exit(0);
         }
         
         SwingUtilities.invokeLater(new Runnable() {
@@ -771,7 +778,7 @@ public class SpecifyDBConverter
                 // Really need to create or get a proper Discipline Record
                 /////////////////////////////////////////////////////////////
                 ConversionLogger.TableWriter taxonTblWriter = convLogger.getWriter("FullTaxon.html", "Taxon Conversion");
-                ConvertTaxonHelper taxonHelper = new ConvertTaxonHelper(oldDBConn, newDBConn, dbNameDest, taxonTblWriter, conversion);
+                ConvertTaxonHelper           taxonHelper    = new ConvertTaxonHelper(oldDBConn, newDBConn, dbNameDest, taxonTblWriter, conversion);
                 taxonHelper.createTaxonIdMappings();
                 taxonHelper.doForeignKeyMappings();
                 

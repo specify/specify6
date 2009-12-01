@@ -171,6 +171,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             return ord;
         }
     }
+    
+    public enum CollectionResultType { eOK, eCancel, eError }
 
     // public enum VISIBILITY_LEVEL {All, Institution}
     public static int                                       defaultVisibilityLevel = 0;                                                   // User/Security
@@ -196,6 +198,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     protected String[]                                      standardDataTypes      = { "Plant", "Animal", "Mineral", "Fungi", "Anthropology"};
     protected Hashtable<String, Integer>                    dataTypeNameIndexes    = new Hashtable<String, Integer>();                   // Name to Index in Array
     protected Hashtable<String, Integer>                    dataTypeNameToIds      = new Hashtable<String, Integer>();                   // name  to Record ID
+    
+    protected Hashtable<Integer, Integer>                   catSeriesToNewCollectionID = new Hashtable<Integer, Integer>();            
 
     protected Hashtable<String, TableStats>                 tableStatHash          = new Hashtable<String, TableStats>();
 
@@ -319,7 +323,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     /**
      * @return
      */
-    public boolean initialize()
+    public CollectionResultType initialize()
     {
         collectionInfoList = CollectionInfo.getCollectionInfoList(oldDBConn);
         
@@ -339,18 +343,24 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             UIHelper.centerWindow(dlg);
             dlg.setVisible(true);
             
+            if (dlg.isCancelled())
+            {
+                return CollectionResultType.eCancel;
+            }
+            
             Pair<CollectionInfo, DisciplineType> pair = CollectionInfo.getDisciplineType(oldDBConn);
             if (pair == null || pair.second == null)
             {
-                disciplineType = getStandardDisciplineName(pair.first.getTaxonomyTypeName(), null);
+                CollectionInfo colInfo = pair.first;
+                disciplineType = getStandardDisciplineName(colInfo.getTaxonomyTypeName(), colInfo.getCatSeriesName());
             } else
             {
                 disciplineType = pair.second;
             }
             
-            return disciplineType != null;
+            return disciplineType != null ? CollectionResultType.eOK : CollectionResultType.eError;
         }
-        return false;
+        return CollectionResultType.eError;
     }
     
     /**
@@ -2234,6 +2244,12 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     @SuppressWarnings("cast")
     public void convertDivision(final Integer institutionId)
     {
+        
+        for (CollectionInfo ci : collectionInfoList)
+        {
+            catSeriesToNewCollectionID.put(ci.getCatSeriesId(), ci.getCollectionId());
+        }
+        
         try
         {
             strBuf.setLength(0);
@@ -2309,6 +2325,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     {
         HibernateUtil.commitTransaction();
     }
+    
+    
 
     /**
      * Converts Object Defs.
@@ -2333,11 +2351,28 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             Hashtable<Integer, String> taxonomyTypeIDToTaxonomyName = new Hashtable<Integer, String>();
             
             TableWriter tblWriter = convLogger.getWriter("convertCollectionObjectTypes.html", "Collection Object Type");
-
-            int collectionCnt      = 0;
-            int prevTaxonomyTypeID = -1;
+            
+            // Create a Hashed List of CollectionInfo for each unique TaxonomyTypeId
+            // where the TaxonomyTypeId is a Discipline
+            HashMap<Integer, Vector<CollectionInfo>> collDispHash = new HashMap<Integer, Vector<CollectionInfo>>();
             for (CollectionInfo info : collectionInfoList)
             {
+                Vector<CollectionInfo> colInfoList = collDispHash.get(info.getTaxonomyTypeId());
+                if (colInfoList == null)
+                {
+                    colInfoList = new Vector<CollectionInfo>();
+                    collDispHash.put(info.getTaxonomyTypeId(), colInfoList);
+                }
+                colInfoList.add(info);
+            }
+
+            String dateTimeNow = dateTimeFormatter.format(now);
+            int collectionCnt      = 0;
+            for (Integer txTypeId : collDispHash.keySet())
+            {
+                Vector<CollectionInfo> collInfoList = collDispHash.get(txTypeId);
+                
+                CollectionInfo      info = collInfoList.get(0);
                 String  taxonomyTypeName = info.getTaxonomyTypeName();
                 Integer taxonomyTypeID   = info.getTaxonomyTypeId();
                 String  lastEditedBy     = null;
@@ -2374,32 +2409,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 lastEditedBy            = info.getCatSeriesLastEditedBy();
                 taxonomyTypeID          = info.getTaxonomyTypeId();
                 
-                AutoNumberingScheme cns = null;
-                if (catalogSeriesID != null && StringUtils.isNotEmpty(seriesName))
-                {
-                    cns = catSeriesToAtuoNumSchemeHash.get(catalogSeriesID);
-                    if (cns == null)
-                    {
-                        Session localSession = HibernateUtil.getNewSession();
-                        cns = new AutoNumberingScheme();
-                        cns.initialize();
-                        cns.setIsNumericOnly(true);
-                        cns.setSchemeClassName("");
-                        cns.setSchemeName(seriesName);
-                        cns.setTableNumber(CollectionObject.getClassTableId());
-                        Transaction trans = localSession.beginTransaction();
-                        localSession.save(cns);
-                        trans.commit();
-                        catSeriesToAtuoNumSchemeHash.put(catalogSeriesID, cns);
-                    }
-                } else
-                {
-                    seriesName = taxTypeName;
-                }
-                
-                Integer catNumSchemeId = cns != null ? cns.getAutoNumberingSchemeId() : null;
-                
-                String dateTimeNow = dateTimeFormatter.format(now);
                 //---------------------------------------------------------------------------------
                 //-- Create Discipline
                 //---------------------------------------------------------------------------------
@@ -2412,116 +2421,143 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 Statement     updateStatement = newDBConn.createStatement();
                 StringBuilder strBuf2         = new StringBuilder();
                 
-                if (taxonomyTypeID != prevTaxonomyTypeID)
-                {
-                    curDisciplineID = taxonomyTypeMapper.get(taxonomyTypeID);
-                    info.setDisciplineId(curDisciplineID);
-                    
-                    // adding DivisioniID
-                    strBuf2.setLength(0);
-                    strBuf2.append("INSERT INTO discipline (DisciplineID, TimestampModified, Type, Name, TimestampCreated, ");
-                    strBuf2.append("DataTypeID, GeographyTreeDefID, GeologicTimePeriodTreeDefID, TaxonTreeDefID, DivisionID, ");
-                    strBuf2.append("CreatedByAgentID, ModifiedByAgentID, Version, UserGroupScopeId) VALUES (");
-                    strBuf2.append(info.getDisciplineId() + ",");
-                    strBuf2.append("'" + dateTimeNow + "',"); // TimestampModified
-                    strBuf2.append("'" + disciplineTypeObj.getName() + "',");
-                    strBuf2.append("'" + disciplineTypeObj.getTitle() + "',");
-                    strBuf2.append("'" + dateTimeNow + "',"); // TimestampCreated
-                    strBuf2.append(dataTypeId + ",");
-                    strBuf2.append("1,"); // GeographyTreeDefID
-                    strBuf2.append("1,"); // GeologicTimePeriodTreeDefID
-                    strBuf2.append("1,"); // TaxonTreeDefID
-        
-                    strBuf2.append(division.getDivisionId() + ","); // DivisionID
-                    strBuf2.append(getCreatorAgentId(null) + "," + getModifiedByAgentId(lastEditedBy) + ",0, ");
-                    strBuf2.append(curDisciplineID);  // UserGroupScopeId
-                    strBuf2.append(")");
-                    // strBuf2.append("NULL)");// UserPermissionID//User/Security changes
-                    log.info(strBuf2.toString());
-        
-                    removeForeignKeyConstraints(newDBConn, BasicSQLUtils.myDestinationServerType);
-                    updateStatement.executeUpdate(strBuf2.toString());
-                    
-                    addAgentDisciplineJoin(userAgent.getAgentId(), curDisciplineID);
-                    
-                    updateStatement.clearBatch();
-                    updateStatement.close();
-                    updateStatement = null;
-                    setIdentityInsertOFFCommandForSQLServer(newDBConn, "discipline", BasicSQLUtils.myDestinationServerType);
-                    //Integer disciplineID = getHighestId(newDBConn, "DisciplineID", "discipline");
-                }
-    
-                newColObjIDTotaxonomyTypeID.put(curDisciplineID, taxonomyTypeID);
-    
-                msg = "Created new discipline[" + taxonomyTypeName + "] is dataType ["  + dataTypeId + "]";
-                log.info(msg);
-                tblWriter.log(msg);
+                curDisciplineID = taxonomyTypeMapper.get(taxonomyTypeID);
+                info.setDisciplineId(curDisciplineID);
                 
-                info.setCollectionId(getNextIndex());
-                curCollectionID = info.getCollectionId();
-                
-                updateStatement = newDBConn.createStatement();
-                strBuf.setLength(0);
-                strBuf.append("INSERT INTO collection (CollectionID, DisciplineID, CollectionName, Code, Remarks, CatalogFormatNumName, ");
-                strBuf.append("IsEmbeddedCollectingEvent, TimestampCreated, TimestampModified, CreatedByAgentID, ModifiedByAgentID, ");
-                strBuf.append("Version, UserGroupScopeId) VALUES (");
-                strBuf.append(curCollectionID + ",");
-                strBuf.append(newColObjdefID + ",");
-                strBuf.append(getStrValue(seriesName) + ",");
-                strBuf.append(getStrValue(prefix) + ",");
-                strBuf.append(getStrValue(remarks) + ",");
-                strBuf.append("'CatalogNumberNumeric',");
-                strBuf.append((isEmbeddedCE ? 1 : 0)  + ",");
-                strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampModified
-                strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampCreated
-                strBuf.append(getCreatorAgentId(null) + "," + getModifiedByAgentId(lastEditedBy) + ", 0, ");
-                strBuf.append(curCollectionID);  // UserGroupScopeId
-                strBuf.append(")");
-
-                log.debug(strBuf.toString());
+                // adding DivisioniID
+                strBuf2.setLength(0);
+                strBuf2.append("INSERT INTO discipline (DisciplineID, TimestampModified, Type, Name, TimestampCreated, ");
+                strBuf2.append("DataTypeID, GeographyTreeDefID, GeologicTimePeriodTreeDefID, TaxonTreeDefID, DivisionID, ");
+                strBuf2.append("CreatedByAgentID, ModifiedByAgentID, Version, UserGroupScopeId) VALUES (");
+                strBuf2.append(info.getDisciplineId() + ",");
+                strBuf2.append("'" + dateTimeNow + "',"); // TimestampModified
+                strBuf2.append("'" + disciplineTypeObj.getName() + "',");
+                strBuf2.append("'" + disciplineTypeObj.getTitle() + "',");
+                strBuf2.append("'" + dateTimeNow + "',"); // TimestampCreated
+                strBuf2.append(dataTypeId + ",");
+                strBuf2.append("1,"); // GeographyTreeDefID
+                strBuf2.append("1,"); // GeologicTimePeriodTreeDefID
+                strBuf2.append("1,"); // TaxonTreeDefID
     
-                updateStatement.executeUpdate(strBuf.toString());
+                strBuf2.append(division.getDivisionId() + ","); // DivisionID
+                strBuf2.append(getCreatorAgentId(null) + "," + getModifiedByAgentId(lastEditedBy) + ",0, ");
+                strBuf2.append(curDisciplineID);  // UserGroupScopeId
+                strBuf2.append(")");
+                // strBuf2.append("NULL)");// UserPermissionID//User/Security changes
+                log.info(strBuf2.toString());
+    
+                removeForeignKeyConstraints(newDBConn, BasicSQLUtils.myDestinationServerType);
+                updateStatement.executeUpdate(strBuf2.toString());
                 
-                //curCollectionID = getInsertedId(updateStatement);
+                addAgentDisciplineJoin(userAgent.getAgentId(), curDisciplineID);
                 
                 updateStatement.clearBatch();
                 updateStatement.close();
                 updateStatement = null;
-
-                if (catNumSchemeId != null)
-                {
-                    joinCollectionAndAutoNum(curCollectionID, catNumSchemeId);
-
-                    String hashKey = catalogSeriesID + "_" + taxonomyTypeID;
-
-                    Integer newCatSeriesID = getHighestId(newDBConn, "CollectionID", "collection");
-                    collectionHash.put(hashKey, newCatSeriesID);
-                    if (StringUtils.isNotEmpty(prefix))
-                    {
-                        prefixHash.put(hashKey, prefix);
-                    }
-
-                    msg = "Collection New[" + newCatSeriesID + "] [" + seriesName + "] [" + prefix + "] [" + newColObjdefID + "]";
-                } else
-                {
-                    msg = "Collection New[" + seriesName + "] [" + prefix + "] [" + newColObjdefID + "]";
-                }
+                setIdentityInsertOFFCommandForSQLServer(newDBConn, "discipline", BasicSQLUtils.myDestinationServerType);
+                //Integer disciplineID = getHighestId(newDBConn, "DisciplineID", "discipline");
+    
+                newColObjIDTotaxonomyTypeID.put(curDisciplineID, taxonomyTypeID);
+    
+                msg = "**** Created new discipline[" + taxonomyTypeName + "] is dataType ["  + dataTypeId + "]";
                 log.info(msg);
                 tblWriter.log(msg);
-
-                //recordCnt++;
-                //msg = "Collection Join Records: " + recordCnt;
-                //log.info(msg);
-                //tblWriter.log(msg);
-
-                tblWriter.close();
                 
-                //rs.close();
-                //stmt.close();
+                for (CollectionInfo collInfo : collInfoList)
+                {
+                    AutoNumberingScheme cns = null;
+                    if (catalogSeriesID != null && StringUtils.isNotEmpty(seriesName))
+                    {
+                        cns = catSeriesToAtuoNumSchemeHash.get(catalogSeriesID);
+                        if (cns == null)
+                        {
+                            Session localSession = HibernateUtil.getNewSession();
+                            cns = new AutoNumberingScheme();
+                            cns.initialize();
+                            cns.setIsNumericOnly(true);
+                            cns.setSchemeClassName("");
+                            cns.setSchemeName(seriesName);
+                            cns.setTableNumber(CollectionObject.getClassTableId());
+                            Transaction trans = localSession.beginTransaction();
+                            localSession.save(cns);
+                            trans.commit();
+                            catSeriesToAtuoNumSchemeHash.put(catalogSeriesID, cns);
+                        }
+                    } else
+                    {
+                        seriesName = taxTypeName;
+                    }
+                    
+                    Integer catNumSchemeId = cns != null ? cns.getAutoNumberingSchemeId() : null;
+                    
+                    collInfo.setCollectionId(getNextIndex());
+                    curCollectionID = collInfo.getCollectionId();
+                    
+                    msg = "**** Created new Collection [" + seriesName + "] is curCollectionID ["  + curCollectionID + "]";
+                    log.info(msg);
+                    
+                    updateStatement = newDBConn.createStatement();
+                    strBuf.setLength(0);
+                    strBuf.append("INSERT INTO collection (CollectionID, DisciplineID, CollectionName, Code, Remarks, CatalogFormatNumName, ");
+                    strBuf.append("IsEmbeddedCollectingEvent, TimestampCreated, TimestampModified, CreatedByAgentID, ModifiedByAgentID, ");
+                    strBuf.append("Version, UserGroupScopeId) VALUES (");
+                    strBuf.append(curCollectionID + ",");
+                    strBuf.append(newColObjdefID + ",");
+                    strBuf.append(getStrValue(seriesName) + ",");
+                    strBuf.append(getStrValue(prefix) + ",");
+                    strBuf.append(getStrValue(remarks) + ",");
+                    strBuf.append("'CatalogNumberNumeric',");
+                    strBuf.append((isEmbeddedCE ? 1 : 0)  + ",");
+                    strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampModified
+                    strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampCreated
+                    strBuf.append(getCreatorAgentId(null) + "," + getModifiedByAgentId(lastEditedBy) + ", 0, ");
+                    strBuf.append(curCollectionID);  // UserGroupScopeId
+                    strBuf.append(")");
+    
+                    log.debug(strBuf.toString());
+        
+                    updateStatement.executeUpdate(strBuf.toString());
+                    
+                    //curCollectionID = getInsertedId(updateStatement);
+                    
+                    updateStatement.clearBatch();
+                    updateStatement.close();
+                    updateStatement = null;
+    
+                    if (catNumSchemeId != null)
+                    {
+                        joinCollectionAndAutoNum(curCollectionID, catNumSchemeId);
+    
+                        String hashKey = catalogSeriesID + "_" + taxonomyTypeID;
+    
+                        Integer newCatSeriesID = getHighestId(newDBConn, "CollectionID", "collection");
+                        collectionHash.put(hashKey, newCatSeriesID);
+                        if (StringUtils.isNotEmpty(prefix))
+                        {
+                            prefixHash.put(hashKey, prefix);
+                        }
+    
+                        msg = "Collection New[" + newCatSeriesID + "] [" + seriesName + "] [" + prefix + "] [" + newColObjdefID + "]";
+                    } else
+                    {
+                        msg = "Collection New[" + seriesName + "] [" + prefix + "] [" + newColObjdefID + "]";
+                    }
+                    log.info(msg);
+                    tblWriter.log(msg);
+    
+                    //recordCnt++;
+                    //msg = "Collection Join Records: " + recordCnt;
+                    //log.info(msg);
+                    //tblWriter.log(msg);
+    
+                    tblWriter.close();
+                    
+                    //rs.close();
+                    //stmt.close();
+                    
+                    collectionCnt++;
+                }
                 
-                collectionCnt++;
-                
-                prevTaxonomyTypeID = taxonomyTypeID;
             } // for loop 
 
         } catch (SQLException e)
@@ -4605,8 +4641,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
         try
         {
-            Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            StringBuilder str = new StringBuilder();
+            Statement     stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            StringBuilder str  = new StringBuilder();
 
             List<String> oldFieldNames = new ArrayList<String>();
 
@@ -4616,7 +4652,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             sql.append(buildSelectFieldList(names, "determination"));
             oldFieldNames.addAll(names);
 
-            sql.append(" FROM determination ORDER BY DeterminationID");
+            sql.append(", cc.CatalogSeriesID FROM determination Inner Join collectionobjectcatalog AS cc ON determination.BiologicalObjectID = cc.CollectionObjectCatalogID");
 
             log.info(sql);
 
@@ -4676,7 +4712,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             Pair<String, String> datePair = new Pair<String, String>();
             
-            Integer oldRecIDInx      = oldNameIndex.get("DeterminationID");
+            Integer catSeriesIdInx  = oldNameIndex.get("CatalogSeriesID");
+            Integer oldRecIDInx     = oldNameIndex.get("DeterminationID");
             int     lastEditedByInx = oldNameIndex.get("LastEditedBy");
             Integer detDateInx      = oldNameIndex.get("Date");
             
@@ -4687,6 +4724,16 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 datePair.second = null;
                 
                 String lastEditedBy = rs.getString(lastEditedByInx);
+                
+                Integer catSeriesId = rs.getInt(catSeriesIdInx);
+                
+                Integer collectionId = catSeriesToNewCollectionID.get(catSeriesId);
+                if (collectionId == null)
+                {
+                    throw new RuntimeException("CollectionId is null when mapped from CatSeriesId");
+                }
+                
+                this.curCollectionID = collectionId;
 
                 str.setLength(0);
                 StringBuffer fieldList = new StringBuffer();
