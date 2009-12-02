@@ -1502,7 +1502,6 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      */
     public void setPermissions(final PermissionIFace permissions)
     {
-        System.err.println(name);
         this.permissions = permissions;
     }
     

@@ -955,7 +955,7 @@ public class TaskSemaphoreMgr
             } else if (!semaphore.getIsLocked())
             {
                 //throw new RuntimeException("Trying to unlock when already unlocked!");
-                System.err.println("Trying to unlock when already unlocked!");
+                log.error("Trying to unlock when already unlocked!");
             }
             
             previouslyLocked = locked;

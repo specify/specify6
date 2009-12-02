@@ -685,7 +685,6 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
      */
     public void stateChanged(final ChangeEvent e)
     {
-        System.err.println(e);
         if (changeListener != null)
         {
             changeListener.stateChanged(e);
