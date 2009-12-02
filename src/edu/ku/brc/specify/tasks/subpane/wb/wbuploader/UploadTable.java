@@ -1530,7 +1530,7 @@ public class UploadTable implements Comparable<UploadTable>
                 }
             }
         }
-        else if (tblClass.equals(CollectionObject.class) && !updateMatches)
+        else if (tblClass.equals(CollectionObject.class)/* && !updateMatches*/)
         {
             result = true;
         }
@@ -1752,8 +1752,16 @@ public class UploadTable implements Comparable<UploadTable>
         }
         for (DefaultFieldEntry dfe : missingRequiredFlds)
 		{
-			critter.add(Restrictions.eq(deCapitalize(dfe.getFldName()), dfe
+			if (dfe.isMultiValued())
+			{
+				critter.add(Restrictions.in(deCapitalize(dfe.getFldName()), dfe
+						.getDefaultValues(recNum)));
+			}
+			else
+			{
+				critter.add(Restrictions.eq(deCapitalize(dfe.getFldName()), dfe
 					.getDefaultValue(recNum)));
+			}
 		}
 
         addDomainCriteria(critter);
@@ -1851,9 +1859,12 @@ public class UploadTable implements Comparable<UploadTable>
             setCurrentRecord(match, recNum);
             // if a match was found matchChildren don't need to do anything. (assuming
             // !updateMatches!!!)
-            for (UploadTable child : matchChildren)
+            if (!updateMatches)
             {
-                child.skipRow = true;
+            	for (UploadTable child : matchChildren)
+            	{
+            		child.skipRow = true;
+            	}
             }
             return true;
         }
@@ -2004,8 +2015,8 @@ public class UploadTable implements Comparable<UploadTable>
             return true;
         }
         
-        return validValues.containsKey(fld.getValue());              
-    }
+        return validValues.containsKey(fld.getValue());
+   }
     
     /**
      * @param fld

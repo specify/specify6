@@ -20,6 +20,8 @@
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Vector;
 
 import edu.ku.brc.specify.datamodel.Determination;
 
@@ -52,7 +54,7 @@ public class DefaultFieldEntry
     /**
      * Default arg for setter member.
      */
-    protected Object[]          defaultValue;
+    protected Vector<Object>          defaultValues = new Vector<Object>();
     /**
      * The name of the field being uploaded to.
      */
@@ -71,10 +73,9 @@ public class DefaultFieldEntry
         this.uploadTbl = uploadTbl;
         this.fldClass = fldClass;
         this.setter = setter;
-        this.defaultValue = new Object[1];
-        defaultValue[0] = null;
         this.fldName = fldName;
         this.uploadFld = uploadFld;
+        this.defaultValues.add(null);
     }
 
     /**
@@ -93,21 +94,58 @@ public class DefaultFieldEntry
     		}    			
     	}
     	
-    	return defaultValue[0];
+    	return defaultValues.get(0);
     }
 
+    /**
+     * @return
+     */
+    public boolean isMultiValued()
+    {
+    	return defaultValues.size() > 1;
+    }
+    
+    /**
+     * @param params
+     * @return
+     */
+    protected List<Object> getDefaultValues(Object... params)
+    {
+    	return defaultValues;
+    }
+    
     /**
      * @param defaultValue the defaultValue to set
      */
-    public final void setDefaultValue(Object defaultValue)
+    public void setDefaultValue(Object defaultValue)
     {
-        this.defaultValue[0] = defaultValue;
+        defaultValues.set(0, defaultValue);
     }
 
     /**
+     * @param values a allowable values for matching.
+     * the first value becomes the default value for new records.
+     */
+    public void setValues(Object[] values)
+    {
+    	this.defaultValues.clear();
+    	if (values.length > 0)
+    	{
+    		for (int o = 0; o < values.length; o++)
+    		{
+    			this.defaultValues.add(values[o]);
+    		}
+    	}
+    	else
+    	{
+    		this.defaultValues.add(null);
+    	}
+    }
+    
+    /**
      * @return the fldClass
      */
-    public final Class<?> getFldClass()
+    public Class<?> getFldClass()
     {
         return fldClass;
     }
@@ -115,7 +153,7 @@ public class DefaultFieldEntry
     /**
      * @return the fldName
      */
-    public final String getFldName()
+    public String getFldName()
     {
         return fldName;
     }
@@ -123,20 +161,20 @@ public class DefaultFieldEntry
     /**
      * @return the setter
      */
-    public final Method getSetter()
+    public Method getSetter()
     {
         return setter;
     }
 
     public boolean isDefined()
     {
-        return defaultValue[0] != null;
+        return defaultValues.get(0) != null;
     }
 
     /**
      * @return the uploadTbl
      */
-    public final UploadTable getUploadTbl()
+    public UploadTable getUploadTbl()
     {
         return uploadTbl;
     }

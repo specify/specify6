@@ -401,7 +401,12 @@ public class MissingDataResolver implements ActionListener
             if (dfe.getFldName().equalsIgnoreCase("agenttype"))
             {
                 log.debug("setting Agent.AgentType to 1");
-                dfe.setDefaultValue(new Byte("1"));
+                Object[] options = new Object[4];
+                options[0] = new Byte(Agent.PERSON); //the default value for new records
+                options[1] = new Byte(Agent.ORG);
+                options[2] = new Byte(Agent.GROUP);
+                options[3] = new Byte(Agent.OTHER);
+                dfe.setValues(options);
                 return true;
             }
         }
