@@ -67,6 +67,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -220,7 +221,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     
     // New Multi-Collection data members
     protected Vector<CollectionInfo>                        collectionInfoList;
-    protected HashMap<Integer, AutoNumberingScheme>         catSeriesToAtuoNumSchemeHash = new HashMap<Integer, AutoNumberingScheme>();
+    protected HashMap<Integer, AutoNumberingScheme>         catSeriesToAutoNumSchemeHash = new HashMap<Integer, AutoNumberingScheme>();
     
 
     protected Session                                       session;
@@ -2244,12 +2245,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     @SuppressWarnings("cast")
     public void convertDivision(final Integer institutionId)
     {
-        
-        for (CollectionInfo ci : collectionInfoList)
-        {
-            catSeriesToNewCollectionID.put(ci.getCatSeriesId(), ci.getCollectionId());
-        }
-        
         try
         {
             strBuf.setLength(0);
@@ -2465,10 +2460,14 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
                 for (CollectionInfo collInfo : collInfoList)
                 {
+                    catalogSeriesID = collInfo.getCatSeriesId();
+                    seriesName      = collInfo.getCatSeriesName();
+                    prefix          = collInfo.getCatSeriesPrefix();
+                    
                     AutoNumberingScheme cns = null;
                     if (catalogSeriesID != null && StringUtils.isNotEmpty(seriesName))
                     {
-                        cns = catSeriesToAtuoNumSchemeHash.get(catalogSeriesID);
+                        cns = catSeriesToAutoNumSchemeHash.get(catalogSeriesID);
                         if (cns == null)
                         {
                             Session localSession = HibernateUtil.getNewSession();
@@ -2481,7 +2480,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             Transaction trans = localSession.beginTransaction();
                             localSession.save(cns);
                             trans.commit();
-                            catSeriesToAtuoNumSchemeHash.put(catalogSeriesID, cns);
+                            catSeriesToAutoNumSchemeHash.put(catalogSeriesID, cns);
                         }
                     } else
                     {
@@ -2559,6 +2558,13 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 }
                 
             } // for loop 
+            
+            for (CollectionInfo ci : collectionInfoList)
+            {
+                catSeriesToNewCollectionID.put(ci.getCatSeriesId(), ci.getCollectionId());
+            }
+            
+            return true;
 
         } catch (SQLException e)
         {
@@ -4652,7 +4658,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             sql.append(buildSelectFieldList(names, "determination"));
             oldFieldNames.addAll(names);
 
-            sql.append(", cc.CatalogSeriesID FROM determination Inner Join collectionobjectcatalog AS cc ON determination.BiologicalObjectID = cc.CollectionObjectCatalogID");
+            sql.append(", cc.CatalogSeriesID AS CatSeriesID FROM determination Inner Join collectionobjectcatalog AS cc ON determination.BiologicalObjectID = cc.CollectionObjectCatalogID");
 
             log.info(sql);
 
@@ -4666,6 +4672,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 sql = new StringBuilder(currentSQL);
 
             }
+            
+            oldFieldNames.add("CatSeriesID");
+            
             log.info(sql);
             List<FieldMetaData> newFieldMetaData = getFieldMetaDataFromSchema(newDBConn, "determination");
 
@@ -4712,10 +4721,12 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             Pair<String, String> datePair = new Pair<String, String>();
             
-            Integer catSeriesIdInx  = oldNameIndex.get("CatalogSeriesID");
+            Integer catSeriesIdInx  = oldNameIndex.get("CatSeriesID");
             Integer oldRecIDInx     = oldNameIndex.get("DeterminationID");
             int     lastEditedByInx = oldNameIndex.get("LastEditedBy");
             Integer detDateInx      = oldNameIndex.get("Date");
+            
+            System.err.println("catSeriesIdInx: "+catSeriesIdInx);
             
             int count = 0;
             do
@@ -4726,6 +4737,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 String lastEditedBy = rs.getString(lastEditedByInx);
                 
                 Integer catSeriesId = rs.getInt(catSeriesIdInx);
+                
+                System.err.println("catSeriesId: "+catSeriesId);
                 
                 Integer collectionId = catSeriesToNewCollectionID.get(catSeriesId);
                 if (collectionId == null)
@@ -5057,10 +5070,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                   "YesNo4", "YesNo5", "YesNo6", "FieldNotebookPageID", "ColObjAttributesID",
                                   "DNASequenceID", "AppraisalID", "TotalValue", "Description" };
 
-        Hashtable<String, String> fieldsToSkipHash = new Hashtable<String, String>();
+        HashSet<String> fieldsToSkipHash = new HashSet<String>();
         for (String fName : fieldsToSkip)
         {
-            fieldsToSkipHash.put(fName, "X");
+            fieldsToSkipHash.add(fName);
         }
 
         TableWriter tblWriter = convLogger.getWriter("convertCollectionObjects.html", "Collection Objects");
@@ -5097,9 +5110,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             log.info(sql);
             String sqlStr = sql.toString();
-
-            // List<String> newFieldNames = new ArrayList<String>();
-            // getFieldNamesFromSchema(newDBConn, "collectionobject", newFieldNames);
 
             List<FieldMetaData> newFieldMetaData = getFieldMetaDataFromSchema(newDBConn, "collectionobject");
 
@@ -5155,6 +5165,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             int catNumInx      = oldNameIndex.get("CatalogNumber");
             int catDateInx     = oldNameIndex.get("CatalogedDate");
+            int catSeriesIdInx = oldNameIndex.get("CatalogSeriesID");
             
             /*int     grpPrmtViewInx    = -1;
             Integer grpPrmtViewInxObj = oldNameIndex.get("GroupPermittedToView");
@@ -5162,6 +5173,18 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             {
                 grpPrmtViewInx = grpPrmtViewInxObj + 1;
             }*/
+            
+            Hashtable<Integer, CollectionInfo> oldCatSeriesIDToCollInfo = new Hashtable<Integer, CollectionInfo>();
+            for (CollectionInfo ci : collectionInfoList)
+            {
+                oldCatSeriesIDToCollInfo.put(ci.getCatSeriesId(), ci);
+            }
+            
+            /*String catIdTaxIdStrBase = "SELECT cc.CollectionObjectCatalogID, cc.CatalogSeriesID, ct.TaxonomyTypeID "
+                                        + "FROM collectionobjectcatalog AS cc "
+                                        + "Inner Join collectionobject AS co ON cc.CollectionObjectCatalogID = co.CollectionObjectID "
+                                        + "Inner Join collectiontaxonomytypes as ct ON co.CollectionObjectTypeID = ct.BiologicalObjectTypeID "
+                                        + "where cc.CollectionObjectCatalogID = ";*/
             
             int     colObjAttrsNotMapped = 0;
             int     count                = 0;
@@ -5181,12 +5204,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 datePair.second = null;
                 
                 skipRecord = false;
-                String catIdTaxIdStr = "SELECT collectionobjectcatalog.CollectionObjectCatalogID, collectionobjectcatalog.CatalogSeriesID, collectiontaxonomytypes.TaxonomyTypeID "
-                        + "FROM collectionobjectcatalog "
-                        + "Inner Join collectionobject ON collectionobjectcatalog.CollectionObjectCatalogID = collectionobject.CollectionObjectID "
-                        + "Inner Join collectiontaxonomytypes ON collectionobject.CollectionObjectTypeID = collectiontaxonomytypes.BiologicalObjectTypeID "
-                        + "where collectionobjectcatalog.CollectionObjectCatalogID = "
-                        + rs.getInt(1);
+                
+                CollectionInfo collInfo = oldCatSeriesIDToCollInfo.get(rs.getInt(catSeriesIdInx));
+                
+                /*String catIdTaxIdStr = catIdTaxIdStrBase + rs.getInt(1);
                 //log.info(catIdTaxIdStr);
                 
                 ResultSet rs2 = stmt2.executeQuery(catIdTaxIdStr);
@@ -5207,7 +5228,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     log.info(msg);
                     tblWriter.logError(msg);
                     continue;
-                }
+                }*/
+                
 
                 /*if (false)
                 {
@@ -5300,6 +5322,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                         } else
                         {
+                            String prefix = collInfo.getCatSeriesPrefix();
+                            
                             float catNum = rs.getFloat(catNumInx);
                             catalogNumber = "\"" + (usePrefix && StringUtils.isNotEmpty(prefix) ? (prefix + "-") : "")
                                             + String.format("%9.0f", catNum).trim() + "\"";
@@ -5316,13 +5340,13 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             break;
                         }
 
-                    } else if (fieldsToSkipHash.get(newFieldName) != null)
+                    } else if (fieldsToSkipHash.contains(newFieldName))
                     {
                         str.append("NULL");
 
                     } else if (newFieldName.equals("CollectionID")) // User/Security changes
                     {
-                        str.append(newCatSeriesId);
+                        str.append(collInfo.getCollectionId());
 
                     } else if (newFieldName.equals("Version")) // User/Security changes
                     {
@@ -5338,7 +5362,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                     } else if (newFieldName.equals("CollectionMemberID")) // User/Security changes
                     {
-                        str.append(getCollectionMemberId());
+                        str.append(collInfo.getCollectionId());
                         
                     } else if (newFieldName.equals("PaleoContextID"))
                     {

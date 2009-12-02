@@ -767,12 +767,66 @@ public class SpecifyDBConverter
                     System.exit(0);
                 }
                 
-                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                // Need to ask for Discipline here or get it from the Sp5 DB
-                
-                boolean debugTaxon = false;
                 conversion.convertDivision(institutionId);
                 frame.incOverall();
+                
+                Agent userAgent   = null;
+                if (startfromScratch)
+                {
+                    String           username         = "testuser";
+                    String           title            = "Mr.";
+                    String           firstName        = "Test";
+                    String           lastName         = "User";
+                    String           midInit          = "C";
+                    String           abbrev           = "tcu";
+                    String           email            = "testuser@ku.edu";
+                    String           userType         = SpecifyUserTypes.UserType.Manager.toString();   
+                    String           password         = "testuser";
+
+                    Transaction trans = getSession().beginTransaction();
+                    
+                    //BasicSQLUtils.deleteAllRecordsFromTable(newConn, "usergroup", BasicSQLUtils.myDestinationServerType);
+                    BasicSQLUtils.deleteAllRecordsFromTable(newConn, "specifyuser", BasicSQLUtils.myDestinationServerType);
+                    //SpPrincipal userGroup = createUserGroup("admin2");
+                    
+                    Criteria criteria = getSession().createCriteria(Agent.class);
+                    criteria.add(Restrictions.eq("lastName", lastName));
+                    criteria.add(Restrictions.eq("firstName", firstName));
+                    
+                    List<?> list = criteria.list();
+                    if (list != null && list.size() == 1)
+                    { 
+                        userAgent = (Agent)list.get(0);
+                    } else
+                    {
+                        userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
+                    }
+                    
+                    Institution institution = (Institution)getSession().createQuery("FROM Institution").list().get(0);
+                    
+                    String encrypted = Encryption.encrypt(password, password);
+                    specifyUser = createAdminGroupAndUser(getSession(), institution,  username, email, encrypted, userType);
+                    specifyUser.addReference(userAgent, "agents");
+                    
+                    getSession().saveOrUpdate(institution);
+                    
+                    userAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
+                    getSession().saveOrUpdate(userAgent);
+                    
+                    trans.commit();
+                    getSession().flush();
+                    
+                } else
+                {
+                    specifyUser = (SpecifyUser)getSession().createCriteria(SpecifyUser.class).list().get(0);
+                    userAgent   = specifyUser.getAgents().iterator().next();
+                    
+                    AppContextMgr.getInstance().setClassObject(SpecifyUser.class, specifyUser);
+                    // XXX Works for a Single Convert
+                    Collection collection = (Collection)getSession().createCriteria(Collection.class).list().get(0);
+                    AppContextMgr.getInstance().setClassObject(Collection.class, collection);
+                }
+                
                 
                 /////////////////////////////////////////////////////////////
                 // Really need to create or get a proper Discipline Record
@@ -787,78 +841,7 @@ public class SpecifyDBConverter
                 boolean convertDiscipline = true;
                 if (convertDiscipline || doAll)
                 {
-                    String           username         = "testuser";
-                    String           title            = "Mr.";
-                    String           firstName        = "Test";
-                    String           lastName         = "User";
-                    String           midInit          = "C";
-                    String           abbrev           = "tcu";
-                    String           email            = "testuser@ku.edu";
-                    String           userType         = SpecifyUserTypes.UserType.Manager.toString();   
-                    String           password         = "testuser";
-                    
-                    Agent userAgent   = null;
-                    
-                    if (startfromScratch)
-                    {
-                        if (!debugTaxon)
-                        {
-                            Transaction trans = getSession().beginTransaction();
-                            
-                            //BasicSQLUtils.deleteAllRecordsFromTable(newConn, "usergroup", BasicSQLUtils.myDestinationServerType);
-                            BasicSQLUtils.deleteAllRecordsFromTable(newConn, "specifyuser", BasicSQLUtils.myDestinationServerType);
-                            //SpPrincipal userGroup = createUserGroup("admin2");
-                            
-                            Criteria criteria = getSession().createCriteria(Agent.class);
-                            criteria.add(Restrictions.eq("lastName", lastName));
-                            criteria.add(Restrictions.eq("firstName", firstName));
-                            
-                            
-                            List<?> list = criteria.list();
-                            if (list != null && list.size() == 1)
-                            { 
-                                userAgent = (Agent)list.get(0);
-                            } else
-                            {
-                                userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
-                            }
-                            
-                            Institution institution = (Institution)getSession().createQuery("FROM Institution").list().get(0);
-                            
-                            String encrypted = Encryption.encrypt(password, password);
-                            specifyUser = createAdminGroupAndUser(getSession(), institution,  username, email, encrypted, userType);
-                            specifyUser.addReference(userAgent, "agents");
-                            
-                            getSession().saveOrUpdate(institution);
-                            
-                            userAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
-                            getSession().saveOrUpdate(userAgent);
-                            
-                            trans.commit();
-                            getSession().flush();
-                        }
-                        
-                    } else
-                    {
-                        // XXX Works for a Single Convert
-                        specifyUser = (SpecifyUser)getSession().createCriteria(SpecifyUser.class).list().get(0);
-                        userAgent   = specifyUser.getAgents().iterator().next();
-                    }
-                    
-                    if (!debugTaxon)
-                    {
-                        if (startfromScratch)
-                        {
-                            conversion.convertCollectionObjectTypes(specifyUser.getSpecifyUserId(), userAgent);
-                            
-                        } else
-                        {
-                            AppContextMgr.getInstance().setClassObject(SpecifyUser.class, specifyUser);
-                            // XXX Works for a Single Convert
-                            Collection collection = (Collection)getSession().createCriteria(Collection.class).list().get(0);
-                            AppContextMgr.getInstance().setClassObject(Collection.class, collection);
-                        }
-                    }
+                    conversion.convertCollectionObjectTypes(specifyUser.getSpecifyUserId(), userAgent);
 
                 } else
                 {
