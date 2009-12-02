@@ -26,8 +26,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -71,7 +69,6 @@ import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
-import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.SpVersion;
 import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.ui.HelpMgr;
@@ -239,15 +236,19 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
      */
     public boolean doExit(boolean doAppExit)
     {
-        // Create Version Record
-        String  appVerNum = UIHelper.getInstall4JInstallString();
-        String  dbVersion = SchemaUpdateService.getInstance().getDBSchemaVersionFromXML();
-        SpVersion.createInitialRecord(DBConnection.getInstance().getConnection(), appVerNum, dbVersion);
-
-        if (UIRegistry.isMobile())
+        // Create Version Record and copy if there is a connection
+        if (DBConnection.getInstance().getConnection() != null)
         {
-            DBConnection.setCopiedToMachineDisk(true);
+            String  appVerNum = UIHelper.getInstall4JInstallString();
+            String  dbVersion = SchemaUpdateService.getInstance().getDBSchemaVersionFromXML();
+            SpVersion.createInitialRecord(DBConnection.getInstance().getConnection(), appVerNum, dbVersion);
+    
+            if (UIRegistry.isMobile())
+            {
+                DBConnection.setCopiedToMachineDisk(true);
+            }
         }
+        
         DBConnection.shutdown();
         HibernateUtil.shutdown();
         

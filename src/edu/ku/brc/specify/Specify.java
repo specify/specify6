@@ -199,6 +199,7 @@ import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.ui.HelpMgr;
+import edu.ku.brc.specify.ui.WorldWindSearchPanel;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
@@ -408,7 +409,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         AttachmentManagerIface attachMgr          = null;
         File                   attachmentLocation = null;
-        File                   location           = UIRegistry.getAppDataSubDir("AttachmentStorage", true); //$NON-NLS-1$
+        final File             location           = UIRegistry.getAppDataSubDir("AttachmentStorage", true); //$NON-NLS-1$
             
         try
         {
@@ -416,7 +417,14 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             attachmentLocation = path != null && !UIRegistry.isMobile() ? new File(path) : location;
             if (!AttachmentUtils.isAttachmentDirMounted(attachmentLocation))
             {
-                UIRegistry.showLocalizedError("AttachmentUtils.LOC_BAD", location.getAbsolutePath());
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        UIRegistry.showLocalizedError("AttachmentUtils.LOC_BAD", location.getAbsolutePath());
+                    }
+                });
                 
             } else
             {
@@ -1127,7 +1135,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             UIRegistry.registerAction("AutoNumbering", autoNumberOnOffAction); //$NON-NLS-1$
         }
 
-/*
+
         dataMenu.addSeparator();
         
         AbstractAction vsa = new AbstractAction("Visual Search") {
@@ -1152,7 +1160,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         dataMenu.add(gpxMI);
         UIRegistry.register("GPXDlg", gpxMI); //$NON-NLS-1$
         UIRegistry.registerAction("GPXDlg", gpxAction); //$NON-NLS-1$
-        */
+        
         
         mb.add(dataMenu);
 
@@ -2951,7 +2959,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       Font newBaseFont = fontName != null && fontSize != null ? new Font(fontName, Font.PLAIN, fontSize) : sysBaseFont;
       UIRegistry.setBaseFont(newBaseFont);
           
-      //SkinsMgr.getInstance().setSkin("metal");
+      //SkinsMgr.getInstance().setSkin("giraffe");
       
       BaseTask.setToolbarBtnFont(newBaseFont); // For ToolbarButtons
       RolloverCommand.setDefaultFont(newBaseFont);

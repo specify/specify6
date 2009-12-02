@@ -31,6 +31,7 @@ import javax.activation.FileTypeMap;
 import javax.activation.MimetypesFileTypeMap;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
@@ -46,8 +47,9 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
  */
 public class AttachmentUtils
 {
-    protected static AttachmentManagerIface attachMgr;
-    protected static Thumbnailer            thumbnailer;
+    private static final Logger           log              = Logger.getLogger(AttachmentUtils.class);
+    private static AttachmentManagerIface attachMgr;
+    private static Thumbnailer            thumbnailer;
     
     /**
      * @return the manager
@@ -115,19 +117,34 @@ public class AttachmentUtils
     {
         try
         {
-            if (attachmentLocation.exists() && attachmentLocation.isDirectory())
+            if (attachmentLocation.exists())
             {
-                File tmpFile = new File(attachmentLocation.getAbsoluteFile() + File.separator + System.currentTimeMillis() + System.getProperty("user.name"));
-                if (tmpFile.createNewFile())
+                if (attachmentLocation.isDirectory())
                 {
-                    // I don't think I need this anymore
-                    FileOutputStream fos = FileUtils.openOutputStream(tmpFile);
-                    fos.write(1);
-                    fos.close();
-                    tmpFile.delete();
-                    return true;
+                    File tmpFile = new File(attachmentLocation.getAbsoluteFile() + File.separator + System.currentTimeMillis() + System.getProperty("user.name"));
+                    if (tmpFile.createNewFile())
+                    {
+                        // I don't think I need this anymore
+                        FileOutputStream fos = FileUtils.openOutputStream(tmpFile);
+                        fos.write(1);
+                        fos.close();
+                        tmpFile.delete();
+                        
+                        return true;
+                        
+                    } else
+                    {
+                        log.error("The Attachment Location ["+attachmentLocation.getCanonicalPath()+"] atachment file couldn't be created");
+                    }
+                } else
+                {
+                    log.error("The Attachment Location ["+attachmentLocation.getCanonicalPath()+"] is not a directory.");
                 }
+            } else
+            {
+                log.error("The Attachment Location ["+attachmentLocation.getCanonicalPath()+"] doesn't exist.");
             }
+            
         } catch (Exception ex)
         {
             ex.printStackTrace();

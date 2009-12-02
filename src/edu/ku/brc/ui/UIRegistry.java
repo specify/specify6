@@ -985,6 +985,8 @@ public class UIRegistry
      */
     public static void showError(final String msg)
     {
+        log.error(msg);
+        
         JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
                 msg, 
                 getResourceString("UIRegistry.UNRECOVERABLE_ERROR_TITLE"), JOptionPane.ERROR_MESSAGE);
