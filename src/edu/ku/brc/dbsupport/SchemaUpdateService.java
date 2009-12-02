@@ -67,7 +67,7 @@ public abstract class SchemaUpdateService
 {
     public static final String factoryName = "edu.ku.brc.af.core.db.SchmeaUpdateService"; //$NON-NLS-1$
     
-    public enum SchemaUpdateTpe {Success, Error, NotNeeded}
+    public enum SchemaUpdateType {Success, SuccessSilent, Error, NotNeeded}
     
     public enum CONTEXT_STATUS {OK, Error, Ignore, Initial}
     
@@ -156,7 +156,7 @@ public abstract class SchemaUpdateService
      * @param versionNumber the current version number of the application
      * @return the view
      */
-    public abstract SchemaUpdateTpe updateSchema(String versionNumber);
+    public abstract SchemaUpdateType updateSchema(String versionNumber);
     
     
     /**

@@ -20,6 +20,9 @@
 package edu.ku.brc.dbsupport;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Vector;
 
@@ -140,6 +143,43 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
         return connection != null;
     }
 
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DBMSUserMgr#doesFieldExistInTable(java.lang.String, java.lang.String)
+     */
+    @Override
+    public boolean doesFieldExistInTable(final String tableName, final String fieldName)
+    {
+        try
+        {
+            DatabaseMetaData mdm = connection.getMetaData();
+            ResultSet        rs  = mdm.getColumns(connection.getCatalog(), connection.getCatalog(), tableName, null);
+            while (rs.next())
+            {
+                String dbFieldName = rs.getString("COLUMN_NAME");
+                if (dbFieldName.equals(fieldName))
+                {
+                    rs.close();
+                    return true;
+                }
+            }
+            rs.close();
+            
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DBMSUserMgr#setConnection(java.sql.Connection)
+     */
+    @Override
+    public void setConnection(Connection connection)
+    {
+        this.connection = connection;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DBMSUserMgr#createDatabase(java.lang.String)

@@ -74,7 +74,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
-import edu.ku.brc.dbsupport.SchemaUpdateService.SchemaUpdateTpe;
+import edu.ku.brc.dbsupport.SchemaUpdateService.SchemaUpdateType;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.init.SpecifyDBSetupWizard;
@@ -1041,8 +1041,8 @@ public class DatabaseLoginPanel extends JTiledPanel
                         DBConnection.getInstance().setConnectionStr(drvInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, getServerName(), getDatabaseName()));
                         
                         // This needs to be done before Hibernate starts up
-                        SchemaUpdateTpe status = SchemaUpdateService.getInstance().updateSchema(UIHelper.getInstall4JInstallString());
-                        if (status == SchemaUpdateTpe.Error)
+                        SchemaUpdateType status = SchemaUpdateService.getInstance().updateSchema(UIHelper.getInstall4JInstallString());
+                        if (status == SchemaUpdateType.Error)
                         {
                             StringBuilder sb = new StringBuilder();
                             for (String s : SchemaUpdateService.getInstance().getErrMsgList())
@@ -1053,9 +1053,9 @@ public class DatabaseLoginPanel extends JTiledPanel
                             sb.append(getResourceString("APP_EXIT")); // 18N
                             UIRegistry.showError(sb.toString());
                             
-                        } else if (status == SchemaUpdateTpe.Success)
+                        } else if (status == SchemaUpdateType.Success)
                         {
-                            UIRegistry.showLocalizedMsg(JOptionPane.QUESTION_MESSAGE, "", "SCHEMA_UP_OK");
+                            UIRegistry.showLocalizedMsg(JOptionPane.QUESTION_MESSAGE, "INFORMATION", "SCHEMA_UP_OK");
                         }
                     }
                 }

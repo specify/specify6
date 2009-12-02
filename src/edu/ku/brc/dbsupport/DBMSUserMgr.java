@@ -22,6 +22,7 @@ package edu.ku.brc.dbsupport;
 import java.io.File;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.sql.Connection;
 
 import edu.ku.brc.specify.config.init.SpecifyDBSetupWizard;
 import edu.ku.brc.ui.UIHelper;
@@ -129,6 +130,21 @@ public abstract class DBMSUserMgr
      * @return true if the IT user got logged in
      */
     public abstract boolean connect(String username, String password, String databaseHost, String dbName);
+    
+    /**
+     * Enables the Mgr to use an existing connection. Assumes it has permissions to whatever
+     * the other calls that are made.
+     * @param connection and existing JDBC connection
+     */
+    public abstract void setConnection(Connection connection);
+    
+    /**
+     * Checks to see if a field exists for a table.
+     * @param tableName the name of the table to be checked
+     * @param fieldName the name of the field to be checked
+     * @return false if table or field doesn't exist
+     */
+    public abstract boolean doesFieldExistInTable(String tableName, String fieldName);
 
 	/**
 	 * Creates a user and assigns permissions.

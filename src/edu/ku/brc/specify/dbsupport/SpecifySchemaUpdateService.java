@@ -141,11 +141,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      * @see edu.ku.brc.dbsupport.SchemaUpdateService#updateSchema(java.lang.String)
      */
     @Override
-    public SchemaUpdateTpe updateSchema(final String appVerNumArg)
+    public SchemaUpdateType updateSchema(final String appVerNumArg)
     {
         String  dbVersion      = getDBSchemaVersionFromXML();
         String  appVerNum      = appVerNumArg;
         boolean internalVerNum = isInternalVerNum(appVerNum);
+        
+        boolean useSilentSuccess = false;
         
         DBConnection dbConn = DBConnection.getInstance();
         if (dbConn != null)
@@ -199,7 +201,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             } else
                             {
                                 CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
-                                return SchemaUpdateTpe.Error;
+                                return SchemaUpdateType.Error;
                             }
                         }
                         
@@ -213,14 +215,18 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             } else
                             {
                                 CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
-                                return SchemaUpdateTpe.Error;
+                                return SchemaUpdateType.Error;
                             }
                         }
                     } else
                     {
                     	//If somebody somehow got a hold of an 'internal' version (via a conversion, or possibly by manually checking for updates.
                     	doUpdateAppVer = true;
-                    	doSchemaUpdate = appVerNumArg != null && !appVerNumArg.equals("6.1.02") && !appVerNumArg.equals("6.1.00");
+                    	if (appVerNumArg != null && appVerNumArg.length() > 2)
+                    	{
+                    	    doSchemaUpdate = Integer.parseInt(appVerNumArg.substring(2, 3)) == 0;
+                    	    useSilentSuccess = true;
+                    	}
                     }
                 } else
                 {
@@ -236,7 +242,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             if (!askToUpdateSchema())
                             {
                                 CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
-                                return SchemaUpdateTpe.Error;
+                                return SchemaUpdateType.Error;
                             }
                             
                             Pair<String, String> usrPwd = getITUsernamePwd();
@@ -257,7 +263,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 if (!ok)
                                 {
                                     frame.setVisible(false);
-                                    return SchemaUpdateTpe.Error;
+                                    return SchemaUpdateType.Error;
                                 }
                                 
                                 ok = SpecifySchemaGenerator.updateSchema(DatabaseDriverInfo.getDriver(dbc.getDriver()), dbc.getServerName(), dbc.getDatabaseName(), usrPwd.first, usrPwd.second);
@@ -265,7 +271,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 {
                                     errMsgList.add("There was an error updating the schema.");
                                     frame.setVisible(false);
-                                    return SchemaUpdateTpe.Error;
+                                    return SchemaUpdateType.Error;
                                 }
                                 frame.setVisible(false);
                                 
@@ -274,7 +280,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             } else
                             {
                                 CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
-                                return SchemaUpdateTpe.Error;
+                                return SchemaUpdateType.Error;
                             }
                         }
                         
@@ -287,10 +293,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             recVerNum++;
                             SpVersion.updateRecord(dbConn.getConnection(), appVerNum, dbVersion, recVerNum, spverId);
                         }
-                        return SchemaUpdateTpe.Success;
+                        return useSilentSuccess ? SchemaUpdateType.SuccessSilent : SchemaUpdateType.Success;
+                        
                     } else
                     {
-                        return SchemaUpdateTpe.NotNeeded;
+                        return SchemaUpdateType.NotNeeded;
                     }
                     
                 } catch (SQLException e)
@@ -303,7 +310,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 }
             }
         }
-        return SchemaUpdateTpe.Error;
+        return SchemaUpdateType.Error;
     }
 
     /**

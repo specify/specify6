@@ -19,12 +19,12 @@ package edu.ku.brc.specify.dbsupport;
 
 import java.sql.Connection;
 import java.util.HashMap;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
 /**
@@ -149,12 +149,19 @@ public class SpecifySchemaUpdateScopeFixer
      */
     protected boolean fieldExists(final Connection conn,  final String tableName, final String fieldName)
     {
-        //XXX portability. This is MySQL -specific.
-    	Vector<Object[]>rows = BasicSQLUtils.query(conn, "SELECT CHARACTER_MAXIMUM_LENGTH FROM `information_schema`.`COLUMNS` where TABLE_SCHEMA = '" +
-        		databaseName + "' and TABLE_NAME = '" + tableName + "' and COLUMN_NAME = '" + fieldName + "'");                    
-        return rows.size() > 0;
+        DBMSUserMgr dbUserMgr = DBMSUserMgr.getInstance();
+        dbUserMgr.setConnection(conn);
+        boolean fieldExists = dbUserMgr.doesFieldExistInTable(tableName, fieldName);
+        dbUserMgr.setConnection(null);
+        return fieldExists;
     }
     
+    /**
+     * @param conn
+     * @param tableName
+     * @param oldIndexName
+     * @return
+     */
     protected boolean fixCollectionMember(final Connection conn, 
                                           final String tableName,
                                           final String oldIndexName)
@@ -189,6 +196,7 @@ public class SpecifySchemaUpdateScopeFixer
 
                 HashMap<Integer, Integer> hash = new HashMap<Integer, Integer>();
                 String sql = "SELECT " + tblInfo.getIdFieldName() + ", CollectionMemberID FROM " + tblName;
+                log.debug(sql);
                 for (Object[] row : BasicSQLUtils.query(conn, sql))
                 {
                     hash.put((Integer)row[0], (Integer)row[1]);
