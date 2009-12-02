@@ -2926,34 +2926,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             });
       }
       
-      try
-      {
-          UIHelper.OSTYPE osType = UIHelper.getOSType();
-          if (osType == UIHelper.OSTYPE.Windows )
-          {
-              //UIManager.setLookAndFeel(new WindowsLookAndFeel());
-              UIManager.setLookAndFeel(new PlasticLookAndFeel());
-              PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
-              
-          } else if (osType == UIHelper.OSTYPE.Linux )
-          {
-              //UIManager.setLookAndFeel(new GTKLookAndFeel());
-              UIManager.setLookAndFeel(new PlasticLookAndFeel());
-              //PlasticLookAndFeel.setPlasticTheme(new SkyKrupp());
-              //PlasticLookAndFeel.setPlasticTheme(new DesertBlue());
-              //PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
-              //PlasticLookAndFeel.setPlasticTheme(new DesertGreen());
-             
-          } else
-          {
-              //PlafOptions.setAsLookAndFeel();
-          }
-      }
-      catch (Exception e)
-      {
-          log.error("Can't change L&F: ", e); //$NON-NLS-1$
-      }
-      
       // Setup base font AFTER setting Look and Feel
       Font defFont = (createLabel("")).getFont();
       UIRegistry.setDefaultFont(defFont);
@@ -3033,6 +3005,34 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
               log.debug("Checking for update....");
               try
               {
+                  try
+                  {
+                      UIHelper.OSTYPE osType = UIHelper.getOSType();
+                      if (osType == UIHelper.OSTYPE.Windows )
+                      {
+                          //UIManager.setLookAndFeel(new WindowsLookAndFeel());
+                          UIManager.setLookAndFeel(new PlasticLookAndFeel());
+                          PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
+                          
+                      } else if (osType == UIHelper.OSTYPE.Linux )
+                      {
+                          //UIManager.setLookAndFeel(new GTKLookAndFeel());
+                          UIManager.setLookAndFeel(new PlasticLookAndFeel());
+                          //PlasticLookAndFeel.setPlasticTheme(new SkyKrupp());
+                          //PlasticLookAndFeel.setPlasticTheme(new DesertBlue());
+                          //PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
+                          //PlasticLookAndFeel.setPlasticTheme(new DesertGreen());
+                         
+                      } else
+                      {
+                          //PlafOptions.setAsLookAndFeel();
+                      }
+                  }
+                  catch (Exception e)
+                  {
+                      log.error("Can't change L&F: ", e); //$NON-NLS-1$
+                  }
+                  
                   // Load Local Prefs
                   AppPreferences localPrefs = AppPreferences.getLocalPrefs();
                   localPrefs.setDirPath(UIRegistry.getAppDataDir());
