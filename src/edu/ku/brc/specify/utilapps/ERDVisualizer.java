@@ -34,6 +34,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Locale;
@@ -146,7 +148,7 @@ public class ERDVisualizer extends JFrame
         
         try
         {
-            File templateFile = new File(UIRegistry.getDefaultWorkingPath() + File.separator + "site/schema_template.html");
+            File templateFile = new File(UIRegistry.getDefaultWorkingPath() + File.separator + "site/template.html");
             mapTemplate = FileUtils.readFileToString(templateFile);
             
         } catch (IOException ex)
@@ -509,6 +511,7 @@ public class ERDVisualizer extends JFrame
             
             int index = mapTemplate.indexOf(contentTag);
             String subContent = mapTemplate.substring(0, index);
+            subContent = StringUtils.replace(subContent, "<!-- Updated -->", (new SimpleDateFormat("yyyy-MM-dd")).format(Calendar.getInstance().getTime()));
             output.write(StringUtils.replace(subContent, "<!-- Title -->", "Schema Index"));
         
             output.write("<UL>");

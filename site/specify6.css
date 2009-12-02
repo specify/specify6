@@ -4,6 +4,8 @@ body {
 	margin:0px;
 	}
 	
+span.footer { font-size: 9pt; font-style: italic;}
+	
 td {
 	font:11pt Arial, Helvetica, sans-serif;
 	color:#666666;
