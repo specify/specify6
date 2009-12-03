@@ -37,6 +37,8 @@ public class StrLocaleEntry
     
     protected STATUS status;
     
+    protected boolean edited = false;
+    
     public StrLocaleEntry(String key, 
                           String srcStr, 
                           String dstStr,
@@ -94,7 +96,11 @@ public class StrLocaleEntry
      */
     public void setDstStr(String dstStr)
     {
-        this.dstStr = dstStr;
+        if (this.dstStr == null || !this.dstStr.equals(dstStr))
+        {
+        	edited = true;
+        	this.dstStr = dstStr;
+        }
     }
 
     /**
@@ -112,5 +118,23 @@ public class StrLocaleEntry
     {
         this.status = status;
     }
+
     
+	/**
+	 * @return the edited
+	 */
+	public boolean isEdited()
+	{
+		return edited;
+	}
+
+	/**
+	 * @param edited the edited to set
+	 */
+	public void setEdited(boolean edited)
+	{
+		this.edited = edited;
+	}
+    
+	
 }

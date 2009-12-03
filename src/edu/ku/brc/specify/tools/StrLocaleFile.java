@@ -21,7 +21,7 @@ package edu.ku.brc.specify.tools;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
@@ -43,15 +43,15 @@ public class StrLocaleFile
 {
     private static final Logger  log                = Logger.getLogger(StrLocaleFile.class);
             
-    protected String                          path;
-    protected String                          srcPath;
-    protected Vector<StrLocaleEntry>          items      = new Vector<StrLocaleEntry>();
-    protected HashMap<Integer, Integer>       mapper     = new HashMap<Integer, Integer>();
-    protected HashMap<String, StrLocaleEntry> itemHash   = new HashMap<String, StrLocaleEntry>();
-    protected HashMap<String, String>         chkHash    = new HashMap<String, String>();
-    protected boolean                         isDestination;
-    protected HashMap<String, Integer>        keyToInxMap = new HashMap<String, Integer>();
-
+    protected String                            path;
+    protected String                            srcPath;
+    protected Vector<StrLocaleEntry>            items      = new Vector<StrLocaleEntry>();
+    protected Hashtable<String, StrLocaleEntry> itemHash   = new Hashtable<String, StrLocaleEntry>();
+    protected Hashtable<String, String>         chkHash    = new Hashtable<String, String>();
+    protected boolean                           isDestination;
+    protected Hashtable<String, Integer>        keyToInxMap = new Hashtable<String, Integer>();
+    protected Vector<StrLocaleEntry>			keys = new Vector<StrLocaleEntry>();
+    
     /**
      * @param path
      */
@@ -66,15 +66,19 @@ public class StrLocaleFile
         
         load(path);
     }
-
+    
     /**
-     * @return
+     * @return number of actual resources with keys in the file
      */
-    public int size()
+    public int getNumberOfKeys()
     {
-        return itemHash.size();
+    	return keys.size();
     }
     
+    /**
+     * @param key
+     * @return
+     */
     public Integer getInxForKey(final String key)
     {
         return keyToInxMap.get(key);
@@ -106,7 +110,7 @@ public class StrLocaleFile
                         
                         String key   = line.substring(0, inx);
                         String value = line.substring(inx+1, line.length());
-                        
+                                                
                         if (itemHash.get(key) != null)
                         {
                             log.error("Key '"+key+"' on Line "+count+" is a duplicate.");
@@ -116,8 +120,8 @@ public class StrLocaleFile
                             StrLocaleEntry entry = new StrLocaleEntry(key, value, null, StringUtils.isEmpty(value) ? STATUS.IsNew : STATUS.IsOK);
                             items.add(entry);
                             itemHash.put(key, entry);
-                            mapper.put(index, count);
-                            keyToInxMap.put(key, index);
+                            keyToInxMap.put(key, keys.size());
+                            keys.add(entry);
                         }
                         
                         index++;
@@ -131,6 +135,8 @@ public class StrLocaleFile
             }
             
             loadCheckFile(path);
+            
+            clearEditFlags();
             
         } catch (IOException ex)
         {
@@ -217,12 +223,38 @@ public class StrLocaleFile
                 FileUtils.copyFile(origFile, outFile);
             }
             
+            //clear edited flag for all items
+            clearEditFlags();
         } catch (IOException ex)
         {
             ex.printStackTrace();
         }
     }
     
+    /**
+     * clear edited flag for all items
+     */
+    public void clearEditFlags()
+    {
+        for (StrLocaleEntry entry : items) 
+        {
+        	entry.setEdited(false);
+        }
+    }
+    /**
+     * @return true if any items have been edited since last save
+     */
+    public boolean isEdited()
+    {
+        for (StrLocaleEntry entry : items) 
+        {
+        	if (entry.isEdited())
+        	{
+        		return true;
+        	}
+        }
+        return false;
+    }
     /**
      * 
      */
@@ -247,27 +279,15 @@ public class StrLocaleFile
         }
     }*/
     
-    /**
-     * @param index
-     * @return
-     */
-    public StrLocaleEntry get(final int index)
+    public StrLocaleEntry getKey(final int index)
     {
-        System.out.println(index);
-        
-        Integer itemIndex = mapper.get(index);
-        if (itemIndex != null)
-        {
-            return items.get(itemIndex);
-        }
-        log.error("mapper index["+index+"] returned null");
-        return null;
+    	return keys.get(index);
     }
-    
+        
     /**
      * @return
      */
-    public HashMap<String, StrLocaleEntry> getItemHash()
+    public Hashtable<String, StrLocaleEntry> getItemHash()
     {
         return itemHash;
     }
@@ -283,10 +303,61 @@ public class StrLocaleFile
     /**
      * @return the chkHash
      */
-    public HashMap<String, String> getChkHash()
+    public Hashtable<String, String> getChkHash()
     {
         return chkHash;
     }
+
+	/**
+	 * @return the path
+	 */
+	public String getPath()
+	{
+		return path;
+	}
+
+	/**
+	 * @return the srcPath
+	 */
+	public String getSrcPath()
+	{
+		return srcPath;
+	}
     
-    
+	
+    /* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString()
+	{
+		return getPath();
+	}
+
+//	public static void main(String[] args)
+//    {
+//    	try
+//    	{
+//    		List<String> text = FileUtils.readLines(new File("/home/timo/LanguageCodesLarge.txt"));
+//    		List<String> newText = new Vector<String>();
+//    		newText.add("<languagecodes>");
+//    		Iterator<String> lines = text.iterator();
+//    		while (lines.hasNext())
+//    		{
+//    			String[] codes = lines.next().split("\t");
+//    			if (codes.length > 4)
+//    			{
+//    				String newLine = "<languagecode englishname=\"" + codes[4].trim() + "\" code=\"" + codes[0].trim() + "\"/>";
+//    				newText.add(newLine);
+//    			}
+//    		}
+//    		newText.add("</languagecodes>");
+//    		FileUtils.writeLines(new File("/home/timo/LanguageCodesLittle.txt"), newText);
+//    	} catch (Exception e)
+//    	{
+//    		e.printStackTrace();
+//    		System.exit(1);
+//    	}
+//    	
+//    }
 }
