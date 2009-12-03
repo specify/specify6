@@ -808,10 +808,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 // XXX "BorrowReturnMaterial", "ReturnedByID", "Agent", "AgentID",
                 // XXX "Preparation", "PreparedByID", "Agent", "AgentID",
                 
-                "Preparation",
+/*                "Preparation",
                 "ParasiteTaxonNameID",
                 "TaxonName",
-                "TaxonNameID",
+                "TaxonNameID",*/
 
                 "LoanPhysicalObject",
                 "PhysicalObjectID",
@@ -870,10 +870,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 // XXX "Shipment", "ShippedByID", "Agent", "AgentID",
                 // "Shipment", "ShipmentMethodID", "ShipmentMethod", "ShipmentMethodID",
 
-                "Habitat",
+/*                "Habitat",
                 "HostTaxonID",
                 "TaxonName",
-                "TaxonNameID",
+                "TaxonNameID",*/
 
                 // XXX "Authors", "AgentID", "Agent", "AgentID",
                 "Authors",
@@ -955,10 +955,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
                 // XXX "Determination", "DeterminerID", "Agent", "AgentID",
                 
-                "Determination",
+/*                "Determination",
                 "TaxonNameID",
                 "TaxonName",
-                "TaxonNameID",
+                "TaxonNameID",*/
                 
                 "Determination",
                 "BiologicalObjectID",
@@ -993,7 +993,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 // XXX "AccessionAgents", "AgentAddressID", "AgentAddress", "AgentAddressID",
                 "DeterminationCitation", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
                 "DeterminationCitation", "DeterminationID", "Determination", "DeterminationID",
-                "OtherIdentifier", "CollectionObjectID", "CollectionObject", "CollectionObjectID",
+                "OtherIdentifier", "CollectionObjectID", "CollectionObjectCatalog", "CollectionObjectCatalogID",
 
                 // XXX "Agent", "ParentOrganizationID", "Agent", "AgentID",
                 // XXX "AgentAddress", "AddressID", "Address", "AddressID",
@@ -2469,6 +2469,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     seriesName      = collInfo.getCatSeriesName();
                     prefix          = collInfo.getCatSeriesPrefix();
                     
+                    collInfo.setDisciplineId(taxonomyTypeMapper.get(collInfo.getTaxonomyTypeId()));
+                    
                     AutoNumberingScheme cns = null;
                     if (catalogSeriesID != null && StringUtils.isNotEmpty(seriesName))
                     {
@@ -2591,6 +2593,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         {
             for (CollectionInfo ci : collectionInfoList)
             {
+                log.debug(ci.getCatSeriesName()+"   ci.getDisciplineId(): "+ci.getDisciplineId());
                 List<?> list = (List<?>)HibernateUtil.getCurrentSession().createQuery("FROM Discipline WHERE id = " + ci.getDisciplineId()).list();
                 if (list != null && list.size() == 1)
                 {
@@ -4149,7 +4152,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                 "WHERE NOT (co.DerivedFromID IS NULL) ORDER BY co.CollectionObjectID";
             sql.append(sqlPostfix);
             
-            int totalPrepCount = BasicSQLUtils.getCountAsInt("SELECT COUNT(*)" + sqlPostfix);
+            int totalPrepCount = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*)" + sqlPostfix);
             setProcess(0, totalPrepCount);
             
             log.info(sql);
@@ -4341,7 +4344,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         Integer newId = prepIdMapper.get(oldId);
                         if (newId == null)
                         {
-                            throw new RuntimeException("Preparations - Couldn't find new ID for old ID["+oldId+"]");
+                            isError = true;
+                            break;
+                            //throw new RuntimeException("Preparations - Couldn't find new ID for old ID["+oldId+"]");
                         }
                         str.append(newId);
 
@@ -4530,8 +4535,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         str.append(getStrValue(data, newFieldMetaData.get(i).getType()));
 
                     }
-
                 }
+                
                 str.append(")");
                 // log.info("\n"+str.toString());
                 if (hasFrame)
@@ -4744,7 +4749,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
                 Integer catSeriesId = rs.getInt(catSeriesIdInx);
                 
-                System.err.println("catSeriesId: "+catSeriesId);
+                //System.err.println("catSeriesId: "+catSeriesId);
                 
                 Integer collectionId = catSeriesToNewCollectionID.get(catSeriesId);
                 if (collectionId == null)
@@ -5137,7 +5142,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             }
             String tableName = "collectionobject";
 
-            Statement newStmt   = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            Statement newStmt   = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             ResultSet rsLooping = newStmt.executeQuery("SELECT OldID, NewID FROM collectionobjectcatalog_CollectionObjectCatalogID ORDER BY OldID");
 
             if (hasFrame)
@@ -6525,6 +6530,20 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         Integer dateInt = rs.getInt(i);
                         value = getStrValue(dateInt, "date");
                         
+                    } else if (colName.startsWith("YesNo"))
+                    {
+                        Integer bool = rs.getInt(i);
+                        if (bool == null)
+                        {
+                            value = "NULL";
+                            
+                        } else if (bool == 0)
+                        {
+                            value = "0";
+                        } else
+                        {
+                            value = "1";
+                        }
                     } else if (isGeoCoordDetail && colName.equals("AgentID"))
                     {
                         Integer agentID = (Integer)rs.getObject(i);

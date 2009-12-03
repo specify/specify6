@@ -825,31 +825,33 @@ public class BasicSQLUtils
      * @return the return value from the SQL update statement (or -1 on an exception)
      */
     public static int deleteAllRecordsFromTable(final Connection connection, 
-                                                final String    tableName,
+                                                final String     tableName,
                                                 final SERVERTYPE currentServerType)
     {
         try
         {
-            Integer count = getCount("select count(*) from "+tableName);
-            if (count == null || count == 0)
+            if (doesTableExist(connection, tableName))
             {
-                return 0;
+                Integer count = getCount(connection, "SELECT COUNT(*) FROM " + tableName);
+                if (count == null || count == 0)
+                {
+                    return 0;
+                }
+                
+                Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+                if (currentServerType != SERVERTYPE.MS_SQLServer)
+                {
+                    removeForeignKeyConstraints(stmt.getConnection(), currentServerType);
+                }
+                int retVal = exeUpdateCmd(stmt, "delete from "+tableName);
+                stmt.clearBatch();
+                stmt.close();
+    
+                log.info("Deleted "+count+" records from "+tableName);
+    
+                return retVal;
+    
             }
-            
-            Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-            //exeUpdateCmd(stmt, "SET FOREIGN_KEY_CHECKS = 0");
-            if (currentServerType != SERVERTYPE.MS_SQLServer)
-            {
-                removeForeignKeyConstraints(stmt.getConnection(), currentServerType);
-            }
-            int retVal = exeUpdateCmd(stmt, "delete from "+tableName);
-            stmt.clearBatch();
-            stmt.close();
-
-            log.info("Deleted "+count+" records from "+tableName);
-
-            return retVal;
-
         } catch (SQLException ex)
         {
             edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
@@ -858,7 +860,33 @@ public class BasicSQLUtils
             ex.printStackTrace();
 
         }
-        return -1;
+        return 0;
+    }
+    
+    /**
+     * @param connection
+     * @param tableName
+     * @return
+     */
+    public static boolean doesTableExist(final Connection connection, 
+                                         final String tableName)
+    {
+        try
+        {
+            DatabaseMetaData mdm = connection.getMetaData();
+            ResultSet        rs  = mdm.getColumns(connection.getCatalog(), connection.getCatalog(), tableName, null);
+            if (rs.next())
+            {
+                rs.close();
+                return true;
+            }
+            rs.close();
+            
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        }
+        return false;
     }
 
     /**

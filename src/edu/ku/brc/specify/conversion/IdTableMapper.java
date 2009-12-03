@@ -50,7 +50,7 @@ public class IdTableMapper extends IdHashMapper
      */
     public IdTableMapper(final String tableName, final String idName)
     {
-        this(tableName, idName, false);
+        this(tableName, idName, true);
     }
     
     /**
@@ -81,7 +81,7 @@ public class IdTableMapper extends IdHashMapper
      */
     public IdTableMapper(final String tableName, final String idName, final String sql)
     {                                                                                                 
-        this(tableName, idName, sql, false);
+        this(tableName, idName, sql, true);
     }
 
     /**
@@ -103,7 +103,7 @@ public class IdTableMapper extends IdHashMapper
     /**
      * @param indexIncremeter
      */
-    public void setIndexIncremeter(IdMapperIndexIncrementerIFace indexIncremeter)
+    public void setIndexIncremeter(final IdMapperIndexIncrementerIFace indexIncremeter)
     {
         this.indexIncremeter = indexIncremeter;
     }
@@ -118,9 +118,11 @@ public class IdTableMapper extends IdHashMapper
         this.sql = sqlArg;
 
         int mappingCount = getMapCount(mapTableName);
+        wasEmpty = mappingCount == 0;
+        
         if (doDelete || mappingCount == 0)
         {
-            BasicSQLUtils.deleteAllRecordsFromTable(mapTableName, BasicSQLUtils.myDestinationServerType);
+            BasicSQLUtils.deleteAllRecordsFromTable(oldConn, mapTableName, BasicSQLUtils.myDestinationServerType);
             if (frame != null)
             {
                 String dMsg = "Mapping "+mapTableName;
@@ -131,7 +133,7 @@ public class IdTableMapper extends IdHashMapper
             try
             {
                 log.debug("Executing: "+sql);
-                PreparedStatement pStmt   = newConn.prepareStatement("INSERT INTO "+mapTableName+" VALUES (?,?)");
+                PreparedStatement pStmt   = oldConn.prepareStatement("INSERT INTO "+mapTableName+" VALUES (?,?)");
                 Statement         stmtOld = oldConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 ResultSet         rs      = stmtOld.executeQuery(sql);
                 

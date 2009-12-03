@@ -111,6 +111,21 @@ public class ConvertTaxonHelper
         // When you run in to this table1.field, go to that table2 and look up the id
         String[] mappings = {
 
+                "Determination",
+                "TaxonNameID",
+                "TaxonName",
+                "TaxonNameID",
+                
+                "Preparation",
+                "ParasiteTaxonNameID",
+                "TaxonName",
+                "TaxonNameID",
+                
+                "Habitat",
+                "HostTaxonID",
+                "TaxonName",
+                "TaxonNameID",
+                
                 "TaxonCitation",
                 "ReferenceWorkID",
                 "ReferenceWork",
@@ -150,7 +165,6 @@ public class ConvertTaxonHelper
         String[] tableNames = {
                 "TaxonCitation", 
                 "TaxonomicUnitType", 
-                "TaxonomyType" 
         };
         
         IdTableMapper idMapper = null;
@@ -158,6 +172,7 @@ public class ConvertTaxonHelper
         {
             idMapper = idMapperMgr.addTableMapper(tableName, tableName + "ID");
             log.debug("mapIds() for table" + tableName);
+            
             idMapper.mapAllIds();
         }
         

@@ -115,7 +115,7 @@ public class IdMapperMgr
      */
     public IdTableMapper addTableMapper(final String tableName, final String idName)
     {
-        return addTableMapper(tableName, idName, null, false);
+        return addTableMapper(tableName, idName, null, true);
     }
     
     /**
