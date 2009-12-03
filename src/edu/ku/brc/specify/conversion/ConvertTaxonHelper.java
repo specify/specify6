@@ -175,7 +175,7 @@ public class ConvertTaxonHelper
         log.debug(sb.toString());
         
         // This mapping is used by Discipline
-        IdTableMapper taxonomyTypeMapper = idMapperMgr.addTableMapper("TaxonomyType", "TaxonomyTypeID");
+        IdTableMapper taxonomyTypeMapper = idMapperMgr.addTableMapper("TaxonomyType", "TaxonomyTypeID", false);
         for (Object txTypIdObj : BasicSQLUtils.querySingleCol(oldDBConn, sb.toString()))
         {
             Integer txTypId = (Integer)txTypIdObj;
@@ -196,7 +196,7 @@ public class ConvertTaxonHelper
         log.debug(sb.toString());
         
         // This mapping is used by Discipline
-        idMapper = idMapperMgr.addTableMapper("TaxonName", "TaxonNameID", sb.toString());
+        idMapper = idMapperMgr.addTableMapper("TaxonName", "TaxonNameID", sb.toString(), false);
         idMapper.setIndexIncremeter(indexIncremeter);
         idMapper.mapAllIdsWithSQL();
         idMapper.setIndexIncremeter(null);

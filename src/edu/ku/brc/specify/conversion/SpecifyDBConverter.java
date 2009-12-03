@@ -1158,12 +1158,15 @@ public class SpecifyDBConverter
                     
                     setSession(localSession);
                     
-                    if (true)
+                    try
                     {
-                        try
+                        for (CollectionInfo collInfo : CollectionInfo.getCollectionInfoList(oldDBConn))
                         {
+                            List<Collection> tmpCollList   = (List<Collection>)localSession.createCriteria("FROM Collection WHERE id = " + collInfo.getCollectionId()).list();
+                            Collection       tmpCollection = tmpCollList.get(0);
+                            
                             // create the standard user groups for this collection
-                            Map<String, SpPrincipal> groupMap = createStandardGroups(localSession, collection);
+                            Map<String, SpPrincipal> groupMap = createStandardGroups(localSession, tmpCollection);
 
                             // add the administrator as a Collections Manager in this group
                             specifyUser.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
@@ -1198,11 +1201,11 @@ public class SpecifyDBConverter
                             AppContextMgr.getInstance().setClassObject(Discipline.class, dscp);
                             
                             localSession.flush();
-                            
-                        } catch (Exception ex)
-                        {
-                            ex.printStackTrace();
                         }
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
                     }
                     
                     status = true;

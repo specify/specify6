@@ -207,6 +207,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     // Helps during debugging
     protected static boolean                                shouldCreateMapTables  = true;
     protected static boolean                                shouldDeleteMapTables  = true;
+    
+    protected static boolean                                doDeleteAllMappings    = false;
 
     protected SpecifyAppContextMgr                          appContextMgr          = new SpecifyAppContextMgr();
 
@@ -675,8 +677,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         IdTableMapper idMapper = null;
         for (String tableName : tableNames)
         {
-            idMapper = idMapperMgr.addTableMapper(tableName, tableName + "ID");
+            idMapper = idMapperMgr.addTableMapper(tableName, tableName + "ID", doDeleteAllMappings);
             log.debug("mapIds() for table" + tableName);
+            
             if (shouldCreateMapTables)
             {
                 idMapper.mapAllIds();
@@ -688,7 +691,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             //---------------------------------
             // This mapping is used by Loans
             //---------------------------------
-            idMapper = idMapperMgr.addTableMapper("Loan", "LoanID", "SELECT LoanID FROM loan WHERE Category = 0 ORDER BY LoanID");
+            idMapper = idMapperMgr.addTableMapper("Loan", "LoanID", "SELECT LoanID FROM loan WHERE Category = 0 ORDER BY LoanID", doDeleteAllMappings);
             if (shouldCreateMapTables)
             {
                 idMapper.mapAllIdsWithSQL();
@@ -697,7 +700,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             //---------------------------------
             // This mapping is used by Loans Preps
             //---------------------------------
-            idMapper = idMapperMgr.addTableMapper("LoanPhysicalObject", "LoanPhysicalObjectID", "SELECT LoanPhysicalObjectID FROM loanphysicalobject lpo INNER JOIN loan l ON l.LoanID = lpo.LoanID WHERE l.Category = 0 ORDER BY l.LoanID");
+            idMapper = idMapperMgr.addTableMapper("LoanPhysicalObject", "LoanPhysicalObjectID", 
+                    "SELECT LoanPhysicalObjectID FROM loanphysicalobject lpo INNER JOIN loan l ON l.LoanID = lpo.LoanID WHERE l.Category = 0 ORDER BY l.LoanID", doDeleteAllMappings);
             if (shouldCreateMapTables)
             {
                 idMapper.mapAllIdsWithSQL();
@@ -706,7 +710,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             //---------------------------------
             // Map all the Logical IDs
             //---------------------------------
-            idMapper = idMapperMgr.addTableMapper("collectionobjectcatalog", "CollectionObjectCatalogID");
+            idMapper = idMapperMgr.addTableMapper("collectionobjectcatalog", "CollectionObjectCatalogID", doDeleteAllMappings);
             if (shouldCreateMapTables)
             {
                 idMapper.mapAllIds("select CollectionObjectID from collectionobject Where collectionobject.DerivedFromID Is Null order by CollectionObjectID");
@@ -715,7 +719,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             //---------------------------------
             // Map all the Physical IDs
             //---------------------------------
-            idMapper = idMapperMgr.addTableMapper("collectionobject", "CollectionObjectID");
+            idMapper = idMapperMgr.addTableMapper("collectionobject", "CollectionObjectID", doDeleteAllMappings);
             if (shouldCreateMapTables)
             {
                 idMapper.mapAllIds("select CollectionObjectID From collectionobject co WHERE co.CollectionObjectTypeID > 20 ORDER BY CollectionObjectID");
@@ -779,7 +783,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                     + oldDetermination_Current
                                     + " = '"
                                     + oldDetermination_CurrentValue
-                                    + "'  group by collectionobjectcatalog.CollectionObjectCatalogID, taxonname.TaxonomyTypeID");
+                                    + "'  group by collectionobjectcatalog.CollectionObjectCatalogID, taxonname.TaxonomyTypeID", doDeleteAllMappings);
     
             if (shouldCreateMapTables)
             {
@@ -1059,7 +1063,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             }
         }
         
-        IdTableMapper loanAgentsMapper = idMapperMgr.addTableMapper("loanagents", "LoanAgentsID", "SELECT loanagents.LoanAgentsID FROM loanagents INNER JOIN loan ON loanagents.LoanID = loan.LoanID WHERE loan.Category = 1 ORDER BY loan.LoanID");
+        IdTableMapper loanAgentsMapper = idMapperMgr.addTableMapper("loanagents", "LoanAgentsID", 
+                "SELECT loanagents.LoanAgentsID FROM loanagents INNER JOIN loan ON loanagents.LoanID = loan.LoanID WHERE loan.Category = 1 ORDER BY loan.LoanID", false);
         if (shouldCreateMapTables)
         {
         	loanAgentsMapper.mapAllIdsWithSQL();
@@ -4229,7 +4234,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             
             // Meg added
             // Map all the Physical IDs
-            IdTableMapper prepIdMapper = idMapperMgr.addTableMapper("preparation", "PreparationID");
+            IdTableMapper prepIdMapper = idMapperMgr.addTableMapper("preparation", "PreparationID", doDeleteAllMappings);
+            
             if (shouldCreateMapTables)
             {
                 String sql2 = "SELECT c.CollectionObjectID FROM collectionobject c WHERE NOT (c.DerivedFromID IS NULL) ORDER BY c.CollectionObjectID";
@@ -7008,7 +7014,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             if (!isOK) return;
     
             // create an ID mapper for the geography table (mainly for use in converting localities)
-            IdHashMapper  lithoStratIdMapper = IdMapperMgr.getInstance().addHashMapper("stratigraphy_stratigraphyid");
+            IdHashMapper  lithoStratIdMapper = IdMapperMgr.getInstance().addHashMapper("stratigraphy_stratigraphyid", false);
             IdMapperIFace gtpIdMapper        = IdMapperMgr.getInstance().get("geologictimeperiod", "GeologicTimePeriodID");
             
             if (lithoStratIdMapper == null)
@@ -7263,8 +7269,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         }
 
         // create an ID mapper for the geography table (mainly for use in converting localities)
-        IdTableMapper lithoStratIdMapper = doSave ? IdMapperMgr.getInstance().addTableMapper(
-                "lithostrat", "LithoStratID") : null;
+        IdTableMapper lithoStratIdMapper = doSave ? IdMapperMgr.getInstance().addTableMapper("lithostrat", "LithoStratID") : null;
 
         int counter = 0;
         // for each old record, convert the record
