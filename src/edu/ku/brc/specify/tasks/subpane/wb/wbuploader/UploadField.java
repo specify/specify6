@@ -328,6 +328,9 @@ public class UploadField
         return null;
     }
     
+    /**
+     * @return picklist for "special cases"
+     */
     protected PickListDBAdapterIFace checkForSpecialCasePicklist()
     {
     	PickListDBAdapterIFace result = null;
