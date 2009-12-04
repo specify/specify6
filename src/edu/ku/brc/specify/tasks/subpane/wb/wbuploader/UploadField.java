@@ -26,8 +26,11 @@ import java.util.TreeMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
@@ -307,10 +310,15 @@ public class UploadField
             else if (RecordTypeCodeBuilder.isTypeCodeField(getField().getFieldInfo()))
             {
                 pickList = RecordTypeCodeBuilder.getTypeCode(getField().getFieldInfo());
-            }
+            } 
+//            else 
+//            {
+//            	pickList = checkForSpecialCasePicklist();
+//            }
             if (pickList != null)
             {
-                TreeMap<String, PickListItemIFace> pickListItems = new TreeMap<String, PickListItemIFace>();                for (PickListItemIFace item : pickList.getList())
+                TreeMap<String, PickListItemIFace> pickListItems = new TreeMap<String, PickListItemIFace>();                
+                for (PickListItemIFace item : pickList.getList())
                 {
                     pickListItems.put(item.getTitle(), item);
                 }
@@ -318,5 +326,26 @@ public class UploadField
             }
         }
         return null;
+    }
+    
+    protected PickListDBAdapterIFace checkForSpecialCasePicklist()
+    {
+    	PickListDBAdapterIFace result = null;
+    	DBFieldInfo fldInfo = getField().getFieldInfo();
+    	if (fldInfo != null)
+    	{
+    		if (fldInfo.getName().equals("name") && fldInfo.getTableInfo().getClassObj().equals(PrepType.class))
+    		{
+    			//XXX add condition for discipline
+    			//XXX need to do this for query builder
+    			//XXX and for column control step in wbpaneSS
+    			String pickListName = BasicSQLUtils.querySingleObj("select spli.picklistname from splocalecontaineritem spli inner join splocalecontainer spl on spl.splocalecontainerid = spli.splocalecontainerid where spli.name = 'prepType' and spl.name = 'preparation'");
+    			if (StringUtils.isNotBlank(pickListName))
+    			{
+    				result = PickListDBAdapterFactory.getInstance().create(pickListName, false);
+    			}
+    		}
+    	}
+    	return result;
     }
 }

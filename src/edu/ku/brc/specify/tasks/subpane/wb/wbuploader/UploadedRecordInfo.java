@@ -29,6 +29,7 @@ import edu.ku.brc.util.Pair;
  * @code_status Alpha
  *
  */
+@SuppressWarnings("serial")
 public class UploadedRecordInfo extends Pair<Integer, Integer> implements Comparable<UploadedRecordInfo>
 {
     protected final int seq;
@@ -87,7 +88,7 @@ public class UploadedRecordInfo extends Pair<Integer, Integer> implements Compar
     {
         //return getKey().compareTo(o.getKey());
         int result = getWbRow().compareTo(o.getWbRow());
-        if (result == 0)
+        if (result == 0 && getKey() != null)
         {
             result = getKey().compareTo(o.getKey());
         }
@@ -100,7 +101,16 @@ public class UploadedRecordInfo extends Pair<Integer, Integer> implements Compar
     @Override
     public boolean equals(Object obj)
     {
-        return getKey().intValue() == ((UploadedRecordInfo )obj).getKey().intValue();
+        UploadedRecordInfo otherObj = (UploadedRecordInfo )obj;
+    	if (getKey() != null && otherObj.getKey() != null)
+    	{
+    		return getKey().intValue() == otherObj.getKey().intValue();
+    	}
+    	if (getKey() == null && otherObj.getKey() == null)
+    	{
+    		return getWbRow().equals(otherObj.getWbRow());
+    	}
+    	return false;
     }
     
 }

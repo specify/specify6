@@ -95,7 +95,11 @@ public class GridTableModel extends SpreadSheetModel
      */
     protected Workbench getWorkbench()
     {
-    	return workbenchPaneSS.getWorkbench();
+    	if (workbenchPaneSS != null)
+    	{
+    		return workbenchPaneSS.getWorkbench();
+    	}
+    	return null;
     }
     
     /**

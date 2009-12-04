@@ -3113,10 +3113,10 @@ public class Uploader implements ActionListener, KeyListener
 
                mainPanel.getViewSettingsBtn().setEnabled(canViewSettings(op));
 
-               mainPanel.getViewUploadBtn().setEnabled(canViewUpload(op));
+               mainPanel.getViewUploadBtn().setEnabled(canViewUpload(op) && uploadedObjects > 0);
                mainPanel.getViewUploadBtn().setVisible(mainPanel.getViewUploadBtn().isEnabled());
 
-               mainPanel.getUndoBtn().setEnabled(canUndo(op));
+               mainPanel.getUndoBtn().setEnabled(canUndo(op) && uploadedObjects > 0);
                mainPanel.getUndoBtn().setVisible(mainPanel.getUndoBtn().isEnabled());
 
                mainPanel.getCloseBtn().setEnabled(canClose(op));
@@ -3456,9 +3456,42 @@ public class Uploader implements ActionListener, KeyListener
         }
     }
 
-    protected synchronized void abortRow(UploaderException cause, int row)
+    /**
+     * @param cause
+     * @param row
+     * @throws UploaderException
+     */
+    protected synchronized void abortRow(UploaderException cause, int row) throws UploaderException
     {
-        logDebug("NOT undoing writes which have already occurred while processing aborted row");
+        //logDebug("NOT undoing writes which have already occurred while processing aborted row");
+        logDebug("undoing writes which have already occurred while processing aborted row");
+        try 
+        {
+            List<UploadTable> fixedUp = reorderUploadTablesForUndo();
+            boolean isEmbeddedCE = AppContextMgr.getInstance().getClassObject(
+                    Collection.class).getIsEmbeddedCollectingEvent();
+            try
+            {
+                AppContextMgr.getInstance().getClassObject(Collection.class)
+                        .setIsEmbeddedCollectingEvent(false);
+                for (int ut = fixedUp.size() - 1; ut >= 0; ut--)
+                {
+                    // setCurrentOpProgress(fixedUp.size() - ut, false);
+                    logDebug("aborting " + fixedUp.get(ut).getTable().getName());
+                    fixedUp.get(ut).abortRow(row);
+                }
+    			updateObjectsCreated();
+            }
+            finally
+            {
+                AppContextMgr.getInstance().getClassObject(Collection.class)
+                        .setIsEmbeddedCollectingEvent(isEmbeddedCE);
+            }
+        } catch (Exception e)
+        {
+        	throw new UploaderException(e, UploaderException.ABORT_IMPORT);
+        }
+        
         if (cause instanceof UploaderMatchSkipException)
         {
             wbSS.getWorkbench().getRow(rowUploading).setUploadStatus(WorkbenchRow.UPLD_SKIPPED);
@@ -3472,6 +3505,9 @@ public class Uploader implements ActionListener, KeyListener
         newMessages.add(sr);
     }
 
+    /**
+     * @param msg
+     */
     public synchronized void addMsg(final UploadMessage msg)
     {
         newMessages.add(msg);

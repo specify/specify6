@@ -2698,6 +2698,23 @@ public class UploadTable implements Comparable<UploadTable>
         deleteObjects(uploadedRecs.iterator(), showProgress);
     }
 
+    /**
+     * @param row
+     * @throws UploaderException
+     * 
+     * deletes all records uploaded for row.
+     */
+    public void abortRow(final int row) throws UploaderException
+    {
+    	UploadedRecordInfo arg1 = new UploadedRecordInfo(null, row-1, 0, null);
+    	UploadedRecordInfo arg2 = new UploadedRecordInfo(null, row+1, 0, null);
+    	SortedSet<UploadedRecordInfo> recsForRow = uploadedRecs.subSet(arg1, arg2);
+    	if (recsForRow.size() > 0)
+    	{
+    		deleteObjects(recsForRow.iterator(), false);
+        	uploadedRecs.removeAll(recsForRow);
+    	}
+    }
     
     /**
      * @param session
