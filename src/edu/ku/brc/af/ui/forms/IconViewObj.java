@@ -768,7 +768,7 @@ public class IconViewObj implements Viewable
                         shortClassName = classToCreate.getSimpleName();
                     }
                 }
-                perm = SecurityMgr.getInstance().getPermission("DO."+shortClassName);            
+                perm = SecurityMgr.getInstance().getPermission("DO."+shortClassName.toLowerCase());            
             }
             
             if ((isEditing && perm.isViewOnly()) || (!isEditing && !perm.canView()))

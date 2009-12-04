@@ -4524,7 +4524,7 @@ public class FormViewObj implements Viewable,
                     shortClassName = classToCreate.getSimpleName();
                 }
             }
-            perm = SecurityMgr.getInstance().getPermission("DO."+shortClassName);
+            perm = SecurityMgr.getInstance().getPermission("DO."+shortClassName.toLowerCase());
         }
     }
 
