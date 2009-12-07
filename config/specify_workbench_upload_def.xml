@@ -198,6 +198,7 @@
     <field table="Determination" name="determinerMiddle1" onetomanysequence="0" relationshipname="determiner" relatedfieldname="middleInitial"/>
     <field table="Determination" name="determinerTitle1" onetomanysequence="0" relationshipname="determiner" relatedfieldname="title"/>
     <field table="Determination" name="isCurrent1" actualname="isCurrent" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="Determination" name="remarks1" actualname="remarks" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Determination" name="phylum1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="30"/>
     <field table="Determination" name="subphylum1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="40"/>
     <field table="Determination" name="superclass1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="50"/>
@@ -214,6 +215,7 @@
     <field table="Determination" name="tribe1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="160"/>
     <field table="Determination" name="subtribe1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="170"/>
     <field table="Determination" name="genus1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="180"/>
+    <field table="Determination" name="subgenus1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="190"/>
     <field table="Determination" name="species1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="220"/>
     <field table="Determination" name="subspecies1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="230"/>
     <field table="Determination" name="variety1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="240"/>
@@ -233,6 +235,7 @@
     <field table="Determination" name="tribeAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="160"/>
     <field table="Determination" name="subtribeAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="170"/>
     <field table="Determination" name="genusAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="180"/>
+    <field table="Determination" name="subgenusAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="190"/>
     <field table="Determination" name="speciesAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="220"/>
     <field table="Determination" name="subspeciesAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="230"/>
     <field table="Determination" name="varietyAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="240"/>
@@ -244,6 +247,7 @@
     <field table="Determination" name="determinerMiddle2" onetomanysequence="1" relationshipname="determiner" relatedfieldname="middleInitial"/>
     <field table="Determination" name="determinerTitle2" onetomanysequence="1" relationshipname="determiner" relatedfieldname="title"/>
     <field table="Determination" name="isCurrent2" actualname="isCurrent" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="Determination" name="remarks2" actualname="remarks" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Determination" name="phylum2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="30"/>
     <field table="Determination" name="subphylum2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="40"/>
     <field table="Determination" name="superclass2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="50"/>
@@ -260,6 +264,7 @@
     <field table="Determination" name="tribe2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="160"/>
     <field table="Determination" name="subtribe2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="170"/>
     <field table="Determination" name="genus2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="180"/>
+    <field table="Determination" name="subgenus2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="190"/>
     <field table="Determination" name="species2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="220"/>
     <field table="Determination" name="subspecies2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="230"/>
     <field table="Determination" name="variety2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="240"/>
@@ -279,6 +284,7 @@
     <field table="Determination" name="tribeAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="160"/>
     <field table="Determination" name="subtribeAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="170"/>
     <field table="Determination" name="genusAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="180"/>
+    <field table="Determination" name="subgenusAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="190"/>
     <field table="Determination" name="speciesAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="220"/>
     <field table="Determination" name="subspeciesAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="230"/>
     <field table="Determination" name="varietyAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="240"/>
@@ -594,6 +600,13 @@
     <field table="Taxon" name="infraorderCommonName" treename="taxon" maptofield="commonName" rankid="120"/>
     <field table="Taxon" name="infraorderSource" treename="taxon" maptofield="source" rankid="120"/>
     <field table="Taxon" name="infraorderGUID" treename="taxon" maptofield="guid" rankid="120"/>
+
+	<!-- for ATBI conversion -->
+    <!--field table="Taxon" name="series" treename="taxon" maptofield="name" rankid="125"/>
+    <field table="Taxon" name="seriesAuthor" treename="taxon" maptofield="author" rankid="125"/>
+    <field table="Taxon" name="seriesCommonName" treename="taxon" maptofield="commonName" rankid="125"/>
+    <field table="Taxon" name="seriesSource" treename="taxon" maptofield="source" rankid="125"/>
+    <field table="Taxon" name="seriesGUID" treename="taxon" maptofield="guid" rankid="125"/-->
     
     <field table="Taxon" name="superfamily" treename="taxon" maptofield="name" rankid="130"/>
     <field table="Taxon" name="superfamilyAuthor" treename="taxon" maptofield="author" rankid="130"/>

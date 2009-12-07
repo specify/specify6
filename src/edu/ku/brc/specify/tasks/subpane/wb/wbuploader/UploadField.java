@@ -70,7 +70,7 @@ public class UploadField
     /**
      * The one to many 'order' of the field (e.g. LastName1, lastName2, ... )
      */
-    protected Integer                    sequence           = 0;
+    protected Integer                    sequence           = null;
     /**
      * True if the field must contain data
      */

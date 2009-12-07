@@ -82,6 +82,7 @@ import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttribute;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
@@ -199,6 +200,12 @@ public class UploadTable implements Comparable<UploadTable>
 
     protected UploadMatchSetting                        matchSetting;
 
+    
+    /**
+     * i.e. is this a many of 1 - many. (eg: Determination 1, 2. Collector 1, 2, ...)
+     */
+    protected boolean                                   isSequenced                 = false;
+    
     /**
      * If true then matching records are updated with values in uploading dataset.
      * 
@@ -705,7 +712,8 @@ public class UploadTable implements Comparable<UploadTable>
      */
     public void addField(UploadField field)
     {
-        int idx = field.getSequence() == null ? 0 : field.getSequence();
+        isSequenced = field.getSequence() != null;
+    	int idx = field.getSequence() == null ? 0 : field.getSequence();
         while (uploadFields.size() < idx + 1)
         {
             uploadFields.add(new Vector<UploadField>());
@@ -2206,7 +2214,6 @@ public class UploadTable implements Comparable<UploadTable>
     	
     	int seq = 0;
         boolean gotABlank = false;
-        int blankSeq = 0;
         
         //for Locality table only
         LatLonConverter.FORMAT llFmt1 = null; 
@@ -2215,7 +2222,7 @@ public class UploadTable implements Comparable<UploadTable>
         UploadField llFld = null; //for 'generic' latlon errors.
         
         Vector<UploadTableInvalidValue> invalidNulls = new Vector<UploadTableInvalidValue>();
-        Vector<Integer> invalidBlankSeqs = new Vector<Integer>();
+        Vector<Integer> blankSeqs = new Vector<Integer>();
         for (Vector<UploadField> flds : uploadFields)
         {
             boolean isBlank = true;
@@ -2296,6 +2303,7 @@ public class UploadTable implements Comparable<UploadTable>
                 invalidValues.add(new UploadTableInvalidValue(null, this, llFld, row, 
                         new Exception(UIRegistry.getResourceString("WB_UPLOADER_INVALID_LATLONG"))));
             }
+            isBlank = isBlankSequence(isBlank, uploadData, row, seq/*, getSequedParentClasses()*/);
             if (isBlank)
             /* 
              * Disallow situations where 1-many lists have 'holes' - eg. CollectorLastName2 is blank but CollectorLastName1 and -3 are not.
@@ -2303,21 +2311,18 @@ public class UploadTable implements Comparable<UploadTable>
              */
             {
                 gotABlank = true;
-                blankSeq = seq;
+                blankSeqs.add(seq);
             }
             else if (!isBlank && gotABlank)
             {
-            	if (!invalidBlankSeqs.contains(blankSeq))
+            	for (Integer blank : blankSeqs)
             	{
-            		for (UploadField blankSeqFld : uploadFields.get(blankSeq))
+            		for (UploadField blankSeqFld : getBlankFields(blank, row, uploadData))
             		{
-            			if (blankSeqFld.getIndex() != -1)
-            			{
-            				addInvalidValueMsgForOneToManySkip(invalidValues, blankSeqFld, toString(), row, blankSeq);
-            			}            			
+            			addInvalidValueMsgForOneToManySkip(invalidValues, blankSeqFld, toString(), row, blank);
             		}
-            		invalidBlankSeqs.add(blankSeq);
             	}
+            	blankSeqs.clear();
             }
             
             if (!hasChildren && !isBlank && invalidNulls.size() != 0)
@@ -2371,6 +2376,82 @@ public class UploadTable implements Comparable<UploadTable>
     }
     
     /**
+     * @param uploadTable
+     * @param blankSeq
+     * @param row
+     * @param uploadData
+     * @return
+     */
+    protected List<UploadField> getBlankFields(int blankSeq, int row, UploadData uploadData)
+    {
+		List<UploadField> result = new LinkedList<UploadField>();
+    	for (UploadField blankSeqFld : uploadFields.get(blankSeq))
+		{
+			if (blankSeqFld.getIndex() != -1)
+			{
+				result.add(blankSeqFld);
+			}            			
+		}
+		
+		//Set<Class<?>> pts = getSequedParentClasses();
+		for (Vector<ParentTableEntry> ptes : parentTables)
+		{
+			for (ParentTableEntry pte : ptes)
+			{
+				if (pte.getImportTable().isSequenced)
+//				if (pts.contains(pte.getImportTable().getTblClass()))
+				{
+					result.addAll(pte.getImportTable().getBlankFields(blankSeq, row, uploadData));
+				}
+			}
+		}
+		
+		return result;
+    }
+    
+    /**
+     * @param blank
+     * @param uploadData
+     * @param row
+     * @param seq
+     * @param parentClasses
+     * 
+     * @return true if blank and blankness matters
+     * 
+     * Checks relationships and datatype to see if table data for row and sequence is really blank and/or
+     * if it is not OK for it to be blank.
+     */
+    protected boolean isBlankSequence(final boolean blank, final UploadData uploadData, final int row, final int seq/*, final Set<Class<?>> parentClasses*/)
+    {
+		if (!blank)
+		{
+			return false;
+		}
+		
+		if (parentTables.size() > 0)
+		{
+			for (Vector<ParentTableEntry> ptes : parentTables)
+			{
+				for (ParentTableEntry pte : ptes)
+				{
+					if (pte.getImportTable().isSequenced)
+//					if (parentClasses.contains(pte.getImportTable().getTblClass()))
+					{
+						if (!pte.getImportTable().isBlankRow(row, uploadData, seq))
+						{
+							return false;
+						}
+					}
+				}
+			}
+			return true;
+		}
+		
+		return !hasChildren;
+    }
+    
+    
+     /**
      * @param uploadData
      * @return Vector of invalid values.
      * 
