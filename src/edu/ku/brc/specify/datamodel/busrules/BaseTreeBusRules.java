@@ -1014,7 +1014,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             if (node.getDefinition().getDoNodeNumberUpdates() && node.getDefinition().getNodeNumbersAreUpToDate())
             {
                 log.info("Saved tree node was added.  Updating node numbers appropriately.");
-                TreeDataService dataServ = TreeDataServiceFactory.createService();
+                TreeDataService<T,D,I> dataServ = TreeDataServiceFactory.createService();
                 if (added)
                 {
                 	success = dataServ.updateNodeNumbersAfterNodeAddition(node, session);
