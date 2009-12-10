@@ -377,8 +377,9 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
         
         Calendar date = null;
 
+        // TODO Really need to verify right here whether the defaultValue as a String is a valid date
         Object dateObj = getter.getFieldValue(value, dateFieldName);
-        if (dateObj == null && StringUtils.isNotEmpty(defaultValue) && defaultValue.equals("today"))
+        if (dateObj == null && StringUtils.isNotEmpty(defaultValue))
         {
             date = Calendar.getInstance();
         }
