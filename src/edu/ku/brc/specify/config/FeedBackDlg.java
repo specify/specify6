@@ -77,7 +77,7 @@ public class FeedBackDlg extends FeedBackSender
      */
     protected String getSenderURL()
     {
-        return "http://specify6-test.nhm.ku.edu/feedback.php";
+        return UIRegistry.getResourceString("CGI_BASE_URL") + "/feedback.php";
     }
     
     /* (non-Javadoc)

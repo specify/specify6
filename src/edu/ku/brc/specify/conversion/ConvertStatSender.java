@@ -21,6 +21,7 @@ import java.util.Properties;
 
 import edu.ku.brc.ui.FeedBackSender;
 import edu.ku.brc.ui.FeedBackSenderItem;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rods
@@ -46,7 +47,7 @@ public class ConvertStatSender extends FeedBackSender
     @Override
     protected String getSenderURL()
     {
-        return "http://specify6-test.nhm.ku.edu/convinfo.php";
+        return UIRegistry.getResourceString("CGI_BASE_URL") + "convinfo.php";
     }
     
     public void senConvertInfo(final String collectionName, final int numColObj, final int convTime)

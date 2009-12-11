@@ -23,6 +23,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 import edu.ku.brc.ui.FeedBackSender;
+import edu.ku.brc.ui.UIRegistry;
 
 
 /**
@@ -54,7 +55,7 @@ public class ExceptionTracker extends FeedBackSender
      */
     protected String getSenderURL()
     {
-        return "http://specify6-test.nhm.ku.edu/exception.php";
+        return UIRegistry.getResourceString("CGI_BASE_URL") + "/exception.php";
     }
     
     /**

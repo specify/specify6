@@ -91,6 +91,7 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -108,7 +109,6 @@ public class RegisterApp extends JPanel
     
     protected static boolean INCL_ANON = false;
     
-    //protected String                    connectStr = "jdbc:mysql://specify6-test.nhm.ku.edu/stats";
     protected String                    connectStr = "jdbc:mysql://localhost/stats";
     protected String                    username   = "root";
     protected String                    password   = "root";
@@ -1107,7 +1107,7 @@ public class RegisterApp extends JPanel
         
         StringBuilder sb = new StringBuilder();
         sb.append("<html><head>\n<title>Registrations</title>\n");
-        //sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"http://specify6-test.nhm.ku.edu/css/report.css\">\n");
+        //sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""+UIRegistry.getResourceString("CGI_BASE_URL") + "/css/report.css\">\n");
         sb.append("<style>");
         sb.append("body { font-family: sans-serif; font-size:10pt; }");
         sb.append("td, th { font-family: sans-serif; font-size:10pt; }");
@@ -1115,7 +1115,7 @@ public class RegisterApp extends JPanel
         sb.append("table td { border-bottom: 1px gray solid; border-right: 1px gray solid; }");
         sb.append("table th { border-bottom: 1px gray solid; border-right: 1px gray solid; }");
         sb.append("</style>");
-        sb.append("</head><body>\n<div style=\"text-align: left;\"><img src=\"http://specify6-test.nhm.ku.edu/images/logosmaller.png\" height=\"42\" width=\"117\"></div>\n");
+        sb.append("</head><body>\n<div style=\"text-align: left;\"><img src=\""+UIRegistry.getResourceString("CGI_BASE_URL") + "/images/logosmaller.png\" height=\"42\" width=\"117\"></div>\n");
 
         StringBuilder tsb = new StringBuilder();
         int cnt = createTable(tsb, "ISA Registrations - "+sdf.format(Calendar.getInstance().getTime()), rp.getRoot(INCL_ANON).getKids(), true);
@@ -1207,8 +1207,8 @@ public class RegisterApp extends JPanel
         
         StringBuilder sb = new StringBuilder();
         sb.append("<html><head>\n<title>Statistics</title>\n");
-        sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"http://specify6-test.nhm.ku.edu/css/report.css\">\n");
-        sb.append("</head><body>\n<div style=\"text-align: left;\"><img src=\"http://specify6-test.nhm.ku.edu/images/logosmaller.png\" height=\"42\" width=\"117\"></div>\n");
+        sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""+UIRegistry.getResourceString("CGI_BASE_URL") + "/css/report.css\">\n");
+        sb.append("</head><body>\n<div style=\"text-align: left;\"><img src=\""+UIRegistry.getResourceString("CGI_BASE_URL") + "/images/logosmaller.png\" height=\"42\" width=\"117\"></div>\n");
         sb.append("<center\n<table class=\"brd\" border=\"0\" cellspacing=\"0\">\n");
         sb.append("<tr>");
         sb.append("<th colspan=\"2\">");
@@ -1295,7 +1295,7 @@ public class RegisterApp extends JPanel
         {
             SimpleDateFormat mmddyyyy = new SimpleDateFormat("MM/dd/yyyy");
             SimpleDateFormat yyyymmdd = new SimpleDateFormat("yyyy/MM/dd");
-            List<String> lines = FileUtils.readLines(rp.getDataFromWeb("http://specify6-test.nhm.ku.edu/specifydownloads/specify6/alpha/versions.txt", false));
+            List<String> lines = FileUtils.readLines(rp.getDataFromWeb(UIRegistry.getResourceString("CGI_BASE_URL") + "/specifydownloads/specify6/alpha/versions.txt", false));
             for (String line : lines)
             {
                 String[] toks = line.split(",");

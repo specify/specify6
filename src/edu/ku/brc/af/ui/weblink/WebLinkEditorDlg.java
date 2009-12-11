@@ -328,8 +328,6 @@ public class WebLinkEditorDlg extends CustomDialog
         args.clear();
         model.fire();
         
-        //http://specify6-test.nhm.ku.edu/echo.php?email=<email>&title=<title>&url=<url>&prompttest=<prompttest>&interests=<interests>&testprompt2=<testprompt2>
-        
         String baseStr = baseUrlTF.getText();
         
         Pattern pattern = Pattern.compile("<.*?>");
