@@ -54,7 +54,7 @@ public class CreationChecker
     {
         String dbName           = "testfish"; 
         String itUsername       = "root";
-        String itPassword       = "nessie1601";
+        String itPassword       = "root";
         
        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         
