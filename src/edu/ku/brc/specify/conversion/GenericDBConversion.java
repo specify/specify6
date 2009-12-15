@@ -233,7 +233,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     protected Agent                                         modifierAgent;
     protected Hashtable<String, BasicSQLUtilsMapValueIFace> columnValueMapper      = new Hashtable<String, BasicSQLUtilsMapValueIFace>();
     protected Division                                      division = null;
-    protected Integer                                       curDivisionID      = 0;
+    protected Integer                                       curDivisionID          = 0;
     
     protected Integer                                       curDisciplineID        = 0;
     protected Integer                                       curCollectionID        = 0;
@@ -498,7 +498,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         BasicSQLUtilsMapValueIFace versionValueMapper            = getVersionValueMapper();
         BasicSQLUtilsMapValueIFace divisionValueMapper           = getDivisionValueMapper();
 
-        columnValueMapper.put("CooutllectionMemberID", collectionMemberIDValueMapper);
+        columnValueMapper.put("CollectioMemberID",  collectionMemberIDValueMapper);
         columnValueMapper.put("CreatedByAgentID",   agentCreatorValueMapper);
         columnValueMapper.put("ModifiedByAgentID",  agentModiferValueMapper);
         columnValueMapper.put("Version",            versionValueMapper);
@@ -691,7 +691,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             //---------------------------------
             // This mapping is used by Loans
             //---------------------------------
-            idMapper = idMapperMgr.addTableMapper("Loan", "LoanID", "SELECT LoanID FROM loan WHERE Category = 0 ORDER BY LoanID", doDeleteAllMappings);
+            idMapper = idMapperMgr.addTableMapper("Loan", "LoanID", "SELECT LoanID FROM loan WHERE Category = 0 ORDER BY LoanID", true);//doDeleteAllMappings);
             if (shouldCreateMapTables)
             {
                 idMapper.mapAllIdsWithSQL();
@@ -815,8 +815,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                 "LoanPhysicalObject",
                 "PhysicalObjectID",
-                "preparation",
-                "PreparationID",
+                "CollectionObject",
+                "CollectionObjectID",
                 
                 "LoanPhysicalObject",
                 "LoanID",
@@ -1064,10 +1064,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         }
         
         IdTableMapper loanAgentsMapper = idMapperMgr.addTableMapper("loanagents", "LoanAgentsID", 
-                "SELECT loanagents.LoanAgentsID FROM loanagents INNER JOIN loan ON loanagents.LoanID = loan.LoanID WHERE loan.Category = 1 ORDER BY loan.LoanID", false);
+                "SELECT loanagents.LoanAgentsID FROM loanagents INNER JOIN loan ON loanagents.LoanID = loan.LoanID ORDER BY loan.LoanID", true);
         if (shouldCreateMapTables)
         {
-        	loanAgentsMapper.mapAllIdsWithSQL();
+            loanAgentsMapper.mapAllIdsWithSQL();
         }
 
         // When you run in to this table1.field, go to that table2 and look up the id
@@ -1367,7 +1367,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "ExchangeIn",
                 "ExchangeOut", 
                 "GroupPerson", 
-                "Habitat", 
+                //"Habitat", 
                 "Journal", 
                 //"Loan", 
                 //"LoanAgent",
@@ -1384,9 +1384,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "TaxonCitation", };
         } else
         {
-            tablesToMoveOver = new String[] { "AccessionAgent", "Accession", "AccessionAuthorization",
-                                              "CollectingEvent","Collector",
-                                              "Permit" };
+            tablesToMoveOver = new String[] { "GroupPerson", "Habitat" };
         }
         String oldLoanReturnPhysicalObj_Date_FieldName = "Date";
         String oldRefWork_Date_FieldName               = "Date";
@@ -1593,10 +1591,16 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 String[] ignoredFields = { "Version", "CreatedByAgentID",  "ModifiedByAgentID", "CollectionMemberID" };
                 setFieldsToIgnoreWhenMappingNames(ignoredFields);
                 
+            } else if (fromTableName.startsWith("groupperson"))
+            {
+                String[] ignoredFields = { "DivisionID",  "Version", "CreatedByAgentID",  "ModifiedByAgentID", };
+                setFieldsToIgnoreWhenMappingNames(ignoredFields);
+                
             } else if (fromTableName.equals("habitat"))
             {
                 toTableName = "collectingeventattribute";
                 setFieldsToIgnoreWhenMappingNames(getHabitatAttributeToIgnore());
+                errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for DeaccessionPhysicalObjectID
                 
             } else if (fromTableName.equals("loan"))
             {
@@ -1864,7 +1868,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     protected String[] getHabitatAttributeToIgnore()
     {
         return new String[] { "HabitatTypeId", "CreatedByAgentID", "ModifiedByAgentID",  
-                              "CollectionMemberID", "Number10",  "Number12", 
+                              "CollectionMemberID", "Number10",  "Number12", "DivisionID",
                               "Number13",  "Number9", "Text12", 
                               "Text13", "Text14", "Text15", 
                               "Text16", "Text17", "Version"};
@@ -1959,9 +1963,14 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      */
     protected boolean checkName(String[] referenceNames, final String name)
     {
-        for (String rn : referenceNames)
+        String[] tokens    = StringUtils.split(name.toLowerCase(), ' ');
+        for (String tok : tokens)
         {
-            if (name.toLowerCase().indexOf(rn.toLowerCase()) > -1) { return true; }
+            for (String rn : referenceNames)
+            {
+                if (StringUtils.contains(rn.toLowerCase(), tok)) { return true; }
+                if (StringUtils.contains(tok, rn.toLowerCase())) { return true; }
+            }
         }
         return false;
     }
@@ -2000,6 +2009,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     public DisciplineType getStandardDisciplineName(final String taxonDefName, final String catSeriesName)
     {
         DisciplineType dispType = getStandardDisciplineName(taxonDefName);
+        if (dispType != null)
+        {
+            return dispType;
+        }
         if (dispType == null && catSeriesName != null)
         {
             StringTokenizer st = new StringTokenizer(catSeriesName, " ,"); //$NON-NLS-1$
@@ -2048,25 +2061,43 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
         STD_DISCIPLINES type = null;
         
-        if (checkName(new String[] { "Plant", "Herb" }, name)) 
+        if (checkName(new String[] { "Plant", "Herb", "Botan", "Fungi" }, name)) 
         { 
             type = STD_DISCIPLINES.botany; 
             
-        } else if (checkName(new String[] { "FishHerps", "Herps", "Herp" }, name)) 
+        } else if (checkName(new String[] { "FishHerps", "Herps", "Herp", "Frog" }, name)) 
         { 
             type = STD_DISCIPLINES.herpetology; 
+            
+        } else if (checkName(new String[] { "Insect", "Ento", "Bug", "Spider", "arachn" }, name)) 
+        { 
+            type = STD_DISCIPLINES.insect; 
             
         } else if (checkName(new String[] { "Mineral", "Rock" }, name)) 
         { 
             type = STD_DISCIPLINES.minerals;
             
+        } else if (checkName(new String[] { "ichthy", "Fish"}, name)) 
+        { 
+            type = STD_DISCIPLINES.fish;
+            
+        } else if (checkName(new String[] { "Paleo"}, name)) 
+        { 
+            if (checkName(new String[] { "Invert", "Fossil"}, name)) 
+            {
+                type = STD_DISCIPLINES.invertpaleo;
+                
+            } else if (checkName(new String[] { "Botan"}, name)) 
+            {
+                type = STD_DISCIPLINES.paleobotany;
+            } else
+            {
+                type = STD_DISCIPLINES.invertpaleo; // Default (should have a generic 'paleo' default)
+            }
+            
         } else if (checkName(new String[] { "Anthro" }, name)) 
         { 
             type = STD_DISCIPLINES.anthropology;
-            
-        } else if (checkName(new String[] { "Fungi" }, name)) 
-        { 
-            type = STD_DISCIPLINES.botany;
         }
         
         if (type != null)
@@ -2338,8 +2369,29 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     {
         try
         {
-            // The Old Table catalogseriesdefinition is being converted to Discipline
-            IdMapperIFace taxonomyTypeMapper = idMapperMgr.get("TaxonomyType", "TaxonomyTypeID");
+            HashSet<Integer> hashSet = new HashSet<Integer>();
+            StringBuilder    inSB    = new StringBuilder();
+            for (CollectionInfo ci : CollectionInfo.getCollectionInfoList(oldDBConn))
+            {
+                if (!hashSet.contains(ci.getTaxonomyTypeId()))
+                {
+                    if (inSB.length() > 0) inSB.append(',');
+                    inSB.append(ci.getTaxonomyTypeId());
+                    hashSet.add(ci.getTaxonomyTypeId());
+                }
+            }
+            
+            StringBuilder sb = new StringBuilder("SELECT TaxonomyTypeID FROM taxonomytype WHERE TaxonomyTypeId in (");
+            sb.append(inSB);
+            sb.append(')');
+            log.debug(sb.toString());
+            
+            // This mapping is used by Discipline
+            //for (Object txTypIdObj : BasicSQLUtils.querySingleCol(oldDBConn, sb.toString()))
+            //{
+            //    Integer txTypId = (Integer)txTypIdObj;
+            //    taxonomyTypeMapper.put(txTypId, getNextIndex());
+            //}
 
             // Create a Hashtable to track which IDs have been handled during the conversion process
             deleteAllRecordsFromTable(newDBConn, "datatype",       BasicSQLUtils.myDestinationServerType);
@@ -2348,7 +2400,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             // BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "collection_colobjdef");
 
             Hashtable<Integer, Integer> newColObjIDTotaxonomyTypeID = new Hashtable<Integer, Integer>();
-            Hashtable<Integer, String> taxonomyTypeIDToTaxonomyName = new Hashtable<Integer, String>();
             
             TableWriter tblWriter = convLogger.getWriter("convertCollectionObjectTypes.html", "Collection Object Type");
             
@@ -2368,11 +2419,29 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             String dateTimeNow = dateTimeFormatter.format(now);
             int collectionCnt      = 0;
-            for (Integer txTypeId : collDispHash.keySet())
+            for (Integer taxonTypeId : collDispHash.keySet())
             {
-                Vector<CollectionInfo> collInfoList = collDispHash.get(txTypeId);
+                Vector<CollectionInfo> collInfoList = collDispHash.get(taxonTypeId);
                 
-                CollectionInfo      info = collInfoList.get(0);
+                // Pick any of the CollectionInfo objects because they will
+                // all share the same Discipline
+                CollectionInfo      info = null;
+                for (CollectionInfo ci : collInfoList)
+                {
+                    if (ci.getCatSeriesId() != null)
+                    {
+                        info = ci;
+                        break;
+                    }
+                }
+                
+                if (info == null)
+                {
+                    //UIRegistry.showError("No viable CatSeriesId to create Discipline. \n(Picking one...)");
+                    info = collInfoList.get(0);
+                    //System.exit(0);
+                }
+                
                 String  taxonomyTypeName = info.getTaxonomyTypeName();
                 Integer taxonomyTypeID   = info.getTaxonomyTypeId();
                 String  lastEditedBy     = null;
@@ -2400,28 +2469,26 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     System.exit(1);
                 }
             
-                Integer catalogSeriesID = info.getCatSeriesId();
-                String seriesName       = info.getCatSeriesName();
                 String taxTypeName      = info.getTaxonomyTypeName();
-                String prefix           = info.getCatSeriesPrefix();
-                String remarks          = info.getCatSeriesRemarks();
-                
                 lastEditedBy            = info.getCatSeriesLastEditedBy();
                 taxonomyTypeID          = info.getTaxonomyTypeId();
                 
                 //---------------------------------------------------------------------------------
                 //-- Create Discipline
                 //---------------------------------------------------------------------------------
-                int newColObjdefID = taxonomyTypeMapper.get(taxonomyTypeID);
+                //Integer newColObjDefID = getNextIndex();//taxonomyTypeMapper.get(taxonomyTypeID);
+                //if (newColObjDefID == null)
+                //{
+                //    UIRegistry.showError("Was unable to map old TaxonomyTypeId["+taxonomyTypeID+"] to new ColectionObjectDefId. \nSeries Name: ["+info.getCatSeriesName()+"]\n(Exiting...)");
+                //    //System.exit(0);
+                //}
                 
-                taxonomyTypeIDToTaxonomyName.put(taxonomyTypeID, taxonomyTypeName);
-
                 // use the old CollectionObjectTypeName as the new Discipline name
                 setIdentityInsertONCommandForSQLServer(newDBConn, "discipline", BasicSQLUtils.myDestinationServerType);
                 Statement     updateStatement = newDBConn.createStatement();
                 StringBuilder strBuf2         = new StringBuilder();
                 
-                curDisciplineID = taxonomyTypeMapper.get(taxonomyTypeID);
+                curDisciplineID = getNextIndex();
                 info.setDisciplineId(curDisciplineID);
                 
                 // adding DivisioniID
@@ -2465,11 +2532,12 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
                 for (CollectionInfo collInfo : collInfoList)
                 {
-                    catalogSeriesID = collInfo.getCatSeriesId();
-                    seriesName      = collInfo.getCatSeriesName();
-                    prefix          = collInfo.getCatSeriesPrefix();
+                    Integer catalogSeriesID = collInfo.getCatSeriesId();
+                    String  seriesName      = collInfo.getCatSeriesName();
+                    String  prefix          = collInfo.getCatSeriesPrefix();
+                    String remarks          = collInfo.getCatSeriesRemarks();
                     
-                    collInfo.setDisciplineId(taxonomyTypeMapper.get(collInfo.getTaxonomyTypeId()));
+                    collInfo.setDisciplineId(curDisciplineID);
                     
                     AutoNumberingScheme cns = null;
                     if (catalogSeriesID != null && StringUtils.isNotEmpty(seriesName))
@@ -2508,7 +2576,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     strBuf.append("IsEmbeddedCollectingEvent, TimestampCreated, TimestampModified, CreatedByAgentID, ModifiedByAgentID, ");
                     strBuf.append("Version, UserGroupScopeId) VALUES (");
                     strBuf.append(curCollectionID + ",");
-                    strBuf.append(newColObjdefID + ",");
+                    strBuf.append(curDisciplineID + ",");
                     strBuf.append(getStrValue(seriesName) + ",");
                     strBuf.append(getStrValue(prefix) + ",");
                     strBuf.append(getStrValue(remarks) + ",");
@@ -2530,7 +2598,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     updateStatement.close();
                     updateStatement = null;
     
-                    if (catNumSchemeId != null)
+                    if (catNumSchemeId != null && catalogSeriesID != null)
                     {
                         joinCollectionAndAutoNum(curCollectionID, catNumSchemeId);
     
@@ -2543,10 +2611,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             prefixHash.put(hashKey, prefix);
                         }
     
-                        msg = "Collection New[" + newCatSeriesID + "] [" + seriesName + "] [" + prefix + "] [" + newColObjdefID + "]";
+                        msg = "Collection New[" + newCatSeriesID + "] [" + seriesName + "] [" + prefix + "] curDisciplineID[" + curDisciplineID + "]";
                     } else
                     {
-                        msg = "Collection New[" + seriesName + "] [" + prefix + "] [" + newColObjdefID + "]";
+                        msg = "Collection New[" + seriesName + "] [" + prefix + "] curDisciplineID[" + curDisciplineID + "]";
                     }
                     log.info(msg);
                     tblWriter.log(msg);
@@ -2568,7 +2636,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             
             for (CollectionInfo ci : collectionInfoList)
             {
-                catSeriesToNewCollectionID.put(ci.getCatSeriesId(), ci.getCollectionId());
+                if (ci.getCatSeriesId() != null)
+                {
+                    catSeriesToNewCollectionID.put(ci.getCatSeriesId(), ci.getCollectionId());
+                }
             }
             
             return true;
@@ -3821,7 +3892,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                 try
                 {
-                    log.debug(str.toString());
+                    //log.debug(str.toString());
                     Statement updateStatement = newDBConn.createStatement();
                     // updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
                     updateStatement.executeUpdate(str.toString());
@@ -5188,7 +5259,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             Hashtable<Integer, CollectionInfo> oldCatSeriesIDToCollInfo = new Hashtable<Integer, CollectionInfo>();
             for (CollectionInfo ci : collectionInfoList)
             {
-                oldCatSeriesIDToCollInfo.put(ci.getCatSeriesId(), ci);
+                if (ci.getCatSeriesId() != null)
+                {
+                    oldCatSeriesIDToCollInfo.put(ci.getCatSeriesId(), ci);
+                }
             }
             
             /*String catIdTaxIdStrBase = "SELECT cc.CollectionObjectCatalogID, cc.CatalogSeriesID, ct.TaxonomyTypeID "
@@ -6978,6 +7052,16 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         setFieldsToIgnoreWhenMappingNames(getHabitatAttributeToIgnore());
         
         setIdentityInsertONCommandForSQLServer(newDBConn, "collectingeventattribute", BasicSQLUtils.myDestinationServerType);
+        
+        clearValueMapper();
+        addToValueMapper("CollectionMemberID", getCollectionMemberIDValueMapper());
+        addToValueMapper("CreatedByAgentID",   getAgentCreatorValueMapper());
+        addToValueMapper("ModifiedByAgentID",  getAgentModiferValueMapper());
+        addToValueMapper("Version",            getVersionValueMapper());
+        addToValueMapper("DivisionID",         getDivisionValueMapper());
+        addToValueMapper("DisciplineID",       getDisciplineValueMapper());
+        addToValueMapper("IsPrimary",          getIsPrimaryValueMapper());
+        addToValueMapper("SrcLatLongUnit",     getSrcLatLongUnitValueMapper());
         
         // Need to add Fields to ignore!
         

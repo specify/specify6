@@ -30,6 +30,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -60,9 +61,9 @@ public class ConvertTaxonHelper
     protected IdMapperIndexIncrementerIFace  indexIncremeter;
     
     protected Vector<CollectionInfo>         collectionInfoList;
-    HashMap<Integer, Vector<CollectionInfo>> collDispHash;
+    protected HashMap<Integer, Vector<CollectionInfo>> collDispHash;
     
-    protected HashMap<Integer, Integer>      taxonTypesInUse = new HashMap<Integer, Integer>();
+    protected HashSet<Integer>               taxonTypesInUse = new HashSet<Integer>();
     protected HashMap<Integer, TaxonTreeDef> taxonTreeDefHash = new HashMap<Integer, TaxonTreeDef>(); // Key is old TaxonTreeTypeID
     
     /**
@@ -163,58 +164,68 @@ public class ConvertTaxonHelper
         
         // These are the names as they occur in the old datamodel
         String[] tableNames = {
+                "Habitat", 
                 "TaxonCitation", 
-                "TaxonomicUnitType", 
+                "TaxonomicUnitType",  // Added Only 
         };
         
+        int i = 0;
         IdTableMapper idMapper = null;
         for (String tableName : tableNames)
         {
             idMapper = idMapperMgr.addTableMapper(tableName, tableName + "ID");
             log.debug("mapIds() for table" + tableName);
             
-            idMapper.mapAllIds();
+            if (i < tableNames.length - 1)
+            {
+                idMapper.mapAllIds();
+            }
+            i++;
         }
         
         //---------------------------------
         // TaxonomyType
         //---------------------------------
-        StringBuilder sb = new StringBuilder("SELECT TaxonomyTypeID FROM taxonomytype WHERE TaxonomyTypeId in (");
-        for (Integer txTypeId : collDispHash.keySet())
+        
+        HashSet<Integer> hashSet = new HashSet<Integer>();
+        StringBuilder    inSB    = new StringBuilder();
+        for (CollectionInfo ci : CollectionInfo.getCollectionInfoList(oldDBConn))
         {
-            sb.append(txTypeId);
-            sb.append(',');
+            if (!hashSet.contains(ci.getTaxonomyTypeId()))
+            {
+                if (inSB.length() > 0) inSB.append(',');
+                inSB.append(ci.getTaxonomyTypeId());
+                hashSet.add(ci.getTaxonomyTypeId());
+            }
         }
-        sb.setLength(sb.length()-1); // Chomp
+        
+        idMapperMgr.addTableMapper("TaxonomyType", "TaxonomyTypeID", true);
+        
+        /*StringBuilder sb = new StringBuilder("SELECT TaxonomyTypeID FROM taxonomytype WHERE TaxonomyTypeId in (");
+        sb.append(inSB);
         sb.append(')');
         log.debug(sb.toString());
         
         // This mapping is used by Discipline
-        IdTableMapper taxonomyTypeMapper = idMapperMgr.addTableMapper("TaxonomyType", "TaxonomyTypeID", false);
+        IdTableMapper taxonomyTypeMapper = idMapperMgr.addTableMapper("TaxonomyType", "TaxonomyTypeID", true);
         for (Object txTypIdObj : BasicSQLUtils.querySingleCol(oldDBConn, sb.toString()))
         {
             Integer txTypId = (Integer)txTypIdObj;
             taxonomyTypeMapper.put(txTypId, indexIncremeter.getNextIndex());
-        }
-        
+        }*/
+
         //---------------------------------
         // TaxonName
         //---------------------------------
+        StringBuilder sb;
         sb = new StringBuilder("SELECT TaxonNameID FROM taxonname WHERE TaxonName IS NOT NULL AND taxonname.TaxonomyTypeId in (");
-        for (CollectionInfo ci : CollectionInfo.getCollectionInfoList(oldDBConn))
-        {
-            sb.append(ci.getTaxonomyTypeId());
-            sb.append(',');
-        }
-        sb.setLength(sb.length()-1); // Chomp
+        sb.append(inSB);
         sb.append(')');
         log.debug(sb.toString());
         
         // This mapping is used by Discipline
         idMapper = idMapperMgr.addTableMapper("TaxonName", "TaxonNameID", sb.toString(), false);
-        idMapper.setIndexIncremeter(indexIncremeter);
         idMapper.mapAllIdsWithSQL();
-        idMapper.setIndexIncremeter(null);
     }
     
     /**
@@ -232,7 +243,9 @@ public class ConvertTaxonHelper
         log.debug(sql);
         for (Object obj : BasicSQLUtils.querySingleCol(oldDBConn, sql))
         {
-            taxonTypesInUse.put((Integer)obj, (Integer)obj);
+            Integer taxonTypeId = (Integer)obj;
+            log.debug("TaxonType in use ["+taxonTypeId+"]");
+            taxonTypesInUse.add(taxonTypeId);
         }
     }
 
@@ -241,9 +254,9 @@ public class ConvertTaxonHelper
      */
     public void convertAllTaxonTreeDefs()
     {
-        for (Integer id : taxonTypesInUse.keySet())
+        for (Object id : taxonTypesInUse.toArray())
         {
-            convertTaxonTreeDefinition(id);
+            convertTaxonTreeDefinition((Integer)id);
         }
     }
 
@@ -261,19 +274,25 @@ public class ConvertTaxonHelper
         {
             Statement st = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
     
-            TaxonTreeDef ttd = new TaxonTreeDef();
-            ttd.initialize();
+            TaxonTreeDef taxonTreeDef = new TaxonTreeDef();
+            taxonTreeDef.initialize();
     
-            ResultSet rs = st.executeQuery("SELECT TaxonomyTypeName FROM taxonomytype WHERE TaxonomyTypeID = " + taxonomyTypeId);
+            String sql = "SELECT TaxonomyTypeName FROM taxonomytype WHERE TaxonomyTypeID = " + taxonomyTypeId;
+            log.debug(sql);
+            ResultSet rs = st.executeQuery(sql);
             rs.next();
             String taxonomyTypeName = rs.getString(1);
+            rs.close();
     
-            ttd.setName(taxonomyTypeName + " taxonomy tree");
-            ttd.setRemarks("Tree converted from " + oldDBName);
-            ttd.setFullNameDirection(TreeDefIface.FORWARD);
+            taxonTreeDef.setName(taxonomyTypeName + " taxonomy tree");
+            taxonTreeDef.setRemarks("Tree converted from " + oldDBName);
+            taxonTreeDef.setFullNameDirection(TreeDefIface.FORWARD);
     
-            rs = st.executeQuery("SELECT DISTINCT RankID, RankName, RequiredParentRankID FROM taxonomicunittype WHERE TaxonomyTypeID = " + taxonomyTypeId + " ORDER BY RankID");
+             sql = "SELECT RankID, RankName, RequiredParentRankID, TaxonomicUnitTypeID FROM taxonomicunittype WHERE TaxonomyTypeID = " + taxonomyTypeId + " ORDER BY RankID";
+            log.debug(sql);
+            rs = st.executeQuery(sql);
     
+            Hashtable<Integer, Integer> rankId2TxnUntTypId = new Hashtable<Integer, Integer>();
             int    rank;
             String name;
             int    requiredRank;
@@ -287,28 +306,33 @@ public class ConvertTaxonHelper
                 name         = rs.getString(2);
                 requiredRank = rs.getInt(3);
                 
-                log.debug(rank + "  " + name);
+                int taxUnitTypeId = rs.getInt(4);
                 
-                TaxonTreeDefItem i = new TaxonTreeDefItem();
-                i.initialize();
-                i.setName(name);
-                i.setFullNameSeparator(" ");
-                i.setRankId(rank);
-                i.setTreeDef(ttd);
-                ttd.getTreeDefItems().add(i);
+                rankId2TxnUntTypId.put(rank, taxUnitTypeId);
+                
+                log.debug(rank + "  " + name+"  TaxonomicUnitTypeID: "+taxUnitTypeId);
+                
+                TaxonTreeDefItem ttdi = new TaxonTreeDefItem();
+                ttdi.initialize();
+                ttdi.setName(name);
+                ttdi.setFullNameSeparator(" ");
+                ttdi.setRankId(rank);
+                ttdi.setTreeDef(taxonTreeDef);
+                taxonTreeDef.getTreeDefItems().add(ttdi);
     
                 // setup the parent/child relationship
                 if (items.isEmpty())
                 {
-                    i.setParent(null);
+                    ttdi.setParent(null);
                 } else
                 {
-                    i.setParent(items.lastElement());
+                    ttdi.setParent(items.lastElement());
                 }
-                items.add(i);
+                items.add(ttdi);
                 enforcedRanks.add(requiredRank);
             }
-    
+            rs.close();
+            
             for (TaxonTreeDefItem i : items)
             {
                 i.setIsEnforced(enforcedRanks.contains(i.getRankId()));
@@ -318,7 +342,7 @@ public class ConvertTaxonHelper
             {
                 Session     session = HibernateUtil.getNewSession();
                 Transaction trans = session.beginTransaction();
-                session.save(ttd);
+                session.save(taxonTreeDef);
                 trans.commit();
                 session.close();
                 
@@ -328,10 +352,24 @@ public class ConvertTaxonHelper
                 throw new RuntimeException(ex);
             }
             
-            CollectionInfo ci = getCIByTaxonTypeId(taxonomyTypeId);
-            ci.setTaxonTreeDef(ttd);
+            IdMapperMgr   idMapperMgr        = IdMapperMgr.getInstance();
+            IdMapperIFace tutMapper          = idMapperMgr.get("TaxonomicUnitType", "TaxonomicUnitTypeID");
+            IdMapperIFace taxonomyTypeMapper = idMapperMgr.get("TaxonomyType", "TaxonomyTypeID");
             
-            taxonTreeDefHash.put(taxonomyTypeId, ttd);
+            taxonomyTypeMapper.put(taxonomyTypeId, taxonTreeDef.getId());
+            
+            for (TaxonTreeDefItem ttdi : taxonTreeDef.getTreeDefItems())
+            {
+                int ttdiId = rankId2TxnUntTypId.get(ttdi.getRankId());
+                tutMapper.put(ttdiId, ttdi.getId());
+                log.debug("Mapping "+ttdiId+" -> "+ttdi.getId());
+            }
+            
+            CollectionInfo ci = getCIByTaxonTypeId(taxonomyTypeId);
+            ci.setTaxonTreeDef(taxonTreeDef);
+            
+            taxonTreeDefHash.put(taxonomyTypeId, taxonTreeDef);
+            log.debug("Hashing taxonomyTypeId: "+taxonomyTypeId+" ->  taxonTreeDefId:"+taxonTreeDef.getId());
             
         } catch (SQLException ex)
         {
@@ -339,8 +377,7 @@ public class ConvertTaxonHelper
             throw new RuntimeException(ex);
         }
     }
-    
-    
+
     /**
      * @param taxonomyTypeId
      * @return
@@ -403,7 +440,7 @@ public class ConvertTaxonHelper
             int errorsToShow = (BasicSQLUtils.SHOW_NAME_MAPPING_ERROR | BasicSQLUtils.SHOW_VAL_MAPPING_ERROR);
             if (showMappingErrors)
             {
-                errorsToShow = errorsToShow | BasicSQLUtils.SHOW_PM_LOOKUP | BasicSQLUtils.SHOW_NULL_PM | BasicSQLUtils.SHOW_COPY_TABLE;
+                errorsToShow = errorsToShow | BasicSQLUtils.SHOW_PM_LOOKUP | BasicSQLUtils.SHOW_NULL_PM;// | BasicSQLUtils.SHOW_COPY_TABLE;
             }
             setShowErrors(errorsToShow);
             
@@ -511,6 +548,31 @@ public class ConvertTaxonHelper
     /**
      * 
      */
+    private void assignTreeDefToDiscipline()
+    {
+        for (Integer txTypeId : collDispHash.keySet())
+        {
+            Vector<CollectionInfo> collInfoList = collDispHash.get(txTypeId);
+            
+            Integer disciplineId = collInfoList.get(0).getDisciplineId();
+            if (disciplineId != null)
+            {
+                TaxonTreeDef txnTreeDef = taxonTreeDefHash.get(txTypeId);
+                String sql = "UPDATE discipline SET TaxonTreeDefID=" + txnTreeDef.getTaxonTreeDefId() + " WHERE DisciplineID = " + disciplineId;
+                if (BasicSQLUtils.update(newDBConn, sql) != 1)
+                {
+                    log.error("Error updating discipline["+disciplineId+"] with TaxonTreeDefID "+ txnTreeDef.getTaxonTreeDefId());
+                }
+            } else
+            {
+                log.error("Missing Discipline #");
+            }
+        }
+    }
+    
+    /**
+     * 
+     */
     public void doConvert()
     {
         getTaxonTreesTypesInUse();
@@ -518,6 +580,8 @@ public class ConvertTaxonHelper
         convertAllTaxonTreeDefs();
         convertTaxonTreeDefSeparators();
         convertTaxonRecords();
+        
+        assignTreeDefToDiscipline();
     }
     
 }

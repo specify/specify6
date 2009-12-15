@@ -177,6 +177,7 @@ public class IdHashMapper implements IdMapperIFace
 
             if (doDelete || mappingCount == 0)
             {
+                wasEmpty = true;
                 Statement stmtNew = oldConn.createStatement();
                 String str  = "DROP TABLE "+mapTableName;
                 

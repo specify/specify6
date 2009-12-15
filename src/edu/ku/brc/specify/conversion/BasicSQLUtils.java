@@ -1871,7 +1871,8 @@ public class BasicSQLUtils
                                     
                                     if (isOptionOn(showNullOption))
                                     {
-                                    	String msg = "Unable to Map Primary Id[NULL] old Name["+oldMappedColName+"]   colInx["+columnIndex+"]   newColName["+newColName+"]";
+                                        
+                                    	String msg = "Unable to Map "+(showNullOption == SHOW_NULL_FK ? "Foreign" : "Primary")+" Key Id[NULL] old Name["+oldMappedColName+"]   colInx["+columnIndex+"]   newColName["+newColName+"]";
                                         log.error(msg);
                                         writeErrLog(msg);
                                         skipRecord = true;
@@ -2028,8 +2029,8 @@ public class BasicSQLUtils
                                 }
                             }
                         }
-                    }
-                    else // there was no old column that maps to this new column
+                        
+                    } else // there was no old column that maps to this new column
                     {
                         String newColValue = null;
                         if (newColDefValues != null)

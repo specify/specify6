@@ -17,6 +17,8 @@
  */
 package edu.ku.brc.specify.conversion;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -80,6 +82,7 @@ public class CollectionInfo
     protected int          taxonNameCnt;
     protected int          colObjDetTaxCnt;
     protected long         srcHostTaxonCnt;
+    protected DisciplineType disciplineTypeObj;
     
     
     
@@ -286,6 +289,8 @@ public class CollectionInfo
                         collectionInfoList.add(info);
                     }
                 }
+
+                dump();
                 
             } catch (Exception ex)
             {
@@ -301,6 +306,17 @@ public class CollectionInfo
         }
         
         return collectionInfoList;
+    }
+    
+    /**
+     * 
+     */
+    public static void dump()
+    {
+        for (CollectionInfo ci : collectionInfoList)
+        {
+            System.out.println("-----------------\n"+ci.toString());
+        }
     }
     
     /**
@@ -918,6 +934,24 @@ public class CollectionInfo
 
 
     /**
+     * @return the disciplineTypeObj
+     */
+    public DisciplineType getDisciplineTypeObj()
+    {
+        return disciplineTypeObj;
+    }
+
+
+    /**
+     * @param disciplineTypeObj the disciplineTypeObj to set
+     */
+    public void setDisciplineTypeObj(DisciplineType disciplineTypeObj)
+    {
+        this.disciplineTypeObj = disciplineTypeObj;
+    }
+
+
+    /**
      * @param collection the collection to set
      */
     public void setCollection(Collection collection)
@@ -925,6 +959,36 @@ public class CollectionInfo
         this.collection = collection;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        // Taken from a web example
+        try
+        {
+            String   result = "";
+            Class<?> cls = this.getClass();
+            Field fieldlist[] = cls.getDeclaredFields();
+            for (int i = 0; i < fieldlist.length; i++)
+            {
+                Field fld = fieldlist[i];
+                if (!Modifier.isStatic(fld.getModifiers()))
+                {
+                    result +=  fld.getName() + " = " + fld.get(this) + "\n";
+                }
+            }
+            result += "\n";
+            
+            return result;
+
+        } catch (Throwable e)
+        {
+            e.printStackTrace();
+        }
+        return super.toString();
+    }
 
 }
 

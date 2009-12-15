@@ -184,11 +184,11 @@ public class ConvScopeFixer
             stmt  = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             pStmt = newDBConn.prepareStatement("UPDATE collectingeventattribute SET CollectionMemberID=? WHERE CollectingEventAttributeID=?");
             
-            String sql = "SELECT ce.CollectingEventID, cc.CatalogSeriesID " + 
-                         "FROM collectingevent AS ce " + 
-                         "Inner Join collectionobject AS co ON ce.CollectingEventID = co.CollectingEventID " + 
-                         "Inner Join collectionobjectcatalog AS cc ON co.CollectionObjectID = cc.CollectionObjectCatalogID";
+            String sql = "SELECT h.HabitatID,cco.CatalogSeriesID FROM habitat AS h " +
+                         "Inner Join collectionobject AS co ON h.HabitatID = co.CollectingEventID " +
+                         "Inner Join collectionobjectcatalog AS cco ON co.CollectionObjectID = cco.CollectionObjectCatalogID ORDER BY h.HabitatID ASC";
             
+            log.debug(sql);
             ResultSet rs = stmt.executeQuery(sql);
             int count = 0;
             while (rs.next())
@@ -329,7 +329,7 @@ public class ConvScopeFixer
                 
         String qrySQL = "SELECT CollectionObjectCatalogID, CatalogSeriesID FROM collectionobjectcatalog WHERE CollectionObjectTypeID > 8 AND CollectionObjectTypeID < 20";
                 
-        return fixTableWithColMemId(cntSQL, qrySQL, "CollectionObject", "CollectionObjectID", null);
+        return fixTableWithColMemId(cntSQL, qrySQL, "CollectionObject", "CollectionObjectID", null, "collectionobjectcatalog_CollectionObjectCatalogID");
     }
     
     /**
@@ -516,7 +516,15 @@ public class ConvScopeFixer
      */
     protected boolean fixTableWithColMemId(final String cntSQL, final String qrySQL, final String className, final String idFieldName, final String newIdName)
     {
-        return fixTable(cntSQL, qrySQL, className, idFieldName, newIdName, "CollectionMemberID");
+        return fixTable(cntSQL, qrySQL, className, idFieldName, newIdName, "CollectionMemberID", null);
+    }
+
+    /**
+     * @return
+     */
+    protected boolean fixTableWithColMemId(final String cntSQL, final String qrySQL, final String className, final String idFieldName, final String newIdName, final String mapperName)
+    {
+        return fixTable(cntSQL, qrySQL, className, idFieldName, newIdName, "CollectionMemberID", mapperName);
     }
 
     /**
@@ -524,7 +532,7 @@ public class ConvScopeFixer
      */
     protected boolean fixTableWithDisciplineId(final String cntSQL, final String qrySQL, final String className, final String idFieldName, final String newIdName)
     {
-        return fixTable(cntSQL, qrySQL, className, idFieldName, newIdName, "DisciplineID");
+        return fixTable(cntSQL, qrySQL, className, idFieldName, newIdName, "DisciplineID", null);
     }
 
     /**
@@ -541,7 +549,8 @@ public class ConvScopeFixer
                                final String className, 
                                final String idFieldName, 
                                final String newIdName,
-                               final String colToFix)
+                               final String colToFix,
+                               final String mapperName)
     {
         int cnt = BasicSQLUtils.getCountAsInt(oldDBConn, cntSQL);
         if (cnt == 0)
@@ -551,7 +560,7 @@ public class ConvScopeFixer
 
         String newIdFieldName = newIdName == null ? idFieldName : newIdName;
             
-        IdMapperIFace detMapper = IdMapperMgr.getInstance().get(className, idFieldName);
+        IdMapperIFace idMapper = mapperName == null ? IdMapperMgr.getInstance().get(className, idFieldName) : IdMapperMgr.getInstance().get(mapperName);
 
         Statement         stmt  = null;
         PreparedStatement pStmt = null;
@@ -561,30 +570,39 @@ public class ConvScopeFixer
             
             pStmt = newDBConn.prepareStatement(String.format("UPDATE %s SET %s=? WHERE %s=?", className.toLowerCase(), colToFix, newIdFieldName));
             
+            log.debug(qrySQL);
+            
             ResultSet rs = stmt.executeQuery(qrySQL);
             int count = 0;
             while (rs.next())
             {
                 String msg = null;
-                Integer newId = detMapper.get(rs.getInt(1));
-                if (newId != null)
+                Integer recId = rs.getInt(1);
+                if (recId != null)
                 {
-                    Integer colMemId = catSerTypeToCollMemId.get(rs.getInt(2));
-                    if (colMemId != null)
+                    Integer newId = idMapper.get(recId);
+                    if (newId != null)
                     {
-                        pStmt.setInt(1, colMemId);
-                        pStmt.setInt(2, newId);
-                        if (pStmt.executeUpdate() != 1)
+                        Integer colMemId = catSerTypeToCollMemId.get(rs.getInt(2));
+                        if (colMemId != null)
                         {
-                            msg = String.format("Error updating %s for Old %s with new ID %d", colToFix, idFieldName, newId);
+                            pStmt.setInt(1, colMemId);
+                            pStmt.setInt(2, newId);
+                            if (pStmt.executeUpdate() != 1)
+                            {
+                                msg = String.format("Error updating %s for Old %s with new ID %d", colToFix, idFieldName, newId);
+                            }
+                        } else
+                        {
+                            msg = String.format("The CatalogSeriesID %d wasn't mapped to %s for Old %s %d", rs.getInt(2), colToFix, idFieldName, rs.getInt(1));
                         }
                     } else
                     {
-                        msg = String.format("The CatalogSeriesID %d wasn't mapped to %s for Old %s %d", rs.getInt(2), colToFix, idFieldName, rs.getInt(1));
+                        msg = String.format("The old %s ID: %d wasn't mapped.", idFieldName, rs.getInt(1));
                     }
                 } else
                 {
-                    msg = String.format("The old %s ID: %d wasn't mapped.", idFieldName, rs.getInt(1));
+                    msg = String.format("The old %s ID: is NULL", idFieldName);
                 }
                 
                 if (msg != null)

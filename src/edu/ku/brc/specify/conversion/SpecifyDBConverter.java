@@ -563,7 +563,7 @@ public class SpecifyDBConverter
         
         boolean doAll               = true; 
         boolean startfromScratch    = true; 
-        boolean deleteMappingTables = true;
+        boolean deleteMappingTables = false;
         
         
         System.out.println("************************************************************");
@@ -937,15 +937,14 @@ public class SpecifyDBConverter
                 //-------------------------------------------------------------------------------
                 conversion.loadDisciplineObjects();
                 
+                conversion.convertHabitat();
                 
                 frame.setDesc("Converting Determinations Records");
                 log.info("Converting Determinations Records");
                 boolean doDeterminations = false;
                 if (doDeterminations || doAll)
                 {
-                    //conversion.createDefaultDeterminationStatusRecords();
                     frame.incOverall();
-
                     conversion.convertDeterminationRecords();
                 } else
                 {
@@ -1067,8 +1066,6 @@ public class SpecifyDBConverter
                     frame.incOverall();
                 }
                 
-                conversion.convertHabitat();
-                
                 //conversion.convertHostTaxonId();
                 
                 frame.setDesc("Converting Straigraphy");
@@ -1162,7 +1159,14 @@ public class SpecifyDBConverter
                     {
                         for (CollectionInfo collInfo : CollectionInfo.getCollectionInfoList(oldDBConn))
                         {
-                            List<Collection> tmpCollList   = (List<Collection>)localSession.createCriteria("FROM Collection WHERE id = " + collInfo.getCollectionId()).list();
+                            if (collInfo.getCollectionId() == null)
+                            {
+                                log.error("CollectionID: was null for "+collInfo.getCatSeriesName());
+                                continue;
+                            }
+                            List<?> list = localSession.createQuery("FROM Collection WHERE id = " + collInfo.getCollectionId()).list();
+                            
+                            List<Collection> tmpCollList   = (List<Collection>)list;
                             Collection       tmpCollection = tmpCollList.get(0);
                             
                             // create the standard user groups for this collection
@@ -1181,26 +1185,7 @@ public class SpecifyDBConverter
                             localSession.saveOrUpdate(specifyUser);
                             
                             trans.commit();
-                            
-                            localSession.close();
-                            
-                            localSession = HibernateUtil.getNewSession();
-                            
-                            specifyUser = (SpecifyUser)localSession.merge(specifyUser);
-                            
-                            division       = (Division)localSession.createQuery("FROM Division WHERE id = " + division.getId()).list().iterator().next();
-                            institution    = (Institution)localSession.createQuery("FROM Institution WHERE id = " + institution.getId()).list().iterator().next();
-                            collection     = (Collection)localSession.createQuery("FROM Collection WHERE id = " + collection.getId()).list().iterator().next();
-                            
-                            AppContextMgr.getInstance().setClassObject(Collection.class, collection);
-                            AppContextMgr.getInstance().setClassObject(Division.class,   division);
-                            AppContextMgr.getInstance().setClassObject(Institution.class, institution);
-                            
-                            dscp = (Discipline)localSession.createQuery("FROM Discipline WHERE id = " + dscp.getId()).list().iterator().next();
-                            dscp.getAgents();
-                            AppContextMgr.getInstance().setClassObject(Discipline.class, dscp);
-                            
-                            localSession.flush();
+
                         }
                         
                     } catch (Exception ex)
@@ -1214,6 +1199,28 @@ public class SpecifyDBConverter
                 {
                     ex.printStackTrace();
                 }
+                
+                
+                localSession.close();
+                
+                localSession = HibernateUtil.getNewSession();
+                setSession(localSession);
+                
+                specifyUser = (SpecifyUser)localSession.merge(specifyUser);
+                
+                division       = (Division)localSession.createQuery("FROM Division WHERE id = " + division.getId()).list().iterator().next();
+                institution    = (Institution)localSession.createQuery("FROM Institution WHERE id = " + institution.getId()).list().iterator().next();
+                collection     = (Collection)localSession.createQuery("FROM Collection WHERE id = " + collection.getId()).list().iterator().next();
+                
+                AppContextMgr.getInstance().setClassObject(Collection.class, collection);
+                AppContextMgr.getInstance().setClassObject(Division.class,   division);
+                AppContextMgr.getInstance().setClassObject(Institution.class, institution);
+                
+                dscp = (Discipline)localSession.createQuery("FROM Discipline WHERE id = " + dscp.getId()).list().iterator().next();
+                dscp.getAgents();
+                AppContextMgr.getInstance().setClassObject(Discipline.class, dscp);
+                
+                localSession.flush();
                 
                 setSession(cachedCurrentSession);
                 
