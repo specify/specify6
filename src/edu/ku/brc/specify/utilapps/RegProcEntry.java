@@ -19,16 +19,25 @@
 */
 package edu.ku.brc.specify.utilapps;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 import org.apache.commons.lang.StringUtils;
+
+import com.thoughtworks.xstream.XStream;
 
 /**
  * @author rod
@@ -51,6 +60,17 @@ public class RegProcEntry extends DefaultMutableTreeNode implements Comparable<R
     protected boolean              isSorted = false;
     protected Timestamp            timestampCreated;
     
+    protected String               hostName = null; 
+    
+    // static
+    private static final String HASH_FILENAME = "hash.xml";
+    private static HashMap<String, String> ipHash = null;
+    
+    static
+    {
+        loadIPHash();
+    }
+    
     /**
      * 
      */
@@ -72,6 +92,8 @@ public class RegProcEntry extends DefaultMutableTreeNode implements Comparable<R
     {
         this.props = props;
         this.type  = props.getProperty("reg_type");
+        
+        discoverHostName();
     }
     
     public RegProcEntry(final String name, final Properties props)
@@ -79,11 +101,86 @@ public class RegProcEntry extends DefaultMutableTreeNode implements Comparable<R
         super();
         this.name  = name;
         this.props = props;
+        
+        discoverHostName();
+    }
+    
+    private static void loadIPHash()
+    {
+        if (ipHash == null)
+        {
+            try
+            {
+                File hashFile = new File(HASH_FILENAME);
+                if (hashFile.exists())
+                {
+                    XStream xstream = new XStream();
+                    xstream.alias("hashmap", HashMap.class);
+                    ipHash = (HashMap<String, String>)xstream.fromXML(new FileInputStream(hashFile));
+                    
+                } else
+                {
+                    ipHash = new HashMap<String, String>();
+                }
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+    }
+    
+    /**
+     * 
+     */
+    public static void cleanUp()
+    {
+        try
+        {
+            File hashFile = new File(HASH_FILENAME);
+            XStream xstream = new XStream();
+            xstream.alias("hashmap", HashMap.class);
+            xstream.toXML(ipHash, new FileOutputStream(hashFile));
+                
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
     
     public void sortKids()
     {
         Collections.sort(kids);
+    }
+    
+    private void discoverHostName()
+    {
+        if (hostName == null)
+        {
+            String ip = props.getProperty("ip");
+            if (ip == null)
+            {
+                ip = "";
+                hostName = "";
+                props.put("hostname", hostName);
+            } else
+            {
+                hostName = ipHash.get(ip);
+            }
+            if (hostName == null)
+            {
+                try
+                {
+                    InetAddress addr = InetAddress.getByName(ip);
+                    hostName = addr.getHostName();
+                    ipHash.put(ip, hostName);
+                    
+                } catch (UnknownHostException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            props.put("hostname", hostName);
+        }
     }
     
     /**
@@ -143,6 +240,21 @@ public class RegProcEntry extends DefaultMutableTreeNode implements Comparable<R
     {
         return props;
     }
+    
+    public Set<Object> keySet()
+    {
+        return props.keySet();
+    }
+    
+    public void put(final String key, final String value)
+    {
+        props.put(key, value);
+        if (hostName == null && key.equals("ip"))
+        {
+            discoverHostName();
+        }
+    }
+    
     /**
      * @return the kids
      */

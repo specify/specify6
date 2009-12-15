@@ -152,8 +152,8 @@ public class RegProcessor
             @Override
             public int compare(RegProcEntry o1, RegProcEntry o2)
             {
-                String date1 = o1.getProps().getProperty("date");
-                String date2 = o2.getProps().getProperty("date");
+                String date1 = o1.get("date");
+                String date2 = o2.get("date");
                 return date1 != null && date2 != null ? date1.compareTo(date2) : 0;
             }
         });
@@ -279,10 +279,10 @@ public class RegProcessor
             {
                 RegProcEntry entry = trackRegNumHash.get(colKey);
                 System.out.println("CUR "+entry.get("date")+"  "+colKey);
-                for (Object keyObj : entry.getProps().keySet())
+                for (Object keyObj : entry.keySet())
                 {
                     String pName = keyObj.toString();
-                    String value = entry.getProps().getProperty(pName);
+                    String value = entry.get(pName);
                     
                     if (pName.startsWith("Usage_"))
                     {
@@ -311,10 +311,10 @@ public class RegProcessor
                 if (entry != null)
                 {
                     System.out.println("PRV "+entry.get("date")+"  "+colKey);
-                    for (Object keyObj : entry.getProps().keySet())
+                    for (Object keyObj : entry.keySet())
                     {
                         String pName = keyObj.toString();
-                        String value = entry.getProps().getProperty(pName);
+                        String value = entry.get(pName);
                         
                         if (pName.startsWith("Usage_"))
                         {
@@ -567,6 +567,7 @@ public class RegProcessor
         list.add(new Pair<String, String>("reg_number",           "Registration Number"));
         list.add(new Pair<String, String>("id",                   "Id"));
         list.add(new Pair<String, String>("last_used_date",       "Last Opened Date"));
+        list.add(new Pair<String, String>("hostname",             "Host Name"));
         
         
         list.addAll(getRegKeyDescPairs());
@@ -656,12 +657,12 @@ public class RegProcessor
                     RegProcEntry colEntry = collHash.get(colNum);
                     if (colEntry != null)
                     {
-                        for (Object keyObj : colEntry.getProps().keySet())
+                        for (Object keyObj : colEntry.keySet())
                         {
                             String key = keyObj.toString();
                             if (key.startsWith("num_"))
                             {
-                                entry.getProps().put(key, colEntry.getProps().get(key));
+                                entry.put(key, colEntry.get(key));
                             }
                         }
                     }
@@ -688,7 +689,7 @@ public class RegProcessor
      */
     protected RegProcEntry getParentFromHash(final RegProcEntry entry, final String className, final String propName)
     {
-        return typeHash.get(className).get(entry.getProps().getProperty(propName));
+        return typeHash.get(className).get(entry.get(propName));
     }
     
     /**
@@ -713,7 +714,7 @@ public class RegProcessor
                 {
                     if (currEntry != null)
                     {
-                        String regType = currEntry.getProps().getProperty("reg_type");
+                        String regType = currEntry.get("reg_type");
                         if (regType != null)
                         {
                             Hashtable<String, RegProcEntry> entryHash = typeHash.get(regType);
@@ -722,8 +723,8 @@ public class RegProcessor
                                 entryHash = new  Hashtable<String, RegProcEntry>();
                                 typeHash.put(regType, entryHash);
                             }
-                            currEntry.getProps().put("reg_number", currEntry.getId());
-                            currEntry.setType(currEntry.getProps().getProperty("reg_type"));
+                            currEntry.put("reg_number", currEntry.getId());
+                            currEntry.setType(currEntry.get("reg_type"));
 
                             
                             if (entryHash.get(currEntry.getId()) == null)
@@ -740,14 +741,23 @@ public class RegProcessor
                     }
                         
                     String regNumber = rs.getString(2);
+                    String ip        = rs.getString(7);
                     currEntry = regNumHash.get(regNumber);
                     if (currEntry == null)
                     {
-                        currEntry = new RegProcEntry();
-                        regNumHash.put(regNumber, currEntry);
-                        currEntry.setId(regNumber);
-                        currEntry.setTimestampCreated(rs.getTimestamp(6));
-                        currEntry.getProps().put("ip", rs.getString(7));
+                        if (ip != null)
+                        {
+                            currEntry = new RegProcEntry();
+                            regNumHash.put(regNumber, currEntry);
+                            currEntry.setId(regNumber);
+                            currEntry.setTimestampCreated(rs.getTimestamp(6));
+                            currEntry.put("ip", ip);
+                            
+                        } else
+                        {
+                            System.err.println("IP is null for "+regNumber);
+                            ip = "N/A";
+                        }
                         
                     } else
                     {
@@ -759,7 +769,6 @@ public class RegProcessor
                 } else if (prevId == Integer.MAX_VALUE)
                 {
                     prevId = id;
-                    
                 }
             
                 String value = rs.getString(4);
@@ -767,9 +776,12 @@ public class RegProcessor
                 {
                     value = rs.getString(5);
                 }
-                String propName = rs.getString(3);
-                currEntry.getProps().put(propName, value);
                 
+                String propName = rs.getString(3);
+                if (currEntry != null && value != null && propName != null)
+                {
+                    currEntry.put(propName, value);
+                }
             }
             rs.close();
             
@@ -830,7 +842,7 @@ public class RegProcessor
         /*Hashtable<String, RegProcEntry> hh = typeHash.get(regList[0]);
         for (RegProcEntry entry : hh.values())
         {
-            System.out.println(entry.getId()+" "+entry.getProps().getProperty("Institution_number"));
+            System.out.println(entry.getId()+" "+entry.get("Institution_number"));
         }*/
         
         for (String key : regList)
@@ -848,11 +860,11 @@ public class RegProcessor
             
             for (RegProcEntry entry : items)
             {
-                String reg_type   = entry.getProps().getProperty("reg_type");
+                String reg_type   = entry.get("reg_type");
                 
                 if (reg_type.equals("Collection"))
                 {
-                    String       dspNum = entry.getProps().getProperty("Discipline_number");
+                    String       dspNum = entry.get("Discipline_number");
                     Hashtable<String, RegProcEntry> hash = typeHash.get("Discipline");
                     if (hash != null)
                     {
@@ -870,7 +882,7 @@ public class RegProcessor
                     
                 } else if (reg_type.equals("Discipline"))
                 {
-                    String       divNum = entry.getProps().getProperty("Division_number");
+                    String       divNum = entry.get("Division_number");
                     RegProcEntry parent = typeHash.get("Division").get(divNum);
                     if (entry != null && parent != null)
                     {
@@ -883,7 +895,7 @@ public class RegProcessor
                     
                 } else if (reg_type.equals("Division"))
                 {
-                    String       instNum = entry.getProps().getProperty("Institution_number");
+                    String       instNum = entry.get("Institution_number");
                     RegProcEntry parent  = typeHash.get("Institution").get(instNum);
                     if (entry != null && parent != null)
                     {
@@ -916,7 +928,7 @@ public class RegProcessor
     {
         for (int i=0;i<level;i++) System.out.print("  ");
         
-        System.out.println(parent.getName()+" "+parent.getProps().getProperty("reg_number"));
+        System.out.println(parent.getName()+" "+parent.get("reg_number"));
         for (RegProcEntry kid : parent.getKids())
         {
             printEntries(kid, level+1);

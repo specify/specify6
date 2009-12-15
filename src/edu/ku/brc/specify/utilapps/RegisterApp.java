@@ -79,6 +79,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.FrameworkAppIFace;
+import edu.ku.brc.af.core.MacOSAppHandler;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -102,7 +104,7 @@ import edu.ku.brc.util.Pair;
  * Nov 27, 2008
  *
  */
-public class RegisterApp extends JPanel
+public class RegisterApp extends JPanel implements FrameworkAppIFace
 {
     private enum CountType {Divs, Disps, Cols}
     private enum DateType  {None, Date, Monthly, Yearly, Time}
@@ -141,6 +143,8 @@ public class RegisterApp extends JPanel
     public RegisterApp()
     {
         super(new BorderLayout());
+        
+        new MacOSAppHandler(this);
         
         DBConnection dbConn = DBConnection.getInstance();
         dbConn.setConnectionStr(connectStr);
@@ -428,6 +432,34 @@ public class RegisterApp extends JPanel
         }
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.FrameworkAppIFace#doAbout()
+     */
+    @Override
+    public void doAbout()
+    {
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.FrameworkAppIFace#doExit(boolean)
+     */
+    @Override
+    public boolean doExit(boolean doAppExit)
+    {
+        RegProcEntry.cleanUp();
+        System.exit(0);
+        
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.FrameworkAppIFace#doPreferences()
+     */
+    @Override
+    public void doPreferences()
+    {
+    }
+
     /**
      * @param entries
      * @return
@@ -916,11 +948,10 @@ public class RegisterApp extends JPanel
         TreePath path = tree.getSelectionPath();
         if (path != null)
         {
-            RegProcEntry rpe   = (RegProcEntry)path.getLastPathComponent();
-            Properties   props = rpe.getProps();
+            RegProcEntry rpe= (RegProcEntry)path.getLastPathComponent();
          
             Vector<String> keys = new Vector<String>();
-            for (Object obj : props.keySet())
+            for (Object obj : rpe.keySet())
             {
                 keys.add(obj.toString());
             }
@@ -942,7 +973,7 @@ public class RegisterApp extends JPanel
                 }
                 rows[inx][0] = titleStr;
                 
-                rows[inx][1] = props.get(key);
+                rows[inx][1] = rpe.get(key.toString());
                 inx++;
             }
             propsTable.setModel(new DefaultTableModel(rows, new String[] {"Property", "Value"}));
@@ -1069,10 +1100,10 @@ public class RegisterApp extends JPanel
                             String       dateStr      = colEntry.get("date");
                             Date         lastUsedDate = new Date(rp.getDate(dateStr));
                             dateStr = rp.getDateFmt().format(lastUsedDate);
-                            col.getProps().put("last_used_date", dateStr);
+                            col.put("last_used_date", dateStr);
                         } else
                         {
-                            col.getProps().put("last_used_date", "&nbsp;");
+                            col.put("last_used_date", "&nbsp;");
                         }
 
                         if (colsCnt > 0) sb.append("<tr>\n");
@@ -1423,7 +1454,7 @@ public class RegisterApp extends JPanel
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    System.exit(0);
+                    doExit(true);
                 }
             });
         }
