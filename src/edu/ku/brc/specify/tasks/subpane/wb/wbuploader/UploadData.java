@@ -80,10 +80,11 @@ public class UploadData
     	{
     		return true;
     	}
-    	for (int col = 0; col < getCols(); col++)
+    	
+    	WorkbenchRow wbrow = getWbRow(row);
+    	for (int c = 0; c < wbrow.getItems().size(); c++)
     	{
-    		String val = get(row, col);
-    		if (!StringUtils.isBlank(val))
+    		if (!StringUtils.isBlank(wbrow.getData(c)))
     		{
     			return false;
     		}
