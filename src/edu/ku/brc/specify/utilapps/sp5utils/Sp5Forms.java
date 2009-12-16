@@ -40,21 +40,27 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Frame;
+import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Vector;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
@@ -81,6 +87,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -106,6 +113,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.SpecifyDBConverter;
+import edu.ku.brc.specify.utilapps.ERDVisualizer;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
@@ -123,6 +131,7 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
 {
     protected static final Logger log = Logger.getLogger(Sp5Forms.class);
     
+    protected Pair<String, String>      namePair = null;
     protected String                    hostName;
     protected Pair<String, String>      itUsrPwd;
     protected Vector<FormInfo>          forms         = new Vector<FormInfo>();
@@ -150,6 +159,13 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
     protected Sp6FieldComboBoxRenderer  sp6FieldRenderer;
     
     protected boolean                   hasChanged = false;
+    
+    // Timer Stuff
+    
+    protected Timer   timer = null;
+    protected JFrame  frame;
+    protected int     formIndex;
+
         
     /**
      * 
@@ -194,7 +210,7 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
         calcColumnWidths(formsTable);
         
         PanelBuilder pbBtn = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,p,f:p:g,p,f:p:g", "p"));
-        reportBtn = createButton("Report");
+        reportBtn = createButton("Create Forms");
         showBtn   = createButton("Show");
         schemaBtn = createButton("Schema");
         pbBtn.add(reportBtn, cc.xy(2, 1));
@@ -220,6 +236,13 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
             public void actionPerformed(ActionEvent e)
             {
                 showForm();
+            }
+        });
+        reportBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                doReport();
             }
         });
         schemaBtn.addActionListener(new ActionListener() {
@@ -739,7 +762,6 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
      */
     protected void startup()
     {
-        Pair<String, String> namePair = null;
         try
         {
             final SpecifyDBConverter converter = new  SpecifyDBConverter();
@@ -749,7 +771,6 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
                 hostName = converter.getHostName();
                 itUsrPwd = converter.getItUsrPwd();
             }
-               
         } catch (SQLException ex)
         {
             ex.printStackTrace();
@@ -888,6 +909,178 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
             xstream.toXML(forms, pw);
             
         } catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    
+    protected void doReport()
+    {
+        formIndex = 0;
+        
+        advance();
+        
+    }
+    
+    /**
+     * 
+     */
+    public synchronized void advance()
+    {
+        if (timer != null)
+        {
+            System.out.println("Task Cancelled. "+timer.hashCode());
+            timer.cancel();
+        }
+        
+        if (formIndex >= 0)
+        {
+            generate();
+        }
+        
+        FormInfo fi;
+        do
+        {
+            formIndex++;
+            System.out.println(formIndex);
+            if (formIndex >= forms.size())
+            {
+                System.out.println("***** Done");
+                generate();
+                return;
+            }
+            fi = forms.get(formIndex);
+            
+        } while (!fi.isFull() && formIndex < forms.size());
+        
+        timer = new Timer();
+        System.out.println("Scheduling next task. "+timer.hashCode());
+        timer.schedule(new TimerTask() {
+            public void run() 
+            {
+                System.out.println("***** Timer Done");
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        advance();
+                    }
+                });
+                
+            }
+        }, 1500);
+    }
+    
+    public void generate()
+    {
+        BufferedImage bufImage = null;
+        if (formFrame != null)
+        {
+            Component topComp = formFrame.getContentPane();
+            
+            Rectangle rect = topComp.getBounds();
+            if (rect.width == 0 || rect.height == 0)
+            {
+                return;
+            }
+            bufImage = new BufferedImage(rect.width, rect.height, (BufferedImage.TYPE_INT_ARGB));
+            Graphics2D    g2       = bufImage.createGraphics();
+            topComp.paint(g2);
+            g2.dispose();
+        }
+        
+        if (formIndex < forms.size())
+        {
+            selectedForm = forms.get(formIndex);
+            
+            showForm();
+            
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        public void run()
+                        {
+                            formFrame.repaint();
+                        }
+                    });
+                }
+            });
+        }
+        
+        File dir = new File("conversions" + File.separator + namePair.second + File.separator);
+        if (!dir.exists())
+        {
+            dir.mkdirs();
+        }
+        
+        if (bufImage != null)
+        {
+            String fName = "conversions" + File.separator + namePair.second + File.separator + selectedForm.getTableName();
+            try
+            {
+                File imgFile = new File(fName + ".png");
+                ImageIO.write(bufImage, "PNG", imgFile);
+                
+            } catch (Exception e)
+            {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ERDVisualizer.class, e);
+                e.printStackTrace();
+            } 
+        }
+        
+        if (formIndex >= forms.size())
+        {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        public void run()
+                        {
+                            if (formFrame != null) formFrame.setVisible(false);
+                            createIndex();
+                            UIRegistry.showLocalizedMsg("Done");
+                        }
+                    });
+                }
+            });
+        }
+    }
+    
+    private void createIndex()
+    {
+        String dirName = "conversions" + File.separator + namePair.second;
+        String fName  = dirName + File.separator + "index.html";
+        try
+        {
+            File dir = new File(dirName);
+            PrintWriter pw = new PrintWriter(new File(fName));
+            pw.println("<html><body><h2>Forms For"+ namePair.second +"</h2><table border='0'>");
+            
+            for (String fileName : dir.list())
+            {
+                if (fileName.endsWith("png"))
+                {
+                    String name = FilenameUtils.getBaseName(fileName);
+                    pw.print("<tr><td>");
+                    pw.print("<a href='");
+                    pw.print(fileName);
+                    pw.print("'>");
+                    pw.print(name);
+                    pw.println("</a></td></tr>");
+                }
+            }
+            pw.println("</body></html>");
+            pw.close();
+            
+        } catch (FileNotFoundException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();

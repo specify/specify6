@@ -27,6 +27,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 
@@ -51,7 +52,9 @@ public class RegAdder
             
     private static final int STR_SIZE = 128;
     
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     private Timestamp        ts     = new Timestamp(Calendar.getInstance().getTime().getTime());
+    private long             startDate;
     
     private int              cnt = 0;
     private int              lineNo = 0;
@@ -84,10 +87,12 @@ public class RegAdder
             trkStmt3  = connection.prepareStatement("UPDATE trackitem SET CountAmt=?, Value=? WHERE TrackItemID=?");
             trkStmt4  = connection.prepareStatement("UPDATE track SET CountAmt=? WHERE TrackID=?");
             
-            regStmt1  = connection.prepareStatement("INSERT INTO register (TimestampCreated, RegNumber, RegType) VALUES(?, ?, ?)");
+            regStmt1  = connection.prepareStatement("INSERT INTO register (TimestampCreated, RegNumber, RegType, IP) VALUES(?, ?, ?, ?)");
             regStmt2  = connection.prepareStatement("INSERT INTO registeritem (Name, CountAmt, Value, RegisterID) VALUES(?, ?, ?, ?)");
             
-        } catch (SQLException ex)
+            startDate = sdf.parse("2009-04-12 00:00:00").getTime();
+            
+        } catch (Exception ex)
         {
             ex.printStackTrace();
         }
@@ -221,7 +226,11 @@ public class RegAdder
                     int recCnt = BasicSQLUtils.getCountAsInt(String.format("SELECT COUNT(*) FROM track WHERE Id = '%s'", id));
                     if (recCnt == 0) // Insert
                     {
-                        trkStmt1.setTimestamp(1, ts);
+                        
+                        Timestamp timeStamp = getTimestamp(mv.get("date"));
+                        if (timeStamp.getTime() < startDate) return;
+                        
+                        trkStmt1.setTimestamp(1, timeStamp);
                         trkStmt1.setString(2,    id);
                         trkStmt1.setInt(3,       1);
                         
@@ -293,8 +302,6 @@ public class RegAdder
      */
     private void insertReg(final HashMap<String, String> mv)
     {
-        
-        
         if (mv.size() > 0)
         {
             /*
@@ -323,9 +330,11 @@ public class RegAdder
             {
                 String type = mv.get("reg_type");
                 String num  = mv.get("reg_number");
-                String ip   = mv.get("IP");
+                String ip   = mv.get("ip");
                 
-                if (StringUtils.isNotEmpty(type) && StringUtils.isNotEmpty(num) && (ip == null || !ip.startsWith("129.237.201")))
+                boolean isNotLocalIP = ip == null || (!ip.startsWith("129.237.201") && !ip.startsWith("24.124"));
+                
+                if (StringUtils.isNotEmpty(type) && StringUtils.isNotEmpty(num) && isNotLocalIP)
                 {
                     
                     int numRegNum = BasicSQLUtils.getCountAsInt(String.format("SELECT COUNT(*) FROM register WHERE RegNumber = '%s'", num));
@@ -334,9 +343,14 @@ public class RegAdder
                         return;
                     }
                     
-                    regStmt1.setTimestamp(1, ts);
+                    Timestamp timeStamp = getTimestamp(mv.get("date"));
+                    
+                    if (timeStamp.getTime() < startDate) return;
+                    
+                    regStmt1.setTimestamp(1, timeStamp);
                     regStmt1.setString(2,    num);
                     regStmt1.setString(3,    type);
+                    regStmt1.setString(4,    ip);
                     
                     //pStmt.toString();
                     
@@ -355,7 +369,7 @@ public class RegAdder
                             regStmt2.setString(1, key);
                             if (!StringUtils.contains(value, ".") && StringUtils.isNumeric(value) && value.length() < 10)
                             {
-                                regStmt2.setInt(2, Integer.parseInt(value));
+                                regStmt2.setInt(2, value.isEmpty() ? 0 : Integer.parseInt(value));
                                 regStmt2.setNull(3, java.sql.Types.VARCHAR);
                                 
                             } else if (value.length() < STR_SIZE+1)
@@ -390,7 +404,7 @@ public class RegAdder
                     {
                         throw new RuntimeException("Error insert register for Reg Type: "+type+"  Num: "+num);
                     }
-                } else
+                } else if (isNotLocalIP)
                 {
                     System.err.println("------------------------ Line No: " + lineNo);
                     System.err.println("Error for Reg Type: ["+type+"]  or Num: ["+ num + "] is null.");
@@ -406,6 +420,24 @@ public class RegAdder
                 ex.printStackTrace();
             }
         }
+    }
+    
+    private Timestamp getTimestamp(final String dateStr)
+    {
+        if (dateStr != null && dateStr.length() == 17)
+        {
+            String[] pair = StringUtils.split(dateStr, " ");
+            String[] dStr = StringUtils.split(dateStr, "/");
+            String str = "20" + dStr[0] + '-' + dStr[1] + '-' + dStr[2].substring(0,2) + " " + pair[1];
+            
+            try
+            {
+                java.util.Date date = sdf.parse(str);
+                return new Timestamp(date.getTime());
+                
+            } catch (Exception e) {}
+        }
+        return ts;
     }
     
 
@@ -462,7 +494,7 @@ public class RegAdder
                     String[] pair = StringUtils.split(text, "=");
                     if (pair.length == 2)
                     {
-                        mappedValues.put(pair[0], pair[1]);
+                        mappedValues.put(pair[0].trim(), pair[1].trim());
                         
                     } else if (pair.length == 1)
                     {
@@ -538,9 +570,15 @@ public class RegAdder
             
             BasicSQLUtils.setDBConnection(connection);
             
-            RegAdder ra = new RegAdder(connection);
-            //ra.process("/home/rods/reg.dat", "register", true);
-            ra.process("/home/rods/track.dat", "track", true);
+            RegAdder ra    = new RegAdder(connection);
+            boolean  doReg = false;
+            if (doReg)
+            {
+                ra.process("/Users/rods/reg.dat", "register", true);
+            } else
+            {
+                ra.process("/Users/rods/track.dat", "track", true);
+            }
             
         } catch (Exception ex)
         {

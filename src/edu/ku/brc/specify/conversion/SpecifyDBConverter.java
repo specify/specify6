@@ -1310,6 +1310,7 @@ public class SpecifyDBConverter
                    updateVersionInfo(newConn);
                 }
                 
+                
                 log.info("Done - " + dbNameDest + " " + convertTimeInSeconds);
                 frame.setDesc("Done - " + dbNameDest + " " + convertTimeInSeconds);
 
@@ -1326,6 +1327,9 @@ public class SpecifyDBConverter
                 idMapperMgr.cleanup();
             }
             
+            TableDataChecker tblDataChecker = new TableDataChecker(oldDBConn);
+            tblDataChecker.createHTMLReport(new File(oldDBConn.getCatalog()+".html"));
+
             frame.setTitle("Done - " + dbNameDest);
             frame.incOverall();
             frame.processDone();

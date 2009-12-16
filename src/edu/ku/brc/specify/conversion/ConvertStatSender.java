@@ -47,7 +47,7 @@ public class ConvertStatSender extends FeedBackSender
     @Override
     protected String getSenderURL()
     {
-        return UIRegistry.getResourceString("CGI_BASE_URL") + "convinfo.php";
+        return UIRegistry.getResourceString("CGI_BASE_URL") + "/convinfo.php";
     }
     
     public void senConvertInfo(final String collectionName, final int numColObj, final int convTime)

@@ -60,6 +60,10 @@ public class FormInfo
         this.tblInfo     = tblInfo;
     }
     
+    public boolean isFull()
+    {
+        return formVersion != null && formVersion.equalsIgnoreCase("full");
+    }
     
     /**
      * @return the tblInfo
