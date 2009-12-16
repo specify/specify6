@@ -364,9 +364,13 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                                 {
                                     perms |= PERM_DELETE;
                                     
-                                } else if (tokens[inx].equals("LOCK_TABLES"))
+                                } else if (tokens[inx].equals("LOCK"))
                                 {
-                                    perms |= PERM_LOCK_TABLES;
+                                    if (inx+1 < tokens.length && tokens[inx+1].equals("TABLES"))
+                                    {
+                                        perms |= PERM_LOCK_TABLES;
+                                        inx++;
+                                    }
                                     
                                 } else if (tokens[inx].equals("INSERT"))
                                 {
@@ -377,6 +381,11 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                         }
                     }
                     log.debug("PERMS: "+perms);
+                    
+                    if (perms == 0 && username.equalsIgnoreCase("root"))
+                    {
+                        perms = PERM_ALL;
+                    }
                     return perms;
                 }
             }
@@ -518,7 +527,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
 	 */
 	protected void appendPerms(final StringBuilder sb, final int permissions)
 	{
-	    if ((permissions & PERM_ALL) == PERM_ALL)
+	    if ((permissions & PERM_ALL_BASIC) == PERM_ALL_BASIC)
         {
             sb.append("ALL ");
             

@@ -165,6 +165,7 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
     protected Timer   timer = null;
     protected JFrame  frame;
     protected int     formIndex;
+    protected String  formName;
 
         
     /**
@@ -565,7 +566,6 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
             }
         } catch (Exception e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;
@@ -657,7 +657,6 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
             connection.close();
         } catch (SQLException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -890,7 +889,6 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
                 
             } catch (IOException e)
             {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -910,7 +908,6 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
             
         } catch (IOException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -997,6 +994,7 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
             
             showForm();
             
+            
             SwingUtilities.invokeLater(new Runnable()
             {
                 public void run()
@@ -1020,7 +1018,7 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
         
         if (bufImage != null)
         {
-            String fName = "conversions" + File.separator + namePair.second + File.separator + selectedForm.getTableName();
+            String fName = "conversions" + File.separator + namePair.second + File.separator + formName;
             try
             {
                 File imgFile = new File(fName + ".png");
@@ -1051,6 +1049,11 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
                     });
                 }
             });
+        }
+        
+        if (selectedForm != null)
+        {
+            formName = selectedForm.getTableName();
         }
     }
     

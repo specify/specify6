@@ -156,13 +156,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             if (dbMgr.connect(dbConn.getUserName(), dbConn.getPassword(), dbConn.getServerName(), dbConn.getDatabaseName()))
             {
                 // Here checks to see if this is the first ever
-                boolean doUpdateAppVer = false;
-                boolean doSchemaUpdate = false;
-                boolean doInsert       = false;
-                String  appVerFromDB   = null;
-                String  schemaVerFromDB  = null;
-                Integer spverId        = null;
-                Integer recVerNum     = 1;
+                boolean doUpdateAppVer  = false;
+                boolean doSchemaUpdate  = false;
+                boolean doInsert        = false;
+                String  appVerFromDB    = null;
+                String  schemaVerFromDB = null;
+                Integer spverId         = null;
+                Integer recVerNum       = 1;
                 
                 
                 log.debug("appVerNumArg:  ["+appVerNumArg+"] dbVersion from XML["+dbVersion+"] ");
@@ -249,6 +249,18 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             if (usrPwd != null)
                             {
                                 DBConnection dbc = DBConnection.getInstance();
+                                
+                                DBMSUserMgr dbmsMgr = DBMSUserMgr.getInstance();
+                                if (dbmsMgr.connectToDBMS(usrPwd.first, usrPwd.second, dbc.getServerName()))
+                                {
+                                    int permissions = dbmsMgr.getPermissions(usrPwd.first, usrPwd.second);
+                                    if (!((permissions & DBMSUserMgr.PERM_ALTER_TABLE) == DBMSUserMgr.PERM_ALTER_TABLE))
+                                    {
+                                        errMsgList.add("You must have permissions to alter database tables.");
+                                        //CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
+                                        return SchemaUpdateType.Error;
+                                    }
+                                }
         
                                 ProgressFrame frame = new ProgressFrame(getResourceString("UPDATE_SCHEMA_TITLE"));
                                 frame.adjustProgressFrame();

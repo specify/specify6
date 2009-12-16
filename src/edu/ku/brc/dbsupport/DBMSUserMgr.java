@@ -53,9 +53,12 @@ public abstract class DBMSUserMgr
     public static final int PERM_DELETE      = 4;
     public static final int PERM_INSERT      = 8;
     public static final int PERM_LOCK_TABLES = 16;
-    public static final int PERM_BASIC       = 31;
     
-    public static final int PERM_ALL         = 32; // Literally 'all' the permissions
+    public static final int PERM_ALL_BASIC   = 31; // Literally 'all' the basic permissions
+    
+    public static final int PERM_ALTER_TABLE = 64;
+    
+    public static final int PERM_ALL         = 127;
     
     private static DBMSUserMgr instance = null;
    

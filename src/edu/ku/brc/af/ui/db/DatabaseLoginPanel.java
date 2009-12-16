@@ -80,6 +80,8 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.init.SpecifyDBSetupWizard;
 import edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame;
 import edu.ku.brc.specify.ui.HelpMgr;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
@@ -1052,6 +1054,8 @@ public class DatabaseLoginPanel extends JTiledPanel
                             }
                             sb.append(getResourceString("APP_EXIT")); // 18N
                             UIRegistry.showError(sb.toString());
+                            
+                            CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
                             
                         } else if (status == SchemaUpdateType.Success)
                         {
