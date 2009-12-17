@@ -4308,7 +4308,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             
             // Meg added
             // Map all the Physical IDs
-            IdTableMapper prepIdMapper = idMapperMgr.addTableMapper("preparation", "PreparationID", doDeleteAllMappings);
+            IdTableMapper prepIdMapper = idMapperMgr.addTableMapper("CollectionObject", "CollectionObjectID", doDeleteAllMappings);
             
             if (shouldCreateMapTables)
             {
