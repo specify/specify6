@@ -1989,6 +1989,11 @@ public class BasicSQLUtils
                             str.append(getStrValue(dataObj, newFldMetaData.getType()));
                         }
 
+                    } else if (newColName.endsWith("Version"))
+                    {
+                        if (i > 0) str.append(", ");
+                        str.append("0");
+                        
                     } else if (newColName.endsWith("DatePrecision"))
                     {
                     	if (i > 0) str.append(", ");

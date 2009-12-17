@@ -78,7 +78,7 @@ public class TableDataChecker
                         if (cols[2].equals("YES"))
                         {
                             String sql = String.format("SELECT COUNT(*) FROM `%s` WHERE `%s` IS NOT NULL", tableName, fieldName);
-                            System.out.println(sql);
+                            //System.out.println(sql);
                             int cnt = BasicSQLUtils.getCountAsInt(connection, sql);
                             if (cnt > 0)
                             {

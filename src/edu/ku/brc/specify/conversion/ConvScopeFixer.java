@@ -28,6 +28,8 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -487,6 +489,31 @@ public class ConvScopeFixer
         return false;
     }
     
+    public void checkTables()
+    {
+        tblWriter.startTable();
+        tblWriter.logHdr("Table", "Field", "Count");
+        
+        String[] fields = new String[] {"CollectionMemberID", "DisciplineID", "DivisionID", "CollectionID"};
+        
+        for (String field : fields)
+        {
+            for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
+            {
+                if (ti.getFieldByColumnName(field) != null)
+                {
+                    Integer cnt = BasicSQLUtils.getCount("SELECT COUNT(*) FROM "+ti.getName()+" WHERE "+field+" IS NULL");
+                    if (cnt != null && cnt > 0)
+                    {
+                        tblWriter.log(field, ti.getName(), cnt.toString());
+                    }
+                }
+            }
+        }
+        
+        tblWriter.endTable();
+    }
+    
     /**
      * @return
      */
@@ -503,7 +530,7 @@ public class ConvScopeFixer
         if (fixDeterminations()) cnt++;
         if (fixOtherIdentifiers()) cnt++;
         if (fixPrepartionAttributes()) cnt++;
-        if (fixPrepartions()) cnt++;
+        //if (fixPrepartions()) cnt++;
         if (fixPaleoContext()) cnt++;
         
         if (fixProjects()) cnt++;
@@ -561,6 +588,11 @@ public class ConvScopeFixer
         String newIdFieldName = newIdName == null ? idFieldName : newIdName;
             
         IdMapperIFace idMapper = mapperName == null ? IdMapperMgr.getInstance().get(className, idFieldName) : IdMapperMgr.getInstance().get(mapperName);
+        if (idMapper == null)
+        {
+            log.error("**** No Mapper for["+className+"]");
+            return false;
+        }
 
         Statement         stmt  = null;
         PreparedStatement pStmt = null;
@@ -576,7 +608,7 @@ public class ConvScopeFixer
             int count = 0;
             while (rs.next())
             {
-                String msg = null;
+                String   msg  = null;
                 Integer recId = rs.getInt(1);
                 if (recId != null)
                 {
@@ -588,7 +620,8 @@ public class ConvScopeFixer
                         {
                             pStmt.setInt(1, colMemId);
                             pStmt.setInt(2, newId);
-                            if (pStmt.executeUpdate() != 1)
+                            int upCnt = pStmt.executeUpdate();
+                            if (upCnt != 1)
                             {
                                 msg = String.format("Error updating %s for Old %s with new ID %d", colToFix, idFieldName, newId);
                             }

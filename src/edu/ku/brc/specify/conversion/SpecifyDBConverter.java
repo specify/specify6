@@ -987,8 +987,8 @@ public class SpecifyDBConverter
                 }
                 frame.incOverall();          
 
-                frame.setDesc("Converting CollectionObjects");
-                log.info("Converting CollectionObjects");
+                frame.setDesc("Converting Preparations");
+                log.info("Converting Preparations");
                 boolean doCollectionObjects = false;
                 if (doCollectionObjects || doAll)
                 {
@@ -997,6 +997,7 @@ public class SpecifyDBConverter
                         Session session = HibernateUtil.getCurrentSession();
                         try
                         {
+                            // Get a HashMap of all the PrepTypes for each Collection
                             Hashtable<Integer, Map<String, PrepType>> collToPrepTypeHash = new Hashtable<Integer, Map<String,PrepType>>();
                             Query   q = session.createQuery("FROM Collection");
                             for (Object dataObj :  q.list())
@@ -1005,7 +1006,7 @@ public class SpecifyDBConverter
                                 GenericDBConversion.setShouldCreateMapTables(true);
                                 
                                 Collection            collection  = (Collection)dataObj;
-                                Map<String, PrepType> prepTypeMap = conversion.createPreparationTypesFromUSys(collection);
+                                Map<String, PrepType> prepTypeMap = conversion.createPreparationTypesFromUSys(collection); // Hashed by PrepType's Name
                                 
                                 GenericDBConversion.setShouldCreateMapTables(cache);
                                 
@@ -1024,6 +1025,7 @@ public class SpecifyDBConverter
                                         log.error("******************************* Couldn't find 'Misc' PrepType!");
                                     }
                                 }
+                                // So Cache a Map of PrepTYpes for each Collection
                                 collToPrepTypeHash.put(collection.getCollectionId(), prepTypeMap);
                             }
                             conversion.convertPreparationRecords(collToPrepTypeHash);
@@ -1031,12 +1033,11 @@ public class SpecifyDBConverter
                         } catch (Exception ex)
                         {
                             throw new RuntimeException(ex);
-                            
                         }
                     }
                     
-                    frame.setDesc("Converting LoanPreparations Records");
-                    log.info("Converting LoanPreparations Records");
+                    frame.setDesc("Converting Loan Records");
+                    log.info("Converting Loan Records");
                     boolean doLoanPreparations = false;
                     if (doLoanPreparations || doAll)
                     {
@@ -1044,6 +1045,8 @@ public class SpecifyDBConverter
                     	conversion.convertLoanAgentRecords(false);// Loans
                         conversion.convertLoanPreparations();
                         
+                        frame.setDesc("Converting Gift Records");
+                        log.info("Converting Gift Records");
                     	conversion.convertLoanAgentRecords(true); // Gifts
                     	conversion.convertLoanRecords(true);      // Gifts
                         conversion.convertGiftPreparations();
@@ -1056,6 +1059,8 @@ public class SpecifyDBConverter
                     
                     // Arg1 - Use Numeric Catalog Number
                     // Arg2 - Use the Prefix from Catalog Series
+                    frame.setDesc("Converting CollectionObjects Records");
+                    log.info("Converting CollectionObjects Records");
                     conversion.convertCollectionObjects(true, false);
                     frame.incOverall();
 
@@ -1276,14 +1281,15 @@ public class SpecifyDBConverter
 
                 frame.incOverall();
                 
-                HabitatTaxonIdConverter habitatConverter = new HabitatTaxonIdConverter(oldDB.getConnection(), newDBConn);
-                habitatConverter.convert(conversion.getCollectionMemberId());
+                //HabitatTaxonIdConverter habitatConverter = new HabitatTaxonIdConverter(oldDB.getConnection(), newDBConn);
+                //habitatConverter.convert(conversion.getCollectionMemberId());
                 
                 frame.incOverall();
                 
                 ConversionLogger.TableWriter tblWriter = convLogger.getWriter("ScopeUpdater.html", "Updating Scope Summary");
                 ConvScopeFixer convScopeFixer = new ConvScopeFixer(oldDBConn, newDBConn, dbNameDest, tblWriter);
                 convScopeFixer.doFixTables();
+                convScopeFixer.checkTables();
                 
                 long stTime = System.currentTimeMillis();
 
@@ -1310,6 +1316,7 @@ public class SpecifyDBConverter
                    updateVersionInfo(newConn);
                 }
                 
+                ConvertMiscData.convertKUFishCruiseData(oldDBConn, newDBConn, conversion.getCurDisciplineID());
                 
                 log.info("Done - " + dbNameDest + " " + convertTimeInSeconds);
                 frame.setDesc("Done - " + dbNameDest + " " + convertTimeInSeconds);

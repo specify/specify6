@@ -3069,7 +3069,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         {
             e.printStackTrace();
             log.error(e);
-            return prepTypeMapper;
         }
 
         return prepTypeMapper;
@@ -4186,6 +4185,42 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             }
         }
     }
+    
+    //-------------------------------------------------------------------------------------------------
+    private Hashtable<Integer, Collection> collIdToCollObj = new Hashtable<Integer, Collection>();
+    private Collection getCollection(final int colId)
+    {
+        Collection collection = collIdToCollObj.get(colId);
+        if (collection == null)
+        {
+            Session tmpSession = null;
+            try
+            {
+                tmpSession = HibernateUtil.getNewSession();
+                Query q = tmpSession.createQuery("FROM Collection WHERE id = "+getCollectionMemberId());
+                List<?> colList = q.list();
+                if (colList != null && colList.size() == 1)
+                {
+                    collection = (Collection)colList.get(0);
+                    collection.forceLoad();
+                    collIdToCollObj.put(colId, collection);
+                }
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                throw new RuntimeException(ex);
+                
+            } finally
+            {
+                if (tmpSession != null)
+                {
+                    tmpSession.close();
+                }
+            }
+        }
+        return collection;
+    }
 
 
     /**
@@ -4198,6 +4233,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         TableWriter tblWriter = convLogger.getWriter("convertPreparations.html", "Preparations");
 
         deleteAllRecordsFromTable(newDBConn, "preparation", BasicSQLUtils.myDestinationServerType);
+        
+        TimeLogger timeLogger = new TimeLogger();
         
         // BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "preparation",
         // BasicSQLUtils.myDestinationServerType);
@@ -4239,50 +4276,15 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             String sqlStr = sql.toString();
             log.debug(sql);
             
-            Collection collection = null;
-            
-            if (AppContextMgr.getInstance().getClassObject(Collection.class) == null)
-            {
-                Session tmpSession = null;
-                try
-                {
-                    tmpSession = HibernateUtil.getNewSession();
-                    Query q = tmpSession.createQuery("FROM Collection WHERE id = "+getCollectionMemberId());
-                    List<?> colList = q.list();
-                    if (colList != null && colList.size() == 1)
-                    {
-                        collection = (Collection)colList.get(0);
-                        collection.forceLoad();
-                    }
-                    
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                    throw new RuntimeException(ex);
-                    
-                } finally
-                {
-                    if (tmpSession != null)
-                    {
-                        tmpSession.close();
-                    }
-                }
-                AppContextMgr.getInstance().setClassObject(Collection.class, collection);
-                
-            } else
-            {
-                collection = AppContextMgr.getInstance().getClassObject(Collection.class);
-            }
-            
-            //log.debug("------------------------ Old Names");
+            log.debug("------------------------ Old Names");
             Map<String, Integer> oldNameIndex = new Hashtable<String, Integer>();
             int inx = 1;
             for (String name : oldFieldNames)
             {
                 oldNameIndex.put(name, inx++);
-                //log.debug(name + " " + (inx - 1));
+                log.debug("OldName: " + name + " " + (inx - 1));
             }
-            //log.debug("------------------------");
+            log.debug("------------------------");
             
             Hashtable<String, String> newToOld = new Hashtable<String, String>();
             newToOld.put("PreparationID",      "CollectionObjectID");
@@ -4304,10 +4306,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             Statement prepStmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
-            //shouldCreateMapTables = true;
-            
-            // Meg added
-            // Map all the Physical IDs
             IdTableMapper prepIdMapper = idMapperMgr.addTableMapper("CollectionObject", "CollectionObjectID", doDeleteAllMappings);
             
             if (shouldCreateMapTables)
@@ -4319,7 +4317,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             {
                 prepIdMapper = (IdTableMapper)idMapperMgr.get("preparation", "PreparationID");
             }
-
+            
+            String    insertStmtStr        = null;
+            boolean   shouldCheckPrepAttrs = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM preparation WHERE PreparedByID IS NOT NULL || PreparedDate IS NOT NULL") > 0;
+            Statement prepTypeStmt         = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            
             Pair<String, String> datePair = new Pair<String, String>();
             
             prepIdMapper.setShowLogErrors(false);
@@ -4327,20 +4329,29 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             //int     prepDateInx     = oldNameIndex.get("CatalogedDate") + 1;
             int     lastEditedByInx = oldNameIndex.get("LastEditedBy");
             Integer idIndex         = oldNameIndex.get("CollectionObjectID");
+            Integer catSeriesIdInx  = oldNameIndex.get("CatalogSeriesID");
             int     count           = 0;
             do
             {
                 datePair.first  = null;
                 datePair.second = null;
                 
+                Integer catSeriesId  = rs.getInt(catSeriesIdInx);
+                Integer collectionId = catSeriesToNewCollectionID.get(catSeriesId);
+                if (collectionId == null)
+                {
+                    throw new RuntimeException("CollectionId is null when mapped from CatSeriesId");
+                }
+                
+                Collection collection = getCollection(collectionId);
+                
                 Integer preparedById = null;
-                boolean checkForPreps = true;
-                if (checkForPreps)
+                if (shouldCheckPrepAttrs)
                 {
                     Integer   recordId    = rs.getInt(idIndex + 1);
-                    Statement subStmt     = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                    
                     String    subQueryStr = "select PreparedByID, PreparedDate from preparation where PreparationID = " + recordId;
-                    ResultSet subQueryRS  = subStmt.executeQuery(subQueryStr);
+                    ResultSet subQueryRS  = prepTypeStmt.executeQuery(subQueryStr);
                     
                     if (subQueryRS.next())
                     {
@@ -4352,10 +4363,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         datePair.second = "NULL";
                     }
                     subQueryRS.close();
-                    subStmt.close();
                 }
                 
-                Map<String, PrepType> prepTypeMap = collToPrepTypeHash.get(AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId());
+                Map<String, PrepType> prepTypeMap = collToPrepTypeHash.get(collection.getCollectionId());
 
                 String lastEditedBy = rs.getString(lastEditedByInx);
 
@@ -4372,24 +4382,28 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                 str.setLength(0);
 
-                StringBuffer fieldList = new StringBuffer();
-                fieldList.append("( ");
-                for (int i = 0; i < newFieldMetaData.size(); i++)
+                if (insertStmtStr == null)
                 {
-                    if ((i > 0) && (i < newFieldMetaData.size()))
+                    StringBuffer fieldList = new StringBuffer();
+                    fieldList.append("( ");
+                    for (int i = 0; i < newFieldMetaData.size(); i++)
                     {
-                        fieldList.append(", ");
+                        if ((i > 0) && (i < newFieldMetaData.size()))
+                        {
+                            fieldList.append(", ");
+                        }
+                        
+                        String newFieldName = newFieldMetaData.get(i).getName();
+                        fieldList.append(newFieldName + " ");
                     }
-                    
-                    String newFieldName = newFieldMetaData.get(i).getName();
-                    fieldList.append(newFieldName + " ");
+                    fieldList.append(")");
+                    insertStmtStr = "INSERT INTO preparation " + fieldList + " VALUES (";
                 }
-                fieldList.append(")");
+                str.append(insertStmtStr);
                 
                 Integer oldId   = null;
                 boolean isError = false;
                 
-                str.append("INSERT INTO preparation " + fieldList + " VALUES (");
                 for (int i = 0; i < newFieldMetaData.size(); i++)
                 {
                     if (i > 0)
@@ -4668,12 +4682,25 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 count++;
                 // if (count == 1) break;
             } while (rs.next());
+            
+            prepTypeStmt.close();
 
             prepStmt.close();
 
             if (hasFrame)
             {
-                setProcess(count);
+                if (count % 2000 == 0)
+                {
+                    final int cnt = count;
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run()
+                        {
+                            setProcess(cnt);
+                        }
+                    });
+                }
+                
             } else
             {
                 if (count % 2000 == 0)
@@ -4689,6 +4716,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             throw new RuntimeException(e);
         }
         
+        tblWriter.log(String.format("Preparations Processing Time: %s", timeLogger.end()));
         tblWriter.close();
         
         return true;
@@ -4712,6 +4740,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             return true; 
         }
 
+        TimeLogger timeLogger = new TimeLogger();
+        
         String oldDetermination_Current = "Current";
         String oldDetermination_Date    = "Date";
 
@@ -4801,6 +4831,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 }
             }
 
+            String insertStmtStr = null;
             Pair<String, String> datePair = new Pair<String, String>();
             
             Integer catSeriesIdInx  = oldNameIndex.get("CatSeriesID");
@@ -4819,9 +4850,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 String lastEditedBy = rs.getString(lastEditedByInx);
                 
                 Integer catSeriesId = rs.getInt(catSeriesIdInx);
-                
-                //System.err.println("catSeriesId: "+catSeriesId);
-                
                 Integer collectionId = catSeriesToNewCollectionID.get(catSeriesId);
                 if (collectionId == null)
                 {
@@ -4831,21 +4859,27 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 this.curCollectionID = collectionId;
 
                 str.setLength(0);
-                StringBuffer fieldList = new StringBuffer();
-                fieldList.append("( ");
-                for (int i = 0; i < newFieldMetaData.size(); i++)
+                
+                if (insertStmtStr == null)
                 {
-                    if ((i > 0) && (i < newFieldMetaData.size()))
+                    StringBuffer fieldList = new StringBuffer();
+                    fieldList.append("( ");
+                    for (int i = 0; i < newFieldMetaData.size(); i++)
                     {
-                        fieldList.append(", ");
+                        if ((i > 0) && (i < newFieldMetaData.size()))
+                        {
+                            fieldList.append(", ");
+                        }
+                        String newFieldName = newFieldMetaData.get(i).getName();
+                        fieldList.append(newFieldName + " ");
                     }
-                    String newFieldName = newFieldMetaData.get(i).getName();
-                    fieldList.append(newFieldName + " ");
+                    fieldList.append(")");
+                    insertStmtStr = "INSERT INTO determination " + fieldList + " VALUES (";
                 }
+                str.append(insertStmtStr);
                 
                 boolean isError = false;
-                fieldList.append(")");
-                str.append("INSERT INTO determination " + fieldList + " VALUES (");
+                
                 for (int i = 0; i < newFieldMetaData.size(); i++)
                 {
                     if (i > 0)
@@ -5034,6 +5068,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             stmt.close();
             
+            tblWriter.log(String.format("Determination Processing Time: %s", timeLogger.end()));
+            
             tblWriter.close();
 
         } catch (SQLException e)
@@ -5167,6 +5203,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         setIdentityInsertONCommandForSQLServer(newDBConn, "collectionobject", BasicSQLUtils.myDestinationServerType);
 
         deleteAllRecordsFromTable(newDBConn, "collectionobject", BasicSQLUtils.myDestinationServerType); // automatically closes the connection
+        
+        TimeLogger timeLogger = new TimeLogger();
+        
         try
         {
             Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -5265,6 +5304,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 }
             }
             
+            String insertStmtStr = null;
+            
             /*String catIdTaxIdStrBase = "SELECT cc.CollectionObjectCatalogID, cc.CatalogSeriesID, ct.TaxonomyTypeID "
                                         + "FROM collectionobjectcatalog AS cc "
                                         + "Inner Join collectionobject AS co ON cc.CollectionObjectCatalogID = co.CollectionObjectID "
@@ -5345,19 +5386,24 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                 str.setLength(0);
 
-                StringBuffer fieldList = new StringBuffer();
-                fieldList.append("( ");
-                for (int i = 0; i < newFieldMetaData.size(); i++)
+                if (insertStmtStr == null)
                 {
-                    if ((i > 0) && (i < newFieldMetaData.size()))
+                    StringBuffer fieldList = new StringBuffer();
+                    fieldList.append("( ");
+                    for (int i = 0; i < newFieldMetaData.size(); i++)
                     {
-                        fieldList.append(", ");
+                        if ((i > 0) && (i < newFieldMetaData.size()))
+                        {
+                            fieldList.append(", ");
+                        }
+                        String newFieldName = newFieldMetaData.get(i).getName();
+                        fieldList.append(newFieldName + " ");
                     }
-                    String newFieldName = newFieldMetaData.get(i).getName();
-                    fieldList.append(newFieldName + " ");
+                    fieldList.append(")");
+                    insertStmtStr = "INSERT INTO collectionobject " + fieldList + "  VALUES (";
                 }
-                fieldList.append(")");
-                str.append("INSERT INTO collectionobject " + fieldList + "  VALUES (");
+                str.append(insertStmtStr);
+                
                 for (int i = 0; i < newFieldMetaData.size(); i++)
                 {
                     if (i > 0)
@@ -5650,6 +5696,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 log.info("Processed CollectionObject " + count + " records.");
             }
             
+            tblWriter.log(String.format("Collection Objects Processing Time: %s", timeLogger.end()));
+            
             tblWriter.log("Processed CollectionObject " + count + " records.");
             rsLooping.close();
             newStmt.close();
@@ -5717,6 +5765,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         }
         
         TableWriter tblWriter = convLogger.getWriter("convertLoanPreparations.html", "Loan Preparations");
+        
+        TimeLogger timeLogger = new TimeLogger();
 
         try
         {
@@ -5779,6 +5829,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     return true;
                 }
             }
+            
+            String insertStmtStr = null;
+            
 
             int count = 0;
             do
@@ -5791,19 +5844,26 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 String lastEditedBy  = rs.getString(lastEditedByInx);
 
                 str.setLength(0);
-                StringBuffer fieldList = new StringBuffer();
-                fieldList.append("( ");
-                for (int i = 0; i < newFieldMetaData.size(); i++)
+                
+                if (insertStmtStr == null)
                 {
-                    if ((i > 0) && (i < newFieldMetaData.size()))
+                    StringBuffer fieldList = new StringBuffer();
+                    fieldList.append("( ");
+                    for (int i = 0; i < newFieldMetaData.size(); i++)
                     {
-                        fieldList.append(", ");
+                        if ((i > 0) && (i < newFieldMetaData.size()))
+                        {
+                            fieldList.append(", ");
+                        }
+                        String newFieldName = newFieldMetaData.get(i).getName();
+                        fieldList.append(newFieldName + " ");
                     }
-                    String newFieldName = newFieldMetaData.get(i).getName();
-                    fieldList.append(newFieldName + " ");
+                    fieldList.append(")");
+                    insertStmtStr = "INSERT INTO loanpreparation " + fieldList + " VALUES (";
                 }
-                fieldList.append(")");
-                str.append("INSERT INTO loanpreparation " + fieldList + " VALUES (");
+                
+                str.append(insertStmtStr);
+                
                 for (int i = 0; i < newFieldMetaData.size(); i++)
                 {
                     if (i > 0)
@@ -5968,6 +6028,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         log.info("Done processing LoanPhysicalObject");
         setIdentityInsertOFFCommandForSQLServer(newDBConn, "LoanPreparation", BasicSQLUtils.myDestinationServerType);
         
+        tblWriter.log(String.format("Loan Preps Processing Time: %s", timeLogger.end()));
         tblWriter.close();
         
         return true;
@@ -6014,6 +6075,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         //idMapper.setFrame(frame);
 
         TableWriter tblWriter = convLogger.getWriter("convertGiftPreparations.html", "Gift Preparations");
+        TimeLogger timeLogger = new TimeLogger();
 
         try
         {
@@ -6079,6 +6141,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 }
             }
             
+            String insertStmtStr = null;
+            
             int count = 0;
             do
             {
@@ -6086,19 +6150,25 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 String lastEditedBy  = rs.getString(lastEditedByInx);
 
                 str.setLength(0);
-                StringBuffer fieldList = new StringBuffer();
-                fieldList.append("( ");
-                for (int i = 0; i < newFieldMetaData.size(); i++)
+                
+                if (insertStmtStr == null)
                 {
-                    if ((i > 0) && (i < newFieldMetaData.size()))
+                    StringBuffer fieldList = new StringBuffer();
+                    fieldList.append("( ");
+                    for (int i = 0; i < newFieldMetaData.size(); i++)
                     {
-                        fieldList.append(", ");
+                        if ((i > 0) && (i < newFieldMetaData.size()))
+                        {
+                            fieldList.append(", ");
+                        }
+                        String newFieldName = newFieldMetaData.get(i).getName();
+                        fieldList.append(newFieldName + " ");
                     }
-                    String newFieldName = newFieldMetaData.get(i).getName();
-                    fieldList.append(newFieldName + " ");
+                    fieldList.append(")");
+                    insertStmtStr = "INSERT INTO giftpreparation " + fieldList + " VALUES (";
                 }
-                fieldList.append(")");
-                str.append("INSERT INTO giftpreparation " + fieldList + " VALUES (");
+                str.append(insertStmtStr);
+                
                 for (int i = 0; i < newFieldMetaData.size(); i++)
                 {
                     if (i > 0) str.append(", ");
@@ -6243,8 +6313,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 log.info("Processed LoanPreparation " + count + " records.");
             }
             rs.close();
-
             stmt.close();
+            
+            tblWriter.log(String.format("Determinations Processing Time: %s", timeLogger.end()));
+            tblWriter.close();
 
         } catch (SQLException e)
         {
@@ -7937,50 +8009,52 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             // empty out any pre-existing records
             deleteAllRecordsFromTable(newDBConn, "lithostrat", BasicSQLUtils.myDestinationServerType);
             
-            Discipline  discipline   = null;
-
             Session lclSession = HibernateUtil.getCurrentSession();
-            HibernateUtil.beginTransaction();
             
-            Criteria criteria        = lclSession.createCriteria(Discipline.class);
-            List<?>  disciplineeList = criteria.list();
             
-            discipline = (Discipline)disciplineeList.get(0);
-            LithoStratTreeDef lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
+            List<?>  disciplineeList = lclSession.createQuery("FROM Discipline").list();
             
-            lithoStratTreeDef.getDisciplines().add(discipline);
-            discipline.setLithoStratTreeDef(lithoStratTreeDef);
-            
-            lclSession.saveOrUpdate(lithoStratTreeDef);
-            lclSession.saveOrUpdate(discipline);
-            
-            LithoStratTreeDefItem earth     = createLithoStratTreeDefItem(lithoStratTreeDef, "Surface", 0, false);
-            LithoStratTreeDefItem superGrp  = createLithoStratTreeDefItem(earth,     "Super Group", 100, false);
-            LithoStratTreeDefItem lithoGrp  = createLithoStratTreeDefItem(superGrp,  "Litho Group", 200, false);
-            LithoStratTreeDefItem formation = createLithoStratTreeDefItem(lithoGrp,  "Formation",   300, false);
-            LithoStratTreeDefItem member    = createLithoStratTreeDefItem(formation, "Member",      400, false);
-            @SuppressWarnings("unused")
-            LithoStratTreeDefItem bed       = createLithoStratTreeDefItem(member,    "Bed",         500, true);
-            lclSession.saveOrUpdate(earth);
-            
-            // setup the root Geography record (planet Earth)
-            LithoStrat earthNode = new LithoStrat();
-            earthNode.initialize();
-            earthNode.setName("Earth");
-            earthNode.setFullName("Earth");
-            earthNode.setNodeNumber(1);
-            earthNode.setHighestChildNodeNumber(1);
-            earthNode.setRankId(0);
-            earthNode.setDefinition(lithoStratTreeDef);
-            earthNode.setDefinitionItem(earth);
-            earth.getTreeEntries().add(earthNode);
-            lclSession.saveOrUpdate(earthNode);
-            
-            HibernateUtil.commitTransaction();
-            
-            if (isPaleo)
+            for (Object obj : disciplineeList)
             {
-                convertLithoStrat(lithoStratTreeDef, earthNode, tblWriter);
+                HibernateUtil.beginTransaction();
+                
+                Discipline discipline = (Discipline)obj;
+                LithoStratTreeDef lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
+                
+                lithoStratTreeDef.getDisciplines().add(discipline);
+                discipline.setLithoStratTreeDef(lithoStratTreeDef);
+                
+                lclSession.saveOrUpdate(lithoStratTreeDef);
+                lclSession.saveOrUpdate(discipline);
+                
+                LithoStratTreeDefItem earth     = createLithoStratTreeDefItem(lithoStratTreeDef, "Surface", 0, false);
+                LithoStratTreeDefItem superGrp  = createLithoStratTreeDefItem(earth,     "Super Group", 100, false);
+                LithoStratTreeDefItem lithoGrp  = createLithoStratTreeDefItem(superGrp,  "Litho Group", 200, false);
+                LithoStratTreeDefItem formation = createLithoStratTreeDefItem(lithoGrp,  "Formation",   300, false);
+                LithoStratTreeDefItem member    = createLithoStratTreeDefItem(formation, "Member",      400, false);
+                @SuppressWarnings("unused")
+                LithoStratTreeDefItem bed       = createLithoStratTreeDefItem(member,    "Bed",         500, true);
+                lclSession.saveOrUpdate(earth);
+                
+                // setup the root Geography record (planet Earth)
+                LithoStrat earthNode = new LithoStrat();
+                earthNode.initialize();
+                earthNode.setName("Earth");
+                earthNode.setFullName("Earth");
+                earthNode.setNodeNumber(1);
+                earthNode.setHighestChildNodeNumber(1);
+                earthNode.setRankId(0);
+                earthNode.setDefinition(lithoStratTreeDef);
+                earthNode.setDefinitionItem(earth);
+                earth.getTreeEntries().add(earthNode);
+                lclSession.saveOrUpdate(earthNode);
+                
+                HibernateUtil.commitTransaction();
+                
+                if (isPaleo)
+                {
+                    convertLithoStrat(lithoStratTreeDef, earthNode, tblWriter);
+                }
             }
             
         } catch (Exception ex)

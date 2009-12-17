@@ -38,6 +38,7 @@ public class TimeLogger
     public TimeLogger()
     {
         super();
+        start();
     }
     
     public void start()
@@ -46,10 +47,18 @@ public class TimeLogger
         endTime   = 0;
     }
     
-    public void end()
+    public String end()
     {
         endTime = System.currentTimeMillis();
         
-        System.out.println(String.format("Elapsed Time: 8.2%f"+ (endTime - startTime) / 1000.0));
+        double totalSeconds = (endTime - startTime) / 1000.0;
+        
+        int hours = (int)(totalSeconds / 3600.0);
+        int mins  = (int)((totalSeconds - (hours * 3600)) / 60);
+        int secs  = (int)(totalSeconds - (hours * 3600) - (mins * 60));
+               
+        String str = String.format("Elapsed Time: %02d:%02d:%02d (%8.4f)", hours, mins, secs, totalSeconds);
+        System.out.println(str);
+        return str;
     }
 }
