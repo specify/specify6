@@ -524,10 +524,10 @@ public class ConvScopeFixer
         if (fixCollectingEventAttributes()) cnt++;
         if (fixCollectionObjectAttributes()) cnt++;
         if (fixCollectionObjectCitations()) cnt++;
-        if (fixCollectionObjects()) cnt++;
+        //if (fixCollectionObjects()) cnt++;
         
         if (fixDeterminationCitations()) cnt++;
-        if (fixDeterminations()) cnt++;
+        //if (fixDeterminations()) cnt++;
         if (fixOtherIdentifiers()) cnt++;
         if (fixPrepartionAttributes()) cnt++;
         //if (fixPrepartions()) cnt++;

@@ -4426,7 +4426,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     if (i == 0)
                     {
                         oldId = rs.getInt(1);
-                        Integer newId = prepIdMapper.get(oldId);
+                       Integer newId = prepIdMapper.get(oldId);
                         if (newId == null)
                         {
                             isError = true;

@@ -66,6 +66,17 @@ public abstract class FeedBackSender
     }
     
     /**
+     * @param cls
+     * @param exception
+     */
+    public void capture(final Class<?> cls, 
+                        final String message,
+                        final Exception exception)
+    {
+        connectToServerNow(getFeedBackSenderItem(cls, message, exception));
+    }
+    
+    /**
      * 
      */
     public void sendFeedback()
@@ -80,9 +91,20 @@ public abstract class FeedBackSender
      */
     protected FeedBackSenderItem getFeedBackSenderItem(final Class<?> cls, final Exception exception)
     {
+        return getFeedBackSenderItem(cls, null, exception);
+    }
+    
+    /**
+     * @param cls
+     * @param exception
+     * @return
+     */
+    protected FeedBackSenderItem getFeedBackSenderItem(final Class<?> cls, final String comments, final Exception exception)
+    {
         FeedBackSenderItem item = new FeedBackSenderItem();
         item.setStackTrace(exception != null ? exception.getMessage() : null);
         item.setClassName(cls != null ? cls.getName() : null);
+        item.setComments(comments);
         return item;
     }
     

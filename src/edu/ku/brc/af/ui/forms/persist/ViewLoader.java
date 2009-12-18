@@ -1077,8 +1077,8 @@ public class ViewLoader
                 
                 try
                 {
-                    Class<?> classObj = Class.forName(className);
                     log.debug(className);
+                    Class<?> classObj = Class.forName(className);
                     if (FormDataObjIFace.class.isAssignableFrom(classObj))
                     {
                         fldVerTableInfo   = DBTableIdMgr.getInstance().getByClassName(className);
@@ -1086,8 +1086,16 @@ public class ViewLoader
                         fldVerFormViewDef = formViewDef;
                     }
                     
+                } catch (ClassNotFoundException ex)
+                {
+                    String comments = "ClassNotFoundException["+className+"]  Name["+name+"]";
+                    log.error(comments);
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewLoader.class, comments, ex);
+                    
                 } catch (Exception ex)
                 {
+                    
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewLoader.class, ex);
                     
