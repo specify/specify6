@@ -30,12 +30,12 @@ else
 	v_exe="exe"
 fi
 
-tar -cvf file.tar  Specify_macos_$1_Beta$append.$v_dmg  Specify_unix_$1_Beta$append.$v_sh  Specify_windows_$1_Beta$append.$v_exe Specify_macos_$1_Beta_update$append.$v_dmg Specify_unix_$1_Beta_update$append.$v_sh Specify_windows_$1_Beta_update$append.$v_exe  updates$uappend.xml
+tar -cvf file$uappend.tar  Specify_macos_$1_Beta$append.$v_dmg  Specify_unix_$1_Beta$append.$v_sh  Specify_windows_$1_Beta$append.$v_exe Specify_macos_$1_Beta_update$append.$v_dmg Specify_unix_$1_Beta_update$append.$v_sh Specify_windows_$1_Beta_update$append.$v_exe  updates$uappend.xml
 
 if [ "${#3}" -gt "2" ] ; then
 	userAserver="$3"
 fi
 
-scp file.tar  $userAserver:.
+scp file$uappend.tar  $userAserver:.
 
 rm file.tar
