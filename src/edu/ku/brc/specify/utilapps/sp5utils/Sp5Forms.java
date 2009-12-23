@@ -39,6 +39,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FileDialog;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.Insets;
@@ -55,6 +56,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -69,6 +71,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -211,7 +214,7 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
         calcColumnWidths(formsTable);
         
         PanelBuilder pbBtn = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,p,f:p:g,p,f:p:g", "p"));
-        reportBtn = createButton("Create Forms");
+        reportBtn = createButton("Create Form Images");
         showBtn   = createButton("Show");
         schemaBtn = createButton("Schema");
         pbBtn.add(reportBtn, cc.xy(2, 1));
@@ -243,7 +246,7 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                doReport();
+                doCreateFormImages();
             }
         });
         schemaBtn.addActionListener(new ActionListener() {
@@ -321,7 +324,7 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
      * @param fi
      * @return
      */
-    protected Triple<JPanel, Integer, Integer> createPanel(final FormInfo formInfo)
+    protected FormPanelInfo createPanel(final FormInfo formInfo)
     {
     	CellConstraints cc = new CellConstraints();
     	
@@ -386,7 +389,7 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
                         uniqueKey = getUniqueKey(fi.getRelatedTableName(), "Embedded", null);
                         subForm   = formHash.get(uniqueKey);
                     }
-                    comp = (subForm != null ? createPanel(subForm).first : new JPanel());
+                    comp = (subForm != null ? createPanel(subForm).getPanel() : new JPanel());
                     addLbl = fi.getControlTypeNum() != 8;
                     break;
                 }
@@ -470,7 +473,7 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
         System.out.println("MaxW: "+maxWidth+"  "+maxCellWidth);
         System.out.println("MaxH: "+maxHeight+"  "+maxCellHeight);
         
-        return new Triple<JPanel, Integer, Integer>(panel, maxWidth, maxHeight);
+        return new FormPanelInfo(formInfo.getTitle() , panel, maxWidth, maxHeight);
     }
     
     /**
@@ -503,10 +506,20 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
             
             formFrame = new JFrame();
             
-            Triple<JPanel, Integer, Integer> triple = createPanel(selectedForm);
-            JPanel panel = triple.first;
+            FormPanelInfo formPanelInfo = createPanel(selectedForm);
+            JPanel panel = formPanelInfo.getPanel();
             
-            formFrame.setContentPane(panel);
+            JLabel label = new JLabel(formPanelInfo.getTitle(), SwingConstants.CENTER);
+            Font   font  = label.getFont();
+            
+            label.setFont(font.deriveFont(14.0f).deriveFont(Font.BOLD));
+            
+            JPanel container = new JPanel(new BorderLayout());
+            
+            container.add(panel, BorderLayout.CENTER);
+            container.add(label, BorderLayout.SOUTH);
+            
+            formFrame.setContentPane(container);
             
             panel.addMouseMotionListener(new MouseAdapter() {
                 @Override
@@ -517,7 +530,7 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
             });
             
             formFrame.setVisible(true);
-            formFrame.setSize(new Dimension(triple.second+10, triple.third+25));
+            formFrame.setSize(new Dimension(formPanelInfo.getMaxWidth()+10, formPanelInfo.getMaxHeight()+25));
         }
     }
     
@@ -912,8 +925,14 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
         }
     }
     
-    protected void doReport()
+    protected void doCreateFormImages()
     {
+        boolean doJustIndex = false;
+        if (doJustIndex)
+        {
+            createIndex();
+            return;
+        }
         formIndex = 0;
         
         advance();
@@ -936,8 +955,24 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
             generate();
         }
         
-        FormInfo fi;
-        do
+        boolean doSkip = false;
+        if (doSkip)
+        {
+            FormInfo fi;
+            do
+            {
+                formIndex++;
+                System.out.println(formIndex);
+                if (formIndex >= forms.size())
+                {
+                    System.out.println("***** Done");
+                    generate();
+                    return;
+                }
+                fi = forms.get(formIndex);
+                
+            } while (!fi.isFull() && formIndex < forms.size());
+        } else
         {
             formIndex++;
             System.out.println(formIndex);
@@ -945,11 +980,10 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
             {
                 System.out.println("***** Done");
                 generate();
+                createIndex();
                 return;
             }
-            fi = forms.get(formIndex);
-            
-        } while (!fi.isFull() && formIndex < forms.size());
+        }
         
         timer = new Timer();
         System.out.println("Scheduling next task. "+timer.hashCode());
@@ -978,14 +1012,16 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
             Component topComp = formFrame.getContentPane();
             
             Rectangle rect = topComp.getBounds();
-            if (rect.width == 0 || rect.height == 0)
+            if (rect.width < 1 || rect.height < 1)
             {
-                return;
+                System.err.println("Can't create image. " + selectedForm.getTitle());
+            } else
+            {
+                bufImage = new BufferedImage(rect.width, rect.height, (BufferedImage.TYPE_INT_ARGB));
+                Graphics2D    g2       = bufImage.createGraphics();
+                topComp.paint(g2);
+                g2.dispose();
             }
-            bufImage = new BufferedImage(rect.width, rect.height, (BufferedImage.TYPE_INT_ARGB));
-            Graphics2D    g2       = bufImage.createGraphics();
-            topComp.paint(g2);
-            g2.dispose();
         }
         
         if (formIndex < forms.size())
@@ -1003,6 +1039,7 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
                     {
                         public void run()
                         {
+                            formFrame.pack();
                             formFrame.repaint();
                         }
                     });
@@ -1053,21 +1090,28 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
         
         if (selectedForm != null)
         {
-            formName = selectedForm.getTableName();
+            formName = selectedForm.getFileName();
         }
     }
     
+    /**
+     * 
+     */
     private void createIndex()
     {
         String dirName = "conversions" + File.separator + namePair.second;
         String fName  = dirName + File.separator + "index.html";
         try
         {
-            File dir = new File(dirName);
-            PrintWriter pw = new PrintWriter(new File(fName));
+            File        dir = new File(dirName);
+            PrintWriter pw  = new PrintWriter(new File(fName));
             pw.println("<html><body><h2>Forms For"+ namePair.second +"</h2><table border='0'>");
             
-            for (String fileName : dir.list())
+            Vector<String> fileList = new Vector<String>();
+            Collections.addAll(fileList, dir.list());
+            Collections.sort(fileList);
+            
+            for (String fileName : fileList)
             {
                 if (fileName.endsWith("png"))
                 {
@@ -1262,6 +1306,56 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
         });
     }
     
+    //------------------------------------------------------------------------------
+    class FormPanelInfo
+    {
+        private String title;
+        private JPanel panel;
+        private int    maxHeight;
+        private int    maxWidth;
+        /**
+         * @param title
+         * @param panel
+         * @param maxHeight
+         * @param maxWidth
+         */
+        public FormPanelInfo(String title, JPanel panel, int maxHeight, int maxWidth)
+        {
+            super();
+            this.title = title;
+            this.panel = panel;
+            this.maxHeight = maxHeight;
+            this.maxWidth = maxWidth;
+        }
+        /**
+         * @return the title
+         */
+        public String getTitle()
+        {
+            return title;
+        }
+        /**
+         * @return the panel
+         */
+        public JPanel getPanel()
+        {
+            return panel;
+        }
+        /**
+         * @return the maxHeight
+         */
+        public int getMaxHeight()
+        {
+            return maxHeight;
+        }
+        /**
+         * @return the maxWidth
+         */
+        public int getMaxWidth()
+        {
+            return maxWidth;
+        }
+    }
     
     //------------------------------------------------------------------------------
     public class Sp6FieldComboBoxRenderer extends JComboBox implements TableCellRenderer

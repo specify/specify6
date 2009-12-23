@@ -116,6 +116,23 @@ public class FormInfo
     }
     
     /**
+     * @return the title
+     */
+    public String getTitle()
+    {
+        return tableName + (StringUtils.isNotEmpty(formVersion) ? (" " +formVersion) : "") + (StringUtils.isNotEmpty(formType) ? (" " +formType) : "");
+    }
+    
+    /**
+     * @return
+     */
+    public String getFileName()
+    {
+        return tableName + (StringUtils.isNotEmpty(formVersion) ? ("_" +formVersion) : "") + (StringUtils.isNotEmpty(formType) ? ("_" +formType) : "");
+    }
+    
+
+    /**
      * @param tableName
      * @param formVersion
      * @param formType
