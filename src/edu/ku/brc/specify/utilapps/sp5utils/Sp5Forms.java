@@ -116,6 +116,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.SpecifyDBConverter;
+import edu.ku.brc.specify.conversion.TableDataChecker;
 import edu.ku.brc.specify.utilapps.ERDVisualizer;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -157,6 +158,7 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
     protected JButton                   reportBtn;
     protected JButton                   schemaBtn;
     protected JButton                   showBtn;
+    protected JButton                   dataCheckerBtn;
     
     protected Sp6FieldComboBoxEditor    sp6FieldEditor;
     protected Sp6FieldComboBoxRenderer  sp6FieldRenderer;
@@ -213,13 +215,15 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
         
         calcColumnWidths(formsTable);
         
-        PanelBuilder pbBtn = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,p,f:p:g,p,f:p:g", "p"));
+        PanelBuilder pbBtn = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,p,f:p:g,p,f:p:g,p,f:p:g", "p"));
         reportBtn = createButton("Create Form Images");
         showBtn   = createButton("Show");
         schemaBtn = createButton("Schema");
+        dataCheckerBtn = createButton("Check For Nulls");
         pbBtn.add(reportBtn, cc.xy(2, 1));
         pbBtn.add(schemaBtn, cc.xy(4, 1));
         pbBtn.add(showBtn, cc.xy(6, 1));
+        pbBtn.add(dataCheckerBtn, cc.xy(8, 1));
         
         pb.add(createLabel("Forms", SwingConstants.CENTER),          cc.xy(1, 1));
         pb.add(createLabel("Missing Fields", SwingConstants.CENTER), cc.xy(3, 1));
@@ -256,6 +260,16 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
                 doSchema();
             }
         });
+        
+        dataCheckerBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                TableDataChecker tdc = new TableDataChecker(DBConnection.getInstance().createConnection());
+                tdc.doCheckDB();
+            }
+        });
+        
     }
     
     protected void doSchema()
