@@ -165,6 +165,38 @@ public class TableDataChecker
         }
     }
     
+    public void doCheckDB()
+    {
+        try
+        {
+            String dbName = connection.getCatalog();
+            
+            boolean fnd = false;
+            Vector<Object[]> tables = BasicSQLUtils.query(connection, "show tables");
+            for (Object[] tblRow : tables)
+            {
+                String tableName = tblRow[0].toString();
+                if (tableName.equalsIgnoreCase("usysversion"))
+                {
+                    fnd = true;
+                    break;
+                }
+            }
+            
+            if (fnd)
+            {
+                createHTMLReport(new File(dbName+".html"));
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+    
+    /**
+     * 
+     */
     public void doAllSp5DBs()
     {
         
