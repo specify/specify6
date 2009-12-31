@@ -22,6 +22,8 @@ elif [ "$2" = "m" ] ; then
 	v_dmg="tgz"
 	v_sh="tar.gz"
 	v_exe="zip"
+	echo "This script can't handle the Mobile version.  Use scp to put the .zip to the internal server instead."
+	exit
 else
 	append=""
 	uappend=""
