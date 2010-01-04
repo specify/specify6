@@ -30,7 +30,7 @@ import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.conversion.ConversionLogger.TableWriter;
+import edu.ku.brc.specify.conversion.TableWriter;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.Triple;
 
