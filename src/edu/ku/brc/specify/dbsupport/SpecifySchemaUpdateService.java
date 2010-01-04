@@ -326,26 +326,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     }
 
     /**
-     * @param conn
-     * @param databaseName
-     * @param tableName
-     * @param fieldName
-     * @return length of field or null if field does not exist.
-     */
-    Integer getFieldLength(final Connection conn, final String databaseName, final String tableName, final String fieldName)
-    {
-        //XXX portability. This is MySQL -specific.
-        Vector<Object[]> rows = BasicSQLUtils.query(conn, "SELECT CHARACTER_MAXIMUM_LENGTH FROM `information_schema`.`COLUMNS` where TABLE_SCHEMA = '" +
-        		databaseName + "' and TABLE_NAME = '" + tableName + "' and COLUMN_NAME = '" + fieldName + "'");                    
-        if (rows.size() == 0)
-        {
-        	return null; //the field doesn't even exits
-        } else 
-        {
-        	return((Number )rows.get(0)[0]).intValue();
-        }
-    }
-    /**
      * @param dbdriverInfo
      * @param hostname
      * @param databaseName
@@ -365,6 +345,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         log.debug("generateSchema connectionStr: " + connectionStr);
 
         log.debug("Creating database connection to: " + connectionStr);
+        
+        DBMSUserMgr dbmsMgr = DBMSUserMgr.getInstance();
         // Now connect to other databases and "create" the Derby database
         DBConnection dbConn = null;
         try
@@ -377,10 +359,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 Statement  stmt = null;
                 try
                 {
+                    dbmsMgr.setConnection(conn);
+                    
                     Integer count = null;
                 	stmt = conn.createStatement();
                     int rv = 0;
-                    Integer len = getFieldLength(conn, databaseName, "localitydetail", "UtmDatum");
+                    Integer len = dbmsMgr.getFieldLength("localitydetail", "UtmDatum");
                     if (len == null)
                     {
                     	count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM localitydetail");
@@ -404,7 +388,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     	}
                     }
                     
-                    len = getFieldLength(conn, databaseName, "specifyuser", "Password");
+                    len = dbmsMgr.getFieldLength("specifyuser", "Password");
                     if (len == null)
                     {
                         errMsgList.add("Unable to update table: specifyuser");
@@ -421,7 +405,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     	}
                     }
                     
-                    len = getFieldLength(conn, databaseName, "spexportschemaitem", "FieldName");
+                    len = dbmsMgr.getFieldLength("spexportschemaitem", "FieldName");
                     if (len == null)
                     {
                         errMsgList.add("Update count didn't match for update to table: spexportschemaitem");
@@ -438,7 +422,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     	}
                     }
                     
-                    len = getFieldLength(conn, databaseName, "agent", "LastName");
+                    len = dbmsMgr.getFieldLength("agent", "LastName");
                     if (len == null)
                     {
                         errMsgList.add("Update count didn't match for update to table: agent");
@@ -455,7 +439,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     	}
                     }
                     
-                    len = getFieldLength(conn, databaseName, "spexportschema", "SchemaName");
+                    len = dbmsMgr.getFieldLength("spexportschema", "SchemaName");
                     if (len == null)
                     {
                         errMsgList.add("Update count didn't match for update to table: spexportschema");
@@ -472,7 +456,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     	}
                     }
                     
-                    len = getFieldLength(conn, databaseName, "spexportschema", "SchemaVersion");
+                    len = dbmsMgr.getFieldLength("spexportschema", "SchemaVersion");
                     if (len == null)
                     {
                         errMsgList.add("Update count didn't match for update to table: spexportschema");
@@ -488,6 +472,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     		return false;
                     	}
                     }
+                    
+                    if (!dbmsMgr.doesFieldExistInTable("collectingeventattachment", "HostTaxonID"))
+                    {
+                        
+                    }
+                    
                     SpecifySchemaUpdateScopeFixer collectionMemberFixer = new SpecifySchemaUpdateScopeFixer(databaseName);
                     if (!collectionMemberFixer.fix(conn))
                     {
@@ -657,6 +647,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     if (stmt != null)
                     {
                         stmt.close();
+                    }
+                    if (dbmsMgr != null)
+                    {
+                        dbmsMgr.setConnection(null);
                     }
                 }
             }

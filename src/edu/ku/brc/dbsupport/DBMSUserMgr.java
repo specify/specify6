@@ -148,6 +148,14 @@ public abstract class DBMSUserMgr
      * @return false if table or field doesn't exist
      */
     public abstract boolean doesFieldExistInTable(String tableName, String fieldName);
+    
+    /*
+     * Returns the length of a field if there is one or null.
+     * @param tableName the table name
+     * @param fieldName the field in the table
+     * @return length of field or null if field does not exist.
+     */
+    public abstract Integer getFieldLength(final String tableName, final String fieldName);
 
 	/**
 	 * Creates a user and assigns permissions.
@@ -235,7 +243,7 @@ public abstract class DBMSUserMgr
                                          final String itPassword)
     {
         DBSTATUS status = checkForDB(dbName, hostName, itUsername,itPassword);
-        if (status == status.hasTables || status == status.emptyDB)
+        if (status == DBSTATUS.hasTables || status == DBSTATUS.emptyDB)
         {
             status = UIHelper.promptForAction("PROCEED", "CANCEL", "DEL_CUR_DB_TITLE", UIRegistry.getLocalizedMessage("DEL_CUR_DB", dbName)) ? DBSTATUS.ok : DBSTATUS.cancelled;
         }
