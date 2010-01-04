@@ -85,7 +85,7 @@ public class AgentConverter
     protected Pair<String, String>                          namePair   = new Pair<String, String>();
     protected Triple<String, String, String>                nameTriple = new Triple<String, String, String>();
 
-    protected ConversionLogger.TableWriter                  tblWriter;
+    protected TableWriter                  tblWriter;
     
     // For Name Parsing
     protected List<AgentNameInfo>                           names    = new Vector<AgentNameInfo>();

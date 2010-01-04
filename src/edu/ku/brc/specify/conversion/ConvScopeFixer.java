@@ -57,7 +57,7 @@ public class ConvScopeFixer
     protected Connection                     oldDBConn;
     protected Connection                     newDBConn;
     protected String                         oldDBName;
-    protected ConversionLogger.TableWriter   tblWriter;
+    protected TableWriter   tblWriter;
     
     protected HashMap<Integer, Integer>      taxonTypesInUse = new HashMap<Integer, Integer>();
     protected HashMap<Integer, TaxonTreeDef> taxonTreeDefHash = new HashMap<Integer, TaxonTreeDef>(); // Key is old TaxonTreeTypeID
@@ -117,7 +117,7 @@ public class ConvScopeFixer
     public ConvScopeFixer(final Connection oldDBConn, 
                           final Connection newDBConn,
                           final String     oldDBName,
-                          final ConversionLogger.TableWriter tblWriter)
+                          final TableWriter tblWriter)
     {
         super();
         this.oldDBConn = oldDBConn;

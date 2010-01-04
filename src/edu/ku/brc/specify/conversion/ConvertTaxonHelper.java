@@ -57,7 +57,7 @@ public class ConvertTaxonHelper
     protected Connection                     oldDBConn;
     protected Connection                     newDBConn;
     protected String                         oldDBName;
-    protected ConversionLogger.TableWriter   tblWriter;
+    protected TableWriter   tblWriter;
     protected IdMapperIndexIncrementerIFace  indexIncremeter;
     
     protected Vector<CollectionInfo>         collectionInfoList;
@@ -75,7 +75,7 @@ public class ConvertTaxonHelper
     public ConvertTaxonHelper(final Connection oldDBConn, 
                               final Connection newDBConn,
                               final String     oldDBName,
-                              final ConversionLogger.TableWriter tblWriter,
+                              final TableWriter tblWriter,
                               final IdMapperIndexIncrementerIFace indexIncremeter)
     {
         super();

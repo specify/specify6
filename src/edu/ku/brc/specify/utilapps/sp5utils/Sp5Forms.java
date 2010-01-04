@@ -121,7 +121,6 @@ import edu.ku.brc.specify.utilapps.ERDVisualizer;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
-import edu.ku.brc.util.Triple;
 
 /**
  * @author rod

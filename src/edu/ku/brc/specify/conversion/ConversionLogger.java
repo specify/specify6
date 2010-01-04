@@ -22,10 +22,10 @@ package edu.ku.brc.specify.conversion;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Hashtable;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author rod
@@ -37,12 +37,7 @@ import org.apache.commons.io.FilenameUtils;
  */
 public class ConversionLogger
 {
-    public static String TR ="<TR>";
-    public static String TR_ ="</TR>";
-    public static String TD ="<TD>";
-    public static String TD_ ="</TD>";
-    public static String TH ="<TH>";
-    public static String TH_ ="</TH>";
+
     
     protected Hashtable<String, String>      printWritersNameHash  = new Hashtable<String, String>();
     protected Hashtable<String, TableWriter> printWritersHash      = new Hashtable<String, TableWriter>();
@@ -64,7 +59,16 @@ public class ConversionLogger
      */
     public boolean initialize(final String name)
     {
-        dir = new File("conversions" + File.separator + name);
+        return initialize("conversions", name);
+    }
+    
+    /**
+     * @param name
+     * @return
+     */
+    public boolean initialize(final String baseDirName, final String name)
+    {
+        dir = new File(baseDirName + File.separator + name);
         if (!dir.exists())
         {
             return dir.mkdirs();
@@ -88,10 +92,10 @@ public class ConversionLogger
     public TableWriter getWriter(final String fileName, final String title)
     {
         
-        ConversionLogger.TableWriter tblWriter = null;
+        TableWriter tblWriter = null;
         try
         {
-            String path = dir.getAbsolutePath() + File.separator + fileName;
+            String path = dir.getAbsolutePath() + File.separator + StringUtils.replace(fileName, " ", "_");
             tblWriter = new TableWriter(path, title);
             printWritersNameHash.put(fileName, path);
             printWritersHash.put(fileName, tblWriter);
@@ -149,139 +153,5 @@ public class ConversionLogger
         }
         
         return null;
-    }
-    
-    //-------------------------------------------------------------
-    public class TableWriter extends PrintWriter
-    {
-        private String fName;
-        private String title;
-        
-        private int errCount = 0;
-        private int lineCnt  = 0;
-        
-        public TableWriter(final String fileName, final String title) throws FileNotFoundException
-        {
-            super(fileName);
-            this.fName = fileName;
-            this.title = title;
-            
-            println("<HTML>\n<HEAD>\n<TITLE>"+title+"</TITLE>\n");
-            writeStyle(this);
-            println("</HEAD>\n<BODY>");
-            println("<H2>"+title+"</H2>");
-        }
-        
-        /**
-         * @param out
-         */
-        protected void writeStyle(final PrintWriter out)
-        {
-            out.println("<STYLE>");
-            out.println(" SPAN.err { color: red; }");
-            out.println(" TABLE.o { border-top: solid 1px rgb(128, 128, 128); border-left: solid 1px rgb(128, 128, 128); }");
-            out.println(" TABLE.o td { border-bottom: solid 1px rgb(128, 128, 128); border-right: solid 1px rgb(128, 128, 128); }");
-            out.println(" TABLE.o th { border-bottom: solid 1px rgb(128, 128, 128); border-right: solid 1px rgb(128, 128, 128); }");
-            out.println(" TABLE.i { border-top: solid 1px rgb(192, 192, 192); border-left: solid 1px rgb(192, 192, 192); }");
-            out.println(" TABLE.i td { border-bottom: solid 1px rgb(192, 192, 192); border-right: solid 1px rgb(192, 192, 192); }");
-            out.println(" TABLE.i th { border-bottom: solid 1px rgb(192, 192, 192); border-right: solid 1px rgb(192, 192, 192); }");
-            out.println("</STYLE>");
-        }
-        
-        /**
-         * @return the fName
-         */
-        public String getFileName() 
-        {
-            return fName;
-        }
-
-        /**
-         * @return the title
-         */
-        public String getTitle() {
-            return title;
-        }
-
-        public void log(final String msg)
-        {
-            lineCnt++;
-            print(msg);
-            println("<BR>");
-            flush();
-        }
-        
-        public void logError(final String msg)
-        {
-            errCount++;
-            lineCnt++;
-            
-            println("<SPAN class=\"err\">");
-            print(msg);
-            println("</SPAN><BR>");
-            flush();
-        }
-        
-        public void startTable()
-        {
-            println("<TABLE class=\"o\" cellspacing=\"0\">");
-            flush();
-        }
-        
-        public void endTable()
-        {
-            println("</TABLE>");
-            flush();
-        }
-        
-        public void log(final String...cols)
-        {
-            lineCnt++;
-            print(TR);
-            for (String c : cols)
-            {
-                if (c != null)
-                {
-                    print(TD);
-                    print(c);
-                    print(TD_);
-                }
-            }
-            println(TR_);
-            flush();
-        }
-        
-        public void logHdr(final String...cols)
-        {
-            print(TR);
-            for (String c : cols)
-            {
-                if (c != null)
-                {
-                    print(TH);
-                    print(c);
-                    print(TH_);
-                }
-            }
-            println(TR_);
-            flush();
-        }
-        
-        /* (non-Javadoc)
-         * @see java.io.PrintWriter#close()
-         */
-        public void close()
-        {
-            println("</BODY></HTML>");
-            super.close();
-        }
-        
-        /**
-         * @return
-         */
-        public boolean hasLines()
-        {
-            return lineCnt > 0;
-        }
     }
 }

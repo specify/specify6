@@ -62,7 +62,7 @@ public class BasicSQLUtils
 {
     protected static final Logger           log               = Logger.getLogger(BasicSQLUtils.class);
     
-    protected static ConversionLogger.TableWriter tblWriter = null;
+    protected static TableWriter tblWriter = null;
     
     public static enum SERVERTYPE {MySQL, MS_SQLServer}
     public static SERVERTYPE myDestinationServerType = SERVERTYPE.MySQL;
@@ -187,12 +187,12 @@ public class BasicSQLUtils
     }
     
     
-    public static ConversionLogger.TableWriter getTblWriter() 
+    public static TableWriter getTblWriter() 
     {
         return tblWriter;
     }
 
-    public static void setTblWriter(ConversionLogger.TableWriter tblWriter) 
+    public static void setTblWriter(TableWriter tblWriter) 
     {
         BasicSQLUtils.tblWriter = tblWriter;
     }

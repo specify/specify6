@@ -831,7 +831,7 @@ public class SpecifyDBConverter
                 /////////////////////////////////////////////////////////////
                 // Really need to create or get a proper Discipline Record
                 /////////////////////////////////////////////////////////////
-                ConversionLogger.TableWriter taxonTblWriter = convLogger.getWriter("FullTaxon.html", "Taxon Conversion");
+                TableWriter taxonTblWriter = convLogger.getWriter("FullTaxon.html", "Taxon Conversion");
                 ConvertTaxonHelper           taxonHelper    = new ConvertTaxonHelper(oldDBConn, newDBConn, dbNameDest, taxonTblWriter, conversion);
                 taxonHelper.createTaxonIdMappings();
                 taxonHelper.doForeignKeyMappings();
@@ -911,7 +911,7 @@ public class SpecifyDBConverter
                 boolean doGTP = true;
                 if (doGTP || doAll )
                 {
-                    ConversionLogger.TableWriter tblWriter = convLogger.getWriter("GTP.html", "Geologic Time Period");
+                    TableWriter tblWriter = convLogger.getWriter("GTP.html", "Geologic Time Period");
                     GeologicTimePeriodTreeDef treeDef = conversion.convertGTPDefAndItems(conversion.isPaleo());
                     conversion.convertGTP(tblWriter, treeDef, conversion.isPaleo());
                 } else
@@ -1078,7 +1078,7 @@ public class SpecifyDBConverter
                 boolean doStrat = false;
                 if (doStrat || doAll )
                 {
-                     ConversionLogger.TableWriter tblWriter = convLogger.getWriter("FullStrat.html", "Straigraphy Conversion");
+                     TableWriter tblWriter = convLogger.getWriter("FullStrat.html", "Straigraphy Conversion");
                      
                      conversion.convertStrat(tblWriter, conversion.isPaleo());
                 }
@@ -1286,7 +1286,7 @@ public class SpecifyDBConverter
                 
                 frame.incOverall();
                 
-                ConversionLogger.TableWriter tblWriter = convLogger.getWriter("ScopeUpdater.html", "Updating Scope Summary");
+                TableWriter tblWriter = convLogger.getWriter("ScopeUpdater.html", "Updating Scope Summary");
                 ConvScopeFixer convScopeFixer = new ConvScopeFixer(oldDBConn, newDBConn, dbNameDest, tblWriter);
                 convScopeFixer.doFixTables();
                 convScopeFixer.checkTables();
@@ -1316,7 +1316,10 @@ public class SpecifyDBConverter
                    updateVersionInfo(newConn);
                 }
                 
-                ConvertMiscData.convertKUFishCruiseData(oldDBConn, newDBConn, conversion.getCurDisciplineID());
+                if (dbNameDest.startsWith("kui_fish_"))
+                {
+                    ConvertMiscData.convertKUFishCruiseData(oldDBConn, newDBConn, conversion.getCurDisciplineID());
+                }
                 
                 log.info("Done - " + dbNameDest + " " + convertTimeInSeconds);
                 frame.setDesc("Done - " + dbNameDest + " " + convertTimeInSeconds);
@@ -1439,7 +1442,7 @@ public class SpecifyDBConverter
      */
     protected void createTableSummaryPage()
     {
-        ConversionLogger.TableWriter tblWriter = convLogger.getWriter("TableSummary.html", "Table Summary");
+        TableWriter tblWriter = convLogger.getWriter("TableSummary.html", "Table Summary");
         tblWriter.startTable();
         tblWriter.println("<tr><th>Table</th><th>Count</th></tr>");
         int total = 0;

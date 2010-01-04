@@ -71,7 +71,7 @@ public class ConvertMiscData
                 }
                 pStmt2.setTimestamp(6, (Timestamp)row[3]);
                 pStmt2.setTimestamp(7, (Timestamp)row[4]);
-                pStmt1.setInt(8, 0);
+                pStmt2.setInt(8, 0);
                 
                 pStmt2.execute();
             }
