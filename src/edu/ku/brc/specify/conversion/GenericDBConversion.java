@@ -5464,9 +5464,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         if (subNumber < 0)
                         {
                             skipRecord = true;
-                            msg = "Collection Object is being skipped because SubNumber is less than zero CatalogNumber["+ catalogNumber + "]";
-                            log.error(msg);
-                            tblWriter.logError(msg);
+                            //msg = "Collection Object is being skipped because SubNumber is less than zero CatalogNumber["+ catalogNumber + "]";
+                            //log.error(msg);
+                            //tblWriter.logError(msg);
                             //showError(msg);
                             break;
                         }
@@ -5679,12 +5679,12 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
             } while (rsLooping.next());
 
-            if (boaCnt > 0)
+            /*if (boaCnt > 0)
             {
                 msg = "CollectionObjectAttributes not mapped: " + colObjAttrsNotMapped + " out of "+boaCnt;
                 log.info(msg);
                 tblWriter.logError(msg);
-            }
+            }*/
             
             stmt2.close();
 
@@ -6882,6 +6882,22 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         setTblWriter(null);
         IdHashMapper.setTblWriter(null);
     }
+    
+    private void fixGeography(final String fieldName)
+    {
+        int cnt = BasicSQLUtils.getCountAsInt(oldDBConn, String.format("SELECT COUNT(*) FROM geography WHERE %s = 'null'", fieldName));
+        if (cnt > 0)
+        {
+            int recs = BasicSQLUtils.update(oldDBConn, String.format("UPDATE geography SET %s = NULL WHERE %s = 'null'", fieldName, fieldName));
+            if (cnt == recs)
+            {
+                log.debug(String.format("%d Geography field %s  was updated correctly .", recs, fieldName));
+            } else
+            {
+                log.debug(String.format("Geography field %s  was updated in error %d / %d.", fieldName, cnt, recs));
+            }
+        }
+    }
 
     /**
      * @param treeDef
@@ -6909,6 +6925,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         String    sql           = "SELECT GeographyID,ContinentOrOcean,Country,State,County FROM geography";
         Statement statement     = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         ResultSet oldGeoRecords = statement.executeQuery(sql);
+        
+        fixGeography("ContinentOrOcean");
+        fixGeography("Country");
+        fixGeography("State");
+        fixGeography("County");
 
         if (hasFrame)
         {
@@ -6964,6 +6985,12 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             String state   = oldGeoRecords.getString(4);
             String county  = oldGeoRecords.getString(5);
             
+            /*cont    = StringUtils.isNotEmpty(county)  && cont.equals("null")    ? null : cont;
+            country = StringUtils.isNotEmpty(country) && country.equals("null") ? null : country;
+            state   = StringUtils.isNotEmpty(state)   && state.equals("null")   ? null : state;
+            county  = StringUtils.isNotEmpty(county)  && county.equals("null")  ? null : county;
+            */
+            
             if (StringUtils.isEmpty(cont) && StringUtils.isEmpty(country) && 
                 StringUtils.isEmpty(state) && StringUtils.isEmpty(county))
             {
@@ -7001,7 +7028,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 //log.error(msg);
                 //tblWriter.logError(msg);
                 
-                country = "Undefined"; 
+                cont = "Undefined"; 
             }
 
             // create a new Geography object from the old data

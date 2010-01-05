@@ -33,6 +33,9 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class ConvertStatSender extends FeedBackSender
 {
+    
+    private String cgiScript = "convinfo.php";
+    
     /**
      * 
      */
@@ -41,13 +44,21 @@ public class ConvertStatSender extends FeedBackSender
         
     }
     
+    /**
+     * 
+     */
+    public ConvertStatSender(final String cgiScript)
+    {
+        this.cgiScript = cgiScript;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.FeedBackSender#getSenderURL()
      */
     @Override
     protected String getSenderURL()
     {
-        return UIRegistry.getResourceString("CGI_BASE_URL") + "/convinfo.php";
+        return UIRegistry.getResourceString("CGI_BASE_URL") + "/" + cgiScript;
     }
     
     public void senConvertInfo(final String collectionName, final int numColObj, final int convTime)
@@ -58,6 +69,28 @@ public class ConvertStatSender extends FeedBackSender
             props.put("CollectionName", collectionName);
             props.put("num_colobj",     Integer.toString(numColObj));
             props.put("num_convtime",   Integer.toString(convTime));
+            FeedBackSenderItem item = new FeedBackSenderItem();
+            item.setProps(props);
+            send(item);
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    public void senVerifyInfo(final String collectionName, 
+                              final int numColObj, 
+                              final int convTime, 
+                              final int numErrors)
+    {
+        try
+        {
+            Properties props = new Properties();
+            props.put("CollectionName", collectionName);
+            props.put("num_colobj",     Integer.toString(numColObj));
+            props.put("num_convtime",   Integer.toString(convTime));
+            props.put("num_verifyerrs", Integer.toString(numErrors));
             FeedBackSenderItem item = new FeedBackSenderItem();
             item.setProps(props);
             send(item);

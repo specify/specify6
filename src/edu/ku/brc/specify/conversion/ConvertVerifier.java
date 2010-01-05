@@ -281,6 +281,8 @@ public class ConvertVerifier
         newDBStmt = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         oldDBStmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         
+        long startTime = System.currentTimeMillis();
+
         String[] tableNames = {"CollectingEvent", "CollectingEvent", "Locality", "Locality"};
         for (int i=0;i<tableNames.length;i+=2)
         {
@@ -290,11 +292,11 @@ public class ConvertVerifier
         progressFrame = new ProgressFrame("Checking Catalog Objects....");
         progressFrame.adjustProgressFrame();
         
-        Integer total = BasicSQLUtils.getCount(oldDBConn, "SELECT COUNT(CatalogNumber) FROM collectionobjectcatalog WHERE CollectionObjectTypeID < 20 ORDER BY CatalogNumber ASC");
-        progressFrame.setProcess(0, total);
+        Integer numColObjs = BasicSQLUtils.getCount(oldDBConn, "SELECT COUNT(CatalogNumber) FROM collectionobjectcatalog WHERE CollectionObjectTypeID < 20 ORDER BY CatalogNumber ASC");
+        progressFrame.setProcess(0, numColObjs);
         //progressFrame.setDesc("Checking Catalog Objects....");
         
-        progressFrame.setOverall(0, total*4);
+        progressFrame.setOverall(0, numColObjs*4);
         progressFrame.setOverall(0);
         progressFrame.setDesc("");
 
@@ -327,7 +329,7 @@ public class ConvertVerifier
         {
             int i = 0;
             Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            ResultSet rs   = stmt.executeQuery("SELECT CatalogNumber FROM collectionobjectcatalog WHERE CollectionObjectTypeID < 20 ORDER BY CatalogNumber ASC");
+            ResultSet rs   = stmt.executeQuery("SELECT CatalogNumber FROM collectionobjectcatalog WHERE CollectionObjectTypeID < 20 AND SubNumber >= 0 ORDER BY CatalogNumber ASC");
             while (rs.next())
             {
                 int    oldCatNum = rs.getInt(1);
@@ -433,7 +435,7 @@ public class ConvertVerifier
             stmt.close();
         }
         
-        progressFrame.setProcess(total);
+        progressFrame.setProcess(numColObjs);
         
         if (isCOOn(DO_COLLECTORS))
         {
@@ -441,7 +443,7 @@ public class ConvertVerifier
             verifyCollectors();
         }
         
-        progressFrame.setOverall(total*2);
+        progressFrame.setOverall(numColObjs*2);
         if (isCOOn(DO_COLLEVENTS))
         {
             tblWriter = tblWriterHash.get(DO_COLLEVENTS);
@@ -453,7 +455,7 @@ public class ConvertVerifier
             tw.endTable();
         }
         
-        progressFrame.setOverall(total*3);
+        progressFrame.setOverall(numColObjs*3);
         
         
         tblWriter = convLogger.getWriter("CatalogNumberSummary.html", "Catalog Nummber Summary");
@@ -537,7 +539,7 @@ public class ConvertVerifier
             rs.close();
             stmt.close();
         }
-        progressFrame.setOverall(total*4);
+        progressFrame.setOverall(numColObjs*4);
         newDBConn.close();
         oldDBConn.close();
         
@@ -550,6 +552,12 @@ public class ConvertVerifier
         
         File indexFile = convLogger.closeAll();
         
+        long endTime = System.currentTimeMillis();
+        
+        int convertTimeInSeconds = (int)((endTime - startTime) / 1000.0);
+        
+        //ConvertStatSender sender = new ConvertStatSender("verify.php");
+        //sender.senConvertInfo(databaseNameDest, numColObjs, convertTimeInSeconds);
         
         log.info("Done.");
         
@@ -712,24 +720,29 @@ public class ConvertVerifier
                     return true;
                 }
             }
-            StringBuilder sb = new StringBuilder("Couldn't find New Geo Name[");
-            sb.append(newGeoName);
-            sb.append("] Old Id[");
-            sb.append(oldDBRS.getInt(1));
-            sb.append("]");
-            for (int i=names.length-1;i>=0;i--)
-            {
-                sb.append(" ");
-                sb.append(lbls[i]);
-                sb.append("[");
-                sb.append(names[i]);
-                sb.append("]");
-            }
-            String oldNewIdStr = oldCatNum + " / "  + newCatNum+" ";
-            log.error(oldNewIdStr + " - " + sb.toString());
-            tblWriter.logErrors(oldNewIdStr, sb.toString());
             
-            return false;
+            if (!newGeoName.equals("Undefined"))
+            {
+                StringBuilder sb = new StringBuilder("Couldn't find New Geo Name[");
+                sb.append(newGeoName);
+                sb.append("] Old Id[");
+                sb.append(oldDBRS.getInt(1));
+                sb.append("]");
+                for (int i=names.length-1;i>=0;i--)
+                {
+                    sb.append(" ");
+                    sb.append(lbls[i]);
+                    sb.append("[");
+                    sb.append(names[i]);
+                    sb.append("]");
+                }
+                String oldNewIdStr = oldCatNum + " / "  + newCatNum+" ";
+                log.error(oldNewIdStr + " - " + sb.toString());
+                tblWriter.logErrors(oldNewIdStr, sb.toString());
+                
+                return false;
+            }
+            return true;
             
         } finally
         {
@@ -1590,14 +1603,19 @@ public class ConvertVerifier
                         "LEFT JOIN geography g ON l.GeographyID = g.GeographyID ORDER BY c.CollectingEventID";
         
         String newCntSQL = "SELECT count(*) " + 
-                        "FROM collectingevent c LEFT JOIN locality l ON c.LocalityID = l.LocalityID " + 
-                        "LEFT JOIN geography g ON l.GeographyID = g.GeographyID ORDER BY c.CollectingEventID";
+                           "FROM collectingevent c LEFT JOIN locality l ON c.LocalityID = l.LocalityID " + 
+                           "LEFT JOIN geography g ON l.GeographyID = g.GeographyID ORDER BY c.CollectingEventID";
 
 
         String oldCntSQL = "SELECT count(*) "+
-                        "FROM collectingevent c LEFT JOIN locality l ON c.LocalityID = l.LocalityID "+
-                        "LEFT JOIN geography g ON l.GeographyID = g.GeographyID ORDER BY c.CollectingEventID";
+                           "FROM collectingevent c LEFT JOIN locality l ON c.LocalityID = l.LocalityID "+
+                           "LEFT JOIN geography g ON l.GeographyID = g.GeographyID ORDER BY c.CollectingEventID";
 
+
+        log.info(newCntSQL);
+        log.info(oldCntSQL);
+        log.info(newSQL);
+        log.info(oldSQL);
 
         Integer oldCnt = BasicSQLUtils.getCount(oldCntSQL);
         Integer newCnt = BasicSQLUtils.getCount(newCntSQL);
@@ -1616,7 +1634,7 @@ public class ConvertVerifier
                 boolean hasOldRec = oldDBRS.next();
                 boolean hasNewRec = newDBRS.next();
                 
-                if (!hasOldRec && !hasNewRec)
+                if (!hasOldRec || !hasNewRec)
                 {
                     break;
                 }
@@ -1638,10 +1656,10 @@ public class ConvertVerifier
                 
                 String oldNewIdStr = oldId + " / "+newId;
                 
-                if (newGeoName != null)
+                if (newGeoName != null && !newGeoName.equals("Undefined"))
                 {
                     boolean fnd       = false;
-                    for (int i=7;i<15;i++)
+                    for (int i=6;i<14;i++)
                     {
                         //if (i == 7) System.out.println();
                         String name = oldDBRS.getString(i);
@@ -1655,9 +1673,10 @@ public class ConvertVerifier
                             }
                         }
                     }
+                    
                     if (!fnd)
                     {
-                        String msg = "No match found for new Geo ["+newGeoName+"]";
+                        String msg = "No match found for new Geo ["+newGeoName+"] ["+oldId + " / "  + newId+"]";
                         log.error(msg);
                         tblWriter.logErrors(oldNewIdStr, msg);
                     }

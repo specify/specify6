@@ -45,6 +45,9 @@ import org.apache.log4j.Logger;
 import com.mysql.jdbc.CommunicationsException;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 
+import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
@@ -1169,11 +1172,11 @@ public class BasicSQLUtils
 
                 }
                 //Meg dropped the (1) from the newFieldType check, field metadata didn't include the (1) values
-                else if (newFieldType.equalsIgnoreCase("bit") || newFieldType.equalsIgnoreCase("tinyint"))
+                else if (newFieldType.equalsIgnoreCase("bit") || newFieldType.equalsIgnoreCase("tinyint") || newFieldType.equalsIgnoreCase("boolean"))
                 //else if (newFieldType.equalsIgnoreCase("bit(1)") || newFieldType.equalsIgnoreCase("tinyint(1)"))
                 {
                     int val = ((Integer)obj).intValue();
-                    return Integer.toString(val == 0? 0 : 1);
+                    return Integer.toString(val == 0 ? 0 : 1);
                 }
                 ////Meg dropped the (1) from the newFieldType check, field metadata didn't include the (1) values
                 //else if (newFieldType.equalsIgnoreCase("bit") || newFieldType.equalsIgnoreCase("tinyint"))
@@ -1630,6 +1633,8 @@ public class BasicSQLUtils
             numRecs = getCountAsInt(fromConn, countSQL);
         }
         setProcess(0, numRecs);
+        
+        DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoByTableName(toTableName);
 
         String id = "";
         try
@@ -1984,6 +1989,12 @@ public class BasicSQLUtils
                         		str.append("NULL");
                         	}
 
+                        } else if (dataObj instanceof Number)
+                        {
+                            DBFieldInfo fi   = tblInfo.getFieldByColumnName(newColName);
+                            String      type = newFldMetaData.getType().toLowerCase().startsWith("tiny") ? fi.getType() : newFldMetaData.getType();
+                            str.append(getStrValue(dataObj, type));
+                            
                         } else 
                         {
                             str.append(getStrValue(dataObj, newFldMetaData.getType()));
