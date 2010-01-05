@@ -6967,9 +6967,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             if (StringUtils.isEmpty(cont) && StringUtils.isEmpty(country) && 
                 StringUtils.isEmpty(state) && StringUtils.isEmpty(county))
             {
-                String msg = "For Record Id["+oldId+"] Continent, Country, State and County are all null.";
-                log.error(msg);
-                tblWriter.logError(msg);
+                //String msg = "For Record Id["+oldId+"] Continent, Country, State and County are all null.";
+                //log.error(msg);
+                //tblWriter.logError(msg);
                 
                 cont    = "Undefined";
                 country = "Undefined";
@@ -6978,19 +6978,28 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
             } else if (StringUtils.isEmpty(cont) && StringUtils.isEmpty(country) && StringUtils.isEmpty(state))
             {
-                String msg = "For Record Id["+oldId+"] Continent, Country and State are all null.";
-                log.error(msg);
-                tblWriter.logError(msg);
+                //String msg = "For Record Id["+oldId+"] Continent, Country and State are all null.";
+                //log.error(msg);
+                //tblWriter.logError(msg);
                 
                 cont    = "Undefined";
                 country = "Undefined";
                 state   = "Undefined";
                 
-            } else if (StringUtils.isEmpty(country))
+            } else if (StringUtils.isEmpty(cont) && StringUtils.isEmpty(country))
             {
-                String msg = "For Record Id["+oldId+"] Country is null.";
-                log.error(msg);
-                tblWriter.logError(msg);
+                //String msg = "For Record Id["+oldId+"] Country is null.";
+                //log.error(msg);
+                //tblWriter.logError(msg);
+                
+                cont    = "Undefined"; 
+                country = "Undefined"; 
+                
+            } else if (StringUtils.isEmpty(cont))
+            {
+                //String msg = "For Record Id["+oldId+"] Country is null.";
+                //log.error(msg);
+                //tblWriter.logError(msg);
                 
                 country = "Undefined"; 
             }
