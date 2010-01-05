@@ -103,11 +103,12 @@ public class ConvertVerifier
     public static final long DO_CO_GEO              =  128; 
     public static final long DO_COLLECTORS          =  256; 
     public static final long DO_COLLEVENTS          =  512; 
-    public static final long DO_CO_ALL              = 1023; 
+    public static final long DO_TAXON_CIT           = 1024; 
+    public static final long DO_CO_ALL              = 2047; 
     
     private String[] labels = {"None", "Preparations", "CO Collecting Events", "Localities", "Preparers", 
-                                 "Catalogers", "Determiners", "Taxon", "Geographies", "Collectors", 
-                                 "Collecting Events", "All"};
+                               "Catalogers", "Determiners", "Taxon", "Geographies", "Collectors", 
+                               "Collecting Events", "Taxon Citations", "All"};
     private ToggleButtonChooserPanel<String> chkPanel;
     
     //public static final long DONT_ADD_ALL_ALTVIEWS  = 256; 
@@ -397,6 +398,15 @@ public class ConvertVerifier
                 {
                     tblWriter = tblWriterHash.get(DO_CO_PREPARER);
                     if (!verifyPreparer(oldCatNum, newCatNum))
+                    {
+                        catNumsInErrHash.put(newCatNum, oldCatNum);
+                    }
+                }
+                
+                if (isCOOn(DO_TAXON_CIT))
+                {
+                    tblWriter = tblWriterHash.get(DO_TAXON_CIT);
+                    if (!verifyTaxonCitations(oldCatNum, newCatNum))
                     {
                         catNumsInErrHash.put(newCatNum, oldCatNum);
                     }
@@ -882,6 +892,36 @@ public class ConvertVerifier
      * @return
      * @throws SQLException
      */
+    private boolean verifyTaxonCitations(final int oldCatNum, final String newCatNum) throws SQLException
+    {
+        newSQL = "SELECT t.Name, tc.Text1, tc.Text2, tc.Number1, tc.Number2, tc.YesNo1, tc.YesNo2, rw.ReferenceWorkType, rw.Title, rw.Publisher, rw.PlaceOfPublication, rw.Volume, rw.Pages, rw.LibraryNumber " +
+                 "FROM collectionobject co INNER JOIN determination d ON co.CollectionObjectID = d.CollectionObjectID " +
+                 "INNER JOIN taxon t ON d.TaxonID = t.TaxonID " +
+                 "INNER JOIN taxoncitation tc ON t.TaxonID = tc.TaxonID " +
+                 "INNER JOIN referencework rw ON tc.ReferenceWorkID = rw.ReferenceWorkID " +
+                 "WHERE CatalogNumber = '"+ newCatNum + "'";
+        
+        oldSQL = "SELECT t.TaxonName, tc.Text1, tc.Text2, tc.Number1, tc.Number2, tc.YesNo1, tc.YesNo2, rw.ReferenceWorkType, rw.Title, rw.Publisher, rw.PlaceOfPublication, rw.Volume, rw.Pages, rw.LibraryNumber " +
+                    "FROM collectionobjectcatalog cc INNER JOIN determination d ON cc.CollectionObjectCatalogID = d.BiologicalObjectID " +
+                    "INNER JOIN taxonname t ON d.TaxonNameID = t.TaxonNameID " +
+                    "INNER JOIN taxoncitation tc ON t.TaxonNameID = tc.TaxonNameID " +
+                    "INNER JOIN referencework rw ON tc.ReferenceWorkID = rw.ReferenceWorkID " +
+                    "WHERE CatalogNumber = " + oldCatNum;
+
+        if (debug)
+        {
+            log.debug("New SQL: "+newSQL);
+            log.debug("Old SQL: "+oldSQL);
+        }
+        StatusType status = compareRecords("TaxonCitation", oldCatNum, newCatNum, oldSQL, newSQL);
+        dumpStatus(status);
+        return status == StatusType.COMPARE_OK;
+    }
+
+    /**
+     * @return
+     * @throws SQLException
+     */
     private boolean verifyAllLocalityToGeo() throws SQLException
     {
         newSQL = "SELECT locality.LocalityID, geography.GeographyID, geography.Name " +
@@ -1105,19 +1145,19 @@ public class ConvertVerifier
      * @throws SQLException
      */
     private StatusType compareRecords(final String desc, 
-                                        final String oldCatNum, 
-                                        final String newCatNum, 
-                                        final String oldSQLArg, 
-                                        final String newSQLArg) throws SQLException
+                                      final String oldCatNum, 
+                                      final String newCatNum, 
+                                      final String oldSQLArg, 
+                                      final String newSQLArg) throws SQLException
     {
         boolean dbg = false;
-        
-        getResultSets(oldSQLArg, newSQLArg);
         if (dbg)
         {
             System.out.println(oldSQLArg);
             System.out.println(newSQLArg);
-        }
+        }        
+        getResultSets(oldSQLArg, newSQLArg);
+
         
         try
         {
@@ -1192,10 +1232,11 @@ public class ConvertVerifier
                     }
                     
                     String oldColName = oldRsmd.getColumnName(oldColInx);
-                    if (oldColName.equals("PreparationMethod"))
+                    if (oldColName.equals("PreparationMethod") && newObj != null)
                     {
-                        if ((oldObj == null && newObj != null && !newObj.equals("Misc")) || 
-                            (oldObj != null && newObj != null && !newObj.equals(oldObj)))
+                        String newObjStr = newObj.toString();
+                        if ((oldObj == null && !newObjStr.equalsIgnoreCase("Misc")) || 
+                            (oldObj != null && !newObjStr.equalsIgnoreCase(oldObj.toString())))
                         {
                             String msg = "Old Value was null and shouldn't have been for Old CatNum ["+oldCatNum+"] Field ["+oldColName+"] oldObj["+oldObj+"] newObj ["+newObj+"]";
                             log.error(desc+ " - "+msg);
@@ -1402,14 +1443,13 @@ public class ConvertVerifier
      */
     private void verifyCollectors()
     {
-    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     	boolean dbg = false;
     	
-         oldSQL = "SELECT collectingevent.CollectingEventID, collectingevent.StartDate, agent.FirstName,  agent.LastName, agent.Name, collectors.Order  " + 
+         oldSQL = "SELECT collectingevent.CollectingEventID, agent.FirstName,  agent.LastName, agent.Name, collectors.Order  " + 
          "FROM collectingevent INNER JOIN collectors ON collectingevent.CollectingEventID = collectors.CollectingEventID " + 
          "INNER JOIN agent ON collectors.AgentID = agent.AgentID ORDER BY collectingevent.CollectingEventID, collectors.Order";
     	
-    	 newSQL = "SELECT collectingevent.CollectingEventID, collectingevent.StartDate, agent.FirstName, agent.LastName, collector.OrderNumber   " + 
+    	 newSQL = "SELECT collectingevent.CollectingEventID, agent.FirstName, agent.LastName, collector.OrderNumber   " + 
     	 "FROM collectingevent INNER JOIN collector ON collectingevent.CollectingEventID = collector.CollectingEventID  " + 
     	 "INNER JOIN agent ON collector.AgentID = agent.AgentID ORDER BY collectingevent.CollectingEventID, collector.OrderNumber";
     	
@@ -1438,17 +1478,15 @@ public class ConvertVerifier
 	            }
 	            
 	            int    newId        = newDBRS.getInt(1);
-	            String newStartDate = newDBRS.getString(2);
-	            String newFirstName = newDBRS.getString(3);
-	            String newLastName  = newDBRS.getString(4);
-	            int    newOrder     = newDBRS.getInt(5);
+	            String newFirstName = newDBRS.getString(2);
+	            String newLastName  = newDBRS.getString(3);
+	            int    newOrder     = newDBRS.getInt(4);
 	            
 	            int    oldId        = oldDBRS.getInt(1);
-	            String oldStartDate = oldDBRS.getString(2);
-	            String oldFirstName = oldDBRS.getString(3);
-	            String oldLastName  = oldDBRS.getString(4);
-	            String oldName      = oldDBRS.getString(5);
-	            int    oldOrder     = oldDBRS.getInt(6);
+	            String oldFirstName = oldDBRS.getString(2);
+	            String oldLastName  = oldDBRS.getString(3);
+	            String oldName      = oldDBRS.getString(4);
+	            int    oldOrder     = oldDBRS.getInt(5);
 	            
 	            String oldNewIdStr = oldId + " / "+newId;
 	            
@@ -1478,37 +1516,6 @@ public class ConvertVerifier
 	            	oldLastName = oldName;
 	            }
 	            
-            	Object dateObj = oldDBRS.getObject(2);
-            	if (dateObj != null && ((Integer)dateObj) == 0)
-            	{
-            		oldStartDate = null;
-            	}
-            	
-	            // Date
-	            if (oldStartDate == null && newStartDate != null)
-	            {
-	            	String msg = "Old Date["+oldStartDate+"] is NULL   New Date["+newStartDate+"] is not";
-	            	log.error(msg);
-	            	tblWriter.logErrors(oldNewIdStr, msg);
-	            }
-	            if (oldStartDate != null && newStartDate == null)
-	            {
-	            	String msg = "Old Date["+oldStartDate+"] is not null   New Date["+newStartDate+"] is NULL";
-	            	log.error(msg);
-	             tblWriter.logErrors(oldNewIdStr, msg);
-	            }
-	            if (oldStartDate != null && newStartDate != null)
-	            {
-            		Date date = UIHelper.convertIntToDate(oldDBRS.getInt(2));
-            		
-            		oldStartDate = sdf.format(date);
-	            	if (!oldStartDate.equals(newStartDate))
-	            	{
-		            	String msg = "Old Date["+oldStartDate+"] is NOT equals   New Date["+newStartDate+"]";
-		            	log.error(msg);
-	                    tblWriter.logErrors(oldNewIdStr, msg);
-	            	}
-	            }
 	            
 	            // First Name
 	            if (oldFirstName == null && newFirstName != null)
@@ -1516,9 +1523,7 @@ public class ConvertVerifier
 	            	String msg = "Old FirstName["+oldFirstName+"] is NULL   New FirstName["+newFirstName+"] is not";
 	            	log.error(msg);
                     tblWriter.logErrors(oldNewIdStr, msg);
-	            }
-	            
-	            if (oldFirstName != null && newFirstName == null)
+	            } else if (oldFirstName != null && newFirstName == null)
 	            {
 	            	String msg = "Old FirstName["+oldFirstName+"] is not null   New FirstName["+newFirstName+"] is NULL";
 	            	log.error(msg);
@@ -1539,15 +1544,13 @@ public class ConvertVerifier
 	            	log.error(msg);
                     tblWriter.logErrors(oldNewIdStr, msg);
 
-	            }
-	            if (oldLastName != null && newLastName == null)
+	            } else if (oldLastName != null && newLastName == null)
 	            {
 	            	String msg = "Old LastName["+oldLastName+"] is not null   New LastName["+newLastName+"] is NULL";
 	            	log.error(msg);
                     tblWriter.logErrors(oldNewIdStr, msg);
 
-	            }
-	            if (oldLastName != null && newLastName != null && !oldLastName.equals(newLastName))
+	            } else if (oldLastName != null && newLastName != null && !oldLastName.equals(newLastName))
 	            {
 	            	String msg = "Old LastName["+oldLastName+"] is NOT equals   New LastName["+newLastName+"]";
 	            	log.error(msg);
@@ -1577,14 +1580,12 @@ public class ConvertVerifier
      */
     private void verifyCEs()
     {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        
-        newSQL = "SELECT c.CollectingEventID, c.StartDate, c.StartTime, l.LocalityName, l.Latitude1, l.Longitude1, g.Name " + 
+        newSQL = "SELECT c.CollectingEventID, c.StartTime, l.LocalityName, l.Latitude1, l.Longitude1, g.Name " + 
                         "FROM collectingevent c LEFT JOIN locality l ON c.LocalityID = l.LocalityID " + 
                         "LEFT JOIN geography g ON l.GeographyID = g.GeographyID ORDER BY c.CollectingEventID";
 
 
-        oldSQL = "SELECT c.CollectingEventID, c.StartDate, c.StartTime, l.LocalityName, l.Latitude1, l.Longitude1, g.ContinentOrOcean, g.Country, g.State,  g.County, g.IslandGroup, g.Island, g.WaterBody, g.Drainage "+
+        oldSQL = "SELECT c.CollectingEventID, c.StartTime, l.LocalityName, l.Latitude1, l.Longitude1, g.ContinentOrOcean, g.Country, g.State,  g.County, g.IslandGroup, g.Island, g.WaterBody, g.Drainage "+
                         "FROM collectingevent c LEFT JOIN locality l ON c.LocalityID = l.LocalityID "+
                         "LEFT JOIN geography g ON l.GeographyID = g.GeographyID ORDER BY c.CollectingEventID";
         
@@ -1622,7 +1623,6 @@ public class ConvertVerifier
                 
                 int col = 1;
                 int     newId           = newDBRS.getInt(col++);
-                String  newStartDate    = newDBRS.getString(col++);
                 Integer newStartTime    = newDBRS.getInt(col++);
                 String  newLocalityName = newDBRS.getString(col++);
                 Double  newLatitude     = newDBRS.getDouble(col++);
@@ -1631,7 +1631,6 @@ public class ConvertVerifier
                 
                 col = 1;
                 int          oldId           = oldDBRS.getInt(col++);
-                String       oldStartDate    = oldDBRS.getString(col++);
                 Integer      oldStartTime    = oldDBRS.getInt(col++);
                 String       oldLocalityName = oldDBRS.getString(col++);
                 Double       oldLatitude     = oldDBRS.getDouble(col++);
@@ -1663,55 +1662,40 @@ public class ConvertVerifier
                         tblWriter.logErrors(oldNewIdStr, msg);
                     }
                 }
-                
-                Object dateObj = oldDBRS.getObject(2);
-                if (dateObj != null && ((Integer)dateObj) == 0)
+
+                // StartTime
+                if (oldStartTime == null && newStartTime != null)
                 {
-                    oldStartDate = null;
-                }
-                
-                // Date
-                if (oldStartDate == null && newStartDate != null)
-                {
-                    String msg = "Old Date["+oldStartDate+"] is NULL   New Date["+newStartDate+"] is not";
+                    String msg = "LocName["+oldId + " / "  + newId+"]  Old StartTime["+oldStartTime+"] is NULL   New StartTime["+newStartTime+"] is not";
                     log.error(msg);
                     tblWriter.logErrors(oldNewIdStr, msg);
-                }
-                
-                if (oldStartDate != null && newStartDate == null)
-                {
-                    String msg = "Old Date["+oldStartDate+"] is not null   New Date["+newStartDate+"] is NULL";
-                    log.error(msg);
-                    tblWriter.logErrors(oldNewIdStr, msg);
-                }
-                
-                if (oldStartDate != null && newStartDate != null)
-                {
-                    Date date = UIHelper.convertIntToDate(oldDBRS.getInt(2));
                     
-                    oldStartDate = sdf.format(date);
-                    if (!oldStartDate.equals(newStartDate))
-                    {
-                        String msg = "Old Date["+oldStartDate+"] is NOT equals   New Date["+newStartDate+"]";
-                        log.error(msg);
-                        tblWriter.logErrors(oldNewIdStr, msg);
-                    }
+                } else if (oldStartTime != null && newStartTime == null)
+                {
+                    String msg = "LocName["+oldId + " / "  + newId+"]  Old StartTime["+oldStartTime+"] is not null   New StartTime["+newStartTime+"] is NULL";
+                    log.error(msg);
+                    tblWriter.logErrors(oldNewIdStr, msg);
+                    
+                } else if (oldStartTime != null && newStartTime != null && !oldStartTime.equals(newStartTime))
+                {
+                    String msg = "LocName["+oldId + " / "  + newId+"]  Old StartTime["+oldStartTime+"] is NOT equals   New StartTime["+newStartTime+"]";
+                    log.error(msg);
+                    tblWriter.logErrors(oldNewIdStr, msg);
                 }
 
+                
                 // LocalityName
                 if (oldLocalityName == null && newLocalityName != null)
                 {
                     String msg = "LocName["+oldId + " / "  + newId+"]  Old LocalityName["+oldLocalityName+"] is NULL   New LocalityName["+newLocalityName+"] is not";
                     log.error(msg);
                     tblWriter.logErrors(oldNewIdStr, msg);
-                }
-                if (oldLocalityName != null && newLocalityName == null)
+                } else if (oldLocalityName != null && newLocalityName == null)
                 {
                     String msg = "LocName["+oldId + " / "  + newId+"]  Old LocalityName["+oldLocalityName+"] is not null   New LocalityName["+newLocalityName+"] is NULL";
                     log.error(msg);
                     tblWriter.logErrors(oldNewIdStr, msg);
-                }
-                if (oldLocalityName != null && newLocalityName != null && !oldLocalityName.equals(newLocalityName))
+                } else if (oldLocalityName != null && newLocalityName != null && !oldLocalityName.equals(newLocalityName))
                 {
                     String msg = "LocName["+oldId + " / "  + newId+"]  Old LocalityName["+oldLocalityName+"] is NOT equals   New LocalityName["+newLocalityName+"]";
                     log.error(msg);
@@ -1724,14 +1708,12 @@ public class ConvertVerifier
                     String msg = "Latitude["+oldId + " / "  + newId+"]  Old Latitude["+oldLatitude+"] is NULL   New Latitude["+newLatitude+"] is not";
                     log.error(msg);
                     tblWriter.logErrors(oldNewIdStr, msg);
-                }
-                if (oldLatitude != null && newLatitude == null)
+                } else if (oldLatitude != null && newLatitude == null)
                 {
                     String msg = "Latitude["+oldId + " / "  + newId+"]  Old Latitude["+oldLatitude+"] is not null   New Latitude["+newLatitude+"] is NULL";
                     log.error(msg);
                     tblWriter.logErrors(oldNewIdStr, msg);
-                }
-                if (oldLatitude != null && newLatitude != null && !oldLatitude.equals(newLatitude))
+                } else if (oldLatitude != null && newLatitude != null && !oldLatitude.equals(newLatitude))
                 {
                     String msg = "Latitude["+oldId + " / "  + newId+"]  Old Latitude["+oldLatitude+"] is NOT equals   New Latitude["+newLatitude+"]";
                     log.error(msg);
@@ -1744,14 +1726,12 @@ public class ConvertVerifier
                     String msg = "Longitude["+oldId + " / "  + newId+"]  Old Longitude["+oldLongitude+"] is NULL   New Longitude["+newLongitude+"] is not";
                     log.error(msg);
                     tblWriter.logErrors(oldNewIdStr, msg);
-                }
-                if (oldLongitude != null && newLongitude == null)
+                } else if (oldLongitude != null && newLongitude == null)
                 {
                     String msg = "Longitude["+oldId + " / "  + newId+"]  Old Longitude["+oldLongitude+"] is not null   New Longitude["+newLongitude+"] is NULL";
                     log.error(msg);
                     tblWriter.logErrors(oldNewIdStr, msg);
-                }
-                if (oldLongitude != null && newLongitude != null && !oldLongitude.equals(newLongitude))
+                } else if (oldLongitude != null && newLongitude != null && !oldLongitude.equals(newLongitude))
                 {
                     String msg = "Longitude["+oldId + " / "  + newId+"]  Old Longitude["+oldLongitude+"] is NOT equals   New Longitude["+newLongitude+"]";
                     log.error(msg);

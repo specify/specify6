@@ -914,8 +914,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
                 "CollectionObjectCitation",
                 "BiologicalObjectID",
-                "CollectionObject",
-                "CollectionObjectID",
+                "CollectionObjectCatalog",
+                "CollectionObjectCatalogID",
                 
                 "CollectingEvent",
                 "HabitatAttributeID",
@@ -3012,7 +3012,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      */
     public Map<String, PrepType> createPreparationTypesFromUSys(final Collection collection)
     {
-        deleteAllRecordsFromTable("preptype", BasicSQLUtils.myDestinationServerType);
+        //deleteAllRecordsFromTable("preptype", BasicSQLUtils.myDestinationServerType);
 
         Hashtable<String, PrepType> prepTypeMapper = new Hashtable<String, PrepType>();
 
@@ -3027,8 +3027,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
              * varchar(50) | YES | | NULL | |
              * +-----------------------+-------------+------+-----+---------+-------+
              */
-            Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            String sqlStr = "select USYSCollObjPrepMethID, InterfaceID, FieldSetSubTypeID, PreparationMethod from usyscollobjprepmeth";
+            Statement stmt   = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            String    sqlStr = "SELECT USYSCollObjPrepMethID, InterfaceID, FieldSetSubTypeID, PreparationMethod FROM usyscollobjprepmeth";
 
             log.info(sqlStr);
 
@@ -6964,7 +6964,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             String state   = oldGeoRecords.getString(4);
             String county  = oldGeoRecords.getString(5);
             
-            if (StringUtils.isEmpty(cont) && StringUtils.isEmpty(country) && StringUtils.isEmpty(state))
+            if (StringUtils.isEmpty(cont) && StringUtils.isEmpty(country) && 
+                StringUtils.isEmpty(state) && StringUtils.isEmpty(county))
             {
                 String msg = "For Record Id["+oldId+"] Continent, Country, State and County are all null.";
                 log.error(msg);
@@ -6972,6 +6973,18 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
                 cont    = "Undefined";
                 country = "Undefined";
+                state   = "Undefined";
+                county  = "Undefined";
+                
+            } else if (StringUtils.isEmpty(cont) && StringUtils.isEmpty(country) && StringUtils.isEmpty(state))
+            {
+                String msg = "For Record Id["+oldId+"] Continent, Country and State are all null.";
+                log.error(msg);
+                tblWriter.logError(msg);
+                
+                cont    = "Undefined";
+                country = "Undefined";
+                state   = "Undefined";
                 
             } else if (StringUtils.isEmpty(country))
             {
