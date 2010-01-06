@@ -636,8 +636,8 @@ public class SpecifyDBConverter
         doFixCollectors = dlg.doFixAgents();
         
         convLogger.initialize(dbNameDest);
-        
-        convLogger.setIndexTitle("Conversion from "+dbNameSource+" to "+dbNameDest);
+        convLogger.setIndexTitle(dbNameDest + " Conversion "+(new SimpleDateFormat("yyy-MM-dd hh:mm:ss")).format(Calendar.getInstance().getTime()));
+
         
         frame.setSize(500, frame.getPreferredSize().height);
         

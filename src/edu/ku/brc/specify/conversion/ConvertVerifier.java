@@ -252,6 +252,8 @@ public class ConvertVerifier
             throw new RuntimeException("Couldn't login into ["+databaseNameDest+"] "+DBConnection.getInstance().getErrorMsg());
         }
         
+        convLogger.setIndexTitle(databaseNameDest + " Verify "+(new SimpleDateFormat("yyy-MM-dd hh:mm:ss")).format(Calendar.getInstance().getTime()));
+        
         //MEG WHY IS THIS COMMENTED OUT???
         //DataBuilder.setSession(HibernateUtil.getNewSession());
         
@@ -334,6 +336,7 @@ public class ConvertVerifier
             {
                 int    oldCatNum = rs.getInt(1);
                 String newCatNum = convertCatNum(oldCatNum);
+                //if (oldCatNum < 1643) continue;
                 
                 if (isCOOn(DO_CO_DETERMINER))
                 {
@@ -593,10 +596,10 @@ public class ConvertVerifier
                         "FROM determination LEFT JOIN collectionobject ON determination.CollectionObjectID = collectionobject.CollectionObjectID "+
                         "LEFT JOIN taxon ON determination.TaxonID = taxon.TaxonID WHERE CatalogNumber = '"+ newCatNum + "'";
 
-        oldSQL = "SELECT collectionobjectcatalog.CatalogedDate, determination.Date,taxonname.FullTaxonName " + 
+        oldSQL = "SELECT cc.CatalogedDate, determination.Date,taxonname.FullTaxonName " + 
                         "FROM determination LEFT JOIN taxonname ON determination.TaxonNameID = taxonname.TaxonNameID " + 
-                        "LEFT JOIN collectionobjectcatalog ON collectionobjectcatalog.CollectionObjectCatalogID = determination.BiologicalObjectID " + 
-                        "WHERE CatalogNumber = " + oldCatNum;
+                        "LEFT JOIN collectionobjectcatalog cc ON cc.CollectionObjectCatalogID = determination.BiologicalObjectID " + 
+                        "WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
         if (debug)
         {
 	         log.debug("New SQL: "+newSQL);
@@ -671,11 +674,11 @@ public class ConvertVerifier
             "WHERE CatalogNumber = '"+ newCatNum + "'";
 
         oldSQL = "SELECT geography.GeographyID, geography.ContinentOrOcean, geography.Country, geography.State, geography.County " +
-            "FROM collectionobjectcatalog INNER JOIN collectionobject ON collectionobjectcatalog.CollectionObjectCatalogID = collectionobject.CollectionObjectID " +
+            "FROM collectionobjectcatalog cc INNER JOIN collectionobject ON cc.CollectionObjectCatalogID = collectionobject.CollectionObjectID " +
             "INNER JOIN collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID " +
             "INNER JOIN locality ON collectingevent.LocalityID = locality.LocalityID " +
             "INNER JOIN geography ON locality.GeographyID = geography.GeographyID " +
-            "WHERE CatalogNumber = " + oldCatNum;
+            "WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
         
         if (debug)
         {
@@ -800,10 +803,10 @@ public class ConvertVerifier
                         "WHERE CatalogNumber = '"+ newCatNum + "'";
 
          oldSQL = "SELECT locality.LocalityName  " +
-                        "FROM collectionobjectcatalog INNER JOIN collectionobject ON collectionobjectcatalog.CollectionObjectCatalogID = collectionobject.CollectionObjectID " +
+                        "FROM collectionobjectcatalog cc INNER JOIN collectionobject ON cc.CollectionObjectCatalogID = collectionobject.CollectionObjectID " +
                         "INNER JOIN collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID " +
                         "INNER JOIN locality ON collectingevent.LocalityID = locality.LocalityID " +
-                        "WHERE CatalogNumber = " + oldCatNum;
+                        "WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
          if (debug)
          {
 	         log.debug("New SQL: "+newSQL);
@@ -833,7 +836,7 @@ public class ConvertVerifier
                   "WHERE CatalogNumber = '"+ newCatNum + "'";
 
          oldSQL = "SELECT agent.FirstName, agent.MiddleInitial, agent.LastName, agent.Name  " +
-                  "FROM collectionobjectcatalog INNER JOIN agent ON collectionobjectcatalog.CatalogerID = agent.AgentID WHERE CatalogNumber = " + oldCatNum;
+                  "FROM collectionobjectcatalog cc INNER JOIN agent ON cc.CatalogerID = agent.AgentID WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
          if (debug)
          {
 	         log.debug("New SQL: "+newSQL);
@@ -858,9 +861,9 @@ public class ConvertVerifier
                   "WHERE CatalogNumber = '"+ newCatNum + "'";
 
          oldSQL = "SELECT agent.FirstName, agent.MiddleInitial, agent.LastName, agent.Name  " +
-                  "FROM collectionobjectcatalog INNER JOIN collectionobject ON collectionobjectcatalog.CollectionObjectCatalogID = collectionobject.CollectionObjectID " +
+                  "FROM collectionobjectcatalog cc INNER JOIN collectionobject ON cc.CollectionObjectCatalogID = collectionobject.CollectionObjectID " +
                   "INNER JOIN determination ON determination.BiologicalObjectID = collectionobject.CollectionObjectID " + 
-                  "INNER JOIN agent ON determination.DeterminerID = agent.AgentID WHERE CatalogNumber = " + oldCatNum;
+                  "INNER JOIN agent ON determination.DeterminerID = agent.AgentID WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
         
          if (debug)
          {
@@ -886,10 +889,10 @@ public class ConvertVerifier
                   "WHERE CatalogNumber = '"+ newCatNum + "'";
 
          oldSQL = "SELECT agent.FirstName, agent.MiddleInitial, agent.LastName, agent.Name  " +
-                  "FROM collectionobjectcatalog INNER JOIN collectionobject ON collectionobjectcatalog.CollectionObjectCatalogID = collectionobject.DerivedFromID " +
+                  "FROM collectionobjectcatalog cc INNER JOIN collectionobject ON cc.CollectionObjectCatalogID = collectionobject.DerivedFromID " +
                   "INNER JOIN preparation ON collectionobject.CollectionObjectID = preparation.PhysicalObjectTypeID " +
                   "INNER JOIN agent ON preparation.PreparedByID = agent.AgentID " +
-                  "WHERE CatalogNumber = " + oldCatNum;
+                  "WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
         
          if (debug)
          {
@@ -919,7 +922,7 @@ public class ConvertVerifier
                     "INNER JOIN taxonname t ON d.TaxonNameID = t.TaxonNameID " +
                     "INNER JOIN taxoncitation tc ON t.TaxonNameID = tc.TaxonNameID " +
                     "INNER JOIN referencework rw ON tc.ReferenceWorkID = rw.ReferenceWorkID " +
-                    "WHERE CatalogNumber = " + oldCatNum;
+                    "WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
 
         if (debug)
         {
@@ -1025,9 +1028,9 @@ public class ConvertVerifier
                         "WHERE CatalogNumber = '"+ newCatNum + "'";
 
          oldSQL = "SELECT collectingevent.StartDate, collectingevent.StationFieldNumber  " +
-                        "FROM collectionobjectcatalog INNER JOIN collectionobject ON collectionobjectcatalog.CollectionObjectCatalogID = collectionobject.CollectionObjectID " +
+                        "FROM collectionobjectcatalog cc INNER JOIN collectionobject ON cc.CollectionObjectCatalogID = collectionobject.CollectionObjectID " +
                         "INNER JOIN collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID " +
-                        "WHERE CatalogNumber = " + oldCatNum;
+                        "WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
         
          StatusType status = compareRecords("CE To Locality", oldCatNum, newCatNum, oldSQL, newSQL);
          dumpStatus(status);
@@ -1048,11 +1051,17 @@ public class ConvertVerifier
                     "preparation.Text2 " +
                     "FROM collectionobject INNER JOIN preparation ON collectionobject.CollectionObjectID = preparation.CollectionObjectID " +
                     "INNER JOIN preptype ON preparation.PrepTypeID = preptype.PrepTypeID " +
-                    "WHERE CatalogNumber = '"+ newCatNum + "' ORDER BY PreparationID";
+                    "WHERE CatalogNumber = '"+ newCatNum + "' ORDER BY preparation.PreparationID";
 
+         
          oldSQL = "SELECT co.Count, co.PreparationMethod, co.Text1, co.Text2 FROM collectionobject co " +
                   "INNER JOIN collectionobjectcatalog cc ON co.DerivedFromID = cc.CollectionObjectCatalogID " + 
-                  "WHERE co.CollectionObjectTypeID > 20 AND CatalogNumber = " + oldCatNum + " ORDER BY co.CollectionObjectID";
+                  "WHERE cc.SubNumber > -1 AND co.CollectionObjectTypeID > 20 AND CatalogNumber = " + oldCatNum + "  ORDER BY cc.CollectionObjectCatalogID";
+         
+         
+         /*oldSQL = "SELECT co.Count, co.PreparationMethod, co.Text1, co.Text2 FROM collectionobject co WHERE CollectionObjectID IN " +
+                  "(SELECT CollectionObjectCatalogID AS COCID FROM collectionobjectcatalog WHERE CollectionObjectTypeID > 20 AND CatalogNumber = " + oldCatNum + ")";
+                  */
         
          StatusType status = compareRecords("Preparation", oldCatNum, newCatNum, oldSQL, newSQL);
          dumpStatus(status);
@@ -1152,6 +1161,26 @@ public class ConvertVerifier
     }
     
     /**
+     * @param desc
+     * @param sql
+     */
+    private void dump(final String desc, final Connection conn, final String sql)
+    {
+        System.out.println("----- "+desc + "-----");
+        System.out.println(sql);
+        for (Object[] rows : BasicSQLUtils.query(conn, sql))
+        {
+            for (Object obj : rows)
+            {
+                System.out.print(obj);
+                System.out.print(", ");
+            }
+            System.out.println();
+        }
+        System.out.println("------------------------------------------");
+    }
+    
+    /**
      * @param oldSQL
      * @param newSQL
      * @return
@@ -1164,13 +1193,13 @@ public class ConvertVerifier
                                       final String newSQLArg) throws SQLException
     {
         boolean dbg = false;
-        if (dbg)
+        /*if (oldCatNum.equals("1643"))
         {
-            System.out.println(oldSQLArg);
-            System.out.println(newSQLArg);
-        }        
+            System.out.println("\n"+desc);
+            dump(desc, oldDBConn, oldSQLArg);
+            dump(desc, newDBConn, newSQLArg);
+        } */       
         getResultSets(oldSQLArg, newSQLArg);
-
         
         try
         {
@@ -1438,7 +1467,7 @@ public class ConvertVerifier
                 }
                 if (!hasNewRec)
                 {
-                    log.error(desc+ "No New Record for ["+newCatNum+"]");
+                    log.error(desc+ " No New Record for ["+newCatNum+"]");
                     tblWriter.logErrors(oldNewIdStr, "No New Record for ["+newCatNum+"]");
                     return StatusType.NO_NEW_REC;
                 }

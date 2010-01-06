@@ -62,6 +62,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -4256,7 +4257,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             sql.append(buildSelectFieldList(names, "cc"));
             oldFieldNames.addAll(names);
 
-            String sqlPostfix = " From collectionobject co Inner Join collectionobjectcatalog cc ON co.CollectionObjectID = cc.CollectionObjectCatalogID " +
+            String sqlPostfix = " FROM collectionobject co LEFT JOIN collectionobjectcatalog cc ON co.CollectionObjectID = cc.CollectionObjectCatalogID " +
                                 "WHERE NOT (co.DerivedFromID IS NULL) ORDER BY co.CollectionObjectID";
             sql.append(sqlPostfix);
             
@@ -4426,7 +4427,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     if (i == 0)
                     {
                         oldId = rs.getInt(1);
-                       Integer newId = prepIdMapper.get(oldId);
+                        Integer newId = prepIdMapper.get(oldId);
                         if (newId == null)
                         {
                             isError = true;
@@ -4503,6 +4504,24 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     {
                         str.append(getCollectionMemberId());
 
+                    } else if (newFieldName.equalsIgnoreCase("TimestampCreated"))
+                    {
+                        Object value = rs.getString(oldNameIndex.get("TimestampCreated"));
+                        if (value == null)
+                        {
+                            value = new Timestamp(Calendar.getInstance().getTime().getTime());
+                        }
+                        str.append(getStrValue(value, newFieldMetaData.get(i).getType()));
+
+                    } else if (newFieldName.equalsIgnoreCase("TimestampModified"))
+                    {
+                        Object value = rs.getString(oldNameIndex.get("TimestampModified"));
+                        if (value == null)
+                        {
+                            value = new Timestamp(Calendar.getInstance().getTime().getTime());
+                        }
+                        str.append(getStrValue(value, newFieldMetaData.get(i).getType()));
+
                     } else if (newFieldName.equalsIgnoreCase("ModifiedByAgentID"))
                     {
                         str.append(getModifiedByAgentId(lastEditedBy));
@@ -4518,6 +4537,16 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         {
                             value = "n/a";
                         }
+                        
+                        /*if (value.equalsIgnoreCase("Slide"))
+                        {
+                            PrepType prepType = prepTypeMap.get(value.toLowerCase());
+                            if (prepType != null)
+                            {
+                                Integer prepTypeId = prepType.getPrepTypeId();
+                                System.err.println(String.format("%s -> %d %s", value, prepTypeId, prepType.getName()));
+                            }
+                        }*/
 
                         PrepType prepType = prepTypeMap.get(value.toLowerCase());
                         if (prepType != null)

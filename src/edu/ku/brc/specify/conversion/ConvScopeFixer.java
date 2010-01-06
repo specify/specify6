@@ -259,7 +259,7 @@ public class ConvScopeFixer
                         }
                     } else
                     {
-                        msg = String.format("The BiologicalObjectTypeCollectedID %d has more than one collection %d and wasn't mapped to CollectionMemberID for HabitatID %d", rs.getInt(2), rs.getInt(1));
+                        msg = String.format("The BiologicalObjectTypeCollectedID %d has more than one collection and wasn't mapped to CollectionMemberID for HabitatID %d", rs.getInt(2), rs.getInt(1));
                     }
                 } else
                 {
