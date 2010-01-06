@@ -3877,7 +3877,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                 if (hasFrame)
                 {
-                    if (count % 100 == 0)
+                    if (count % 500 == 0)
                     {
                         setProcess(count);
                     }
@@ -5045,7 +5045,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                 if (hasFrame)
                 {
-                    if (count % 100 == 0)
+                    if (count % 500 == 0)
                     {
                         setProcess(count);
                     }
@@ -5652,7 +5652,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     // log.info("\n"+str.toString());
                     if (hasFrame)
                     {
-                        if (count % 100 == 0)
+                        if (count % 500 == 0)
                         {
                             setProcess(count);
                         }
@@ -5991,7 +5991,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                 if (hasFrame)
                 {
-                    if (count % 100 == 0)
+                    if (count % 500 == 0)
                     {
                         setProcess(count);
                     }
@@ -6292,7 +6292,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                 if (hasFrame)
                 {
-                    if (count % 100 == 0)
+                    if (count % 500 == 0)
                     {
                         setProcess(count);
                     }
@@ -6995,7 +6995,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         // for each old record, convert the record
         do
         {
-            if (counter % 100 == 0)
+            if (counter % 500 == 0)
             {
                 if (hasFrame)
                 {
@@ -7282,7 +7282,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             // for each old record, convert the record
             do
             {
-                if (counter % 100 == 0)
+                if (counter % 500 == 0)
                 {
                     if (hasFrame)
                     {

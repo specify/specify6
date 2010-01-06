@@ -1311,6 +1311,10 @@ public class SpecifyDBConverter
                 
                 frame.incOverall();
                 
+                frame.setDesc("Running Table Checker to report on fields with data.");
+                TableDataChecker tblDataChecker = new TableDataChecker(oldDBConn);
+                tblDataChecker.createHTMLReport(new File(oldDBConn.getCatalog()+".html"));
+                
                 if (false)
                 {
                    updateVersionInfo(newConn);
@@ -1336,9 +1340,6 @@ public class SpecifyDBConverter
             {
                 idMapperMgr.cleanup();
             }
-            
-            TableDataChecker tblDataChecker = new TableDataChecker(oldDBConn);
-            tblDataChecker.createHTMLReport(new File(oldDBConn.getCatalog()+".html"));
 
             frame.setTitle("Done - " + dbNameDest);
             frame.incOverall();

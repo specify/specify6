@@ -1104,7 +1104,7 @@ public class ConvertVerifier
                  "FROM accession INNER JOIN accessionagents ON accession.AccessionID = accessionagents.AccessionID " +
                  "INNER JOIN agentaddress ON accessionagents.AgentAddressID = agentaddress.AgentAddressID " +
                  "INNER JOIN agent ON agentaddress.AgentID = agent.AgentID " +
-                 "WHERE Number = '" + oldAccNum + "' ORDER BY agent.LastName";
+                 "WHERE Number = '" + oldAccNum + "' ORDER BY agent.Name, agent.LastName";
 
         StatusType status = compareRecords("Accession", oldAccNum, newAccNum, oldSQL, newSQL);
         dumpStatus(status);
@@ -1193,12 +1193,13 @@ public class ConvertVerifier
                                       final String newSQLArg) throws SQLException
     {
         boolean dbg = false;
-        /*if (oldCatNum.equals("1643"))
+        if (dbg)
         {
             System.out.println("\n"+desc);
             dump(desc, oldDBConn, oldSQLArg);
             dump(desc, newDBConn, newSQLArg);
-        } */       
+        } 
+
         getResultSets(oldSQLArg, newSQLArg);
         
         try
@@ -2026,7 +2027,7 @@ public class ConvertVerifier
                 chkPanel = new ToggleButtonChooserPanel<String>(list, Type.Checkbox);
                 chkPanel.setUseScrollPane(true);
                 chkPanel.createUI();
-                pb.add(chkPanel, cc.xyw(1, 5, 3));
+                //pb.add(chkPanel, cc.xyw(1, 5, 3));
                 
                 /*ActionListener al = new ActionListener() {
                     @Override
