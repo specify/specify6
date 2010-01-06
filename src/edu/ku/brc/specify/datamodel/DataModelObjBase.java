@@ -896,10 +896,10 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
             transOpen = false;
         } catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataModelObjBase.class, ex);
             ex.printStackTrace();
             log.error(ex);
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataModelObjBase.class, ex);
             errMsg = ex.toString();
             
             if (doShowError)

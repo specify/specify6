@@ -8,6 +8,7 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.Vector;
@@ -63,15 +64,7 @@ public class CollectingEventsAndAttrsMaint
      */
     public CollectingEventsAndAttrsMaint()
     {
-        try
-        {
-            connection = DBConnection.getInstance().createConnection();
-            session    = DataProviderFactory.getInstance().createSession();
-        
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
+
     }
     
     /**
@@ -146,6 +139,7 @@ public class CollectingEventsAndAttrsMaint
         
     }
     
+    
     /**
      * @throws Exception
      * 
@@ -163,6 +157,16 @@ public class CollectingEventsAndAttrsMaint
             return;
         }
         
+        try
+        {
+            connection = DBConnection.getInstance().createConnection();
+            session    = DataProviderFactory.getInstance().createSession();
+        
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        
         // Skip converted databases
         Institution institution = AppContextMgr.getInstance().getClassObject(Institution.class);
         String      remarks     = institution.getRemarks();
@@ -177,6 +181,7 @@ public class CollectingEventsAndAttrsMaint
                 
                 AppContextMgr.getInstance().setClassObject(Institution.class, institution);
                 remotePrefs.getBoolean(convPrefName, true);
+                shutdown();
                 return;
                 
             } catch (Exception ex1)
@@ -198,6 +203,7 @@ public class CollectingEventsAndAttrsMaint
         
         if (collectionsIds.size() == 0)
         {
+            shutdown();
             return;
         }
         
@@ -209,6 +215,7 @@ public class CollectingEventsAndAttrsMaint
         
         if (totCnt == 0)
         {
+            shutdown();
             return;
         }
         
@@ -243,6 +250,8 @@ public class CollectingEventsAndAttrsMaint
             protected void done()
             {
                 super.done();
+                
+                shutdown();
                 
                 glassPane.setProgress(100);
                 

@@ -127,6 +127,8 @@ public class SpecifyDBConverter
 {
     protected static final Logger log = Logger.getLogger(SpecifyDBConverter.class);
 
+    protected static final int                  OVERALL_STEPS     = 21;
+    
     protected static Hashtable<String, Integer> prepTypeMapper    = new Hashtable<String, Integer>();
     protected static int                        attrsId           = 0;
     protected static SimpleDateFormat           dateFormatter     = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -695,7 +697,7 @@ public class SpecifyDBConverter
         	GenericDBConversion.setShouldCreateMapTables(startfromScratch);
             GenericDBConversion.setShouldDeleteMapTables(deleteMappingTables);
             
-            frame.setOverall(0, 19);
+            frame.setOverall(0, OVERALL_STEPS);
             SwingUtilities.invokeLater(new Runnable() {
                 public void run()
                 {
@@ -1261,6 +1263,9 @@ public class SpecifyDBConverter
                     localSession.close();
                 }
                 
+                frame.incOverall();
+                
+                frame.setDesc("Fixing Preferred Taxon");
                 
                 // MySQL Only ???
                 String sql = "UPDATE determination SET PreferredTaxonID = CASE WHEN " +
@@ -1311,6 +1316,8 @@ public class SpecifyDBConverter
                 
                 frame.incOverall();
                 
+                fixHibernateHiLo(newDBConn);
+                
                 frame.setDesc("Running Table Checker to report on fields with data.");
                 TableDataChecker tblDataChecker = new TableDataChecker(oldDBConn);
                 tblDataChecker.createHTMLReport(new File(oldDBConn.getCatalog()+".html"));
@@ -1360,6 +1367,24 @@ public class SpecifyDBConverter
             {
                 getSession().close();
             }
+        }
+    }
+    
+    
+    /**
+     * 
+     */
+    private void fixHibernateHiLo(final Connection connection)
+    {
+        Vector<Object> values = BasicSQLUtils.querySingleCol(connection, "SELECT next_hi FROM hibernate_unique_key");
+        if (values.size() == 1)
+        {
+            int nextHi = (Integer)values.get(0);
+            BasicSQLUtils.update("UPDATE hibernate_unique_key SET next_hi="+(nextHi+1));
+            
+        } else
+        {
+            throw new RuntimeException("The hibernate_unique_key must be created.");
         }
     }
     

@@ -569,7 +569,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             if (currColl != null)
             {
-                session = DataProviderFactory.getInstance().createSession();
+                //session = DataProviderFactory.getInstance().createSession();
                 
                 collection = (Collection)session.getData("FROM Collection WHERE id = " + currColl.second);
                 if (collection != null)
