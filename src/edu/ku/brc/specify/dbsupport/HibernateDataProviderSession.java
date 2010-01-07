@@ -23,6 +23,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
 
@@ -67,6 +68,8 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     
     protected List<Object> deleteList     = new Vector<Object>();
     
+    private static HashSet<Session> sessions = new HashSet<Session>();
+    
     /**
      * Creates a new Hibernate Session.
      */
@@ -76,7 +79,21 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         if (SHOW_COUNTS)
         {
             createsCounts++;
-            log.debug(" Creates: "+createsCounts+"  Closes: "+closesCounts+" Dif: "+(createsCounts-closesCounts));
+            System.err.println("Create - Creates: "+createsCounts+"  Closes: "+closesCounts+" Dif: "+(createsCounts-closesCounts)+"  "+session.hashCode());
+            sessions.add(this.session);
+            
+            if (sessions.size() < 4)
+            {
+                int cn = 0;
+                for (Session ses : sessions)
+                {
+                    if (cn > 0) System.err.print(",");
+                    cn++;
+                    System.err.print(ses.hashCode());
+                    if (cn %20 == 0) System.err.println();
+                }
+                System.err.println();
+            }
         }
     }
     
@@ -94,7 +111,8 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         if (SHOW_COUNTS)
         {
             createsCounts++;
-            log.debug(" Creates: "+createsCounts+"  Closes: "+closesCounts+" Dif: "+(createsCounts-closesCounts));
+            //System.err.println("Aquire - Creates: "+createsCounts+"  Closes: "+closesCounts+" Dif: "+(createsCounts-closesCounts)+"  "+session.hashCode());
+            sessions.add(this.session);
         }
     }
     
@@ -675,13 +693,22 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         if (SHOW_COUNTS)
         {
             closesCounts++;
-            log.info("*Creates: "+createsCounts+"  Closes: "+closesCounts+" Dif: "+(createsCounts-closesCounts));
-            if (closesCounts == 3)
+            System.err.println("Close - Creates: "+createsCounts+"  Closes: "+closesCounts+" Dif: "+(createsCounts-closesCounts)+"  "+session.hashCode());
+            
+            sessions.remove(session);
+            
+            if (sessions.size() == 1)
             {
-                int x= 0;
-                x++;
+                int cn = 0;
+                for (Session ses : sessions)
+                {
+                    if (cn > 0) System.err.print(",");
+                    cn++;
+                    System.err.print(ses.hashCode());
+                    if (cn %20 == 0) System.err.println();
+                }
+                System.err.println();
             }
-
         }
         
         if (session != null)
