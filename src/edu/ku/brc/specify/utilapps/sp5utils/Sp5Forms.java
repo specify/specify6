@@ -1060,7 +1060,7 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
             });
         }
         
-        File dir = new File("conversions" + File.separator + namePair.second + File.separator);
+        File dir = new File("conversions" + File.separator + namePair.second + "_6" + File.separator + "forms");
         if (!dir.exists())
         {
             dir.mkdirs();
@@ -1068,10 +1068,10 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
         
         if (bufImage != null)
         {
-            String fName = "conversions" + File.separator + namePair.second + File.separator + formName;
+            String fName = dir.getAbsolutePath() + File.separator + formName + ".png";
             try
             {
-                File imgFile = new File(fName + ".png");
+                File imgFile = new File(fName);
                 ImageIO.write(bufImage, "PNG", imgFile);
                 
             } catch (Exception e)
@@ -1112,13 +1112,13 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
      */
     private void createIndex()
     {
-        String dirName = "conversions" + File.separator + namePair.second;
+        String dirName = "conversions" + File.separator + namePair.second + "_6" + File.separator + "forms";
         String fName  = dirName + File.separator + "index.html";
         try
         {
             File        dir = new File(dirName);
             PrintWriter pw  = new PrintWriter(new File(fName));
-            pw.println("<html><body><h2>Forms For"+ namePair.second +"</h2><table border='0'>");
+            pw.println("<html><body><h2>Forms For "+ namePair.second +"</h2><table border='0'>");
             
             Vector<String> fileList = new Vector<String>();
             Collections.addAll(fileList, dir.list());
