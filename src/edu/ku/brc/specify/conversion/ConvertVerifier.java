@@ -331,7 +331,10 @@ public class ConvertVerifier
         
         // For Debug
         coOptions = DO_CO_ALL;
-
+        
+        tblWriter = tblWriterHash.get(DO_COLLECTORS);
+        verifyCollectors();
+        
         if (coOptions > NO_OPTIONS)
         {
             int i = 0;
@@ -1616,6 +1619,11 @@ public class ConvertVerifier
 	            String oldName      = oldDBRS.getString(4);
 	            int    oldOrder     = oldDBRS.getInt(5);
 	            
+	            if (StringUtils.isNotEmpty(oldName) && StringUtils.isEmpty(oldLastName))
+	            {
+	                oldLastName = oldName;
+	            }
+	            
 	            String oldNewIdStr = oldId + " / "+newId;
 	            
 	            if (newId == Integer.MAX_VALUE)
@@ -1644,24 +1652,24 @@ public class ConvertVerifier
 	            	oldLastName = oldName;
 	            }
 	            
-	            
 	            // First Name
 	            if (oldFirstName == null && newFirstName != null)
 	            {
 	            	String msg = "Old FirstName["+oldFirstName+"] is NULL   New FirstName["+newFirstName+"] is not";
-	            	log.error(msg);
+	            	log.error(oldNewIdStr + " " + msg);
                     tblWriter.logErrors(oldNewIdStr, msg);
+                    
 	            } else if (oldFirstName != null && newFirstName == null)
 	            {
 	            	String msg = "Old FirstName["+oldFirstName+"] is not null   New FirstName["+newFirstName+"] is NULL";
-	            	log.error(msg);
+	            	log.error(oldNewIdStr + " " + msg);
                     tblWriter.logErrors(oldNewIdStr, msg);
 	            }
 	            
 	            if (oldFirstName != null && newFirstName != null && !oldFirstName.equals(newFirstName))
 	            {
 	            	String msg = "Old FirstName["+oldFirstName+"] is NOT equals   New FirstName["+newFirstName+"]";
-	            	log.error(msg);
+	            	log.error(oldNewIdStr + " " + msg);
                     tblWriter.logErrors(oldNewIdStr, msg);
 	            }
 	            
@@ -1669,19 +1677,19 @@ public class ConvertVerifier
 	            if (oldLastName == null && newLastName != null)
 	            {
 	            	String msg = "Old LastName["+oldLastName+"] is NULL   New LastName["+newLastName+"] is not";
-	            	log.error(msg);
+	            	log.error(oldNewIdStr + " " + msg);
                     tblWriter.logErrors(oldNewIdStr, msg);
 
 	            } else if (oldLastName != null && newLastName == null)
 	            {
 	            	String msg = "Old LastName["+oldLastName+"] is not null   New LastName["+newLastName+"] is NULL";
-	            	log.error(msg);
+	            	log.error(oldNewIdStr + " " + msg);
                     tblWriter.logErrors(oldNewIdStr, msg);
 
 	            } else if (oldLastName != null && newLastName != null && !oldLastName.equals(newLastName))
 	            {
 	            	String msg = "Old LastName["+oldLastName+"] is NOT equals   New LastName["+newLastName+"]";
-	            	log.error(msg);
+	            	log.error(oldNewIdStr + " " + msg);
                     tblWriter.logErrors(oldNewIdStr, msg);
 	            }
 	            
@@ -1689,7 +1697,7 @@ public class ConvertVerifier
 	            if (oldOrder != newOrder)
 	            {
 	            	String msg = "Old Order["+oldOrder+"] is not equal ["+newOrder+"]";
-	            	log.error(msg);
+	            	log.error(oldNewIdStr + " " + msg);
                     tblWriter.logErrors(oldNewIdStr, msg);
 	            }
 	        }
@@ -1758,16 +1766,29 @@ public class ConvertVerifier
                 int        newId           = newDBRS.getInt(col++);
                 Integer    newStartTime    = newDBRS.getInt(col++);
                 String     newLocalityName = newDBRS.getString(col++);
-                BigDecimal newLatitude     = newDBRS.getBigDecimal(col++);
-                BigDecimal newLongitude    = newDBRS.getBigDecimal(col++);
+                
+                Object     bigDecObj       = newDBRS.getObject(col); 
+                BigDecimal newLatitude     = bigDecObj == null ? null : newDBRS.getBigDecimal(col);
+                col++;
+                
+                bigDecObj = newDBRS.getObject(col);
+                BigDecimal newLongitude    = bigDecObj == null ? null : newDBRS.getBigDecimal(col);
+                col++;
+                
                 String     newGeoName      = newDBRS.getString(col++);
                 
                 col = 1;
                 int          oldId           = oldDBRS.getInt(col++);
                 Integer      oldStartTime    = oldDBRS.getInt(col++);
                 String       oldLocalityName = oldDBRS.getString(col++);
-                Double       oldLatitude     = oldDBRS.getDouble(col++);
-                Double       oldLongitude    = oldDBRS.getDouble(col++);
+                
+                bigDecObj = newDBRS.getObject(col); 
+                Double       oldLatitude     = bigDecObj == null ? null : oldDBRS.getDouble(col);
+                col++;
+                
+                bigDecObj = newDBRS.getObject(col); 
+                Double       oldLongitude    = bigDecObj == null ? null : oldDBRS.getDouble(col);
+                col++;
                 
                 String oldNewIdStr = oldId + " / "+newId;
                 
@@ -1854,7 +1875,7 @@ public class ConvertVerifier
                     tblWriter.logErrors(oldNewIdStr, msg);
                 }
                 
-                // Latitude
+                // Longitude
                 if (oldLongitude == null && newLongitude != null)
                 {
                     String msg = "Longitude["+oldId + " / "  + newId+"]  Old Longitude["+oldLongitude+"] is NULL   New Longitude["+newLongitude+"] is not";

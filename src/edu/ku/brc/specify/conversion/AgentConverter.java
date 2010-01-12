@@ -396,9 +396,11 @@ public class AgentConverter
                 AddressInfo addrInfo  = addressHash.get(addrId);
                 AgentInfo   agentInfo = agentHash.get(agentId);
 
-                // Deal with Agent FirstName, LastName and Name
-                int    srcColInx = agentType != 1 ? nameInx : lastNameInx;
-                namePair.second  = rs.getString(srcColInx);
+                // Deal with Agent FirstName, LastName and Name]
+                String lastName = rs.getString(lastNameInx);
+                String name     = rs.getString(nameInx);
+                
+                namePair.second  = StringUtils.isNotEmpty(name) && StringUtils.isEmpty(lastName) ? name : lastName;
                 namePair.first   = rs.getString(firstNameInx);
 
                 // Now tell the AgentAddress Mapper the New ID to the Old AgentAddressID
@@ -460,10 +462,10 @@ public class AgentConverter
                         } else if (agentColumns[i].equals("agent.LastName") || agentColumns[i].equals("LastName"))
                         {
                             
-                            int    lastNameLen = 50;
-                            String lastName    = namePair.second;
-                            lastName = lastName == null ? null : lastName.length() <= lastNameLen ? lastName : lastName.substring(0, lastNameLen);
-                            sqlStr.append(BasicSQLUtils.getStrValue(lastName));
+                            int    lastNameLen = 120;
+                            String lstName    = namePair.second;
+                            lstName = lstName == null ? null : lstName.length() <= lastNameLen ? lstName : lstName.substring(0, lastNameLen);
+                            sqlStr.append(BasicSQLUtils.getStrValue(lstName));
 
                         } else if (agentColumns[i].equals("agent.FirstName") || agentColumns[i].equals("FirstName"))
                         {
@@ -1072,6 +1074,8 @@ public class AgentConverter
         String newFieldListStr = buildSelectFieldList(newAgentFieldNames, "agent");
 
         //log.info(newFieldListStr);
+        
+        int lastNameLen = 120;
 
         Hashtable<String, Integer> oldIndexFromNameMap = new Hashtable<String, Integer>();
         int inx = 1;
@@ -1135,8 +1139,14 @@ public class AgentConverter
                         
                     } else if (StringUtils.contains(fieldName, "LastName"))
                     {
-                        int    srcColInx = rsX.getInt(agentTypeInx) != 1 ? nameInx : lastNameInx;
+                        int    oldType   = rsX.getInt(agentTypeInx);
+                        int    srcColInx = oldType != 1 ? nameInx : lastNameInx;
                         String lName     = rsX.getString(srcColInx);
+                        
+                        if (lName == null && oldType != 1)
+                        {
+                            lName = rsX.getString(lastNameInx);
+                        }
                         
                         if (lName != null && lName.length() > lastNameField.getLength())
                         {
@@ -1144,6 +1154,10 @@ public class AgentConverter
                             tblWriter.logError("Agent id: "+rsX.getString(agentIDInx)+" - Concatinating Last Name from ["+lName+"] to ["+str+"]");
                             lName = str;
                         }
+                        
+                        String lstName = lName;
+                        lName = lstName == null ? null : lstName.length() <= lastNameLen ? lstName : lstName.substring(0, lastNameLen);
+                        
                         sqlStr.append(BasicSQLUtils.getStrValue(lName));
                         
                     } else

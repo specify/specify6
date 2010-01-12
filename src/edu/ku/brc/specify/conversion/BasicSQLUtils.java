@@ -1672,11 +1672,18 @@ public class BasicSQLUtils
         }
         setProcess(0, numRecs);
         
-        DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoByTableName(toTableName);
-
-        String id = "";
+        DBTableInfo tblInfo         = DBTableIdMgr.getInstance().getInfoByTableName(toTableName);
+        Statement   updateStatement = null;
+        String      id              = "";
         try
         {
+            
+            updateStatement = toConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            if (BasicSQLUtils.myDestinationServerType != BasicSQLUtils.SERVERTYPE.MS_SQLServer) 
+            {
+                BasicSQLUtils.removeForeignKeyConstraints(toConn, BasicSQLUtils.myDestinationServerType);
+            
+            }
             List<FieldMetaData> newFieldMetaData = getFieldMetaDataFromSchema(toConn, toTableName);
 
             Statement         stmt = fromConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
@@ -1773,7 +1780,7 @@ public class BasicSQLUtils
 	                            vertbatimDateMap.put(newColName, dataObj.toString());
 	                        } else
 	                        {
-	                            log.error("No Verbatim Date Mapper for Table[" + fromTableName + "] Col Name[" + newFieldMetaData.get(i).getName() + "]");
+	                            log.error("No Verbatim Date Mapper  for Table[" + fromTableName + "] Col Name[" + newFieldMetaData.get(i).getName() + "]");
 	                        }
                         }
                     }
@@ -1842,6 +1849,8 @@ public class BasicSQLUtils
                     str.append("INSERT INTO " + toTableName + " "+ fieldList+ " VALUES (");
                     
                     insertSQL = str.toString();
+                    
+                    log.debug(str);
                 } else
                 {
                     str.append(insertSQL);
@@ -2134,12 +2143,7 @@ public class BasicSQLUtils
                         log.info(toTableName + " processed: " + count);
                     }                        
                 }
-                Statement updateStatement = toConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-                if (BasicSQLUtils.myDestinationServerType != BasicSQLUtils.SERVERTYPE.MS_SQLServer) 
-                {
-                    BasicSQLUtils.removeForeignKeyConstraints(toConn, BasicSQLUtils.myDestinationServerType);
                 
-                }
                 //setQuotedIdentifierOFFForSQLServer(toConn, BasicSQLUtils.myDestinationServerType);
                 //exeUpdateCmd(updateStatement, "SET FOREIGN_KEY_CHECKS = 0");
                 //if (str.toString().toLowerCase().contains("insert into locality"))
@@ -2158,9 +2162,6 @@ public class BasicSQLUtils
                         log.debug("executing: " + str);
                     }
 	                int retVal = exeUpdateCmd(updateStatement, str.toString());
-	                updateStatement.clearBatch();
-	                updateStatement.close();
-	
 	                if (retVal == -1)
 	                {
 	                    rs.close();
@@ -2196,6 +2197,17 @@ public class BasicSQLUtils
             log.error(sqlStr);
             log.error(ex);
             log.error("ID: " + id);
+        } finally
+        {
+            try
+            {
+                updateStatement.clearBatch();
+                updateStatement.close();
+                
+            } catch (SQLException ex)
+            {
+                
+            }
         }
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);//meg added
         return true;

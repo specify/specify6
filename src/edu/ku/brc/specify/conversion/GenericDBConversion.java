@@ -1739,9 +1739,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         return new String[] {
                 "CollectionObjectAttributeID", "BiologicalObjectAttributesID",
                 // "biologicalObjectTypeId", ??? "Number36"
-                "Text10", "Sex", 
+                "Text10",   "Sex", 
                 "Number11", "Age", 
-                "Number12", "Stage", 
+                "Text12",   "Stage", 
                 "Number37", "Weight",
                 "Number38", "Length", 
                 "Number8",  "GosnerStage", 
