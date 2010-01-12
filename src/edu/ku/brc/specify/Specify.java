@@ -116,6 +116,7 @@ import edu.ku.brc.af.core.MacOSAppHandler;
 import edu.ku.brc.af.core.MainPanel;
 import edu.ku.brc.af.core.RecordSetFactory;
 import edu.ku.brc.af.core.SchemaI18NService;
+import edu.ku.brc.af.core.SpecialMsgNotifier;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
@@ -3054,6 +3055,9 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                   {
                       localPrefs.putBoolean(VERSION_CHECK, true);
                   }
+                  
+                  SpecialMsgNotifier smn = new SpecialMsgNotifier();
+                  smn.checkForMessages();
 
                   String EXTRA_CHECK = "extra.check";
                   Boolean isExtraCheck = localPrefs.getBoolean(EXTRA_CHECK, true);
