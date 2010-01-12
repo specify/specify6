@@ -332,9 +332,6 @@ public class ConvertVerifier
         // For Debug
         coOptions = DO_CO_ALL;
         
-        tblWriter = tblWriterHash.get(DO_COLLECTORS);
-        verifyCollectors();
-        
         if (coOptions > NO_OPTIONS)
         {
             int i = 0;
