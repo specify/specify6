@@ -27,6 +27,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -1100,6 +1101,43 @@ public class BasicSQLUtils
                 // log.debug("single quotes:" + s);
             }
             return s;
+        }
+        return null;
+    }
+    
+    /**
+     * @param obj
+     * @return
+     */
+    public static java.sql.Date getDateObj(final Object obj)
+    {
+        if (obj == null)
+        {
+            return null;
+        }
+        
+        if (obj instanceof Integer)
+        {
+            getPartialDate(obj, datePair);
+            
+            try
+            {
+                Date d = dateFormatter.parse(datePair.first);
+                if (d != null)
+                {
+                    return new java.sql.Date(d.getTime());
+                }
+                return null;
+                
+            } catch (ParseException e)
+            {
+                e.printStackTrace();
+            }
+            return null;
+                
+        } else if (obj instanceof Date)
+        {
+            return new java.sql.Date(((Date)obj).getTime());
         }
         return null;
     }

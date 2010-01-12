@@ -30,6 +30,7 @@ import static edu.ku.brc.specify.conversion.BasicSQLUtils.deleteAllRecordsFromTa
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.escapeStringLiterals;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.fixTimestamps;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getCount;
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.getDateObj;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldMetaDataFromSchema;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldMetaDataFromSchemaHash;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldNamesFromSchema;
@@ -53,6 +54,7 @@ import static edu.ku.brc.ui.UIRegistry.showError;
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.io.File;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -107,7 +109,6 @@ import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.DisciplineType.STD_DISCIPLINES;
 import edu.ku.brc.specify.config.init.DataBuilder;
-import edu.ku.brc.specify.conversion.TableWriter;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
@@ -614,6 +615,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         
         // These are the names as they occur in the old datamodel
         String[] tableNames = {
+                "Locality", 
                 "Accession",
                 // XXX "AccessionAgents",
                 "AccessionAuthorizations",
@@ -659,7 +661,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 // XXX "LoanAgents",
                 //"LoanPhysicalObject", 
                 "LoanReturnPhysicalObject", 
-                "Locality", 
                 "LocalityCitation",
                 "Observation", 
                 "OtherIdentifier",
@@ -6586,6 +6587,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      */
     protected void convertLocalityExtraInfo(final String tableName, final boolean isGeoCoordDetail)
     {
+        removeForeignKeyConstraints(newDBConn, BasicSQLUtils.myDestinationServerType);
+        
         String capName = StringUtils.capitalize(tableName);
         TableWriter tblWriter = convLogger.getWriter(capName + ".html", capName);
         setTblWriter(tblWriter);
@@ -6687,7 +6690,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     String value;
                     if (colName.equals("LocalityID"))
                     {
-                    	Integer oldId = rs.getInt(i);
+                        Integer oldId = rs.getInt(i);
                         Integer newId = locIdMapper.get(oldId);
                         if (newId != null)
                         {
@@ -6791,7 +6794,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             + "," + getModifiedByAgentId(null) 
                             + ")";
 
-                    removeForeignKeyConstraints(newDBConn, BasicSQLUtils.myDestinationServerType);
                     /*if (true)
                     {
                         log.info(insertSQL);
@@ -6848,7 +6850,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         setIdentityInsertONCommandForSQLServer(newDBConn, "locality", BasicSQLUtils.myDestinationServerType);
         deleteAllRecordsFromTable("locality", BasicSQLUtils.myDestinationServerType);
 
-        String sql = "select locality.*,geography.* FROM locality LEFT JOIN geography on locality.GeographyID = geography.GeographyID  WHERE locality.GeographyID IS NOT NULL";
 
         Hashtable<String, String> newToOldColMap = new Hashtable<String, String>();
         newToOldColMap.put("Visibility", "GroupPermittedToView");
@@ -6871,7 +6872,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "GML",
                 "SrcLatLongUnit",
                 "Visibility",
-                "VisibilitySetByID"};
+                "VisibilitySetByID",
+                // Special String
+                "LocalityName",
+                "NamedPlace",
+                "RelationToNamedPlace"};
         
         setFieldsToIgnoreWhenMappingNames(fieldsToIgnore);
 
@@ -6881,6 +6886,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         TableWriter tblWriter = convLogger.getWriter("Locality.html", "Localities");
         setTblWriter(tblWriter);
         IdHashMapper.setTblWriter(tblWriter);
+
+        String sql = "SELECT locality.*,g.* FROM locality LEFT JOIN geography g on locality.GeographyID = g.GeographyID WHERE locality.GeographyID IS NOT NULL";
 
         if (copyTable(oldDBConn, newDBConn, sql, "locality", "locality", null, null, BasicSQLUtils.mySourceServerType, BasicSQLUtils.myDestinationServerType))
         {
@@ -6901,6 +6908,71 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         {
             log.error("Copying locality/geography (fields) to new Locality");
         }
+        
+        frame.setProcess(0, BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM locality"));
+        
+        PreparedStatement pStmt = null;
+        Statement         stmt  = null;
+        sql = "SELECT LocalityID, LocalityName, NamedPlace, RelationToNamedPlace FROM locality ORDER BY LocalityID";
+        try
+        {
+            IdMapperIFace locMapper = idMapperMgr.get("locality_LocalityID");
+            pStmt = newDBConn.prepareStatement("UPDATE locality SET LocalityName=?, NamedPlace=?, RelationToNamedPlace=? WHERE LocalityID=?");
+            stmt  = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = stmt.executeQuery(sql);
+            int cnt = 0;
+            while (rs.next())
+            {
+                int     oldId = rs.getInt(1);
+                Integer newId = locMapper.get(oldId);
+                if (newId != null)
+                {
+                    pStmt.setString(1, rs.getString(2));
+                    pStmt.setString(2, rs.getString(3));
+                    pStmt.setString(3, rs.getString(4));
+                    pStmt.setInt(4,    newId);
+                    
+                    pStmt.execute();
+                    
+                    /*if (!pStmt.execute())
+                    {
+                        if ()
+                        String msg = "Error Updating OldId ["+rs.getInt(1)+"] NewId ["+newId+"]";
+                        log.error(msg);
+                        tblWriter.logErrors(Integer.toString(rs.getInt(1)), msg);
+                    }*/
+                    
+                } else
+                {
+                    String msg = "No Mapping for OldId ["+rs.getInt(1)+"]";
+                    log.error(msg);
+                    tblWriter.logErrors(Integer.toString(rs.getInt(1)), msg);
+                }
+                cnt++;
+                if (cnt % 500 == 0)
+                {
+                    frame.setProcess(cnt);
+                }
+            }
+            
+            frame.setProcess(cnt);
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            tblWriter.logErrors("Exception", ex.toString());
+        } finally
+        {
+            try
+            {
+                stmt.close();
+                pStmt.close();
+                
+            } catch (SQLException ex)
+            {
+                
+            }
+        }
 
         convertLocalityExtraInfo("localitydetail", false);
         convertLocalityExtraInfo("geocoorddetail", true);
@@ -6912,6 +6984,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         IdHashMapper.setTblWriter(null);
     }
     
+    /**
+     * @param fieldName
+     */
     private void fixGeography(final String fieldName)
     {
         int cnt = BasicSQLUtils.getCountAsInt(oldDBConn, String.format("SELECT COUNT(*) FROM geography WHERE %s = 'null'", fieldName));

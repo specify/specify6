@@ -23,6 +23,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -592,14 +593,14 @@ public class ConvertVerifier
      */
     private boolean verifyTaxon(final int oldCatNum, final String newCatNum) throws SQLException
     {
-        newSQL = "SELECT collectionobject.CatalogedDate, collectionobject.CatalogedDatePrecision, determination.DeterminedDate, determination.DeterminedDatePrecision, taxon.FullName " + 
-                        "FROM determination LEFT JOIN collectionobject ON determination.CollectionObjectID = collectionobject.CollectionObjectID "+
-                        "LEFT JOIN taxon ON determination.TaxonID = taxon.TaxonID WHERE CatalogNumber = '"+ newCatNum + "'";
+        newSQL = "SELECT co.CollectionObjectID, co.CatalogedDate, co.CatalogedDatePrecision, determination.DeterminedDate, determination.DeterminedDatePrecision, tx.FullName " + 
+                 "FROM determination LEFT JOIN collectionobject co ON determination.CollectionObjectID = co.CollectionObjectID "+
+                 "LEFT JOIN taxon tx ON determination.TaxonID = tx.TaxonID WHERE CatalogNumber = '"+ newCatNum + "'";
 
-        oldSQL = "SELECT cc.CatalogedDate, determination.Date,taxonname.FullTaxonName " + 
-                        "FROM determination LEFT JOIN taxonname ON determination.TaxonNameID = taxonname.TaxonNameID " + 
-                        "LEFT JOIN collectionobjectcatalog cc ON cc.CollectionObjectCatalogID = determination.BiologicalObjectID " + 
-                        "WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
+        oldSQL = "SELECT cc.CollectionObjectCatalogID, cc.CatalogedDate, determination.Date,taxonname.FullTaxonName " + 
+                 "FROM determination LEFT JOIN taxonname ON determination.TaxonNameID = taxonname.TaxonNameID " + 
+                 "LEFT JOIN collectionobjectcatalog cc ON cc.CollectionObjectCatalogID = determination.BiologicalObjectID " + 
+                 "WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
         if (debug)
         {
 	         log.debug("New SQL: "+newSQL);
@@ -667,18 +668,18 @@ public class ConvertVerifier
     {
         String[] lbls = new String[] {"ContinentOrOcean", "Country", "State", "County"};
         
-        newSQL = "SELECT geography.Name " +
-            "FROM collectionobject INNER JOIN collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID " +
-            "INNER JOIN locality ON collectingevent.LocalityID = locality.LocalityID " +
-            "INNER JOIN geography ON locality.GeographyID = geography.GeographyID " +
-            "WHERE CatalogNumber = '"+ newCatNum + "'";
+        newSQL = "SELECT g.GeographyID, g.Name " +
+                    "FROM collectionobject co INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID " +
+                    "INNER JOIN locality l ON ce.LocalityID = l.LocalityID " +
+                    "INNER JOIN geography g ON l.GeographyID = g.GeographyID " +
+                    "WHERE CatalogNumber = '"+ newCatNum + "'";
 
-        oldSQL = "SELECT geography.GeographyID, geography.ContinentOrOcean, geography.Country, geography.State, geography.County " +
-            "FROM collectionobjectcatalog cc INNER JOIN collectionobject ON cc.CollectionObjectCatalogID = collectionobject.CollectionObjectID " +
-            "INNER JOIN collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID " +
-            "INNER JOIN locality ON collectingevent.LocalityID = locality.LocalityID " +
-            "INNER JOIN geography ON locality.GeographyID = geography.GeographyID " +
-            "WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
+        oldSQL = "SELECT g.GeographyID, g.ContinentOrOcean, g.Country, g.State, g.County " +
+                    "FROM collectionobjectcatalog cc INNER JOIN collectionobject co ON cc.CollectionObjectCatalogID = co.CollectionObjectID " +
+                    "INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID " +
+                    "INNER JOIN locality l ON ce.LocalityID = l.LocalityID " +
+                    "INNER JOIN geography g ON l.GeographyID = g.GeographyID " +
+                    "WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
         
         if (debug)
         {
@@ -709,7 +710,7 @@ public class ConvertVerifier
                 return false;
             }
             
-            String newGeoName = newDBRS.getString(1);
+            String newGeoName = newDBRS.getString(2);
             String[] names = new String[4];
             for (int i=0;i<names.length;i++)
             {
@@ -730,6 +731,8 @@ public class ConvertVerifier
                 sb.append(newGeoName);
                 sb.append("] Old Id[");
                 sb.append(oldDBRS.getInt(1));
+                sb.append("] New Id[");
+                sb.append(newDBRS.getInt(1));
                 sb.append("]");
                 for (int i=names.length-1;i>=0;i--)
                 {
@@ -797,15 +800,15 @@ public class ConvertVerifier
 
     private boolean verifyCOToLocality(final int oldCatNum, final String newCatNum) throws SQLException
     {
-         newSQL = "SELECT locality.LocalityName " +
-                        "FROM collectionobject INNER JOIN collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID " +
-                        "INNER JOIN locality ON collectingevent.LocalityID = locality.LocalityID " +
+         newSQL = "SELECT l.LocalityID, l.LocalityName " +
+                        "FROM collectionobject co INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID " +
+                        "INNER JOIN locality l ON ce.LocalityID = l.LocalityID " +
                         "WHERE CatalogNumber = '"+ newCatNum + "'";
 
-         oldSQL = "SELECT locality.LocalityName  " +
-                        "FROM collectionobjectcatalog cc INNER JOIN collectionobject ON cc.CollectionObjectCatalogID = collectionobject.CollectionObjectID " +
-                        "INNER JOIN collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID " +
-                        "INNER JOIN locality ON collectingevent.LocalityID = locality.LocalityID " +
+         oldSQL = "SELECT l.LocalityID, l.LocalityName  " +
+                        "FROM collectionobjectcatalog cc INNER JOIN collectionobject co ON cc.CollectionObjectCatalogID = co.CollectionObjectID " +
+                        "INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID " +
+                        "INNER JOIN locality l ON ce.LocalityID = l.LocalityID " +
                         "WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
          if (debug)
          {
@@ -831,12 +834,12 @@ public class ConvertVerifier
         //log.debug("Old SQL: "+oldSQL);
         
         // address.Address, 
-         newSQL = "SELECT agent.FirstName, agent.MiddleInitial, agent.LastName " +
-                  "FROM collectionobject INNER JOIN agent ON collectionobject.CatalogerID = agent.AgentID " +
+         newSQL = "SELECT a.AgentID, a.FirstName, a.MiddleInitial, a.LastName " +
+                  "FROM collectionobject co INNER JOIN agent a ON co.CatalogerID = a.AgentID " +
                   "WHERE CatalogNumber = '"+ newCatNum + "'";
 
-         oldSQL = "SELECT agent.FirstName, agent.MiddleInitial, agent.LastName, agent.Name  " +
-                  "FROM collectionobjectcatalog cc INNER JOIN agent ON cc.CatalogerID = agent.AgentID WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
+         oldSQL = "SELECT a.AgentID, a.FirstName, a.MiddleInitial, a.LastName, a.Name  " +
+                  "FROM collectionobjectcatalog cc INNER JOIN agent a ON cc.CatalogerID = a.AgentID WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
          if (debug)
          {
 	         log.debug("New SQL: "+newSQL);
@@ -855,15 +858,15 @@ public class ConvertVerifier
      */
     private boolean verifyDeterminer(final int oldCatNum, final String newCatNum) throws SQLException
     {
-         newSQL = "SELECT agent.FirstName, agent.MiddleInitial, agent.LastName " +
-                  "FROM collectionobject INNER JOIN determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID " +
-                  "INNER JOIN agent ON determination.DeterminerID = agent.AgentID " +
+         newSQL = "SELECT a.AgentID, a.FirstName, a.MiddleInitial, a.LastName " +
+                  "FROM collectionobject co INNER JOIN determination ON co.CollectionObjectID = determination.CollectionObjectID " +
+                  "INNER JOIN agent a ON determination.DeterminerID = a.AgentID " +
                   "WHERE CatalogNumber = '"+ newCatNum + "'";
 
-         oldSQL = "SELECT agent.FirstName, agent.MiddleInitial, agent.LastName, agent.Name  " +
-                  "FROM collectionobjectcatalog cc INNER JOIN collectionobject ON cc.CollectionObjectCatalogID = collectionobject.CollectionObjectID " +
-                  "INNER JOIN determination ON determination.BiologicalObjectID = collectionobject.CollectionObjectID " + 
-                  "INNER JOIN agent ON determination.DeterminerID = agent.AgentID WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
+         oldSQL = "SELECT a.AgentID, a.FirstName, a.MiddleInitial, a.LastName, a.Name  " +
+                  "FROM collectionobjectcatalog cc INNER JOIN collectionobject co ON cc.CollectionObjectCatalogID = co.CollectionObjectID " +
+                  "INNER JOIN determination ON determination.BiologicalObjectID = co.CollectionObjectID " + 
+                  "INNER JOIN agent a ON determination.DeterminerID = a.AgentID WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
         
          if (debug)
          {
@@ -884,14 +887,14 @@ public class ConvertVerifier
      */
     private boolean verifyPreparer(final int oldCatNum, final String newCatNum) throws SQLException
     {
-         newSQL = "SELECT agent.FirstName, agent.MiddleInitial, agent.LastName " +
-                  "FROM collectionobject INNER JOIN preparation ON collectionobject.CollectionObjectID = preparation.CollectionObjectID INNER JOIN agent ON preparation.PreparedByID = agent.AgentID " +
+         newSQL = "SELECT a.AgentID, a.FirstName, a.MiddleInitial, a.LastName " +
+                  "FROM collectionobject co INNER JOIN preparation p ON co.CollectionObjectID = p.CollectionObjectID INNER JOIN agent a ON p.PreparedByID = a.AgentID " +
                   "WHERE CatalogNumber = '"+ newCatNum + "'";
 
-         oldSQL = "SELECT agent.FirstName, agent.MiddleInitial, agent.LastName, agent.Name  " +
-                  "FROM collectionobjectcatalog cc INNER JOIN collectionobject ON cc.CollectionObjectCatalogID = collectionobject.DerivedFromID " +
-                  "INNER JOIN preparation ON collectionobject.CollectionObjectID = preparation.PhysicalObjectTypeID " +
-                  "INNER JOIN agent ON preparation.PreparedByID = agent.AgentID " +
+         oldSQL = "SELECT a.AgentID, a.FirstName, a.MiddleInitial, a.LastName, a.Name  " +
+                  "FROM collectionobjectcatalog cc INNER JOIN collectionobject co ON cc.CollectionObjectCatalogID = co.DerivedFromID " +
+                  "INNER JOIN preparation p ON co.CollectionObjectID = p.PhysicalObjectTypeID " +
+                  "INNER JOIN agent a ON p.PreparedByID = a.AgentID " +
                   "WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
         
          if (debug)
@@ -910,14 +913,14 @@ public class ConvertVerifier
      */
     private boolean verifyTaxonCitations(final int oldCatNum, final String newCatNum) throws SQLException
     {
-        newSQL = "SELECT t.Name, tc.Text1, tc.Text2, tc.Number1, tc.Number2, tc.YesNo1, tc.YesNo2, rw.ReferenceWorkType, rw.Title, rw.Publisher, rw.PlaceOfPublication, rw.Volume, rw.Pages, rw.LibraryNumber " +
+        newSQL = "SELECT t.TaxonID, t.Name, tc.Text1, tc.Text2, tc.Number1, tc.Number2, tc.YesNo1, tc.YesNo2, rw.ReferenceWorkType, rw.Title, rw.Publisher, rw.PlaceOfPublication, rw.Volume, rw.Pages, rw.LibraryNumber " +
                  "FROM collectionobject co INNER JOIN determination d ON co.CollectionObjectID = d.CollectionObjectID " +
                  "INNER JOIN taxon t ON d.TaxonID = t.TaxonID " +
                  "INNER JOIN taxoncitation tc ON t.TaxonID = tc.TaxonID " +
                  "INNER JOIN referencework rw ON tc.ReferenceWorkID = rw.ReferenceWorkID " +
                  "WHERE CatalogNumber = '"+ newCatNum + "'";
         
-        oldSQL = "SELECT t.TaxonName, tc.Text1, tc.Text2, tc.Number1, tc.Number2, tc.YesNo1, tc.YesNo2, rw.ReferenceWorkType, rw.Title, rw.Publisher, rw.PlaceOfPublication, rw.Volume, rw.Pages, rw.LibraryNumber " +
+        oldSQL = "SELECT t.TaxonNameID, t.TaxonName, tc.Text1, tc.Text2, tc.Number1, tc.Number2, tc.YesNo1, tc.YesNo2, rw.ReferenceWorkType, rw.Title, rw.Publisher, rw.PlaceOfPublication, rw.Volume, rw.Pages, rw.LibraryNumber " +
                     "FROM collectionobjectcatalog cc INNER JOIN determination d ON cc.CollectionObjectCatalogID = d.BiologicalObjectID " +
                     "INNER JOIN taxonname t ON d.TaxonNameID = t.TaxonNameID " +
                     "INNER JOIN taxoncitation tc ON t.TaxonNameID = tc.TaxonNameID " +
@@ -940,13 +943,13 @@ public class ConvertVerifier
      */
     private boolean verifyAllLocalityToGeo() throws SQLException
     {
-        newSQL = "SELECT locality.LocalityID, geography.GeographyID, geography.Name " +
-                 "FROM locality " +
-                 "INNER JOIN geography ON locality.GeographyID = geography.GeographyID ";
+        newSQL = "SELECT l.LocalityID, g.GeographyID, g.Name " +
+                 "FROM locality l " +
+                 "INNER JOIN geography g ON l.GeographyID = g.GeographyID ";
 
-        oldSQL = "SELECT locality.LocalityID, geography.GeographyID, geography.GeographyID, geography.ContinentOrOcean, geography.Country, geography.State, geography.County " +
-                 "FROM locality " +
-                 "INNER JOIN geography ON locality.GeographyID = geography.GeographyID ";
+        oldSQL = "SELECT l.LocalityID, g.GeographyID, g.GeographyID, g.ContinentOrOcean, g.Country, g.State, g.County " +
+                 "FROM locality l " +
+                 "INNER JOIN geography g ON l.GeographyID = g.GeographyID ";
     
         //System.out.println(newSQL);
         //System.out.println(oldSQL);
@@ -1023,13 +1026,13 @@ public class ConvertVerifier
      */
     private boolean verifyCollectingEvent(final int oldCatNum, final String newCatNum) throws SQLException
     {
-         newSQL = "SELECT collectingevent.StartDate, collectingevent.StartDatePrecision, collectingevent.StationFieldNumber " +
-                        "FROM collectionobject INNER JOIN collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID " +
+         newSQL = "SELECT ce.CollectingEventID, ce.StartDate, ce.StartDatePrecision, ce.StationFieldNumber " +
+                        "FROM collectionobject co INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID " +
                         "WHERE CatalogNumber = '"+ newCatNum + "'";
 
-         oldSQL = "SELECT collectingevent.StartDate, collectingevent.StationFieldNumber  " +
-                        "FROM collectionobjectcatalog cc INNER JOIN collectionobject ON cc.CollectionObjectCatalogID = collectionobject.CollectionObjectID " +
-                        "INNER JOIN collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID " +
+         oldSQL = "SELECT ce.CollectingEventID, ce.StartDate, ce.StationFieldNumber  " +
+                        "FROM collectionobjectcatalog cc INNER JOIN collectionobject co ON cc.CollectionObjectCatalogID = co.CollectionObjectID " +
+                        "INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID " +
                         "WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
         
          StatusType status = compareRecords("CE To Locality", oldCatNum, newCatNum, oldSQL, newSQL);
@@ -1045,16 +1048,13 @@ public class ConvertVerifier
      */
     private boolean verifyPreparation(final int oldCatNum, final String newCatNum) throws SQLException
     {
-         newSQL = "SELECT preparation.CountAmt, " +
-                    "preptype.Name, " +
-                    "preparation.Text1, " +
-                    "preparation.Text2 " +
-                    "FROM collectionobject INNER JOIN preparation ON collectionobject.CollectionObjectID = preparation.CollectionObjectID " +
-                    "INNER JOIN preptype ON preparation.PrepTypeID = preptype.PrepTypeID " +
-                    "WHERE CatalogNumber = '"+ newCatNum + "' ORDER BY preparation.PreparationID";
+         newSQL = "SELECT co.CollectionObjectID, p.CountAmt, preptype.Name, p.Text1, p.Text2 " +
+                  "FROM collectionobject co INNER JOIN preparation p ON co.CollectionObjectID = p.CollectionObjectID " +
+                  "INNER JOIN preptype ON p.PrepTypeID = preptype.PrepTypeID " +
+                  "WHERE CatalogNumber = '"+ newCatNum + "' ORDER BY p.PreparationID";
 
          
-         oldSQL = "SELECT co.Count, co.PreparationMethod, co.Text1, co.Text2 FROM collectionobject co " +
+         oldSQL = "SELECT cc.CollectionObjectCatalogID, co.Count, co.PreparationMethod, co.Text1, co.Text2 FROM collectionobject co " +
                   "INNER JOIN collectionobjectcatalog cc ON co.DerivedFromID = cc.CollectionObjectCatalogID " + 
                   "WHERE cc.SubNumber > -1 AND co.CollectionObjectTypeID > 20 AND CatalogNumber = " + oldCatNum + "  ORDER BY cc.CollectionObjectCatalogID";
          
@@ -1076,10 +1076,10 @@ public class ConvertVerifier
      */
     private boolean verifyAccessions(final String oldAccNum, final String newAccNum) throws SQLException
     {
-         newSQL = "SELECT AccessionNumber, Status, Type, VerbatimDate, DateAccessioned, DateReceived, Number1, Number2, YesNo1, YesNo2 FROM accession  " +
+         newSQL = "SELECT AccessionID, AccessionNumber, Status, Type, VerbatimDate, DateAccessioned, DateReceived, Number1, Number2, YesNo1, YesNo2 FROM accession  " +
                   "WHERE AccessionNumber = '"+ newAccNum + "'";
 
-         oldSQL = "SELECT Number, Status, Type, VerbatimDate, DateAccessioned, DateReceived, Number1, Number2, YesNo1, YesNo2 FROM accession " +
+         oldSQL = "SELECT AccessionID, Number, Status, Type, VerbatimDate, DateAccessioned, DateReceived, Number1, Number2, YesNo1, YesNo2 FROM accession " +
                   "WHERE Number = '" + oldAccNum + "'";
         
          StatusType status = compareRecords("Accession", oldAccNum, newAccNum, oldSQL, newSQL);
@@ -1095,16 +1095,16 @@ public class ConvertVerifier
      */
     private boolean verifyAccessionAgents(final String oldAccNum, final String newAccNum) throws SQLException
     {
-        newSQL = "SELECT accessionagent.Role, agent.FirstName, agent.MiddleInitial, agent.LastName " +
-                 "FROM accession INNER JOIN accessionagent ON accession.AccessionID = accessionagent.AccessionID "+
-                 "INNER JOIN agent ON accessionagent.AgentID = agent.AgentID  " +
-                 "WHERE AccessionNumber = '" + newAccNum + "' ORDER BY agent.LastName";
+        newSQL = "SELECT ac.AccessionID, aa.Role, a.FirstName, a.MiddleInitial, a.LastName " +
+                 "FROM accession ac INNER JOIN accessionagent aa ON ac.AccessionID = aa.AccessionID "+
+                 "INNER JOIN agent a ON aa.AgentID = a.AgentID  " +
+                 "WHERE ac.AccessionNumber = '" + newAccNum + "' ORDER BY a.LastName";
 
-        oldSQL = "SELECT accessionagents.Role, agent.FirstName, agent.MiddleInitial, agent.LastName, agent.Name " +
-                 "FROM accession INNER JOIN accessionagents ON accession.AccessionID = accessionagents.AccessionID " +
-                 "INNER JOIN agentaddress ON accessionagents.AgentAddressID = agentaddress.AgentAddressID " +
-                 "INNER JOIN agent ON agentaddress.AgentID = agent.AgentID " +
-                 "WHERE Number = '" + oldAccNum + "' ORDER BY agent.Name, agent.LastName";
+        oldSQL = "SELECT ac.AccessionID, aa.Role, a.FirstName, a.MiddleInitial, a.LastName, a.Name " +
+                 "FROM accession ac INNER JOIN accessionagents aa ON ac.AccessionID = aa.AccessionID " +
+                 "INNER JOIN agentaddress ON aa.AgentAddressID = agentaddress.AgentAddressID " +
+                 "INNER JOIN agent a ON agentaddress.AgentID = a.AgentID " +
+                 "WHERE ac.Number = '" + oldAccNum + "' ORDER BY a.Name, a.LastName";
 
         StatusType status = compareRecords("Accession", oldAccNum, newAccNum, oldSQL, newSQL);
         dumpStatus(status);
@@ -1227,7 +1227,7 @@ public class ConvertVerifier
             
             String oldNewIdStr = oldCatNum + " / "+newCatNum;
             
-            boolean checkForAgent = newSQL.indexOf("agent.LastName") > -1;
+            boolean checkForAgent = newSQL.indexOf("a.LastName") > -1;
             
             ResultSetMetaData oldRsmd = oldDBRS.getMetaData();
             ResultSetMetaData newRsmd = newDBRS.getMetaData();
@@ -1242,6 +1242,7 @@ public class ConvertVerifier
                 
                 int oldColInx = 0;
                 int newColInx = 0;
+                String idMsgStr = "";
                 
                 int numCols = newRsmd.getColumnCount();
                 
@@ -1274,6 +1275,12 @@ public class ConvertVerifier
                         continue;
                     }
                     
+                    if (col == 0)
+                    {
+                        idMsgStr = String.format(" - Rec Ids[%s / %s] ", (oldObj != null ? oldObj : -1), (newObj != null ? newObj : -1));
+                        continue;
+                    }
+                    
                     String oldColName = oldRsmd.getColumnName(oldColInx);
                     if (oldColName.equals("PreparationMethod") && newObj != null)
                     {
@@ -1281,8 +1288,8 @@ public class ConvertVerifier
                         if ((oldObj == null && !newObjStr.equalsIgnoreCase("Misc")) || 
                             (oldObj != null && !newObjStr.equalsIgnoreCase(oldObj.toString())))
                         {
-                            String msg = "Old Value was null and shouldn't have been for Old CatNum ["+oldCatNum+"] Field ["+oldColName+"] oldObj["+oldObj+"] newObj ["+newObj+"]";
-                            log.error(desc+ " - "+msg);
+                            String msg = idMsgStr + "Old Value was null and shouldn't have been for Old CatNum ["+oldCatNum+"] Field ["+oldColName+"] oldObj["+oldObj+"] newObj ["+newObj+"]";
+                            log.error(desc + " - " + msg);
                             tblWriter.logErrors(oldCatNum, msg);
                             return StatusType.OLD_VAL_NULL;
                         }
@@ -1293,7 +1300,7 @@ public class ConvertVerifier
                     {
                         if (!oldColName.equals("PreparationMethod") || !newObj.equals("Misc"))
                         {
-                            String msg = "Old Value was null and shouldn't have been for Old CatNum ["+oldCatNum+"] Field ["+oldColName+"]";
+                            String msg = idMsgStr + "Old Value was null and shouldn't have been for Old CatNum ["+oldCatNum+"] Field ["+oldColName+"]";
                             log.error(desc+ " - "+msg);
                             tblWriter.logErrors(oldCatNum, msg);
                             return StatusType.OLD_VAL_NULL;
@@ -1308,7 +1315,7 @@ public class ConvertVerifier
                         if (!clsName.equals("java.sql.Date") || (!(oldObj instanceof String) && ((Number)oldObj).intValue() != 0))
                         {
                             String msg = "New Value was null and shouldn't have been for Key Value New CatNo["+newCatNum+"] Field ["+colName+"] ["+oldObj+"]";
-                            log.error(desc+ " - "+msg);
+                            log.error(desc+ idMsgStr + " - "+msg);
                             tblWriter.logErrors(newCatNum, msg);
                             return StatusType.NEW_VAL_NULL;
                         }
@@ -1331,7 +1338,7 @@ public class ConvertVerifier
                         {
                             newColInx++;
                             numCols--;
-                            partialDateType =  newDBRS.getByte(newColInx);
+                            partialDateType = newDBRS.getByte(newColInx);
                             isPartialDate   = true;
                         }
                         
@@ -1381,7 +1388,7 @@ public class ConvertVerifier
                         
                         if (errSB.length() > 0 && (!isYearOK || !isPartialDate))
                         {
-                            errSB.insert(0, oldColName+"  ");
+                            errSB.insert(0, oldColName+"  "+idMsgStr);
                             errSB.append("[");
                             errSB.append(datePair);
                             errSB.append("][");
@@ -1398,7 +1405,7 @@ public class ConvertVerifier
                         String s2 = String.format("%10.5f", oldObj instanceof Float ? (Float)oldObj : (Double)oldObj);
                         if (!s1.equals(s2))
                         {
-                            String msg = "Columns don't compare["+s1+"]["+s2+"]  ["+newRsmd.getColumnName(col)+"]["+oldRsmd.getColumnName(oldColInx)+"]";
+                            String msg = idMsgStr + "Columns don't compare["+s1+"]["+s2+"]  ["+newRsmd.getColumnName(col)+"]["+oldRsmd.getColumnName(oldColInx)+"]";
                             log.error(desc+ " - "+msg);
                             tblWriter.logErrors(oldNewIdStr, msg);
                             return StatusType.NO_COMPARE;
@@ -1414,7 +1421,7 @@ public class ConvertVerifier
                             String newLastName = newDBRS.getString(newColInx);
                             if (!newLastName.equals(lastName) &&!newLastName.equals(agentName))
                             {
-                                String msg = "Columns don't compare["+newObj+"]["+oldObj+"]  ["+newColName+"]["+oldColName+"]";
+                                String msg = idMsgStr + "Columns don't compare["+newObj+"]["+oldObj+"]  ["+newColName+"]["+oldColName+"]";
                                 log.error(desc+ " - "+msg);
                                 tblWriter.logErrors(oldNewIdStr, msg);
                                 return StatusType.NO_COMPARE;
@@ -1422,7 +1429,7 @@ public class ConvertVerifier
                             
                         } else if (!newObj.equals(oldObj))
                         {
-                            String msg = "Columns don't Cat Num["+oldCatNum+"] compare["+newObj+"]["+oldObj+"]  ["+newColName+"]["+oldColName+"]";
+                            String msg = idMsgStr + "Columns don't Cat Num["+oldCatNum+"] compare["+newObj+"]["+oldObj+"]  ["+newColName+"]["+oldColName+"]";
                             log.error(desc+ " - "+msg);
                             tblWriter.logErrors(oldNewIdStr, msg);
                             return StatusType.NO_COMPARE;
@@ -1462,13 +1469,13 @@ public class ConvertVerifier
                 
                 if (!hasOldRec)
                 {
-                    log.error(desc+ " - No Old Record for ["+oldCatNum+"]");
+                    log.error(desc+ idMsgStr + " - No Old Record for ["+oldCatNum+"]");
                     tblWriter.logErrors(oldNewIdStr, "No Old Record for ["+oldCatNum+"]");
                     return StatusType.NO_OLD_REC;
                 }
                 if (!hasNewRec)
                 {
-                    log.error(desc+ " No New Record for ["+newCatNum+"]");
+                    log.error(desc+ idMsgStr + " No New Record for ["+newCatNum+"]");
                     tblWriter.logErrors(oldNewIdStr, "No New Record for ["+newCatNum+"]");
                     return StatusType.NO_NEW_REC;
                 }
@@ -1488,13 +1495,13 @@ public class ConvertVerifier
     {
     	boolean dbg = false;
     	
-         oldSQL = "SELECT collectingevent.CollectingEventID, agent.FirstName,  agent.LastName, agent.Name, collectors.Order  " + 
-         "FROM collectingevent INNER JOIN collectors ON collectingevent.CollectingEventID = collectors.CollectingEventID " + 
-         "INNER JOIN agent ON collectors.AgentID = agent.AgentID ORDER BY collectingevent.CollectingEventID, collectors.Order";
+         oldSQL = "SELECT ce.CollectingEventID, a.FirstName,  a.LastName, a.Name, collectors.Order  " + 
+         "FROM collectingevent ce INNER JOIN collectors ON ce.CollectingEventID = collectors.CollectingEventID " + 
+         "INNER JOIN agent a ON collectors.AgentID = a.AgentID ORDER BY ce.CollectingEventID, collectors.Order";
     	
-    	 newSQL = "SELECT collectingevent.CollectingEventID, agent.FirstName, agent.LastName, collector.OrderNumber   " + 
-    	 "FROM collectingevent INNER JOIN collector ON collectingevent.CollectingEventID = collector.CollectingEventID  " + 
-    	 "INNER JOIN agent ON collector.AgentID = agent.AgentID ORDER BY collectingevent.CollectingEventID, collector.OrderNumber";
+    	 newSQL = "SELECT ce.CollectingEventID, a.FirstName, a.LastName, collector.OrderNumber   " + 
+    	 "FROM collectingevent ce INNER JOIN collector ON ce.CollectingEventID = collector.CollectingEventID  " + 
+    	 "INNER JOIN agent a ON collector.AgentID = a.AgentID ORDER BY ce.CollectingEventID, collector.OrderNumber";
     	
     	int prevOldId = Integer.MAX_VALUE;
     	int prevNewId = Integer.MAX_VALUE;
@@ -1652,7 +1659,7 @@ public class ConvertVerifier
         String msg2 = "Record Counts ["+oldCnt + " / "  + newCnt+"]";
         log.info(msg2);
         
-        tblWriter.logErrors("Record Counts", oldCnt + " / "  + newCnt);
+        //tblWriter.logErrors("Record Counts", oldCnt + " / "  + newCnt);
         tblWriter.flush();
         
         try
@@ -1670,12 +1677,12 @@ public class ConvertVerifier
                 }
                 
                 int col = 1;
-                int     newId           = newDBRS.getInt(col++);
-                Integer newStartTime    = newDBRS.getInt(col++);
-                String  newLocalityName = newDBRS.getString(col++);
-                Double  newLatitude     = newDBRS.getDouble(col++);
-                Double  newLongitude    = newDBRS.getDouble(col++);
-                String  newGeoName      = newDBRS.getString(col++);
+                int        newId           = newDBRS.getInt(col++);
+                Integer    newStartTime    = newDBRS.getInt(col++);
+                String     newLocalityName = newDBRS.getString(col++);
+                BigDecimal newLatitude     = newDBRS.getBigDecimal(col++);
+                BigDecimal newLongitude    = newDBRS.getBigDecimal(col++);
+                String     newGeoName      = newDBRS.getString(col++);
                 
                 col = 1;
                 int          oldId           = oldDBRS.getInt(col++);
@@ -1762,7 +1769,7 @@ public class ConvertVerifier
                     String msg = "Latitude["+oldId + " / "  + newId+"]  Old Latitude["+oldLatitude+"] is not null   New Latitude["+newLatitude+"] is NULL";
                     log.error(msg);
                     tblWriter.logErrors(oldNewIdStr, msg);
-                } else if (oldLatitude != null && newLatitude != null && !oldLatitude.equals(newLatitude))
+                } else if (oldLatitude != null && newLatitude != null && !oldLatitude.equals(newLatitude.doubleValue()))
                 {
                     String msg = "Latitude["+oldId + " / "  + newId+"]  Old Latitude["+oldLatitude+"] is NOT equals   New Latitude["+newLatitude+"]";
                     log.error(msg);
@@ -1780,7 +1787,7 @@ public class ConvertVerifier
                     String msg = "Longitude["+oldId + " / "  + newId+"]  Old Longitude["+oldLongitude+"] is not null   New Longitude["+newLongitude+"] is NULL";
                     log.error(msg);
                     tblWriter.logErrors(oldNewIdStr, msg);
-                } else if (oldLongitude != null && newLongitude != null && !oldLongitude.equals(newLongitude))
+                } else if (oldLongitude != null && newLongitude != null && !oldLongitude.equals(newLongitude.doubleValue()))
                 {
                     String msg = "Longitude["+oldId + " / "  + newId+"]  Old Longitude["+oldLongitude+"] is NOT equals   New Longitude["+newLongitude+"]";
                     log.error(msg);
@@ -1795,6 +1802,111 @@ public class ConvertVerifier
         {
             ex.printStackTrace(); 
         }
+    }
+    
+    /**
+     * 
+     */
+    private void verifyAgents()
+    {
+    
+        newSQL = "SELECT a.AgentID,a.AgentType,a.LastName,a.MiddleInitial,a.FirstName, a.JobTitle,adr.Phone1,adr.Phone2,adr.Address,adr.City,adr.Country,adr.State,adr.PostalCode " +
+                "FROM agent AS a Left Join address AS adr ON a.AgentID = adr.AgentID";
+    
+        oldSQL = "SELECT a.AgentType,a.LastName,a.MiddleInitial,a.FirstName,aa.JobTitle,aa.Phone1,aa.Phone2,adr.Address,adr.City,adr.State,adr.Country,adr.State,adr.Postalcode FROM agent AS a " +
+                 "Left Join agentaddress AS aa ON a.AgentID = aa.AgentID " +
+                 "Left Join address AS adr ON aa.AddressID = adr.AddressID";
+    
+        log.info(newSQL);
+        log.info(oldSQL);
+    
+        try
+        {
+            getResultSets(oldSQL, newSQL);
+            while (true)
+            {
+    
+                boolean hasOldRec = oldDBRS.next();
+                boolean hasNewRec = newDBRS.next();
+    
+                if (!hasOldRec || !hasNewRec)
+                {
+                    break;
+                }
+    
+                int col = 1;
+                int     newId           = newDBRS.getInt(col++);
+                Integer newStartTime    = newDBRS.getInt(col++);
+                String  newLocalityName = newDBRS.getString(col++);
+                Double  newLatitude     = newDBRS.getDouble(col++);
+                Double  newLongitude    = newDBRS.getDouble(col++);
+                String  newGeoName      = newDBRS.getString(col++);
+
+                col = 1;
+                int          oldId           = oldDBRS.getInt(col++);
+                Integer      oldStartTime    = oldDBRS.getInt(col++);
+                String       oldLocalityName = oldDBRS.getString(col++);
+                Double       oldLatitude     = oldDBRS.getDouble(col++);
+                Double       oldLongitude    = oldDBRS.getDouble(col++);
+
+                String oldNewIdStr = oldId + " / "+newId;
+
+                if (newGeoName != null && !newGeoName.equals("Undefined"))
+                {
+                    boolean fnd       = false;
+                    for (int i=6;i<14;i++)
+                    {
+                        //if (i == 7) System.out.println();
+                        String name = oldDBRS.getString(i);
+                        if (name != null)
+                        {
+                            //System.out.println("["+name+"]");
+                            if (name.equalsIgnoreCase(newGeoName))
+                            {
+                                fnd = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!fnd)
+                    {
+                        String msg = "No match found for new Geo ["+newGeoName+"] ["+oldId + " / "  + newId+"]";
+                        log.error(msg);
+                        tblWriter.logErrors(oldNewIdStr, msg);
+                    }
+                }
+
+                // StartTime
+                if (oldStartTime == null && newStartTime != null)
+                {
+                    String msg = "LocName["+oldId + " / "  + newId+"]  Old StartTime["+oldStartTime+"] is NULL   New StartTime["+newStartTime+"] is not";
+                    log.error(msg);
+                    tblWriter.logErrors(oldNewIdStr, msg);
+
+                } else if (oldStartTime != null && newStartTime == null)
+                {
+                    String msg = "LocName["+oldId + " / "  + newId+"]  Old StartTime["+oldStartTime+"] is not null   New StartTime["+newStartTime+"] is NULL";
+                    log.error(msg);
+                    tblWriter.logErrors(oldNewIdStr, msg);
+
+                } else if (oldStartTime != null && newStartTime != null && !oldStartTime.equals(newStartTime))
+                {
+                    String msg = "LocName["+oldId + " / "  + newId+"]  Old StartTime["+oldStartTime+"] is NOT equals   New StartTime["+newStartTime+"]";
+                    log.error(msg);
+                    tblWriter.logErrors(oldNewIdStr, msg);
+                }
+
+            }
+
+            oldDBRS.close();
+            newDBRS.close();
+
+        } catch (Exception ex)
+        {
+            ex.printStackTrace(); 
+        }
+
     }
     
     /**

@@ -563,7 +563,6 @@ public class SpecifyDBConverter
 
         AppContextMgr.getInstance().clear();
         
-        boolean doAll               = true; 
         boolean startfromScratch    = true; 
         boolean deleteMappingTables = false;
         
@@ -735,6 +734,8 @@ public class SpecifyDBConverter
                 //---------------------------------------------------------------------------------------
                 conversion.doInitialize();
                 
+                boolean doAll = true;
+                
                 if (startfromScratch)
                 {
                     BasicSQLUtils.deleteAllRecordsFromTable(conversion.getNewDBConnection(), "agent", BasicSQLUtils.myDestinationServerType);
@@ -745,9 +746,7 @@ public class SpecifyDBConverter
                 frame.setDesc("Mapping Tables.");
                 log.info("Mapping Tables.");
                 boolean mapTables = true;
-                
-                //GenericDBConversion.setShouldCreateMapTables(false);
-                if (mapTables || doAll)
+                if (mapTables)
                 {
                     // Ignore these field names from new table schema when mapping OR
                     // when mapping IDs
@@ -772,7 +771,7 @@ public class SpecifyDBConverter
                 conversion.convertDivision(institutionId);
                 frame.incOverall();
                 
-                Agent userAgent   = null;
+                Agent userAgent = null;
                 if (startfromScratch)
                 {
                     String           username         = "testuser";
@@ -829,7 +828,6 @@ public class SpecifyDBConverter
                     AppContextMgr.getInstance().setClassObject(Collection.class, collection);
                 }
                 
-                
                 /////////////////////////////////////////////////////////////
                 // Really need to create or get a proper Discipline Record
                 /////////////////////////////////////////////////////////////
@@ -841,7 +839,7 @@ public class SpecifyDBConverter
                 frame.setDesc("Converting CollectionObjectDefs.");
                 log.info("Converting CollectionObjectDefs.");
                 boolean convertDiscipline = true;
-                if (convertDiscipline || doAll)
+                if (convertDiscipline)
                 {
                     conversion.convertCollectionObjectTypes(specifyUser.getSpecifyUserId(), userAgent);
 
@@ -862,8 +860,8 @@ public class SpecifyDBConverter
                 // This MUST be done before any of the table copies because it
                 // creates the IdMappers for Agent, Address and more importantly AgentAddress
                 // NOTE: AgentAddress is actually mapping from the old AgentAddress table to the new Agent table
-                boolean copyAgentAddressTables = true;
-                if (copyAgentAddressTables || doAll)
+                boolean copyAgentAddressTables = doAll;
+                if (copyAgentAddressTables)
                 {
                     log.info("Calling - convertAgents");
                     
@@ -879,7 +877,7 @@ public class SpecifyDBConverter
                 
                 frame.setDesc("Mapping Agent Tables.");
                 log.info("MappingAgent Tables.");
-                if (mapTables || doAll)
+                if (mapTables)
                 {
                     // Ignore these field names from new table schema when mapping OR
                     // when mapping IDs
@@ -894,8 +892,8 @@ public class SpecifyDBConverter
                 
                 frame.setDesc("Converting Geography");
                 log.info("Converting Geography");
-                boolean doGeography = true;
-                if (!dbNameDest.startsWith("accessions") && (doGeography || doAll))
+                boolean doGeography = doAll;
+                if (!dbNameDest.startsWith("accessions") && doGeography)
                 {
                     GeographyTreeDef treeDef = conversion.createStandardGeographyDefinitionAndItems();
                     conversion.convertGeography(treeDef);
@@ -910,8 +908,8 @@ public class SpecifyDBConverter
                 log.info("Converting Geologic Time Period.");
                 // GTP needs to be converted here so the stratigraphy conversion can use
                 // the IDs
-                boolean doGTP = true;
-                if (doGTP || doAll )
+                boolean doGTP = doAll;
+                if (doGTP)
                 {
                     TableWriter tblWriter = convLogger.getWriter("GTP.html", "Geologic Time Period");
                     GeologicTimePeriodTreeDef treeDef = conversion.convertGTPDefAndItems(conversion.isPaleo());
@@ -925,8 +923,8 @@ public class SpecifyDBConverter
                 
                 frame.setDesc("Converting Taxonomy");
                 log.info("Converting Taxonomy");
-                boolean doTaxonomy = true;
-                if (doTaxonomy || doAll )
+                boolean doTaxonomy = doAll;
+                if (doTaxonomy)
                 {
                     BasicSQLUtils.setTblWriter(taxonTblWriter);
                     taxonHelper.doConvert();
@@ -943,8 +941,8 @@ public class SpecifyDBConverter
                 
                 frame.setDesc("Converting Determinations Records");
                 log.info("Converting Determinations Records");
-                boolean doDeterminations = false;
-                if (doDeterminations || doAll)
+                boolean doDeterminations = doAll;
+                if (doDeterminations)
                 {
                     frame.incOverall();
                     conversion.convertDeterminationRecords();
@@ -957,8 +955,8 @@ public class SpecifyDBConverter
                 
                 frame.setDesc("Copying Tables");
                 log.info("Copying Tables");
-                boolean copyTables = true;
-                if (copyTables || doAll)
+                boolean copyTables = doAll;
+                if (copyTables)
                 {
                     boolean doBrief  = false;
                     conversion.copyTables(doBrief);
@@ -969,7 +967,9 @@ public class SpecifyDBConverter
 
                 frame.setDesc("Converting Locality");
                 log.info("Converting Locality");
-                if (!dbNameDest.startsWith("accessions") && (doGeography || doAll))
+                
+                boolean doLocality = doAll;
+                if (!dbNameDest.startsWith("accessions") && (doGeography || doLocality))
                 {
                     conversion.convertLocality();
                     frame.incOverall();
@@ -982,8 +982,8 @@ public class SpecifyDBConverter
                 
                 frame.setDesc("Converting DeaccessionCollectionObject");
                 log.info("Converting DeaccessionCollectionObject");
-                boolean doDeaccessionCollectionObject = false;
-                if (doDeaccessionCollectionObject || doAll)
+                boolean doDeaccessionCollectionObject = doAll;
+                if (doDeaccessionCollectionObject)
                 {
                     conversion.convertDeaccessionCollectionObject();
                 }
@@ -991,8 +991,8 @@ public class SpecifyDBConverter
 
                 frame.setDesc("Converting Preparations");
                 log.info("Converting Preparations");
-                boolean doCollectionObjects = false;
-                if (doCollectionObjects || doAll)
+                boolean doCollectionObjects = doAll;
+                if (doCollectionObjects)
                 {
                     if (true)
                     {
@@ -1040,8 +1040,8 @@ public class SpecifyDBConverter
                     
                     frame.setDesc("Converting Loan Records");
                     log.info("Converting Loan Records");
-                    boolean doLoanPreparations = false;
-                    if (doLoanPreparations || doAll)
+                    boolean doLoanPreparations = doAll;
+                    if (doLoanPreparations)
                     {
                     	conversion.convertLoanRecords(false);     // Loans
                     	conversion.convertLoanAgentRecords(false);// Loans
@@ -1077,8 +1077,8 @@ public class SpecifyDBConverter
                 
                 frame.setDesc("Converting Straigraphy");
                 log.info("Converting Straigraphy");
-                boolean doStrat = false;
-                if (doStrat || doAll )
+                boolean doStrat = true;
+                if (doStrat)
                 {
                      TableWriter tblWriter = convLogger.getWriter("FullStrat.html", "Straigraphy Conversion");
                      
@@ -1233,8 +1233,8 @@ public class SpecifyDBConverter
                 
                 frame.setDesc("Converting USYS Tables.");
                 log.info("Converting USYS Tables.");
-                boolean copyUSYSTables = false;
-                if (copyUSYSTables || doAll)
+                boolean copyUSYSTables = doAll;
+                if (copyUSYSTables)
                 {
                     if (status)
                     {
