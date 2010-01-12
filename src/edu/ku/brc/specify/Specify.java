@@ -108,6 +108,7 @@ import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.auth.specify.SpecifySecurityMgr;
+import edu.ku.brc.af.auth.specify.module.DbLoginCallbackHandler;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.FrameworkAppIFace;
 import edu.ku.brc.af.core.GenericLSIDGeneratorFactory;
@@ -1913,10 +1914,18 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     public void doAbout()
     {
-        if (false)
+        /*if (false)
         {
             ViewToSchemaReview.checkViews();
         }
+        
+        if (true)
+        {
+            //StatsTrackerTask st = (StatsTrackerTask)TaskMgr.getInstance().getTask(StatsTrackerTask.STATS_TRACKER);
+            //st.sendStats(false, false, false);
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DbLoginCallbackHandler.class, new java.lang.RuntimeException("Test"));
+           return;
+        }*/
         
         AppContextMgr acm        = AppContextMgr.getInstance();
         boolean       hasContext = acm.hasContext();
@@ -3054,7 +3063,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                       localPrefs.putBoolean(EXTRA_CHECK, isExtraCheck);
                   }
 
-                  if (localPrefs.getBoolean(VERSION_CHECK, true) && isExtraCheck)
+                  if (localPrefs.getBoolean(VERSION_CHECK, true))
                   {
                       try
                       {
