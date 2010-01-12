@@ -90,6 +90,7 @@ public class ConvertVerifier
     private Pair<String, String> namePairToConvert = null;
     
     private boolean              dbgStatus         = false;
+    private boolean              compareTo6DBs      = false;
     
     
     // These are the configuration Options for a View
@@ -295,7 +296,10 @@ public class ConvertVerifier
         progressFrame = new ProgressFrame("Checking Catalog Objects....");
         progressFrame.adjustProgressFrame();
         
-        Integer numColObjs = BasicSQLUtils.getCount(oldDBConn, "SELECT COUNT(CatalogNumber) FROM collectionobjectcatalog WHERE CollectionObjectTypeID < 20 ORDER BY CatalogNumber ASC");
+        String cntSQL = compareTo6DBs ? "SELECT COUNT(*) FROM collectionobject" :
+                                        "SELECT COUNT(*) FROM collectionobjectcatalog WHERE CollectionObjectTypeID < 20";
+        Integer numColObjs = BasicSQLUtils.getCount(oldDBConn, cntSQL);
+        
         progressFrame.setProcess(0, numColObjs);
         //progressFrame.setDesc("Checking Catalog Objects....");
         
@@ -332,7 +336,9 @@ public class ConvertVerifier
         {
             int i = 0;
             Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            ResultSet rs   = stmt.executeQuery("SELECT CatalogNumber FROM collectionobjectcatalog WHERE CollectionObjectTypeID < 20 AND SubNumber >= 0 ORDER BY CatalogNumber ASC");
+            String    sql  = compareTo6DBs ? "SELECT CatalogNumber FROM collectionobject ORDER BY CatalogNumber ASC" :
+                                             "SELECT CatalogNumber FROM collectionobjectcatalog WHERE CollectionObjectTypeID < 20 AND SubNumber >= 0 ORDER BY CatalogNumber ASC";
+            ResultSet rs   = stmt.executeQuery(sql);
             while (rs.next())
             {
                 int    oldCatNum = rs.getInt(1);
@@ -356,13 +362,15 @@ public class ConvertVerifier
                         catNumsInErrHash.put(newCatNum, oldCatNum);
                     }
                 }
+                
                 if (isCOOn(DO_CO_GEO))
                 {
                     tblWriter = tblWriterHash.get(DO_CO_GEO);
                     if (!verifyGeography(oldCatNum, newCatNum))
                     {
                         catNumsInErrHash.put(newCatNum, oldCatNum);
-                    }                }
+                    }
+                }
                 
                 if (isCOOn(DO_CO_CE))
                 {
@@ -572,6 +580,14 @@ public class ConvertVerifier
         System.exit(0);
     }
     
+    /**
+     * @param compare26DBs the compare26DBs to set
+     */
+    public void setCompareTo6DBs(final boolean compareTo6DBs)
+    {
+        this.compareTo6DBs = compareTo6DBs;
+    }
+
     /**
      * @param prefix
      * @throws FileNotFoundException
@@ -1121,7 +1137,7 @@ public class ConvertVerifier
     private void getResultSets(final String oldSQLArg, final String newSQLArg)  throws SQLException
     {
         newDBRS   = newDBStmt.executeQuery(newSQLArg);  
-        oldDBRS   = oldDBStmt.executeQuery(oldSQLArg);  
+        oldDBRS   = oldDBStmt.executeQuery(compareTo6DBs ? newSQLArg : oldSQLArg);  
     }
     
     /**
@@ -1187,18 +1203,30 @@ public class ConvertVerifier
      * @throws SQLException
      */
     private StatusType compareRecords(final String desc, 
-                                      final String oldCatNum, 
-                                      final String newCatNum, 
+                                      final String oldCatNumArg, 
+                                      final String newCatNumArg, 
                                       final String oldSQLArg, 
                                       final String newSQLArg) throws SQLException
     {
         boolean dbg = false;
         if (dbg)
         {
+            System.out.println(oldSQLArg);
+            System.out.println(newSQLArg);
+        }
+        if (dbg)
+        {
             System.out.println("\n"+desc);
-            dump(desc, oldDBConn, oldSQLArg);
+            dump(desc, oldDBConn, compareTo6DBs ? newSQLArg : oldSQLArg);
             dump(desc, newDBConn, newSQLArg);
         } 
+        
+        String oldCatNum = oldCatNumArg;
+        String newCatNum = newCatNumArg;
+        if (compareTo6DBs)
+        {
+            oldCatNum = newCatNumArg;
+        }
 
         getResultSets(oldSQLArg, newSQLArg);
         
@@ -1253,7 +1281,7 @@ public class ConvertVerifier
 
                     if (dbg)
                     {
-                        System.out.println("col       "+col+" / "+oldRsmd.getColumnCount());
+                        System.out.println("\ncol       "+col+" / "+oldRsmd.getColumnCount());
                         System.out.println("newColInx "+newColInx);
                         System.out.println("oldColInx "+oldColInx);
                         System.out.println(oldRsmd.getColumnName(oldColInx));
@@ -1271,6 +1299,7 @@ public class ConvertVerifier
                         {
                             newColInx++;
                             numCols--;
+                            if (compareTo6DBs) oldColInx++;
                         }
                         continue;
                     }
@@ -1312,18 +1341,32 @@ public class ConvertVerifier
                         String clsName = newRsmd.getColumnClassName(newColInx);
                         String colName = newRsmd.getColumnName(newColInx);
 
-                        if (!clsName.equals("java.sql.Date") || (!(oldObj instanceof String) && ((Number)oldObj).intValue() != 0))
+                        if (compareTo6DBs)
                         {
-                            String msg = "New Value was null and shouldn't have been for Key Value New CatNo["+newCatNum+"] Field ["+colName+"] ["+oldObj+"]";
-                            log.error(desc+ idMsgStr + " - "+msg);
-                            tblWriter.logErrors(newCatNum, msg);
-                            return StatusType.NEW_VAL_NULL;
+                            if (!clsName.equals("java.sql.Date") || oldObj != null)
+                            {
+                                String msg = "New Value was null and shouldn't have been for Key Value New CatNo["+newCatNum+"] Field ["+colName+"] ["+oldObj+"]";
+                                log.error(desc+ " - "+msg);
+                                tblWriter.logErrors(newCatNum, msg);
+                                return StatusType.NEW_VAL_NULL;
+                            }
+                            
+                        } else
+                        {
+                            if (!clsName.equals("java.sql.Date") || (!(oldObj instanceof String) && ((Number)oldObj).intValue() != 0))
+                            {
+                                String msg = "New Value was null and shouldn't have been for Key Value New CatNo["+newCatNum+"] Field ["+colName+"] ["+oldObj+"]";
+                                log.error(desc+ " - "+msg);
+                                tblWriter.logErrors(newCatNum, msg);
+                                return StatusType.NEW_VAL_NULL;
+                            }
                         }
                         
                         if (StringUtils.contains(colName, "Date") && StringUtils.contains(newRsmd.getColumnName(newColInx+1), "DatePrecision"))
                         {
                             newColInx++;
                             numCols--;
+                            if (compareTo6DBs) oldColInx++;
                         }
                         continue;
                     }
@@ -1332,8 +1375,8 @@ public class ConvertVerifier
                     
                     if (newObj instanceof java.sql.Date)
                     {
-                        boolean isPartialDate = false;
-                        Byte partialDateType = null;
+                        boolean isPartialDate   = false;
+                        Byte    partialDateType = null;
                         if (StringUtils.contains(newRsmd.getColumnName(newColInx+1), "DatePrecision"))
                         {
                             newColInx++;
@@ -1342,63 +1385,98 @@ public class ConvertVerifier
                             isPartialDate   = true;
                         }
                         
-                        int oldIntDate = oldDBRS.getInt(oldColInx);
-                        if (oldIntDate == 0)
+                        if (compareTo6DBs)
                         {
-                            continue;
-                        }
-                        
-                        BasicSQLUtils.getPartialDate(oldIntDate, datePair, false);
-                        
-                        if (partialDateType != null)
-                        {
-                            if (Byte.parseByte(datePair.second) != partialDateType.byteValue())
+                            Object dateObj = oldDBRS.getObject(oldColInx);
+                            
+                            boolean isPartialDate2   = false;
+                            Byte    partialDateType2 = null;
+                            if (StringUtils.contains(oldRsmd.getColumnName(oldColInx+1), "DatePrecision"))
                             {
-                                errSB.append("Partial Dates Type do not match. Old["+datePair.second+"]  New ["+partialDateType.byteValue()+"]");
-                                // error partial dates don't match
+                                oldColInx++;
+                                partialDateType2 =  newDBRS.getByte(oldColInx);
+                                isPartialDate2   = true;
+                                
+                            } else
+                            {
+                                log.error("Next isn't DatePrecision and can't be!");
+                                tblWriter.logErrors(oldNewIdStr, errSB.toString());
                             }
-                        } 
-                        
-                        cal.setTime((Date)newObj);
-                        
-                        int year = Integer.parseInt(datePair.first.substring(0, 4));
-                        int mon  = Integer.parseInt(datePair.first.substring(5, 7));
-                        int day  = Integer.parseInt(datePair.first.substring(8, 10));
-                        
-                        if (mon > 0) mon--;
-                        
-                        boolean isYearOK = true;
-                        
-                        int yr = cal.get(Calendar.YEAR);
-                        if (year != yr)
+                            
+                            if (!newObj.equals(dateObj) || (isPartialDate2 && !partialDateType2.equals(partialDateType)))
+                            {
+                                errSB.insert(0, oldColName+"  ");
+                                errSB.append("[");
+                                errSB.append(datePair);
+                                errSB.append("][");
+                                errSB.append(dateFormatter.format((Date)newObj));
+                                errSB.append("] oldDate[");
+                                errSB.append(dateFormatter.format((Date)dateObj));
+                                errSB.append("]");
+                                log.error(errSB.toString());
+                                tblWriter.logErrors(oldNewIdStr, errSB.toString());
+                                return StatusType.BAD_DATE;
+                            }
+                            
+                        } else
                         {
-                            errSB.append("Year mismatch Old["+year+"]  New ["+yr+"] ");
-                            isYearOK = false;
-                        }
-                        
-                        if (mon != cal.get(Calendar.MONTH))
-                        {
-                            errSB.append("Month mismatch Old["+mon+"]  New ["+cal.get(Calendar.MONTH)+"] ");
-                        }
-                        
-                        if (day != cal.get(Calendar.DAY_OF_MONTH))
-                        {
-                            errSB.append("Day mismatch Old["+day+"]  New ["+cal.get(Calendar.DAY_OF_MONTH)+"] ");
-                        }
-                        
-                        if (errSB.length() > 0 && (!isYearOK || !isPartialDate))
-                        {
-                            errSB.insert(0, oldColName+"  "+idMsgStr);
-                            errSB.append("[");
-                            errSB.append(datePair);
-                            errSB.append("][");
-                            errSB.append(dateFormatter.format((Date)newObj));
-                            errSB.append("]");
-                            log.error(errSB.toString());
-                            tblWriter.logErrors(oldNewIdStr, errSB.toString());
-                            return StatusType.BAD_DATE;
-                        }
-                        
+                            int oldIntDate = oldDBRS.getInt(oldColInx);
+                            if (oldIntDate == 0)
+                            {
+                                continue;
+                            }
+                            
+                            BasicSQLUtils.getPartialDate(oldIntDate, datePair, false);
+                            
+                            if (partialDateType != null)
+                            {
+                                if (Byte.parseByte(datePair.second) != partialDateType.byteValue())
+                                {
+                                    errSB.append("Partial Dates Type do not match. Old["+datePair.second+"]  New ["+partialDateType.byteValue()+"]");
+                                    // error partial dates don't match
+                                }
+                            } 
+                            
+                            cal.setTime((Date)newObj);
+                            
+                            int year = Integer.parseInt(datePair.first.substring(0, 4));
+                            int mon  = Integer.parseInt(datePair.first.substring(5, 7));
+                            int day  = Integer.parseInt(datePair.first.substring(8, 10));
+                            
+                            if (mon > 0) mon--;
+                            
+                            boolean isYearOK = true;
+                            
+                            int yr = cal.get(Calendar.YEAR);
+                            if (year != yr)
+                            {
+                                errSB.append("Year mismatch Old["+year+"]  New ["+yr+"] ");
+                                isYearOK = false;
+                            }
+                            
+                            if (mon != cal.get(Calendar.MONTH))
+                            {
+                                errSB.append("Month mismatch Old["+mon+"]  New ["+cal.get(Calendar.MONTH)+"] ");
+                            }
+                            
+                            if (day != cal.get(Calendar.DAY_OF_MONTH))
+                            {
+                                errSB.append("Day mismatch Old["+day+"]  New ["+cal.get(Calendar.DAY_OF_MONTH)+"] ");
+                            }
+                            
+                            if (errSB.length() > 0 && (!isYearOK || !isPartialDate))
+                            {
+                                errSB.insert(0, oldColName+"  ");
+                                errSB.append("[");
+                                errSB.append(datePair);
+                                errSB.append("][");
+                                errSB.append(dateFormatter.format((Date)newObj));
+                                errSB.append("]");
+                                log.error(errSB.toString());
+                                tblWriter.logErrors(oldNewIdStr, errSB.toString());
+                                return StatusType.BAD_DATE;
+                            }
+                        }                        
                     } else if (newObj instanceof Float || newObj instanceof Double)
                     {
                         String s1 = String.format("%10.5f", newObj instanceof Float ? (Float)newObj : (Double)newObj);
@@ -1417,9 +1495,9 @@ public class ConvertVerifier
                         if (checkForAgent && StringUtils.contains(newColName, "LastName"))
                         {
                             String lastName    = oldDBRS.getString(oldColInx);
-                            String agentName   = oldDBRS.getString(oldColInx+1); // The 'Name' Column
+                            String agentName   = compareTo6DBs ? "" : oldDBRS.getString(oldColInx+1); // The 'Name' Column
                             String newLastName = newDBRS.getString(newColInx);
-                            if (!newLastName.equals(lastName) &&!newLastName.equals(agentName))
+                            if (!newLastName.equals(lastName) && (compareTo6DBs || !newLastName.equals(agentName)))
                             {
                                 String msg = idMsgStr + "Columns don't compare["+newObj+"]["+oldObj+"]  ["+newColName+"]["+oldColName+"]";
                                 log.error(desc+ " - "+msg);
@@ -1949,6 +2027,14 @@ public class ConvertVerifier
 	                            {
 	                                try
 	                                {
+	                                    boolean compareTo6DBS = false;
+	                                    if (compareTo6DBS)
+	                                    {
+	                                        pair.first = "ku_fish";
+	                                        pair.second = "kui_fish_dbo_6";
+	                                        cv.setCompareTo6DBs(compareTo6DBS);
+	                                    }
+	                                    
 	                                    cv.verifyDB( pair.first, pair.second);
 	                                    
 	                                } catch (Exception ex)

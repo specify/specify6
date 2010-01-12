@@ -99,7 +99,7 @@ public class TableDataChecker
      * @param file
      * @param title
      */
-    public void createHTMLReport(final File file)
+    public void createHTMLReport(final TableWriter tblWriter)
     {
         HashSet<String> skipNames = new HashSet<String>();
         String[] sknames = new String[] {"TimestampCreated", "TimestampModified", "LastEditedBy"};
@@ -111,20 +111,9 @@ public class TableDataChecker
         try
         {
             String titleStr = String.format("Nullable Table Columns with Data for %s", connection.getCatalog());
-            
-            PrintWriter pw = new PrintWriter(file);
-            pw.print("<html><head><title>");
-            pw.println(titleStr);
-            pw.print("</title>\n<style>");
-            pw.println("  table { border-top: gray 1px solid; border-left: gray 1px solid; }");
-            pw.println("  td { border-right: gray 1px solid; border-bottom: gray 1px solid; }");
-            pw.println("  th { border-right: gray 1px solid; border-bottom: gray 1px solid; }");
-            pw.println("</style>\n</head>");
-            pw.println("<body><center>");
-            pw.print("<h2>");
-            pw.print(titleStr);
-            pw.print("</h2>");
-            
+            tblWriter.print("<H3>");
+            tblWriter.print(titleStr);
+            tblWriter.print("</H3>");
             Vector<Object> tableNames = BasicSQLUtils.querySingleCol(connection, "SHOW TABLES");
             for (Object tblObj : tableNames)
             {
@@ -139,25 +128,22 @@ public class TableDataChecker
                 List<String> cols = getColumnNamesWithData(tblName, skipNames);
                 if (cols.size() > 0)
                 {
-                    pw.println("<table cellspacing='0' cellpadding='4' border='0'>");
-                    pw.print("<tr><th>");
-                    pw.print(tblName);
-                    pw.println("</td></th>");
+                    tblWriter.print("<center>");
+                    tblWriter.startTable();
+                    tblWriter.print("<tr><th>");
+                    tblWriter.print(tblName);
+                    tblWriter.println("</td></th>");
                     for (String colName : cols)
                     {
-                        pw.print("<tr><td>");
-                        pw.print(colName);
-                        pw.println("</td></tr>");
+                        tblWriter.print("<tr><td>");
+                        tblWriter.print(colName);
+                        tblWriter.println("</td></tr>");
                     }
-                    pw.println("</table><br>");
+                    tblWriter.endTable();
+                    tblWriter.print("</center>");
+                    tblWriter.log("<br>");
                 }
             }
-            
-            pw.println("</cetner></body>");
-            pw.println("</html>");
-            
-            pw.flush();
-            pw.close();
             
         } catch (Exception e)
         {
@@ -165,6 +151,9 @@ public class TableDataChecker
         }
     }
     
+    /**
+     * 
+     */
     public void doCheckDB()
     {
         try
@@ -185,7 +174,10 @@ public class TableDataChecker
             
             if (fnd)
             {
-                createHTMLReport(new File(dbName+".html"));
+                TableWriter tDSTblWriter = new TableWriter(dbName+"_TableDataSummary.html", "Table Data Summary");
+                createHTMLReport(tDSTblWriter);
+                tDSTblWriter.flush();
+                tDSTblWriter.close();
             }
             
         } catch (Exception ex)
@@ -229,7 +221,11 @@ public class TableDataChecker
                 if (fnd)
                 {
                     pw.println("<a href='"+dbName+".html'>"+dbName+"</a><br>");
-                    createHTMLReport(new File(dbName+".html"));
+                    
+                    TableWriter tDSTblWriter = new TableWriter(dbName+"_TableDataSummary.html", "Table Data Summary");
+                    createHTMLReport(tDSTblWriter);
+                    tDSTblWriter.flush();
+                    tDSTblWriter.close();
                 }
             }
             

@@ -22,7 +22,9 @@ package edu.ku.brc.specify.conversion;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -95,11 +97,16 @@ public class ConversionLogger
         TableWriter tblWriter = null;
         try
         {
-            String path = dir.getAbsolutePath() + File.separator + StringUtils.replace(fileName, " ", "_");
-            tblWriter = new TableWriter(path, title);
-            printWritersNameHash.put(fileName, path);
-            printWritersHash.put(fileName, tblWriter);
-            
+            if (printWritersNameHash.get(fileName) == null)
+            {
+                String path = dir.getAbsolutePath() + File.separator + StringUtils.replace(fileName, " ", "_");
+                tblWriter = new TableWriter(path, title);
+                printWritersNameHash.put(fileName, path);
+                printWritersHash.put(fileName, tblWriter);
+            } else
+            {
+                System.err.println("Duplicate file name["+fileName+"]");
+            }
         } catch (IOException ex) { ex.printStackTrace(); }
 
         return tblWriter;
@@ -116,8 +123,14 @@ public class ConversionLogger
             TableWriter indexWriter = new TableWriter(path, indexTitle);
             indexWriter.startTable();
             
-            for (TableWriter tblWriter : printWritersHash.values())
+            Vector<String> names = new Vector<String>(printWritersHash.keySet());
+            
+            for (String nm : names)
             {
+                System.out.println(nm);
+                
+                TableWriter tblWriter = printWritersHash.get(nm);
+                
                 try
                 {
                     if (tblWriter.hasLines())

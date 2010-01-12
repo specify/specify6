@@ -127,7 +127,7 @@ public class SpecifyDBConverter
 {
     protected static final Logger log = Logger.getLogger(SpecifyDBConverter.class);
 
-    protected static final int                  OVERALL_STEPS     = 21;
+    protected static final int                  OVERALL_STEPS     = 22;
     
     protected static Hashtable<String, Integer> prepTypeMapper    = new Hashtable<String, Integer>();
     protected static int                        attrsId           = 0;
@@ -1291,6 +1291,10 @@ public class SpecifyDBConverter
                 
                 frame.incOverall();
                 
+                agentConverter.fixAddressOfRecord();
+                
+                frame.incOverall();
+
                 TableWriter tblWriter = convLogger.getWriter("ScopeUpdater.html", "Updating Scope Summary");
                 ConvScopeFixer convScopeFixer = new ConvScopeFixer(oldDBConn, newDBConn, dbNameDest, tblWriter);
                 convScopeFixer.doFixTables();
@@ -1319,8 +1323,10 @@ public class SpecifyDBConverter
                 fixHibernateHiLo(newDBConn);
                 
                 frame.setDesc("Running Table Checker to report on fields with data.");
+                TableWriter tDSTblWriter = convLogger.getWriter("TableDataSummary.html", "Table Data Summary");
                 TableDataChecker tblDataChecker = new TableDataChecker(oldDBConn);
-                tblDataChecker.createHTMLReport(new File(oldDBConn.getCatalog()+".html"));
+                tblDataChecker.createHTMLReport(tDSTblWriter);
+                tDSTblWriter.close();
                 
                 if (false)
                 {

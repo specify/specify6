@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -44,10 +45,13 @@ import org.hibernate.Transaction;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.datamodel.AddressOfRecord;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.util.Pair;
@@ -1586,6 +1590,158 @@ public class AgentConverter
             session.close();
         }
     }
+
+    
+    
+    /**
+     * 
+     */
+    public void fixAddressOfRecord()
+    {
+        String oldAcc = "SELECT ac.AccessionID, aa.AgentID, adr.Address, adr.City, adr.State, adr.Country, adr.Postalcode, adr.Remarks, adr.TimestampModified, adr.TimestampCreated " +
+                        "FROM accession AS ac " +
+                        "Inner Join accessionagents AS aca ON ac.AccessionID = aca.AccessionID " +
+                        "Inner Join agentaddress AS aa ON aca.AgentAddressID = aa.AgentAddressID " +
+                        "Inner Join address AS adr ON aa.AddressID = adr.AddressID " +
+                        "ORDER BY ac.Number ASC";
+        
+        String oldCntAcc = "SELECT COUNT(*) " +
+                        "FROM accession AS ac " +
+                        "Inner Join accessionagents AS aca ON ac.AccessionID = aca.AccessionID " +
+                        "Inner Join agentaddress AS aa ON aca.AgentAddressID = aa.AgentAddressID " +
+                        "Inner Join address AS adr ON aa.AddressID = adr.AddressID " +
+                        "ORDER BY ac.Number ASC";
+        
+        String oldLoan = "SELECT l.LoanID, aa.AgentID, adr.Address, adr.City, adr.State, adr.Country, adr.Postalcode, adr.Remarks, adr.TimestampModified, adr.TimestampCreated " +
+                        "FROM loan AS l " +
+                        "Inner Join loanagents AS la ON l.LoanID = la.LoanID " +
+                        "Inner Join agentaddress AS aa ON la.AgentAddressID = aa.AgentAddressID " +
+                        "Inner Join address AS adr ON aa.AddressID = adr.AddressID " +
+                        "WHERE Category = 0 ORDER BY l.LoanNumber ASC";
+
+        String oldCntLoan = "SELECT COUNT(*) FROM loan AS l " +
+                            "Inner Join loanagents AS la ON l.LoanID = la.LoanID " +
+                            "Inner Join agentaddress AS aa ON la.AgentAddressID = aa.AgentAddressID " +
+                            "Inner Join address AS adr ON aa.AddressID = adr.AddressID " +
+                            "WHERE Category = 0 ORDER BY l.LoanNumber ASC";
+        
+        String oldGift    = StringUtils.replace(oldLoan, "0", "1");
+        String oldCntGift = StringUtils.replace(oldCntLoan, "0", "1");
+        
+        conv.setDesc("Fixing Accession Address Of Record");
+        doAddressOfRecord(oldCntAcc, oldAcc, "Accession", "accession_AccessionID");
+        
+        conv.setDesc("Fixing Loan Address Of Record");
+        doAddressOfRecord(oldCntLoan, oldLoan, "Loan", "loan_LoanID");
+        
+        conv.setDesc("Fixing Gift Address Of Record");
+        doAddressOfRecord(oldCntGift, oldGift, "Gift", "loan_LoanID");
+
+    }
+    
+    /**
+     * @param cntSQL
+     * @param sql
+     * @param tableName
+     * @param mapperName
+     */
+    private void doAddressOfRecord(final String cntSQL, 
+                                   final String sql, 
+                                   final String tableName, 
+                                   final String mapperName)
+    {
+        IdMapperIFace agentMapper = IdMapperMgr.getInstance().get("agent_AgentID");
+        
+        Session     session = HibernateUtil.getNewSession();
+        Transaction trans   = null;
+        try
+        { 
+            conv.setProcess(0, BasicSQLUtils.getCountAsInt(oldDBConn, cntSQL));
+        
+            IdMapperIFace loanMapper  = IdMapperMgr.getInstance().get(mapperName);
+
+            Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs   = stmt.executeQuery(sql);
+
+            int cnt = 0;
+            while (rs.next())
+            {
+                int col = 1;
+                Integer loanID       = rs.getInt(col++);
+                Integer agentID      = rs.getInt(col++); 
+                String address       = rs.getString(col++); 
+                String city          = rs.getString(col++); 
+                String state         = rs.getString(col++); 
+                String country       = rs.getString(col++);
+                String postalCode    = rs.getString(col++); 
+                String remarks       = rs.getString(col++); 
+                Timestamp timestampModified = rs.getTimestamp(col++);
+                Timestamp timestampCreated  = rs.getTimestamp(col++);
+                
+                Integer newAgentId = agentMapper.get(agentID);
+                
+                if (newAgentId != null)
+                {
+                    List<?> list = session.createQuery("FROM Agent WHERE id = " + newAgentId).list();
+                    if (list != null && list.size() == 1)
+                    {
+                        Agent agent = (Agent)list.get(0);
+                        
+                        Integer newLoanId = loanMapper.get(loanID);
+                        
+                        if (newLoanId != null)
+                        {
+                            list = session.createQuery("FROM "+tableName+" WHERE id = " + newLoanId).list();
+                            if (list != null && list.size() == 1)
+                            {
+                                trans = session.beginTransaction();
+                                AddressOfRecord aor = new AddressOfRecord();
+                                aor.initialize();
+                                aor.setAddress(address);
+                                aor.setAgent(agent);
+                                aor.setCity(city);
+                                aor.setCountry(country);
+                                aor.setPostalCode(postalCode);
+                                aor.setRemarks(remarks);
+                                aor.setState(state);
+                                aor.setTimestampCreated(timestampCreated);
+                                aor.setTimestampModified(timestampModified);
+                               
+                                FormDataObjIFace parentObj = (FormDataObjIFace)list.get(0);
+                                DataModelObjBase.setDataMember(parentObj, "addressOfRecord", aor);
+                                
+                                session.saveOrUpdate(parentObj);
+                                //session.saveOrUpdate(aor);
+                                trans.commit();
+                            }
+                        }
+                    }
+                }
+                
+                if (cnt % 100 == 0)
+                {
+                    conv.setProcess(0, cnt);
+                }
+                cnt++;
+            }
+            rs.close();
+            stmt.close();
+            
+        } catch (Exception ex)
+        {
+            try
+            {
+                if (trans != null) trans.rollback();
+            } catch (Exception ex1) {}
+            ex.printStackTrace();
+            log.error(ex);
+            
+        } finally
+        {
+            session.close();
+        }
+
+    }
     
     //-------------------------------------------------------------------------
     //--
@@ -1666,6 +1822,16 @@ public class AgentConverter
         }
     }
     
+    /**
+     * @param firstName
+     * @param lastName
+     * @param innerSep
+     * @param nameSep
+     * @param isLastNameFieldFirst
+     * @param isLastNameFirst
+     * @param trimAfterComma
+     * @return
+     */
     public List<AgentNameInfo> parseName(final String    firstName, 
                                          final String    lastName,
                                          @SuppressWarnings("unused") final char      innerSep,
