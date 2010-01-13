@@ -4259,7 +4259,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             oldFieldNames.addAll(names);
 
             String sqlPostfix = " FROM collectionobject co LEFT JOIN collectionobjectcatalog cc ON co.CollectionObjectID = cc.CollectionObjectCatalogID " +
-                                "WHERE NOT (co.DerivedFromID IS NULL) ORDER BY co.CollectionObjectID";
+                                "WHERE NOT (co.DerivedFromID IS NULL) AND CatalogSeriesID IS NOT NULL ORDER BY co.CollectionObjectID";
             sql.append(sqlPostfix);
             
             int totalPrepCount = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*)" + sqlPostfix);
@@ -4342,7 +4342,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 Integer collectionId = catSeriesToNewCollectionID.get(catSeriesId);
                 if (collectionId == null)
                 {
-                    throw new RuntimeException("CollectionId is null when mapped from CatSeriesId");
+                    Integer colObjId = rs.getInt(idIndex);
+                    throw new RuntimeException("CollectionId is null when mapped from CatSeriesId["+catSeriesId+"] ColObjID["+colObjId+"]");
                 }
                 
                 Collection collection = getCollection(collectionId);
@@ -4658,15 +4659,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 {
                     if (count % 5000 == 0)
                     {
-                        final int cnt = count;
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run()
-                            {
-                                setProcess(cnt);
-                            }
-                        });
-                        
+                        setProcess(count);
                         log.info("Preparation Records: " + count);
                     }
 
@@ -5254,7 +5247,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             sql.append(buildSelectFieldList(names, "collectionobjectcatalog"));
             oldFieldNames.addAll(names);
 
-            String fromClause = " From collectionobject Inner Join collectionobjectcatalog ON " +
+            String fromClause = " FROM collectionobject Inner Join collectionobjectcatalog ON " +
                                 "collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID " +
                                 "WHERE (collectionobject.DerivedFromID IS NULL) AND collectionobjectcatalog.CollectionObjectCatalogID = ";
             sql.append(fromClause);

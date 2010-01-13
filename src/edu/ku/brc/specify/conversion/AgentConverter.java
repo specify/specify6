@@ -373,6 +373,8 @@ public class AgentConverter
                 indexFromNameMap.put(fldName, inx++);
             }
 
+            Statement updateStatement = newDBConn.createStatement();
+
             // Figure out certain icolumn indexes we will need ater
             int agentIdInx   = indexFromNameMap.get("agent.AgentID");
             int addrIdInx    = indexFromNameMap.get("address.AddressID");
@@ -489,8 +491,6 @@ public class AgentConverter
 
                     try
                     {
-                        Statement updateStatement = newDBConn.createStatement();
-                        // updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
                         if (debugAgents)
                         {
                             log.info(sqlStr.toString());
@@ -502,9 +502,6 @@ public class AgentConverter
                         {
                             throw new RuntimeException("Couldn't get the Agent's inserted ID");
                         }
-                        updateStatement.clearBatch();
-                        updateStatement.close();
-                        updateStatement = null;
                         
                         conv.addAgentDisciplineJoin(newAgentId, conv.getDisciplineId());
 
@@ -534,7 +531,7 @@ public class AgentConverter
                     BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "address", BasicSQLUtils.myDestinationServerType);
                     StringBuilder sqlStr = new StringBuilder("INSERT INTO address ");
                     sqlStr.append("(AddressID, TimestampModified, Address, Address2, City, State, Country, PostalCode, Remarks, TimestampCreated, ");
-                    sqlStr.append("IsPrimary, IsCurrent, Phone1, Phone2, Fax, RoomOrBuilding, AgentID, CreatedByAgentID, ModifiedByAgentID, Version)");
+                    sqlStr.append("IsPrimary, IsCurrent, Phone1, Phone2, Fax, RoomOrBuilding, AgentID, CreatedByAgentID, ModifiedByAgentID, Version, Ordinal)");
                     sqlStr.append(" VALUES (");
                     
                     for (int i = 0; i < addressColumns.length; i++)
@@ -583,21 +580,17 @@ public class AgentConverter
                             sqlStr.append(value);
                         }
                     }
-                    sqlStr.append("," + conv.getCreatorAgentId(lastEditedBy) + "," + conv.getModifiedByAgentId(lastEditedBy) + ", 0");
+                    sqlStr.append("," + conv.getCreatorAgentId(lastEditedBy) + "," + conv.getModifiedByAgentId(lastEditedBy) + ", 0, " + agentInfo.addrOrd); // Version, Ordinal
                     sqlStr.append(")");
+                    agentInfo.addrOrd++;
 
                     try
                     {
-                        Statement updateStatement = newDBConn.createStatement();
-                        // updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
                         if (debugAgents)
                         {
                             log.info(sqlStr.toString());
                         }
                         updateStatement.executeUpdate(sqlStr.toString());
-                        updateStatement.clearBatch();
-                        updateStatement.close();
-                        updateStatement = null;
 
                     } catch (SQLException e)
                     {
@@ -608,8 +601,7 @@ public class AgentConverter
                         throw new RuntimeException(e);
                     }
                 }
-                BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "address",
-                        BasicSQLUtils.myDestinationServerType);
+                BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "address", BasicSQLUtils.myDestinationServerType);
 
                 if (recordCnt % 250 == 0)
                 {
@@ -617,7 +609,7 @@ public class AgentConverter
                 }
                 recordCnt++;
             } // while
-
+            
             log.info("AgentAddress Records: " + recordCnt);
             rs.close();
             stmt.close();
@@ -767,8 +759,6 @@ public class AgentConverter
 
                     try
                     {
-                        Statement updateStatement = newDBConn.createStatement();
-                        // updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
                         if (debugAgents)
                         {
                             log.info(sqlStr.toString());
@@ -780,9 +770,6 @@ public class AgentConverter
                         {
                             throw new RuntimeException("Couldn't get the Agent's inserted ID");
                         }
-                        updateStatement.clearBatch();
-                        updateStatement.close();
-                        updateStatement = null;
                         
                         conv.addAgentDisciplineJoin(newAgentId, conv.getDisciplineId());
 
@@ -809,6 +796,7 @@ public class AgentConverter
             rs.close();
             stmt.close();
             
+            updateStatement.close();
 
             conv.setProcess(0, BasicSQLUtils.getNumRecords(oldDBConn, "agent"));
             conv.setDesc("Adding Agents");
@@ -1954,6 +1942,7 @@ public class AgentConverter
         String                      lastName;
         String                      firstName;
         String                      name;
+        int                         addrOrd = 0;
 
         public AgentInfo(Integer oldAgentId, 
                          Integer newAgentId,

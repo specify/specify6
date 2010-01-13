@@ -1328,10 +1328,7 @@ public class SpecifyDBConverter
                 tblDataChecker.createHTMLReport(tDSTblWriter);
                 tDSTblWriter.close();
                 
-                if (false)
-                {
-                   updateVersionInfo(newConn);
-                }
+                updateVersionInfo(newConn);
                 
                 if (dbNameDest.startsWith("kui_fish_"))
                 {
@@ -1401,9 +1398,19 @@ public class SpecifyDBConverter
     private void updateVersionInfo(final Connection newDBConn) throws SQLException
     {
         String  appVersion     = null;
-        String  schemaVersion  = SchemaUpdateService.getInstance().getDBSchemaVersionFromXML();
+        String  schemaVersion  = null;
         Integer spverId        = null;
         Integer recVerNum     = 1;
+        
+        try
+        {
+            System.setProperty(SchemaUpdateService.factoryName, "edu.ku.brc.specify.dbsupport.SpecifySchemaUpdateService");   // needed for updating the schema
+            schemaVersion = SchemaUpdateService.getInstance().getDBSchemaVersionFromXML();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
         
         Vector<Object[]> rows = BasicSQLUtils.query(newDBConn, "SELECT AppVersion, SchemaVersion, SpVersionID, Version FROM spversion");
         if (rows.size() == 1)
@@ -1458,6 +1465,7 @@ public class SpecifyDBConverter
             }
         }
     }
+
     
     private boolean isUsingEmbeddedCEsInSp5()
     {
