@@ -162,6 +162,7 @@ import edu.ku.brc.specify.config.CollectingEventsAndAttrsMaint;
 import edu.ku.brc.specify.config.DebugLoggerDialog;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.FeedBackDlg;
+import edu.ku.brc.specify.config.FixDBAfterLogin;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
@@ -641,6 +642,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         System.setProperty(ViewFactory.factoryName,                     "edu.ku.brc.specify.config.SpecifyViewFactory");        // Needed by ViewFactory //$NON-NLS-1$
         System.setProperty(AppContextMgr.factoryName,                   "edu.ku.brc.specify.config.SpecifyAppContextMgr");      // Needed by AppContextMgr //$NON-NLS-1$
         System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");         // Needed by AppReferences //$NON-NLS-1$
+        System.setProperty(AppPreferences.factoryGlobalName,            "edu.ku.brc.specify.config.AppPrefsGlobalDBIOIImpl");         // Needed by AppReferences //$NON-NLS-1$
         System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");            // Needed By UIRegistry //$NON-NLS-1$ //$NON-NLS-2$
         System.setProperty("edu.ku.brc.ui.forms.DraggableRecordIdentifierFactory", "edu.ku.brc.specify.ui.SpecifyDraggableRecordIdentiferFactory"); // Needed By the Form System //$NON-NLS-1$ //$NON-NLS-2$
         System.setProperty("edu.ku.brc.dbsupport.AuditInterceptor",     "edu.ku.brc.specify.dbsupport.AuditInterceptor");       // Needed By the Form System for updating Lucene and logging transactions //$NON-NLS-1$ //$NON-NLS-2$
@@ -2522,16 +2524,34 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 window.setVisible(false);
             }
             
-            // Temp Code to Fix issues with Release 6.0.9 and below
-            SwingUtilities.invokeLater(new Runnable() 
+            // General DB Fxies independent of a release.
+            if (!AppPreferences.getGlobalPrefs().getBoolean("CollectingEventsAndAttrsMaint1", false))
             {
-                @Override
-                public void run()
+                // Temp Code to Fix issues with Release 6.0.9 and below
+                SwingUtilities.invokeLater(new Runnable() 
                 {
-                    CollectingEventsAndAttrsMaint dbMaint = new CollectingEventsAndAttrsMaint();
-                    dbMaint.performMaint();
-                }
-            });
+                    @Override
+                    public void run()
+                    {
+                        CollectingEventsAndAttrsMaint dbMaint = new CollectingEventsAndAttrsMaint();
+                        dbMaint.performMaint();
+                    }
+                });
+            }
+            
+            if (!AppPreferences.getGlobalPrefs().getBoolean("FixAgentToDisciplines", false))
+            {
+                // Temp Code to Fix issues with Release 6.0.9 and below
+                SwingUtilities.invokeLater(new Runnable() 
+                {
+                    @Override
+                    public void run()
+                    {
+                        FixDBAfterLogin fixer = new FixDBAfterLogin();
+                        fixer.fixAgentToDisciplines();
+                    }
+                });
+            }
             
         } else if (status == AppContextMgr.CONTEXT_STATUS.Error)
         {

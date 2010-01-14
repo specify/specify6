@@ -466,7 +466,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @return the current Collection or null
      */
     protected Collection setupCurrentCollection(final SpecifyUser userArg,
-                                                final boolean     startingOver,
                                                 final boolean     promptForCollection)
     {
         DataProviderSessionIFace session = null;
@@ -491,6 +490,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                             "INNER JOIN specifyuser_spprincipal AS su_pr ON p.SpPrincipalID = su_pr.SpPrincipalID " + 
                             "INNER JOIN specifyuser AS su ON su_pr.SpecifyUserID = su.SpecifyUserID " + 
                             "WHERE su.SpecifyUserID = "+spUser.getSpecifyUserId(); //$NON-NLS-1$
+            log.debug(sqlStr);
             
             for (Object[] row : BasicSQLUtils.query(sqlStr))
             {
@@ -697,6 +697,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return null;
     }
     
+    
     /**
      * Get SpAppResourceDir from database.
      * @param sessionArg
@@ -709,24 +710,53 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @return
      */
     public SpAppResourceDir getAppResDir(final DataProviderSessionIFace sessionArg,
-                                            final SpecifyUser    specifyUser,
-                                            final Discipline     discipline,
-                                            final Collection     collection,
-                                            final String         userType,
-                                            final boolean        isPersonal,
-                                            final String         localizedTitle,
-                                            final boolean        createWhenNotFound)
+                                         final SpecifyUser    specifyUser,
+                                         final Discipline     discipline,
+                                         final Collection     collection,
+                                         final String         userType,
+                                         final boolean        isPersonal,
+                                         final String         localizedTitle,
+                                         final boolean        createWhenNotFound)
     {
-        //StringBuilder sb = new StringBuilder("FROM SpAppResourceDir WHERE specifyUserId = "); //$NON-NLS-1$
-        //sb.append(specifyUser.getSpecifyUserId());
+        return getAppResDir(sessionArg, specifyUser, discipline, collection, userType, isPersonal, localizedTitle, createWhenNotFound, false);
+    }
+    
+    /**
+     * Get SpAppResourceDir from database.
+     * @param sessionArg
+     * @param specifyUser
+     * @param discipline
+     * @param collection
+     * @param userType
+     * @param isPersonal
+     * @param createWhenNotFound
+     * @param checkForNullSpUser
+     * @return
+     */
+    public SpAppResourceDir getAppResDir(final DataProviderSessionIFace sessionArg,
+                                         final SpecifyUser    specifyUser,
+                                         final Discipline     discipline,
+                                         final Collection     collection,
+                                         final String         userType,
+                                         final boolean        isPersonal,
+                                         final String         localizedTitle,
+                                         final boolean        createWhenNotFound,
+                                         final boolean        checkForNullSpUser)
+    {
         StringBuilder sb = new StringBuilder("FROM SpAppResourceDir WHERE");
         sb.append(" isPersonal = "); //$NON-NLS-1$
         sb.append(isPersonal);
-        if (isPersonal)
+        
+        if (checkForNullSpUser)
+        {
+            sb.append(" AND specifyUserId is null"); //$NON-NLS-1$
+            
+        } else if (isPersonal)
         {
         	sb.append(" AND specifyUserId = ");
         	sb.append(specifyUser.getSpecifyUserId());
         }
+        
         if (discipline != null)
         {
             sb.append(" AND disciplineId = "); //$NON-NLS-1$
@@ -755,7 +785,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             sb.append(" AND userType is null"); //$NON-NLS-1$
         }
         
-        //log.debug(sb.toString());
+        log.debug(sb.toString());
         
         List<?> list = sessionArg.getDataList(sb.toString());
         if (list.size() == 1)
@@ -1186,7 +1216,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             AppContextMgr.getInstance().setClassObject(SpecifyUser.class, user);
 
             // Ask the User to choose which Collection they will be working with
-            Collection collection = setupCurrentCollection(user, startingOver, doPrompt);
+            Collection collection = setupCurrentCollection(user, doPrompt);
             if (collection == null)
             {
                 // Return false but don't mess with anything that has been set up so far

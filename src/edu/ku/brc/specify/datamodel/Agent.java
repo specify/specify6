@@ -56,6 +56,8 @@ import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.TypeCode;
 import edu.ku.brc.specify.dbsupport.TypeCodeItem;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -1032,18 +1034,29 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
                      "INNER JOIN specifyuser su ON a.SpecifyUserID = su.SpecifyUserID WHERE " +
                      "d.UserGroupScopeId = " + discipline.getId() + " AND su.SpecifyUserID = " + user.getId();
         
+        boolean notFndErr = false;
         userAgent = null;
-        Integer agentId = BasicSQLUtils.getCount(sql);
+        System.err.println(sql);
+        
+        Integer agentId = BasicSQLUtils.getCount(sql); // gets the AgentId
         if (agentId != null)
         {
             userAgent = getDataObj(Agent.class, agentId);
             if (userAgent == null)
             {
                 UIRegistry.showError("A user agent was not found for the SpecifyUser for discipline["+discipline.getName()+"] and Agent id ["+agentId+"]");
+                notFndErr = true;
             }
         } else
         {
             UIRegistry.showError("A user agent was not found for the SpecifyUser for discipline["+discipline.getName()+"]");
+            notFndErr = true;
+        }
+        
+        if (notFndErr)
+        {
+            UIRegistry.showLocalizedMsg("Specify.ABT_EXIT");
+            CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit"));
         }
     }
     

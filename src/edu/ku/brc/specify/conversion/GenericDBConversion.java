@@ -2187,28 +2187,32 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     {
 
         Session     localSession = HibernateUtil.getNewSession();
-        Discipline  discipline   = null;
-        Transaction trans        = localSession.beginTransaction();
+        Transaction trans        = null;
 
         try
         {
             Criteria criteria        = localSession.createCriteria(Discipline.class);
             List<?>  disciplineeList = criteria.list();
-            
-            discipline = (Discipline)disciplineeList.get(0);
-
-            BuildSampleDatabase bsd = new BuildSampleDatabase();
-            bsd.setSession(localSession);
-            
-            bsd.loadSchemaLocalization(discipline, 
-                                       SpLocaleContainer.CORE_SCHEMA, 
-                                       DBTableIdMgr.getInstance(),
-                                       "CatalogNumberNumeric",
-                                       null,
-                                       false,
-                                       null);
-            localSession.save(discipline);
-            trans.commit();
+            for (Object obj : disciplineeList)
+            {
+                
+                trans = localSession.beginTransaction();
+                
+                Discipline discipline = (Discipline)obj;
+    
+                BuildSampleDatabase bsd = new BuildSampleDatabase();
+                bsd.setSession(localSession);
+                
+                bsd.loadSchemaLocalization(discipline, 
+                                           SpLocaleContainer.CORE_SCHEMA, 
+                                           DBTableIdMgr.getInstance(),
+                                           "CatalogNumberNumeric",
+                                           null,
+                                           false,
+                                           null);
+                localSession.save(discipline);
+                trans.commit();
+            }
 
             /*DBTableIdMgr schema = new DBTableIdMgr(false);
             schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml")));

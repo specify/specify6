@@ -699,9 +699,9 @@ public class NavigationTreeMgr
      */
     public DefaultMutableTreeNode addExistingUser(final DefaultMutableTreeNode grpNode) 
     {
-        DataModelObjBaseWrapper wrp   = (DataModelObjBaseWrapper) grpNode.getUserObject();
-        SpPrincipal             group = (SpPrincipal) wrp.getDataObj();
-        AddExistingUserDlg      dlg   = new AddExistingUserDlg(null, group);
+        DataModelObjBaseWrapper wrp       = (DataModelObjBaseWrapper) grpNode.getUserObject();
+        SpPrincipal             prinGroup = (SpPrincipal) wrp.getDataObj();
+        AddExistingUserDlg      dlg       = new AddExistingUserDlg(null, prinGroup);
         dlg.setVisible(true);
         
         if (dlg.isCancelled())
@@ -709,6 +709,7 @@ public class NavigationTreeMgr
             return null;
         }
 
+        // This is the existing User to be Added to the New Collection/Discipline
         SpecifyUser specifyUser = dlg.getSelectedUser();
         
         if (specifyUser == null || grpNode == null || 
@@ -722,12 +723,14 @@ public class NavigationTreeMgr
         {
             return null; // selection isn't a suitable parent for a group
         }
-        
-        // discipline to which the user's being added
+        // Discipline to which the user's being added by walking up the tree
+        // to find the appropriate Discipline Node
         Discipline parentDiscipline = getParentDiscipline(grpNode);
-        //final Division   division         = parentDiscipline.getDivision();
         
         AppContextMgr acMgr          = AppContextMgr.getInstance();
+        
+        // Set the Parent Discipline into the Context so it thinks we are in
+        // that context when we add all the security info.
         Discipline    currDiscipline = acMgr.getClassObject(Discipline.class);
         acMgr.setClassObject(Discipline.class, parentDiscipline);
         
@@ -739,17 +742,17 @@ public class NavigationTreeMgr
             session = DataProviderFactory.getInstance().createSession();
             session.beginTransaction();
             
-            group = session.merge(group);
+            prinGroup = session.merge(prinGroup);
             
-            wrp.setDataObj(group);
+            wrp.setDataObj(prinGroup);
 
             // Add users to Group
             specifyUser = (SpecifyUser)session.getData("FROM SpecifyUser WHERE id = "+specifyUser.getId());
                 
-            group.getSpecifyUsers().add(specifyUser);
-            specifyUser.getSpPrincipals().add(group);
+            prinGroup.getSpecifyUsers().add(specifyUser);
+            specifyUser.getSpPrincipals().add(prinGroup);
             
-            Agent clonedAgent;
+            Agent  clonedAgent;
             String sql = String.format("SELECT AgentID FROM agent a WHERE a.SpecifyUserID = %d AND DivisionID = %d", specifyUser.getId(), currDivision.getId());
             Integer existingAgentID = BasicSQLUtils.getCount(sql);
             if (existingAgentID == null)
@@ -757,13 +760,14 @@ public class NavigationTreeMgr
                 Agent agent = specifyUser.getAgents().iterator().next();
                 clonedAgent = (Agent)agent.clone();
                 clonedAgent.setDivision(currDivision);
+                clonedAgent.getDisciplines().clear();
                 
             } else
             {
                 clonedAgent = (Agent)session.getData("FROM Agent agent WHERE id = " + existingAgentID);
             }
             
-            clonedAgent.getDisciplines().clear();
+            // Add the New Agent or Existing Agent to the New Discipline.
             clonedAgent.getDisciplines().add(parentDiscipline);
             
             clonedAgent.setSpecifyUser(specifyUser);

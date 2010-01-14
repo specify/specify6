@@ -47,7 +47,10 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class AppPreferences
 {
+    public enum AppPrefType {local, remote, global}
+    
     public static final String factoryName = "edu.ku.brc.af.prefs.AppPrefsIOIFace"; //$NON-NLS-1$
+    public static final String factoryGlobalName = "edu.ku.brc.af.prefs.AppPrefsIOIFaceGlobal"; //$NON-NLS-1$
 
     // Static Data Members
     public final static String LOCALFILENAME  = "user.properties"; //$NON-NLS-1$
@@ -58,15 +61,16 @@ public class AppPreferences
             
     protected static AppPreferences instanceRemote    = null;
     protected static AppPreferences instanceLocal     = null;
+    protected static AppPreferences instanceGlobal    = null;
 
     // instanceRemote Data Member
     protected Properties         properties           = null;
     protected String             dirPath;
     protected boolean            isChanged            = false;
-    protected boolean            isRemote;
+    protected AppPrefType        prefType;
     protected String             localFileName        = null;
     
-    protected String             remoteSaverClassName = null;
+    protected String             saverClassName       = null;
     protected AppPrefsIOIFace    appPrefsIO           = null;
     protected boolean            isEnabled            = true;
 
@@ -79,45 +83,59 @@ public class AppPreferences
 
     
     /**
-     * Constructor for Remote and Local prefs.
-     * @param isRemote true means the prefs are stored in the database, false on local disk
+     * Constructor for Remote, Global and Local prefs.
+     * @param prefType remote is per user in the DB, global is in the DB, local on local disk
      */
-    protected AppPreferences(final boolean isRemote)
+    protected AppPreferences(final AppPrefType prefType)
     {
+        this.prefType = prefType;
         
-        if (isRemote)
+        if (prefType == AppPrefType.remote)
+        {
+            this.appPrefsIO = createFactoryIO(factoryName);
+           
+        } else if (prefType == AppPrefType.global)
         {
             // Start by checking to see if we have a Remote IO impl
-            this.remoteSaverClassName = System.getProperty(factoryName, null);
-            if (remoteSaverClassName == null)
-            {
-                throw new InternalError("System Property '"+factoryName+"' must be set!"); //$NON-NLS-1$ //$NON-NLS-2$
-                
-            }
-            // else
-            this.isRemote = true;
             
-            try 
-            {
-                appPrefsIO = (AppPrefsIOIFace)Class.forName(remoteSaverClassName).newInstance();
-                appPrefsIO.setAppPrefsMgr(this);
-                
-            } catch (Exception e) 
-            {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AppPreferences.class, e);
-                InternalError error = new InternalError("Can't instantiate "+factoryName+" factory " + remoteSaverClassName); //$NON-NLS-1$ //$NON-NLS-2$
-                error.initCause(e);
-                throw error;
-            }
-           
+            this.appPrefsIO = createFactoryIO(factoryGlobalName);
+            
         } else
         {
-            this.isRemote      = false;
             this.localFileName = LOCALFILENAME;
             this.appPrefsIO    = new AppPrefsDiskIOIImpl();
             this.appPrefsIO.setAppPrefsMgr(this);
         }
+    }
+    
+    /**
+     * @param factoryClassName
+     * @param factoryNm
+     * @return
+     */
+    private AppPrefsIOIFace createFactoryIO(final String factoryNm)
+    {
+        this.saverClassName = System.getProperty(factoryNm, null);
+        if (this.saverClassName == null)
+        {
+            throw new InternalError("System Property '"+factoryNm+"' must be set!"); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        
+        AppPrefsIOIFace prefIO = null;
+        try 
+        {
+            prefIO = (AppPrefsIOIFace)Class.forName(this.saverClassName).newInstance();
+            prefIO.setAppPrefsMgr(this);
+            
+        } catch (Exception e) 
+        {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AppPreferences.class, e);
+            InternalError error = new InternalError("Can't instantiate "+this.saverClassName +" factory for " + factoryNm); //$NON-NLS-1$ //$NON-NLS-2$
+            error.initCause(e);
+            throw error;
+        }
+        return prefIO;
     }
     
     /**
@@ -142,12 +160,24 @@ public class AppPreferences
      */
     public static AppPreferences getRemote()
     {
-        //log.debug("** Creating Remote Prefs.");
         if (instanceRemote == null)
         {
-            instanceRemote = new AppPreferences(true);
+            instanceRemote = new AppPreferences(AppPrefType.remote);
         }
         return instanceRemote;
+    }
+    
+    /**
+     * Returns the singleton.
+     * @return the singleton
+     */
+    public static AppPreferences getGlobalPrefs()
+    {
+        if (instanceGlobal == null)
+        {
+            instanceGlobal = new AppPreferences(AppPrefType.global);
+        }
+        return instanceGlobal;
     }
     
     /**
@@ -157,7 +187,6 @@ public class AppPreferences
     public static void startup()
     {
         connectedToDB = true;
-        //schedulePrefSynching();
     }
     
     /**
@@ -174,6 +203,20 @@ public class AppPreferences
         }
     }
     
+    private static void shutdownPref(final AppPreferences pref) throws BackingStoreException
+    {
+        if (pref != null)
+        {
+            if (connectedToDB)
+            {
+                pref.flush();
+            }
+            pref.listeners.clear();
+            pref.appPrefsIO = null;
+        }
+
+    }
+    
     /**
      * Flushes the values and then terminates the Prefs so a new one can be created.
      */
@@ -184,16 +227,12 @@ public class AppPreferences
         {
             blockTimer.set(true);
             
-            if (instanceRemote != null)
-            {
-                if (connectedToDB)
-                {
-                    instanceRemote.flush();
-                }
-                instanceRemote.listeners.clear();
-                instanceRemote.appPrefsIO = null;
-                instanceRemote = null;
-            }
+            shutdownPref(instanceRemote);
+            shutdownPref(instanceGlobal);
+            
+            instanceRemote = null;
+            instanceGlobal = null;
+            
             blockTimer.set(false);
             
         } catch (BackingStoreException ex)
@@ -242,7 +281,7 @@ public class AppPreferences
     {
         if (instanceLocal == null)
         {
-            instanceLocal = new AppPreferences(false);
+            instanceLocal = new AppPreferences(AppPrefType.local);
         }
         
         return instanceLocal;
@@ -290,7 +329,7 @@ public class AppPreferences
      */
     public boolean isRemote()
     {
-        return isRemote;
+        return prefType == AppPrefType.remote;
     }
 
     /**
@@ -312,7 +351,7 @@ public class AppPreferences
     }
 
     /**
-     * Sest the properties file.
+     * Sets the properties file.
      * @param properties the properties file.
      */
     public void setProperties(Properties properties)

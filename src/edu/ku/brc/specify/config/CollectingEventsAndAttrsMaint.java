@@ -8,7 +8,6 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.Vector;
@@ -72,8 +71,11 @@ public class CollectingEventsAndAttrsMaint
      */
     public void shutdown()
     {
+        AppPreferences.getGlobalPrefs().putBoolean("CollectingEventsAndAttrsMaint1", true);
         try
         {
+            AppPreferences.getGlobalPrefs().flush();
+            
             connection.close();
             session.close();
             

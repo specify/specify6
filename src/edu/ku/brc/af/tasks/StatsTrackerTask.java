@@ -23,6 +23,8 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Vector;
 
@@ -283,12 +285,12 @@ public class StatsTrackerTask extends BaseTask
             httpClient.executeMethod(postMethod);
             
             // get the server response
-            /*String responseString = postMethod.getResponseBodyAsString();
+            String responseString = postMethod.getResponseBodyAsString();
             
             if (StringUtils.isNotEmpty(responseString))
             {
                 System.err.println(responseString);
-            }*/
+            }
 
         }
         catch (Exception e)
@@ -379,10 +381,10 @@ public class StatsTrackerTask extends BaseTask
             if (!UIRegistry.isRelease()) // For Testing Only
             {
                 postParams.add(new NameValuePair("user_name", System.getProperty("user.name"))); //$NON-NLS-1$
-                //try 
-                //{
-                //    postParams.add(new NameValuePair("ip", InetAddress.getLocalHost().getHostAddress())); //$NON-NLS-1$
-                //} catch (UnknownHostException e) {}
+                try 
+                {
+                    postParams.add(new NameValuePair("ip", InetAddress.getLocalHost().getHostAddress())); //$NON-NLS-1$
+                } catch (UnknownHostException e) {}
             }
             
             String install4JStr = UIHelper.getInstall4JInstallString();

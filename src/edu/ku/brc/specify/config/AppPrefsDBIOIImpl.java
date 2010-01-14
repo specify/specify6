@@ -57,6 +57,7 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
     protected SpAppResourceDir  spAppResourceDir = null;
     protected SpAppResource     spAppResource    = null;
     protected boolean           found            = false;
+    protected String            xmlTitle         = "Remote User Prefs";
     
     /**
      * Constructor.
@@ -115,12 +116,36 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
         return spAppResource.getTimestampModified();
     }
     
+    /**
+     * @param session
+     * @param specifyAppContext
+     * @return
+     */
+    protected SpAppResourceDir createResDir(final DataProviderSessionIFace session, final SpecifyAppContextMgr specifyAppContext)
+    {
+        return specifyAppContext.getAppResDir(session, AppContextMgr.getInstance().getClassObject(SpecifyUser.class), null, null, "Prefs", false, "Prefs", true);
+    }
+    
+    /**
+     * @return
+     */
+    protected SpAppResource createAndInitResource()
+    {
+        SpAppResource appRes = new SpAppResource();
+        appRes.initialize();
+        
+        appRes.setName(PREF_NAME);
+        appRes.setLevel((short)3); // TODO WHAT LEVEL IS USER???????
+        appRes.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
+        
+        return appRes;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.prefs.AppPreferences.AppPrefsIOIFace#load(edu.ku.brc.af.prefs.AppPreferences)
      */
     public void load()
     {
-        //log.debug("loading AppPrefsDBIOIImpl");
         if (spAppResource == null && appPrefsMgr != null)
         {
             //log.debug("loading creating Properties");
@@ -136,16 +161,10 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                     SpecifyAppContextMgr specifyAppContext = (SpecifyAppContextMgr)AppContextMgr.getInstance();
                     
                     SpAppResourceData appData = null;
-                    spAppResourceDir = specifyAppContext.getAppResDir(session, AppContextMgr.getInstance().getClassObject(SpecifyUser.class), null, null, "Prefs", false, "Prefs", true);
+                    spAppResourceDir = createResDir(session, specifyAppContext);
                     if (spAppResourceDir.getSpAppResourceDirId() == null)
                     {
-                        spAppResource = new SpAppResource();
-                        spAppResource.initialize();
-                        
-                        spAppResource.setName(PREF_NAME);
-                        spAppResource.setLevel((short)3); // TODO WHAT LEVEL IS USER???????
-                        SpecifyUser user = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-                        spAppResource.setSpecifyUser(user);
+                        spAppResource = createAndInitResource();
 
                         appData = new SpAppResourceData();
                         appData.initialize();
@@ -191,7 +210,7 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
             } catch (Exception ex)
             {
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AppPrefsDBIOIImpl.class, ex);
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AppPrefsGlobalDBIOIImpl.class, ex);
                 ex.printStackTrace();
                 log.error(ex);
                 
@@ -204,7 +223,6 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
             }
         }    
     }
-    
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.prefs.AppPreferences.AppPrefsIOIFace#save(edu.ku.brc.af.prefs.AppPreferences)
@@ -223,7 +241,7 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
             try
             {
                 ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-                appPrefsMgr.getProperties().store(byteOut, "Remote User Prefs");
+                appPrefsMgr.getProperties().store(byteOut, xmlTitle);
                 appPrefsMgr.setChanged(false);
                 
                 SpAppResourceData apData = spAppResource.getSpAppResourceDatas().iterator().next();
@@ -241,8 +259,6 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                 
             } catch (IOException ex)
             {
-                //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AppPrefsDBIOIImpl.class, ex);
                 throw new BackingStoreException(ex);
             }
         } else

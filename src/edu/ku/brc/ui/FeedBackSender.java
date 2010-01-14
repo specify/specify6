@@ -121,6 +121,8 @@ public abstract class FeedBackSender
     {
         if (item != null)
         {
+            String s = "";
+            
             // check the website for the info about the latest version
             HttpClient httpClient = new HttpClient();
             httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
@@ -137,12 +139,12 @@ public abstract class FeedBackSender
                 httpClient.executeMethod(postMethod);
                 
                 // get the server response
-                /*String responseString = postMethod.getResponseBodyAsString();
+                String responseString = postMethod.getResponseBodyAsString();
                 
                 if (StringUtils.isNotEmpty(responseString))
                 {
                     System.err.println(responseString);
-                }*/
+                }
     
             }
             catch (Exception e)
@@ -195,7 +197,7 @@ public abstract class FeedBackSender
                 }
             }
             
-            if (!UIRegistry.isRelease()) // For Testing Only
+            //if (!UIRegistry.isRelease()) // For Testing Only
             {
                 postParams.add(new NameValuePair("user_name", System.getProperty("user.name"))); //$NON-NLS-1$
                 try 
