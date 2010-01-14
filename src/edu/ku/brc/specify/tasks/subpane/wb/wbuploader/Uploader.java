@@ -2683,13 +2683,17 @@ public class Uploader implements ActionListener, KeyListener
         {
             return true;
         }
-        if (currentTask != null)
+        if (currentTask != null || 
+        		(shuttingDownSS != null && (currentOp.equals(Uploader.SUCCESS)  || currentOp.equals(Uploader.SUCCESS_PARTIAL)) && getUploadedObjects() > 0))
         {
             JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), getResourceString("WB_UPLOAD_BUSY_CANNOT_CLOSE"));
             return false;
         }
+        
         boolean result = true;
-        if ((currentOp.equals(Uploader.SUCCESS)  || currentOp.equals(Uploader.SUCCESS_PARTIAL)) && getUploadedObjects() > 0)
+        
+        if (result && shuttingDownSS == null && 
+        		(currentOp.equals(Uploader.SUCCESS)  || currentOp.equals(Uploader.SUCCESS_PARTIAL)) && getUploadedObjects() > 0)
         {
             result = false;
         	String msg = String.format(getResourceString("WB_UPLOAD_CONFIRM_SAVE"), wbSS.getWorkbench().getName());
@@ -2727,12 +2731,12 @@ public class Uploader implements ActionListener, KeyListener
                     }
                 }
             }
-        }
-        if (result && additionalLocksSet)
+        } 
+        if (additionalLocksSet)
         {
         	freeAdditionalLocks();
         }
-        return result;
+        return result; 
     }
     
     protected void showSettings()
