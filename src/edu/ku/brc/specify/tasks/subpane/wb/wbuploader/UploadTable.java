@@ -74,13 +74,17 @@ import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.FieldNotebook;
+import edu.ku.brc.specify.datamodel.FieldNotebookPage;
 import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.LocalityDetail;
 import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttribute;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.ReferenceWork;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
@@ -104,7 +108,7 @@ import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
  */
 public class UploadTable implements Comparable<UploadTable>
 {
-    protected static boolean                          debugging               = false;
+    protected static boolean                          debugging               = true;
     //if true then 'Undos' are accomplished with sql delete statements. This is safe
     //if modification to the database is prevented while uploading.
     private static boolean                          doRawDeletes            = true;
@@ -330,9 +334,7 @@ public class UploadTable implements Comparable<UploadTable>
     protected boolean shouldSkipMatching()
     {
         return isOneToOneChild() || 
-        	(tblClass.equals(CollectingEvent.class) && 
-        		AppContextMgr.getInstance().getClassObject(
-                Collection.class).getIsEmbeddedCollectingEvent());
+        	(tblClass.equals(CollectingEvent.class) &&  AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent());
     }
     
     /**
@@ -347,7 +349,10 @@ public class UploadTable implements Comparable<UploadTable>
     {
         return tblClass.equals(CollectionObjectAttribute.class)
             || tblClass.equals(PreparationAttribute.class)
-            || tblClass.equals(CollectingEventAttribute.class);
+            || tblClass.equals(CollectingEventAttribute.class)
+        	|| tblClass.equals(GeoCoordDetail.class)
+        	|| tblClass.equals(LocalityDetail.class)
+        	;
        
     }
     /**
@@ -970,6 +975,14 @@ public class UploadTable implements Comparable<UploadTable>
                 {
                 	setterName = "GeoRefDetBy";
                 }
+                else if (tblClass.equals(FieldNotebook.class) && setterName.equals("Agent"))
+                {
+                	setterName = "OwnerAgent";
+                }
+                else if (tblClass.equals(FieldNotebookPage.class) && setterName.equals("FieldNotebookPageSet"))
+                {
+                	setterName = "PageSet";
+                }
                 pt.setSetter(tblClass.getMethod("set" + setterName, parType));
             }
         }
@@ -1541,6 +1554,14 @@ public class UploadTable implements Comparable<UploadTable>
         {
             result = true;
         }
+        else if (tblClass.equals(Locality.class))
+        {
+            System.out.println("matching locality children");
+        	for (UploadTable child : matchChildren)
+            {
+            	System.out.println(child);
+            }
+        }
         else
         // Oh no!!
         {
@@ -1556,7 +1577,9 @@ public class UploadTable implements Comparable<UploadTable>
         // temporary fix. Really should determine based on cascade rules and the fields in the
         // dataset.
         return tblClass.equals(CollectingEvent.class) || tblClass.equals(Accession.class)
-                || tblClass.equals(CollectionObject.class);
+                || tblClass.equals(CollectionObject.class) 
+                || tblClass.equals(Locality.class)
+                ;
     }
 
     protected boolean needToMatchChild(Class<?> childClass)
@@ -1564,12 +1587,25 @@ public class UploadTable implements Comparable<UploadTable>
         // temporary fix. Really should determine based on cascade rules and the fields in the
         // dataset.
         logDebug("need to add more child classes");
-        if (tblClass.equals(Accession.class)) { return childClass.equals(AccessionAgent.class)
-                || childClass.equals(AccessionAuthorization.class); }
-        if (tblClass.equals(CollectingEvent.class)) { return childClass.equals(Collector.class); }
-        if (tblClass.equals(CollectionObject.class)) { return childClass
+        if (tblClass.equals(Accession.class)) 
+        { 
+        	return childClass.equals(AccessionAgent.class)
+                || childClass.equals(AccessionAuthorization.class); 
+        }
+        if (tblClass.equals(CollectingEvent.class)) 
+        { 
+        	return childClass.equals(Collector.class); 
+        }
+        if (tblClass.equals(CollectionObject.class)) 
+        { 
+        	return childClass
                 .equals(Determination.class)
-                || childClass.equals(Preparation.class); }
+                || childClass.equals(Preparation.class); 
+        }
+        if (tblClass.equals(Locality.class))
+        {
+        	return childClass.equals(GeoCoordDetail.class) || childClass.equals(LocalityDetail.class);
+        }
         return false;
     }
 
@@ -1757,20 +1793,22 @@ public class UploadTable implements Comparable<UploadTable>
         {
             critter.add(Restrictions.eq(rce.getPropertyName(), rce.getDefaultObj(recNum)));
         }
-        for (DefaultFieldEntry dfe : missingRequiredFlds)
-		{
-			if (dfe.isMultiValued())
-			{
-				critter.add(Restrictions.in(deCapitalize(dfe.getFldName()), dfe
+        if (!tblClass.equals(ReferenceWork.class))
+        {
+        	for (DefaultFieldEntry dfe : missingRequiredFlds)
+        	{
+        		if (dfe.isMultiValued())
+        		{
+        			critter.add(Restrictions.in(deCapitalize(dfe.getFldName()), dfe
 						.getDefaultValues(recNum)));
-			}
-			else
-			{
-				critter.add(Restrictions.eq(deCapitalize(dfe.getFldName()), dfe
-					.getDefaultValue(recNum)));
-			}
-		}
-
+        		}
+        		else
+        		{
+        			critter.add(Restrictions.eq(deCapitalize(dfe.getFldName()), dfe
+        					.getDefaultValue(recNum)));
+        		}
+        	}
+        }
         addDomainCriteria(critter);
         
         Collections.sort(restrictedVals);
@@ -2123,7 +2161,7 @@ public class UploadTable implements Comparable<UploadTable>
     	}
     	if (hasChildren &&
     			(tblClass.equals(Accession.class) || tblClass.equals(Permit.class) || tblClass.equals(Locality.class) 
-    			|| tblClass.equals(CollectingEvent.class))) 
+    			|| tblClass.equals(CollectingEvent.class) || tblClass.equals(FieldNotebookPage.class))) 
     	{
     		boolean isBlank = isBlankRow(row, uploadData, seq);
         	//XXX Really need to access the upload graph to do this correctly - what about (CO-COAttribute, CE-CEAttr, ...
@@ -2510,6 +2548,7 @@ public class UploadTable implements Comparable<UploadTable>
     {
         int recNum = 0;
         logDebug("writeRowOrNot: " + this.table.getName());
+        //System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
         autoAssignedVal = null;  //assumes one autoassign field per table.
         for (Vector<UploadField> seq : uploadFields)
         {
@@ -2618,9 +2657,38 @@ public class UploadTable implements Comparable<UploadTable>
      * @return true if there is some data in the current row dataset that needs to be written to
      *         this table in the database.
      */
-    protected boolean needToWrite(int recNum)
+    protected boolean needToWrite(int recNum) throws UploaderException
     {
-        return dataToWrite(recNum) || parentTables.size() > 0;
+        if (dataToWrite(recNum))
+        {
+        	return true;
+        }
+        if (parentTables.size() == 0)
+        {
+        	return false;
+        }
+    	for (Vector<ParentTableEntry> pts : parentTables)
+    	{
+    		for (ParentTableEntry pt : pts)
+    		{
+    			if (pt.getImportTable() instanceof UploadTableTree || 
+    					(pt.getParentRel()!= null && (hasChildren || !pt.getParentRel().getRelType().equalsIgnoreCase("onetomany"))))
+    			{
+    				try 
+    				{
+    					if (pt.getImportTable().getParentRecord(recNum, this) != null)
+    					{
+    						return true;
+    					}
+    				}
+    				catch (Exception ex)
+    				{
+    					throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+    				}
+    			}
+    		}
+    	}
+    	return false;
     }
 
     /**

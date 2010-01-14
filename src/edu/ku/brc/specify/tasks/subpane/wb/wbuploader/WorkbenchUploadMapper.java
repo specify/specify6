@@ -67,6 +67,10 @@ public class WorkbenchUploadMapper
     
     protected Map<String, TreeLevelInfo>   taxonLevels;
     protected Map<String, TreeLevelInfo>   geoLevels;
+    protected Map<String, TreeLevelInfo>   lithoLevels;
+    protected Map<String, TreeLevelInfo>   chronoLevels;
+    protected Map<String, TreeLevelInfo>   storageLevels;
+    
     
     
     private class DefInfo
@@ -285,6 +289,9 @@ public class WorkbenchUploadMapper
         defs = buildDefs();
         taxonLevels = buildTreeLevels("taxon");
         geoLevels = buildTreeLevels("geography");
+        lithoLevels = buildTreeLevels("lithostrat");
+        chronoLevels = buildTreeLevels("geologictimeperiod");
+        storageLevels = buildTreeLevels("storage");
         maps = new Vector<UploadMappingDef>();
     }
 
@@ -535,6 +542,9 @@ public class WorkbenchUploadMapper
     {
         Vector<WorkbenchTemplateMappingItem> taxTreeItems = new Vector<WorkbenchTemplateMappingItem>();
         Vector<WorkbenchTemplateMappingItem> geoTreeItems = new Vector<WorkbenchTemplateMappingItem>();
+        Vector<WorkbenchTemplateMappingItem> lithoTreeItems = new Vector<WorkbenchTemplateMappingItem>();
+        Vector<WorkbenchTemplateMappingItem> chronoTreeItems = new Vector<WorkbenchTemplateMappingItem>();
+        Vector<WorkbenchTemplateMappingItem> storageTreeItems = new Vector<WorkbenchTemplateMappingItem>();
 
         for (WorkbenchTemplateMappingItem wbi : wbt.getWorkbenchTemplateMappingItems())
         {
@@ -548,10 +558,25 @@ public class WorkbenchUploadMapper
                 {
                     geoTreeItems.add(wbi);
                 }
+                else if (isLithoTreeItem(wbi))
+                {
+                    lithoTreeItems.add(wbi);
+                }
+                else if (isChronoTreeItem(wbi))
+                {
+                	chronoTreeItems.add(wbi);
+                }
+                else if (isStorageTreeItem(wbi))
+                {
+                	storageTreeItems.add(wbi);
+                }
             }
         }
         mapTaxTreeItems(taxTreeItems);
         mapGeoTreeItems(geoTreeItems);
+        mapLithoTreeItems(lithoTreeItems);
+        mapChronoTreeItems(chronoTreeItems);
+        mapStorageTreeItems(storageTreeItems);
     }
 
     /**
@@ -613,6 +638,79 @@ public class WorkbenchUploadMapper
             if (levels.size() > 0)
             {
                 maps.add(new UploadMappingDefTree("geography", "name", "parentId", null, levels, "geography"/*i18n*/));
+            }
+        }
+    }
+
+    /**
+     * builds mapping for litho levels
+     * 
+     * @param treeItems - the columns in this.wbt that are litho levels
+     */
+    protected void mapLithoTreeItems(Vector<WorkbenchTemplateMappingItem> treeItems) throws Exception
+    {
+        log.debug("lithoTreeItems:");
+        for (WorkbenchTemplateMappingItem wbi : treeItems)
+        {
+            log.debug(wbi.getCaption() + ": " + wbi.getTableName() + "."
+                    + wbi.getFieldName());
+        }
+        log.debug("");
+        if (treeItems.size() > 0)
+        {
+            Vector<Vector<TreeMapElement>> levels = mapTreeItems(treeItems, lithoLevels);
+            if (levels.size() > 0)
+            {
+                maps.add(new UploadMappingDefTree("lithostrat", "name", "parentId", null, levels, "lithostrat"/*i18n*/));
+            }
+        }
+    }
+   
+    /**
+     * builds mapping for chrono levels
+     * 
+     * @param treeItems - the columns in this.wbt that are chrono levels
+     */
+    protected void mapChronoTreeItems(Vector<WorkbenchTemplateMappingItem> treeItems) throws Exception
+    {
+        log.debug("chronoTreeItems:");
+        for (WorkbenchTemplateMappingItem wbi : treeItems)
+        {
+            log.debug(wbi.getCaption() + ": " + wbi.getTableName() + "."
+                    + wbi.getFieldName());
+        }
+        log.debug("");
+        if (treeItems.size() > 0)
+        {
+            Vector<Vector<TreeMapElement>> levels = mapTreeItems(treeItems,chronoLevels);
+            if (levels.size() > 0)
+            {
+                maps.add(new UploadMappingDefTree("geologictimeperiod", "name", "parentId", null, levels, "geologictimeperiod"/*i18n*/));
+            }
+        }
+    }
+
+    
+    /**
+     * builds mapping for storage levels
+     * 
+     * @param treeItems - the columns in this.wbt that are storage levels
+     */
+    protected void mapStorageTreeItems(Vector<WorkbenchTemplateMappingItem> treeItems) throws Exception
+    {
+        log.debug("storageTreeItems:");
+        for (WorkbenchTemplateMappingItem wbi : treeItems)
+        {
+            log.debug(wbi.getCaption() + ": " + wbi.getTableName() + "."
+                    + wbi.getFieldName());
+        }
+        log.debug("");
+        if (treeItems.size() > 0)
+        {
+            Vector<Vector<TreeMapElement>> levels = mapTreeItems(treeItems, storageLevels);
+            if (levels.size() > 0)
+            {
+                maps.add(new UploadMappingDefTree("storage", "name", "parentId", null, levels, "storage"/*i18n*/));
             }
         }
     }
@@ -708,7 +806,35 @@ public class WorkbenchUploadMapper
         return wbi.getTableName().equals("geography") && geoLevels.containsKey(wbi.getFieldName());
     }
     
-   
+
+    /**
+     * @param wbi
+     * @return
+     */
+    protected boolean isLithoTreeItem(WorkbenchTemplateMappingItem wbi)
+    {
+        return wbi.getTableName().equals("lithostrat") && lithoLevels.containsKey(wbi.getFieldName());
+    }
+
+    
+    /**
+     * @param wbi
+     * @return
+     */
+    protected boolean isStorageTreeItem(WorkbenchTemplateMappingItem wbi)
+    {
+        return (wbi.getTableName().equals("storage") || wbi.getTableName().equals("preparation")) && storageLevels.containsKey(wbi.getFieldName());
+    }
+
+    /**
+     * @param wbi
+     * @return
+     */
+    protected boolean isChronoTreeItem(WorkbenchTemplateMappingItem wbi)
+    {
+        return wbi.getTableName().equals("geologictimeperiod") && chronoLevels.containsKey(wbi.getFieldName());
+    }
+
 /*Saving this stuff in case it's needed again...
     for (UploadMappingDef map : maps)
     {

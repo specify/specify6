@@ -81,8 +81,10 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
+import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.LocalityAttachment;
+import edu.ku.brc.specify.datamodel.LocalityDetail;
 import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -567,9 +569,11 @@ public class Uploader implements ActionListener, KeyListener
                 throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
             }
             // find the 'right' rel. ie: discard Agent ->> ModifiedByAgentID/CreatedByAgentID
+            //Actually it seems the modifiedby and createdby 'system' relationships get filtered out during graph creation,
+            //so the filtering isn't necessarily necessary.
             for (Relationship rel : rs)
             {
-                if (!rel.getRelatedField().getName().equalsIgnoreCase("modifiedbyagentid")
+            	if (!rel.getRelatedField().getName().equalsIgnoreCase("modifiedbyagentid")
                         && !rel.getRelatedField().getName().equalsIgnoreCase("createdbyagentid"))
                 {
                     r = rel;
@@ -1781,7 +1785,7 @@ public class Uploader implements ActionListener, KeyListener
             //in hibernate)
             for (UploadTable t : uploadTables)
             {
-                if (t.isOneToOneChild() && !t.getHasChildren())
+                if (t.isOneToOneChild() && !t.getHasChildren() && !(t.getTblClass().equals(LocalityDetail.class) || t.getTblClass().equals(GeoCoordDetail.class)))
                 {
                     Vector<Vertex<Table>> vs = db.getGraph().getAdjacentVertices(new Vertex<Table>(t.getTable().getName(), t.getTable()));
                     Vector<Table> tbls = new Vector<Table>();
@@ -3891,7 +3895,8 @@ public class Uploader implements ActionListener, KeyListener
     {
         for (UploadField field : uploadFields)
         {
-            logDebug("   uploading field; " + field.getWbFldName());
+            logDebug("   uploading field: " + field.getWbFldName());
+            //System.out.println("   uploading field: " + field.getWbFldName());
         	if (field.getField().getTable().equals(t.getTable()))
             {
                 if (field.getIndex() != -1)
