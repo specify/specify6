@@ -663,7 +663,12 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
         str.append(" [");
         for (UIFieldFormatterField field : fields)
         {
-            str.append(field.getValue());
+            String val = field.getValue();
+            if (StringUtils.isEmpty(val))
+            {
+                val = field.getSample();
+            }
+            str.append(val);
         }
         str.append("]");
 

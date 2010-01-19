@@ -238,7 +238,7 @@ public class UIFieldFormatterField implements Cloneable
 		        sample = String.format("%0"+size+"d", 1);
 		    } else
 		    {
-		        return anyNumericSample.substring(0, value.length());
+		        return anyNumericSample.substring(0, size);
 		    }
 		}
 
