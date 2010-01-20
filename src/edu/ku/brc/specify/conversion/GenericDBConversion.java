@@ -30,7 +30,6 @@ import static edu.ku.brc.specify.conversion.BasicSQLUtils.deleteAllRecordsFromTa
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.escapeStringLiterals;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.fixTimestamps;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getCount;
-import static edu.ku.brc.specify.conversion.BasicSQLUtils.getDateObj;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldMetaDataFromSchema;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldMetaDataFromSchemaHash;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldNamesFromSchema;
@@ -54,7 +53,6 @@ import static edu.ku.brc.ui.UIRegistry.showError;
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.io.File;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

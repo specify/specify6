@@ -84,13 +84,8 @@ public class CollectionInfo
     protected long         srcHostTaxonCnt;
     protected DisciplineType disciplineTypeObj;
     
-    
-    
     /**
-     * @param taxonomyTypeId
-     * @param kingdomId
-     * @param colObjTypeName
-     * @param taxonNameId
+     * 
      */
     public CollectionInfo()
     {
@@ -833,16 +828,6 @@ public class CollectionInfo
         this.kingdomId = kingdomId;
     }
 
-
-    /**
-     * @return the taxonNameId
-     */
-    public int getTaxonNameId()
-    {
-        return taxonNameId;
-    }
-
-
     /**
      * @param taxonNameId the taxonNameId to set
      */
@@ -850,7 +835,6 @@ public class CollectionInfo
     {
         this.taxonNameId = taxonNameId;
     }
-
 
     /**
      * @return the taxonName
@@ -860,7 +844,6 @@ public class CollectionInfo
         return taxonName;
     }
 
-
     /**
      * @param taxonName the taxonName to set
      */
@@ -868,7 +851,6 @@ public class CollectionInfo
     {
         this.taxonName = taxonName;
     }
-
 
     /**
      * @return the disciplineId
@@ -878,7 +860,6 @@ public class CollectionInfo
         return disciplineId;
     }
 
-
     /**
      * @param disciplineId the disciplineId to set
      */
@@ -886,7 +867,6 @@ public class CollectionInfo
     {
         this.disciplineId = disciplineId;
     }
-
 
     /**
      * @return the discipline

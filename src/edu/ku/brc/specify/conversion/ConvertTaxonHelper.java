@@ -545,9 +545,58 @@ public class ConvertTaxonHelper
         }
     }
     
+
     /**
      * 
      */
+    public void assignTreeDefToDisciplineOld()
+    {
+        for (CollectionInfo ci : CollectionInfo.getCollectionInfoList(oldDBConn))
+        {
+            Integer      disciplineId = ci.getDisciplineId();
+            TaxonTreeDef ttd          = ci.getTaxonTreeDef();
+            if (ttd != null && disciplineId != null)
+            {
+                String sql = String.format("UPDATE discipline SET TaxonTreeDefID=%d WHERE DisciplineID=%d", ttd.getId(), disciplineId);
+                if (BasicSQLUtils.update(newDBConn, sql) != 1)
+                {
+                    log.error("Error updating discipline["+disciplineId+"] with TaxonTreeDefID "+ ttd.getId());
+                }
+            } else
+            {
+                log.error("Error updating (both are not null) discipline["+disciplineId+"] with TaxonTreeDefID "+ (ttd == null ? null : ttd.getId())+" TxnTypId: "+ci.getTaxonomyTypeId());
+            }
+        }
+    }
+    
+    /**
+     * 
+     */
+    private void assignTreeDefToDisciplineOld2()
+    {
+        for (Integer txTypeId : collDispHash.keySet())
+        {
+            Vector<CollectionInfo> collInfoList = collDispHash.get(txTypeId);
+            
+            for (CollectionInfo ci : collInfoList)
+            {
+                Integer disciplineId = ci.getDisciplineId();
+                if (disciplineId != null)
+                {
+                    TaxonTreeDef txnTreeDef = ci.getTaxonTreeDef();
+                    String sql = "UPDATE discipline SET TaxonTreeDefID=" + txnTreeDef.getTaxonTreeDefId() + " WHERE DisciplineID = " + disciplineId;
+                    if (BasicSQLUtils.update(newDBConn, sql) != 1)
+                    {
+                        log.error("Error updating discipline["+disciplineId+"] with TaxonTreeDefID "+ txnTreeDef.getTaxonTreeDefId());
+                    }
+                } else
+                {
+                    log.error("Missing Discipline #");
+                }
+            }
+        }
+    }
+    
     private void assignTreeDefToDiscipline()
     {
         for (Integer txTypeId : collDispHash.keySet())
