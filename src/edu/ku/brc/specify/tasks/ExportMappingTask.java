@@ -992,8 +992,9 @@ public class ExportMappingTask extends QueryTask
 	 * @see edu.ku.brc.specify.tasks.QueryTask#getExportDlgMsgi18nKey()
 	 */
 	@Override
-	protected String getExportDlgMsgi18nKey() {
-		return "ExportMappingTask.NothingToExport";
+	protected String getExportDlgMsgi18nKey() 
+	{
+		return "ExportMappingTask.ChooseMappings";
 	}
 
 
@@ -1002,7 +1003,8 @@ public class ExportMappingTask extends QueryTask
 	 * @see edu.ku.brc.specify.tasks.QueryTask#getExportDlgTitlei18nKey()
 	 */
 	@Override
-	protected String getExportDlgTitlei18nKey() {
+	protected String getExportDlgTitlei18nKey() 
+	{
 		return "ExportMappingTask.EXPORT_QUERIES";
 	}
 
@@ -1012,9 +1014,8 @@ public class ExportMappingTask extends QueryTask
 	 * @see edu.ku.brc.specify.tasks.QueryTask#getExportHelpContext()
 	 */
 	@Override
-	protected String getExportHelpContext() {
-		// TODO Auto-generated method stub
-		//XXX help for mapper???
+	protected String getExportHelpContext() 
+	{
 		return super.getExportHelpContext();
 	}
 
@@ -1024,7 +1025,8 @@ public class ExportMappingTask extends QueryTask
 	 * @see edu.ku.brc.specify.tasks.QueryTask#getExportUsageKey()
 	 */
 	@Override
-	protected String getExportUsageKey() {
+	protected String getExportUsageKey() 
+	{
 		return "ExportMapper.Export";
 	}
 
@@ -1034,7 +1036,8 @@ public class ExportMappingTask extends QueryTask
 	 * @see edu.ku.brc.specify.tasks.QueryTask#getXMLExportFirstLine()
 	 */
 	@Override
-	protected String getXMLExportFirstLine() {
+	protected String getXMLExportFirstLine() 
+	{
 		return "<spexportschemamappings>\n";
 	}
 
@@ -1044,7 +1047,8 @@ public class ExportMappingTask extends QueryTask
 	 * @see edu.ku.brc.specify.tasks.QueryTask#getXMLExportLastLine()
 	 */
 	@Override
-	protected String getXMLExportLastLine() {
+	protected String getXMLExportLastLine() 
+	{
 		return "</spexportschemamappings>";
 	}
 
@@ -1054,7 +1058,8 @@ public class ExportMappingTask extends QueryTask
 	 * @see edu.ku.brc.specify.tasks.QueryTask#toXML(edu.ku.brc.specify.datamodel.SpQuery, java.lang.StringBuilder)
 	 */
 	@Override
-	protected void toXML(SpQuery query, StringBuilder sb) {
+	protected void toXML(SpQuery query, StringBuilder sb) 
+	{
 		//XXX Don't seem to need this method anymore...
 		super.toXML(query, sb);
 	}

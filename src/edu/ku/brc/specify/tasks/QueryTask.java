@@ -2058,7 +2058,12 @@ public class QueryTask extends BaseTask
             dlg.setHelpContext(getExportHelpContext());
             UIHelper.centerAndShow(dlg);
             selectedList = dlg.getSelectedObjects();
+            if (dlg.isCancelled() || selectedList.size() == 0)
+            {
+            	return;
+            }
         }
+        
         
         String path = AppPreferences.getLocalPrefs().get(XML_PATH_PREF, null);
         
