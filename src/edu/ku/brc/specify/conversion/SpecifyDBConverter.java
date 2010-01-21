@@ -850,7 +850,6 @@ public class SpecifyDBConverter
                 }
                 frame.incOverall();
 
-                
                 frame.setDesc("Converting Agents.");
                 log.info("Converting Agents.");
                 
@@ -874,7 +873,7 @@ public class SpecifyDBConverter
                     idMapperMgr.addTableMapper("agentaddress", "AgentAddressID");
                 }
                 frame.incOverall();
-                
+
                 frame.setDesc("Mapping Agent Tables.");
                 log.info("MappingAgent Tables.");
                 if (mapTables)
@@ -903,7 +902,7 @@ public class SpecifyDBConverter
                 {
                     frame.incOverall();
                 }
-                
+
                 frame.setDesc("Converting Geologic Time Period.");
                 log.info("Converting Geologic Time Period.");
                 // GTP needs to be converted here so the stratigraphy conversion can use
@@ -920,7 +919,7 @@ public class SpecifyDBConverter
                     idMapperMgr.mapForeignKey("Stratigraphy", "GeologicTimePeriodID", "GeologicTimePeriod", "GeologicTimePeriodID");
                 }
                 frame.incOverall();
-                
+
                 frame.setDesc("Converting Taxonomy");
                 log.info("Converting Taxonomy");
                 boolean doTaxonomy = doAll;
@@ -932,10 +931,12 @@ public class SpecifyDBConverter
                 }
                 frame.incOverall();
 
+                checkDisciplines();
+
                 //-------------------------------------------------------------------------------
                 // Get the Discipline Objects and put them into the CollectionInfo Objects
                 //-------------------------------------------------------------------------------
-                conversion.loadDisciplineObjects();
+                //conversion.loadDisciplineObjects();
                 
                 conversion.convertHabitat();
                 
@@ -952,6 +953,8 @@ public class SpecifyDBConverter
                 }
                 frame.incOverall();
 
+                checkDisciplines();
+
                 
                 frame.setDesc("Copying Tables");
                 log.info("Copying Tables");
@@ -963,6 +966,8 @@ public class SpecifyDBConverter
                 }
 
                 frame.incOverall();
+
+                checkDisciplines();
 
 
                 frame.setDesc("Converting Locality");
@@ -979,6 +984,8 @@ public class SpecifyDBConverter
                     frame.incOverall();
                     frame.incOverall();
                 }
+
+                checkDisciplines();
                 
                 frame.setDesc("Converting DeaccessionCollectionObject");
                 log.info("Converting DeaccessionCollectionObject");
@@ -988,6 +995,8 @@ public class SpecifyDBConverter
                     conversion.convertDeaccessionCollectionObject();
                 }
                 frame.incOverall();          
+
+                checkDisciplines();
 
                 frame.setDesc("Converting Preparations");
                 log.info("Converting Preparations");
@@ -1031,7 +1040,9 @@ public class SpecifyDBConverter
                                 collToPrepTypeHash.put(collection.getCollectionId(), prepTypeMap);
                             }
                             conversion.convertPreparationRecords(collToPrepTypeHash);
-                            
+
+                            checkDisciplines();
+
                         } catch (Exception ex)
                         {
                             throw new RuntimeException(ex);
@@ -1058,7 +1069,9 @@ public class SpecifyDBConverter
                     {
                         frame.incOverall();
                     }
-                    
+
+                    checkDisciplines();
+
                     // Arg1 - Use Numeric Catalog Number
                     // Arg2 - Use the Prefix from Catalog Series
                     frame.setDesc("Converting CollectionObjects Records");
@@ -1072,8 +1085,18 @@ public class SpecifyDBConverter
                     frame.incOverall();
                     frame.incOverall();
                 }
-                
+
+                checkDisciplines();
+
                 //conversion.convertHostTaxonId();
+                
+                if (getSession() != null)
+                {
+                    getSession().close();
+                    setSession(null);
+                }
+                
+                setSession(HibernateUtil.getNewSession());
                 
                 frame.setDesc("Converting Straigraphy");
                 log.info("Converting Straigraphy");
@@ -1084,7 +1107,9 @@ public class SpecifyDBConverter
                      
                      conversion.convertStrat(tblWriter, conversion.isPaleo());
                 }
-                
+
+                checkDisciplines();
+
                 //-------------------------------------------
                 // Get Discipline and Collection
                 //-------------------------------------------
@@ -1124,7 +1149,9 @@ public class SpecifyDBConverter
                     {
                         collection = dscp.getCollections().iterator().next();
                     }
-                    
+
+                    checkDisciplines();
+
                     if (collection == null)
                     {
                         if (conversion.getCurCollectionID() == null || conversion.getCurCollectionID() == 0)
@@ -1144,7 +1171,9 @@ public class SpecifyDBConverter
                             collection = (Collection)list.get(0);
                         }
                     }
-                    
+
+                    checkDisciplines();
+
                     division    = dscp.getDivision();
                     localSession.lock(division, LockMode.NONE);
                     institution = division.getInstitution();
@@ -1154,12 +1183,17 @@ public class SpecifyDBConverter
                     AppContextMgr.getInstance().setClassObject(Collection.class, collection);
                     AppContextMgr.getInstance().setClassObject(Division.class, division);
                     AppContextMgr.getInstance().setClassObject(Institution.class, institution);
+
+                    checkDisciplines();
+
                     
                     if (doFixCollectors)
                     {
                         agentConverter.fixupForCollectors(division, dscp);
                     }
-                    
+
+                    checkDisciplines();
+
                     setSession(localSession);
                     
                     try
@@ -1194,7 +1228,9 @@ public class SpecifyDBConverter
                             trans.commit();
 
                         }
-                        
+
+                        checkDisciplines();
+
                     } catch (Exception ex)
                     {
                         ex.printStackTrace();
@@ -1207,7 +1243,9 @@ public class SpecifyDBConverter
                     ex.printStackTrace();
                 }
                 
-                
+
+                checkDisciplines();
+
                 localSession.close();
                 
                 localSession = HibernateUtil.getNewSession();
@@ -1226,7 +1264,9 @@ public class SpecifyDBConverter
                 dscp = (Discipline)localSession.createQuery("FROM Discipline WHERE id = " + dscp.getId()).list().iterator().next();
                 dscp.getAgents();
                 AppContextMgr.getInstance().setClassObject(Discipline.class, dscp);
-                
+
+                checkDisciplines();
+
                 localSession.flush();
                 
                 setSession(cachedCurrentSession);
@@ -1262,7 +1302,9 @@ public class SpecifyDBConverter
                 {
                     localSession.close();
                 }
-                
+
+                checkDisciplines();
+
                 frame.incOverall();
                 
                 frame.setDesc("Fixing Preferred Taxon");
@@ -1280,9 +1322,13 @@ public class SpecifyDBConverter
                 //------------------------------------------------
                 frame.setDesc("Localizing the Schema");
                 conversion.doLocalizeSchema();
-                
+
+                checkDisciplines();
+
                 BuildSampleDatabase.makeFieldVisible(null, dscp);
                 BuildSampleDatabase.makeFieldVisible(dscp.getType(), dscp);
+
+                checkDisciplines();
 
                 frame.incOverall();
                 
@@ -1294,6 +1340,8 @@ public class SpecifyDBConverter
                 agentConverter.fixAddressOfRecord();
                 
                 frame.incOverall();
+
+                checkDisciplines();
 
                 TableWriter tblWriter = convLogger.getWriter("ScopeUpdater.html", "Updating Scope Summary");
                 ConvScopeFixer convScopeFixer = new ConvScopeFixer(oldDBConn, newDBConn, dbNameDest, tblWriter);
@@ -1370,6 +1418,25 @@ public class SpecifyDBConverter
             {
                 getSession().close();
             }
+        }
+    }
+    
+    protected void checkDisciplines()
+    {
+        System.out.println("Checking....");
+        int count = 0;
+        for (Object obj : BasicSQLUtils.querySingleCol("SELECT TaxonTreeDefID FROM discipline"))
+        {
+            if (((Integer)obj) == 1)
+            {
+                count++;
+            }
+        }
+        
+        System.out.println("Count: "+count);
+        if (count == 3)
+        {
+            throw new RuntimeException("set back");
         }
     }
     

@@ -2662,7 +2662,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     /**
      * 
      */
-    public void loadDisciplineObjects()
+    /*public void loadDisciplineObjects()
     {
         try
         {
@@ -2685,7 +2685,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             throw new RuntimeException("Couldn't load disciplines");
         }
 
-    }
+    }*/
     
     /**
      * @param collId
@@ -8152,19 +8152,21 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      */
     public void convertStrat(final TableWriter tblWriter, final boolean isPaleo) throws SQLException
     {
+        Transaction trans = null;
+        Session lclSession = null;
         try
         {
             // empty out any pre-existing records
             deleteAllRecordsFromTable(newDBConn, "lithostrat", BasicSQLUtils.myDestinationServerType);
             
-            Session lclSession = HibernateUtil.getCurrentSession();
+            lclSession = HibernateUtil.getNewSession();
             
             
             List<?>  disciplineeList = lclSession.createQuery("FROM Discipline").list();
             
             for (Object obj : disciplineeList)
             {
-                HibernateUtil.beginTransaction();
+                trans = lclSession.beginTransaction();
                 
                 Discipline discipline = (Discipline)obj;
                 LithoStratTreeDef lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
@@ -8197,7 +8199,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 earth.getTreeEntries().add(earthNode);
                 lclSession.saveOrUpdate(earthNode);
                 
-                HibernateUtil.commitTransaction();
+                trans.commit();
                 
                 if (isPaleo)
                 {
@@ -8207,8 +8209,12 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             
         } catch (Exception ex)
         {
-            HibernateUtil.rollbackTransaction();
+            trans.rollback();
+            
             ex.printStackTrace();
+        } finally
+        {
+            lclSession.close();
         }
     }
 

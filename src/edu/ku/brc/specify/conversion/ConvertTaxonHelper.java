@@ -40,7 +40,10 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
@@ -599,22 +602,51 @@ public class ConvertTaxonHelper
     
     private void assignTreeDefToDiscipline()
     {
-        for (Integer txTypeId : collDispHash.keySet())
+        DataProviderSessionIFace session = null;
+        
+        try
         {
-            Vector<CollectionInfo> collInfoList = collDispHash.get(txTypeId);
+            session = DataProviderFactory.getInstance().createSession();
             
-            Integer disciplineId = collInfoList.get(0).getDisciplineId();
-            if (disciplineId != null)
+            for (Integer txTypeId : collDispHash.keySet())
             {
-                TaxonTreeDef txnTreeDef = taxonTreeDefHash.get(txTypeId);
-                String sql = "UPDATE discipline SET TaxonTreeDefID=" + txnTreeDef.getTaxonTreeDefId() + " WHERE DisciplineID = " + disciplineId;
-                if (BasicSQLUtils.update(newDBConn, sql) != 1)
+                Vector<CollectionInfo> collInfoList = collDispHash.get(txTypeId);
+                Integer                disciplineId = collInfoList.get(0).getDisciplineId();
+                if (disciplineId != null)
                 {
-                    log.error("Error updating discipline["+disciplineId+"] with TaxonTreeDefID "+ txnTreeDef.getTaxonTreeDefId());
+                    TaxonTreeDef txnTreeDef = taxonTreeDefHash.get(txTypeId);
+                    String sql = "UPDATE discipline SET TaxonTreeDefID=" + txnTreeDef.getTaxonTreeDefId() + " WHERE DisciplineID = " + disciplineId;
+                    if (BasicSQLUtils.update(newDBConn, sql) != 1)
+                    {
+                        log.error("Error updating discipline["+disciplineId+"] with TaxonTreeDefID "+ txnTreeDef.getTaxonTreeDefId());
+                    } else
+                    {
+                        /*Discipline discipline = collInfoList.get(0).getDiscipline();
+                        if (discipline == null)
+                        {
+                            log.error("Error updating discipline["+collInfoList.get(0).getDisciplineId()+"] with TaxonTreeDefID "+ collInfoList.get(0).getTaxonTreeDef().getTaxonTreeDefId());
+                            continue;
+                        }
+                        
+                        discipline = session.load(Discipline.class, discipline.getId());
+                        for (CollectionInfo ci : collInfoList)
+                        {
+                            ci.setDiscipline(discipline);
+                        }*/
+                    }
+                } else
+                {
+                    log.error("Missing Discipline #");
                 }
-            } else
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            if (session != null)
             {
-                log.error("Missing Discipline #");
+                session.close();
             }
         }
     }
