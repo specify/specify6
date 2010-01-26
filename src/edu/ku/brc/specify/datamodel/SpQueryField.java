@@ -653,7 +653,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
 
     public int compareTo(SpQueryField o)
     {
-        return position.compareTo(o.position);
+        return position != null && o != null && o.position != null ? position.compareTo(o.position) : 0;
     }
 
     /**

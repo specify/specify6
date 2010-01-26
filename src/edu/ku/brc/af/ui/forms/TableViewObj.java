@@ -934,6 +934,8 @@ public class TableViewObj implements Viewable,
      */
     protected void editRow(final int rowIndex, final boolean isNew)
     {
+        FormDataObjIFace origObj = null;
+        FormDataObjIFace dObj    = null;
         if (isNew)
         {
             // Check to see if the business rules will be creating the object
@@ -945,7 +947,7 @@ public class TableViewObj implements Viewable,
             } else
             {
                 // OK, we need to create it locally
-                FormDataObjIFace dObj;
+                
                 if (classToCreate != null)
                 {
                     dObj = FormHelper.createAndNewDataObj(classToCreate);
@@ -954,21 +956,28 @@ public class TableViewObj implements Viewable,
                     dObj = FormHelper.createAndNewDataObj(view.getClassName());
                 }
                 
-                if (mvParent != null && mvParent.getTopLevel() != null)
-                {
-                    mvParent.getTopLevel().addBusRuleItem(dObj);
-                }
                 
-                editRow(dObj, rowIndex, isNew);
+                dObj = editRow(dObj, rowIndex, isNew);
             }
         } else
         {
-            FormDataObjIFace dObj = (FormDataObjIFace)dataObjList.get(rowIndex);
+            dObj = (FormDataObjIFace)dataObjList.get(rowIndex);
             if (dObj == null)
             {
                 return;
             }
-            editRow(dObj, rowIndex, isNew);
+            origObj = dObj;
+            dObj = editRow(dObj, rowIndex, isNew);
+        }
+        
+        if (origObj != null && origObj != dObj)
+        {
+            int inx = dataObjList.indexOf(origObj);
+            if (inx > -1)
+            {
+                dataObjList.removeElementAt(inx);
+                dataObjList.insertElementAt(dObj, inx);
+            }
         }
     }
     
@@ -988,8 +997,10 @@ public class TableViewObj implements Viewable,
      * @param isNew hwther the object is new
      */
     @SuppressWarnings("unchecked")
-    protected void editRow(final FormDataObjIFace dObj, final int rowIndex, final boolean isNew)
+    protected FormDataObjIFace editRow(final FormDataObjIFace dObjArg, final int rowIndex, final boolean isNew)
     {
+        FormDataObjIFace dObj = dObjArg;
+        
         // Add it in here so the Business Rules has a parent object to
         // get state from.
         if (parentDataObj != null && isEditing && isNew)
@@ -1028,7 +1039,18 @@ public class TableViewObj implements Viewable,
                     if (dObj.getId() != null)
                     {
                         localSession = DataProviderFactory.getInstance().createSession();
-                        localSession.attach(dObj);
+                        try
+                        {
+                            localSession.attach(dObj);
+                            
+                        } catch (org.hibernate.HibernateException ex)
+                        {
+                            String msg = ex.getMessage();
+                            if (StringUtils.isNotEmpty(msg) && StringUtils.contains(msg, "dirty collection"))
+                            {
+                                //dObj = localSession.merge(dObj);
+                            }
+                        }
                     }
                     dialog.setSession(localSession);
                 }
@@ -1143,6 +1165,7 @@ public class TableViewObj implements Viewable,
             parentDataObj.removeReference(dObj, dataSetFieldName);
         }
 
+        return dObj;
     }
     
     /**
@@ -1214,11 +1237,6 @@ public class TableViewObj implements Viewable,
                 if (addSearch && mvParent != null && dObj.getId() != null)
                 {
                     mvParent.getTopLevel().addToBeSavedItem(dObj);
-                    
-                    if (mvParent != null && mvParent.getTopLevel() != null)
-                    {
-                        mvParent.getTopLevel().addBusRuleItem(dataObj);
-                    }
                 }
                 
                 // 'addSearch' is used in FormViewObj, but here maybe we need to use 'doOtherSide'

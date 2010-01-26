@@ -27,12 +27,9 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.ui.IllustrativeBarCodeUI;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
-import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.Viewable;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.DNASequence;
 import edu.ku.brc.specify.datamodel.DNASequencingRun;
-import edu.ku.brc.specify.datamodel.DNASequencingRunAttachment;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
@@ -218,44 +215,18 @@ public class DNASequenceBusRules extends BaseBusRules implements CommandListener
     }
     
     /**
-     * Add the Attachment Owners and Attachment Holders to MV to be processed.
-     * @param attOwner the owner being processed.
+     * @param attOwner
      */
-    protected void addExtraObjectForProcessing(final DNASequence attOwner)
+    @Override
+    protected void addExtraObjectForProcessing(final Object dObjAtt)
     {
-        if (viewable != null && viewable.getMVParent() != null && viewable.getMVParent().getTopLevel() != null)
+        super.addExtraObjectForProcessing(dObjAtt);
+        
+        DNASequence dnaseq = (DNASequence)dObjAtt;
+        
+        for (DNASequencingRun dnasr : dnaseq.getDnaSequencingRuns())
         {
-            MultiView topMV = viewable.getMVParent().getTopLevel();
-            
-            for (DNASequencingRun dnasr : attOwner.getDnaSequencingRuns())
-            {
-                for (DNASequencingRunAttachment att : dnasr.getAttachmentReferences())
-                topMV.addBusRuleItem(att);
-            }
+            super.addExtraObjectForProcessing(dnasr);
         }
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
-     */
-    @Override
-    public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
-    {
-        super.beforeMerge(dataObj, session);
-        
-        addExtraObjectForProcessing((DNASequence)dataObj);
-    }
-
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
-     */
-    @Override
-    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
-    {
-        super.beforeSave(dataObj, session);
-        
-        addExtraObjectForProcessing((DNASequence)dataObj);
-
     }
 }

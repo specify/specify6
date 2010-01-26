@@ -340,7 +340,7 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
      */
     public int compareTo(AltViewIFace obj)
     {
-        return name.compareTo(obj.getName());
+        return name != null && obj != null && obj.getName() != null ? name.compareTo(obj.getName()) : 0;
     }
 
 

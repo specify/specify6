@@ -431,7 +431,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable,
      */
     public int compareTo(TaxonTreeDefItem o)
     {
-        return rankId.compareTo(o.rankId);
+        return rankId != null && o != null && o.rankId != null ? rankId.compareTo(o.rankId) : 0;
     }
 
 }

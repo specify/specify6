@@ -23,10 +23,8 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
-import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Preparation;
-import edu.ku.brc.specify.datamodel.PreparationAttachment;
 
 /**
  * @author rod
@@ -89,47 +87,5 @@ public class PreparationBusRules extends AttachmentOwnerBaseBusRules
         }
         
         return false;
-    }
-    
-    /**
-     * Add the Attachment Owners and Attachment Holders to MV to be processed.
-     * @param attOwner the owner being processed.
-     */
-    protected void addExtraObjectForProcessing(final Preparation attOwner)
-    {
-        
-        if (viewable != null && viewable.getMVParent() != null && viewable.getMVParent().getTopLevel() != null)
-        {
-            MultiView topMV = viewable.getMVParent().getTopLevel();
-            topMV.addBusRuleItem(attOwner);
-            
-            for (PreparationAttachment att : attOwner.getAttachmentReferences())
-            {
-                topMV.addBusRuleItem(att);
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
-     */
-    @Override
-    public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
-    {
-        super.beforeMerge(dataObj, session);
-        
-        addExtraObjectForProcessing((Preparation)dataObj);
-    }
-
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
-     */
-    @Override
-    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
-    {
-        super.beforeSave(dataObj, session);
-        
-        addExtraObjectForProcessing((Preparation)dataObj);
     }
 }

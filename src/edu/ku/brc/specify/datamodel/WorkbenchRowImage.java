@@ -223,11 +223,10 @@ public class WorkbenchRowImage implements java.io.Serializable, Comparable<Workb
      */
     public int compareTo(WorkbenchRowImage o)
     {
-        if (o == null)
+        if (imageOrder != null && o != null && o.imageOrder != null)
         {
-            return 1;
+            return imageOrder.compareTo(o.imageOrder);
         }
-        
-        return this.getImageOrder().compareTo(o.getImageOrder());
+        return 0;
     }
 }

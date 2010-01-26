@@ -258,7 +258,11 @@ public class LoanAttachment extends DataModelObjBase implements ObjectAttachment
      */
     public int compareTo(LoanAttachment obj)
     {
-        return ordinal.compareTo(obj.ordinal);
+        if (ordinal != null && obj != null && obj.ordinal != null)
+        {
+            return ordinal.compareTo(obj.ordinal);
+        }
+        return 0;
     }
 
 }

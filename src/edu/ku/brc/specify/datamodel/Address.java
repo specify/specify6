@@ -593,7 +593,7 @@ public class Address extends DataModelObjBase implements Orderable,
      */
     public int compareTo(Address obj)
     {
-        if (ordinal != null && obj.ordinal != null)
+        if (ordinal != null && obj != null && obj.ordinal != null)
         {
             return ordinal.compareTo(obj.ordinal);
         }

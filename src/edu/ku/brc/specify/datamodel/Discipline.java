@@ -553,7 +553,7 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
             return type.compareTo(obj.type);
         }
         // else
-        return timestampCreated.compareTo(obj.timestampCreated);
+        return timestampCreated != null && obj != null && obj.timestampCreated != null ? timestampCreated.compareTo(obj.timestampCreated) : 0;
     }
     
     /**

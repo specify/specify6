@@ -875,7 +875,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
      */
     public int compareTo(final WorkbenchRow obj)
     {
-        return rowNumber.compareTo(obj.rowNumber);
+        return rowNumber != null && obj != null && obj.rowNumber != null ? rowNumber.compareTo(obj.rowNumber) : 0;
     }
     
     //------------------------------------------------------------------------

@@ -332,19 +332,22 @@ public class SpPrincipal extends DataModelObjBase implements java.io.Serializabl
      */
     public int compareTo(SpPrincipal obj)
     {
-        if (priority < 80)
+        if (priority != null && obj != null && obj.priority != null)
         {
-            if (name != null && obj != null && StringUtils.isNotEmpty(obj.name))
+            if (priority < 80)
             {
-                return name.compareTo(obj.name);
+                if (name != null && obj != null && StringUtils.isNotEmpty(obj.name))
+                {
+                    return name.compareTo(obj.name);
+                }
+            } else if (priority != null && obj != null && obj.priority != null)
+            {
+                return priority.compareTo(obj.priority);
             }
-        } else if (priority != null && obj != null && obj.priority != null)
-        {
-            return priority.compareTo(obj.priority);
         }
         
         // else
-        return timestampCreated.compareTo(obj.timestampCreated);
+        return timestampCreated != null && obj != null && obj.timestampCreated != null ? timestampCreated.compareTo(obj.timestampCreated) : 0;
     }
 }
 

@@ -260,7 +260,7 @@ public class SpUIRow implements java.io.Serializable, FormRowIFace, Comparable<S
      */
     public int compareTo(SpUIRow row)
     {
-        return rowNum.compareTo(row.rowNum);
+        return rowNum != null && row != null && row.rowNum != null ? rowNum.compareTo(row.rowNum) : 0;
     }
 
     /* (non-Javadoc)

@@ -472,7 +472,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
      */
     public int compareTo(Workbench obj)
     {
-        return name.compareTo(obj.name);
+        return name != null && obj != null && obj.name != null ? name.compareTo(obj.name) : 0;
     }
     
     //----------------------------------------------------

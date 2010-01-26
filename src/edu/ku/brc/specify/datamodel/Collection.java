@@ -660,7 +660,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
      */
     public int compareTo(Collection obj)
     {
-        return collectionName.compareTo(obj.collectionName);
+        return collectionName != null && obj != null && obj.collectionName != null ? collectionName.compareTo(obj.collectionName) : 0;
     }
 
     /**

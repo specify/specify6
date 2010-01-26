@@ -662,7 +662,7 @@ public class Determination extends CollectionMember implements java.io.Serializa
             return obj.determinedDate.compareTo(determinedDate); //reverse order- recent first
         }
         // else
-        return obj.timestampCreated.compareTo(timestampCreated); //reverse order- recent first
+        return timestampCreated != null && obj != null && obj.timestampCreated != null ? timestampCreated.compareTo(obj.timestampCreated) : 0;
     }
 
 

@@ -19,10 +19,8 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
-import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.FieldNotebookPage;
-import edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment;
 
 /**
  * @author rod
@@ -42,26 +40,6 @@ public class FieldNotebookPageBusRules extends AttachmentOwnerBaseBusRules
         super(FieldNotebookPage.class);
     }
 
-    
-    /**
-     * Add the Attachment Owners and Attachment Holders to MV to be processed.
-     * @param attOwner the owner being processed.
-     */
-    protected void addExtraObjectForProcessing(final FieldNotebookPage attOwner)
-    {
-        
-        if (viewable != null && viewable.getMVParent() != null && viewable.getMVParent().getTopLevel() != null)
-        {
-            MultiView topMV = viewable.getMVParent().getTopLevel();
-            topMV.addBusRuleItem(attOwner);
-            
-            for (FieldNotebookPageAttachment psa : attOwner.getAttachmentReferences())
-            {
-                topMV.addBusRuleItem(psa);
-            }
-        }
-    }
-
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
@@ -70,9 +48,7 @@ public class FieldNotebookPageBusRules extends AttachmentOwnerBaseBusRules
     {
         super.beforeMerge(dataObj, session);
         
-        addExtraObjectForProcessing((FieldNotebookPage)dataObj);
     }
-
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
@@ -81,9 +57,6 @@ public class FieldNotebookPageBusRules extends AttachmentOwnerBaseBusRules
     public void beforeSave(Object dataObj, DataProviderSessionIFace session)
     {
         super.beforeSave(dataObj, session);
-        
-        addExtraObjectForProcessing((FieldNotebookPage)dataObj);
-
     }
 
 }

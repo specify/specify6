@@ -123,7 +123,6 @@ public class MultiView extends JPanel
     
     protected Vector<Object>               deletedItems         = null;
     protected Vector<Object>               toBeSavedItems       = null;
-    protected HashSet<FormDataObjIFace>    busRulesItems        = null;
     
     protected CollapsableSeparator         separator            = null;
     
@@ -1467,31 +1466,6 @@ public class MultiView extends JPanel
             toBeSavedItems.add(toBeSavedItem);
         }
     }
-    
-    /**
-     * Adds an item to be process by the busrules to a list.
-     * @param brItem the item to be busruled.
-     */
-    public void addBusRuleItem(final Object brItem)
-    {
-        if (busRulesItems == null)
-        {
-            busRulesItems = new HashSet<FormDataObjIFace>();
-        }
-        
-        boolean addToList = true;
-        if (!(brItem instanceof FormDataObjIFace))
-        {
-            addToList = false;
-        }
-        if (addToList)
-        {
-            busRulesItems.add((FormDataObjIFace)brItem);
-        }
-        
-        System.out.println("addBusRuleItem: "+view.getClassName());
-    }
-    
 
     /**
      * Returns a list of items to be deleted, it may return null.
@@ -1511,14 +1485,6 @@ public class MultiView extends JPanel
     }
     
     /**
-     * @return the busRulesItems
-     */
-    public HashSet<FormDataObjIFace> getBusRulesItems()
-    {
-        return busRulesItems;
-    }
-
-    /**
      * Clears the list.
      */
     public void clearItemsToBeSaved()
@@ -1537,17 +1503,6 @@ public class MultiView extends JPanel
         if (deletedItems != null)
         {
             deletedItems.clear();
-        }
-    }
-
-    /**
-     * Clears the list.
-     */
-    public void clearItemsForBusRules()
-    {
-        if (busRulesItems != null)
-        {
-            busRulesItems.clear();
         }
     }
 

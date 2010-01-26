@@ -363,7 +363,7 @@ public class SpUIViewSet extends DataModelObjBase implements ViewSetIFace
      */
     public int compareTo(ViewSetIFace obj)
     {
-        return name.compareTo(obj.getName());
+        return name != null && obj != null && obj.getName() != null ? name.compareTo(obj.getName()) : 0;
     }
 
 

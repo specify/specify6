@@ -984,7 +984,7 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
      */
     public int compareTo(ViewDefIFace obj)
     {
-        return name.compareTo(obj.getName());
+        return name != null && obj != null && obj.getName() != null ? name.compareTo(obj.getName()) : 0;
     }
     
     /**

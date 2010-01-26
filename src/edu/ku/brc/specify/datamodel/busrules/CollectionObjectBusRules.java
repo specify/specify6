@@ -35,7 +35,6 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
-import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -43,7 +42,6 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
-import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
@@ -52,7 +50,6 @@ import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
-import edu.ku.brc.specify.datamodel.PreparationAttachment;
 import edu.ku.brc.specify.datamodel.Project;
 
 /**
@@ -219,10 +216,9 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     public void beforeMerge(final Object dataObj, 
                             final DataProviderSessionIFace session)
     {
-        super.beforeMerge(dataObj, session);
-        
         CollectionObject colObj = (CollectionObject)dataObj;
-        addExtraObjectForProcessing(colObj);
+        
+        super.beforeMerge(dataObj, session);
         
         if (AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
         {
@@ -230,49 +226,35 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             if (colObj != null && cachedColEve != null)
             {
                 colObj.setCollectingEvent(null);
-                cachedColEve.getCollectionObjects().clear();
-                
-                if (cachedColEve.getAttachmentReferences().size() > 0 && 
-                    viewable != null &&
-                    viewable.getMVParent() != null && 
-                    viewable.getMVParent().getTopLevel() != null)
+                try
                 {
-                    MultiView topMV = viewable.getMVParent().getTopLevel();
-                    topMV.addBusRuleItem(cachedColEve);
+                    cachedColEve.getCollectionObjects().clear();
+                } catch (org.hibernate.LazyInitializationException ex)
+                {
+                    ex.printStackTrace();
                 }
             }
-
         }
     }
     
     /**
-     * Add the Attachment Owners and Attachment Holders to MV to be processed.
-     * @param colObj the Collection Object being processed.
+     * @param attOwner
      */
-    protected void addExtraObjectForProcessing(final CollectionObject colObj)
+    @Override
+    protected void addExtraObjectForProcessing(final Object dObjAtt)
     {
-        if (viewable != null && viewable.getMVParent() != null && viewable.getMVParent().getTopLevel() != null)
+        super.addExtraObjectForProcessing(dObjAtt);
+        
+        CollectionObject colObj = (CollectionObject)dObjAtt;
+        
+        if (AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent() && (colObj.getCollectingEvent() != null || cachedColEve != null))
         {
-            MultiView topMV = viewable.getMVParent().getTopLevel();
-            topMV.addBusRuleItem(cachedColEve);
-            
-            if (cachedColEve != null)
-            {
-                for (CollectingEventAttachment cea : cachedColEve.getAttachmentReferences())
-                {
-                    topMV.addBusRuleItem(cea);
-                }
-            }
-            
-            for (Preparation prep : colObj.getPreparations())
-            {
-                topMV.addBusRuleItem(prep);
-                
-                for (PreparationAttachment pa : prep.getAttachmentReferences())
-                {
-                    topMV.addBusRuleItem(pa);
-                }
-            }
+            super.addExtraObjectForProcessing(cachedColEve != null ? cachedColEve : colObj.getCollectingEvent());
+        }
+        
+        for (Preparation prep : colObj.getPreparations())
+        {
+            super.addExtraObjectForProcessing(prep);
         }
     }
 
@@ -282,13 +264,12 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     @Override
     public void beforeSave(Object dataObj, DataProviderSessionIFace session)
     {
+        CollectionObject colObj = (CollectionObject)dataObj;
+        
         super.beforeSave(dataObj, session);
-       
+        
         if (AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
         {
-            CollectionObject colObj = (CollectionObject)dataObj;
-            addExtraObjectForProcessing(colObj);
-            
             if (cachedColEve != null)
             {
                 try

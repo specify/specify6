@@ -735,6 +735,6 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         }
         
         // else
-        return timestampCreated.compareTo(obj.timestampCreated);
+        return timestampCreated != null && obj != null && obj.timestampCreated != null ? timestampCreated.compareTo(obj.timestampCreated) : 0;
     }
 }

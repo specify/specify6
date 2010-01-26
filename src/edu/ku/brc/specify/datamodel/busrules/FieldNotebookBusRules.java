@@ -19,14 +19,9 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
-import edu.ku.brc.af.ui.forms.MultiView;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.FieldNotebook;
-import edu.ku.brc.specify.datamodel.FieldNotebookAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPage;
-import edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageSet;
-import edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment;
 
 /**
  * @author rod
@@ -42,67 +37,26 @@ public class FieldNotebookBusRules extends AttachmentOwnerBaseBusRules
     {
         super(FieldNotebook.class);
     }
+
     
     /**
-     * Add the Attachment Owners and Attachment Holders to MV to be processed.
-     * @param attOwner the owner being processed.
+     * @param attOwner
      */
-    protected void addExtraObjectForProcessing(final FieldNotebook attOwner)
+    @Override
+    protected void addExtraObjectForProcessing(final Object dObjAtt)
     {
-        if (viewable != null && viewable.getMVParent() != null && viewable.getMVParent().getTopLevel() != null)
+        super.addExtraObjectForProcessing(dObjAtt);
+        
+        FieldNotebook fnb = (FieldNotebook)dObjAtt;
+        
+        for (FieldNotebookPageSet pageSet : fnb.getPageSets())
         {
-            MultiView topMV = viewable.getMVParent().getTopLevel();
-            topMV.addBusRuleItem(attOwner);
+            super.addExtraObjectForProcessing(pageSet);
             
-            for (FieldNotebookAttachment fnba : attOwner.getAttachmentReferences())
+            for (FieldNotebookPage page : pageSet.getPages())
             {
-                topMV.addBusRuleItem(fnba);
-            }
-            
-            for (FieldNotebookPageSet pageSet : attOwner.getPageSets())
-            {
-                topMV.addBusRuleItem(pageSet);
-                
-                for (FieldNotebookPageSetAttachment psa : pageSet.getAttachmentReferences())
-                {
-                    topMV.addBusRuleItem(psa);
-                }
-                
-                for (FieldNotebookPage page : pageSet.getPages())
-                {
-                    topMV.addBusRuleItem(page);
-                    
-                    for (FieldNotebookPageAttachment pa : page.getAttachmentReferences())
-                    {
-                        topMV.addBusRuleItem(pa);
-                    }
-                }
+                super.addExtraObjectForProcessing(page);
             }
         }
     }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
-     */
-    @Override
-    public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
-    {
-        super.beforeMerge(dataObj, session);
-        
-        addExtraObjectForProcessing((FieldNotebook)dataObj);
-    }
-
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
-     */
-    @Override
-    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
-    {
-        super.beforeSave(dataObj, session);
-        
-        addExtraObjectForProcessing((FieldNotebook)dataObj);
-
-    }
-
 }

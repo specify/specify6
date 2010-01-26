@@ -247,6 +247,10 @@ public class ConservDescriptionAttachment extends DataModelObjBase implements Ob
      */
     public int compareTo(ConservDescriptionAttachment obj)
     {
-        return ordinal.compareTo(obj.ordinal);
+        if (ordinal != null && obj != null && obj.ordinal != null)
+        {
+            return ordinal.compareTo(obj.ordinal);
+        }
+        return 0;
     }
 }

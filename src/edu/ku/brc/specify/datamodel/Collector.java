@@ -283,7 +283,7 @@ public class Collector extends CollectionMember implements java.io.Serializable,
      */
     public int compareTo(Collector obj)
     {
-        return orderNumber.compareTo(obj.orderNumber);
+        return orderNumber != null && obj != null && obj.orderNumber != null ? orderNumber.compareTo(obj.orderNumber) : 0;
     }
     
     /* (non-Javadoc)

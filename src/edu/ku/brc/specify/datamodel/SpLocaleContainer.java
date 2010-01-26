@@ -302,7 +302,7 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
      */
     public int compareTo(SpLocaleContainer obj)
     {
-        return name.compareTo(obj.name);
+        return name != null && obj != null && obj.getName() != null ? name.compareTo(obj.getName()) : 0;
     }
     
     /* (non-Javadoc)
@@ -375,9 +375,9 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(LocalizableContainerIFace o)
+    public int compareTo(LocalizableContainerIFace obj)
     {
-        return name.compareTo(o.getName());
+        return name != null && obj != null && obj.getName() != null ? name.compareTo(obj.getName()) : 0;
     }
 
 

@@ -281,12 +281,12 @@ public interface BusinessRulesIFace
     /**
      * Called before the objects in the cached HashSet of objects are processed in a loop.
      */
-    public abstract void beginSecondaryRuleProcessing();
+    public abstract void startProcessingBeforeAfterRules();
     
     /**
      * Called after the objects in the cached HashSet of objects are processed in a loop.
      */
-    public abstract void endSecondaryRuleProcessing();
+    public abstract void endProcessingBeforeAfterRules();
     
     /**
      * Call right before formShutdown is called, but the entire UI is still intact.

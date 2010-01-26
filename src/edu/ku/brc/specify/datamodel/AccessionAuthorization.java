@@ -189,7 +189,7 @@ public class AccessionAuthorization extends DataModelObjBase implements java.io.
             return permit.permitNumber.compareTo(obj.permit.permitNumber);
         }
         // else
-        return timestampCreated.compareTo(obj.timestampCreated);
+        return timestampCreated != null && obj != null && obj.timestampCreated != null ? timestampCreated.compareTo(obj.timestampCreated) : 0;
     }
     
     /* (non-Javadoc)

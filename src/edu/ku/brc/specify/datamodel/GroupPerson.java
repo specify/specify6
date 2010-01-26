@@ -287,7 +287,7 @@ public class GroupPerson extends DataModelObjBase implements java.io.Serializabl
      */
     public int compareTo(GroupPerson obj)
     {
-        return orderNumber.compareTo(obj.orderNumber);
+        return orderNumber != null && obj != null && obj.orderNumber != null ? orderNumber.compareTo(obj.orderNumber) : 0;
     }
 
 }

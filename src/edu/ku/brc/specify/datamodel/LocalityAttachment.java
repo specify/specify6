@@ -249,9 +249,11 @@ public class LocalityAttachment extends DataModelObjBase implements ObjectAttach
      */
     public int compareTo(LocalityAttachment obj)
     {
-    	int o1 = ordinal == null ? 0 : ordinal.intValue();
-    	int o2 = obj.ordinal == null ? 0 : obj.ordinal.intValue();
-    	return o1 == o2 ? 0 : o1 < o2 ? -1 : 1;
+        if (ordinal != null && obj != null && obj.ordinal != null)
+        {
+            ordinal.compareTo(obj.ordinal);
+        }
+    	return 0;
     }
 
 }

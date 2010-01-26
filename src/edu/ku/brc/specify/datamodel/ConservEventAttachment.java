@@ -246,6 +246,10 @@ public class ConservEventAttachment extends DataModelObjBase implements ObjectAt
      */
     public int compareTo(ConservEventAttachment obj)
     {
-        return ordinal.compareTo(obj.ordinal);
+        if (ordinal != null && obj != null && obj.ordinal != null)
+        {
+            return ordinal.compareTo(obj.ordinal);
+        }
+        return 0;
     }
 }

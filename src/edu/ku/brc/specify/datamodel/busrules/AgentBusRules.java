@@ -42,14 +42,12 @@ import edu.ku.brc.af.ui.db.TextFieldFromPickListTable;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
-import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.ui.UIHelper;
@@ -454,8 +452,6 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
     {
         super.beforeSave(dataObj, session);
         
-        addExtraObjectForProcessing((Agent)dataObj);
-        
         if (AppContextMgr.getInstance().getClassObject(Discipline.class) != null)
         {
             Agent agent = (Agent)dataObj;
@@ -503,8 +499,6 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         super.beforeMerge(dataObj, session);
         
         Agent agent = (Agent)dataObj;
-        
-        addExtraObjectForProcessing(agent);
         
         if (agent.getDivision() == null)
         {
@@ -578,24 +572,4 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         
         return super.beforeDeleteCommit(dataObj, session);
     }
-
-    /**
-     * Add the Attachment Owners and Attachment Holders to MV to be processed.
-     * @param  attOwner the owner being processed.
-     */
-    protected void addExtraObjectForProcessing(final Agent attOwner)
-    {
-        
-        if (viewable != null && viewable.getMVParent() != null && viewable.getMVParent().getTopLevel() != null)
-        {
-            MultiView topMV = viewable.getMVParent().getTopLevel();
-            topMV.addBusRuleItem(attOwner);
-            
-            for (AgentAttachment att : attOwner.getAttachmentReferences())
-            {
-                topMV.addBusRuleItem(att);
-            }
-        }
-    }
-
 }

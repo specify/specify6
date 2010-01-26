@@ -1340,7 +1340,7 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
      */
     public int compareTo(FormCellIFace obj)
     {
-        return name.compareTo(obj.getName());
+        return name != null && obj != null && obj.getName() != null ? name.compareTo(obj.getName()) : 0;
     }
 
     /* (non-Javadoc)

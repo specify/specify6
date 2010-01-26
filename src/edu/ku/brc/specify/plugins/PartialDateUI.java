@@ -493,9 +493,9 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
         }
         
         dateType = UIFieldFormatter.PartialDateEnum.values()[inx+1];
-        formatSelector.removeActionListener(comboBoxAL);
+        if (!skipProcessing) formatSelector.removeActionListener(comboBoxAL);
         formatSelector.setSelectedIndex(inx);
-        formatSelector.addActionListener(comboBoxAL);
+        if (!skipProcessing) formatSelector.addActionListener(comboBoxAL);
         cardLayout.show(cardPanel, formatSelector.getModel().getElementAt(inx).toString());
     }
 

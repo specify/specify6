@@ -783,7 +783,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
             return prepType.name.toLowerCase().compareTo(obj.prepType.name.toLowerCase());
         }
         // else
-        return timestampCreated.compareTo(obj.timestampCreated);
+        return timestampCreated != null && obj != null && obj.timestampCreated != null ? timestampCreated.compareTo(obj.timestampCreated) : 0;
     }
 
 

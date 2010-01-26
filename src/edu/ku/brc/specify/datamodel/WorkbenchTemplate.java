@@ -317,7 +317,7 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
      */
     public int compareTo(WorkbenchTemplate obj)
     {
-        return name.compareTo(obj.name);
+        return name != null && obj != null && obj.name != null ? name.compareTo(obj.name) : 0;
     }
     
     /**

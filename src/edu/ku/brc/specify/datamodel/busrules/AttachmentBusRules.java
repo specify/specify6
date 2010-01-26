@@ -122,19 +122,22 @@ public class AttachmentBusRules extends BaseBusRules
                     });
                 }
                 
-                formViewObj.getRsController().getNewRecBtn().addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run()
-                            {
-                                browser.getBrowseBtn().doClick();
-                            }
-                        });
-                    }
-                });
+                if (formViewObj.getRsController() != null && formViewObj.getRsController().getNewRecBtn() != null)
+                {
+                    formViewObj.getRsController().getNewRecBtn().addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e)
+                        {
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run()
+                                {
+                                    browser.getBrowseBtn().doClick();
+                                }
+                            });
+                        }
+                    });
+                }
             }
         }
     }

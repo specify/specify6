@@ -26,6 +26,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -47,6 +48,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.config.SpecifyLSIDGeneratorFactory;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.AttachmentOwnerIFace;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -65,6 +67,9 @@ public class BaseBusRules implements BusinessRulesIFace
     protected FormViewObj  formViewObj = null;
     protected List<String> reasonList  = new Vector<String>();
     protected Class<?>[]   dataClasses;
+    
+    
+    protected HashSet<AttachmentOwnerIFace<?>>   attachOwners  = new HashSet<AttachmentOwnerIFace<?>>();
     
     /**
      * The data class that is used within the business rules.
@@ -186,6 +191,17 @@ public class BaseBusRules implements BusinessRulesIFace
     {
     }
 
+    /**
+     * @param attOwner
+     */
+    protected void addExtraObjectForProcessing(final Object dObj)
+    {
+        if (dObj instanceof AttachmentOwnerIFace<?>)
+        {
+            attachOwners.add((AttachmentOwnerIFace<?>)dObj);
+        }
+    }
+    
     /**
      * Checks to see if it can be deleted.
      * @param tableName the table name to check
@@ -881,7 +897,7 @@ public class BaseBusRules implements BusinessRulesIFace
      * @see edu.ku.brc.af.ui.forms.BusinessRulesIFace#beginSecondaryRuleProcessing()
      */
     @Override
-    public void beginSecondaryRuleProcessing()
+    public void startProcessingBeforeAfterRules()
     {
         
     }
@@ -890,7 +906,7 @@ public class BaseBusRules implements BusinessRulesIFace
      * @see edu.ku.brc.af.ui.forms.BusinessRulesIFace#endSecondaryRuleProcessing()
      */
     @Override
-    public void endSecondaryRuleProcessing()
+    public void endProcessingBeforeAfterRules()
     {
         
     }

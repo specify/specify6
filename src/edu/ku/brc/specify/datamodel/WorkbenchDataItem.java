@@ -233,7 +233,14 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
      */
     public int compareTo(WorkbenchDataItem obj)
     {
-        return getWorkbenchTemplateMappingItem().getViewOrder().compareTo(obj.getWorkbenchTemplateMappingItem().getViewOrder());
+        if (getWorkbenchTemplateMappingItem() != null &&
+            getWorkbenchTemplateMappingItem().getViewOrder() != null &&
+            obj.getWorkbenchTemplateMappingItem() != null &&
+            obj.getWorkbenchTemplateMappingItem().getViewOrder() != null)
+        {
+            return getWorkbenchTemplateMappingItem().getViewOrder().compareTo(obj.getWorkbenchTemplateMappingItem().getViewOrder());
+        }
+        return 0;
     }
 
 	/**

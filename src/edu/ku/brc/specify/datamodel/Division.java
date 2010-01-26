@@ -687,6 +687,6 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
             return name.compareTo(obj.name);
         }
         // else
-        return timestampCreated.compareTo(obj.timestampCreated);
+        return timestampCreated != null && obj != null && obj.timestampCreated != null ? timestampCreated.compareTo(obj.timestampCreated) : 0;
     }
  }

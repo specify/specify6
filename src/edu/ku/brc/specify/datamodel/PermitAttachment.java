@@ -248,7 +248,11 @@ public class PermitAttachment extends DataModelObjBase implements ObjectAttachme
      */
     public int compareTo(PermitAttachment obj)
     {
-        return ordinal.compareTo(obj.ordinal);
+        if (ordinal != null && obj != null && obj.ordinal != null)
+        {
+            return ordinal.compareTo(obj.ordinal);
+        }
+        return 0;
     }
 
 }

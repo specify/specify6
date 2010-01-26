@@ -1203,7 +1203,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
             return catalogNumber.compareTo(obj.catalogNumber);
         }
         // else
-        return timestampCreated.compareTo(obj.timestampCreated);
+        return timestampCreated != null && obj != null && obj.timestampCreated != null ? timestampCreated.compareTo(obj.timestampCreated) : 0;
     }
 
 }

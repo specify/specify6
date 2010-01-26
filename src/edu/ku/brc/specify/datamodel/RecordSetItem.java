@@ -108,7 +108,7 @@ public class RecordSetItem implements java.io.Serializable, RecordSetItemIFace {
     
     public int compareTo(RecordSetItemIFace obj)
     {
-        return recordId.compareTo(obj.getRecordId());
+        return recordId != null && obj != null && obj.getRecordId() != null ? recordId.compareTo(obj.getRecordId()) : 0;
     }
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)

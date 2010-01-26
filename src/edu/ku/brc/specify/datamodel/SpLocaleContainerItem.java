@@ -348,9 +348,9 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(SpLocaleContainerItem o)
+    public int compareTo(SpLocaleContainerItem obj)
     {
-        return name.compareTo(o.name);
+        return name != null && obj != null && obj.getName() != null ? name.compareTo(obj.getName()) : 0;
     }
     
 }

@@ -312,12 +312,12 @@ public class PickListItem extends DataModelObjBase implements PickListItemIFace,
         }
         
         // Default to title
-        if (title.equals(obj.getTitle()))
+        if (title != null && obj != null && obj.getTitle() != null)
         {
-            return 0;
+            return title.compareTo(obj.getTitle());
         }
         // else
-        return title.compareTo(obj.getTitle());
+        return 0;
     }
 
 

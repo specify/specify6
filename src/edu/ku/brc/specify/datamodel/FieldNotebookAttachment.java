@@ -218,7 +218,11 @@ public class FieldNotebookAttachment extends DataModelObjBase implements ObjectA
      */
     public int compareTo(FieldNotebookAttachment obj)
     {
-        return ordinal.compareTo(obj.ordinal);
+        if (ordinal != null && obj != null && obj.ordinal != null)
+        {
+            return ordinal.compareTo(obj.ordinal);
+        }
+        return 0;
     }
 
 }

@@ -48,10 +48,8 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
 {
     protected Logger log = Logger.getLogger(AttachmentOwnerBaseBusRules.class);
     
-    private static HashMap<Class<?>, HashSet<String>> attachHashSet = new HashMap<Class<?>, HashSet<String>>();
     
-    private boolean firstTime = true;
-    
+    private HashMap<Class<?>, HashSet<String>> attachHashSet = new HashMap<Class<?>, HashSet<String>>();
     
     /**
      * @param classes
@@ -65,11 +63,130 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#beginSecondaryRuleProcessing()
      */
     @Override
-    public void beginSecondaryRuleProcessing()
+    public void startProcessingBeforeAfterRules()
     {
-        firstTime = true;
+        attachHashSet.clear();
+        attachOwners.clear();
+    }
+    
+    protected void clearOwners()
+    {
+        attachOwners.clear();
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#endSecondaryRuleProcessing()
+     */
+    @Override
+    public void endProcessingBeforeAfterRules()
+    {
+    }
+
+    /**
+     * @param dObj
+     * @return
+     */
+    private HashSet<String> getHashSetForClass(final Object dObj)
+    {
+        Class<?>        cls  = dObj.getClass();
+        HashSet<String> hSet = attachHashSet.get(cls);
+        if (hSet == null)
+        {
+            hSet = new HashSet<String>();
+            attachHashSet.put(cls, hSet);
+        }
+        return hSet;
+    }
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
+    {
+        addExtraObjectForProcessing(dataObj);
+        
+        for (AttachmentOwnerIFace<?> aOwner : attachOwners)
+        {
+            for (ObjectAttachmentIFace<?> objAtt : aOwner.getAttachmentReferences())
+            {
+                Attachment a = objAtt.getAttachment();
+                if (a != null && a.getAttachmentLocation() == null)
+                {
+                    AttachmentUtils.getAttachmentManager().setStorageLocationIntoAttachment(a);
+                    getHashSetForClass(dataObj).add(a.getAttachmentLocation());
+                }
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeSave(final Object dataObj, final DataProviderSessionIFace session)
+    {
+        clearOwners();
+        
+        addExtraObjectForProcessing(dataObj);
+        
+        super.beforeSave(dataObj, session);
+        
+        for (AttachmentOwnerIFace<?> aOwner : attachOwners)
+        {
+            for (ObjectAttachmentIFace<?> objAtt : aOwner.getAttachmentReferences())
+            {
+                Attachment a = objAtt.getAttachment();
+                
+                if (a != null && a.getAttachmentLocation() != null)
+                {
+                    if (getHashSetForClass(dataObj).contains(a.getAttachmentLocation()))
+                    {
+                        a.setStoreFile(true);
+                    }
+                }
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#beforeSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public boolean beforeSaveCommit(final Object dataObj, final DataProviderSessionIFace session) throws Exception
+    {
+        boolean retVal = super.beforeSaveCommit(dataObj, session);
+        if (retVal == false)
+        {
+            return retVal;
+        }
+        
+        for (AttachmentOwnerIFace<?> aOwner : attachOwners)
+        {
+            for (ObjectAttachmentIFace<?> oa: aOwner.getAttachmentReferences())
+            {
+                Attachment a = oa.getAttachment();
+                if (a != null && a.isStoreFile())
+                {
+                    // this is a new Attachment object
+                    // we need to store it's file into the storage system
+                    try
+                    {
+                        a.storeFile();
+                    }
+                    catch (IOException e)
+                    {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AttachmentOwnerBaseBusRules.class, e);
+                        log.error("Unable to store attached file", e); //$NON-NLS-1$
+                    }
+                }
+            }
+        }
+        return true;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BaseBusRules#beforeDeleteCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
@@ -126,123 +243,5 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
         return retVal;
     }
     
-    private static HashSet<String> getHashSetForClass(final Object dObj)
-    {
-        Class<?>        cls  = dObj.getClass();
-        HashSet<String> hSet = attachHashSet.get(cls);
-        if (hSet == null)
-        {
-            hSet = new HashSet<String>();
-            attachHashSet.put(cls, hSet);
-        }
-        return hSet;
-    }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
-     */
-    @Override
-    public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
-    {
-        if (firstTime)
-        {
-            getHashSetForClass(dataObj).clear();
-            firstTime = false;
-        }
-        
-        if (dataObj instanceof AttachmentOwnerIFace<?>)
-        {
-            AttachmentOwnerIFace<?> owner = (AttachmentOwnerIFace<?>)dataObj;
-            
-            for (ObjectAttachmentIFace<?> oa: owner.getAttachmentReferences())
-            {
-                Attachment a = oa.getAttachment();
-                if (a != null && a.getAttachmentLocation() == null)
-                {
-                    AttachmentUtils.getAttachmentManager().setStorageLocationIntoAttachment(a);
-                    getHashSetForClass(dataObj).add(a.getAttachmentLocation());
-                }
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
-     */
-    @Override
-    public void beforeSave(final Object dataObj, final DataProviderSessionIFace session)
-    {
-        super.beforeSave(dataObj, session);
-        
-        if (dataObj instanceof AttachmentOwnerIFace<?>)
-        {
-            AttachmentOwnerIFace<?> owner = (AttachmentOwnerIFace<?>)dataObj;
-            
-            for (ObjectAttachmentIFace<?> oa: owner.getAttachmentReferences())
-            {
-                Attachment a = oa.getAttachment();
-                
-                if (a != null && a.getAttachmentLocation() != null)
-                {
-                    if (getHashSetForClass(dataObj).contains(a.getAttachmentLocation()))
-                    {
-                        a.setStoreFile(true);
-                    }
-                }
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BaseBusRules#beforeSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
-     */
-    @Override
-    public boolean beforeSaveCommit(final Object dataObj, final DataProviderSessionIFace session) throws Exception
-    {
-        boolean retVal = super.beforeSaveCommit(dataObj, session);
-        if (retVal == false)
-        {
-            return retVal;
-        }
-        
-        // walk the set of ObjectAttachmentIFace objects, looking for any that have a new Attachment record
-        // that needs to be saved into the Attachment storage system
-        
-        if (dataObj instanceof AttachmentOwnerIFace<?>)
-        {
-            AttachmentOwnerIFace<?> owner = (AttachmentOwnerIFace<?>)dataObj;
-            for (ObjectAttachmentIFace<?> oa: owner.getAttachmentReferences())
-            {
-                Attachment a = oa.getAttachment();
-                if (a != null && a.isStoreFile())
-                {
-                    // this is a new Attachment object
-                    // we need to store it's file into the storage system
-                    try
-                    {
-                        a.storeFile();
-                    }
-                    catch (IOException e)
-                    {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AttachmentOwnerBaseBusRules.class, e);
-                        log.error("Unable to store attached file", e); //$NON-NLS-1$
-                    }
-                }
-            }
-        }
-        
-        return true;
-    }
-    
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
-     */
-    @Override
-    public boolean afterSaveCommit(final Object dataObj, final DataProviderSessionIFace sessionArg)
-    {
-       
-        return super.afterSaveCommit(dataObj, sessionArg);
-    }
 }

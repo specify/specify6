@@ -240,6 +240,10 @@ public class AgentAttachment extends DataModelObjBase implements ObjectAttachmen
      */
     public int compareTo(AgentAttachment obj)
     {
-        return ordinal.compareTo(obj.ordinal);
+        if (ordinal != null && obj != null && obj.ordinal != null)
+        {
+            return ordinal.compareTo(obj.ordinal);
+        }
+        return 0;
     }
 }

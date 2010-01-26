@@ -776,7 +776,7 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
      */
     public int compareTo(ViewIFace obj)
     {
-        return name.compareTo(obj.getName());
+        return name != null && obj != null && obj.getName() != null ? name.compareTo(obj.getName()) : 0;
     }
 
     
