@@ -188,6 +188,15 @@ public class IconViewObj implements Viewable
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.Viewable#getMVParent()
+     */
+    @Override
+    public MultiView getMVParent()
+    {
+        return mvParent;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.Viewable#setClassToCreate(java.lang.String)
      */
     public void setClassToCreate(final Class<?> classToCreate)

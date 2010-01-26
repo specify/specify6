@@ -554,9 +554,10 @@ public class TableViewObj implements Viewable,
         return deleteButton;
     }
 
-    /**
-     * @return the mvParent
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.Viewable#getMVParent()
      */
+    @Override
     public MultiView getMVParent()
     {
         return mvParent;
@@ -931,7 +932,6 @@ public class TableViewObj implements Viewable,
      * @param isEdit whether we are editing or view
      * @param isNew hwther the object is new
      */
-    @SuppressWarnings("unchecked")
     protected void editRow(final int rowIndex, final boolean isNew)
     {
         if (isNew)
@@ -953,6 +953,12 @@ public class TableViewObj implements Viewable,
                 {
                     dObj = FormHelper.createAndNewDataObj(view.getClassName());
                 }
+                
+                if (mvParent != null && mvParent.getTopLevel() != null)
+                {
+                    mvParent.getTopLevel().addBusRuleItem(dObj);
+                }
+                
                 editRow(dObj, rowIndex, isNew);
             }
         } else
@@ -1208,6 +1214,11 @@ public class TableViewObj implements Viewable,
                 if (addSearch && mvParent != null && dObj.getId() != null)
                 {
                     mvParent.getTopLevel().addToBeSavedItem(dObj);
+                    
+                    if (mvParent != null && mvParent.getTopLevel() != null)
+                    {
+                        mvParent.getTopLevel().addBusRuleItem(dataObj);
+                    }
                 }
                 
                 // 'addSearch' is used in FormViewObj, but here maybe we need to use 'doOtherSide'
@@ -1736,7 +1747,6 @@ public class TableViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.Viewable#setSession(org.hibernate.Session)
      */
-    @SuppressWarnings("unchecked")
     public void setSession(final DataProviderSessionIFace session)
     {
         this.session = session;

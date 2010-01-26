@@ -24,6 +24,7 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
@@ -58,6 +59,8 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
 {
     protected static Logger log = Logger.getLogger(AttachmentReferenceBaseBusRules.class);
     
+    private BusinessRulesIFace br = new AttachmentBusRules();
+    
     public AttachmentReferenceBaseBusRules()
     {
         super( AccessionAttachment.class,
@@ -77,7 +80,7 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
                RepositoryAgreementAttachment.class,
                TaxonAttachment.class );
     }
-
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BaseBusRules#afterDeleteCommit(java.lang.Object)
      */
@@ -92,81 +95,59 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
         //System.out.println("afterSaveCommit(): " + a.getOrigFilename());
         
         AttachmentBusRules attachBusRules = new AttachmentBusRules();
-        boolean okToDelete = attachBusRules.okToEnableDelete(a);
+        boolean okToDelete = a.getId() != null && attachBusRules.okToEnableDelete(a);
         
         if (okToDelete)
         {
-            boolean userApproved = askUserToApproveDelete(a);
-            if (userApproved)
+            try
             {
+                AttachmentUtils.getAttachmentManager().deleteAttachmentFiles(a);
+                DataProviderSessionIFace session = null;
                 try
                 {
-                    AttachmentUtils.getAttachmentManager().deleteAttachmentFiles(a);
-                    DataProviderSessionIFace session = null;
-                    try
-                    {
-                        session = DataProviderFactory.getInstance().createSession();
-                        
-                        Attachment aFromDisk = session.load(Attachment.class, a.getId());
-                        
-                        session.beginTransaction();
-                        session.delete(aFromDisk);
-                        session.commit();
-                    }
-                    catch (Exception e)
-                    {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AttachmentReferenceBaseBusRules.class, e);
-                        log.error("Failed to delete Attachment record from database", e);
-                        
-                    } finally
-                    {
-                        if (session != null)
-                        {
-                            session.close();
-                        }
-                    }
+                    session = DataProviderFactory.getInstance().createSession();
+                    
+                    Attachment aFromDisk = session.load(Attachment.class, a.getId());
+                    
+                    session.beginTransaction();
+                    session.delete(aFromDisk);
+                    session.commit();
                 }
-                catch (IOException e)
+                catch (Exception e)
                 {
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AttachmentReferenceBaseBusRules.class, e);
-                    log.warn("Failed to delete attachment files from disk", e);
+                    log.error("Failed to delete Attachment record from database", e);
+                    
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
                 }
+            }
+            catch (IOException e)
+            {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AttachmentReferenceBaseBusRules.class, e);
+                log.warn("Failed to delete attachment files from disk", e);
             }
         }
         
         super.afterDeleteCommit(dataObj);
     }
     
-    /**
-     * @param attachment
-     * @return
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
-    protected boolean askUserToApproveDelete(Attachment attachment)
+    @Override
+    public boolean beforeSaveCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
     {
-        /*
-        JOptionPane pane = new JOptionPane("Delete the associated files from the attachment storage system?  " + attachment.getOrigFilename()); // I18N
-        pane.setOptionType(JOptionPane.YES_NO_OPTION);
-        AttachmentManagerIface attachMgr = AttachmentUtils.getAttachmentManager();
-        File thumbnail = attachMgr.getThumbnail(attachment);
+        ObjectAttachmentIFace<?> attRef = (ObjectAttachmentIFace<?>)dataObj;
         
-        if (thumbnail != null)
-        {
-            ImageIcon icon = new ImageIcon(thumbnail.getAbsolutePath());
-            pane.setIcon(icon);
-        }
-        
-        JDialog paneDialog = pane.createDialog(UIRegistry.getMostRecentWindow(), "Confirm Deletion");
-        paneDialog.setVisible(true);
-        Object choice = pane.getValue();
-        
-        return ((Integer)choice == JOptionPane.YES_OPTION);
-        */
-        // rods - decided for now to always delete it.
-        return true;
+        return br.afterSaveCommit(attRef.getAttachment(), session);
     }
-
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#doesSearchObjectRequireNewParent()

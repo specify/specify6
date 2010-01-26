@@ -978,7 +978,11 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         return DataObjFieldFormatMgr.getInstance().format(this, getClass());
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
+     */
     @Transient
+    @Override
     public Set<AgentAttachment> getAttachmentReferences()
     {
         return agentAttachments;

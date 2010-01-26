@@ -122,6 +122,7 @@ public class MultiView extends JPanel
     
     protected Vector<Object>               deletedItems         = null;
     protected Vector<Object>               toBeSavedItems       = null;
+    protected Vector<Object>               busRulesItems        = null;
     
     protected CollapsableSeparator         separator            = null;
     
@@ -859,10 +860,12 @@ public class MultiView extends JPanel
     }
 
     /**
-     * Show a Viewable by name.
-     * @param devName the registered name of the component (In this case it is the name of the Viewable)
+     *  Create the Viewable from an AltView Name.
+     * @param altViewName the name of the AltView
+     * @param cellNameArg
+     * @return
      */
-    public Viewable createViewable(final String altViewName, final String cellName)
+    public Viewable createViewable(final String altViewName, final String cellNameArg)
     {
         // Find the AltView to create
         List<AltViewIFace> list = view.getAltViews();
@@ -871,7 +874,7 @@ public class MultiView extends JPanel
         {
             if (altViewName.equals(altView.getName()))
             {
-                return createViewable(altView, cellName);
+                return createViewable(altView, cellNameArg);
             }
             inx++;
         }
@@ -882,10 +885,12 @@ public class MultiView extends JPanel
     }
 
     /**
-     * Show a Viewable by name.
-     * @param devName the registered name of the component (In this case it is the name of the Viewable)
+     * Create the Viewable from an AltView.
+     * @param altView the actual AltView object
+     * @param cellNameArg
+     * @return the viewable for the altview
      */
-    protected Viewable createViewable(final AltViewIFace altView, final String cellName)
+    protected Viewable createViewable(final AltViewIFace altView, final String cellNameArg)
     {
         ViewIFace newView = AppContextMgr.getInstance().getView(view.getViewSetName(), altView.getView().getName());
         // 12/14/07 - rods
@@ -913,7 +918,7 @@ public class MultiView extends JPanel
 
             int tmpCreateOptions = createOptions | (createWithMode == AltViewIFace.CreationMode.EDIT ? (IS_EDITTING) : 0);
             //MultiView.printCreateOptions("createViewable", createOptions);
-            Viewable viewable = ViewFactory.createFormView(this, newView, altView.getName(), data, tmpCreateOptions, cellName, getBackground());
+            Viewable viewable = ViewFactory.createFormView(this, newView, altView.getName(), data, tmpCreateOptions, cellNameArg, getBackground());
             if (viewable != null)
             {
                 if (add(viewable, altView.getName()))
@@ -1441,8 +1446,8 @@ public class MultiView extends JPanel
     }
     
     /**
-     * Adds an item to be deleted to a list.
-     * @param toBeSavedItem the item to be deleted.
+     * Adds an item to be saved to a list.
+     * @param toBeSavedItem the item to be saved.
      */
     public void addToBeSavedItem(final Object toBeSavedItem)
     {
@@ -1450,6 +1455,7 @@ public class MultiView extends JPanel
         {
             toBeSavedItems = new Vector<Object>();
         }
+        
         boolean addToList = true;
         if (!(toBeSavedItem instanceof FormDataObjIFace))// && ((FormDataObjIFace)toBeSavedItem).getId() == null)
         {
@@ -1461,6 +1467,31 @@ public class MultiView extends JPanel
         }
     }
     
+    /**
+     * Adds an item to be process by the busrules to a list.
+     * @param brItem the item to be busruled.
+     */
+    public void addBusRuleItem(final Object brItem)
+    {
+        if (busRulesItems == null)
+        {
+            busRulesItems = new Vector<Object>();
+        }
+        
+        boolean addToList = true;
+        if (!(brItem instanceof FormDataObjIFace))
+        {
+            addToList = false;
+        }
+        if (addToList)
+        {
+            busRulesItems.add(brItem);
+        }
+        
+        System.out.println("addBusRuleItem: "+view.getClassName());
+    }
+    
+
     /**
      * Returns a list of items to be deleted, it may return null.
      * @return a list of items to be deleted, it may return null.
@@ -1479,6 +1510,14 @@ public class MultiView extends JPanel
     }
     
     /**
+     * @return the busRulesItems
+     */
+    public Vector<Object> getBusRulesItems()
+    {
+        return busRulesItems;
+    }
+
+    /**
      * Clears the list.
      */
     public void clearItemsToBeSaved()
@@ -1486,6 +1525,28 @@ public class MultiView extends JPanel
         if (toBeSavedItems != null)
         {
             toBeSavedItems.clear();
+        }
+    }
+
+    /**
+     * Clears the list.
+     */
+    public void clearItemsToBeDeleted()
+    {
+        if (deletedItems != null)
+        {
+            deletedItems.clear();
+        }
+    }
+
+    /**
+     * Clears the list.
+     */
+    public void clearItemsForBusRules()
+    {
+        if (busRulesItems != null)
+        {
+            busRulesItems.clear();
         }
     }
 

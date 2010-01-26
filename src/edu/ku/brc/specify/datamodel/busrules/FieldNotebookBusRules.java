@@ -19,7 +19,14 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.FieldNotebook;
+import edu.ku.brc.specify.datamodel.FieldNotebookAttachment;
+import edu.ku.brc.specify.datamodel.FieldNotebookPage;
+import edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment;
+import edu.ku.brc.specify.datamodel.FieldNotebookPageSet;
+import edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment;
 
 /**
  * @author rod
@@ -34,6 +41,48 @@ public class FieldNotebookBusRules extends AttachmentOwnerBaseBusRules
     public FieldNotebookBusRules()
     {
         super(FieldNotebook.class);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeSave(dataObj, session);
+        
+        
+        if (viewable != null && viewable.getMVParent() != null && viewable.getMVParent().getTopLevel() != null)
+        {
+            MultiView topMV = viewable.getMVParent().getTopLevel();
+            
+            FieldNotebook fieldNotebook = (FieldNotebook)dataObj;
+            
+            for (FieldNotebookAttachment fnba : fieldNotebook.getAttachmentReferences())
+            {
+                topMV.addBusRuleItem(fnba);
+            }
+            
+            for (FieldNotebookPageSet pageSet : fieldNotebook.getPageSets())
+            {
+                topMV.addBusRuleItem(pageSet);
+                
+                for (FieldNotebookPageSetAttachment psa : pageSet.getAttachmentReferences())
+                {
+                    topMV.addBusRuleItem(psa);
+                }
+                
+                for (FieldNotebookPage page : pageSet.getPages())
+                {
+                    topMV.addBusRuleItem(page);
+                    
+                    for (FieldNotebookPageAttachment pa : page.getAttachmentReferences())
+                    {
+                        topMV.addBusRuleItem(pa);
+                    }
+                }
+            }
+        }
     }
 
 }

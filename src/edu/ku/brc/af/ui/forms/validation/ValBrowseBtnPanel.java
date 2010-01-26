@@ -51,6 +51,14 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
         
         setValidatingFile(true);
     }
+    
+    /**
+     * @return
+     */
+    public ValTextField getValTextField()
+    {
+        return textField;
+    }
 
     /* (non-Javadoc)
      * @see java.awt.Component#setEnabled(boolean)

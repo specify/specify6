@@ -317,6 +317,13 @@ public class DBTableInfo extends DBInfoBase
                 if (clazz.isAssignableFrom(BusinessRulesIFace.class))
                 {
                     return (BusinessRulesIFace)clazz.newInstance();
+                } else 
+                {
+                    Object obj = clazz.newInstance();
+                    if (BusinessRulesIFace.class.isInstance(obj))
+                    {
+                        return (BusinessRulesIFace)obj;
+                    }
                 }
                 
             } catch (Exception ex)

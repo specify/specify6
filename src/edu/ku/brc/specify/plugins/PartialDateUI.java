@@ -29,7 +29,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -54,6 +57,7 @@ import com.lowagie.text.Font;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.ui.forms.DataObjectGettable;
 import edu.ku.brc.af.ui.forms.DataObjectGettableFactory;
 import edu.ku.brc.af.ui.forms.DataObjectSettable;
@@ -68,6 +72,7 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.ValFormattedTextField;
 import edu.ku.brc.af.ui.forms.validation.ValFormattedTextFieldSingle;
+import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIRegistry;
@@ -86,6 +91,8 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
                                                      ChangeListener
 {
     private static final Logger log  = Logger.getLogger(PartialDateUI.class);
+    
+    protected DateWrapper             scrDateFormat = null;
     
     protected DataObjectGettable      getter;
     protected DataObjectSettable      setter;
@@ -135,6 +142,20 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
     }
     
     /**
+     * @param tf
+     */
+    private void setupPopupMenu(final ValFormattedTextField tf)
+    {
+        for (JComponent comp : tf.getTextComps())
+        {
+            if (comp instanceof JTextField)
+            {
+                ViewFactory.addTextFieldPopup(this, (JTextField)comp, true);
+            }
+        }
+    }
+    
+    /**
      * Creates the UI.
      */
     protected void createUI()
@@ -169,24 +190,32 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
             {
                 ValFormattedTextField tf = new ValFormattedTextField(uiff, isDisplayOnly, !isDisplayOnly);
                 tf.setRequired(isRequired);
+                
                 if (docListener != null) tf.addDocumentListener(docListener);
                 uivs[1]       = tf;
                 textFields[1] = tf.getTextField();
                 if (isDisplayOnly)
                 {
                     ViewFactory.changeTextFieldUIForDisplay(textFields[1], false);
+                } else
+                {
+                    setupPopupMenu(tf);
                 }
                 
             } else if (uiff.getName().equals("PartialDateYear"))
             {
                 ValFormattedTextField tf = new ValFormattedTextField(uiff, isDisplayOnly, !isDisplayOnly);
                 tf.setRequired(isRequired);
+                
                 if (docListener != null) tf.addDocumentListener(docListener);
                 uivs[2]       = tf;
                 textFields[2] = tf.getTextField();
                 if (isDisplayOnly)
                 {
                     ViewFactory.changeTextFieldUIForDisplay(textFields[2], false);
+                } else
+                {
+                    setupPopupMenu(tf);
                 }
             }
         }
@@ -198,14 +227,17 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
             {
                 ValFormattedTextFieldSingle tf = new ValFormattedTextFieldSingle(uiff, isDisplayOnly, false);
                 tf.setRequired(isRequired);
+
                 if (docListener != null) tf.addDocumentListener(docListener);
                 uivs[0]       = tf;
                 textFields[0] = tf;
                 if (isDisplayOnly)
                 {
                     ViewFactory.changeTextFieldUIForDisplay(textFields[0], false);
+                } else
+                {
+                    ViewFactory.addTextFieldPopup(this, tf, true);
                 }
-
             }
         }
         
@@ -353,6 +385,21 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
             setter = DataObjectSettableFactory.get(dataObj.getClass().getName(), FormHelper.DATA_OBJ_SETTER);
         }
     }
+    
+    private SimpleDateFormat getDateFormatter()
+    {
+        if (scrDateFormat == null)
+        {
+            scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
+        }
+        
+        if (scrDateFormat != null)
+        {
+            return scrDateFormat.getSimpleDateFormat();
+        }
+        
+        return new SimpleDateFormat("yyyy-MM-dd");
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
@@ -375,55 +422,73 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
             return;
         }
         
-        Calendar date = null;
-
-        // TODO Really need to verify right here whether the defaultValue as a String is a valid date
-        Object dateObj = getter.getFieldValue(value, dateFieldName);
-        if (dateObj == null && StringUtils.isNotEmpty(defaultValue))
+        int      inx            = 0;
+        boolean  skipProcessing = false;
+        Calendar calDate        = null;
+        
+        if (value instanceof String && StringUtils.isEmpty(defaultValue))
         {
-            date = Calendar.getInstance();
+            try
+            {
+                Date date = getDateFormatter().parse(value.toString());
+                calDate = Calendar.getInstance();
+                calDate.setTime(date);
+                skipProcessing = true;
+                
+            } catch (ParseException ex) {}
         }
         
-        if (dateObj instanceof Calendar)
-        {
-            date = (Calendar)dateObj;
-        }
         
-        int inx = 0;
-        Object dateTypeObj = getter.getFieldValue(value, dateTypeName);
-        if (dateTypeObj instanceof String)
+        if (!skipProcessing)
         {
-            inx = Integer.parseInt((String)dateTypeObj);
-            dateTypeIsStr = true;
+            // TODO Really need to verify right here whether the defaultValue as a String is a valid date
+            Object dateObj = getter.getFieldValue(value, dateFieldName);
+            if (dateObj == null && StringUtils.isNotEmpty(defaultValue))
+            {
+                calDate = Calendar.getInstance();
+            }
             
-        } else if (dateTypeObj instanceof Short)
-        {
-            inx = ((Short)dateTypeObj).intValue();
-            dateTypeIsStr = false;
+            if (dateObj instanceof Calendar)
+            {
+                calDate = (Calendar)dateObj;
+            }
             
-        } else if (dateTypeObj instanceof Byte)
-        {
-            inx = ((Byte)dateTypeObj).intValue();
-            dateTypeIsStr = false;
             
-        } else 
-        {
-            inx = 1;
-        }
-        
-        if (inx > 0)
-        {
-            inx--; // need to subtract one because the first item is "None"
-        } else
-        {
-            log.error(dateTypeName+" was zero and shouldn't have been!");
+            Object dateTypeObj = getter.getFieldValue(value, dateTypeName);
+            if (dateTypeObj instanceof String)
+            {
+                inx = Integer.parseInt((String)dateTypeObj);
+                dateTypeIsStr = true;
+                
+            } else if (dateTypeObj instanceof Short)
+            {
+                inx = ((Short)dateTypeObj).intValue();
+                dateTypeIsStr = false;
+                
+            } else if (dateTypeObj instanceof Byte)
+            {
+                inx = ((Byte)dateTypeObj).intValue();
+                dateTypeIsStr = false;
+                
+            } else 
+            {
+                inx = 1;
+            }
+            
+            if (inx > 0)
+            {
+                inx--; // need to subtract one because the first item is "None"
+            } else
+            {
+                log.error(dateTypeName+" was zero and shouldn't have been!");
+            }
         }
         
         currentUIV = uivs[inx];
         if (currentUIV != null)
         {
             ignoreDocChanges = true;
-            ((GetSetValueIFace)currentUIV).setValue(date, "");
+            ((GetSetValueIFace)currentUIV).setValue(calDate, "");
             ignoreDocChanges = false;
         }
         

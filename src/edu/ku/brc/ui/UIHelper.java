@@ -1026,28 +1026,25 @@ public final class UIHelper
             editMenu.add(createMenu(getResourceString("CopyMenu"), VK_C, getResourceString("CopyMneu")));
             editMenu.add(createMenu(getResourceString("PasteMenu"), VK_V, getResourceString("PasteMneu")));
         }
-
-
-
         return menuBar;
     }
 
     /**
      * Creates a JMenuItem.
-     * @param label the label of the menu item
+     * @param key the label key of the menu item
      * @param mnemonic the mnemonic
      * @param accessibleDescription the accessible Description
      * @param enabled enabled
      * @param action the aciton
      * @return menu item
      */
-    public static JMenuItem createLocalizedMenuItem(final String         label,
+    public static JMenuItem createLocalizedMenuItem(final String         key,
                                                     final String         mnemonic,
                                                     final String         accessibleDescription,
                                                     final boolean        enabled,
                                                     final ActionListener al)
     {
-        JMenuItem mi = new JMenuItem(getResourceString(label));
+        JMenuItem mi = new JMenuItem(getResourceString(key));
         if (isNotEmpty(mnemonic))
         {
         	String mnu = getResourceString(mnemonic);
@@ -1066,7 +1063,7 @@ public final class UIHelper
     /**
      * Creates a JMenuItem.
      * @param menu parent menu
-     * @param label the label of the menu item
+     * @param key the label key of the menu item
      * @param mnemonic the mnemonic
      * @param accessibleDescription the accessible Description
      * @param enabled enabled
@@ -1074,13 +1071,13 @@ public final class UIHelper
      * @return menu item
      */
     public static JMenuItem createLocalizedMenuItem(final JMenu          menu,
-                                                    final String         label,
+                                                    final String         key,
                                                     final String         mnemonic,
                                                     final String         accessibleDescription,
                                                     final boolean        enabled,
                                                     final ActionListener al)
     {
-        JMenuItem mi = createLocalizedMenuItem(label, mnemonic, accessibleDescription, enabled, al);
+        JMenuItem mi = createLocalizedMenuItem(key, mnemonic, accessibleDescription, enabled, al);
         if (menu != null)
         {
             menu.add(mi);
@@ -1099,13 +1096,13 @@ public final class UIHelper
      * @return menu item
      */
     public static JMenuItem createlocalizedMenuItem(final JPopupMenu     popupMenu,
-                                           final String         label,
-                                           final String         mnemonic,
-                                           final String         accessibleDescription,
-                                           final boolean        enabled,
-                                           final ActionListener al)
+                                                    final String         key,
+                                                    final String         mnemonic,
+                                                    final String         accessibleDescription,
+                                                    final boolean        enabled,
+                                                    final ActionListener al)
     {
-        JMenuItem mi = createLocalizedMenuItem(label, mnemonic, accessibleDescription, enabled, al);
+        JMenuItem mi = createLocalizedMenuItem(key, mnemonic, accessibleDescription, enabled, al);
         if (popupMenu != null)
         {
             popupMenu.add(mi);
@@ -1132,6 +1129,7 @@ public final class UIHelper
     {
         JMenuItem mi = new JMenuItem(action);
         mi.setText(label);
+        
         if (menu != null)
         {
             menu.add(mi);

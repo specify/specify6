@@ -61,7 +61,7 @@ import edu.ku.brc.af.core.AppContextMgr;
         @Index (name="FNBStartDateIDX", columnNames={"StartDate"}),
         @Index (name="FNBEndDateIDX", columnNames={"EndDate"})
     })
-public class FieldNotebook extends DisciplineMember
+public class FieldNotebook extends DisciplineMember implements AttachmentOwnerIFace<FieldNotebookAttachment>
 {
     protected Integer    fieldNotebookId;
     protected String     name;
@@ -280,10 +280,21 @@ public class FieldNotebook extends DisciplineMember
         this.attachments = attachments;
     }
 
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
+     */
+    @Transient
+    @Override
+    public Set<FieldNotebookAttachment> getAttachmentReferences()
+    {
+        return attachments;
+    }
+    
     //---------------------------------------------------------------------------
     // Overrides DataModelObjBase
     //---------------------------------------------------------------------------
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
      */

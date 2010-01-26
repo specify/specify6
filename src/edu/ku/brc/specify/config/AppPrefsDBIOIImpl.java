@@ -255,6 +255,21 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                 }
                 byteOut.close();
                 
+                DataProviderSessionIFace session = null;
+                try
+                {
+                    session = DataProviderFactory.getInstance().createSession();
+                    session.merge(spAppResourceDir);
+                    session.merge(spAppResource);
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                } finally
+                {
+                    session.close();
+                }
+                
                 DataModelObjBase.save(true, spAppResourceDir, spAppResource);
                 
             } catch (IOException ex)

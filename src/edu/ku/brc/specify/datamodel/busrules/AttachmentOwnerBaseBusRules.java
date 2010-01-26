@@ -115,20 +115,27 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
      * @see edu.ku.brc.ui.forms.BaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     @Override
-    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
+    public void beforeSave(final Object dataObj, DataProviderSessionIFace session)
     {
         super.beforeSave(dataObj, session);
+        
+        System.err.println("AttachmentOwnerBase - isAttachmentOwnerIFace: "+(dataObj instanceof AttachmentOwnerIFace ? "YES" : "NO"));
         
         if (dataObj instanceof AttachmentOwnerIFace<?>)
         {
             AttachmentOwnerIFace<?> owner = (AttachmentOwnerIFace<?>)dataObj;
+            
+            System.err.println("AttachmentOwnerBase - size: "+owner.getAttachmentReferences().size());
             for (ObjectAttachmentIFace<?> oa: owner.getAttachmentReferences())
             {
                 Attachment a = oa.getAttachment();
+                System.err.println("1AttachmentOwnerBase - a: orig: "+a.getOrigFilename()+"  Loc: "+a.getAttachmentLocation());
                 if (a != null && a.getAttachmentLocation() == null)
                 {
                     AttachmentUtils.getAttachmentManager().setStorageLocationIntoAttachment(a);
                     a.setStoreFile(true);
+                    
+                    System.err.println("2AttachmentOwnerBase - a: orig: "+a.getOrigFilename()+"  Loc: "+a.getAttachmentLocation());
                 }
             }
         }

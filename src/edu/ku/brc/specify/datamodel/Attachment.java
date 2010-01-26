@@ -605,6 +605,9 @@ public class Attachment extends DataModelObjBase implements Serializable
         this.storeFile = storeFile;
     }
 
+    /**
+     * @throws IOException
+     */
     public void storeFile() throws IOException
     {
         // Copy the attachment file to the file storage system

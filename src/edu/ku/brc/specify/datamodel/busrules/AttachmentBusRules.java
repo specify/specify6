@@ -19,12 +19,24 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import java.awt.Component;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.event.DocumentEvent;
+
+import org.apache.commons.io.FilenameUtils;
+
 import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.EditViewCompSwitcherPanel;
+import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.af.ui.forms.validation.ValBrowseBtnPanel;
+import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Attachment;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
@@ -49,6 +61,57 @@ public class AttachmentBusRules extends BaseBusRules
         super(Attachment.class);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
+     */
+    @Override
+    public void initialize(Viewable viewableArg)
+    {
+        super.initialize(viewableArg);
+        
+        if (formViewObj != null)
+        {
+            Component origComp  = formViewObj.getCompById("origFilename");
+            Component titleComp = formViewObj.getCompById("title");
+            
+            if (origComp instanceof EditViewCompSwitcherPanel && titleComp instanceof ValTextField)
+            {
+                final EditViewCompSwitcherPanel evcsp = (EditViewCompSwitcherPanel)origComp;
+                
+                final ValTextField  titleTF = (ValTextField)titleComp;
+                final ValTextField browserTF = ((ValBrowseBtnPanel)evcsp.getComp(true)).getValTextField();
+                
+                browserTF.getDocument().addDocumentListener(new DocumentAdaptor() {
+                    @Override
+                    protected void changed(DocumentEvent e)
+                    {
+                        String filePath = browserTF.getText();
+                        if (titleTF.getText().isEmpty() && !filePath.isEmpty())
+                        {
+                            titleTF.setText(FilenameUtils.getBaseName(browserTF.getText()));
+                        }
+                    }
+                    
+                });
+                
+                browserTF.addFocusListener(new FocusAdapter() {
+                    @Override
+                    public void focusLost(FocusEvent e)
+                    {
+                        super.focusLost(e);
+                        
+                        String filePath = browserTF.getText();
+                        if (titleTF.getText().isEmpty() && !filePath.isEmpty())
+                        {
+                            titleTF.setText(FilenameUtils.getBaseName(filePath));
+                        }
+                    }
+                });
+                
+            }
+        }
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object)
      */

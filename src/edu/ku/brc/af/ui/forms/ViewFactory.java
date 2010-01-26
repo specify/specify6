@@ -30,11 +30,16 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -42,15 +47,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
@@ -118,6 +126,7 @@ import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandActionWrapper;
+import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconButton;
 import edu.ku.brc.ui.IconManager;
@@ -145,13 +154,10 @@ public class ViewFactory
     private static  ViewFactory  instance = null;
     
     // Data Members
-    protected static ColorWrapper     viewFieldColor    = null;
-    protected static boolean          doFixLabels       = true;
-    protected static boolean          isFormTransparent = false;
+    private static ColorWrapper     viewFieldColor         = null;
+    private static boolean          doFixLabels            = true;
+    private static boolean          isFormTransparent      = false;
 
-    // transient - is valid only during a build process
-    protected MultiView               rootMultiView    = null;
-    
     /**
      * Constructor.
      */
@@ -207,8 +213,6 @@ public class ViewFactory
 
         if (viewDef == null) return null;
 
-        this.rootMultiView =  parentView;
-        
         Class<?> dataClass = null;
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
         MultiView   parentsMV = parentView != null ? parentView.getMultiViewParent() : null;
@@ -237,19 +241,16 @@ public class ViewFactory
         if (viewDef.getType() == ViewDefIFace.ViewType.form)
         {
             Viewable viewable = buildFormViewable(view, altView, parentView, options, cellName, dataClass, bgColor);
-            this.rootMultiView =  null;
             return viewable;
 
         } else if (viewDef.getType() == ViewDefIFace.ViewType.table ||
                    viewDef.getType() == ViewDefIFace.ViewType.formtable)
         {
             Viewable viewable = buildTableViewable(view, altView, parentView, options, cellName, dataClass, bgColor);
-            this.rootMultiView =  null;
             return viewable;
 
         } else if (viewDef.getType() == ViewDefIFace.ViewType.field)
         {
-            this.rootMultiView =  null;
             return null;
 
         }
@@ -263,7 +264,6 @@ public class ViewFactory
                 
         } else
         {
-            this.rootMultiView =  null;
             throw new RuntimeException("Form Type not covered by builder ["+viewDef.getType()+"]");
         }
 
@@ -283,50 +283,54 @@ public class ViewFactory
     {
         String validationRule = cellField.getValidationRule();
        
-        JTextField txtField;
+        JTextField   txtField;
+        ValTextField valTextField = null; 
         if (validator != null && (isRequired || isNotEmpty(validationRule) || cellField.isChangeListenerOnly()))
         {
-            ValTextField textField = new ValTextField(cellField.getTxtCols(), adapter);
-            textField.setRequired(isRequired);
-            textField.setViewOnly(cellField.isReadOnly());
+            valTextField = new ValTextField(cellField.getTxtCols(), adapter);
+            valTextField.setRequired(isRequired);
+            valTextField.setViewOnly(cellField.isReadOnly());
             
-            validator.hookupTextField(textField,
+            validator.hookupTextField(valTextField,
                                       cellField.getIdent(),//+"_text",
                                       isRequired,
                                       parseValidationType(cellField.getValidationType()),
                                       cellField.getValidationRule(),
                                       cellField.isChangeListenerOnly() && !isRequired);
 
-            txtField = textField;
-            textField.setEditable(!cellField.isReadOnly());
+            txtField = valTextField;
+            valTextField.setEditable(!cellField.isReadOnly());
             
             if (fieldInfo != null && fieldInfo.getLength() > -1)
             {
-                textField.setLimit(fieldInfo.getLength());
+                valTextField.setLimit(fieldInfo.getLength());
             }
 
         } else if (adapter != null)
         {
-            ValTextField textField = new ValTextField(cellField.getTxtCols(), adapter);
-            textField.setViewOnly(cellField.isReadOnly());
+            valTextField = new ValTextField(cellField.getTxtCols(), adapter);
+            valTextField.setViewOnly(cellField.isReadOnly());
             if (fieldInfo.getLength() > -1)
             {
-                textField.setLimit(fieldInfo.getLength());
+                valTextField.setLimit(fieldInfo.getLength());
             }
             
-            txtField = textField;
-            textField.setEditable(false);
+            txtField = valTextField;
+            valTextField.setEditable(false);
 
         } else
         {
-            ValTextField textField = new ValTextField(cellField.getTxtCols());
-            textField.setViewOnly(cellField.isReadOnly());
+            valTextField = new ValTextField(cellField.getTxtCols());
+            valTextField.setViewOnly(cellField.isReadOnly());
             if (fieldInfo != null && fieldInfo.getLength() > -1)
             {
-                textField.setLimit(fieldInfo.getLength());
+                valTextField.setLimit(fieldInfo.getLength());
             }
-            txtField = textField;
+            txtField = valTextField;
         }
+        
+        addTextFieldPopup(valTextField, valTextField, false);
+        
         return txtField;
     }
 
@@ -418,10 +422,10 @@ public class ViewFactory
             
             if (formatter.isDate() || formatter.isNumeric())
             {
-                ValFormattedTextFieldSingle textField = new ValFormattedTextFieldSingle(uiFormatterName, 
-                                                                                       isViewOnly, 
-                                                                                       isPartialOK, 
-                                                                                       suggestedNumCols);
+                final ValFormattedTextFieldSingle textField = new ValFormattedTextFieldSingle(uiFormatterName, 
+                                                                                              isViewOnly, 
+                                                                                              isPartialOK, 
+                                                                                              suggestedNumCols);
                 textField.setRequired(isRequired);
                 
                 validator.hookupTextField(textField,
@@ -431,6 +435,8 @@ public class ViewFactory
                                           cellField.getValidationRule(), 
                                           false);
                 
+                addTextFieldPopup(textField, textField, formatter.isDate());
+
                 if (isViewOnly)
                 {
                     changeTextFieldUIForDisplay(textField, cellField.getPropertyAsBoolean("transparent", false));
@@ -446,7 +452,7 @@ public class ViewFactory
             ValFormattedTextField textField = new ValFormattedTextField(formatter, isViewOnly, allEditOK, isPartialOK);
             textField.setRequired(isRequired);
             textField.setFromUIFmtOverride(isFromUIFmtOverride);
-
+            
             DataChangeNotifier dcn = validator.hookupComponent(textField,
                                                                cellField.getIdent(),
                                                                UIValidator.Type.Changed,  
@@ -485,6 +491,64 @@ public class ViewFactory
         vtf.setRequired(isRequired);
         vtf.setFromUIFmtOverride(isFromUIFmtOverride);
         return vtf;
+    }
+    
+    
+    
+    /**
+     * @param destObj
+     * @param textField
+     */
+    public static void addTextFieldPopup(final GetSetValueIFace destObj, final JTextField textField, final boolean doAddDate)
+    {
+        if (textField != null)
+        {
+            JPopupMenu popupMenu = new JPopupMenu();
+            
+            if (doAddDate)
+            {
+                AbstractAction aa = new AbstractAction("Clear It") {
+                    
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
+                        if (scrDateFormat != null)
+                        {
+                            destObj.setValue(scrDateFormat.format(Calendar.getInstance()), "");
+                        } else
+                        {
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                            destObj.setValue(sdf.format(Calendar.getInstance()), "");
+                        }
+                    }
+                };
+    
+                UIHelper.createlocalizedMenuItem(popupMenu, "ViewFactory.CURR_DATE", "", "", true, aa);
+                
+                KeyStroke ctrlShiftT = KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK);
+                textField.getInputMap().put(ctrlShiftT, "SetCurrentDate");
+                textField.getActionMap().put("SetCurrentDate", aa);
+    
+            }
+            
+            String clearField = "ClearField";
+            AbstractAction clearAction = new AbstractAction(clearField) {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    destObj.setValue("", "");
+                }
+            };
+            
+            UIHelper.createlocalizedMenuItem(popupMenu, "ViewFactory.CLEAR", "", "", true, clearAction);
+            
+            textField.getInputMap().put(KeyStroke.getKeyStroke("F3"), clearField);
+            textField.getActionMap().put(clearField, clearAction);
+            
+            textField.add(popupMenu);
+            textField.setComponentPopupMenu(popupMenu);
+        }
     }
 
     /**

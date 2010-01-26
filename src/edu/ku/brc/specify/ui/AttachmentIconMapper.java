@@ -105,7 +105,7 @@ public class AttachmentIconMapper implements ObjectIconMapper
         boolean doGen = true;
         synchronized (thumbGenStarted)
         {
-            if (thumbGenStarted.contains(attatchment))
+            if (thumb == null || thumbGenStarted.contains(attatchment))
             {
                 doGen = false;
             }

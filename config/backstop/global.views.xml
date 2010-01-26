@@ -457,6 +457,7 @@
         
 		<view name="ObjectAttachment"
 			class="edu.ku.brc.specify.datamodel.ObjectAttachmentIFace"
+			busrules="edu.ku.brc.specify.datamodel.busrules.AttachmentBusRules"
 			resourcelabels="false">
 			<desc><![CDATA[The Object-Attachment View.]]></desc>
             <altviews>

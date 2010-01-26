@@ -56,7 +56,7 @@ import org.hibernate.annotations.Index;
     {   @Index (name="FNBPSStartDateIDX", columnNames={"StartDate"}),
         @Index (name="FNBPSEndDateIDX", columnNames={"EndDate"})
     })
-public class FieldNotebookPageSet extends DisciplineMember
+public class FieldNotebookPageSet extends DisciplineMember implements AttachmentOwnerIFace<FieldNotebookPageSetAttachment>
 {
     protected Integer    fieldNotebookPageSetId;
     protected Calendar   startDate;
@@ -271,11 +271,22 @@ public class FieldNotebookPageSet extends DisciplineMember
     {
         this.attachments = attachments;
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
+     */
+    @Override
+    @Transient
+    public Set<FieldNotebookPageSetAttachment> getAttachmentReferences()
+    {
+        return attachments;
+    }
+    
     //---------------------------------------------------------------------------
     // Overrides DataModelObjBase
     //---------------------------------------------------------------------------
-    
+
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
      */

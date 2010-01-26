@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.Attachment;
 
@@ -32,10 +34,17 @@ import edu.ku.brc.specify.datamodel.Attachment;
  * provide storage of the attachments and thumbnails.
  *
  * @author jstewart
+ * @author rods
  * @code_status Beta
  */
 public class FileStoreAttachmentManager implements AttachmentManagerIface
 {
+    private static final Logger  log   = Logger.getLogger(FileStoreAttachmentManager.class);
+    
+    private static final String ORIGINAL   = "originals";
+    private static final String THUMBNAILS = "thumbnails";
+    
+    
     /** The base directory path of where the files will be stored. */
     protected String baseDirectory;
     
@@ -67,12 +76,19 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     public void setDirectory(final File baseDir) throws IOException
     {
         this.baseDirectory = baseDir.getAbsolutePath();
-        this.originalsDir  = new File(baseDirectory + File.separator + "originals");
-        this.thumbsDir     = new File(baseDirectory + File.separator + "thumbnails");
+        this.originalsDir  = new File(baseDirectory + File.separator + ORIGINAL);
+        this.thumbsDir     = new File(baseDirectory + File.separator + THUMBNAILS);
         
         // create the directories, if they don't already exist
-        originalsDir.mkdirs();
-        thumbsDir.mkdirs();
+        if (!originalsDir.exists() && !originalsDir.mkdirs())
+        {
+            log.error("setDirectory - failed to create originals["+originalsDir.getAbsolutePath()+"]");
+        }
+        
+        if (!thumbsDir.exists() && !thumbsDir.mkdirs())
+        {
+            log.error("setDirectory - failed to create thumbsDir["+thumbsDir.getAbsolutePath()+"]");
+        }
         
         // make sure the directories are writable
         if (!originalsDir.canWrite())
@@ -104,26 +120,41 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         String attName    = attachment.getOrigFilename();
         int    lastPeriod = attName.lastIndexOf('.');
         String suffix     = ".att";
-        if (lastPeriod!=-1)
+        
+        if (lastPeriod != -1)
         {
             // Make sure the file extension (if any) remains the same so the host
             // filesystem still sees the files as the proper types.  This is simply
             // to make the files browsable from a system file browser.
             suffix = ".att" + attName.substring(lastPeriod);
         }
+        
         try
         {
+            if (originalsDir == null || !originalsDir.exists())
+            {
+                log.error("originalsDir doesn't exist["+(originalsDir != null ? originalsDir.getAbsolutePath() : "null")+"]");
+            }
+            
             // find an unused filename in the originals dir
             File storageFile = File.createTempFile("sp6-", suffix, originalsDir);
-            attachment.setAttachmentLocation(storageFile.getName());
-            unfilledFiles.add(attachment.getAttachmentLocation());
+            if (storageFile.exists())
+            {
+                attachment.setAttachmentLocation(storageFile.getName());
+                unfilledFiles.add(attachment.getAttachmentLocation());
+                
+            } else
+            {
+                log.error("storageFile doesn't exist["+(storageFile != null ? storageFile.getAbsolutePath() : "null")+"]");
+            }
         }
         catch (IOException e)
         {
+            e.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FileStoreAttachmentManager.class, e);
             // TODO What should we do in this case?
-            e.printStackTrace();
+
         }
     }
 
@@ -133,10 +164,16 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     public File getOriginal(final Attachment attachment)
     {
         String fileLoc = attachment.getAttachmentLocation();
-        File storedFile = new File(baseDirectory + File.separator + "originals" + File.separator + fileLoc);
-        if (storedFile.exists())
+        if (StringUtils.isNotEmpty(fileLoc))
         {
-            return storedFile;
+            File storedFile = new File(baseDirectory + File.separator + ORIGINAL + File.separator + fileLoc);
+            if (storedFile.exists())
+            {
+                return storedFile;
+            }
+        } else
+        {
+            log.error("AttachmentLocation is null for id["+attachment.getId()+"]");
         }
         return null;
     }
@@ -147,10 +184,16 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     public File getThumbnail(final Attachment attachment)
     {
         String fileLoc = attachment.getAttachmentLocation();
-        File storedFile = new File(baseDirectory + File.separator + "thumbnails" + File.separator + fileLoc);
-        if (storedFile.exists())
+        if (StringUtils.isNotEmpty(fileLoc))
         {
-            return storedFile;
+            File storedFile = new File(baseDirectory + File.separator + THUMBNAILS + File.separator + fileLoc);
+            if (storedFile.exists())
+            {
+                return storedFile;
+            }
+        } else
+        {
+            log.error("AttachmentLocation is null for id["+attachment.getId()+"]");
         }
         return null;
     }
@@ -163,13 +206,14 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     {
         // copy the original into the storage system
         String attachLoc = attachment.getAttachmentLocation();
-        File origFile = new File(baseDirectory + File.separator + "originals" + File.separator + attachLoc);
+        File origFile = new File(baseDirectory + File.separator + ORIGINAL + File.separator + attachLoc);
+        
         FileUtils.copyFile(attachmentFile, origFile);
         
         // copy the thumbnail, if any, into the storage system
         if (thumbnail != null)
         {
-            File thumbFile = new File(baseDirectory + File.separator + "thumbnails" + File.separator + attachLoc);
+            File thumbFile = new File(baseDirectory + File.separator + THUMBNAILS + File.separator + attachLoc);
             FileUtils.copyFile(thumbnail, thumbFile);
         }
         
@@ -184,8 +228,8 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     public void replaceOriginal(final Attachment attachment, final File newOriginal, final File newThumbnail) throws IOException
     {
         String attachLoc = attachment.getAttachmentLocation();
-        File origFile = new File(baseDirectory + File.separator + "originals" + File.separator + attachLoc);
-        File thumbFile = new File(baseDirectory + File.separator + "thumbnails" + File.separator + attachLoc);
+        File origFile = new File(baseDirectory + File.separator + ORIGINAL + File.separator + attachLoc);
+        File thumbFile = new File(baseDirectory + File.separator + THUMBNAILS + File.separator + attachLoc);
 
         replaceFile(origFile, newOriginal);
         replaceFile(thumbFile, newThumbnail);
@@ -227,11 +271,25 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     public void deleteAttachmentFiles(final Attachment attachment) throws IOException
     {
         String attachLoc = attachment.getAttachmentLocation();
-        File origFile = new File(baseDirectory + File.separator + "originals" + File.separator + attachLoc);
-        File thumbFile = new File(baseDirectory + File.separator + "thumbnails" + File.separator + attachLoc);
-        
-        origFile.delete();
-        thumbFile.delete();
+        if (StringUtils.isNotEmpty(attachLoc))
+        {
+            File   origFile  = new File(baseDirectory + File.separator + ORIGINAL + File.separator + attachLoc);
+            File   thumbFile = new File(baseDirectory + File.separator + THUMBNAILS + File.separator + attachLoc);
+            
+            if (origFile.exists())
+            {
+                origFile.delete();
+            }
+            
+            if (thumbFile.exists())
+            {
+                thumbFile.delete();
+            }
+            
+        } else
+        {
+            log.error("The AttachmentLocation was null/empty for attachment id: "+attachment.getId());
+        }
     }
 
     /* (non-Javadoc)

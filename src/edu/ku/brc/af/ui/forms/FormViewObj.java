@@ -143,6 +143,7 @@ import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.CommandAction;
@@ -184,6 +185,8 @@ public class FormViewObj implements Viewable,
                                     PropertyChangeListener
 {
     private static final Logger log = Logger.getLogger(FormViewObj.class);
+    
+    private   enum BRProcessType {eBeforeMerge, eBeforeSave, eBeforeSaveCommit, eAfterSaveCommit, eAfterSaveFailure, eBeforeDelete, eBeforeDeleteCommit, eAfterDeleteCommit}
     
     protected enum SAVE_STATE {Initial, NewObjSaveerror, StaleRecovery, SaveOK, Error}
     
@@ -1235,9 +1238,10 @@ public class FormViewObj implements Viewable,
         return null;
     }
 
-    /**
-     * @return the mvParent
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.Viewable#getMVParent()
      */
+    @Override
     public MultiView getMVParent()
     {
         return mvParent;
@@ -2525,11 +2529,21 @@ public class FormViewObj implements Viewable,
                     businessRules.beforeMerge(dataObjArg, session);
                 }
                 
+                if (numTries == 1)
+                {
+                    processBusRules(session, BRProcessType.eBeforeMerge);
+                }
+    
                 dObj = session.merge(dataObjArg);
                 
                 if (businessRules != null)
                 {
                     businessRules.beforeSave(dObj, session);
+                }
+                
+                if (numTries == 1)
+                {
+                    processBusRules(session, BRProcessType.eBeforeSave);
                 }
 
                 session.saveOrUpdate(dObj);
@@ -2540,6 +2554,12 @@ public class FormViewObj implements Viewable,
                         throw new Exception("Business rules processing failed");
                     }
                 }
+                
+                if (numTries == 1)
+                {
+                    processBusRules(session, BRProcessType.eBeforeSaveCommit);
+                }
+                
                 session.commit();
                 session.flush();
                 
@@ -2560,6 +2580,11 @@ public class FormViewObj implements Viewable,
                         }
                     }
                     deletedItems.clear();
+                }
+                
+                if (numTries == 1)
+                {
+                    processBusRules(session, BRProcessType.eAfterDeleteCommit);
                 }
                 
                 tryAgain = false;
@@ -2680,7 +2705,17 @@ public class FormViewObj implements Viewable,
                 saveState = SAVE_STATE.StaleRecovery;
             }
             
+            if (saveState == SAVE_STATE.StaleRecovery)
+            {
+                processBusRules(session, BRProcessType.eAfterSaveFailure);
+            }
+            
         } while (tryAgain);
+        
+        if (mvParent != null)
+        {
+            mvParent.clearItemsForBusRules();
+        }
         
         return saveState;
     }
@@ -2702,6 +2737,91 @@ public class FormViewObj implements Viewable,
             mvParent.collectionViewState(viewStateList, altView.getMode(), 2);
         }
         return viewStateList;
+    }
+    
+    /**
+     * @param sessionArg the session 
+     * @param processType the type of processing required
+     */
+    private void processBusRules(final DataProviderSessionIFace sessionArg, 
+                                 final BRProcessType processType)
+    {
+        // Allow an exception on any one object, but make sure you get through the list
+        Vector<Object> busRuleItems   = mvParent != null ? mvParent.getBusRulesItems() : null;
+        
+        if (busRuleItems != null)
+        {
+            for (Object obj : busRuleItems)
+            {
+                System.err.println(obj.getClass().getSimpleName()+ " "+ obj.hashCode());
+                
+                try
+                {
+                    if (obj instanceof DataModelObjBase)
+                    {
+                        DataModelObjBase brObj   = (DataModelObjBase)obj;
+                        DBTableInfo      tblInfo = DBTableIdMgr.getInstance().getInfoById(brObj.getTableId());
+                        if (tblInfo != null)
+                        {
+                            BusinessRulesIFace busRule = tblInfo.getBusinessRule();
+                            if (busRule != null)
+                            {
+                                switch (processType)
+                                {
+                                    case eBeforeMerge:
+                                        busRule.beforeMerge(brObj, sessionArg);
+                                        break;
+                                        
+                                    case eBeforeSave:
+                                        busRule.beforeSave(brObj, sessionArg);
+                                        break;
+            
+                                    case eBeforeSaveCommit:
+                                        busRule.beforeSaveCommit(brObj, sessionArg);
+                                        break;
+                                        
+            
+                                    case eAfterSaveCommit:
+                                        busRule.afterSaveCommit(brObj, sessionArg);
+                                        break;
+                                        
+            
+                                    case eAfterSaveFailure:
+                                        busRule.afterSaveFailure(brObj, sessionArg);
+                                        break;
+                                        
+            
+                                    case eBeforeDelete:
+                                        busRule.beforeDelete(brObj, sessionArg);
+                                        break;
+                                        
+            
+                                    case eBeforeDeleteCommit:
+                                        busRule.beforeDeleteCommit(brObj, sessionArg);
+                                        break;
+                                        
+            
+                                    case eAfterDeleteCommit:
+                                        busRule.afterDeleteCommit(brObj);
+                                        break;
+                                    }
+                                }
+                            } else
+                            {
+                                log.error("No Business Rule for class ["+brObj.getDataClass().getName()+"]");
+                            }
+                        } else
+                        {
+                            log.error("The object is not an instance DataModelObjBase class ["+obj.getClass().getName()+"]");
+                        }
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, e);
+                }
+            }
+        }
     }
 
     /**
@@ -3120,9 +3240,10 @@ public class FormViewObj implements Viewable,
             try
             {
                 // Clear the items in the "deleted" cache because they will be deleted anyway.
-                if (mvParent != null && mvParent.getDeletedItems() != null)
+                if (mvParent != null)
                 {
-                    mvParent.getDeletedItems().clear();
+                    mvParent.clearItemsToBeDeleted();
+                    mvParent.clearItemsForBusRules();
                 }
                 
                 FormDataObjIFace fdo   = (FormDataObjIFace)dataObj;
@@ -3146,6 +3267,9 @@ public class FormViewObj implements Viewable,
                         {
                             businessRules.beforeDelete(dbDataObj, session);
                         }
+                        
+                        processBusRules(session, BRProcessType.eBeforeDelete);
+                        
                         session.delete(dbDataObj);
                         if (businessRules != null)
                         {
@@ -3155,6 +3279,9 @@ public class FormViewObj implements Viewable,
                                 throw new Exception("Business rules processing failed");
                             }
                         }
+                        
+                        processBusRules(session, BRProcessType.eBeforeDeleteCommit);
+                        
                         session.commit();
                         session.flush();
                         
@@ -3203,10 +3330,10 @@ public class FormViewObj implements Viewable,
 
         } catch (Exception e)
         {
+            e.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, e);
             log.error("******* " + e);
-            e.printStackTrace();
             
         } finally
         {
@@ -3412,6 +3539,11 @@ public class FormViewObj implements Viewable,
                                 rsController.getRecDisp().setEnabled(true);
                             }
                         }
+                    }
+                    
+                    if (mvParent != null && mvParent.getTopLevel() != null)
+                    {
+                        mvParent.getTopLevel().addBusRuleItem(dataObj);
                     }
                     UIValidator.setIgnoreAllValidation(this, false);
                     //focusFirstFormControl();

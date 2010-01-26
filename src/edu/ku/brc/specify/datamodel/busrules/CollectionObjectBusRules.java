@@ -35,6 +35,7 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -42,6 +43,7 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
@@ -50,6 +52,7 @@ import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.specify.datamodel.PreparationAttachment;
 import edu.ku.brc.specify.datamodel.Project;
 
 /**
@@ -63,6 +66,8 @@ import edu.ku.brc.specify.datamodel.Project;
 public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
 {
     //private static final Logger  log = Logger.getLogger(CollectionObjectBusRules.class);
+    
+    private CollectingEvent  cachedColEve = null;
     
     /**
      * Constructor.
@@ -150,18 +155,6 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 ce.initialize();
                 colObj.addReference(ce, "collectingEvent");
             }
-            
-            /* Need to be able to configure this via prefs
-            if (colObj.getPreparations().size() == 0)
-            {
-                Preparation prep = new Preparation();
-                prep.initialize();
-                prep.setCount(1);
-                prep.setPrepType(getDefaultPrepType());
-                prep.setPreparedDate(Calendar.getInstance());
-                colObj.addReference(prep, "preparations");
-                prep.setPreparedByAgent(getDefaultPreparedByAgent());
-            }*/
         }
     }
 
@@ -231,18 +224,59 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         CollectionObject colObj = (CollectionObject)dataObj;
         if (AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
         {
-            CollectingEvent ce = colObj.getCollectingEvent();
-            if (ce != null)
+            cachedColEve = colObj.getCollectingEvent();
+            if (colObj != null && cachedColEve != null)
+            {
+                colObj.setCollectingEvent(null);
+                cachedColEve.getCollectionObjects().clear();
+            }
+        }
+    }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeSave(dataObj, session);
+        
+       
+        if (AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
+        {
+            CollectionObject colObj = (CollectionObject)dataObj;
+            if (cachedColEve != null)
             {
                 try
                 {
-                    if (ce != null && ce.getId() != null)
+                    if (cachedColEve != null && cachedColEve.getId() != null)
                     {
-                        CollectingEvent mergedCE = session.merge(colObj.getCollectingEvent());
-                        colObj.setCollectingEvent(mergedCE);
+                        cachedColEve = session.merge(cachedColEve);
                     } else
                     {
-                        session.save(colObj.getCollectingEvent());
+                        session.save(cachedColEve);
+                    }
+                    
+                    if (viewable != null && viewable.getMVParent() != null && viewable.getMVParent().getTopLevel() != null)
+                    {
+                        MultiView topMV = viewable.getMVParent().getTopLevel();
+                        topMV.addBusRuleItem(cachedColEve);
+                        
+                        for (CollectingEventAttachment cea : cachedColEve.getAttachmentReferences())
+                        {
+                            topMV.addBusRuleItem(cea);
+                        }
+                        
+                        for (Preparation prep : colObj.getPreparations())
+                        {
+                            topMV.addBusRuleItem(prep);
+                            
+                            for (PreparationAttachment pa : prep.getAttachmentReferences())
+                            {
+                                topMV.addBusRuleItem(pa);
+                            }
+                        }
                     }
                     
                 } catch (Exception ex)
@@ -252,6 +286,18 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionObjectBusRules.class, ex);
                 }
             }
+            
+            // Hook back up
+            if (cachedColEve != null && colObj != null)
+            {
+                colObj.setCollectingEvent(cachedColEve);
+                cachedColEve.getCollectionObjects().add(colObj);
+                cachedColEve = null;
+            } else
+            {
+                log.error("The CE "+cachedColEve+" was null or the CO "+colObj+" was null");
+            }
+                    
         }
     }
     

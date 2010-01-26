@@ -155,9 +155,15 @@ public interface Viewable
     /**
      * Returns a subform by name
      * @param name the name of the sub form to be returned
-     * @return a subform (Viewable)
+     * @return a subform's MultiView
      */
     public abstract MultiView getSubView(final String name);
+
+    /**
+     * Returns a the Parent MultiView, menaing this view's MultiView
+     * @return MultiView
+     */
+    public abstract MultiView getMVParent();
 
     /**
      * List the List with all the ids of the cells of type "field".
