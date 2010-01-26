@@ -49,6 +49,8 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -2747,72 +2749,78 @@ public class FormViewObj implements Viewable,
                                  final BRProcessType processType)
     {
         // Allow an exception on any one object, but make sure you get through the list
-        Vector<Object> busRuleItems   = mvParent != null ? mvParent.getBusRulesItems() : null;
+        HashSet<FormDataObjIFace>             busRuleItems = mvParent != null ? mvParent.getBusRulesItems() : null;
+        HashMap<Integer, BusinessRulesIFace> busRuleHash   = new HashMap<Integer, BusinessRulesIFace>();
         
         if (busRuleItems != null)
         {
-            for (Object obj : busRuleItems)
+            log.debug("processBusRules - ############################ " + (busRuleItems != null ? busRuleItems.size() : "null"));
+            for (FormDataObjIFace obj : busRuleItems)
             {
-                System.err.println(obj.getClass().getSimpleName()+ " "+ obj.hashCode());
+                log.debug(obj.getClass().getSimpleName()+ " "+ obj.hashCode());
                 
                 try
                 {
                     if (obj instanceof DataModelObjBase)
                     {
-                        DataModelObjBase brObj   = (DataModelObjBase)obj;
-                        DBTableInfo      tblInfo = DBTableIdMgr.getInstance().getInfoById(brObj.getTableId());
-                        if (tblInfo != null)
+                        DataModelObjBase brObj     = (DataModelObjBase)obj;
+                        BusinessRulesIFace busRule = busRuleHash.get(obj.getTableId());
+                        if (busRule == null)
                         {
-                            BusinessRulesIFace busRule = tblInfo.getBusinessRule();
-                            if (busRule != null)
+                            DBTableInfo  tblInfo = DBTableIdMgr.getInstance().getInfoById(brObj.getTableId());
+                            if (tblInfo != null)
                             {
-                                switch (processType)
-                                {
-                                    case eBeforeMerge:
-                                        busRule.beforeMerge(brObj, sessionArg);
-                                        break;
-                                        
-                                    case eBeforeSave:
-                                        busRule.beforeSave(brObj, sessionArg);
-                                        break;
-            
-                                    case eBeforeSaveCommit:
-                                        busRule.beforeSaveCommit(brObj, sessionArg);
-                                        break;
-                                        
-            
-                                    case eAfterSaveCommit:
-                                        busRule.afterSaveCommit(brObj, sessionArg);
-                                        break;
-                                        
-            
-                                    case eAfterSaveFailure:
-                                        busRule.afterSaveFailure(brObj, sessionArg);
-                                        break;
-                                        
-            
-                                    case eBeforeDelete:
-                                        busRule.beforeDelete(brObj, sessionArg);
-                                        break;
-                                        
-            
-                                    case eBeforeDeleteCommit:
-                                        busRule.beforeDeleteCommit(brObj, sessionArg);
-                                        break;
-                                        
-            
-                                    case eAfterDeleteCommit:
-                                        busRule.afterDeleteCommit(brObj);
-                                        break;
-                                    }
+                                busRule = tblInfo.getBusinessRule();
+                                busRuleHash.put(obj.getTableId(), busRule);
+                                busRule.beginSecondaryRuleProcessing();
+                            }
+                        }
+                        
+                        if (busRule != null)
+                        {
+                            switch (processType)
+                            {
+                                case eBeforeMerge:
+                                    busRule.beforeMerge(brObj, sessionArg);
+                                    break;
+                                    
+                                case eBeforeSave:
+                                    busRule.beforeSave(brObj, sessionArg);
+                                    break;
+        
+                                case eBeforeSaveCommit:
+                                    busRule.beforeSaveCommit(brObj, sessionArg);
+                                    break;
+                                    
+        
+                                case eAfterSaveCommit:
+                                    busRule.afterSaveCommit(brObj, sessionArg);
+                                    break;
+                                    
+        
+                                case eAfterSaveFailure:
+                                    busRule.afterSaveFailure(brObj, sessionArg);
+                                    break;
+                                    
+        
+                                case eBeforeDelete:
+                                    busRule.beforeDelete(brObj, sessionArg);
+                                    break;
+                                    
+        
+                                case eBeforeDeleteCommit:
+                                    busRule.beforeDeleteCommit(brObj, sessionArg);
+                                    break;
+                                    
+        
+                                case eAfterDeleteCommit:
+                                    busRule.afterDeleteCommit(brObj);
+                                    break;
                                 }
-                            } else
-                            {
-                                log.error("No Business Rule for class ["+brObj.getDataClass().getName()+"]");
                             }
                         } else
                         {
-                            log.error("The object is not an instance DataModelObjBase class ["+obj.getClass().getName()+"]");
+                            log.error("No Business Rule for class ["+obj.getDataClass().getName()+"]");
                         }
                 } catch (Exception e)
                 {
@@ -2820,6 +2828,11 @@ public class FormViewObj implements Viewable,
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, e);
                 }
+            }
+            
+            for (BusinessRulesIFace br : busRuleHash.values())
+            {
+                br.endSecondaryRuleProcessing();
             }
         }
     }

@@ -29,10 +29,12 @@ import org.apache.commons.lang.StringUtils;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.LocalityAttachment;
 
 /**
  * @author rod
@@ -180,5 +182,47 @@ public class LocalityBusRules extends AttachmentOwnerBaseBusRules implements Lis
         setLSID((FormDataObjIFace)dataObj);
 
         return super.afterSaveCommit(dataObj, session);
+    }
+    
+    /**
+     * Add the Attachment Owners and Attachment Holders to MV to be processed.
+     * @param attOwner the owner being processed.
+     */
+    protected void addExtraObjectForProcessing(final Locality attOwner)
+    {
+        
+        if (viewable != null && viewable.getMVParent() != null && viewable.getMVParent().getTopLevel() != null)
+        {
+            MultiView topMV = viewable.getMVParent().getTopLevel();
+            topMV.addBusRuleItem(attOwner);
+            
+            for (LocalityAttachment att : attOwner.getAttachmentReferences())
+            {
+                topMV.addBusRuleItem(att);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeMerge(dataObj, session);
+        
+        addExtraObjectForProcessing((Locality)dataObj);
+    }
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeSave(dataObj, session);
+        
+        addExtraObjectForProcessing((Locality)dataObj);
     }
 }

@@ -76,7 +76,7 @@ public class GiftBusRules extends BaseBusRules
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     @Override
     public void beforeMerge(Object dataObj, DataProviderSessionIFace session)

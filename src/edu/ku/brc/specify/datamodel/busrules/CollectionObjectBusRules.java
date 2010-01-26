@@ -222,6 +222,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         super.beforeMerge(dataObj, session);
         
         CollectionObject colObj = (CollectionObject)dataObj;
+        addExtraObjectForProcessing(colObj);
+        
         if (AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
         {
             cachedColEve = colObj.getCollectingEvent();
@@ -229,10 +231,50 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             {
                 colObj.setCollectingEvent(null);
                 cachedColEve.getCollectionObjects().clear();
+                
+                if (cachedColEve.getAttachmentReferences().size() > 0 && 
+                    viewable != null &&
+                    viewable.getMVParent() != null && 
+                    viewable.getMVParent().getTopLevel() != null)
+                {
+                    MultiView topMV = viewable.getMVParent().getTopLevel();
+                    topMV.addBusRuleItem(cachedColEve);
+                }
             }
+
         }
     }
     
+    /**
+     * Add the Attachment Owners and Attachment Holders to MV to be processed.
+     * @param colObj the Collection Object being processed.
+     */
+    protected void addExtraObjectForProcessing(final CollectionObject colObj)
+    {
+        if (viewable != null && viewable.getMVParent() != null && viewable.getMVParent().getTopLevel() != null)
+        {
+            MultiView topMV = viewable.getMVParent().getTopLevel();
+            topMV.addBusRuleItem(cachedColEve);
+            
+            if (cachedColEve != null)
+            {
+                for (CollectingEventAttachment cea : cachedColEve.getAttachmentReferences())
+                {
+                    topMV.addBusRuleItem(cea);
+                }
+            }
+            
+            for (Preparation prep : colObj.getPreparations())
+            {
+                topMV.addBusRuleItem(prep);
+                
+                for (PreparationAttachment pa : prep.getAttachmentReferences())
+                {
+                    topMV.addBusRuleItem(pa);
+                }
+            }
+        }
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
@@ -241,11 +283,12 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     public void beforeSave(Object dataObj, DataProviderSessionIFace session)
     {
         super.beforeSave(dataObj, session);
-        
        
         if (AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
         {
             CollectionObject colObj = (CollectionObject)dataObj;
+            addExtraObjectForProcessing(colObj);
+            
             if (cachedColEve != null)
             {
                 try
@@ -256,27 +299,6 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                     } else
                     {
                         session.save(cachedColEve);
-                    }
-                    
-                    if (viewable != null && viewable.getMVParent() != null && viewable.getMVParent().getTopLevel() != null)
-                    {
-                        MultiView topMV = viewable.getMVParent().getTopLevel();
-                        topMV.addBusRuleItem(cachedColEve);
-                        
-                        for (CollectingEventAttachment cea : cachedColEve.getAttachmentReferences())
-                        {
-                            topMV.addBusRuleItem(cea);
-                        }
-                        
-                        for (Preparation prep : colObj.getPreparations())
-                        {
-                            topMV.addBusRuleItem(prep);
-                            
-                            for (PreparationAttachment pa : prep.getAttachmentReferences())
-                            {
-                                topMV.addBusRuleItem(pa);
-                            }
-                        }
                     }
                     
                 } catch (Exception ex)

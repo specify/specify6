@@ -28,6 +28,7 @@ import java.awt.event.ItemListener;
 import javax.swing.JCheckBox;
 
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace.CreationMode;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
@@ -35,6 +36,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.tasks.TreeTaskMgr;
@@ -231,6 +233,8 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
     @Override
     public void beforeSave(Object dataObj, DataProviderSessionIFace session)
     {
+        addExtraObjectForProcessing((Taxon)dataObj);
+        
         // make sure to handle all of the attachment stuff
         attachOwnerRules.beforeSave(dataObj, session);
         
@@ -367,5 +371,35 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
         super.formShutdown();
         
         TreeTaskMgr.checkLocks();
+    }
+    
+    /**
+     * Add the Attachment Owners and Attachment Holders to MV to be processed.
+     * @param attOwner the owner being processed.
+     */
+    protected void addExtraObjectForProcessing(final Taxon attOwner)
+    {
+        
+        if (viewable != null && viewable.getMVParent() != null && viewable.getMVParent().getTopLevel() != null)
+        {
+            MultiView topMV = viewable.getMVParent().getTopLevel();
+            topMV.addBusRuleItem(attOwner);
+            
+            for (TaxonAttachment att : attOwner.getAttachmentReferences())
+            {
+                topMV.addBusRuleItem(att);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeMerge(dataObj, session);
+        
+        addExtraObjectForProcessing((Taxon)dataObj);
     }
 }

@@ -45,6 +45,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Loan;
+import edu.ku.brc.specify.datamodel.LoanAttachment;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Shipment;
@@ -345,6 +346,8 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
     @Override
     public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
     {
+        addExtraObjectForProcessing((Loan)dataObj);
+        
          Loan loan = (Loan)dataObj;
         
         //System.out.println("beforeSaveCommit loanNum: "+loan.getLoanNumber());
@@ -383,6 +386,37 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
             }
         }*/
         return super.beforeSaveCommit(dataObj, session);
+    }
+    
+    /**
+     * Add the Attachment Owners and Attachment Holders to MV to be processed.
+     * @param attOwner the owner being processed.
+     */
+    protected void addExtraObjectForProcessing(final Loan attOwner)
+    {
+        
+        if (viewable != null && viewable.getMVParent() != null && viewable.getMVParent().getTopLevel() != null)
+        {
+            MultiView topMV = viewable.getMVParent().getTopLevel();
+            topMV.addBusRuleItem(attOwner);
+            
+            for (LoanAttachment psa : attOwner.getAttachmentReferences())
+            {
+                topMV.addBusRuleItem(psa);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeSave(dataObj, session);
+        
+        addExtraObjectForProcessing((Loan)dataObj);
+
     }
 
     /* (non-Javadoc)

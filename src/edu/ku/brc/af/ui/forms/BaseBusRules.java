@@ -877,6 +877,24 @@ public class BaseBusRules implements BusinessRulesIFace
         return processBusinessRules(dataObj);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BusinessRulesIFace#beginSecondaryRuleProcessing()
+     */
+    @Override
+    public void beginSecondaryRuleProcessing()
+    {
+        
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BusinessRulesIFace#endSecondaryRuleProcessing()
+     */
+    @Override
+    public void endSecondaryRuleProcessing()
+    {
+        
+    }
+
     /**
      * @param data
      */

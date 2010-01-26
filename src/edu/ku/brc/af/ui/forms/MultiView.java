@@ -27,6 +27,7 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -122,7 +123,7 @@ public class MultiView extends JPanel
     
     protected Vector<Object>               deletedItems         = null;
     protected Vector<Object>               toBeSavedItems       = null;
-    protected Vector<Object>               busRulesItems        = null;
+    protected HashSet<FormDataObjIFace>    busRulesItems        = null;
     
     protected CollapsableSeparator         separator            = null;
     
@@ -1475,7 +1476,7 @@ public class MultiView extends JPanel
     {
         if (busRulesItems == null)
         {
-            busRulesItems = new Vector<Object>();
+            busRulesItems = new HashSet<FormDataObjIFace>();
         }
         
         boolean addToList = true;
@@ -1485,7 +1486,7 @@ public class MultiView extends JPanel
         }
         if (addToList)
         {
-            busRulesItems.add(brItem);
+            busRulesItems.add((FormDataObjIFace)brItem);
         }
         
         System.out.println("addBusRuleItem: "+view.getClassName());
@@ -1512,7 +1513,7 @@ public class MultiView extends JPanel
     /**
      * @return the busRulesItems
      */
-    public Vector<Object> getBusRulesItems()
+    public HashSet<FormDataObjIFace> getBusRulesItems()
     {
         return busRulesItems;
     }

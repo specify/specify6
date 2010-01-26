@@ -278,6 +278,15 @@ public interface BusinessRulesIFace
      */
     public abstract void createNewObj(boolean doSetIntoAndValidateArg, Object oldDataObj);
     
+    /**
+     * Called before the objects in the cached HashSet of objects are processed in a loop.
+     */
+    public abstract void beginSecondaryRuleProcessing();
+    
+    /**
+     * Called after the objects in the cached HashSet of objects are processed in a loop.
+     */
+    public abstract void endSecondaryRuleProcessing();
     
     /**
      * Call right before formShutdown is called, but the entire UI is still intact.

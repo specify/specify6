@@ -42,28 +42,24 @@ public class FieldNotebookBusRules extends AttachmentOwnerBaseBusRules
     {
         super(FieldNotebook.class);
     }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+    
+    /**
+     * Add the Attachment Owners and Attachment Holders to MV to be processed.
+     * @param attOwner the owner being processed.
      */
-    @Override
-    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
+    protected void addExtraObjectForProcessing(final FieldNotebook attOwner)
     {
-        super.beforeSave(dataObj, session);
-        
-        
         if (viewable != null && viewable.getMVParent() != null && viewable.getMVParent().getTopLevel() != null)
         {
             MultiView topMV = viewable.getMVParent().getTopLevel();
+            topMV.addBusRuleItem(attOwner);
             
-            FieldNotebook fieldNotebook = (FieldNotebook)dataObj;
-            
-            for (FieldNotebookAttachment fnba : fieldNotebook.getAttachmentReferences())
+            for (FieldNotebookAttachment fnba : attOwner.getAttachmentReferences())
             {
                 topMV.addBusRuleItem(fnba);
             }
             
-            for (FieldNotebookPageSet pageSet : fieldNotebook.getPageSets())
+            for (FieldNotebookPageSet pageSet : attOwner.getPageSets())
             {
                 topMV.addBusRuleItem(pageSet);
                 
@@ -83,6 +79,30 @@ public class FieldNotebookBusRules extends AttachmentOwnerBaseBusRules
                 }
             }
         }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeMerge(dataObj, session);
+        
+        addExtraObjectForProcessing((FieldNotebook)dataObj);
+    }
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeSave(dataObj, session);
+        
+        addExtraObjectForProcessing((FieldNotebook)dataObj);
+
     }
 
 }

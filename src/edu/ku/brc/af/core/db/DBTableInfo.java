@@ -307,6 +307,9 @@ public class DBTableInfo extends DBInfoBase
         this.businessRuleName = businessRule;
     }
     
+    /**
+     * @return
+     */
     public BusinessRulesIFace getBusinessRule()
     {
         if (StringUtils.isNotEmpty(businessRuleName))

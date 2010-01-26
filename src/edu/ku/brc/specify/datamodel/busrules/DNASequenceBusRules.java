@@ -23,16 +23,25 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.af.ui.IllustrativeBarCodeUI;
+import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.DNASequence;
+import edu.ku.brc.specify.datamodel.DNASequencingRun;
+import edu.ku.brc.specify.datamodel.DNASequencingRunAttachment;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.DocumentAdaptor;
 
-public class DNASequenceBusRules extends AttachmentOwnerBaseBusRules implements CommandListener
+public class DNASequenceBusRules extends BaseBusRules implements CommandListener
 {
+    private static final Logger log = Logger.getLogger(DNASequenceBusRules.class);
+    
     protected IllustrativeBarCodeUI  barCodeUI = null;
     
     /**
@@ -173,7 +182,6 @@ public class DNASequenceBusRules extends AttachmentOwnerBaseBusRules implements 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CommandListener#doCommand(edu.ku.brc.ui.CommandAction)
      */
-    @SuppressWarnings("unchecked")
     @Override
     public void doCommand(final CommandAction cmdAction)
     {
@@ -208,5 +216,46 @@ public class DNASequenceBusRules extends AttachmentOwnerBaseBusRules implements 
             }
         }*/
     }
+    
+    /**
+     * Add the Attachment Owners and Attachment Holders to MV to be processed.
+     * @param attOwner the owner being processed.
+     */
+    protected void addExtraObjectForProcessing(final DNASequence attOwner)
+    {
+        if (viewable != null && viewable.getMVParent() != null && viewable.getMVParent().getTopLevel() != null)
+        {
+            MultiView topMV = viewable.getMVParent().getTopLevel();
+            
+            for (DNASequencingRun dnasr : attOwner.getDnaSequencingRuns())
+            {
+                for (DNASequencingRunAttachment att : dnasr.getAttachmentReferences())
+                topMV.addBusRuleItem(att);
+            }
+        }
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeMerge(dataObj, session);
+        
+        addExtraObjectForProcessing((DNASequence)dataObj);
+    }
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeSave(dataObj, session);
+        
+        addExtraObjectForProcessing((DNASequence)dataObj);
+
+    }
 }

@@ -1,60 +1,59 @@
-/* Copyright (C) 2009, University of Kansas Center for Research
- * 
- * Specify Software Project, specify@ku.edu, Biodiversity Institute,
- * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
- * 
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
+/* This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+/**
  * 
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
+ */
 package edu.ku.brc.specify.datamodel.busrules;
 
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.datamodel.ConservEvent;
-import edu.ku.brc.specify.datamodel.ConservEventAttachment;
+import edu.ku.brc.specify.datamodel.DNASequencingRun;
+import edu.ku.brc.specify.datamodel.DNASequencingRunAttachment;
 
 /**
- * @author rod
+ * @author rods
  *
  * @code_status Alpha
  *
- * Feb 11, 2008
+ * Created Date: Jan 26, 2010
  *
  */
-public class ConservEventBusRules extends AttachmentOwnerBaseBusRules
+public class DNASequencingRunAttachmentBusRules extends AttachmentOwnerBaseBusRules
 {
+
     /**
      * 
      */
-    public ConservEventBusRules()
+    public DNASequencingRunAttachmentBusRules()
     {
-        super(ConservEvent.class);
+        super();
     }
-    
+
     /**
      * Add the Attachment Owners and Attachment Holders to MV to be processed.
      * @param attOwner the owner being processed.
      */
-    protected void addExtraObjectForProcessing(final ConservEvent attOwner)
+    protected void addExtraObjectForProcessing(final DNASequencingRun attOwner)
     {
-        
         if (viewable != null && viewable.getMVParent() != null && viewable.getMVParent().getTopLevel() != null)
         {
             MultiView topMV = viewable.getMVParent().getTopLevel();
+            
             topMV.addBusRuleItem(attOwner);
             
-            for (ConservEventAttachment att : attOwner.getAttachmentReferences())
+            for (DNASequencingRunAttachment att : attOwner.getAttachmentReferences())
             {
                 topMV.addBusRuleItem(att);
             }
@@ -69,7 +68,7 @@ public class ConservEventBusRules extends AttachmentOwnerBaseBusRules
     {
         super.beforeMerge(dataObj, session);
         
-        addExtraObjectForProcessing((ConservEvent)dataObj);
+        addExtraObjectForProcessing((DNASequencingRun)dataObj);
     }
 
 
@@ -81,6 +80,7 @@ public class ConservEventBusRules extends AttachmentOwnerBaseBusRules
     {
         super.beforeSave(dataObj, session);
         
-        addExtraObjectForProcessing((ConservEvent)dataObj);
+        addExtraObjectForProcessing((DNASequencingRun)dataObj);
+
     }
 }

@@ -23,9 +23,11 @@ import javax.swing.JButton;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
+import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Locality;
 
@@ -140,5 +142,48 @@ public class CollectingEventBusRules extends AttachmentOwnerBaseBusRules
         }
         
         return false;
+    }
+    
+    /**
+     * Add the Attachment Owners and Attachment Holders to MV to be processed.
+     * @param  attOwner the owner being processed.
+     */
+    protected void addExtraObjectForProcessing(final CollectingEvent attOwner)
+    {
+        
+        if (viewable != null && viewable.getMVParent() != null && viewable.getMVParent().getTopLevel() != null)
+        {
+            MultiView topMV = viewable.getMVParent().getTopLevel();
+            topMV.addBusRuleItem(attOwner);
+            
+            for (CollectingEventAttachment att : attOwner.getAttachmentReferences())
+            {
+                topMV.addBusRuleItem(att);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeMerge(dataObj, session);
+        
+        addExtraObjectForProcessing((CollectingEvent)dataObj);
+    }
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeSave(dataObj, session);
+        
+        addExtraObjectForProcessing((CollectingEvent)dataObj);
+
     }
 }

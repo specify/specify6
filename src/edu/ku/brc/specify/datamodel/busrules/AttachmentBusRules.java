@@ -20,11 +20,14 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 
 import org.apache.commons.io.FilenameUtils;
@@ -53,6 +56,9 @@ public class AttachmentBusRules extends BaseBusRules
                           "fieldnotebookpagesetattachment","loanattachment",              "localityattachment",
                           "permitattachment",              "preparationattachment",       "repositoryagreementattachment",
                           "taxonattachment"};
+    
+    private ValBrowseBtnPanel browser = null;
+    
     /**
      * 
      */
@@ -71,43 +77,64 @@ public class AttachmentBusRules extends BaseBusRules
         
         if (formViewObj != null)
         {
-            Component origComp  = formViewObj.getCompById("origFilename");
-            Component titleComp = formViewObj.getCompById("title");
             
-            if (origComp instanceof EditViewCompSwitcherPanel && titleComp instanceof ValTextField)
+            final Component origComp  = formViewObj.getCompById("origFilename");
+            final Component titleComp = formViewObj.getCompById("title");
+            
+            if (origComp instanceof EditViewCompSwitcherPanel)
             {
-                final EditViewCompSwitcherPanel evcsp = (EditViewCompSwitcherPanel)origComp;
-                
-                final ValTextField  titleTF = (ValTextField)titleComp;
-                final ValTextField browserTF = ((ValBrowseBtnPanel)evcsp.getComp(true)).getValTextField();
-                
-                browserTF.getDocument().addDocumentListener(new DocumentAdaptor() {
-                    @Override
-                    protected void changed(DocumentEvent e)
-                    {
-                        String filePath = browserTF.getText();
-                        if (titleTF.getText().isEmpty() && !filePath.isEmpty())
-                        {
-                            titleTF.setText(FilenameUtils.getBaseName(browserTF.getText()));
-                        }
-                    }
+                EditViewCompSwitcherPanel evcsp = (EditViewCompSwitcherPanel)origComp;
+                browser = (ValBrowseBtnPanel)evcsp.getComp(true);
+            }
+            
+            if (browser != null)
+            {
+                if (titleComp instanceof ValTextField)
+                {
+                    final ValTextField  titleTF = (ValTextField)titleComp;
+                    final ValTextField browserTF = browser.getValTextField();
                     
-                });
-                
-                browserTF.addFocusListener(new FocusAdapter() {
-                    @Override
-                    public void focusLost(FocusEvent e)
-                    {
-                        super.focusLost(e);
-                        
-                        String filePath = browserTF.getText();
-                        if (titleTF.getText().isEmpty() && !filePath.isEmpty())
+                    browserTF.getDocument().addDocumentListener(new DocumentAdaptor() {
+                        @Override
+                        protected void changed(DocumentEvent e)
                         {
-                            titleTF.setText(FilenameUtils.getBaseName(filePath));
+                            String filePath = browserTF.getText();
+                            if (titleTF.getText().isEmpty() && !filePath.isEmpty())
+                            {
+                                titleTF.setText(FilenameUtils.getBaseName(browserTF.getText()));
+                            }
                         }
+                        
+                    });
+                    
+                    browserTF.addFocusListener(new FocusAdapter() {
+                        @Override
+                        public void focusLost(FocusEvent e)
+                        {
+                            super.focusLost(e);
+                            
+                            String filePath = browserTF.getText();
+                            if (titleTF.getText().isEmpty() && !filePath.isEmpty())
+                            {
+                                titleTF.setText(FilenameUtils.getBaseName(filePath));
+                            }
+                        }
+                    });
+                }
+                
+                formViewObj.getRsController().getNewRecBtn().addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run()
+                            {
+                                browser.getBrowseBtn().doClick();
+                            }
+                        });
                     }
                 });
-                
             }
         }
     }

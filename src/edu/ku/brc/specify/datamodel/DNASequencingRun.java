@@ -52,8 +52,7 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "dnasequencingrun")
-public class DNASequencingRun extends CollectionMember 
-	implements AttachmentOwnerIFace<DNASequencingRunAttachment>, Orderable
+public class DNASequencingRun extends CollectionMember implements AttachmentOwnerIFace<DNASequencingRunAttachment>, Orderable
 {
 	protected Integer dnaSequencingRunId;
 	protected Integer ordinal;

@@ -23,6 +23,8 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -35,6 +37,7 @@ import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
 import edu.ku.brc.specify.datamodel.ConservDescriptionAttachment;
 import edu.ku.brc.specify.datamodel.ConservEventAttachment;
 import edu.ku.brc.specify.datamodel.DNASequencingRunAttachment;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.FieldNotebookAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment;
@@ -59,8 +62,9 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
 {
     protected static Logger log = Logger.getLogger(AttachmentReferenceBaseBusRules.class);
     
-    private BusinessRulesIFace br = new AttachmentBusRules();
-    
+    /**
+     * 
+     */
     public AttachmentReferenceBaseBusRules()
     {
         super( AccessionAttachment.class,
@@ -138,6 +142,45 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
         super.afterDeleteCommit(dataObj);
     }
     
+    /**
+     * @param cls
+     * @return
+     */
+    private BusinessRulesIFace getBusRuleForClass(final Object dObj)
+    {
+        BusinessRulesIFace busRule = null;
+        DataModelObjBase   brObj   = (DataModelObjBase)dObj;
+        DBTableInfo        tblInfo = DBTableIdMgr.getInstance().getInfoById(brObj.getTableId());
+        if (tblInfo != null)
+        {
+            busRule = tblInfo.getBusinessRule();
+        }
+        return busRule;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeMerge(dataObj, session);
+        
+        ObjectAttachmentIFace<?> attRef = (ObjectAttachmentIFace<?>)dataObj;
+        getBusRuleForClass(attRef.getAttachment()).beforeMerge(attRef.getAttachment(), session);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeSave(dataObj, session);
+        ObjectAttachmentIFace<?> attRef = (ObjectAttachmentIFace<?>)dataObj;
+        getBusRuleForClass(attRef.getAttachment()).beforeSave(attRef.getAttachment(), session);
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
@@ -145,8 +188,7 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
     public boolean beforeSaveCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
     {
         ObjectAttachmentIFace<?> attRef = (ObjectAttachmentIFace<?>)dataObj;
-        
-        return br.afterSaveCommit(attRef.getAttachment(), session);
+        return getBusRuleForClass(attRef.getAttachment()).afterSaveCommit(attRef.getAttachment(), session);
     }
 
     /* (non-Javadoc)
