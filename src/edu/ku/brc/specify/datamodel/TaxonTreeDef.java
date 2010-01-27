@@ -60,6 +60,7 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
     public static final int ORDER         = 100;
     public static final int SUBORDER      = 110;
     public static final int INFRAORDER    = 120;
+    public static final int PARVORDER     = 125; 		    
     public static final int SUPERFAMILY   = 130;
     public static final int FAMILY        = 140;
     public static final int SUBFAMILY     = 150;
@@ -143,6 +144,8 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
 				SUBORDER));
 		result.add(new TreeDefItemStandardEntry(getLevelName(INFRAORDER),
 				INFRAORDER));
+		result.add(new TreeDefItemStandardEntry(getLevelName(PARVORDER),
+				PARVORDER));
 		result.add(new TreeDefItemStandardEntry(getLevelName(SUPERFAMILY),
 				SUPERFAMILY));
 		result
@@ -224,6 +227,7 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
             case ORDER: return "Order";  //$NON-NLS-1$
             case SUBORDER: return "Suborder";  //$NON-NLS-1$
             case INFRAORDER: return "Infraorder";  //$NON-NLS-1$
+            case PARVORDER: return "Parvorder"; //$NON-NLS-1$		
             case SUPERFAMILY: return "Superfamily";  //$NON-NLS-1$
             case FAMILY: return "Family";  //$NON-NLS-1$
             case SUBFAMILY: return "Subfamily";  //$NON-NLS-1$
