@@ -261,7 +261,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                     cachedColEve.getCollectionObjects().clear();
                 } catch (org.hibernate.LazyInitializationException ex)
                 {
-                    ex.printStackTrace();
+                    //ex.printStackTrace();
                 }
             }
         }
