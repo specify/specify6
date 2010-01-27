@@ -823,6 +823,10 @@ public class ReportsBaseTask extends BaseTask
                 {
                     doLabels(cmdAction.getPropertyAsString("file"), cmdAction.getPropertyAsString("title"), recordSet, params, this, (ImageIcon)cmdAction.getProperty("icon"));
                 }
+                else
+                {
+                	UIRegistry.displayLocalizedStatusBarText("RecordSetTask.NoRecordsets");
+                }
             }
             
         }
