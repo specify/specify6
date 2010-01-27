@@ -1227,10 +1227,22 @@ public class ReportsBaseTask extends BaseTask
 			String hql = reportId != null ? "from SpReport where id = "  + reportId : 
 				"from SpReport where appResourceId = " + resourceId;
 			SpReport rep = (SpReport) session.getData(hql);
+			SpAppResource repRes = null;
 			if (rep != null) 
 			{
-	        	((SpecifyAppContextMgr) AppContextMgr.getInstance()).removeAppResourceSp(rep.getAppResource()
-	                    .getSpAppResourceDir(), rep.getAppResource());
+	        	repRes = rep.getAppResource();
+//				((SpecifyAppContextMgr) AppContextMgr.getInstance()).removeAppResourceSp(rep.getAppResource()
+//	                    .getSpAppResourceDir(), rep.getAppResource());
+			}
+			else
+			{
+				hql = "from SpAppResource where id = " + resourceId;
+				repRes = (SpAppResource)session.getData(hql);
+			}
+			if (repRes != null) 
+			{
+				((SpecifyAppContextMgr) AppContextMgr.getInstance()).removeAppResourceSp(repRes
+	                    .getSpAppResourceDir(), repRes);
 			}
 		} catch (Exception e) 
 		{
