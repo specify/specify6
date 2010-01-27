@@ -62,6 +62,7 @@ import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.JPAQuery;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.stats.BarChartPanel;
 import edu.ku.brc.stats.StatDataItem;
@@ -164,9 +165,9 @@ public class StatsPane extends BaseSubPane
             
         } catch (Exception ex)
         {
+            log.error(ex);
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(StatsPane.class, ex);
-            log.error(ex);
         }
         return QueryType.SQL;
     }
@@ -223,7 +224,8 @@ public class StatsPane extends BaseSubPane
      */
     protected StatGroupTable processGroupItems(final Element  boxElement, 
                                                final String   title, 
-                                               final String[] colNames)
+                                               final String[] colNames,
+                                               final boolean  hasResBundle)
     {
         StatGroupTable groupTable = null;
         
@@ -234,7 +236,7 @@ public class StatsPane extends BaseSubPane
             for (Object io : items)
             {
                 Element itemElement = (Element)io;
-                String  itemTitle   = getAttr(itemElement, "title", "N/A"); //$NON-NLS-1$ //$NON-NLS-2$
+                String  itemTitle   = getStrFromAttr(itemElement, "title", hasResBundle); //$NON-NLS-1$
                 
                 String  formatStr  = null;
                 Element formatNode = (Element)itemElement.selectSingleNode("sql/format"); //$NON-NLS-1$
@@ -343,33 +345,60 @@ public class StatsPane extends BaseSubPane
     }
     
     /**
+     * @param str
+     * @param hasResBundle
+     * @return
+     */
+    private String getStrFromAttr(final String str, final boolean hasResBundle)
+    {
+        if (StringUtils.isNotEmpty(str) && !str.equals(" "))
+        {
+            return hasResBundle ? UIRegistry.getResourceString(str) : str;
+        }
+        return " ";
+    }
+
+    /**
+     * @param boxElement
+     * @param attr
+     * @param hasResBundle
+     * @return
+     */
+    private String getStrFromAttr(final Element boxElement, final String attr, final boolean hasResBundle)
+    {
+        String str = getAttr(boxElement, attr, null);
+        return getStrFromAttr(str, hasResBundle);
+    }
+    
+    /**
      * @param boxElement
      * @return
      */
-    protected Component processBox(final Element boxElement)
+    protected Component processBox(final Element boxElement, final boolean hasResBundle)
     {
         Component comp = null;
         
         int    descCol   = getAttr(boxElement, "desccol", -1); //$NON-NLS-1$
         int    valCol    = getAttr(boxElement, "valcol", -1); //$NON-NLS-1$
-        String descTitle = getAttr(boxElement, "desctitle", " "); //$NON-NLS-1$ //$NON-NLS-2$
-        String title     = getAttr(boxElement, "title", ""); //$NON-NLS-1$ //$NON-NLS-2$
-        String noresults = getAttr(boxElement, "noresults", null); //$NON-NLS-1$
+        String descTitle = getStrFromAttr(boxElement, "desctitle", hasResBundle); //$NON-NLS-1$
+        String title     = getStrFromAttr(boxElement, "title",     hasResBundle); //$NON-NLS-1$
+        String noresults = getStrFromAttr(boxElement, "noresults", hasResBundle); //$NON-NLS-1$
         
         //log.debug("***** "+title+" *******");
         
         String[] colNames = null;
         if (valCol != -1 && descCol == -1)
         {
-            colNames = new String[] {getAttr(boxElement, "valtitle", " ")}; //$NON-NLS-1$ //$NON-NLS-2$
+            colNames = new String[] {getStrFromAttr(boxElement, "valtitle", hasResBundle)};
             
         } else if (descCol != -1 && valCol == -1 && StringUtils.isNotEmpty(descTitle))
         {
-            colNames = new String[] {descTitle};
+            colNames = new String[] {getStrFromAttr(descTitle, hasResBundle)};
             
         } else
         {
-            colNames = new String[] {descTitle, getAttr(boxElement, "valtitle", " ")}; //$NON-NLS-1$ //$NON-NLS-2$
+            colNames = new String[] {getStrFromAttr(descTitle, hasResBundle), 
+                                     getStrFromAttr(boxElement, "valtitle", hasResBundle)}; //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         Element sqlElement = (Element)boxElement.selectSingleNode("sql"); //$NON-NLS-1$
@@ -460,7 +489,7 @@ public class StatsPane extends BaseSubPane
 
         } else
         {
-            comp = processGroupItems(boxElement, title, colNames);
+            comp = processGroupItems(boxElement, title, colNames, hasResBundle);
         }
         
         return comp;
@@ -494,6 +523,15 @@ public class StatsPane extends BaseSubPane
 
             // count up rows and column
             StringBuilder rowsDef = new StringBuilder(128);
+            
+            boolean hasResBundle  = false; 
+            Element panelEl       = (Element)rootElement.selectObject("/panel");
+            String  resBundleName = XMLHelper.getAttr(panelEl, "resource", null);
+            if (StringUtils.isNotEmpty(resBundleName))
+            {
+                hasResBundle = true;
+                UIRegistry.loadAndPushResourceBundle(resBundleName);
+            }
 
             List<?> rows = rootElement.selectNodes("/panel/row"); //$NON-NLS-1$
             int maxCols = 0;
@@ -556,7 +594,7 @@ public class StatsPane extends BaseSubPane
 
                     } else // The default is "Box"
                     {
-                        comp = processBox(boxElement);
+                        comp = processBox(boxElement, hasResBundle);
                     }
 
                     if (comp != null)
@@ -575,6 +613,11 @@ public class StatsPane extends BaseSubPane
                     }
                 } // boxes
                 y += 2;
+            }
+            
+            if (hasResBundle)
+            {
+                UIRegistry.popResourceBundle();
             }
 
             setBackground(bgColor);
