@@ -88,6 +88,7 @@ public class MultiView extends JPanel
     public static final int USE_ONLY_CREATION_MODE =  512; // Create only the AltViews that have the same creation mode
     public static final int DONT_USE_EMBEDDED_SEP  = 1024; // use the internal embedded separator
     public static final int NO_MORE_BTN_FOR_SEP    = 2048; // doesn't include the separator's 'more' btn
+    public static final int COLLAPSE_SEPARATOR     = 4096; // Make the Collapse Separator collapsed
 
     // Statics
     private static final Logger log = Logger.getLogger(MultiView.class);
@@ -352,12 +353,15 @@ public class MultiView extends JPanel
                 }
             }
             this.cardPanel = new JPanel(cardLayout);
+            this.cardPanel.setVisible(!isOptionOn(options, COLLAPSE_SEPARATOR));
+            
             this.separator = new CollapsableSeparator(title, !isOptionOn(options, NO_MORE_BTN_FOR_SEP));
             this.separator.setInnerComp(this.cardPanel);
             this.cardPanel.setOpaque(false);
             
             add(this.separator, BorderLayout.NORTH);
             add(this.cardPanel, BorderLayout.CENTER);
+            
         } else
         {
             setLayout(cardLayout);
@@ -1715,9 +1719,12 @@ public class MultiView extends JPanel
         log.debug("NO_SCROLLBARS         ["+((options & MultiView.NO_SCROLLBARS) == MultiView.NO_SCROLLBARS ? "true" : "false")+"]");
         log.debug("ADD_SEARCH_BTN        ["+((options & MultiView.ADD_SEARCH_BTN) == MultiView.ADD_SEARCH_BTN ? "true" : "false")+"]");
         log.debug("DONT_ADD_ALL_ALTVIEWS ["+((options & MultiView.DONT_ADD_ALL_ALTVIEWS) == MultiView.DONT_ADD_ALL_ALTVIEWS ? "true" : "false")+"]");
+        log.debug("USE_ONLY_CREATION_MODE["+((options & MultiView.USE_ONLY_CREATION_MODE) == MultiView.USE_ONLY_CREATION_MODE ? "true" : "false")+"]");
+        log.debug("DONT_USE_EMBEDDED_SEP ["+((options & MultiView.DONT_USE_EMBEDDED_SEP) == MultiView.DONT_USE_EMBEDDED_SEP ? "true" : "false")+"]");
+        log.debug("NO_MORE_BTN_FOR_SEP   ["+((options & MultiView.NO_MORE_BTN_FOR_SEP) == MultiView.NO_MORE_BTN_FOR_SEP ? "true" : "false")+"]");
+        log.debug("COLLAPSE_SEPARATOR    ["+((options & MultiView.COLLAPSE_SEPARATOR) == MultiView.COLLAPSE_SEPARATOR ? "true" : "false")+"]");
         log.debug(" ");        
     }
-    
     
     class ViewState 
     {

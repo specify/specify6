@@ -205,5 +205,13 @@ public class CollapsableSeparator extends JPanel
                  });
             }
         }
-    }    
+    }
+
+    /**
+     * @return the moreBtn
+     */
+    public JCheckBox getMoreBtn()
+    {
+        return moreBtn;
+    }   
 }
