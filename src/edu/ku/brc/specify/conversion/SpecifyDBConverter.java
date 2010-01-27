@@ -1399,6 +1399,10 @@ public class SpecifyDBConverter
                 idMapperMgr.cleanup();
             }
 
+            //This will convert Specify5 queries exported from the 5 database to a file that can be imported
+            //into the six database. Need to have standard location for files. Can probably also import the queries here.
+            //QueryConverter.convert("/home/timo/Desktop/KUI_FishQueries.xml", "/home/timo/convertedSpQ.xml", "/home/timo/UnconvertedFields.xml");
+
             frame.setTitle("Done - " + dbNameDest);
             frame.incOverall();
             frame.processDone();
