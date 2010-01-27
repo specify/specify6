@@ -12,7 +12,7 @@
 	<parameter name="title" class="java.lang.String" isForPrompting="false">	</parameter>
 	<parameter name="subtitle" class="java.lang.String" isForPrompting="false">	</parameter>
 	<parameter name="DATASOURCE" class="java.lang.Object" isForPrompting="false">	</parameter>
-	<parameter name="footer" class="java.lang.String" isForPrompting="false">	</parameter>
+	<parameter name="footer" class="java.lang.String" isForPrompting="true">	</parameter>
 	<field name="commonName" class="java.lang.String">	</field>
 	<field name="family" class="java.lang.String">	</field>
 	<field name="startDate" class="java.lang.String">	</field>
