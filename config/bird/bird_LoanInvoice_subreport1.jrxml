@@ -143,7 +143,7 @@ where LoanID $P!{itemnum} order by CatalogNumber]]></queryString>
 		</columnHeader>
 		<detail>
 			<band height="63"  isSplitAllowed="true" >
-				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="8"
 						y="7"
@@ -156,7 +156,7 @@ where LoanID $P!{itemnum} order by CatalogNumber]]></queryString>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[((edu.ku.brc.specify.config.Scriptlet)$P{REPORT_SCRIPTLET}).formatCatNo($F{CatalogNumber})]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="401"
 						y="8"
@@ -169,7 +169,7 @@ where LoanID $P!{itemnum} order by CatalogNumber]]></queryString>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{Quantity} + " " + $F{Name} +  " of " + ((edu.ku.brc.specify.config.Scriptlet)$P{REPORT_SCRIPTLET}).calcLoanQuantity($F{Count}, $F{QuantityReturned}, $F{QuantityResolved}) + " " + $F{Name}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="120"
 						y="15"
@@ -182,7 +182,7 @@ where LoanID $P!{itemnum} order by CatalogNumber]]></queryString>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{TaxonFullName}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="85"
 						y="30"
@@ -195,7 +195,7 @@ where LoanID $P!{itemnum} order by CatalogNumber]]></queryString>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[((edu.ku.brc.specify.config.Scriptlet)$P{REPORT_SCRIPTLET}).buildLocalityString($F{FullName}, $F{LocalityName}, $F{Lat1Text}, $F{Long1Text})]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="85"
 						y="42"
@@ -208,7 +208,7 @@ where LoanID $P!{itemnum} order by CatalogNumber]]></queryString>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA["Field No.: " + $F{FieldNumber}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="304"
 						y="42"

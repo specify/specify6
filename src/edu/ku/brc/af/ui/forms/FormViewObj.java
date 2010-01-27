@@ -2017,11 +2017,11 @@ public class FormViewObj implements Viewable,
         if (shouldDoCarryForward)
         {
             // We don't need a Session when we are not cloning sets.
-            if (false)
-            {
-                carryFwdInfo.carryForward(businessRules, carryFwdDataObj, obj);
-                
-            } else
+            //if (false)
+            //{
+            //    carryFwdInfo.carryForward(businessRules, carryFwdDataObj, obj);
+            //    
+            //} else
             {
                 DataProviderSessionIFace sessionLocal = null;
                 try
@@ -2295,14 +2295,14 @@ public class FormViewObj implements Viewable,
      */
     protected void saveOnThread(final boolean saveAndNewArg)
     {
-        if (true)
+        //if (true)
         {
             if (saveObject() && saveAndNewArg)
             {
                createNewDataObject(true);
             }
             
-        } else
+        }/* else
         {
             UIRegistry.writeSimpleGlassPaneMsg("Saving...", 20); // I18N
             
@@ -2310,9 +2310,6 @@ public class FormViewObj implements Viewable,
             
             javax.swing.SwingWorker<Integer, Integer> bldWorker = new javax.swing.SwingWorker<Integer, Integer>()
             {
-                /* (non-Javadoc)
-                 * @see javax.swing.SwingWorker#doInBackground()
-                 */
                 @Override
                 protected Integer doInBackground() throws Exception
                 {
@@ -2335,7 +2332,7 @@ public class FormViewObj implements Viewable,
             };
             
             bldWorker.execute();
-        }
+        }*/
     }
     
     /* (non-Javadoc)
@@ -4741,6 +4738,7 @@ public class FormViewObj implements Viewable,
             draggableRecIdentifier.setFormDataObj(formDataObj);
         }
         
+        boolean hasDefault = false;
         if (weHaveData)
         {
             //log.debug("*************************** weHaveData!" + dataObj);
@@ -4767,6 +4765,14 @@ public class FormViewObj implements Viewable,
                     if (cellField.isIgnoreSetGet())
                     {
                         continue;
+                    }
+                    
+                    //System.out.println(this.dataObj);
+                    
+                    boolean hasID = dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() != null;
+                    if (this.dataObj != null && !hasID && !hasDefault && StringUtils.isNotEmpty(defaultValue))
+                    {
+                       hasDefault = true; 
                     }
                     
                     boolean isTextFieldPerMode = cellField.isTextFieldForMode(altView.getMode());
@@ -4874,7 +4880,7 @@ public class FormViewObj implements Viewable,
                     
                     if (data != null)
                     {
-                        if (((FormCellSubViewIFace)fieldInfo.getFormCell()).isSingleValueFromSet() && data instanceof Set)
+                        if (((FormCellSubViewIFace)fieldInfo.getFormCell()).isSingleValueFromSet() && data instanceof Set<?>)
                         {
                             Set<?> set = (Set<?>)data;
                             if (set.size() > 0)
@@ -4915,10 +4921,26 @@ public class FormViewObj implements Viewable,
             }
         }
         
+        
         // Adjust the formValidator now that all the data is in the controls
-        if (doResetAfterFill && formValidator != null)
+        //boolean doReset = !hasDefault || formValidator == null || !formValidator.hasChanged();
+        if (dataObj != null)
         {
-            formValidator.reset(MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT));
+            System.out.println("hasDefault: "+hasDefault + "  doResetAfterFill: "+doResetAfterFill+"  "+(formValidator != null ? formValidator.getName() :""));
+        } else
+        {
+            System.out.println("hasDefault: "+hasDefault);
+        }
+        
+        if (formValidator != null)
+        {
+            if (this.dataObj == null || (!hasDefault && doResetAfterFill))
+            {
+                formValidator.reset(MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT));
+            } else
+            {
+                formValidator.setHasChanged(true);
+            }
         }
         
         if (businessRules != null)
@@ -5025,7 +5047,8 @@ public class FormViewObj implements Viewable,
                 
                 for (FVOFieldInfo fieldInfo : controlsById.values())
                 {
-                    //String nm = fieldInfo.getFormCell().getName();
+                    String nm = fieldInfo.getFormCell().getName();
+                    System.out.println(nm);
                     //if (nm.equals("collection.collectionName"))
                     //{
                     //    int x = 0;
@@ -5356,7 +5379,7 @@ public class FormViewObj implements Viewable,
     {
 
         Iterator<?> iter = null;
-        if (data instanceof Set)
+        if (data instanceof Set<?>)
         {
             iter = ((Set<?>)data).iterator();
 

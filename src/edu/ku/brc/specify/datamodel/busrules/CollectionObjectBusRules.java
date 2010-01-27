@@ -154,6 +154,36 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             }
         }
     }
+    
+    /*
+     
+        if (status == STATUS.OK)
+        {
+            String sqlPart = String.format("SELECT COUNT(*) FROM collectionobject co INNER JOIN determination d ON co.CollectionObjectID = d.CollectionObjectID WHERE co.CollectionObjectID = %d", colObj.getId());
+            // check that a current determination exists
+            int detCnt = BasicSQLUtils.getCountAsInt(sqlPart);
+            if (detCnt > 0)
+            {
+                String sql = String.format("%s AND IsCurrent <> 0", sqlPart);
+                int currents = BasicSQLUtils.getCountAsInt(sql);
+                
+                if (currents != 1)
+                {
+                    status = STATUS.Error;
+                }
+                if (currents == 0)
+                {
+                    reasonList.add(getResourceString("CollectionObjectBusRules.CURRENT_DET_REQUIRED"));
+                }
+                else
+                {
+                    reasonList.add(getResourceString("CollectionObjectBusRules.ONLY_ONE_CURRENT_DET"));
+                }
+            }
+        }
+
+     
+     */
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object)

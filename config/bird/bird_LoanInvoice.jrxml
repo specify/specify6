@@ -92,7 +92,7 @@ WHERE LoanID $P!{itemnum}]]></queryString>
 					</textElement>
 				<text><![CDATA[Loan # :]]></text>
 				</staticText>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="481"
 						y="1"
@@ -131,7 +131,7 @@ WHERE LoanID $P!{itemnum}]]></queryString>
 					</textElement>
 				<text><![CDATA[Due Date:]]></text>
 				</staticText>
-				<textField isStretchWithOverflow="false" pattern="yyyy/MM/dd" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="false" pattern="yyyy/MM/dd" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="465"
 						y="55"
@@ -144,7 +144,7 @@ WHERE LoanID $P!{itemnum}]]></queryString>
 					</textElement>
 				<textFieldExpression   class="java.util.Date"><![CDATA[$F{LoanDate}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" pattern="yyyy/MM/dd" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="false" pattern="yyyy/MM/dd" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="465"
 						y="73"
@@ -209,7 +209,7 @@ WHERE LoanID $P!{itemnum}]]></queryString>
 					</textElement>
 				<text><![CDATA[Length of Loan:]]></text>
 				</staticText>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="477"
 						y="130"
@@ -235,7 +235,7 @@ WHERE LoanID $P!{itemnum}]]></queryString>
 					</textElement>
 				<text><![CDATA[To:]]></text>
 				</staticText>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="22"
 						y="110"
@@ -370,7 +370,7 @@ WHERE LoanID $P!{itemnum}]]></queryString>
 					</textElement>
 				<text><![CDATA[Dissection or C&S requires prior authorization]]></text>
 				</staticText>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="477"
 						y="170"
@@ -403,7 +403,7 @@ Lawrence, Kansas, USA 66045-7561
 Voice: 785-864-3369 Fax: 785-864-5335
 e-mail: ABentley@ku.edu]]></text>
 				</staticText>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="477"
 						y="112"
@@ -566,7 +566,7 @@ e-mail: ABentley@ku.edu]]></text>
 					</textElement>
 				<text><![CDATA[PLEASE SIGN AND RETURN ONE COPY]]></text>
 				</staticText>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Auto" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Auto" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="58"
 						y="20"
@@ -579,7 +579,7 @@ e-mail: ABentley@ku.edu]]></text>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA["Total Number of Lots = " + $V{lots}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Report" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Report" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="309"
 						y="20"
