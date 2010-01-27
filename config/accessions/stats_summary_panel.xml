@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<panel>
+<panel resource="stats">
   <row>
-      <box title="Type Specimen Counts" desccol="1" valcol="2">
+      <box title="TYP_SPEC_CNT" desccol="1" valcol="2">
           <sql><![CDATA[select Name, ObjectCount from (select DisciplineID AS ObjectType, Count(CollectionObjectID) AS ObjectCount from collectionobject Group By DisciplineID) AS T2, collectiontype where T2.ObjectType = collectiontype. DisciplineID order by ObjectCount desc]]></sql>
       </box>
       <box title="CITES Permits Expiring" desccol="1" valcol="2">

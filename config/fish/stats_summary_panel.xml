@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<panel>
+<panel resource="stats">
   <row>
       <box title="Specimen">
-        <item title="Specimens">
+        <item title="SPECIMENS">
             <sql>
                 <tables><id>1</id></tables>            
                 <statement row="1" col="1">
@@ -10,7 +10,7 @@
                 </statement>
             </sql>
         </item>
-        <item title="Type Specimens">
+        <item title="TYP_SPEC">
             <sql>
                 <tables><id>1</id><id>9</id></tables>            
                 <statement row="1" col="1">
@@ -18,7 +18,7 @@
                 </statement>
             </sql>
         </item>
-        <item title="Unique Families" useprogress="true">
+        <item title="UNQ_FAM" useprogress="true">
             <sql>
                 <tables><id>4</id></tables>            
                 <statement row="1" col="1">
@@ -26,7 +26,7 @@
                 </statement>
             </sql>
         </item>
-        <item title="Unique Genera" useprogress="true">
+        <item title="UNQ_GEN" useprogress="true">
             <sql>
                 <tables><id>4</id></tables>            
                 <statement row="1" col="1">
@@ -34,7 +34,7 @@
                 </statement>
             </sql>
         </item>
-        <item title="Unique Species" useprogress="true">
+        <item title="UNQ_SPEC" useprogress="true">
             <sql>
                 <tables><id>4</id></tables>  
                 <statement>          
@@ -42,44 +42,38 @@
                 </statement>
             </sql>
         </item>
-        <item title="Taxa in Collection" useprogress="true">
-            <sql>
-                <tables><id>4</id><id>9</id></tables>            
-                <statement><![CDATA[SELECT count(TaxonID) AS TaxaInCollectionCount FROM taxon WHERE TaxonID in (SELECT TaxonId FROM determination WHERE CollectionMemberID = COLMEMID AND determination.IsCurrent = true)]]></statement>
-            </sql>
-        </item>
       </box>
-        <box title="Data Entry">
-            <item title="Cataloged in Last 7 Days">
+        <box title="DAT_ENT">
+            <item title="CAT_LAST_7DAYS">
                 <sql type="custom" name="CatalogedLast7Days"/>
                 <link>CatalogedLast7DaysDetail</link>
             </item>
-            <item title="Cataloged in Last 30 Days">
+            <item title="CAT_LAST_MON">
                 <sql type="custom" name="CatalogedLast30Days"/>
                 <link>CatalogedLastMonth</link>
             </item>
-            <item title="Cataloged in Last Year">
+            <item title="CAT_LAST_YR">
                 <sql type="custom" name="CatalogedLastYear"/>
                 <link>CatalogedLastYear</link>
             </item>
         </box>
   </row>
   <row>
-      <box title="Loans">
-        <item title="Items on Loan">
+      <box title="LOANS">
+        <item title="ITMS_LOAN">
             <sql>
                 <tables><id>52</id><id>54</id></tables>            
                 <statement><![CDATA[SELECT count(LoanPreparationID) AS ItemsOnLoanCount FROM loanpreparation as lpo inner join loan on loan.loanid = lpo.loanid WHERE loan.DisciplineID = DSPLNID AND quantityresolved < quantity and (IsClosed = false or IsClosed is null)]]></statement>
             </sql>
         </item>
-        <item title="Overdue Loans">
+        <item title="OVRDUE_LOANS">
             <sql>
                 <tables><id>52</id></tables>            
                 <statement><![CDATA[SELECT count(LoanID) as OpenLoanCount FROM loan WHERE loanid in (SELECT loanid FROM loan WHERE loan.DisciplineID = DSPLNID AND (not (currentduedate is null)) and (IsClosed = false or IsClosed is null) and datediff(CURDATE(), currentduedate) > 0)]]></statement>
             </sql>
             <link>OverdueLoansList</link>
         </item>
-        <item title="Open Loans">
+        <item title="OPEN_LOANS">
             <sql>
                 <tables><id>52</id></tables>            
                 <statement><![CDATA[SELECT count(LoanID) as OpenLoanCount FROM loan WHERE loan.DisciplineID = DSPLNID AND (IsClosed = false or IsClosed is null)]]></statement>
@@ -87,8 +81,8 @@
             <link>OpenLoans</link>
         </item>
       </box>
-      <box title="Locality/Geography">
-        <item title="Localities">
+      <box title="LOC_GEO">
+        <item title="LOCS">
             <sql>
                 <tables><id>2</id></tables>            
                 <statement><![CDATA[SELECT count(*) FROM locality INNER JOIN discipline ON locality.DisciplineID = discipline.DisciplineID WHERE discipline.DisciplineID = DSPLNID]]></statement>
@@ -100,55 +94,55 @@
                 <statement><![CDATA[SELECT count(*) FROM geography WHERE GeographyTreeDefID = GEOTREEDEFID]]></statement>
             </sql>
         </item>
-        <item title="Countries" useprogress="true">
+        <item title="COUNTRIES" useprogress="true">
             <sql>
                 <tables><id>2</id><id>3</id></tables>            
                 <statement><![CDATA[SELECT count(Name) FROM (SELECT DISTINCT Name FROM (SELECT g.GeographyID,g.nodenumber FROM locality as l inner join geography as g on l.GeographyID = g.GeographyID) as GEO, geography as g WHERE g.rankid = 200 and GEO.nodenumber between g.nodenumber and g.HighestChildNodeNumber) As GEO2]]></statement>
             </sql>
         </item>
-        <item title="Percentage Georeferenced">
+        <item title="PRCNT_GEOREF">
             <sql>
                 <tables><id>2</id></tables>            
                 <statement><![CDATA[SELECT CASE WHEN (SELECT count(*) FROM locality INNER JOIN discipline ON locality.DisciplineID = discipline.DisciplineID WHERE discipline.DisciplineID = DSPLNID) = 0 THEN 0 ELSE ((count(localityid) * 1.0) / ((SELECT count(*) FROM locality) * 1.0)) * 100.0 END AS PercentGeoReferencedLocalities FROM locality WHERE not latitude1 is null]]></statement>
-                <format>%5.2f</format>
+                <format>%3.0f</format>
             </sql>
         </item>
     </box>
   </row>
   <row>
-    <box title="Taxonomic Tree">
-        <item title="Classes">
+    <box title="TAX_TREE">
+        <item title="CLASSES">
             <sql>
                 <tables><id>4</id></tables>            
                 <statement><![CDATA[SELECT count(*) FROM taxon WHERE TaxonTreeDefID = TAXTREEDEFID AND rankid = 60]]></statement>
             </sql>
         </item>
-        <item title="Orders">
+        <item title="ORDERS">
             <sql>
                 <tables><id>4</id></tables>            
                 <statement><![CDATA[SELECT count(*) FROM taxon WHERE TaxonTreeDefID = TAXTREEDEFID AND rankid = 100]]></statement>
             </sql>
         </item>
-        <item title="Families">
+        <item title="FAMS">
             <sql>
                 <tables><id>4</id></tables>            
                 <statement><![CDATA[SELECT count(*) FROM taxon WHERE TaxonTreeDefID = TAXTREEDEFID AND rankid = 140]]></statement>
             </sql>
         </item>
-        <item title="Genera">
+        <item title="GENERA">
             <sql>
                 <tables><id>4</id></tables>            
                 <statement><![CDATA[SELECT count(*) FROM taxon WHERE TaxonTreeDefID = TAXTREEDEFID AND rankid = 180]]></statement>
             </sql>
         </item>
-        <item title="Species">
+        <item title="SPECIES">
             <sql>
                 <tables><id>4</id></tables>            
                 <statement><![CDATA[SELECT count(*) FROM taxon WHERE TaxonTreeDefID = TAXTREEDEFID AND rankid = 220]]></statement>
             </sql>
         </item>
     </box>
-      <box title="Type Specimen Counts" desccol="1" valcol="2" desctitle="Taxon" valtitle="Count" noresults="No Type Specimens">
+      <box title="TYP_SPEC_CNT" desccol="1" valcol="2" desctitle="TAXON" valtitle="COUNT" noresults="NO_TYP_SPEC">
         <sql>
             <tables><id>9</id></tables>            
             <statement><![CDATA[SELECT TypeStatusName, count(DeterminationID) AS DeterminationCount FROM determination WHERE CollectionMemberID = COLMEMID AND TypeStatusName is not null group by TypeStatusName]]></statement>

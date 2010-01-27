@@ -219,7 +219,7 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
                 {
                     // rods - We have decided that will automatically go ahead and delete
                     // the file on disk. We can make this a preference later if we wish.
-                    if (false)
+                    /*if (false)
                     {
                         int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
                                 UIRegistry.getResourceString("AttachmentOwnerBaseBusRules.DEL_FROM_DISK"),  //$NON-NLS-1$
@@ -231,7 +231,7 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
                             session.delete(attach);
                             owner.getAttachmentReferences().remove(attach);
                         }
-                    } else
+                    } else*/
                     {
                         session.delete(attach);
                         owner.getAttachmentReferences().remove(attach);
