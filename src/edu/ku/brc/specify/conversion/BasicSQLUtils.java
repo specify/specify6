@@ -1304,7 +1304,7 @@ public class BasicSQLUtils
         {
             if (newFieldType != null)
             {
-                if (newFieldType.indexOf("date") ==  0)
+                if (newFieldType.toLowerCase().indexOf("date") ==  0)
                 {
                 	getPartialDate(obj, datePair);
                     return datePair.first;

@@ -50,16 +50,17 @@ public class IdTableMapper extends IdHashMapper
      */
     public IdTableMapper(final String tableName, final String idName)
     {
-        this(tableName, idName, true);
+        this(tableName, idName, true, true);
     }
     
     /**
      * Creates a Mapper for a table and the name of the primary or foreign key.
      * @param tableName name of the table
      * @param idName name of the key field
-     * @throws SQLException any
+     * @param doDelete
+     * @param doCheckOldDB
      */
-    public IdTableMapper(final String tableName, final String idName, final boolean doDelete)
+    public IdTableMapper(final String tableName, final String idName, final boolean doDelete, final boolean doCheckOldDB)
     {
         super();
         
@@ -69,7 +70,7 @@ public class IdTableMapper extends IdHashMapper
         this.mapTableName = tableName + "_" + idName;
         this.doDelete     = doDelete;
         
-        init(true);
+        init(doCheckOldDB);
     }
     
     /**
@@ -92,10 +93,23 @@ public class IdTableMapper extends IdHashMapper
      * @throws SQLException any
      */
     public IdTableMapper(final String tableName, final String idName, final String sql, final boolean doDelete)
+    {
+        this(tableName, idName, sql, doDelete, true);
+    }
+
+    /**
+     * Creates a Mapper for a table and the name of the primary or foreign key.
+     * @param tableName name of the table
+     * @param idName name of the key field
+     * @param sql the SQL statement to build the index
+     * @throws SQLException any
+     */
+    public IdTableMapper(final String tableName, final String idName, final String sql, final boolean doDelete, final boolean doCheckOldDB)
     {                                                                                                 
-        this(tableName, idName, doDelete);
+        this(tableName, idName, doDelete, doCheckOldDB);
         
         this.sql = sql;
+        
         log.debug("IdTableMapper created for table[" + tableName +"] idName[" + idName + "] ");
         log.debug("IdTableMapper using sql: " + sql );
     }

@@ -107,6 +107,15 @@ public class IdMapperMgr
     }
     
     /**
+     * @param idMapper
+     */
+    public void addMapper(final IdTableMapper idMapper)
+    {
+        idMappers.put(idMapper.getName(), idMapper);
+        idMapper.setFrame(frame);
+    }
+    
+    /**
      * Creates a mapper with name and id.
      * @param tableName the name of the table
      * @param idName the id (primary key)
@@ -187,6 +196,10 @@ public class IdMapperMgr
      */
     public IdMapperIFace get(final String tableName, final String idName)
     {
+        /*for (String nm : idMappers.keySet())
+        {
+            System.out.println(nm);
+        }*/
         return idMappers.get(tableName.toLowerCase()+"_"+idName);
     }
     

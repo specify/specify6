@@ -1317,6 +1317,11 @@ public class SpecifyDBConverter
                 BasicSQLUtils.setSkipTrackExceptions(true);
                 BasicSQLUtils.update(sql);
                 
+                frame.incOverall();
+                
+                ShipmentConverter shipmentConv = new ShipmentConverter(oldDBConn, newDBConn);
+                shipmentConv.fixup();
+                
                 //------------------------------------------------
                 // Localize Schema and make form fields visible
                 //------------------------------------------------
@@ -1334,6 +1339,7 @@ public class SpecifyDBConverter
                 
                 //HabitatTaxonIdConverter habitatConverter = new HabitatTaxonIdConverter(oldDB.getConnection(), newDBConn);
                 //habitatConverter.convert(conversion.getCollectionMemberId());
+
                 
                 frame.incOverall();
                 
@@ -1427,7 +1433,7 @@ public class SpecifyDBConverter
     
     protected void checkDisciplines()
     {
-        System.out.println("Checking....");
+        System.out.println("Checking kDisciplines....");
         int count = 0;
         for (Object obj : BasicSQLUtils.querySingleCol("SELECT TaxonTreeDefID FROM discipline"))
         {
@@ -1437,7 +1443,7 @@ public class SpecifyDBConverter
             }
         }
         
-        System.out.println("Count: "+count);
+        System.out.println("kDisciplines Count: "+count);
         if (count == 3)
         {
             throw new RuntimeException("set back");
