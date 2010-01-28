@@ -3986,6 +3986,8 @@ public class FormViewObj implements Viewable,
         } catch (Exception ex)
         {
             ex.printStackTrace();
+            edu.ku.brc.af.core.UsageTracker.incrHQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
             
         } finally
         {

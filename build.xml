@@ -116,8 +116,8 @@
 				<include name="**/images/**/*.*" />
 			</fileset>
 		</jar>
-        <copy file="${jar.name}.jar" todir="webapp/WEB-INF/lib" />
-        <copy file="${jar.name}.jar" todir="upwebapp/WEB-INF/lib" />
+        <!-- <copy file="${jar.name}.jar" todir="webapp/WEB-INF/lib" />
+        <copy file="${jar.name}.jar" todir="upwebapp/WEB-INF/lib" /> -->
 	</target>
 
 	<!-- Jar up compiled classes -->
