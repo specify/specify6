@@ -48,7 +48,7 @@
                 <sql type="custom" name="CatalogedLast7Days"/>
                 <link>CatalogedLast7DaysDetail</link>
             </item>
-            <item title="CAT_LAST_MON">
+            <item title="CAT_LAST_30DAYS">
                 <sql type="custom" name="CatalogedLast30Days"/>
                 <link>CatalogedLastMonth</link>
             </item>
