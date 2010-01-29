@@ -124,13 +124,15 @@
    <mapID target="Stats" url="SpecifyHelp/Statistics/Statistics.html"/>
    <mapID target="Load" url="SpecifyHelp/Security/loading.html"/> 
    <mapID target="PrefsLoan" url="SpecifyHelp/Prefs/Loans.html"/> 
-   <mapID target="slicer" url="SpecifyHelp/Uploading/splitter.html"/> 
-   <mapID target="LSIDPrefs" url="SpecifyHelp/Prefs/LSIDs.html"/> 
+   <mapID target="slicer" url="SpecifyHelp/Uploading/splitter.html"/>
+   <mapID target="PrefsLSID" url="SpecifyHelp/Prefs/lsid.html"/> 
+   <mapID target="export_data" url="SpecifyHelp/QueryBuilder/third_party.html"/>
+   <mapID target="schema_tool" url="SpecifyHelp/QueryBuilder/data_exporter.html"/>
 
 
 <!-- Index Bookmarks -->
 
-   <mapID target="specify" url="http:/specifysoftware.org"/>
+   <mapID target="specify" url="http://specify6.specifysoftware.org"/>
    <mapID target="login" url="SpecifyHelp/Dialogs/Login.html#login"/>
    <mapID target="Forum" url="SpecifyHelp/Intro/about.html#user_forums"/>
    <mapID target="Sample_Resources" url="SpecifyHelp/Intro/about.html#sample_resources"/>
@@ -148,7 +150,6 @@
    <mapID target="Add_Collection" url="SpecifyHelp/Configuration/institution_hierarchy.html#add_collection"/>
    <mapID target="Add_User" url="SpecifyHelp/Security/permissions.html#add_user"/>
    <mapID target="SecuritySummary" url="SpecifyHelp/Security/permissions.html#security_summary"/>
-   <mapID target="SecurityAdmin" url="SpecifyHelp/Security/permissions.html"/>
    <mapID target="Set_Permissions" url="SpecifyHelp/Security/permissions.html#set_permissions"/>
    <mapID target="DataEntryConfigure" url="SpecifyHelp/Data_Entry/Data_Entry.html#data_entry_configure"/>
    <mapID target="SUBVIEW_FORM_HELP" url="SpecifyHelp/Dialogs/Using_Forms.html#sub_form"/>
@@ -293,5 +294,16 @@
    <mapID target="wizard_create_collection" url="SpecifyHelp/Security/Wizard.html#create_collection"/>    
    <mapID target="wizard_summary" url="SpecifyHelp/Security/Wizard.html#summary"/>
    <mapID target="update_tree" url="SpecifyHelp/Trees/editing_tree_def.html#update_tree_nodes"/>
-   <mapID target="field_format" url="SpecifyHelp/Security/Field_Format_Editor.html"/>                 
+   <mapID target="field_format" url="SpecifyHelp/Security/Field_Format_Editor.html"/>
+   <mapID target="SecurityAdmin" url="SpecifyHelp/Security/permissions.html"/> 
+   <mapID target="web_publishing" url="SpecifyHelp/QueryBuilder/third_party.html#web_publishing"/>
+   <mapID target="schema_mapping" url="SpecifyHelp//QueryBuilder/third_party.html#schema_mapping"/>
+   <mapID target="schema_authority" url="SpecifyHelp//QueryBuilder/third_party.html#schema_authority"/>
+   <mapID target="export_schema_map" url="SpecifyHelp//QueryBuilder/third_party.html#export_schema_map"/>
+   <mapID target="delete_schema_map" url="SpecifyHelp//QueryBuilder/third_party.html#delete_schema_map"/>
+   <mapID target="lsid" url="SpecifyHelp/Prefs/lsid.html#lsid"/>
+   <mapID target="guid" url="SpecifyHelp/Prefs/lsid.html#guid"/>
+   <mapID target="automatic_lsid" url="SpecifyHelp/Prefs/lsid.html#automatic_lsid"/>
+   <mapID target="world_wind" url="SpecifyHelp/Data_Entry/Data_Entry.html#world_wind"/>
+   <mapID target="third_party" url="SpecifyHelp/QueryBuilder/third_party.html#third_party"/>                    
 </map>
