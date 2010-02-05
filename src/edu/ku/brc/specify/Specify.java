@@ -108,7 +108,6 @@ import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.auth.specify.SpecifySecurityMgr;
-import edu.ku.brc.af.auth.specify.module.DbLoginCallbackHandler;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.FrameworkAppIFace;
 import edu.ku.brc.af.core.GenericLSIDGeneratorFactory;
@@ -196,7 +195,6 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
-import edu.ku.brc.specify.extras.ViewToSchemaReview;
 import edu.ku.brc.specify.prefs.SystemPrefs;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
@@ -3061,6 +3059,12 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                   catch (Exception e)
                   {
                       log.error("Can't change L&F: ", e); //$NON-NLS-1$
+                  }
+                  
+                  if (UIHelper.isWindows() && System.getProperty("java.version").equals("1.6.0_18"))
+                  {
+                      UIRegistry.showLocalizedError("BAD_UPDATE18");
+                      System.exit(0);
                   }
                   
                   // Load Local Prefs
