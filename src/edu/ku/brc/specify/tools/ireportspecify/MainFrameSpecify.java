@@ -111,6 +111,7 @@ import edu.ku.brc.specify.tasks.subpane.JRConnectionFieldDef;
 import edu.ku.brc.specify.tasks.subpane.SpJRIReportConnection;
 import edu.ku.brc.specify.tasks.subpane.qb.QBJRIReportConnection;
 import edu.ku.brc.specify.tasks.subpane.wb.WBJRIReportConnection;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
 import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.ChooseFromListDlg;
@@ -1062,18 +1063,36 @@ public class MainFrameSpecify extends MainFrame
         setActiveReportForm(jrf);    
     }
 
+    /**
+     * @param repRes
+     * @return
+     */
     protected boolean repResIsEditableByUser(AppResourceIFace repRes)
     {
+    	if (!(repRes instanceof SpAppResource))
+    	{
+    		return false;
+    	}
+    	
     	//??? SpReport has a SpecifyUserID field too
-    	String sql = "select count(spq.SpQueryID) from spquery spq inner join spreport spr "
+    	String sql1 = "select count(spq.SpQueryID) from spquery spq inner join spreport spr "
     		+ " on spr.SpQueryID = spq.SpQueryID inner join spappresource spa "
     		+ "on spa.SpAppResourceID = spr.AppResourceID where spq.SpecifyUserID = "
-    		+ AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId();
+    		+ AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId()
+    		+ " and spa.SpAppResourceID = " + ((SpAppResource )repRes).getId();
+    	String sql2 = "select count(spw.WorkbenchTemplateID) from workbenchtemplate spw inner join spreport spr "
+    		+ " on spr.WorkbenchTemplateID = spw.WorkbenchTemplateID inner join spappresource spa "
+    		+ "on spa.SpAppResourceID = spr.AppResourceID where spw.SpecifyUserID = "
+    		+ AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId()
+    		+ " and spa.SpAppResourceID = " + ((SpAppResource )repRes).getId();
     	try 
     	{
-    		return BasicSQLUtils.getCount(sql) != 0; 
+    		return BasicSQLUtils.getCount(sql1) != 0 || BasicSQLUtils.getCount(sql2) != 0; 
     	} catch (Exception ex)
     	{
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, ex);
+            log.error(ex);
     		return false;
     	}
     }
