@@ -437,4 +437,43 @@ public class GeoCoordDetail extends DataModelObjBase
     {
         return 123;
     }
+    
+    /**
+     * @param o
+     * @return true if 'non-system' fields all match.
+     */
+    public boolean matches(GeoCoordDetail o)
+    {
+        if (o == null)
+        {
+        	return false;
+        }
+        
+    	return
+        	((geoCoordDetailId == null && o.geoCoordDetailId == null) || ((geoCoordDetailId != null && o.geoCoordDetailId != null) && geoCoordDetailId.equals(o.geoCoordDetailId))) &&
+        	((namedPlaceExtent == null && o.namedPlaceExtent == null) || ((namedPlaceExtent != null && o.namedPlaceExtent != null) && namedPlaceExtent.equals(o.namedPlaceExtent))) &&
+            ((geoRefAccuracyUnits == null && o.geoRefAccuracyUnits == null) || ((geoRefAccuracyUnits != null && o.geoRefAccuracyUnits != null) && geoRefAccuracyUnits.equals(o.geoRefAccuracyUnits))) &&
+            ((geoRefDetRef == null && o.geoRefDetRef == null) || ((geoRefDetRef != null && o.geoRefDetRef != null) && geoRefDetRef.equals(o.geoRefDetRef))) &&
+            ((geoRefDetDate == null && o.geoRefDetDate == null) || ((geoRefDetDate != null && o.geoRefDetDate != null)
+            		&& geoRefDetDate.equals(o.geoRefDetDate))) &&
+            ((geoRefDetBy == null && o.geoRefDetBy == null) || ((geoRefDetBy != null && o.geoRefDetBy != null)
+            		&& geoRefDetBy.equals(o.geoRefDetBy))) &&
+            ((noGeoRefBecause == null && o.noGeoRefBecause == null) || ((noGeoRefBecause != null && o.noGeoRefBecause != null)
+            		&& noGeoRefBecause.equals(o.noGeoRefBecause))) &&
+            ((geoRefRemarks == null && o.geoRefRemarks == null) || ((geoRefRemarks != null && o.geoRefRemarks != null) && geoRefRemarks.equals(o.geoRefRemarks))) &&
+            ((geoRefVerificationStatus == null && o.geoRefVerificationStatus == null) || ((geoRefVerificationStatus != null && o.geoRefVerificationStatus != null)
+                    && geoRefVerificationStatus.equals(o.geoRefVerificationStatus))) &&
+            ((maxUncertaintyEst == null && o.maxUncertaintyEst == null) || ((maxUncertaintyEst != null && o.maxUncertaintyEst != null)
+                    && maxUncertaintyEst.equals(o.maxUncertaintyEst))) &&
+            ((maxUncertaintyEstUnit == null && o.maxUncertaintyEstUnit == null) || ((maxUncertaintyEstUnit != null && o.maxUncertaintyEstUnit != null)
+            		&& maxUncertaintyEstUnit.equals(o.maxUncertaintyEstUnit))) &&
+            ((originalCoordSystem == null && o.originalCoordSystem == null) || ((originalCoordSystem != null && o.originalCoordSystem != null)
+                    && originalCoordSystem.equals(o.originalCoordSystem))) &&
+            ((validation == null && o.validation == null) || ((validation != null && o.validation != null)
+                    && validation.equals(o.validation))) &&
+            ((protocol == null && o.protocol == null) || ((protocol != null && o.protocol != null) && protocol.equals(o.protocol))) &&
+            ((source == null && o.source == null) || ((source != null && o.source != null) && source.equals(o.source)));
+    
+    }
+
 }

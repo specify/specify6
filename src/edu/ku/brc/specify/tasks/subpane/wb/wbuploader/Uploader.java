@@ -3891,11 +3891,8 @@ public class Uploader implements ActionListener, KeyListener
     /**
      * @param t
      * @param row
-     * @throws UploaderException
-     * 
-     * imports data in row belonging to t's Table.
      */
-    protected void uploadRow(final UploadTable t, int row) throws UploaderException
+    public void loadRow(final UploadTable t, int row)
     {
         for (UploadField field : uploadFields)
         {
@@ -3909,7 +3906,18 @@ public class Uploader implements ActionListener, KeyListener
                 }
             }
         }
-        try
+    }
+    /**
+     * @param t
+     * @param row
+     * @throws UploaderException
+     * 
+     * imports data in row belonging to t's Table.
+     */
+    protected void uploadRow(final UploadTable t, int row) throws UploaderException
+    {
+        loadRow(t, row);
+    	try
         {
             writeRow(t, row);
         }

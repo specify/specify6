@@ -44,7 +44,7 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "localitydetail")
-public class LocalityDetail extends DataModelObjBase implements Cloneable
+public class LocalityDetail extends DataModelObjBase
 {
     // Fields    
     protected Integer               localityDetailId;
@@ -674,4 +674,57 @@ public class LocalityDetail extends DataModelObjBase implements Cloneable
         return ld;
     }
 
+    /**
+     * @param o
+     * @return true if 'non-system' fields all match.
+     * 
+     */
+    public boolean matches(LocalityDetail o)
+    {
+        if (o == null)
+        {
+        	return false;
+        }
+        
+    	return
+        	((baseMeridian == null && o.baseMeridian == null) || ((baseMeridian != null && o.baseMeridian != null) && baseMeridian.equals(o.baseMeridian))) &&
+        	((rangeDesc == null && o.rangeDesc == null) || ((rangeDesc != null && o.rangeDesc != null) && rangeDesc.equals(o.rangeDesc))) &&
+            ((rangeDirection == null && o.rangeDirection == null) || ((rangeDirection != null && o.rangeDirection != null) && rangeDirection.equals(o.rangeDirection))) &&
+            ((township == null && o.township == null) || ((township != null && o.township != null) && township.equals(o.township))) &&
+            ((townshipDirection == null && o.townshipDirection == null) || ((townshipDirection != null && o.townshipDirection != null)
+            		&& townshipDirection.equals(o.townshipDirection))) &&
+            ((section == null && o.section == null) || ((section != null && o.section != null)
+            		&& section.equals(o.section))) &&
+            ((sectionPart == null && o.sectionPart == null) || ((sectionPart != null && o.sectionPart != null)
+            		&& sectionPart.equals(o.sectionPart))) &&
+            ((gml == null && o.gml == null) || ((gml != null && o.gml != null) && gml.equals(o.gml))) &&
+            ((nationalParkName == null && o.nationalParkName == null) || ((nationalParkName != null && o.nationalParkName != null)
+                    && nationalParkName.equals(o.nationalParkName))) &&
+            ((islandGroup == null && o.islandGroup == null) || ((islandGroup != null && o.islandGroup != null)
+                    && islandGroup.equals(o.islandGroup))) &&
+            ((island == null && o.island == null) || ((island != null && o.island != null)
+            		&& island.equals(o.island))) &&
+            ((drainage == null && o.drainage == null) || ((drainage != null && o.drainage != null)
+                    && drainage.equals(o.drainage))) &&
+            ((utmDatum == null && o.utmDatum == null) || ((utmDatum != null && o.utmDatum != null)
+                    && utmDatum.equals(o.utmDatum))) &&
+            ((utmScale == null && o.utmScale == null) || ((utmScale != null && o.utmScale != null) && utmScale.equals(o.utmScale))) &&
+            ((hucCode == null && o.hucCode == null) || ((hucCode != null && o.hucCode != null) && hucCode.equals(o.hucCode))) &&
+            ((text1 == null && o.text1 == null) || ((text1 != null && o.text1 != null) && text1.equals(o.text1))) &&
+            ((text2 == null && o.text2 == null) || ((text2 != null && o.text2 != null) & text2.equals(o.text2))) &&
+            ((number1 == null && o.number1 == null) || ((number1 != null && o.number1 != null) && number1.equals(o.number1))) &&
+            ((number2 == null && o.number2 == null) || ((number2 != null && o.number2 != null) && number2.equals(o.number2))) &&
+            ((yesNo1 == null && o.yesNo1 == null) || ((yesNo1 != null && o.yesNo1 != null) && yesNo1.equals(o.yesNo1))) &&
+            ((yesNo2 == null && o.yesNo2 == null) || ((yesNo2 != null && o.yesNo2 != null) && yesNo2.equals(o.yesNo2))) &&
+            ((utmEasting == null && o.utmEasting == null) || ((utmEasting != null && o.utmEasting != null) && utmEasting.equals(o.utmEasting))) &&
+            ((utmNorthing == null && o.utmNorthing == null) || ((utmNorthing != null && o.utmNorthing != null) && utmNorthing.equals(o.utmNorthing))) &&
+            ((utmFalseEasting == null && o.utmFalseEasting == null) || ((utmFalseEasting != null && o.utmFalseEasting != null) && utmFalseEasting.equals(o.utmFalseEasting))) &&
+            ((utmFalseNorthing == null && o.utmFalseNorthing == null) || ((utmFalseNorthing != null && o.utmFalseNorthing != null) && utmFalseNorthing.equals(o.utmFalseNorthing))) &&
+            ((utmZone == null && o.utmZone == null) || ((utmZone != null && o.utmZone != null) && utmZone.equals(o.utmZone))) &&
+            ((utmOrigLatitude == null && o.utmOrigLatitude == null) || ((utmOrigLatitude != null && o.utmOrigLatitude != null) && utmOrigLatitude.equals(o.utmOrigLatitude))) &&
+            ((utmOrigLongitude == null && o.utmOrigLongitude == null) || ((utmOrigLongitude != null && o.utmOrigLongitude != null) && utmOrigLongitude.equals(o.utmOrigLongitude))) &&
+            ((waterBody == null && o.waterBody == null) || ((waterBody != null && o.waterBody != null) && waterBody.equals(o.waterBody)));
+    }
+    
+    
 }
