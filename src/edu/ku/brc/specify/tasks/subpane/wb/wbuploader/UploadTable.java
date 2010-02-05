@@ -214,7 +214,7 @@ public class UploadTable implements Comparable<UploadTable>
      * If true then matching records are updated with values in uploading dataset.
      * 
      */
-    protected boolean                                   updateMatches                = true;
+    protected boolean                                   updateMatches                = false;
 
     /**
      * Used in processing new objects added as result of the UploadMatchSetting.ADD_NEW_MODE option.
