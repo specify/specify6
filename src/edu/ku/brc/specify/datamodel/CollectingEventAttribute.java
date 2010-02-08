@@ -679,4 +679,59 @@ public class CollectingEventAttribute extends CollectionMember implements Clonea
     {
         return getClassTableId();
     }
+    
+    /**
+     * @param o
+     * @return true if 'non-system' fields all match.
+     * 
+     */
+    public boolean matches(CollectingEventAttribute o)
+    {
+        if (o == null)
+        {
+        	return false;
+        }
+        
+    	return
+        	((number1 == null && o.number1 == null) || ((number1 != null && o.number1 != null) && number1.equals(o.number1))) &&
+        	((number2 == null && o.number2 == null) || ((number2 != null && o.number2 != null) && number2.equals(o.number2))) &&
+            ((number3 == null && o.number3 == null) || ((number3 != null && o.number3 != null) && number3.equals(o.number3))) &&
+            ((number4 == null && o.number4 == null) || ((number4 != null && o.number4 != null) && number4.equals(o.number4))) &&
+            ((number5 == null && o.number5 == null) || ((number5 != null && o.number5 != null) && number5.equals(o.number5))) &&
+            ((number6 == null && o.number6 == null) || ((number6 != null && o.number6 != null) && number6.equals(o.number6))) &&
+            ((number7 == null && o.number7 == null) || ((number7 != null && o.number7 != null) && number7.equals(o.number7))) &&
+            ((number8 == null && o.number8 == null) || ((number8 != null && o.number8 != null) && number8.equals(o.number8))) &&
+            ((number9 == null && o.number9 == null) || ((number9 != null && o.number9 != null) && number9.equals(o.number9))) &&
+            ((number10 == null && o.number10 == null) || ((number10 != null && o.number10 != null) && number10.equals(o.number10))) &&
+            ((number11 == null && o.number11 == null) || ((number11 != null && o.number11 != null) && number11.equals(o.number11))) &&
+            ((number12 == null && o.number12 == null) || ((number12 != null && o.number12 != null) && number12.equals(o.number12))) &&
+            ((number13 == null && o.number13 == null) || ((number13 != null && o.number13 != null) && number13.equals(o.number13))) &&
+            ((remarks == null && o.remarks == null) || ((remarks != null && o.remarks != null) && remarks.equals(o.remarks))) &&
+            ((text1 == null && o.text1 == null) || ((text1 != null && o.text1 != null) && text1.equals(o.text1))) &&
+            ((text2 == null && o.text2 == null) || ((text2 != null && o.text2 != null) & text2.equals(o.text2))) &&
+            ((text3 == null && o.text3 == null) || ((text3 != null && o.text3 != null) & text3.equals(o.text3))) &&
+            ((text4 == null && o.text4 == null) || ((text4 != null && o.text4 != null) & text4.equals(o.text4))) &&
+            ((text5 == null && o.text5 == null) || ((text5 != null && o.text5 != null) & text5.equals(o.text5))) &&
+            ((text6 == null && o.text6 == null) || ((text6 != null && o.text6 != null) & text6.equals(o.text6))) &&
+            ((text7 == null && o.text7 == null) || ((text7 != null && o.text7 != null) & text7.equals(o.text7))) &&
+            ((text8 == null && o.text8 == null) || ((text8 != null && o.text8 != null) & text8.equals(o.text8))) &&
+            ((text9 == null && o.text9 == null) || ((text9 != null && o.text9 != null) & text9.equals(o.text9))) &&
+            ((text10 == null && o.text10 == null) || ((text10 != null && o.text10 != null) & text10.equals(o.text10))) &&
+            ((text11 == null && o.text11 == null) || ((text11 != null && o.text11 != null) & text11.equals(o.text11))) &&
+            ((text12 == null && o.text12 == null) || ((text12 != null && o.text12 != null) & text12.equals(o.text12))) &&
+            ((text13 == null && o.text13 == null) || ((text13 != null && o.text13 != null) & text13.equals(o.text13))) &&
+            ((text14 == null && o.text14 == null) || ((text14 != null && o.text14 != null) & text14.equals(o.text14))) &&
+            ((text15 == null && o.text15 == null) || ((text15 != null && o.text15 != null) & text15.equals(o.text15))) &&
+            ((text16 == null && o.text16 == null) || ((text16 != null && o.text16 != null) & text16.equals(o.text16))) &&
+            ((text17 == null && o.text17 == null) || ((text17 != null && o.text17 != null) & text17.equals(o.text17))) &&
+            ((yesNo1 == null && o.yesNo1 == null) || ((yesNo1 != null && o.yesNo1 != null) && yesNo1.equals(o.yesNo1))) &&
+            ((yesNo2 == null && o.yesNo2 == null) || ((yesNo2 != null && o.yesNo2 != null) && yesNo2.equals(o.yesNo2))) &&
+            ((yesNo3 == null && o.yesNo3 == null) || ((yesNo3 != null && o.yesNo3 != null) && yesNo3.equals(o.yesNo3))) &&
+            ((yesNo4 == null && o.yesNo4 == null) || ((yesNo4 != null && o.yesNo4 != null) && yesNo4.equals(o.yesNo4))) &&
+            ((yesNo5 == null && o.yesNo5 == null) || ((yesNo5 != null && o.yesNo5 != null) && yesNo5.equals(o.yesNo5))) &&
+            //assuming hostTaxons' IDs are not null
+            ((hostTaxon == null && o.hostTaxon == null) || ((hostTaxon != null && o.hostTaxon != null) && hostTaxon.getId().equals(o.hostTaxon.getId())));
+    		//not matching collecting event
+    }
+
 }

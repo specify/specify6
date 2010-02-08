@@ -30,8 +30,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -356,6 +356,13 @@ public class UploadTable implements Comparable<UploadTable>
         	|| tblClass.equals(PaleoContext.class);
        
     }
+    
+    public boolean isZeroToOneMany()
+    {
+        return tblClass.equals(GeoCoordDetail.class)
+    		|| tblClass.equals(LocalityDetail.class);
+    }
+    
     /**
      * Icky workaround for some problems with determining tblClass in constructor. Must be called
      * after constructor.
@@ -864,6 +871,10 @@ public class UploadTable implements Comparable<UploadTable>
                 if (pte.getImportTable().needToMatchChild(tblClass))
                 {
                     pte.getImportTable().addChild(this);
+                }
+                else if (needToMatchChildren() && pte.getImportTable().isOneToOneChild())
+                {
+                	addChild(pte.getImportTable());
                 }
             }
         }
@@ -1400,10 +1411,19 @@ public class UploadTable implements Comparable<UploadTable>
         }
     }
 
+    /**
+     * @param recNum
+     * @return true if children for matching records match the children of this record.
+     * 
+     * Also will delete and clear matched one-to-one children (i.e. XXXAttribute tables)
+     * 
+     * @throws UploaderException
+     */
     protected boolean checkChildrenMatch(int recNum) throws UploaderException
     {
         boolean result = true;
         DataModelObjBase match = getCurrentRecord(recNum);
+        Vector<UploadTable> deletes = new Vector<UploadTable>();
         logDebug("Checking to see if children match:" + tblClass.toString() + "=" + match.getId());
         if (tblClass.equals(CollectingEvent.class))
         {
@@ -1412,7 +1432,8 @@ public class UploadTable implements Comparable<UploadTable>
                 logDebug(child.getTable().getName());
                 if (child.getTblClass().equals(Collector.class))
                 {
-                    DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
+                    //System.out.println("matching collector children");
+                	DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
                             .createSession();
                     try
                     {
@@ -1423,7 +1444,15 @@ public class UploadTable implements Comparable<UploadTable>
                         try
                         {
                         	child.loadFromDataSet(wbCurrentRow);
-                        	if (matches.size() > child.getUploadFields().size())
+                        	int childCount = 0;
+                        	for (int c = 0; c < child.getUploadFields().size(); c++)
+                        	{
+                        		if (child.getCurrentRecord(c) != null && child.needToWrite(c))
+                        		{
+                        			childCount++;
+                        		}
+                        	}
+                        	if (matches.size() != childCount)
                         	{
                         		result = false;
                         	}
@@ -1433,11 +1462,6 @@ public class UploadTable implements Comparable<UploadTable>
                         		{
                         			Collector coll1 = (Collector) matches.get(rec);
                         			Collector coll2 = (Collector) child.getCurrentRecord(rec);
-                        			if (coll2 == null)
-                        			{
-                        				result = false;
-                        				break;
-                        			}
                         			if (!coll1.getOrderNumber().equals(coll2.getOrderNumber()))
                         			{
                         				// maybe this doesn't really need to be checked?
@@ -1466,6 +1490,59 @@ public class UploadTable implements Comparable<UploadTable>
                         matchSession.close();
                     }
                 }
+                else if (child.getTblClass().equals(CollectingEventAttribute.class))
+                {
+                    //System.out.println("matching collectingeventattribute children");
+                    DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
+                    .createSession();
+                    try
+                    {
+                    	String hql = "from CollectingEventAttribute where collectingEventAttributeId ";
+                    	CollectingEvent ceMatch = (CollectingEvent )match;
+                    	if (ceMatch.getCollectingEventAttribute() == null)
+                    	{
+                    		hql += "is null";
+                    	}
+                    	else
+                    	{
+                    		hql += "= " + ((CollectingEvent )match).getCollectingEventAttribute().getId();
+                    	}
+                    	QueryIFace matchesQ = matchSession
+                        	.createQuery(hql, false);
+                    	List<?> matches = matchesQ.list();
+                    	try
+                    	{
+                    		child.loadFromDataSet(wbCurrentRow); 
+                    		CollectingEventAttribute cea2 = (CollectingEventAttribute) child.getCurrentRecord(0);
+                    		if (cea2 == null && matches.size() == 0)
+                    		{
+                    			continue;
+                    		}
+                    		if (cea2 == null && matches.size() != 0)
+                    		{
+                    			return false;
+                    		}
+                    		if (cea2 != null && matches.size() == 0)
+                    		{
+                    			return false;
+                    		}
+                    		CollectingEventAttribute cea1 = (CollectingEventAttribute) matches.get(0);
+                    		result = cea1.matches(cea2);
+                    		if (result)
+                    		{
+                    			//need to delete already-created "child" (due to weird hibernate 1-1 config requirements)
+                    			deletes.add(child);
+                    		}
+                    	} finally
+                    	{
+                    		child.loadFromDataSet(child.wbCurrentRow);
+                    	}
+                    }
+                    finally
+                    {
+                    	matchSession.close();
+                    }
+                }
                 if (!result)
                 {
                     break;
@@ -1490,8 +1567,15 @@ public class UploadTable implements Comparable<UploadTable>
                         try
 						{
 							child.loadFromDataSet(wbCurrentRow);
-							if (matches.size() != child.getUploadFields()
-									.size())
+							int childCount = 0;
+                        	for (int c = 0; c < child.getUploadFields().size(); c++)
+                        	{
+                        		if (child.getCurrentRecord(c) != null)
+                        		{
+                        			childCount++;
+                        		}
+                        	}
+							if (matches.size() != childCount)
 							{
 								result = false;
 								break;
@@ -1502,7 +1586,7 @@ public class UploadTable implements Comparable<UploadTable>
 										.get(rec);
 								int c = 0;
 								boolean matched = false;
-								while (c < child.getUploadFields().size()
+								while (c < childCount
 										&& !matched)
 								{
 									AccessionAgent ag2 = (AccessionAgent) child
@@ -1540,8 +1624,15 @@ public class UploadTable implements Comparable<UploadTable>
                         try
 						{
 							child.loadFromDataSet(wbCurrentRow);
-							if (matches.size() != child.getUploadFields()
-									.size())
+							int childCount = 0;
+                        	for (int c = 0; c < child.getUploadFields().size(); c++)
+                        	{
+                        		if (child.getCurrentRecord(c) != null)
+                        		{
+                        			childCount++;
+                        		}
+                        	}
+							if (matches.size() != childCount)
 							{
 								result = false;
 								break;
@@ -1552,7 +1643,7 @@ public class UploadTable implements Comparable<UploadTable>
 										.get(rec);
 								int c = 0;
 								boolean matched = false;
-								while (c < child.getUploadFields().size()
+								while (c < childCount
 										&& !matched)
 								{
 									AccessionAuthorization au2 = (AccessionAuthorization) child
@@ -1593,6 +1684,7 @@ public class UploadTable implements Comparable<UploadTable>
             {
                 if (child.getTblClass().equals(LocalityDetail.class))
                 {
+                    //System.out.println("matching localitydetail children");
                     DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
                             .createSession();
                     try
@@ -1601,18 +1693,24 @@ public class UploadTable implements Comparable<UploadTable>
                                 .createQuery("from LocalityDetail where localityId = "
                                         + match.getId(), false);
                         List<?> matches = matchesQ.list();
-                        if (matches.size() == 0)
-                        {
-                        	return false;
-                        }
                         try
 						{
 							child.loadFromDataSet(wbCurrentRow);
-							LocalityDetail ld1 = (LocalityDetail) matches
-									.get(0);
-							LocalityDetail ld2 = (LocalityDetail) child
-									.getCurrentRecord(0);
-							return ld1.matches(ld2);
+							LocalityDetail ld2 = (LocalityDetail) child.getCurrentRecord(0);
+							if (ld2 == null && matches.size() == 0)
+							{
+								continue;
+							}
+							if (ld2 == null && matches.size() != 0)
+							{
+								return false;
+							}
+							if (ld2 != null && matches.size() == 0)
+							{
+								return false;
+							}
+							LocalityDetail ld1 = (LocalityDetail) matches.get(0);
+							result = ld1.matches(ld2);
 						} finally
 						{
 							child.loadFromDataSet(child.wbCurrentRow);
@@ -1625,6 +1723,7 @@ public class UploadTable implements Comparable<UploadTable>
                 }
                 if (child.getTblClass().equals(GeoCoordDetail.class))
                 {
+                    //System.out.println("matching geocoorddetail children");
                     DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
                             .createSession();
                     try
@@ -1633,18 +1732,25 @@ public class UploadTable implements Comparable<UploadTable>
                                 .createQuery("from GeoCoordDetail where localityId = "
                                         + match.getId(), false);
                         List<?> matches = matchesQ.list();
-                        if (matches.size() == 0)
-                        {
-                        	return false;
-                        }
                         try
 						{
 							child.loadFromDataSet(wbCurrentRow);
+							GeoCoordDetail ld2 = (GeoCoordDetail) child.getCurrentRecord(0);
+							if (ld2 == null && matches.size() == 0)
+							{
+								continue;
+							}
+							if (ld2 == null && matches.size() != 0)
+							{
+								return false;
+							}
+							if (ld2 != null && matches.size() == 0)
+							{
+								return false;
+							}
 							GeoCoordDetail ld1 = (GeoCoordDetail) matches
 									.get(0);
-							GeoCoordDetail ld2 = (GeoCoordDetail) child
-									.getCurrentRecord(0);
-							return ld1.matches(ld2);
+							result = ld1.matches(ld2);
 						} finally
 						{
 							child.loadFromDataSet(child.wbCurrentRow);
@@ -1663,6 +1769,13 @@ public class UploadTable implements Comparable<UploadTable>
             log.error("Unable to check matching children for " + tblClass.getName());
             throw new UploaderException("Unable to check matching children for "
                     + tblClass.getName(), UploaderException.ABORT_IMPORT);
+        }
+        if (result)
+        {
+        	for (UploadTable ut : deletes)
+        	{
+        		ut.abortRow(ut.wbCurrentRow);
+        	}
         }
         return result;
     }
@@ -1689,13 +1802,15 @@ public class UploadTable implements Comparable<UploadTable>
         }
         if (tblClass.equals(CollectingEvent.class)) 
         { 
-        	return childClass.equals(Collector.class); 
+        	return childClass.equals(Collector.class)
+        		|| childClass.equals(CollectingEventAttribute.class);
         }
         if (tblClass.equals(CollectionObject.class)) 
         { 
         	return childClass
                 .equals(Determination.class)
-                || childClass.equals(Preparation.class); 
+                || childClass.equals(Preparation.class)
+                || childClass.equals(CollectionObjectAttribute.class); 
         }
         if (tblClass.equals(Locality.class))
         {
@@ -1879,9 +1994,12 @@ public class UploadTable implements Comparable<UploadTable>
         {
             for (ParentTableEntry pte : ptes)
             {
-                restrictedVals.add(new MatchRestriction(pte.getPropertyName(), addRestriction(
+                if (!needToMatchChildren() || !pte.getImportTable().isOneToOneChild())
+                {
+                	restrictedVals.add(new MatchRestriction(pte.getPropertyName(), addRestriction(
                         critter, pte.getPropertyName(), pte.getImportTable().getParentRecord(
                                 recNum, this), false), -1));
+                }
             }
         }
         for (RelatedClassSetter rce : relatedClassDefaults)
@@ -1951,7 +2069,21 @@ public class UploadTable implements Comparable<UploadTable>
                 // for
                 // list() to return duplicate objects, and they did not mention any sort of 'select
                 // distinct' property.
-                Set<DataModelObjBase> matchSet = new HashSet<DataModelObjBase>(matchList);
+                Set<DataModelObjBase> matchSet = new TreeSet<DataModelObjBase>(new Comparator<DataModelObjBase>() {
+
+					/* (non-Javadoc)
+					 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+					 */
+					@Override
+					public int compare(DataModelObjBase arg0,
+							DataModelObjBase arg1)
+					{
+						// TODO Auto-generated method stub
+						return arg0.getId().compareTo(arg1.getId());
+					}
+                	
+                });
+                matchSet.addAll(matchList);
                 matches = new ArrayList<DataModelObjBase>(matchSet);
             }
             else
@@ -2003,7 +2135,10 @@ public class UploadTable implements Comparable<UploadTable>
             {
             	for (UploadTable child : matchChildren)
             	{
-            		child.skipRow = true;
+            		if (!child.isOneToOneChild() || child.isZeroToOneMany())
+            		{
+            			child.skipRow = true;
+            		}
             	}
             }
             return true;
@@ -2617,8 +2752,11 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected void loadFromDataSet(int wbRow) throws UploaderException
     {
-    	Uploader.currentUpload.loadRow(this, wbRow);
-    	writeRowOrNot(true, true);
+    	if (wbRow != wbCurrentRow)
+    	{
+    		Uploader.currentUpload.loadRow(this, wbRow);
+    		writeRowOrNot(true, true);
+    	}
     }
 
     protected void writeRow(int row) throws UploaderException
@@ -2666,20 +2804,24 @@ public class UploadTable implements Comparable<UploadTable>
                         boolean gotRequiredParents = setParents(rec, recNum);
                         setRelatedDefaults(rec, recNum);
                         finalizeWrite(rec, recNum);
-                        if (!doNotWrite)
+                        if (!gotRequiredParents && hasChildren)
                         {
-                            if (!gotRequiredParents && hasChildren)
-                            {
                                 throw new UploaderException(UIRegistry.getResourceString("UPLOADER_MISSING_REQUIRED_DATA"), UploaderException.ABORT_ROW);
-                            }
-                            if (gotRequiredParents)
-                            {
-                                doWrite(rec);
+                        }
+                        if (gotRequiredParents)
+                        {
+                        	if (!doNotWrite)
+                        	{
+                        		doWrite(rec);
                                 uploadedRecs.add(new UploadedRecordInfo(rec.getId(), wbCurrentRow,
                                     recNum, autoAssignedVal));
-                            }
+                        	}
+                            setCurrentRecord(rec, recNum);
                         }
-                        setCurrentRecord(rec, recNum);
+                        else 
+                        {
+                        	setCurrentRecord(null, recNum);
+                        }
                         finishMatching(rec);
                     }
                 }
@@ -2950,7 +3092,7 @@ public class UploadTable implements Comparable<UploadTable>
      */
     public void abortRow(final int row) throws UploaderException
     {
-    	UploadedRecordInfo arg1 = new UploadedRecordInfo(null, row-1, 0, null);
+    	UploadedRecordInfo arg1 = new UploadedRecordInfo(null, row, 0, null);
     	UploadedRecordInfo arg2 = new UploadedRecordInfo(null, row+1, 0, null);
     	SortedSet<UploadedRecordInfo> recsForRow = uploadedRecs.subSet(arg1, arg2);
     	if (recsForRow.size() > 0)

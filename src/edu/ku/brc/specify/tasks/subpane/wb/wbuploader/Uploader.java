@@ -1056,13 +1056,16 @@ public class Uploader implements ActionListener, KeyListener
                         String relFld1Name = e.getData().getField().getName();
                         Relationship rel = new Relationship(parentTbl.getField(relFld1Name), e
                                 .getData().getRelatedField(), e.getData().getRelType());
-                        try
+                        if (isRelationshipImplemented(rel, relTblVertex.getData()))
                         {
-                            uploadGraph.addEdge(parentTbl.getName(), relTblVertex.getLabel(), rel);
-                        }
-                        catch (DirectedGraphException ex)
-                        {
-                            throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+                        	try
+                        	{
+                        		uploadGraph.addEdge(parentTbl.getName(), relTblVertex.getLabel(), rel);
+                        	}
+                        	catch (DirectedGraphException ex)
+                        	{
+                        		throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+                        	}
                         }
                     }
                 }
@@ -1219,6 +1222,35 @@ public class Uploader implements ActionListener, KeyListener
         }
     }
 
+    
+    /**
+     * @param r
+     * @return true is r is working
+     */
+    protected boolean isRelationshipImplemented(Relationship r, Table t)
+    {
+    	boolean result = true;
+    	if (t.getName().equalsIgnoreCase("collectingeventattribute"))
+    	{
+    		if (r.getRelatedField().getName().equalsIgnoreCase("HostTaxonID"))
+    		{
+    			result = false;
+    		}
+    	}
+    	else if (t.getName().equalsIgnoreCase("paleocontext"))
+    	{
+    		if (r.getRelatedField().getName().equalsIgnoreCase("ChrnosStratID"))
+    		{
+    			result = false;
+    		}
+    	}
+    	if (!result)
+    	{
+			log.debug("Ignoring relationship: " + r.getField().getName() + ":" + r.getRelatedField().getName());
+    	}
+    	return result;
+    }
+
     /**
      * @throws UploaderException
      * 
@@ -1238,17 +1270,20 @@ public class Uploader implements ActionListener, KeyListener
                             .getTable());
                     for (Relationship r : rs)
                     {
-                        Vector<UploadTable> impTs = getUploadTable(tv.getData());
-                        Vector<ParentTableEntry> entries = new Vector<ParentTableEntry>();
-                        for (UploadTable impT : impTs)
+                        if (isRelationshipImplemented(r, tv.getData()))
                         {
-                            if (impT.getRelationship() == null || r.equals(impT.getRelationship()))
-                            {
-                                impT.setHasChildren(true);
-                                entries.add(new ParentTableEntry(impT, r));
-                            }
+                        	Vector<UploadTable> impTs = getUploadTable(tv.getData());
+                        	Vector<ParentTableEntry> entries = new Vector<ParentTableEntry>();
+                        	for (UploadTable impT : impTs)
+                        	{
+                        		if (impT.getRelationship() == null || r.equals(impT.getRelationship()))
+                        		{
+                        			impT.setHasChildren(true);
+                        			entries.add(new ParentTableEntry(impT, r));
+                        		}
+                        	}
+                            parentTables.add(entries);
                         }
-                        parentTables.add(entries);
                     }
                 }
                 catch (DirectedGraphException ex)
