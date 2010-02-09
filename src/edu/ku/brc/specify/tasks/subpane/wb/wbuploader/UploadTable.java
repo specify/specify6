@@ -109,7 +109,7 @@ import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
  */
 public class UploadTable implements Comparable<UploadTable>
 {
-    protected static boolean                          debugging               = true;
+    protected static boolean                          debugging               = false;
     //if true then 'Undos' are accomplished with sql delete statements. This is safe
     //if modification to the database is prevented while uploading.
     private static boolean                          doRawDeletes            = true;
@@ -2797,7 +2797,7 @@ public class UploadTable implements Comparable<UploadTable>
     {
         int recNum = 0;
         logDebug("writeRowOrNot: " + this.table.getName());
-        System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
+        //System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
         autoAssignedVal = null;  //assumes one autoassign field per table.
         for (Vector<UploadField> seq : uploadFields)
         {
