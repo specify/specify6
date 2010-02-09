@@ -804,6 +804,18 @@ public class UploadTable implements Comparable<UploadTable>
     }
 
     /**
+     * @param f
+     * @return true if the field is irrelevant in determining whether it's record contains writable data
+     */
+    protected boolean ignoreFieldData(UploadField f)
+    {
+    	if (f.getField().getName().equalsIgnoreCase("ordernumber"))
+    	{
+    		return true;
+    	}
+    	return false;
+    }
+    /**
      * @param recNum
      * @return true if record is not empty and required data is present.
      */
@@ -813,10 +825,13 @@ public class UploadTable implements Comparable<UploadTable>
         boolean result = false;
         for (UploadField f : uploadFields.get(index))
         {
-            if (StringUtils.isNotEmpty(f.getValue()) || f == autoAssignedField)
+            if (!ignoreFieldData(f))
             {
-                result = true;
-                break;
+            	if (StringUtils.isNotEmpty(f.getValue()) || f == autoAssignedField)
+            	{
+            		result = true;
+            		break;
+            	}
             }
         }
         return result && requiredDataPresent(recNum);
@@ -1447,7 +1462,7 @@ public class UploadTable implements Comparable<UploadTable>
                         	int childCount = 0;
                         	for (int c = 0; c < child.getUploadFields().size(); c++)
                         	{
-                        		if (child.getCurrentRecord(c) != null && child.needToWrite(c))
+                        		if (child.getCurrentRecord(c) != null)
                         		{
                         			childCount++;
                         		}
@@ -1473,7 +1488,7 @@ public class UploadTable implements Comparable<UploadTable>
                         				result = false;
                         				break;
                         			}
-                        			else if (!coll1.getIsPrimary().equals(coll1.getIsPrimary()))
+                        			else if (!coll1.getIsPrimary().equals(coll2.getIsPrimary()))
                         			{
                         				result = false;
                         				break;
@@ -2755,7 +2770,7 @@ public class UploadTable implements Comparable<UploadTable>
     	if (wbRow != wbCurrentRow)
     	{
     		Uploader.currentUpload.loadRow(this, wbRow);
-    		writeRowOrNot(true, true);
+    		writeRowOrNot(wbRow < wbCurrentRow, wbRow < wbCurrentRow);
     	}
     }
 
@@ -2782,7 +2797,7 @@ public class UploadTable implements Comparable<UploadTable>
     {
         int recNum = 0;
         logDebug("writeRowOrNot: " + this.table.getName());
-        //System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
+        System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
         autoAssignedVal = null;  //assumes one autoassign field per table.
         for (Vector<UploadField> seq : uploadFields)
         {
@@ -2808,8 +2823,8 @@ public class UploadTable implements Comparable<UploadTable>
                         {
                                 throw new UploaderException(UIRegistry.getResourceString("UPLOADER_MISSING_REQUIRED_DATA"), UploaderException.ABORT_ROW);
                         }
-                        if (gotRequiredParents)
-                        {
+//                        if (gotRequiredParents || !hasChildren)
+//                        {
                         	if (!doNotWrite)
                         	{
                         		doWrite(rec);
@@ -2817,12 +2832,12 @@ public class UploadTable implements Comparable<UploadTable>
                                     recNum, autoAssignedVal));
                         	}
                             setCurrentRecord(rec, recNum);
-                        }
-                        else 
-                        {
-                        	setCurrentRecord(null, recNum);
-                        }
-                        finishMatching(rec);
+                            finishMatching(rec);
+//                        }
+//                        else 
+//                        {
+//                        	setCurrentRecord(null, recNum);
+//                        }
                     }
                 }
                 else
@@ -2909,8 +2924,20 @@ public class UploadTable implements Comparable<UploadTable>
     	{
     		for (ParentTableEntry pt : pts)
     		{
-    			if (pt.getImportTable() instanceof UploadTableTree || 
-    					(pt.getParentRel()!= null && (hasChildren || !pt.getParentRel().getRelType().equalsIgnoreCase("onetomany"))))
+    			UploadTable parentTbl = pt.getImportTable();
+    			boolean checkParent =  parentTbl instanceof UploadTableTree || parentTbl.isOneToOneChild();
+    			if (!checkParent && pt.getParentRel() != null)
+    			{
+    				if (pt.getParentRel().getRelType().startsWith("OneTo"))
+    				{
+    					checkParent = !parentTbl.matchChildren.contains(this);    				
+    				}
+    				else
+    				{
+    					checkParent = true;
+    				}
+    			}
+    			if (checkParent)
     			{
     				try 
     				{

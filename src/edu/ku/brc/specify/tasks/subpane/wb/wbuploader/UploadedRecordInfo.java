@@ -88,7 +88,7 @@ public class UploadedRecordInfo extends Pair<Integer, Integer> implements Compar
     {
         //return getKey().compareTo(o.getKey());
         int result = getWbRow().compareTo(o.getWbRow());
-        if (result == 0 && getKey() != null)
+        if (result == 0 && getKey() != null && o.getKey() != null)
         {
             result = getKey().compareTo(o.getKey());
         }
