@@ -35,12 +35,14 @@ FROM (SELECT e4.*, loanpreparation.LoanID, loanpreparation.Quantity, loanprepara
 FROM (SELECT e3.*, preptype.Name 
 FROM (SELECT e2.*, preparation.PreparationID, preparation.CountAmt as Count,  preparation.PrepTypeID 
 FROM (SELECT e1.*, taxon.FullName AS TaxonFullName 
-FROM (SELECT collectionobject.CatalogNumber, collectionobject.FieldNumber, collectionobject.CollectionObjectID, collectionobject.CollectingEventID, 
-determination.PreferredTaxonID
-FROM collectionobject 
+FROM (SELECT e0.*, determination.PreferredTaxonID
+FROM (SELECT co.CatalogNumber, co.FieldNumber, co.CollectionObjectID, co.CollectingEventID FROM loan l 
+      INNER JOIN loanpreparation lp ON l.LoanID = lp.LoanID 
+      INNER JOIN preparation p ON lp.PreparationID = p.PreparationID 
+      INNER JOIN collectionobject co ON p.CollectionObjectID = co.CollectionObjectID WHERE l.LoanID $P!{itemnum}) e0 
 LEFT JOIN determination 
-ON collectionobject.CollectionObjectID = determination.CollectionObjectID 
-WHERE determination.IsCurrent or determination.determinationid is null) e1 
+ON e0.CollectionObjectID = determination.CollectionObjectID 
+WHERE (determination.IsCurrent or determination.determinationid is null)) e1 
 LEFT JOIN taxon 
 ON e1.PreferredTaxonID = taxon.TaxonID) e2 
 INNER JOIN preparation 
