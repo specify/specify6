@@ -85,4 +85,13 @@
         </pref>
     </section>
     
+    <section title="GEOLocate">
+        <pref name="GEOLocate" title="GEOLocate" icon="GEOLocate" panelClass="edu.ku.brc.specify.prefs.GEOLocatePrefsPanel" help="PrefsLSIDs">
+            <defperm name="Manager"       perm="true,true,true,true"/>
+            <defperm name="FullAccess"    perm="true,true,true,true"/>
+            <defperm name="LimitedAccess" perm="true,true,true,true"/>
+            <defperm name="Guest"         perm="true,true,true,true"/>
+        </pref>
+    </section>
+    
 </prefs>

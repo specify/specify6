@@ -167,7 +167,7 @@ public class Project extends CollectionMember implements java.io.Serializable {
     /**
      *      * Name of the project
      */
-    @Column(name = "ProjectName", unique = false, nullable = false, insertable = true, updatable = true, length = 50)
+    @Column(name = "ProjectName", unique = false, nullable = false, insertable = true, updatable = true, length = 128)
     public String getProjectName() {
         return this.projectName;
     }

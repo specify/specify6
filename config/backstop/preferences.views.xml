@@ -83,6 +83,15 @@
             </altviews>
         </view>
         
+        <view
+            name="GEOLocatePrefs"
+            class="java.util.prefs.Preferences">
+            <desc><![CDATA[GEOLocate Preference Form.]]></desc>
+            <altviews>
+                <altview name="GEOLocatePrefs" viewdef="GEOLocatePrefs" label="GEOLocate" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
     </views>
 
     <!-- ***************************************************************************************** -->
@@ -780,6 +789,33 @@
                 </row>
             </rows>
         </viewdef>
+        
+        <viewdef
+            type="form"
+            name="GEOLocatePrefs"
+            class="java.util.prefs.Preferences"
+            gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+            useresourcelabels="true">
+            
+            <desc><![CDATA[GEOLocatePrefs Preference Form.]]></desc>
+            
+            <columnDef>p,f:p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="GEOLocate" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="field" id="GEOLocate.HYWX" name="GEOLocate.HYWX" uitype="checkbox" label="GL_HYWX" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="field" id="GEOLocate.WATERBODY" name="GEOLocate.WATERBODY" uitype="checkbox" label="GL_WATERBODY" colspan="2"/>
+                </row>
+            </rows>
+        </viewdef>
+        
         
     </viewdefs>
 </viewset>

@@ -219,9 +219,9 @@ public class PrefsToolbar extends JPanel
                             
                         } catch (MissingResourceException ex)
                         {
+                            log.error("Couldn't find key["+prefTitle+"]"); 
                             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PrefsToolbar.class, ex);
-                            log.error("Couldn't find key["+prefTitle+"]"); 
                         }
                     }
 

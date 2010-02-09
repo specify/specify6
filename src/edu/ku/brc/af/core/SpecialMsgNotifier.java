@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.af.core;
 
+import java.util.Vector;
+
 import javax.swing.SwingWorker;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -64,7 +66,7 @@ public class SpecialMsgNotifier
                 {
                     Thread.sleep(30000); // 30 seconds
                     
-                    String url       = UIRegistry.getResourceString("CGI_BASE_URL") + "/getmsg.php";
+                    String url       = UIRegistry.getResourceString("CGI_BASE_URL") + "/getmsg2.php";
                     String installID = UsageTracker.getInstallId();
                     
                     msg = send(url, installID);
@@ -107,25 +109,45 @@ public class SpecialMsgNotifier
         
         PostMethod postMethod = new PostMethod(url);
         
-        NameValuePair[] postParams = new NameValuePair[1];
-        postParams[0] = new NameValuePair("id", id);
-        postMethod.setRequestBody(postParams);
+        Vector<NameValuePair> postParams = new Vector<NameValuePair>();
+        
+        postParams.add(new NameValuePair("id", id)); //$NON-NLS-1$
+
+        // get the OS name and version
+        postParams.add(new NameValuePair("os_name",      System.getProperty("os.name"))); //$NON-NLS-1$
+        postParams.add(new NameValuePair("os_version",   System.getProperty("os.version"))); //$NON-NLS-1$
+        postParams.add(new NameValuePair("java_version", System.getProperty("java.version"))); //$NON-NLS-1$
+        postParams.add(new NameValuePair("java_vendor",  System.getProperty("java.vendor"))); //$NON-NLS-1$
+        
+        // create an array from the params
+        NameValuePair[] paramArray = new NameValuePair[postParams.size()];
+        for (int i = 0; i < paramArray.length; ++i)
+        {
+            paramArray[i] = postParams.get(i);
+        }
+
+        postMethod.setRequestBody(paramArray);
         
         // connect to the server
         try
         {
             httpClient.executeMethod(postMethod);
             
-            // get the server response
-            String responseString = postMethod.getResponseBodyAsString();
-            
-            if (StringUtils.isNotEmpty(responseString))
+            int status = postMethod.getStatusCode();
+            if (status == 200)
             {
-                return responseString;
+                // get the server response
+                String responseString = postMethod.getResponseBodyAsString();
+                
+                if (StringUtils.isNotEmpty(responseString))
+                {
+                    return responseString;
+                }
             }
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             // die silently
         }
         return null;

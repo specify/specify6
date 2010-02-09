@@ -21,12 +21,16 @@ package edu.ku.brc.services.geolocate.client;
 
 import java.util.List;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.services.mapping.LocalityMapper;
 import edu.ku.brc.services.mapping.SimpleMapLocation;
 import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
 
 public class GeoLocate
 {
+    private static final String GL_HYWX    = "GEOLocate.HYWX";
+    private static final String GL_WTRBODY = "GEOLocate.WATERBODY";
+
     protected static final int MAP_MAX_WIDTH  = 400;
     protected static final int MAP_MAX_HEIGHT = 250;
 
@@ -37,8 +41,8 @@ public class GeoLocate
         GeolocatesvcSoap port = service.getGeolocatesvcSoap();
 
         // initialize parameters
-        boolean hwyX = false;
-        boolean findWaterbody = false;
+        boolean hwyX          = AppPreferences.getRemote().getBoolean(GL_HYWX, false);
+        boolean findWaterbody = AppPreferences.getRemote().getBoolean(GL_WTRBODY, false);
         
         // process result here
         GeorefResultSet resultSet = port.georef2(country == null ? "" : country, 

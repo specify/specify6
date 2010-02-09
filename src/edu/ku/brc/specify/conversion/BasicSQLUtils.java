@@ -146,7 +146,15 @@ public class BasicSQLUtils
     {
         BasicSQLUtils.skipTrackExceptions = skipTrackExceptions;
     }
-
+    
+    /**
+     * @return the skipTrackExceptions
+     */
+    public static boolean isSkipTrackExceptions()
+    {
+        return skipTrackExceptions;
+    }
+    
     /**
      * Sets the SQL connection
      * @param connection the SQL Connection

@@ -1046,6 +1046,8 @@ public class MySQLBackupService extends BackupServiceFactory
             @Override
             protected Integer doInBackground() throws Exception
             {
+                boolean skipTrackExceptions = BasicSQLUtils.isSkipTrackExceptions();
+                BasicSQLUtils.setSkipTrackExceptions(false);
                 try
                 {
                     String userName  = itUsername != null ? itUsername : DBConnection.getInstance().getUserName();
@@ -1105,9 +1107,11 @@ public class MySQLBackupService extends BackupServiceFactory
                                         fPath = StringUtils.replace(fPath, "\\", "\\\\");
                                     }
                                     String sql = "LOAD DATA LOCAL INFILE '" + fPath + "' INTO TABLE " + FilenameUtils.getBaseName(file.getName());
-                                    //System.out.println(sql);
+                                    log.debug(sql);
+                                    //System.err.println(sql);
                                     int rv = BasicSQLUtils.update(connection, sql);
-                                    log.debug("rv= "+rv);
+                                    log.debug("done fPath["+fPath+"] rv= "+rv);
+                                    //System.err.println("done fPath["+fPath+"] rv= "+rv);
                                 }
                             }
                         }
@@ -1137,6 +1141,10 @@ public class MySQLBackupService extends BackupServiceFactory
                     {
                         pcl.propertyChange(new PropertyChangeEvent(MySQLBackupService.this, "Error", 0, 1));
                     }
+                    
+                } finally
+                {
+                    BasicSQLUtils.setSkipTrackExceptions(skipTrackExceptions);
                 }
                 return null;
             }

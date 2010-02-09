@@ -81,7 +81,9 @@ public class LocalityDetail extends DataModelObjBase
     protected Short                 utmZone;
     protected BigDecimal            utmOrigLatitude;
     protected BigDecimal            utmOrigLongitude;
-    protected String                utmScale;
+    protected Float                 utmScale;
+    protected String                mgrsZone;            // GZD only, precision level 6 x 8 (in most cases)
+    
      
     protected Locality              locality;
 
@@ -131,6 +133,7 @@ public class LocalityDetail extends DataModelObjBase
         utmOrigLatitude  = null;
         utmOrigLongitude = null;
         utmScale         = null;
+        mgrsZone         = null;
         
         text1 = null;
         text2 = null;
@@ -582,8 +585,8 @@ public class LocalityDetail extends DataModelObjBase
     /**
      * @return the utmScale
      */
-    @Column(name = "UtmScale", unique = false, nullable = true, updatable = true, insertable = true, length = 8)
-    public String getUtmScale()
+    @Column(name = "UtmScale", unique = false, nullable = true, updatable = true, insertable = true)
+    public Float getUtmScale()
     {
         return utmScale;
     }
@@ -591,9 +594,26 @@ public class LocalityDetail extends DataModelObjBase
     /**
      * @param utmScale the utmScale to set
      */
-    public void setUtmScale(String utmScale)
+    public void setUtmScale(Float utmScale)
     {
         this.utmScale = utmScale;
+    }
+
+    /**
+     * @return the mgrsZone
+     */
+    @Column(name = "MgrsZone", unique = false, nullable = true, updatable = true, insertable = true, length = 4)
+    public String getMgrsZone()
+    {
+        return mgrsZone;
+    }
+
+    /**
+     * @param mgrsZone the mgrsZone to set
+     */
+    public void setMgrsZone(String mgrsZone)
+    {
+        this.mgrsZone = mgrsZone;
     }
 
     /* (non-Javadoc)

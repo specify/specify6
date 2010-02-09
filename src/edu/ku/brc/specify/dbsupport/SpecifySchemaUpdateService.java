@@ -23,12 +23,16 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Frame;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -51,6 +55,7 @@ import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.conversion.TableWriter;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpVersion;
@@ -62,6 +67,7 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -75,6 +81,10 @@ import edu.ku.brc.util.Pair;
 public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
+    
+    private static final String APP          = "App";
+    private static final String APP_REQ_EXIT = "AppReqExit";
+
     
     /**
      * 
@@ -179,7 +189,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         recVerNum     = (Integer)row[3];
                         
                         log.debug("appVerNumArg: ["+appVerNumArg+"] dbVersion from XML["+dbVersion+"] appVersion["+appVerFromDB+"] schemaVersion["+schemaVerFromDB+"]  spverId["+spverId+"]  recVerNum["+recVerNum+"] ");
-
                         
                         if (appVerNum == null /*happens for developers*/ || internalVerNum) 
                         {
@@ -200,7 +209,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 doUpdateAppVer = true;
                             } else
                             {
-                                CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
+                                CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
                                 return SchemaUpdateType.Error;
                             }
                         }
@@ -209,12 +218,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         {
                             String errKey = "SpecifySchemaUpdateService.DB_VER_NEQ";
                             if (checkVersion(schemaVerFromDB, dbVersion, 
-                                             "SpecifySchemaUpdateService.DB_VER_ERR", errKey, errKey, true))
+                                             "SpecifySchemaUpdateService.DB_VER_ERR", errKey, errKey, false))
                             {
                                 doSchemaUpdate = true;
                             } else
                             {
-                                CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
+                                CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
                                 return SchemaUpdateType.Error;
                             }
                         }
@@ -241,7 +250,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         {
                             if (!askToUpdateSchema())
                             {
-                                CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
+                                CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
                                 return SchemaUpdateType.Error;
                             }
                             
@@ -257,7 +266,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                     if (!((permissions & DBMSUserMgr.PERM_ALTER_TABLE) == DBMSUserMgr.PERM_ALTER_TABLE))
                                     {
                                         errMsgList.add("You must have permissions to alter database tables.");
-                                        //CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
+                                        //CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
                                         return SchemaUpdateType.Error;
                                     }
                                 }
@@ -291,7 +300,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 
                             } else
                             {
-                                CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
+                                CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
                                 return SchemaUpdateType.Error;
                             }
                         }
@@ -485,6 +494,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         return false;
                     }
                     
+                    // Do updates for Schema 1.2
+                    doFixesForDBSchema1_2(conn);
+                    
                     // Find Accession NumberingSchemes that 'attached' to Collections
                     String postfix = " FROM autonumsch_coll ac Inner Join autonumberingscheme ans ON ac.AutoNumberingSchemeID = ans.AutoNumberingSchemeID WHERE ans.TableNumber = '7'";
                     log.debug("SELECT COUNT(*)" + postfix);
@@ -664,6 +676,165 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             dbConn.close();
         }
         return false;
+    }
+    
+    private boolean alterFieldLength(final Connection conn,
+                                     final String tblName, 
+                                     final String fldName, 
+                                     final int origLen, 
+                                     final int newLen)
+    {
+        Integer len = DBMSUserMgr.getInstance().getFieldLength(tblName, fldName);
+        if (len == origLen)
+        {
+            int rv = BasicSQLUtils.update(conn, String.format("ALTER TABLE %s MODIFY %s varchar(%d)", tblName, fldName, newLen));
+            System.err.println("rv= "+rv);
+            /*if (rv != count)
+            {
+                errMsgList.add("Update count didn't match for update to table: spexportschema");
+                return false;
+            }*/
+        }
+        return true;
+    }
+    
+    /**
+     * Fixes the Schema for Database Version 1.2
+     * @param conn
+     * @throws Exception
+     */
+    private boolean doFixesForDBSchema1_2(final Connection conn) throws Exception
+    {
+        /////////////////////////////
+        // PaleoContext
+        /////////////////////////////
+        Integer len = DBMSUserMgr.getInstance().getFieldLength("paleocontext", "Text1");
+        alterFieldLength(conn, "paleocontext", "Text1", 32, 64);
+        alterFieldLength(conn, "paleocontext", "Text2", 32, 64);
+        
+        len = DBMSUserMgr.getInstance().getFieldLength("paleocontext", "Remarks");
+        if (len == null)
+        {
+            int count = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM paleocontext");
+            int rv    = BasicSQLUtils.update(conn, "ALTER TABLE paleocontext ADD Remarks VARCHAR(60)");
+            if (rv != count)
+            {
+                errMsgList.add("Error updating PaleoContext.Remarks");
+                return false;
+            }
+        }
+        
+        /////////////////////////////
+        // FieldNotebookPage
+        /////////////////////////////
+        len = DBMSUserMgr.getInstance().getFieldLength("fieldnotebookpage", "PageNumber");
+        if (len != null && len == 16)
+        {
+            alterFieldLength(conn, "fieldnotebookpage", "PageNumber", 16, 32);
+            BasicSQLUtils.update(conn, "ALTER TABLE fieldnotebookpage ALTER COLUMN ScanDate DROP DEFAULT");
+        }
+
+        /////////////////////////////
+        // Project Table
+        /////////////////////////////
+        alterFieldLength(conn, "project", "projectname", 50, 128);
+        
+        /////////////////////////////
+        // LocalityDetail
+        /////////////////////////////
+        
+        boolean statusOK = true;
+        int     count    = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM localitydetail WHERE UtmScale IS NOT NULL");
+        if (count > 0)
+        {
+            Vector<Object[]> values = BasicSQLUtils.query("SELECT ld.LocalityDetailID, ld.UtmScale, l.LocalityName FROM localitydetail ld INNER JOIN locality l ON ld.LocalityID = l.LocalityID");
+            
+            BasicSQLUtils.update(conn, "ALTER TABLE localitydetail DROP COLUMN UtmScale");
+            BasicSQLUtils.update(conn, "ALTER TABLE localitydetail ADD COLUMN UtmScale FLOAT AFTER utmOrigLongitude");
+            BasicSQLUtils.update(conn, "ALTER TABLE localitydetail ADD COLUMN MgrsZone VARCHAR(4) AFTER UtmScale");
+            
+            HashMap<String, String> badLocalitiesHash = new HashMap<String, String>();
+            
+            try
+            {
+                PreparedStatement pStmt = conn.prepareStatement("UPDATE localitydetail SET UtmScale=? WHERE LocalityDetailID=?");
+                
+                for (Object[] row : values)
+                {
+                    Integer locDetailId = (Integer)row[0];
+                    String  scale       = (String)row[1];
+                    String  locName     = (String)row[2];
+                    
+                    scale = StringUtils.contains(scale, ',') ? StringUtils.replace(scale, ",", "") : scale;
+                    if (!StringUtils.isNumeric(scale))
+                    {
+                        badLocalitiesHash.put(locName, scale);
+                        continue;
+                    }
+                    
+                    float scaleFloat = 0.0f;
+                    try
+                    {
+                        scaleFloat = Float.parseFloat(scale);
+                        
+                    } catch (NumberFormatException ex)
+                    {
+                        badLocalitiesHash.put(locName, scale);
+                        continue;
+                    }
+                    
+                    pStmt.setFloat(1, scaleFloat);
+                    pStmt.setInt(2, locDetailId);
+                    pStmt.execute();
+                }
+                pStmt.close();
+                
+            } catch (SQLException ex)
+            {
+                statusOK = false;
+            }
+            
+            if (badLocalitiesHash.size() > 0)
+            {
+                try
+                {
+                    File file = new File(UIRegistry.getUserHomeDir() + File.separator + "localitydetailerrors.html");
+                    TableWriter tblWriter = new TableWriter(file.getAbsolutePath(), "Locality Detail Errors");
+                    tblWriter.startTable();
+                    tblWriter.logHdr(new String[] {"Locality Name", "Scale"});
+                    
+                    for (String key : badLocalitiesHash.keySet())
+                    {
+                        tblWriter.log(key, badLocalitiesHash.get(key));
+                    }
+                    tblWriter.endTable();
+                    tblWriter.flush();
+                    tblWriter.close();
+                    
+                   
+                    UIRegistry.showLocalizedError("LOC_DETAIL_ERRORS", badLocalitiesHash.size(), file.getAbsoluteFile());
+                    
+                    badLocalitiesHash.clear();
+                    
+                    if (file.exists())
+                    {
+                        try
+                        {
+                            AttachmentUtils.openURI(file.toURI());
+                            
+                        } catch (Exception ex)
+                        {
+                            ex.printStackTrace();
+                        }
+                    }
+                } catch (IOException ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        
+        return statusOK;
     }
     
     /**

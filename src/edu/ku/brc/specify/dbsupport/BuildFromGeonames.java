@@ -604,8 +604,8 @@ public class BuildFromGeonames
         
         if (parentId != null)
         {
-            Double lat = ((BigDecimal)row.get(1)).doubleValue();
-            Double lon = ((BigDecimal)row.get(2)).doubleValue();
+            Double lat = row.get(1) != null ? ((BigDecimal)row.get(1)).doubleValue() : null;
+            Double lon = row.get(2) != null ? ((BigDecimal)row.get(2)).doubleValue() : null;
             
             sql.append("\"");
             sql.append(nameStr);

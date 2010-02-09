@@ -29,6 +29,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -61,6 +62,8 @@ public class PaleoContext extends CollectionMember implements Cloneable
     protected String  distanceUnits; // "ft" or "m"
     protected String  direction;     // "up" or "down"
     protected String  positionState; // float or in-situ
+    
+    protected String  remarks;
     
     protected String  text1;
     protected String  text2;
@@ -116,6 +119,7 @@ public class PaleoContext extends CollectionMember implements Cloneable
         direction      = null;
         positionState  = null;
         
+        remarks        = null;
         text1          = null;
         text2          = null;
         yesNo1         = null;
@@ -214,11 +218,24 @@ public class PaleoContext extends CollectionMember implements Cloneable
     {
         this.collectionObjects = collectionObjects;
     }
+    
+    /**
+     * 
+     */
+    @Lob
+    @Column(name = "Remarks", length = 4096)
+    public String getRemarks() {
+        return this.remarks;
+    }
+    
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
 
     /**
      * @return the text1
      */
-    @Column(name="Text1", unique=false, nullable=true, insertable=true, updatable=true, length=32)
+    @Column(name="Text1", unique=false, nullable=true, insertable=true, updatable=true, length=64)
     public String getText1()
     {
         return text1;
@@ -235,7 +252,7 @@ public class PaleoContext extends CollectionMember implements Cloneable
     /**
      * @return the text2
      */
-    @Column(name="Text2", unique=false, nullable=true, insertable=true, updatable=true, length=32)
+    @Column(name="Text2", unique=false, nullable=true, insertable=true, updatable=true, length=64)
     public String getText2()
     {
         return text2;

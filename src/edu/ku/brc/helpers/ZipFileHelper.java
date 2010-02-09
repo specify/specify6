@@ -23,7 +23,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import java.util.zip.ZipEntry;
@@ -32,7 +31,6 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FileUtils;
 
-import edu.ku.brc.specify.dbsupport.BuildFromGeonames;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -95,7 +93,7 @@ public class ZipFileHelper
      */
     public List<File> unzipToFiles(final File zipFile) throws ZipException, IOException
     {
-        ArrayList<File> files = new ArrayList<File>();
+        Vector<File> files = new Vector<File>();
         
         final int bufSize = 65535;
         
@@ -116,15 +114,15 @@ public class ZipFileHelper
                     outFile = new File(dir.getCanonicalPath() + File.separator + entry.getName());
                     fos     = new FileOutputStream(outFile);
                     
-                    byte[] bytes = new byte[bufSize]; // 64k
-                    int bytesRead = zin.read(bytes, 0, bufSize);
+                    byte[] bytes     = new byte[bufSize]; // 64k
+                    int    bytesRead = zin.read(bytes, 0, bufSize);
                     while (bytesRead > 0)
                     {
                         fos.write(bytes, 0, bytesRead);
-                        bytesRead = zin.read(bytes, 0, 100);
+                        bytesRead = zin.read(bytes, 0, bufSize);
                     }
                     
-                    files.add(outFile.getCanonicalFile());
+                    files.insertElementAt(outFile.getCanonicalFile(), 0);
                 }
                 entry = zin.getNextEntry();
             }
@@ -140,7 +138,7 @@ public class ZipFileHelper
     }
 
     /**
-     * Unzips the geonames backup file.
+     * Unzips a a zip file cntaining just one file.
      * @param zipFile the backup file
      * @return the file of the new uncompressed back up file.
      */
@@ -175,13 +173,13 @@ public class ZipFileHelper
         } catch (ZipException ex)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildFromGeonames.class, ex);
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ZipFileHelper.class, ex);
             return null; //I think this means it is not a zip file.
             
         } catch (Exception ex)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildFromGeonames.class, ex);
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ZipFileHelper.class, ex);
             return null;
         }
         return outFile;

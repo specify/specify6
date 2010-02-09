@@ -157,7 +157,7 @@ public class FieldNotebookPage extends DisciplineMember implements AttachmentOwn
     /**
      * @return the pageNumber
      */
-    @Column(name = "PageNumber", unique = false, nullable = false, insertable = true, updatable = true, length = 16)
+    @Column(name = "PageNumber", unique = false, nullable = false, insertable = true, updatable = true, length = 32)
     public String getPageNumber()
     {
         return pageNumber;
@@ -167,7 +167,7 @@ public class FieldNotebookPage extends DisciplineMember implements AttachmentOwn
      * @return the scanDate
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "ScanDate", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "ScanDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getScanDate()
     {
         return scanDate;
