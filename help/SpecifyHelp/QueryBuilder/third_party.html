@@ -1,318 +1,99 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta content="text/html; charset=MacRoman" http-equiv="Content-Type">
-    <link href="../../main.css" media="screen" type="text/css" rel="stylesheet">
-    <meta name="generator" content="Helen">
-    <title>Web Publishing</title>
-  </head>
-  <body bgcolor="#ffffff">
-    <table border="0" width="100%" background="../../images/topbar.png">
-      <tr>
-        <td>
-          &nbsp;
-        </td>
-      </tr>
-    </table>
-    <h2>
-       <a name="third_party"></a>Exporting Data for Third Parties
-    </h2>
-    <p>
-       Sharing Specify data with third parties, such as Darwin Core or OBIS, is a two-step process.
-      First, the schema of the third party must be mapped to the Specify schema using the Schema
-      Mapping Editor inside Specify. Next, the data file is created and/or updated using the Data
-      Exporter stand-alone application (found in the bin directory within the Specify application
-      directory).
-    </p>
-    <p>
-       &nbsp;
-    </p>
-    <h3>
-       <a name="web_publishing">Publishing Specify data to the Web</a>
-    </h3>
-    <p>
-       Specify 6.1 takes advantage of the Global Biodiversity Information Facility's (GBIF)
-      Integrated Publishing Toolkit (IPT) to publish Specify data to the web. IPT is an
-      open-source, Java web application designed to publish biodiversity data on the Internet. The
-      IPT creates an HTML web site on your web server and starts a network service that publishes
-      your collection's data with the TAPIR data communications protocol. GBIF can then be notified
-      of the existence of your IPT server to make first contact and integrate your data into the
-      GBIF cache. &nbsp;You will be assimilated. Specify no longer uses its own web interface
-      software nor the DiGIR protocol for serving XML encoded data. See <a href=
-      "http://ipt.gbif.org">http://ipt.gbif.org</a> for additional information on IPT.
-    </p>
-    <p>
-       Using the Integrated Publishing Toolkit to display and publish Specify collection data
-      requires several steps. First, Tomcat must be installed on the computer that will be serving
-      data to the Internet. &nbsp;Next, the Specify data must be mapped to schema authority, such
-      as Darwin Core, from inside Specify. A separate Specify tool, Data Exporter, is then used to
-      create (build) the data file for IPT. Last, IPT must be setup to display Specify data. Each
-      of these steps is explained in the pdf document, <em>Publishing Specify Data with IPT,</em>
-      found on the Specify website documentation page at <a href=
-      "http://specifysoftware.org/content/documentation">http://specifysoftware.org/content/documentation</a>.
-    </p>
-    <p>
-       This help document will explain how to define, or 'map', the Specify fields to those found
-      in an IPT. Documentation for building the data file from within the Data Exporter tool is
-      available online when using the tool.
-    </p>
-    <p>
-       &nbsp;
-    </p>
-    <h3>
-       <a name="schema_mapping">Mapping Specify fields to an IPT supported schema</a>
-    </h3>
-    <p>
-       Open the Schema Mapping Editor by choosing <em>System &gt; Schema Mapper</em>. &nbsp;
-    </p>
-    <p>
-       Choose either of the actions in the 'Create Mapping' section of the sidebar to open an
-      IPT-supported schema and create/update a mapping. Existing mappings for the collection are
-      listed in the '<em>Mappings</em>' section and can be opened by simply clicking on them.
-    </p>
-    <p>
-       <strong>Import a schema authority</strong>
-    </p>
-    <p>
-       Click on <em>Create New Mapping</em> to open a dialog listing IPT supported schema files.
-      Choose one from the list or import a new schema by clicking <em>Import Schema</em> and
-      choosing one from your system file. Once a schema is chosen, a dialog will appear to enter a
-      title and version. The two entries will be concatenated together and used to identify the
-      schema mapping in the external tool. The concatenation will also be used for the name of the
-      database table which holds the cache.
-    </p>
-    <p>
-       <a name="schema_authority"></a>Specify ships with the following schema files preloaded in
-      the Specify/Config directory:
-    </p>
-    <div style=" margin-left: 0;">
-      <ul>
-        <li>
-          Darwin2_core.xsd – <strong>Darwin Core 1.2</strong> - first deployed version (used in
-          GBIF – also known as DarwinCoreV2)
-        </li>
-        <li>
-          DarwinCoreVertNet.xsd – <strong>Darwin Core 1.21</strong> - revised version of Darwin
-          Core 1.2 (used in GBIF, MaNIS, HerpNet, OrNIS, and FishNet2)
-        </li>
-        <li>
-          DarwinCoreWithDiGIRv1.3.xsd – <strong>Darwin Core 1.3</strong> - draft standard of the
-          Darwin Core accepted at TDWG Meeting 2004, Christchurch, New Zealand.
-        </li>
-        <li>
-          TDWG_DW_Core.xsd – <strong>Darwin Core 1.4</strong> - draft standard under discussion
-          (used in GBIF, and recommended to use in GBIF)
-        </li>
-        <li>
-          TDWG_dwterms.xsd - The Generic Darwin Core schema defining all property terms as global
-          elements.
-        </li>
-      </ul>
-    </div>
-    <p>
-       If a schema other than Darwin Core is desired it must first be downloaded (preferably into
-      the same Config directory) and imported as an .xsd definition file.&nbsp; Three examples are:
-    </p>
-    <p>
-       OBIS - <a href=
-      "http://www.iobis.org/obis/obis.xsd">http://www.iobis.org/obis/obis.xsd</a><br>
-       PaleoPortal - <a href=
-      "http://data.paleoportal.org/schema/conceptual/1.0/paleoportal.xsd">http://data.paleoportal.org/schema/conceptual/1.0/paleoportal.xsd</a><br>
+<head>
+<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
+<title>Web Publishing</title>
+</head>
 
-       ABCD - <a href=
-      "http://rs.tdwg.org/abcd/2.06/ABCD_2.06.xsd">http://rs.tdwg.org/abcd/2.06/ABCD_2.06.xsd</a>
-    </p>
-    <p>
-       <strong>NOTE</strong>: Currently all schmea mappings are assumed to be specimen-based – i.e:
-      the elements described in the schema definition are assumed to refer to biological specimens.
-      This means the mapping is based on a CollectionObject query by default.
-    </p>
-    <p>
-       To delete a schema from the available list (and your Specify/Config directory)
-      Right-button-Click in the Sidebar, then choose <em>Delete Schema</em> in the resulting
-      context menu. You may also delete the file directly from your Specify/Config directory.
-    </p>
-    <p>
-       The next step in the process is to map the relevant fields in your database to the fields in
-      the schema.&nbsp; To do so choose <em>Create New Mapping</em> from the sidebar and choose the
-      appropriate schema from the resulting list.
-    </p>
-    <ul>
-      <li>
-        A modified query builder window will appear. Each term in the selected schema will be
-        displayed as a 'Place-holder' in the lower section of the screen. The left-most column in
-        the display is the name of the term. After a term is mapped, the remaining columns are
-        similar to those in the regular query builder, except that some options, (such as
-        'Display') are not available. Specify will automatically map fields to recognized concepts.
-        (Auto-mapping is currently optimized for Darwin Core terms) Other terms unmapped by
-        Specify’s auto-mapping will need to be manually mapped. &nbsp;Criteria can also be added to
-        the mapping to restrict or remove certain records from the build and to eliminate
-        duplication of records due to the one-to-many relationships within Specify.
-      </li>
-    </ul>
-    <p>
-       &nbsp;
-    </p>
-    <p>
-       <strong>Mapping a Term</strong>
-    </p>
-    <p>
-       To map a term, first select it in the lower window, then locate the equivalent specify field
-      in the upper section of the mapper, and either double-click on a Specify field (or select the
-      field click the <em><img width="16" src="../../images/add.png" height="16">(add)</em>
-      button).
-    </p>
-    <p>
-      <br>
-       If a field was already mapped to the term, it will be replaced by the new field.&nbsp;
-      Fields can be left un-mapped if not required or if your database does not contain data in
-      that field.
-    </p>
-    <p>
-       &nbsp;
-    </p>
-    <p>
-       <strong>Un-mapping a Term</strong>
-    </p>
-    <p>
-       To un-map a term, click the&nbsp;<img src="../../images/delete.png" width="16" height=
-      "16">&nbsp;<em>(remove field)</em> button at the right of the mapping element.&nbsp; The
-      field will not be removed from the query but simply un-mapped.
-    </p>
-    <p>
-       &nbsp;
-    </p>
-    <p>
-       <strong>Adding Unmapped Conditions</strong>
-    </p>
-    <p>
-       IPT and Specify require that all uploaded records be unique.&nbsp; Due to the one-to-many
-      relationships contained in Specify databases it may be necessary to add certain conditional
-      fields to the schema to ensure this e.g. adding the Determination Current field and setting
-      it to <em>Yes</em> will eliminate multiple determinations.&nbsp; One can also select a table
-      to take advantage of the formatted and aggregated value for that table e.g. selecting the
-      Collectors table will add all collectors on a single line.&nbsp; Fields can also be added to
-      eliminate certain records from the resulting cache
-    </p>
-    <ul>
-      <li>
-        Select the 'Add Unmapped Condition' term located at the bottom of the list of schema terms.
-      </li>
-      <li>
-        &nbsp;Then either double-click on a Specify field (or select the field and click the
-        <em><img width="16" src="../../images/add.png" height="16">(add)</em> button) to add it to
-        the schema.
-      </li>
-    </ul>
-    <p>
-       &nbsp;
-    </p>
-    <p>
-       <strong>Checking a Schema Mapping</strong>
-    </p>
-    <ul>
-      <li>
-        Click the <em>Preview</em> button in the lower right corner to display a 120 record sample
-        of the mapping in a query results display. If your data contains duplicate records, you
-        will be alerted and will need to correct this problem by adding conditions to the query
-        before continuing.&nbsp; Once successful, Specify will display a dialog message asking you
-        to use the external tool to export the data.
-      </li>
-      <li>
-        If all the mappings are correct, save the schema mapping by clicking the <em>Save</em>
-        button.
-      </li>
-    </ul>
-    <p>
-       The mapping name is automatically created by Specify, based on the title and version of the
-      schema.
-    </p>
-    <ul>
-      <li>
-        To edit a schema mapping simply click on it in the side bar to re-open it in the Schema
-        Mapping Editor. &nbsp;
-      </li>
-    </ul>
-    <p>
-       <em><strong>Note:</strong></em> Whenever a schema mapping is edited, a full rebuild of its
-      cache (in the separate Schema Exporter tool) will be required.
-    </p>
-    <p>
-       &nbsp;
-    </p>
-    <p>
-       <strong><a name="export_schema_map"></a>Import/Export a Mapping</strong>
-    </p>
-    <p>
-       The mapping file will be saved as an xml file.
-    </p>
-    <p>
-       <u>Import</u>
-    </p>
-    <ol>
-      <li>
-        Right-button-Click in the Sidebar, then choose <em>Import Mappings</em> in the resulting
-        context menu.
-      </li>
-      <li>
-        Choose the file to import from the resulting file menu dialog
-      </li>
-    </ol>
-    <p>
-       <em><strong>Note:</strong></em> When importing mappings that have the same name as existing
-      queries, Specify will simply add a number (2) to the import query name.
-    </p>
-    <p>
-       &nbsp;
-    </p>
-    <p>
-       <u>Export</u>
-    </p>
-    <p>
-       To export a mapping:
-    </p>
-    <ol>
-      <li>
-        Right-button-Click in the Sidebar, then choose <em>Export Mappings</em> in the resulting
-        context menu.
-      </li>
-      <li>
-        Choose the mapping to export from the resulting dialog list and click the <em>OK</em>
-        button.
-      </li>
-      <li>
-        Name the file and choose a storage location for the file in the resulting file menu dialog,
-        then click the <em>Save</em> button.
-      </li>
-    </ol>
-    <p>
-       &nbsp;
-    </p>
-    <p>
-       <strong><a name="delete_schema_map"></a>Delete a Mapping</strong>
-    </p>
-    <p>
-       Mappings are deleted by dragging and dropping them onto the Trash Can in the Sidebar.
-    </p>
-    <p>
-       <em><strong>Note:</strong></em> Mappings that are deleted from within Specify will no longer
-      be available for data file updates in the Data Exporter tool.
-    </p>
-    <p>
-       &nbsp;
-    </p>
-    <p>
-       To generate the Data file see the documentation page <a href="data_exporter.html">Data
-      Exporter</a>.
-    </p>
-    <p>
-       &nbsp;
-    </p>
-    <p>
-       &nbsp;
-    </p>
-    <p>
-       &nbsp;
-    </p>
-  </body>
+<BODY BGCOLOR=#ffffff>
+<table width="100%" border="0" background="../../images/topbar.png">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<h2><a name="third_party"></a>Exporting Data for Third Parties</h2>
+<p>Sharing Specify data with third parties, such as Darwin Core or OBIS, is a two-step process. First, the schema of the third party must be mapped to the Specify schema using the Schema Mapping Editor inside Specify. Next, the data file is created and/or updated using the Data Exporter stand-alone application.</p>
+<p>&nbsp;</p>
+<h3><a name="web_publishing">Publishing Specify data to the Web</a></h3>
+<p>Specify 6.1 takes advantage of the Global Biodiversity Information Facility's (GBIF) Integrated Publishing Toolkit (IPT) to publish Specify data to the web. IPT is an open-source, Java web application designed to publish biodiversity data on the Internet. The IPT creates an HTML web site on your web server and starts a network service that publishes your collection's data with the TAPIR data communications protocol. GBIF can then be notified of the existence of your IPT server to make first contact and integrate your data into the GBIF cache. &nbsp;You will be assimilated. Specify no longer uses its own web interface software nor the DiGIR protocol for serving XML encoded data. See <a href="http://ipt.gbif.org">http://ipt.gbif.org</a> for additional information on IPT. </p>
+<p>Using the Integrated Publishing Toolkit to display and publish Specify collection data requires several steps. First, Tomcat must be installed on the computer that will be serving data to the Internet. &nbsp;Next, the Specify data must be mapped to  schema authority, such as Darwin Core, from inside Specify. A separate Specify tool, Data Exporter, is then used to create (build) the data file for IPT. Last, IPT must be setup to display Specify data. Each of these steps is explained in the pdf document, <em>Publishing Specify Data with IPT, </em>found on the Specify website documentation page at <a href="http://specifysoftware.org/content/documentation"> http://specifysoftware.org/content/documentation</a>. </p>
+<p>This help document will explain how to define, or 'map', the Specify fields to those found in an IPT. Documentation for building the data file from within the Data Exporter tool is available online when using the tool.</p>
+<p>&nbsp;</p>
+<h3><a name="schema_mapping">Mapping Specify fields to an IPT supported schema</a></h3>
+<p>Open the Schema Mapping Editor by choosing <em>System &gt; Schema Mapper</em>. &nbsp;</p>
+<p>Choose either of the actions in the 'Create Mapping' section of the sidebar to open an IPT-supported schema and create/update a mapping. Existing mappings for the collection are listed in the '<em>Mappings</em>' section and can be opened by simply clicking on them.</p>
+<p><strong>Import a schema authority</strong></p>
+<p>Click on <em>Create New Mapping</em> to open a dialog listing IPT supported schema files. Choose one from the list or import a new schema by clicking <em>Import  Schema</em> and choosing one from your system file. Once a schema is chosen, a dialog will appear to enter a title and version. The two entries will be concatenated together and used to identify the schema mapping in the external tool. The concatenation will also be used for the name of the database table which holds the cache. </p>
+<p><a name="schema_authority"></a>Specify ships with the following schema files preloaded  in the Specify/Config directory:
+</p>
+<ul>
+  <ul>
+    <li>Darwin2_core.xsd &ndash; <strong>Darwin Core 1.2</strong> - first deployed version (used in       GBIF &ndash; also known as DarwinCoreV2)</li>
+    <li>DarwinCoreVertNet.xsd &ndash; <strong>Darwin       Core 1.21</strong> - revised       version of Darwin Core 1.2 (used in GBIF, MaNIS, HerpNet, OrNIS, and       FishNet2) </li>
+    <li>DarwinCoreWithDiGIRv1.3.xsd &ndash; <strong>Darwin       Core 1.3</strong> - draft       standard of the Darwin Core accepted at TDWG Meeting 2004, Christchurch,       New Zealand. </li>
+    <li>TDWG_DW_Core.xsd &ndash; <strong>Darwin Core       1.4</strong> - draft       standard under discussion (used in GBIF, and recommended to use in GBIF) </li>
+    <li>TDWG_dwterms.xsd - The       Generic Darwin Core schema defining all property terms as global       elements. </li>
+  </ul>
+</ul>
+<p>If a schema other than Darwin Core is desired it must first be downloaded (preferably into the same Config directory) and imported as an .xsd definition file.&nbsp; Three examples are:</p>
+<p>OBIS - <a href="http://www.iobis.org/obis/obis.xsd">http://www.iobis.org/obis/obis.xsd</a><br />
+  PaleoPortal - <a href="http://data.paleoportal.org/schema/conceptual/1.0/paleoportal.xsd">http://data.paleoportal.org/schema/conceptual/1.0/paleoportal.xsd</a><br />
+  ABCD - <a href="http://rs.tdwg.org/abcd/2.06/ABCD_2.06.xsd">http://rs.tdwg.org/abcd/2.06/ABCD_2.06.xsd</a></p>
+<p><strong>NOTE</strong>: Currently all schmea mappings are assumed to be specimen-based &ndash; i.e: the elements described in the schema definition are assumed to refer to biological specimens. This means the mapping is based on a CollectionObject query by default.</p>
+<p>To delete a schema from the available list (and your Specify/Config directory) Right-button-Click in the Sidebar, then choose <em>Delete Schema</em> in the resulting context menu. You may also delete the file directly from your Specify/Config directory.</p>
+<p>The next step in the process is to map the relevant fields in your database to the fields in the schema.&nbsp; To do so choose <em>Create New Mapping</em> from the sidebar and choose the appropriate schema from the resulting list.</p>
+<ul>
+  <li>A modified query builder window will appear. Each term in the selected schema will be displayed as a 'Place-holder' in the lower section of the screen. The left-most column in the display is the name of the term. After a term is mapped, the remaining columns are similar to those in the regular query builder, except that some options, (such as 'Display') are not available. Specify will automatically map fields to recognized concepts. (Auto-mapping is currently optimized for Darwin Core terms) Other terms unmapped by Specify&rsquo;s auto-mapping will need to be manually mapped. &nbsp;Criteria can also be added to the mapping to restrict or remove certain records from the build and to eliminate duplication of records due to the one-to-many relationships within Specify.</li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>Mapping a Term</strong></p>
+<p>To map a term, first select it in the lower window, then locate the equivalent specify field in the upper section of the mapper, and either double-click on a Specify field (or select the field click the <em><img src="../../images/add.png" width="16" height="16" />(add)</em> button). </p>
+<p><br />
+  If a field was already mapped to the term, it will be replaced by the new field.&nbsp; Fields can be left un-mapped if not required or if your database does not contain data in that field.</p>
+<p>&nbsp;</p>
+<p><strong>Un-mapping a Term</strong></p>
+<p>To un-map a term, click the&nbsp;<img src="../../images/delete.png" width="16" height="16" />&nbsp;<em>(remove field)</em> button at the right of the mapping element.&nbsp; The field will not be removed from the query but simply un-mapped.</p>
+<p>&nbsp;</p>
+<p><strong>Adding Unmapped Conditions</strong></p>
+<p>IPT and Specify require that all uploaded records be unique.&nbsp; Due to the one-to-many relationships contained in Specify databases it may be necessary to add certain conditional fields to the schema to ensure this e.g. adding the Determination Current field and setting it to <em>Yes</em> will eliminate multiple determinations.&nbsp; One can also select a table to take advantage of the formatted and aggregated value for that table e.g. selecting the Collectors table will add all collectors on a single line.&nbsp; Fields can also be added to eliminate certain records from the resulting cache</p>
+<ul>
+  <li>Select the 'Add Unmapped Condition' term located at the bottom of the list of schema terms.</li>
+  <li>&nbsp;Then either double-click on a Specify field (or select the field and click the <em><img src="../../images/add.png" width="16" height="16" />(add)</em> button) to add it to the schema. </li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>Checking a Schema Mapping </strong></p>
+<ul>
+  <li>Click the <em>Preview</em> button in the lower right corner to display a 120 record sample of the mapping in a query results display. If your data contains duplicate records, you will be alerted and will need to correct this problem by adding conditions to the query before continuing.&nbsp; Once successful, Specify will display a dialog message asking you to use the external tool to export the data. </li>
+  <li>If all the mappings are correct, save the schema mapping by clicking the <em>Save</em> button. </li>
+</ul>
+<p>The mapping name is automatically created by Specify, based on the title and version of the schema. </p>
+<ul>
+  <li>To edit a schema mapping simply click on it in the side bar to re-open it in the Schema Mapping Editor. &nbsp;</li>
+</ul>
+<p><em><strong>Note: </strong></em>Whenever a schema mapping is edited, a full rebuild of its cache (in the separate Schema Exporter tool) will be required. </p>
+<p>&nbsp;</p>
+<p><strong><a name="export_schema_map"></a>Import/Export a Mapping</strong></p>
+<p>The mapping file will be saved as an xml file.</p>
+<p><u>Import</u></p>
+<ol>
+  <li>Right-button-Click in the Sidebar, then choose <em>Import Mappings</em> in the resulting context menu.</li>
+  <li>Choose the file to import from the resulting file menu dialog</li>
+</ol>
+<p><em><strong>Note:</strong></em> When importing mappings that have the same name as existing queries, Specify will simply add a number (2) to the import query name.</p>
+<p>&nbsp;</p>
+<p><u>Export</u></p>
+<p>To export a mapping: </p>
+<ol>
+  <li>Right-button-Click in the Sidebar, then choose <em>Export Mappings</em> in the resulting context menu.</li>
+  <li>Choose the mapping to export from the resulting dialog list and click the <em>OK</em> button.</li>
+  <li>Name the file and choose a storage location for the file in the resulting file menu dialog, then click the <em>Save</em> button.</li>
+</ol>
+<p>&nbsp;</p>
+<p><strong><a name="delete_schema_map"></a>Delete a Mapping</strong></p>
+<p>Mappings are deleted by dragging and dropping them onto the Trash Can in the Sidebar.</p>
+<p><em><strong>Note:</strong></em> Mappings that are deleted from within Specify will no longer be available for data file updates in the Data Exporter tool. </p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</BODY>
 </html>

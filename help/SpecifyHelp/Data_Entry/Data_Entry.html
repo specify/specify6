@@ -87,8 +87,8 @@
 <table width="100%" border="1" cellpadding="6" cellspacing="2">
   
   <tr>
-    <td align="left" valign="top"><strong>Alternate Name</strong></td>
-    <td align="left" valign="top">A free text field for insertion of a name (scientific or common) not recognized in the taxon tree authority.  This field operates as an “either/or” condition with Preferred Taxon; both cannot be entered in a single Determination. </td>
+    <td width="11%" align="left" valign="top"><strong>Alternate Name</strong></td>
+    <td width="89%" align="left" valign="top">A free text field for insertion of a name (scientific or common) not recognized in the taxon tree authority.  This field operates as an “either/or” condition with Preferred Taxon; both cannot be entered in a single Determination. </td>
   </tr>
   <tr>
     <td align="left" valign="top"><div align="left"><strong>Name Usage</strong></div></td>
@@ -169,10 +169,88 @@
 </ul>
 <p>When a lat/long is entered the format is captured and displayed in the (Source) field. This field remains constant when formats are changed, but if the lat/long numbers are changed then the (Source) field will update to the new lat/long entry.</p>
 <p>Specify  does not track versions of the latitude and longitude and does not keep a verbatim field!</p>
-<p>Other data on the Locality form include a Geo Referencing Determination By and Date. These are for documenting how and when a georeference for the Locality occurred. </p>
-<p>One weblink button is available on the Locality form for a quick link to the  GEOLocate service. GEOLocate uses a description of a Locality, and at least two geographic locations to find  Latitude and Longitude coordinate data. This is referred to as georeferencing. When using the United States as a geographic location GEOLocate will not recognize 'United States of America' or 'U.S.A.' GEOLocate prefers 'United States' but can use 'USA'.</p>
-<p>A weblink button to Google Earth is also included on the Locality form. Localities with Latitude and Longitude data can be plotted on Google Earth by simply clicking this button. Google Earth must be installed on your machine for it to work. </p>
-<p>For more information about  GEOLocate or Google Earth plugins please refer to the <A href="../../Plugins/Plugins.html">Plugins</A> documentation.</p>
+<p>Other data on the Locality form include a Geo Referencing Determination By and Date. These are for documenting how and when a georeference for the Locality occurred.</p>
+<p>Three weblink buttons exist on the Locality form:</p>
+<p><img src="../../images/geolocate_button.png" width="90" height="23"> This button is a quick link to the  GEOLocate service. GEOLocate uses a description of a Locality, and at least two geographic locations to find  Latitude and Longitude coordinate data. This is referred to as georeferencing. Once the Latitude and Longitude information is complete the GEOLocate button will become enabled.</p>
+<p>When using the United States as a geographic location GEOLocate will not recognize 'United States of America' or 'U.S.A.' GEOLocate prefers 'United States' but can use 'USA'.</p>
+<p>More information about GEOLocate can be found at <a href="http://www.museum.tulane.edu/geolocate/">http://www.museum.tulane.edu/geolocate/</a>.</p>
+<p><img src="../../images/worldwind_button.png" width="144" height="23"> <a name="world_wind"></a>The link to NASA World Wind is available at any time in the Locality form. A text box at the top of the World Wind dialog allows either a Latitude and Longitude or a Locality Name to be entered. The location is then displayed on a World Wind map. If either a Latitude and Longitude or Locality Name exists in the Locality form World Wind will automatically plot the location on the map once the button is clicked. </p>
+<p>World Wind requires a 3D video card with updated drivers to work properly. </p>
+<p>Several default controls are available from within World Wind.</p>
+<p>Mouse with scroll wheel:</p>
+<table border="1" cellspacing="2" cellpadding="6">
+  <tr>
+    <td>Pan</td>
+    <td>Left-mouse button click &amp; drag - all directions</td>
+  </tr>
+  <tr>
+    <td>Zoom</td>
+    <td>Use the scroll wheel on the mouse <br>or Left &amp; Right mouse (both butons) click &amp; drag</td>
+  </tr>
+  <tr>
+    <td>Tilt</td>
+    <td>Right-mouse button click &amp; drag - up and down <br>or use &quot;Page Up' and &quot;Page Down&quot; on the keyboard.</td>
+  </tr>
+  <tr>
+    <td valign="top">Rotate</td>
+    <td><p>Right-mouse button click &amp; drag - left and right <br>
+    Note: Crossing the top and bottom half f the screen while rotating will change direction.
+    </td>
+  </tr>
+  <tr>
+    <td>Stop</td>
+    <td>Spacebar</td>
+  </tr>
+  <tr>
+    <td>Reset Heading</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>Rest All</td>
+    <td>R</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p>Single button mouse:</p>
+<table border="1" cellspacing="2" cellpadding="6">
+  <tr>
+    <td>Pan</td>
+    <td>Left-mouse button click &amp; drag - all directions<br>Left-mouse button click once to center view.</td>
+  </tr>
+  <tr>
+    <td>Zoom</td>
+    <td>Hold &quot;Ctrl&quot; on the keyboard and <br>Left-mouse button click &amp; drag - up and down.</td>
+  </tr>
+  <tr>
+    <td>Tilt</td>
+    <td>Hold &quot;Shift&quot; on the keyboard and <br>Left-mouse button click &amp; drag - up and down</td>
+  </tr>
+  <tr>
+    <td valign="top">Rotate</td>
+    <td>Hold &quot;Shift&quot; on the keyboar and <br>
+      Left-mouse buton click &amp; drag - left and right.
+    </td>
+  </tr>
+  <tr>
+    <td>Stop</td>
+    <td>Spacebar</td>
+  </tr>
+  <tr>
+    <td>Reset Heading</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>Rest All</td>
+    <td>R</td>
+  </tr>
+</table>
+<p>More information about World Wind can be found at <a href="http://worldwind.arc.nasa.gov/java/">http://worldwind.arc.nasa.gov/java/</a>.
+</p>
+<p><img src="../../images/google_earth.png" width="153" height="23"> A weblink button to Google Earth is also included on the Locality form. Localities with Latitude and Longitude data can be plotted on Google Earth by simply clicking this button. Google Earth must be properly installed on the local machine for Specify to display in Google Earth. </p>
+<p>For more information or to download and install Google Earth visit <a href="http://earth.google.com/">http://earth.google.com/</a>.</p>
+
+
+<p>For more information about  the GEOLocate or Google Earth plugins please refer to the <A href="../../Plugins/Plugins.html">Plugins</A> documentation.</p>
 <p>&nbsp;</p>
 <h3><a name="collecting_event"></a>Collecting Event / Time and Place</h3>
 <p>One of the important curatorial decisions to be made early on is the use of “Collecting Events” in a collection. This is also named 'Time and Place' on some Data Type forms. A collecting event is described by the date and time of the collection together with collector names and a number associated either with all specimens collected at that date and time or a number associated with each individual specimen.</p>

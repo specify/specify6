@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
+<title>About Specify</title>
+</head>
+
+
+<BODY BGCOLOR=#ffffff>
+<table width="100%" border="0" background="../images/topbar.png">
+  
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<h2><a name="lsid"><a name="guid">LSID</a></a> </h2>
+<p>A field for a unique identifier exists within the Collection Object, Taxon, Geography, Lithostratigraphy, Locality, Agent, reference Work and Journal tables in Specify. The field is named Globally Unique Identifier, (GUID).</p>
+<p>A more specific form of GUID, Life Science Identifiers (LSIDs) have become the universally accepted identification scheme for the biological collections community. Using an LSID to identify information allows that information to be shared and recognized globally. As more biological information systems use LSIDs it will become possible to instantly recognize when globally exchanged information has been updated or duplicated. </p>
+<p>Specify has adapted its own scheme for creating LSIDs, but was also written to include the flexibility for institutions wanting to include their own scheme to create a plugin. </p>
+<p>Specify&rsquo;s LSID scheme was created with specific sections so that information about the referenced information is instantly recognizable. This scheme includes a version number, which will change each time the record is updated.</p>
+<p align="center"><img src="../../images/LSID.png" width="592" height="151" />. </p>
+<p>&nbsp;</p>
+<p><strong>LSID Authority</strong> refers to the source of the data, which is typically the url for the institution.<br />
+  <strong>Institution Code</strong> is the code located within Specify for the Institution.<br />
+  <strong>Collection Code</strong> is the code for the collection.<br />
+  <strong>Collecton Code</strong> refers to the type of record.<br />
+  <strong>Catalog Number</strong> is the catalog number for the data in Specify.<br />
+  <strong>Version</strong> refers to the amount of times the information has been updated. </p>
+<p>The Catalog Number is used within the LSID schema to identify specimen records, but all other records are identified using the primary record id found within MySQL.</p>
+<p>LSIDs can be automatically created by Specify for each specimen, taxonomy, geography, lithostratigraphy, locality, person, reference work and journal record located within Specify. LSIDs are configured in the System Preferences. </p>
+<p>For Mac: Choose <em>Specify &gt; Preferences &gt; LSID</em>. <br />
+For Windows and Linux: Choose <em>Edit &gt; Preferences &gt; LSID</em>.</p>
+<p><strong><a name="automatic_lsid">Automatic LSID Generation</a></strong><br />
+Check the box to choose tables for automatically create LSIDs. This will allow new records in each specific table to include an automatically generated LSID. To automatically generate LSIDs for existing records in tables first choose the tables in this section, then click the <em>Create LSIDs</em> button.</p>
+<p><strong>Additional Options</strong><br />
+Click the <em>Create LSIDs</em> button to automatically generate LSIDs for existing records in the tables selected in the <em>Automatic LSID Generation</em> section. </p>
+<p>Specify will not override LSID information. </p>
+</BODY>
+</html>
