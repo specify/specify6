@@ -181,6 +181,13 @@ public class DisciplineType implements Comparable<DisciplineType>
         DisciplineType disciplineType = getDisciplineHash().get(name);
         if (disciplineType == null)
         {
+            for (DisciplineType dt : getDisciplineHash().values())
+            {
+                if (dt.getTitle().equalsIgnoreCase(name))
+                {
+                    return dt;
+                }
+            }
             log.error("Couldn't locate disciplineType["+name+"]");
         }
         return disciplineType;

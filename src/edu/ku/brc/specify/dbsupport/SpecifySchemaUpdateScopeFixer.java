@@ -150,9 +150,14 @@ public class SpecifySchemaUpdateScopeFixer
     protected boolean fieldExists(final Connection conn,  final String tableName, final String fieldName)
     {
         DBMSUserMgr dbUserMgr = DBMSUserMgr.getInstance();
+        
+        Connection cachedConn = dbUserMgr.getConnection();
         dbUserMgr.setConnection(conn);
+        
         boolean fieldExists = dbUserMgr.doesFieldExistInTable(tableName, fieldName);
-        dbUserMgr.setConnection(null);
+        
+        dbUserMgr.setConnection(cachedConn);
+        
         return fieldExists;
     }
     

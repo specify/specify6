@@ -651,14 +651,17 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
     {
         try
         {
-    Vector<Object> rows = BasicSQLUtils.querySingleCol(connection, "SELECT CHARACTER_MAXIMUM_LENGTH FROM `information_schema`.`COLUMNS` where TABLE_SCHEMA = '" +
-                                                         connection.getCatalog() + "' and TABLE_NAME = '" + tableName + "' and COLUMN_NAME = '" + fieldName + "'");                    
-    if (rows.size() == 0)
-    {
-        return null; //the field doesn't even exits
-    }
-    
-    return((Number )rows.get(0)).intValue();
+            String sql = "SELECT CHARACTER_MAXIMUM_LENGTH FROM `information_schema`.`COLUMNS` where TABLE_SCHEMA = '" +
+                          connection.getCatalog() + "' and TABLE_NAME = '" + tableName + "' and COLUMN_NAME = '" + fieldName + "'";
+            //log.debug(sql);
+            
+            Vector<Object> rows = BasicSQLUtils.querySingleCol(connection, sql);                    
+            if (rows.size() == 0)
+            {
+                return null; //the field doesn't even exits
+            }
+            
+            return((Number )rows.get(0)).intValue();
             
         } catch (Exception ex)
         {

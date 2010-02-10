@@ -678,6 +678,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         return false;
     }
     
+    /**
+     * @param conn
+     * @param tblName
+     * @param fldName
+     * @param origLen
+     * @param newLen
+     * @return
+     */
     private boolean alterFieldLength(final Connection conn,
                                      final String tblName, 
                                      final String fldName, 
@@ -705,6 +713,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      */
     private boolean doFixesForDBSchema1_2(final Connection conn) throws Exception
     {
+        //DBMSUserMgr.getInstance().setConnection(conn);
+
         /////////////////////////////
         // PaleoContext
         /////////////////////////////

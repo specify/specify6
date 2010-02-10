@@ -1793,7 +1793,14 @@ public class BasicSQLUtils
                 BasicSQLUtils.removeForeignKeyConstraints(toConn, BasicSQLUtils.myDestinationServerType);
             
             }
-            List<FieldMetaData> newFieldMetaData = getFieldMetaDataFromSchema(toConn, toTableName);
+            
+            //HashMap<String, Integer> newDBFieldHash   = new HashMap<String, Integer>();
+            List<FieldMetaData>      newFieldMetaData = getFieldMetaDataFromSchema(toConn, toTableName);
+            //int inx = 1;
+            //for (FieldMetaData fmd : newFieldMetaData)
+            //{
+            //    newDBFieldHash.put(fmd.getName(), inx++);
+            //}
 
             Statement         stmt = fromConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             //System.out.println(sqlStr);
@@ -1826,6 +1833,8 @@ public class BasicSQLUtils
 	            for (String newName : colNewToOldMap.keySet())
 	            {
 	            	String oldName = colNewToOldMap.get(newName);
+	            	System.out.println("Mapping oldName["+(oldName == null ? newName : oldName) + " -> "+ newName);
+	            	
 	            	oldNameToNewNameHash.put(oldName == null ? newName : oldName, newName);
 	            }
             }
@@ -1868,7 +1877,7 @@ public class BasicSQLUtils
                     	continue;
                     }
                     
-                    String newColName = colNewToOldMap != null ? oldNameToNewNameHash.get(oldColName) : newFieldMetaData.get(oldColIndex).getName();
+                    String newColName = colNewToOldMap != null ? oldNameToNewNameHash.get(oldColName) : null;
                     if (newColName == null)
                     {
                     	newColName = oldColName;

@@ -106,11 +106,12 @@ public class ConvertVerifier
     public static final long DO_COLLECTORS          =  256; 
     public static final long DO_COLLEVENTS          =  512; 
     public static final long DO_TAXON_CIT           = 1024; 
-    public static final long DO_CO_ALL              = 2047; 
+    public static final long DO_SHIPMENTS           = 2048; 
+    public static final long DO_CO_ALL              = 4095; 
     
     private String[] labels = {"None", "Preparations", "CO Collecting Events", "Localities", "Preparers", 
                                "Catalogers", "Determiners", "Taxon", "Geographies", "Collectors", 
-                               "Collecting Events", "Taxon Citations", "All"};
+                               "Collecting Events", "Taxon Citations", "Shipments", "All"};
     private ToggleButtonChooserPanel<String> chkPanel;
     
     //public static final long DONT_ADD_ALL_ALTVIEWS  = 256; 
@@ -460,6 +461,13 @@ public class ConvertVerifier
         {
             tblWriter = tblWriterHash.get(DO_COLLEVENTS);
             verifyCEs();
+        }
+        
+        //progressFrame.setOverall(numColObjs*2);
+        if (isCOOn(DO_COLLEVENTS))
+        {
+            tblWriter = tblWriterHash.get(DO_COLLEVENTS);
+            verifyShipments();
         }
         
         for (TableWriter tw : tblWriterHash.values())
@@ -1567,6 +1575,252 @@ public class ConvertVerifier
     }
     
     /**
+     * @param oldNewIdStr
+     * @param newColInx
+     * @param oldColInx
+     * @return
+     * @throws SQLException
+     */
+    private StatusType compareDates(final String oldNewIdStr, final int newColInx, final int oldColInx) throws SQLException 
+    {
+        Pair<String, String> datePair = new Pair<String, String>();
+        
+        Object newObj = newDBRS.getObject(newColInx);
+        Object oldObj = oldDBRS.getObject(oldColInx);
+        
+        ResultSetMetaData newRsmd = newDBRS.getMetaData();
+        ResultSetMetaData oldRsmd = oldDBRS.getMetaData();
+        
+        String newColName = newRsmd.getColumnName(newColInx);
+        String oldColName = oldRsmd.getColumnName(oldColInx);
+        
+        if (newObj == null)
+        {
+            String clsName = newRsmd.getColumnClassName(newColInx);
+
+            if (compareTo6DBs)
+            {
+                if (!clsName.equals("java.sql.Date") || oldObj != null)
+                {
+                    String msg = "New Value was null and shouldn't have been for Key Value New  Field ["+newColName+"] ["+oldObj+"]";
+                    log.error(msg);
+                    tblWriter.logErrors(newColName, msg);
+                    return StatusType.NEW_VAL_NULL;
+                }
+                
+            } else
+            {
+                if (!clsName.equals("java.sql.Date") || (!(oldObj instanceof String) && ((Number)oldObj).intValue() != 0))
+                {
+                    String msg = "New Value was null and shouldn't have been for Key Value New Field ["+newColName+"] ["+oldObj+"]";
+                    log.error(msg);
+                    tblWriter.logErrors(newColName, msg);
+                    return StatusType.NEW_VAL_NULL;
+                }
+            }
+        }
+        
+        StringBuilder errSB = new StringBuilder();
+        
+        //System.out.println(newObj.getClass().getName()+"  "+oldObj.getClass().getName());
+        
+        if (newObj instanceof java.sql.Date)
+        {
+            boolean isPartialDate   = false;
+            Byte    partialDateType = null;
+            if (StringUtils.contains(newRsmd.getColumnName(newColInx+1), "DatePrecision"))
+            {
+                partialDateType = newDBRS.getByte(newColInx);
+                isPartialDate   = true;
+            }
+            
+            if (compareTo6DBs)
+            {
+                Object dateObj = oldDBRS.getObject(oldColInx);
+                
+                boolean isPartialDate2   = false;
+                Byte    partialDateType2 = null;
+                if (StringUtils.contains(oldRsmd.getColumnName(oldColInx+1), "DatePrecision"))
+                {
+                    partialDateType2 =  newDBRS.getByte(oldColInx);
+                    isPartialDate2   = true;
+                    
+                } else
+                {
+                    log.error("Next isn't DatePrecision and can't be!");
+                    tblWriter.logErrors(oldNewIdStr, errSB.toString());
+                }
+                
+                if (!newObj.equals(dateObj) || (isPartialDate2 && !partialDateType2.equals(partialDateType)))
+                {
+                    errSB.insert(0, oldColName+"  ");
+                    errSB.append("[");
+                    errSB.append(datePair);
+                    errSB.append("][");
+                    errSB.append(dateFormatter.format((Date)newObj));
+                    errSB.append("] oldDate[");
+                    errSB.append(dateFormatter.format((Date)dateObj));
+                    errSB.append("]");
+                    log.error(errSB.toString());
+                    tblWriter.logErrors(oldNewIdStr, errSB.toString());
+                    return StatusType.BAD_DATE;
+                }
+                
+            } else
+            {
+                int oldIntDate = oldDBRS.getInt(oldColInx);
+                if (oldIntDate == 0)
+                {
+                    return StatusType.NO_OLD_REC;
+                }
+                
+                BasicSQLUtils.getPartialDate(oldIntDate, datePair, false);
+                
+                if (partialDateType != null)
+                {
+                    if (Byte.parseByte(datePair.second) != partialDateType.byteValue())
+                    {
+                        errSB.append("Partial Dates Type do not match. Old["+datePair.second+"]  New ["+partialDateType.byteValue()+"]");
+                        // error partial dates don't match
+                    }
+                } 
+                
+                Calendar cal = Calendar.getInstance();
+                cal.setTime((Date)newObj);
+                
+                int year = Integer.parseInt(datePair.first.substring(0, 4));
+                int mon  = Integer.parseInt(datePair.first.substring(5, 7));
+                int day  = Integer.parseInt(datePair.first.substring(8, 10));
+                
+                if (mon > 0) mon--;
+                
+                boolean isYearOK = true;
+                
+                int yr = cal.get(Calendar.YEAR);
+                if (year != yr)
+                {
+                    errSB.append("Year mismatch Old["+year+"]  New ["+yr+"] ");
+                    isYearOK = false;
+                }
+                
+                if (mon != cal.get(Calendar.MONTH))
+                {
+                    errSB.append("Month mismatch Old["+mon+"]  New ["+cal.get(Calendar.MONTH)+"] ");
+                }
+                
+                if (day != cal.get(Calendar.DAY_OF_MONTH))
+                {
+                    errSB.append("Day mismatch Old["+day+"]  New ["+cal.get(Calendar.DAY_OF_MONTH)+"] ");
+                }
+                
+                if (errSB.length() > 0 && (!isYearOK || !isPartialDate))
+                {
+                    errSB.insert(0, oldColName+"  ");
+                    errSB.append("[");
+                    errSB.append(datePair);
+                    errSB.append("][");
+                    errSB.append(dateFormatter.format((Date)newObj));
+                    errSB.append("]");
+                    log.error(errSB.toString());
+                    tblWriter.logErrors(oldNewIdStr, errSB.toString());
+                    return StatusType.BAD_DATE;
+                }
+            } 
+        }
+        
+        return StatusType.COMPARE_OK;
+    }
+    
+    /**
+     * @param oldNewIdStr
+     * @throws SQLException
+     */
+    private void compareNames(final String oldNewIdStr, final int startInxNewArg, final int startInxOldArg) throws SQLException 
+    {
+        String newFirstName = newDBRS.getString(startInxNewArg);
+        String newLastName  = newDBRS.getString(startInxNewArg+1);
+        
+        String oldFirstName = oldDBRS.getString(startInxOldArg);
+        String oldLastName  = oldDBRS.getString(startInxOldArg+1);
+        String oldName      = oldDBRS.getString(startInxOldArg+2);
+        
+        if (StringUtils.isNotEmpty(oldName) && StringUtils.isEmpty(oldLastName))
+        {
+            oldLastName = oldName;
+        }
+        
+        if (oldFirstName == null && oldLastName == null && oldName != null)
+        {
+            oldLastName = oldName;
+        }
+        
+        // First Name
+        if (oldFirstName == null && newFirstName != null)
+        {
+            String msg = "Old FirstName["+oldFirstName+"] is NULL   New FirstName["+newFirstName+"] is not";
+            log.error(oldNewIdStr + " " + msg);
+            tblWriter.logErrors(oldNewIdStr, msg);
+            
+        } else if (oldFirstName != null && newFirstName == null)
+        {
+            String msg = "Old FirstName["+oldFirstName+"] is not null   New FirstName["+newFirstName+"] is NULL";
+            log.error(oldNewIdStr + " " + msg);
+            tblWriter.logErrors(oldNewIdStr, msg);
+        }
+        
+        if (oldFirstName != null && newFirstName != null && !oldFirstName.equals(newFirstName))
+        {
+            String msg = "Old FirstName["+oldFirstName+"] is NOT equals   New FirstName["+newFirstName+"]";
+            log.error(oldNewIdStr + " " + msg);
+            tblWriter.logErrors(oldNewIdStr, msg);
+        }
+        
+        // Last Name and old Name
+        if (oldLastName == null && newLastName != null)
+        {
+            String msg = "Old LastName["+oldLastName+"] is NULL   New LastName["+newLastName+"] is not";
+            log.error(oldNewIdStr + " " + msg);
+            tblWriter.logErrors(oldNewIdStr, msg);
+
+        } else if (oldLastName != null && newLastName == null)
+        {
+            String msg = "Old LastName["+oldLastName+"] is not null   New LastName["+newLastName+"] is NULL";
+            log.error(oldNewIdStr + " " + msg);
+            tblWriter.logErrors(oldNewIdStr, msg);
+
+        } else if (oldLastName != null && newLastName != null && !oldLastName.equals(newLastName))
+        {
+            String msg = "Old LastName["+oldLastName+"] is NOT equals   New LastName["+newLastName+"]";
+            log.error(oldNewIdStr + " " + msg);
+            tblWriter.logErrors(oldNewIdStr, msg);
+        }
+    }
+    
+    /**
+     * @param oldNewIdStr
+     * @throws SQLException
+     */
+    private void compareStrings(final String oldNewIdStr, final String colName, final int startInxNewArg, final int startInxOldArg) throws SQLException 
+    {
+        String newStr = newDBRS.getString(startInxNewArg);
+        String oldStr = oldDBRS.getString(startInxOldArg);
+        
+        if (oldStr == null && newStr != null)
+        {
+            String msg = "Old "+colName+" ["+oldStr+"] is NULL   New "+colName+"["+newStr+"] is not";
+            log.error(oldNewIdStr + " " + msg);
+            tblWriter.logErrors(oldNewIdStr, msg);
+            
+        } else if (oldStr != null && newStr == null)
+        {
+            String msg = "Old "+colName+"["+oldStr+"] is not null   New "+colName+"["+newStr+"] is NULL";
+            log.error(oldNewIdStr + " " + msg);
+            tblWriter.logErrors(oldNewIdStr, msg);
+        }
+    }
+
+    
+    /**
      * 
      */
     private void verifyCollectors()
@@ -1606,20 +1860,10 @@ public class ConvertVerifier
 	            }
 	            
 	            int    newId        = newDBRS.getInt(1);
-	            String newFirstName = newDBRS.getString(2);
-	            String newLastName  = newDBRS.getString(3);
 	            int    newOrder     = newDBRS.getInt(4);
 	            
 	            int    oldId        = oldDBRS.getInt(1);
-	            String oldFirstName = oldDBRS.getString(2);
-	            String oldLastName  = oldDBRS.getString(3);
-	            String oldName      = oldDBRS.getString(4);
 	            int    oldOrder     = oldDBRS.getInt(5);
-	            
-	            if (StringUtils.isNotEmpty(oldName) && StringUtils.isEmpty(oldLastName))
-	            {
-	                oldLastName = oldName;
-	            }
 	            
 	            String oldNewIdStr = oldId + " / "+newId;
 	            
@@ -1644,51 +1888,7 @@ public class ConvertVerifier
                     break;
 	            }
 	            
-	            if (oldFirstName == null && oldLastName == null && oldName != null)
-	            {
-	            	oldLastName = oldName;
-	            }
-	            
-	            // First Name
-	            if (oldFirstName == null && newFirstName != null)
-	            {
-	            	String msg = "Old FirstName["+oldFirstName+"] is NULL   New FirstName["+newFirstName+"] is not";
-	            	log.error(oldNewIdStr + " " + msg);
-                    tblWriter.logErrors(oldNewIdStr, msg);
-                    
-	            } else if (oldFirstName != null && newFirstName == null)
-	            {
-	            	String msg = "Old FirstName["+oldFirstName+"] is not null   New FirstName["+newFirstName+"] is NULL";
-	            	log.error(oldNewIdStr + " " + msg);
-                    tblWriter.logErrors(oldNewIdStr, msg);
-	            }
-	            
-	            if (oldFirstName != null && newFirstName != null && !oldFirstName.equals(newFirstName))
-	            {
-	            	String msg = "Old FirstName["+oldFirstName+"] is NOT equals   New FirstName["+newFirstName+"]";
-	            	log.error(oldNewIdStr + " " + msg);
-                    tblWriter.logErrors(oldNewIdStr, msg);
-	            }
-	            
-	            // Last Name and old Name
-	            if (oldLastName == null && newLastName != null)
-	            {
-	            	String msg = "Old LastName["+oldLastName+"] is NULL   New LastName["+newLastName+"] is not";
-	            	log.error(oldNewIdStr + " " + msg);
-                    tblWriter.logErrors(oldNewIdStr, msg);
-
-	            } else if (oldLastName != null && newLastName == null)
-	            {
-	            	String msg = "Old LastName["+oldLastName+"] is not null   New LastName["+newLastName+"] is NULL";
-	            	log.error(oldNewIdStr + " " + msg);
-                    tblWriter.logErrors(oldNewIdStr, msg);
-
-	            } else if (oldLastName != null && newLastName != null && !oldLastName.equals(newLastName))
-	            {
-	            	String msg = "Old LastName["+oldLastName+"] is NOT equals   New LastName["+newLastName+"]";
-	            	log.error(oldNewIdStr + " " + msg);
-                    tblWriter.logErrors(oldNewIdStr, msg);
-	            }
+	            compareNames(oldNewIdStr, 2, 2);
 	            
 	            // Order
 	            if (oldOrder != newOrder)
@@ -1906,7 +2106,7 @@ public class ConvertVerifier
     private void verifyAgents()
     {
     
-        newSQL = "SELECT a.AgentID,a.AgentType,a.LastName,a.MiddleInitial,a.FirstName, a.JobTitle,adr.Phone1,adr.Phone2,adr.Address,adr.City,adr.Country,adr.State,adr.PostalCode " +
+        newSQL = "SELECT a.AgentID,a.AgentType, a.LastName, a.MiddleInitial,a.FirstName, a.JobTitle,adr.Phone1,adr.Phone2,adr.Address,adr.City,adr.Country,adr.State,adr.PostalCode " +
                 "FROM agent AS a Left Join address AS adr ON a.AgentID = adr.AgentID";
     
         oldSQL = "SELECT a.AgentType,a.LastName,a.MiddleInitial,a.FirstName,aa.JobTitle,aa.Phone1,aa.Phone2,adr.Address,adr.City,adr.State,adr.Country,adr.State,adr.Postalcode FROM agent AS a " +
@@ -1995,6 +2195,84 @@ public class ConvertVerifier
 
             }
 
+            oldDBRS.close();
+            newDBRS.close();
+
+        } catch (Exception ex)
+        {
+            ex.printStackTrace(); 
+        }
+
+    }
+    
+    /**
+     * 
+     */
+    private void verifyShipments()
+    {
+    
+        newSQL = "SELECT s.ShipmentNumber,s.ShipmentDate, s.ShipmentMethod, s.NumberOfPackages, s.Weight, s.InsuredForAmount, ato.FirstName, ato.LastName, aby.FirstName, aby.LastName " +
+                 "FROM shipment AS s " +
+                 "Inner Join agent AS ato ON s.ShippedToID = ato.AgentID " +
+                 "Inner Join agent AS aby ON s.ShippedByID = aby.AgentID " +
+                 "ORDER BY s.ShipmentNumber ASC";
+    
+        oldSQL = "SELECT s.ShipmentNumber,s.ShipmentDate, s.ShipmentMethod, s.NumberOfPackages, s.Weight, s.InsuredForAmount, ato.FirstName, ato.LastName, ato.Name, aby.FirstName, aby.LastName, aby.Name " +
+                 "FROM shipment AS s " +
+                 "Inner Join agent AS ato ON s.ShippedToID = ato.AgentID " +
+                 "Inner Join agent AS aby ON s.ShippedByID = aby.AgentID " +
+                 "ORDER BY s.ShipmentNumber ASC";
+    
+        //log.info(newSQL);
+        //log.info(oldSQL);
+        
+        int prevOldId = Integer.MAX_VALUE;
+        int prevNewId = Integer.MAX_VALUE;
+    
+        try
+        {
+            getResultSets(oldSQL, newSQL);
+            
+            
+            ResultSetMetaData rmd = newDBRS.getMetaData();
+            while (true)
+            {
+            
+                boolean hasOldRec = oldDBRS.next();
+                boolean hasNewRec = newDBRS.next();
+                
+                if (!hasOldRec && !hasNewRec)
+                {
+                    break;
+                }
+                
+                int    newId        = newDBRS.getInt(1);
+                int    oldId        = oldDBRS.getInt(1);
+                
+                String oldNewIdStr = oldId + " / "+newId;
+                
+                if (newId == Integer.MAX_VALUE)
+                {
+                    prevNewId = newId;
+                }
+                
+                if (oldId == Integer.MAX_VALUE)
+                {
+                    prevOldId = oldId;
+                }
+                
+                compareStrings(oldNewIdStr, rmd.getColumnName(1), 1, 1);
+                compareStrings(oldNewIdStr, rmd.getColumnName(2), 2, 2);
+                compareDates(oldNewIdStr, 3, 3);
+                compareStrings(oldNewIdStr, rmd.getColumnName(4), 4, 4);
+                compareStrings(oldNewIdStr, rmd.getColumnName(5), 5, 5);
+                compareStrings(oldNewIdStr, rmd.getColumnName(6), 6, 6);
+                
+                compareNames(oldNewIdStr, 7,7);
+                compareNames(oldNewIdStr, 9, 10);
+                               
+            }
+            
             oldDBRS.close();
             newDBRS.close();
 
@@ -2167,7 +2445,7 @@ public class ConvertVerifier
                 Vector<Object[]> dbNames = BasicSQLUtils.query(conn, "show databases");
                 for (Object[] row : dbNames)
                 {
-                    System.err.println("Setting ["+row[0].toString()+"]");
+                    System.err.println("Setting ["+row[0].toString()+"] ");
                     conn.setCatalog(row[0].toString());
                     
                     boolean isSp5 = false;
@@ -2176,6 +2454,10 @@ public class ConvertVerifier
                     Vector<Object[]> tables = BasicSQLUtils.query(conn, "show tables");
                     for (Object[] tblRow : tables)
                     {
+                        if (row[0].toString().equals("debugdb"))
+                        {
+                            System.err.println(tblRow[0].toString());
+                        }
                     	if (tblRow[0].toString().equals("usysversion"))
                         {
                     		isSp5 = true;
@@ -2210,6 +2492,8 @@ public class ConvertVerifier
     	                	availNewPairs.add(new DBNamePair(collName, row[0].toString()));
     	                }
                     }
+                    
+                    System.err.println("isSp5 ["+isSp5+"] isSp6 ["+isSp6+"] ");
                 }
                 
                 Comparator<Pair<String, String>> comparator =  new Comparator<Pair<String, String>>() {

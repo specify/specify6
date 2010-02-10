@@ -142,6 +142,11 @@ public abstract class DBMSUserMgr
     public abstract void setConnection(Connection connection);
     
     /**
+     * @return the current connection (do not close).
+     */
+    public abstract Connection getConnection();
+    
+    /**
      * Checks to see if a field exists for a table.
      * @param tableName the name of the table to be checked
      * @param fieldName the name of the field to be checked
