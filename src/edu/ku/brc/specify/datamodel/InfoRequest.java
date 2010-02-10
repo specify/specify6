@@ -19,9 +19,6 @@
 */
 package edu.ku.brc.specify.datamodel;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -41,8 +38,6 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Index;
-
-import edu.ku.brc.dbsupport.DBConnection;
 
 /**
 
@@ -101,7 +96,7 @@ public class InfoRequest extends CollectionMember implements java.io.Serializabl
         agent         = null;
         
         // XXX For Demo
-        if (false)
+       /* if (false)
         {
             try
             {
@@ -125,7 +120,7 @@ public class InfoRequest extends CollectionMember implements java.io.Serializabl
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InfoRequest.class, ex);
                 ex.printStackTrace();
             }
-        }
+        }*/
         
     }
     // End Initializer

@@ -38,7 +38,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Hashtable;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -101,6 +102,7 @@ import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.VerticalSeparator;
+import edu.ku.brc.util.Pair;
 
 /**
  * Creates a dialog representing all the Preparation objects being returned for a loan.
@@ -169,23 +171,32 @@ public class LoanReturnDlg extends JDialog
             
             JPanel mainPanel = new JPanel();
             
-            Hashtable<CollectionObject, Vector<LoanPreparation>> colObjHash = new Hashtable<CollectionObject, Vector<LoanPreparation>>();
+            System.out.println("Num Loan Preps for Loan: "+loan.getLoanPreparations());
+            
+            HashMap<Integer, Pair<CollectionObject, Vector<LoanPreparation>>> colObjHash = new HashMap<Integer, Pair<CollectionObject, Vector<LoanPreparation>>>();
             for (LoanPreparation loanPrep : loan.getLoanPreparations())
             {
                 CollectionObject        colObj = loanPrep.getPreparation().getCollectionObject();
-                Vector<LoanPreparation> list   = colObjHash.get(colObj);
-                if (list == null)
+                System.out.println("For LoanPrep ColObj Is: "+colObj.getIdentityTitle());
+                
+                Vector<LoanPreparation> list = null;
+                Pair<CollectionObject, Vector<LoanPreparation>> pair = colObjHash.get(colObj.getId());
+                if (pair == null)
                 {
                     list = new Vector<LoanPreparation>();
-                    colObjHash.put(colObj, list);
+                    colObjHash.put(colObj.getId(), new Pair<CollectionObject, Vector<LoanPreparation>>(colObj, list));
+                } else
+                {
+                     list = pair.second;
+
                 }
                 list.add(loanPrep);
             }
-            int colObjCnt = colObjHash.size();
-    
-            String          rowDef   = UIHelper.createDuplicateJGoodiesDef("p", "1px,p,4px", (colObjCnt*2)-1);
-            PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("f:p:g", rowDef), mainPanel);
-            CellConstraints cc       = new CellConstraints();
+            
+            int             colObjCnt = colObjHash.size();
+            String          rowDef    = UIHelper.createDuplicateJGoodiesDef("p", "1px,p,4px", (colObjCnt*2)-1);
+            PanelBuilder    pbuilder  = new PanelBuilder(new FormLayout("f:p:g", rowDef), mainPanel);
+            CellConstraints cc        = new CellConstraints();
             
             ActionListener al = new ActionListener()
             {
@@ -206,17 +217,29 @@ public class LoanReturnDlg extends JDialog
             int i = 0;
             int y = 1;
     
-            Vector<CollectionObject> keysList = new Vector<CollectionObject>(colObjHash.keySet());
-            Collections.sort(keysList);
-            for (CollectionObject co : keysList)
+            Vector<Pair<CollectionObject, Vector<LoanPreparation>>> pairList = new Vector<Pair<CollectionObject, Vector<LoanPreparation>>>(colObjHash.values());
+            
+            Collections.sort(pairList, new Comparator<Pair<CollectionObject, Vector<LoanPreparation>>>()
             {
+                @Override
+                public int compare(Pair<CollectionObject, Vector<LoanPreparation>> o1,
+                                   Pair<CollectionObject, Vector<LoanPreparation>> o2)
+                {
+                    return o1.first.getIdentityTitle().compareTo(o2.first.getIdentityTitle());
+                }
+            });
+
+            for (Pair<CollectionObject, Vector<LoanPreparation>> pair : pairList)
+            {
+                CollectionObject co = pair.first;
+                
                 if (i > 0)
                 {
                     pbuilder.addSeparator("", cc.xy(1,y));
                     y += 2;
                 }
                 
-                ColObjPanel panel = new ColObjPanel(session, this, co, colObjHash.get(co));
+                ColObjPanel panel = new ColObjPanel(session, this, co, colObjHash.get(co.getId()).second);
                 colObjPanels.add(panel);
                 panel.addActionListener(al, cl);
                 pbuilder.add(panel, cc.xy(1,y));
@@ -474,6 +497,7 @@ public class LoanReturnDlg extends JDialog
             
             Color[] colors = new Color[] { new Color(255,255,255), new Color(235,235,255)};
             
+            System.out.println(colObj.getIdentityTitle()+"  lpoList.size: "+lpoList.size());
             int i = 0;
             for (LoanPreparation lpo : lpoList)
             {

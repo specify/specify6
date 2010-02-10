@@ -282,13 +282,13 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
                                  "INNER JOIN loanpreparation lp ON p.PreparationID = lp.PreparationID WHERE p.PreparationID = "+getId();
                     ResultSet rs = stmt.executeQuery(sql);
                     
-                    int     totalAvail = 0;
-                    Integer prepQty    = null;
+                    int     totalOnLoan = 0;
+                    Integer prepQty     = null;
                     
                     while (rs.next())
                     {
                         prepQty = rs.getObject(1) != null ? rs.getInt(1) : 0;
-                        //System.err.print("\nprepQty "+prepQty);
+                        //System.err.println("\nprepQty "+prepQty);
                         
                         boolean isResolved = rs.getObject(5) != null ? rs.getBoolean(5) : false;
                         
@@ -296,12 +296,16 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
                         int qtyRes  = rs.getObject(3) != null ? rs.getInt(3) : 0;
                         //int qtyRtn  = rs.getObject(4) != null ? rs.getInt(4) : 0;
                         
+                        //System.err.println("loanQty "+loanQty);
+                        //System.err.println("qtyRes  "+qtyRes);
+                        //System.err.println("qtyRtn  "+qtyRtn);
+                        
                         if (isResolved && qtyRes != loanQty) // this shouldn't happen
                         {
                             qtyRes = loanQty;
                         }
                         
-                        totalAvail += qtyRes - loanQty;
+                        totalOnLoan += loanQty - qtyRes;
                     }
                     rs.close();
                     
@@ -310,7 +314,10 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
                         return false;
                     }
                         
-                    isOnLoan = totalAvail < prepQty;
+                    isOnLoan = totalOnLoan > 0;
+                    //System.err.println("totalOnLoan "+totalOnLoan);
+                    //System.err.println("isOnLoan    "+isOnLoan);
+                    
                 } else
                 {
                     UsageTracker.incrNetworkUsageCount();
@@ -340,7 +347,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
                 }
             }
         }
-        return isOnLoan == null ? false : true;
+        return isOnLoan == null ? false : isOnLoan;
     }
     
     /**
