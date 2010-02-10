@@ -74,6 +74,7 @@ import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.FieldNotebook;
 import edu.ku.brc.specify.datamodel.FieldNotebookPage;
 import edu.ku.brc.specify.datamodel.GeoCoordDetail;
@@ -227,6 +228,7 @@ public class UploadTable implements Comparable<UploadTable>
     protected UploadField                               autoAssignedField            = null; //Assuming one per table.
     protected Collection                                collection                   = null;
     protected Discipline                                discipline                   = null;
+    protected Division									division                     = null;
     
     UploadedRecFinalizerIFace                           finalizer                    = null;
     List<Pair<UploadField, Method>>                     precisionDateFields          = new LinkedList<Pair<UploadField, Method>>();
@@ -588,7 +590,7 @@ public class UploadTable implements Comparable<UploadTable>
             {
                 javax.persistence.JoinColumn jc = (javax.persistence.JoinColumn) a;
                 logDebug(jc.columnDefinition());
-                if (!jc.nullable())
+                if (!jc.nullable() || m.getName().equals("getDivision"))
                 {
                     logDebug("adding required class: " + tblClass.getName() + " - " + m.getName());
                     javax.persistence.ManyToOne mto = m.getAnnotation(javax.persistence.ManyToOne.class);
@@ -1480,18 +1482,15 @@ public class UploadTable implements Comparable<UploadTable>
                         			if (!coll1.getOrderNumber().equals(coll2.getOrderNumber()))
                         			{
                         				// maybe this doesn't really need to be checked?
-                        				result = false;
-                        				break;
+                        				return false;
                         			}
                         			else if (coll2.getAgent() == null || !coll1.getAgent().getId().equals(coll2.getAgent().getId()))
                         			{
-                        				result = false;
-                        				break;
+                        				return false;
                         			}
                         			else if (!coll1.getIsPrimary().equals(coll2.getIsPrimary()))
                         			{
-                        				result = false;
-                        				break;
+                        				return false;
                         			}
                         		}
                         	} 
@@ -1592,27 +1591,15 @@ public class UploadTable implements Comparable<UploadTable>
                         	}
 							if (matches.size() != childCount)
 							{
-								result = false;
-								break;
+								return false;
 							}
 							for (int rec = 0; rec < matches.size(); rec++)
 							{
-								AccessionAgent ag1 = (AccessionAgent) matches
-										.get(rec);
-								int c = 0;
-								boolean matched = false;
-								while (c < childCount
-										&& !matched)
+								AccessionAgent ag1 = (AccessionAgent) matches.get(rec);
+								AccessionAgent ag2 = (AccessionAgent) child.getCurrentRecord(rec);
+								if (!ag1.getAgent().getId().equals(ag2.getAgent().getId()))
 								{
-									AccessionAgent ag2 = (AccessionAgent) child
-											.getCurrentRecord(c++);
-									matched = ag1.getAgent().getId().equals(
-											ag2.getAgent().getId());
-								}
-								if (!matched)
-								{
-									result = false;
-									break;
+									return false;
 								}
 							}
 						} finally
@@ -1649,27 +1636,15 @@ public class UploadTable implements Comparable<UploadTable>
                         	}
 							if (matches.size() != childCount)
 							{
-								result = false;
-								break;
+								return false;
 							}
 							for (int rec = 0; rec < matches.size(); rec++)
 							{
-								AccessionAuthorization au1 = (AccessionAuthorization) matches
-										.get(rec);
-								int c = 0;
-								boolean matched = false;
-								while (c < childCount
-										&& !matched)
+								AccessionAuthorization au1 = (AccessionAuthorization) matches.get(rec);
+								AccessionAuthorization au2 = (AccessionAuthorization) child.getCurrentRecord(rec);
+								if (!au1.getPermit().getId().equals(au2.getPermit().getId()))
 								{
-									AccessionAuthorization au2 = (AccessionAuthorization) child
-											.getCurrentRecord(c++);
-									matched = au1.getPermit().getId().equals(
-											au2.getPermit().getId());
-								}
-								if (!matched)
-								{
-									result = false;
-									break;
+									return  false;
 								}
 							}
 						} finally
@@ -1920,29 +1895,46 @@ public class UploadTable implements Comparable<UploadTable>
     {
     	if (discipline == null)
     	{
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            try
-            {
-                DataModelObjBase temp = AppContextMgr.getInstance().getClassObject(Discipline.class);
-                discipline = (Discipline )session.get(temp.getDataClass(), temp.getId());
-            }
-            catch (Exception ex)
-            {
-                throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
-            }
-            finally
-            {
-                session.close();
-            }
+    		discipline = (Discipline )getClassObject(Discipline.class);
     	}
     	return discipline;
     }
+
+    protected Division getDivision() throws UploaderException
+    {
+    	if (division == null)
+    	{
+    		division = (Division )getClassObject(Division.class);
+    	}
+    	return division;
+    }
     
+    protected DataModelObjBase getClassObject(Class<?> toGet)
+			throws UploaderException
+	{
+		DataProviderSessionIFace session = DataProviderFactory.getInstance()
+				.createSession();
+		try
+		{
+			DataModelObjBase temp = (DataModelObjBase) AppContextMgr
+					.getInstance().getClassObject(toGet);
+			temp = (DataModelObjBase) session.get(temp.getDataClass(), temp
+					.getId());
+			return temp;
+		} catch (Exception ex)
+		{
+			throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+		} finally
+		{
+			session.close();
+		}
+	}
+
     /**
      * @param criteriam
      * @throws UploaderException
      * 
-     * Adds extra criteria related to discipline.
+     * Adds extra criteria related to 'domain'
      */
     protected void addDomainCriteria(CriteriaIFace criteria) throws UploaderException
     {
@@ -1950,7 +1942,7 @@ public class UploadTable implements Comparable<UploadTable>
     	//but it would only be used here. 
     	//but this code will need to be checked whenever QueryAdjusterForDomain.getSpecialColumns is updated...
     	        
-        /* CollectionMember and Discipline (and Division?) gets done by MissingClassResolver.
+        /* CollectionMember and Discipline and Division conditions get added via relatedClassDefaults in getMatchCriteria().
     	if (CollectionMember.class.isAssignableFrom(tblClass))
         {
         	criteria.add(Restrictions.eq("collectionMemberId", getCollection().getId()));
@@ -1960,13 +1952,13 @@ public class UploadTable implements Comparable<UploadTable>
         {
         	criteria.add(Restrictions.eq("discipline", getDiscipline()));
         	return;
-        }*/
+        }
         if (Agent.class.isAssignableFrom(tblClass))
         {
         	//there is probably an nicer way to to do this
-        	criteria.addSubCriterion("disciplines", Restrictions.eq("userGroupScopeId", getDiscipline().getUserGroupScopeId()));
+        	//criteria.addSubCriterion("division", Restrictions.eq("userGroupScopeId", getDivision().getUserGroupScopeId()));
         	return;
-        }
+        }*/
     }
     
     protected boolean getMatchCriteria(CriteriaIFace critter,
@@ -2769,11 +2761,32 @@ public class UploadTable implements Comparable<UploadTable>
     {
     	if (wbRow != wbCurrentRow)
     	{
-    		Uploader.currentUpload.loadRow(this, wbRow);
-    		writeRowOrNot(wbRow < wbCurrentRow, wbRow < wbCurrentRow);
+    		readFromDataSet(wbRow);
+    		writeRowOrNot(wbCurrentRow < wbRow, wbCurrentRow < wbRow);
+    		readFromDataSet(wbCurrentRow);
     	}
     }
 
+    /**
+     * @param wbRow
+     * 
+     * reads data from the dataset to fields in this table and it's parent tables
+     */
+    protected void readFromDataSet(int wbRow)
+    {
+    	Uploader.currentUpload.loadRow(this, wbRow);
+		for (Vector<ParentTableEntry> ptes : parentTables)
+		{
+			for (ParentTableEntry pt : ptes)
+			{
+				if (pt.getImportTable() != null)
+				{
+					pt.getImportTable().readFromDataSet(wbRow);
+				}
+			}
+		}
+    }
+    
     protected void writeRow(int row) throws UploaderException
     {
         wbCurrentRow = row;
@@ -2823,21 +2836,14 @@ public class UploadTable implements Comparable<UploadTable>
                         {
                                 throw new UploaderException(UIRegistry.getResourceString("UPLOADER_MISSING_REQUIRED_DATA"), UploaderException.ABORT_ROW);
                         }
-//                        if (gotRequiredParents || !hasChildren)
-//                        {
-                        	if (!doNotWrite)
-                        	{
-                        		doWrite(rec);
-                                uploadedRecs.add(new UploadedRecordInfo(rec.getId(), wbCurrentRow,
-                                    recNum, autoAssignedVal));
-                        	}
-                            setCurrentRecord(rec, recNum);
-                            finishMatching(rec);
-//                        }
-//                        else 
-//                        {
-//                        	setCurrentRecord(null, recNum);
-//                        }
+                        if (!doNotWrite)
+                        {
+                        	doWrite(rec);
+                            uploadedRecs.add(new UploadedRecordInfo(rec.getId(), wbCurrentRow,
+                            recNum, autoAssignedVal));
+                        }
+                        setCurrentRecord(rec, recNum);
+                        finishMatching(rec);
                     }
                 }
                 else
