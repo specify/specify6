@@ -4926,13 +4926,13 @@ public class FormViewObj implements Viewable,
         
         // Adjust the formValidator now that all the data is in the controls
         //boolean doReset = !hasDefault || formValidator == null || !formValidator.hasChanged();
-        if (dataObj != null)
+        /*if (dataObj != null)
         {
             System.out.println("hasDefault: "+hasDefault + "  doResetAfterFill: "+doResetAfterFill+"  "+(formValidator != null ? formValidator.getName() :""));
         } else
         {
             System.out.println("hasDefault: "+hasDefault);
-        }
+        }*/
         
         if (formValidator != null)
         {

@@ -233,7 +233,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     	doUpdateAppVer = true;
                     	if (appVerNumArg != null && appVerNumArg.length() > 2)
                     	{
-                    	    doSchemaUpdate = Integer.parseInt(appVerNumArg.substring(2, 3)) == 0;
+                    	    doSchemaUpdate   = true; //Integer.parseInt(appVerNumArg.substring(2, 3)) == 0;
                     	    useSilentSuccess = true;
                     	}
                     }

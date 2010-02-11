@@ -113,14 +113,15 @@ public class AutoNumberGeneric implements AutoNumberIFace
     }
     
     /**
+     * @param formatter
      * @param session
-     * @param yearPos
+     * @param value
      * @param yearPos
      * @param pos
      * @return
      * @throws Exception
      */
-    protected Object getHighestObject(final UIFieldFormatterIFace formatter, 
+    protected String getHighestObject(final UIFieldFormatterIFace formatter, 
                                       final Session session, 
                                       final String  value,
                                       final Pair<Integer, Integer> yearPos, 
@@ -144,7 +145,11 @@ public class AutoNumberGeneric implements AutoNumberIFace
         }
 
         //List list = session.createCriteria(classObj).addOrder( Order.desc(fieldName) ).setMaxResults(1).list();
-        StringBuilder sb = new StringBuilder(" FROM "+classObj.getSimpleName()); //$NON-NLS-1$
+        StringBuilder sb = new StringBuilder("SELECT "); //$NON-NLS-1$
+        sb.append(fieldName);
+        sb.append(" FROM "); //$NON-NLS-1$
+        sb.append(classObj.getSimpleName());
+        
         if (yearVal != null && yearPos != null)
         {
             sb.append(" WHERE '"); //$NON-NLS-1$
@@ -176,7 +181,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
             List<?> list = session.createQuery(sb.toString()).setMaxResults(1).list();
             if (list.size() == 1)
             {
-                return list.get(0);
+                return list.get(0).toString();
             }
             
         } catch (Exception ex)
@@ -404,8 +409,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
                 UIFieldFormatterField  yearField = formatter.getYear();
                 Pair<Integer, Integer> yrPos     = yearField != null ? formatter.getYearPosition() : null;
                 
-                Object dataObj      = getHighestObject(formatter, session, formValue, yrPos, formatter.getIncPosition());
-                String highestValue = dataObj != null ? (String)getter.getFieldValue(dataObj, fieldName) : null;
+                String highestValue  = getHighestObject(formatter, session, formValue, yrPos, formatter.getIncPosition());
                 
                 Pair<Integer, Integer> yearAndIncVal = getYearAndIncVal(formatter, highestValue, formValue);
                 

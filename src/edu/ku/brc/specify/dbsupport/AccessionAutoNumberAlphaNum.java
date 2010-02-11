@@ -72,7 +72,7 @@ public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
      * @see edu.ku.brc.af.core.db.AutoNumberGeneric#getHighestObject(edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace, org.hibernate.Session, java.lang.String, edu.ku.brc.util.Pair, edu.ku.brc.util.Pair)
      */
     @Override
-    protected Object getHighestObject(final UIFieldFormatterIFace formatter, 
+    protected String getHighestObject(final UIFieldFormatterIFace formatter, 
                                       final Session session, 
                                       final String  value,
                                       final Pair<Integer, Integer> yearPos, 
@@ -112,7 +112,7 @@ public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
             yearVal = extractIntegerValue(yearPos, value);
         }
 
-        StringBuilder sb = new StringBuilder(" From Accession c Join c.division dv Join dv.numberingSchemes ans WHERE ans.id = ");
+        StringBuilder sb = new StringBuilder("SELECT accessionNumber FROM Accession c Join c.division dv Join dv.numberingSchemes ans WHERE ans.id = ");
         sb.append(currDivision.getNumberingSchemesByType(Accession.getClassTableId()).getAutoNumberingSchemeId());
         sb.append(" AND dv.id in (");
         //sb.append(currDivision.getId());
@@ -154,9 +154,7 @@ public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
             List<?> list = session.createQuery(sb.toString()).setMaxResults(1).list();
             if (list.size() == 1)
             {
-                Object[] objArray = (Object[]) list.get(0);
-                //System.err.println(((Accession)objArray[0]).getAccessionNumber());
-                return objArray[0] instanceof Accession ? objArray[0] : null;
+                return list.get(0).toString();
             }
         } catch (Exception ex)
         {
