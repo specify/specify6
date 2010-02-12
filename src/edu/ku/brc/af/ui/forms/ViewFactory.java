@@ -1892,6 +1892,12 @@ public class ViewFactory
                             bi.doAddToValidator   = false;
                             bi.compToAdd          = subViewBtn;
                             
+                            String visProp = cell.getProperty("visible");
+                            if (StringUtils.isNotEmpty(visProp) && visProp.equalsIgnoreCase("false") && bi.compToAdd != null)
+                            {
+                                bi.compToAdd.setVisible(false);
+                            }
+                            
                             try
                             {
                                 addControl(validator, viewBldObj, rowInx, cell, bi);
@@ -2017,10 +2023,9 @@ public class ViewFactory
             {
                 throw new RuntimeException("Panel Type is not implemented.");
             }
-
        }
         
-        String visProp = cell.getProperty("vis");
+        String visProp = cell.getProperty("visible");
         if (StringUtils.isNotEmpty(visProp) && visProp.equalsIgnoreCase("false") && bi.compToAdd != null)
         {
             bi.compToAdd.setVisible(false);
