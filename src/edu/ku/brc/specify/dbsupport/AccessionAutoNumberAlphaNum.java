@@ -112,7 +112,7 @@ public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
             yearVal = extractIntegerValue(yearPos, value);
         }
 
-        StringBuilder sb = new StringBuilder("SELECT accessionNumber FROM Accession c Join c.division dv Join dv.numberingSchemes ans WHERE ans.id = ");
+        StringBuilder sb = new StringBuilder("SELECT a.accessionNumber FROM Accession a Join a.division dv Join dv.numberingSchemes ans WHERE ans.id = ");
         sb.append(currDivision.getNumberingSchemesByType(Accession.getClassTableId()).getAutoNumberingSchemeId());
         sb.append(" AND dv.id in (");
         //sb.append(currDivision.getId());
@@ -149,7 +149,7 @@ public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
                 sb.append(" substring("+fieldName+","+(pos.first+1)+","+pos.second+") desc");
             }
             
-            //System.out.println("AccessionAutoNumberAlphaNum - "+sb.toString());
+            System.out.println("AccessionAutoNumberAlphaNum - "+sb.toString());
             
             List<?> list = session.createQuery(sb.toString()).setMaxResults(1).list();
             if (list.size() == 1)
