@@ -81,7 +81,7 @@ public class CollectionAutoNumberAlphaNum extends AutoNumberGeneric
             yearVal = extractIntegerValue(yearPos, value);
         }
 
-        StringBuilder sb = new StringBuilder("SELECT catalogNumber From CollectionObject c Join c.collection col Join col.numberingSchemes cns WHERE cns.autoNumberingSchemeId = ");
+        StringBuilder sb = new StringBuilder("SELECT c.catalogNumber From CollectionObject c Join c.collection col Join col.numberingSchemes cns WHERE cns.autoNumberingSchemeId = ");
         sb.append(currCollection.getNumberingSchemesByType(CollectionObject.getClassTableId()).getAutoNumberingSchemeId());
         
         if (yearVal != null)
@@ -111,7 +111,7 @@ public class CollectionAutoNumberAlphaNum extends AutoNumberGeneric
             
             String sql = QueryAdjusterForDomain.getInstance().adjustSQL(sb.toString());
             
-            //System.out.println(sql);
+            System.out.println(sql);
             List<?> list = session.createQuery(sql).setMaxResults(1).list();
             if (list.size() == 1)
             {
