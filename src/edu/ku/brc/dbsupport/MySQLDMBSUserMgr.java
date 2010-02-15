@@ -364,6 +364,10 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                                 {
                                     perms |= PERM_DELETE;
                                     
+                                } else if (tokens[inx].equals("ALL"))
+                                {
+                                    perms |= PERM_ALL;
+                                    
                                 } else if (tokens[inx].equals("LOCK"))
                                 {
                                     if (inx+1 < tokens.length && tokens[inx+1].equals("TABLES"))
