@@ -122,7 +122,12 @@
     <field table="CollectionObject" name="catalogerLastName" relationshipname="cataloger" relatedfieldname="lastName"/>
     <field table="CollectionObject" name="catalogerMiddle" relationshipname="cataloger" relatedfieldname="middleInitial"/>
     <field table="CollectionObject" name="catalogerTitle" relationshipname="cataloger" relatedfieldname="title"/>
-    <field table="CollectionObject" name="collectionObjectCitation" onetomanysequence="0" actualtable="CollectionObjectCitation" relationshipname="referenceWork" relatedfieldname="title"/>
+    <field table="CollectionObject" name="collectionObjectCitation1" onetomanysequence="0" actualtable="CollectionObjectCitation" relationshipname="referenceWork" relatedfieldname="title"/>
+    <field table="CollectionObject" name="isCoFigured1" onetomanysequence="0" actualtable="collectionobjectcitation" actualname="isFigured" relationshipname="collectionObject"/>
+    <field table="CollectionObject" name="citationCORemarks1" onetomanysequence="0" actualtable="collectionobjectcitation" actualname="remarks" relationshipname="collectionObject"/>
+    <field table="CollectionObject" name="collectionObjectCitation2" onetomanysequence="1" actualtable="CollectionObjectCitation" relationshipname="referenceWork" relatedfieldname="title"/>
+    <field table="CollectionObject" name="isCoFigured2" onetomanysequence="1" actualtable="collectionobjectcitation" actualname="isFigured" relationshipname="collectionObject"/>
+    <field table="CollectionObject" name="citationCORemarks2" onetomanysequence="1" actualtable="collectionobjectcitation" actualname="remarks" relationshipname="collectionObject"/>
 
 	<!-- collectionobjectattribute -->
     <field table="CollectionObjectAttribute" name="colObjAttributeRemarks" actualname="Remarks"/>
@@ -177,11 +182,11 @@
     <field table="CollectionObjectAttribute" name="colObjAttributeText7" actualname="Text7"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeText8" actualname="Text8"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeText9" actualname="Text9"/>
-    <field table="CollectionObjectAttribute" name="colObjAttributeText10" actualname="Text9"/>
-    <field table="CollectionObjectAttribute" name="colObjAttributeText11" actualname="Text9"/>
-    <field table="CollectionObjectAttribute" name="colObjAttributeText12" actualname="Text9"/>
-    <field table="CollectionObjectAttribute" name="colObjAttributeText13" actualname="Text9"/>
-    <field table="CollectionObjectAttribute" name="colObjAttributeText14" actualname="Text9"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeText10" actualname="Text10"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeText11" actualname="Text11"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeText12" actualname="Text12"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeText13" actualname="Text13"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeText14" actualname="Text14"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeYesNo1" actualname="YesNo1"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeYesNo2" actualname="YesNo2"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeYesNo3" actualname="YesNo3"/>
@@ -199,6 +204,8 @@
     <field table="Determination" name="determinerTitle1" onetomanysequence="0" relationshipname="determiner" relatedfieldname="title"/>
     <field table="Determination" name="isCurrent1" actualname="isCurrent" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Determination" name="remarks1" actualname="remarks" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="Determination" name="qualifier1" actualname="qualifier" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="Determination" name="featureOrBasis1" actualname="featureOrBasis" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Determination" name="phylum1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="30"/>
     <field table="Determination" name="subphylum1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="40"/>
     <field table="Determination" name="superclass1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="50"/>
@@ -219,6 +226,7 @@
     <field table="Determination" name="species1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="220"/>
     <field table="Determination" name="subspecies1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="230"/>
     <field table="Determination" name="variety1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="240"/>
+    <field table="Determination" name="forma1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="260"/>
     <field table="Determination" name="phylumAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="30"/>
     <field table="Determination" name="subphylumAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="40"/>
     <field table="Determination" name="superclassAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="50"/>
@@ -239,6 +247,7 @@
     <field table="Determination" name="speciesAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="220"/>
     <field table="Determination" name="subspeciesAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="230"/>
     <field table="Determination" name="varietyAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="240"/>
+    <field table="Determination" name="formaAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="260"/>
     <field table="Determination" name="typeStatusName1" actualname="typeStatusName" onetomanysequence="0" relationshipname="collectionObject"/>
     
     <field table="Determination" name="determinedDate2" actualname="determinedDate" onetomanysequence="1" relationshipname="collectionObject"/>
@@ -248,6 +257,8 @@
     <field table="Determination" name="determinerTitle2" onetomanysequence="1" relationshipname="determiner" relatedfieldname="title"/>
     <field table="Determination" name="isCurrent2" actualname="isCurrent" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Determination" name="remarks2" actualname="remarks" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="Determination" name="qualifier2" actualname="qualifier" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="Determination" name="featureOrBasis2" actualname="featureOrBasis" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Determination" name="phylum2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="30"/>
     <field table="Determination" name="subphylum2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="40"/>
     <field table="Determination" name="superclass2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="50"/>
@@ -289,15 +300,92 @@
     <field table="Determination" name="subspeciesAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="230"/>
     <field table="Determination" name="varietyAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="240"/>
     <field table="Determination" name="typeStatusName2" actualname="typeStatusName" onetomanysequence="1" relationshipname="collectionObject"/> 
+
+    <field table="Determination" name="determinedDate3" actualname="determinedDate" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="Determination" name="determinerLastName3" onetomanysequence="2" relationshipname="determiner" relatedfieldname="lastName"/>
+    <field table="Determination" name="determinerFirstName3" onetomanysequence="2" relationshipname="determiner" relatedfieldname="firstName"/>
+    <field table="Determination" name="determinerMiddle3" onetomanysequence="2" relationshipname="determiner" relatedfieldname="middleInitial"/>
+    <field table="Determination" name="determinerTitle3" onetomanysequence="2" relationshipname="determiner" relatedfieldname="title"/>
+    <field table="Determination" name="isCurrent3" actualname="isCurrent" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="Determination" name="remarks3" actualname="remarks" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="Determination" name="qualifier3" actualname="qualifier" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="Determination" name="featureOrBasis3" actualname="featureOrBasis" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="Determination" name="phylum3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="30"/>
+    <field table="Determination" name="subphylum3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="40"/>
+    <field table="Determination" name="superclass3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="50"/>
+    <field table="Determination" name="class3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="60"/>
+    <field table="Determination" name="subclass3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="70"/>
+    <field table="Determination" name="infraclass3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="80"/>
+    <field table="Determination" name="superorder3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="90"/>
+    <field table="Determination" name="order3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="100"/>
+    <field table="Determination" name="suborder3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="110"/>
+    <field table="Determination" name="infraorder3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="120"/>
+    <field table="Determination" name="superfamily3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="130"/>
+    <field table="Determination" name="family3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="140"/>
+    <field table="Determination" name="subfamily3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="150"/>
+    <field table="Determination" name="tribe3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="160"/>
+    <field table="Determination" name="subtribe3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="170"/>
+    <field table="Determination" name="genus3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="180"/>
+    <field table="Determination" name="subgenus3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="190"/>
+    <field table="Determination" name="species3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="220"/>
+    <field table="Determination" name="subspecies3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="230"/>
+    <field table="Determination" name="variety3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="240"/>
+    <field table="Determination" name="phylumAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="30"/>
+    <field table="Determination" name="subphylumAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="40"/>
+    <field table="Determination" name="superclassAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="50"/>
+    <field table="Determination" name="classAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="60"/>
+    <field table="Determination" name="subclassAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="70"/>
+    <field table="Determination" name="infraclassAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="80"/>
+    <field table="Determination" name="superorderAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="90"/>
+    <field table="Determination" name="orderAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="100"/>
+    <field table="Determination" name="suborderAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="110"/>
+    <field table="Determination" name="infraorderAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="120"/>
+    <field table="Determination" name="superfamilyAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="130"/>
+    <field table="Determination" name="familyAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="140"/>
+    <field table="Determination" name="subfamilyAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="150"/>
+    <field table="Determination" name="tribeAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="160"/>
+    <field table="Determination" name="subtribeAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="170"/>
+    <field table="Determination" name="genusAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="180"/>
+    <field table="Determination" name="subgenusAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="190"/>
+    <field table="Determination" name="speciesAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="220"/>
+    <field table="Determination" name="subspeciesAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="230"/>
+    <field table="Determination" name="varietyAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="240"/>
+    <field table="Determination" name="typeStatusName3" actualname="typeStatusName" onetomanysequence="2" relationshipname="collectionObject"/>
+
+
+
+
+
+    <field table="FieldNotebook" name="ownerFirstName" relationshipname="ownerAgent" relatedfieldname="firstName"/>
+    <field table="FieldNotebook" name="ownerLastName" relationshipname="ownerAgent" relatedfieldname="lastName"/>
+    <field table="FieldNotebook" name="ownerMiddle" relationshipname="ownerAgent" relatedfieldname="middleInitial"/>
+    <field table="FieldNotebook" name="ownerTitle" relationshipname="ownerAgent" relatedfieldname="title"/>
+
+   	<!-- geocoorddetail -->
+    <!-- <field table="GeoCoordDetail" name="geoRefRemarks"/>
+    <field table="GeoCoordDetail" name="originalCoordSystem" actualtable="GeoCoordDetail" relationshipname="locality"/>
+    <field table="GeoCoordDetail" name="namedPlaceExtent" actualtable="GeoCoordDetail" relationshipname="locality"/>
+    <field table="GeoCoordDetail" name="geoRefDetDate" actualtable="GeoCoordDetail" relationshipname="locality"/>-->
+    <field table="GeoCoordDetail" name="geoRefByFirst" relationshipname="geoRefDetBy"  relatedfieldname="firstName"/>
+    <field table="GeoCoordDetail" name="geoRefByLast" relationshipname="geoRefDetBy"  relatedfieldname="lastName"/>
+    <field table="GeoCoordDetail" name="geoRefByMiddle" relationshipname="geoRefDetBy"  relatedfieldname="middleInitial"/>
+    <field table="GeoCoordDetail" name="geoRefByTitle" relationshipname="geoRefDetBy" relatedfieldname="title"/>
+
  
     <!-- geography -->
     <field table="Geography" name="continent" treename="geography" maptofield="name" rankid="100"/>
     <field table="Geography" name="country" treename="geography" maptofield="name" rankid="200"/>
     <field table="Geography" name="state" treename="geography" maptofield="name" rankid="300"/>
     <field table="Geography" name="county" treename="geography" maptofield="name" rankid="400"/>
+    <field table="Geography" name="city" treename="geography" maptofield="name" rankid="500"/>
     
     <!-- geologictimeperied -->
     <field table="GeologicTimePeriod" name="geologicTimePeriodRemarks" actualname="Remarks" />
+   	<field table="GeologicTimePeriod" name="eon" treename="geologictimeperiod" maptofield="name" rankid="50"/>
+   	<field table="GeologicTimePeriod" name="era" treename="geologictimeperiod" maptofield="name" rankid="100"/>
+   	<field table="GeologicTimePeriod" name="period" treename="geologictimeperiod" maptofield="name" rankid="200"/>
+   	<field table="GeologicTimePeriod" name="epoch" treename="geologictimeperiod" maptofield="name" rankid="300"/>
+   	<field table="GeologicTimePeriod" name="age" treename="geologictimeperiod" maptofield="name" rankid="400"/>
     
    	<!-- habitatattributes -->
 	<field table="HabitatAttribute" name="habitatAttributeRemarks" actualname="Remarks"/>
@@ -325,6 +413,16 @@
     <field table="HabitatAttribute" name="habitatAttributeYesNo3" actualname="YesNo3"/>
     <field table="HabitatAttribute" name="habitatAttributeYesNo4" actualname="YesNo4"/>
     <field table="HabitatAttribute" name="habitatAttributeYesNo5" actualname="YesNo5"/>
+
+    <!-- lithostrat -->
+   <field table="LithoStrat" name="superGroup" treename="lithostrat" maptofield="name" rankid="100"/>
+   <field table="LithoStrat" name="lithoGroup" treename="lithostrat" maptofield="name" rankid="200"/>
+   <field table="LithoStrat" name="formation" treename="lithostrat" maptofield="name" rankid="300"/>
+   <field table="LithoStrat" name="member" treename="lithostrat" maptofield="name" rankid="400"/>
+   <field table="LithoStrat" name="bed" treename="lithostrat" maptofield="name" rankid="500"/>
+   <field table="LithoStrat" name="horizon" treename="lithostrat" maptofield="name" rankid="1500"/>
+   <field table="LithoStrat" name="stage" treename="lithostrat" maptofield="name" rankid="2500"/>
+
    
    	<!-- locality -->
    	<field table="Locality" name="localityRemarks" actualname="Remarks"/>
@@ -346,17 +444,33 @@
     <field table="Locality" name="section" actualtable="LocalityDetail" relationshipname="locality"/>
     <field table="Locality" name="sectionPart" actualtable="LocalityDetail" relationshipname="locality"/>
     <field table="Locality" name="baseMeridian" actualtable="LocalityDetail" relationshipname="locality"/>
-    <field table="Locality" name="localityCitation" onetomanysequence="0" actualtable="LocalityCitation" relationshipname="referenceWork" relatedfieldname="title"/>
+    <field table="Locality" name="utmOrigLatitude" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="utmOrigLongitude" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="utmNorthing" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="utmEasting" actualtable="LocalityDetail" relationshipname="locality"/>
+    
+    <field table="Locality" name="localityCitation1" onetomanysequence="0" actualtable="LocalityCitation" relationshipname="referenceWork" relatedfieldname="title"/>
+    <field table="Locality" name="localityCitation2" onetomanysequence="1" actualtable="LocalityCitation" relationshipname="referenceWork" relatedfieldname="title"/>
+    <field table="Locality" name="localityCitation3" onetomanysequence="2" actualtable="LocalityCitation" relationshipname="referenceWork" relatedfieldname="title"/>
+    <field table="Locality" name="localityCitation4" onetomanysequence="3" actualtable="LocalityCitation" relationshipname="referenceWork" relatedfieldname="title"/>
+    <field table="Locality" name="creatorFirstName" relationshipname="createdByAgent" relatedfieldname="firstName"/>
+    <field table="Locality" name="creatorLastName" relationshipname="createdByAgent" relatedfieldname="lastName"/>
+    <field table="Locality" name="creatorMiddle" relationshipname="createdByAgent" relatedfieldname="middleInitial"/>
+    <field table="Locality" name="creatorTitle" relationshipname="createdByAgent" relatedfieldname="title"/>
+    <field table="Locality" name="editorFirstName" relationshipname="modifiedByAgent" relatedfieldname="firstName"/>
+    <field table="Locality" name="editorLastName" relationshipname="modifiedByAgent" relatedfieldname="lastName"/>
+    <field table="Locality" name="editorMiddle" relationshipname="modifiedByAgent" relatedfieldname="middleInitial"/>
+    <field table="Locality" name="editorTitle" relationshipname="modifiedByAgent" relatedfieldname="title"/>
    	
-   	<!-- geocoorddetail -->
-    <!-- <field table="GeoCoordDetail" name="geoRefRemarks"/>
-    <field table="GeoCoordDetail" name="originalCoordSystem" actualtable="GeoCoordDetail" relationshipname="locality"/>
-    <field table="GeoCoordDetail" name="namedPlaceExtent" actualtable="GeoCoordDetail" relationshipname="locality"/>
-    <field table="GeoCoordDetail" name="geoRefDetDate" actualtable="GeoCoordDetail" relationshipname="locality"/>-->
-    <field table="GeoCoordDetail" name="geoRefByFirst" relationshipname="geoRefDetBy"  relatedfieldname="firstName"/>
-    <field table="GeoCoordDetail" name="geoRefByLast" relationshipname="geoRefDetBy"  relatedfieldname="lastName"/>
-    <field table="GeoCoordDetail" name="geoRefByMiddle" relationshipname="geoRefDetBy"  relatedfieldname="middleInitial"/>
-    <field table="GeoCoordDetail" name="geoRefByTitle" relationshipname="geoRefDetBy" relatedfieldname="title"/>
+    <field table="OtherIdentifier" name="otherIdentifier1" actualname="identifier" onetomanysequence="0" relationshipname="collectionObject" />
+    <field table="OtherIdentifier" name="otherIdentifierInstitution1" actualname="institution" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="OtherIdentifier" name="otherIdentifier2"  actualname="identifier" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="OtherIdentifier" name="otherIdentifierInstitution2" actualname="institution" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="OtherIdentifier" name="otherIdentifier3" actualname="identifier" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="OtherIdentifier" name="otherIdentifierInstitution3" actualname="institution" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="OtherIdentifier" name="otherIdentifier4" actualname="identifier" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="OtherIdentifier" name="otherIdentifierInstitution4" actualname="institution" onetomanysequence="3" relationshipname="collectionObject"/>
+
    	
   	<!-- preparation -->
     <field table="Preparation" name="preparedDate1" actualname="preparedDate" onetomanysequence="0" relationshipname="collectionObject"/>
@@ -365,9 +479,18 @@
     <field table="Preparation" name="preparedMiddleBy1" onetomanysequence="0" relationshipname="preparedByAgent" relatedfieldname="middleInitial"/>
     <field table="Preparation" name="preparedTitleBy1" onetomanysequence="0" relationshipname="preparedByAgent" relatedfieldname="title"/>
     <field table="Preparation" name="prepType1" onetomanysequence="0" relationshipname="prepType" relatedfieldname="name"/>
+    <field table="Preparation" name="prepYesNo1" actualname="yesNo1" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep1Text1" actualname="text1" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prepDescription1" actualname="description" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Preparation" name="count1" actualname="countAmt" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation1" actualname="storageLocation" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks1" actualname="Remarks" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="Preparation" name="caseOrCabinet1" onetomanysequence="0" treename="storage" maptofield="name" rankid="1000"/>
+    <field table="Preparation" name="shelf1" onetomanysequence="0" treename="storage" maptofield="name" rankid="2000"/>
+    <field table="Preparation" name="tray1" onetomanysequence="0" treename="storage" maptofield="name" rankid="3000"/>
+    <field table="Preparation" name="trayPosition1" onetomanysequence="0" treename="storage" maptofield="name" rankid="4000"/>
+    <field table="Preparation" name="prepAttr1Text1" onetomanysequence="0" relationshipname="preparationAttribute" relatedfieldname="text1"/>
+    <field table="Preparation" name="prepAttr1Text2" onetomanysequence="0" relationshipname="preparationAttribute" relatedfieldname="text2"/>
     
     <field table="Preparation" name="preparedDate2" actualname="preparedDate" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy2" onetomanysequence="1" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
@@ -378,6 +501,12 @@
     <field table="Preparation" name="count2" actualname="countAmt" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation2" actualname="storageLocation" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks2" actualname="Remarks" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="Preparation" name="caseOrCabinet2" onetomanysequence="1" treename="storage" maptofield="name" rankid="1000"/>
+    <field table="Preparation" name="shelf2" onetomanysequence="1" treename="storage" maptofield="name" rankid="2000"/>
+    <field table="Preparation" name="tray2" onetomanysequence="1" treename="storage" maptofield="name" rankid="3000"/>
+    <field table="Preparation" name="trayPosition2" onetomanysequence="1" treename="storage" maptofield="name" rankid="4000"/>
+    <field table="Preparation" name="prepAttr2Text1" onetomanysequence="1" relationshipname="preparationAttribute" relatedfieldname="text1"/>
+    <field table="Preparation" name="prepAttr2Text2" onetomanysequence="1" relationshipname="preparationAttribute" relatedfieldname="text2"/>
     
     <field table="Preparation" name="preparedDate3" actualname="preparedDate" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy3" onetomanysequence="2" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
@@ -515,6 +644,13 @@
     <field table="ReferenceWork" name="referenceWorkNumber2" actualname="Number2"/>
     <field table="ReferenceWork" name="referenceWorkYesNo1" actualname="YesNo1"/>
     <field table="ReferenceWork" name="referenceWorkYesNo2" actualname="YesNo2"/>
+
+    <!-- Storage -->
+    <field table="Storage" name="caseOrCabinet" treename="storage" maptofield="name" rankid="1000"/>
+    <field table="Storage" name="shelf" treename="storage" maptofield="name" rankid="2000"/>
+    <field table="Storage" name="tray" treename="storage" maptofield="name" rankid="3000"/>
+    <field table="Storage" name="trayPosition" treename="storage" maptofield="name" rankid="4000"/>
+
 	 
     <!-- taxon -->
     <field table="Taxon" name="kingdom" treename="taxon" maptofield="name" rankid="10"/>
@@ -600,6 +736,21 @@
     <field table="Taxon" name="infraorderCommonName" treename="taxon" maptofield="commonName" rankid="120"/>
     <field table="Taxon" name="infraorderSource" treename="taxon" maptofield="source" rankid="120"/>
     <field table="Taxon" name="infraorderGUID" treename="taxon" maptofield="guid" rankid="120"/>
+
+    <field table="Taxon" name="parvorder" treename="taxon" maptofield="name" rankid="125"/>
+    <field table="Taxon" name="parvorderAuthor" treename="taxon" maptofield="author" rankid="125"/>
+    <field table="Taxon" name="parvorderCommonName" treename="taxon" maptofield="commonName" rankid="125"/>
+    <field table="Taxon" name="parvorderSource" treename="taxon" maptofield="source" rankid="125"/>
+    <field table="Taxon" name="parvorderGUID" treename="taxon" maptofield="guid" rankid="125"/>
+
+    <!-- for OU PBOT... -->
+    <field table="Taxon" name="domain" treename="taxon" maptofield="name" rankid="5"/>
+   	<field table="Taxon" name="infrakingdom" treename="taxon" maptofield="name" rankid="25"/>
+   	<field table="Taxon" name="superphylum" treename="taxon" maptofield="name" rankid="27"/>
+   	<field table="Taxon" name="infradivision" treename="taxon" maptofield="name" rankid="45"/>
+   	<field table="Taxon" name="cohort" treename="taxon" maptofield="name" rankid="47"/>
+    <!-- ...for OU PBOT -->
+
 
 	<!-- for ATBI conversion -->
     <!--field table="Taxon" name="series" treename="taxon" maptofield="name" rankid="125"/>
