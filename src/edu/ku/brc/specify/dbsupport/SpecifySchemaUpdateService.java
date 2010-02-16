@@ -29,10 +29,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -642,6 +644,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     
                     //-----------------------------------------------------------------------------
+                    //-- This will fix any Agents messed up by creating new Divisions
+                    //-----------------------------------------------------------------------------
+                    fixAgentsDivsDisps(conn);
+                    
+                    //-----------------------------------------------------------------------------
                     //-- This will add any new fields to the schema
                     //-----------------------------------------------------------------------------
                     //System.setProperty("AddSchemaTablesFields", "TRUE");
@@ -678,6 +685,397 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         return false;
     }
     
+    /**
+     * @param conn
+     */
+    public void fixAgentsDivsDisps(final Connection conn)
+    {
+        boolean doUpdate = true;
+        PreparedStatement pStmt    = null;
+        PreparedStatement pStmtDel = null;
+        PreparedStatement pStmtAdd = null;
+        try
+        {
+            pStmt    = conn.prepareStatement("UPDATE agent SET DivisionID=? WHERE AgentID = ?");
+            pStmtDel = conn.prepareStatement("DELETE FROM agent_discipline WHERE AgentID = ?");
+            pStmtAdd = conn.prepareStatement("INSERT INTO agent_discipline (AgentID, DisciplineID) VALUES(?, ?)");
+            
+            String sql = "SELECT T1.SpecifyUserID FROM (SELECT COUNT(su.SpecifyUserID) AS cnt, su.SpecifyUserID FROM specifyuser su INNER JOIN agent a ON su.SpecifyUserID = a.SpecifyUserID GROUP BY su.SpecifyUserID) T1 WHERE cnt > 1";
+            Vector<Object> rows = BasicSQLUtils.querySingleCol(conn, sql);
+            for (Object obj : rows)
+            {
+                Integer spId = (Integer)obj;
+                
+                //--------------------------------------------------------------
+                // Get all the available Divisions
+                //--------------------------------------------------------------
+                /*Vector<Integer> divIds = new Vector<Integer>();
+                for (Object divObj : BasicSQLUtils.querySingleCol(conn, "SELECT DivisionID FROM division ORDER BY DivisionID"))
+                {
+                    divIds.add((Integer)divObj);
+                }*/
+                
+                //--------------------------------------------------------------
+                // Get the Disciplines for SpecifyUser from the Permissions
+                //--------------------------------------------------------------
+                Vector<Pair<Integer, Integer>> divDspList = new Vector<Pair<Integer,Integer>>();
+                HashSet<Integer> disciplinesHash = new HashSet<Integer>();
+                HashSet<Integer> divisionHash    = new HashSet<Integer>();
+                sql = "SELECT dv.UserGroupScopeId, ds.UserGroupScopeId FROM collection cln " +
+                      "INNER JOIN spprincipal p ON cln.UserGroupScopeId = p.userGroupScopeID " +
+                      "INNER JOIN discipline ds ON cln.DisciplineID = ds.UserGroupScopeId " +
+                      "INNER JOIN division dv ON ds.DivisionID = dv.UserGroupScopeId " +
+                      "INNER JOIN specifyuser_spprincipal su_pr ON p.SpPrincipalID = su_pr.SpPrincipalID " +
+                      "INNER JOIN specifyuser su ON su_pr.SpecifyUserID = su.SpecifyUserID  WHERE su.SpecifyUserID = " + spId;
+                
+                for (Object[] row : BasicSQLUtils.query(conn, sql))
+                {
+                    divisionHash.add((Integer)row[0]);
+                    disciplinesHash.add((Integer)row[1]);
+                    divDspList.add(new Pair<Integer, Integer>((Integer)row[0], (Integer)row[1]));
+                }
+                
+                //--------------------------------------------------------------
+                // Fix up the Agent's DivisionID because they are all the same.
+                //
+                // Easier Just to delete all the agent_disicpline records
+                // and re-add them.
+                //--------------------------------------------------------------
+                HashMap<Integer, Integer> divToAgentHash = new HashMap<Integer, Integer>();
+                HashSet<Integer> agentHash = new HashSet<Integer>();
+                Vector<Integer>  agents    = new Vector<Integer>();
+                int inx = 0;
+                sql = "SELECT a.AgentID FROM specifyuser su INNER JOIN agent a ON su.SpecifyUserID = a.SpecifyUserID WHERE su.SpecifyUserID = " + spId;
+                for (Object agtObj : BasicSQLUtils.querySingleCol(conn, sql))
+                {
+                    Integer agentId = (Integer)agtObj;
+                    agentHash.add(agentId);
+                    
+                    Pair<Integer, Integer> divDsp = divDspList.get(inx);
+                    
+                    pStmt.setInt(1, divDsp.first);
+                    pStmt.setInt(2, agentId);
+                    if (doUpdate) pStmt.execute();
+                    
+                    divToAgentHash.put(divDsp.first, agentId);
+                    
+                    pStmtDel.setInt(1, agentId);
+                    if (doUpdate) pStmtDel.execute();
+                    
+                    agents.add(agentId);
+                    
+                    System.err.println(spId +" -> "+ agentId +" -> "+ divDsp.first);
+                    inx++;
+                }
+                
+                System.err.println("Number Agents: "+ agents.size() +" Number of Discipline: "+ divDspList.size());
+                
+                //--------------------------------------------------------------
+                // Now re-add the agent_discipline records.
+                //--------------------------------------------------------------
+                inx = 0;
+                for (Pair<Integer, Integer> divDsp : divDspList)
+                {
+                    pStmtAdd.setInt(1, agents.get(inx));
+                    pStmtAdd.setInt(2, divDsp.second);
+                    if (doUpdate) pStmtAdd.execute();
+                    inx++;
+                }
+                
+                //--------------------------------------------------------------------------------
+                // Check all records with Agents to make sure the wrong agent wasn't used
+                //--------------------------------------------------------------------------------
+                /*HashSet<String> tiNames = new HashSet<String>();
+                int cntHard = 0;
+                int cntEasy = 0;
+                for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
+                {
+                    for (DBRelationshipInfo ri : ti.getRelationships())
+                    {
+                        if (ri.getType() == DBRelationshipInfo.RelationshipType.ManyToOne &&
+                            ri.getDataClass() == Agent.class && 
+                            !ri.getColName().equals("CreatedByAgentID") &&
+                            !ri.getColName().equals("ModifiedByAgentID"))
+                        {
+                            System.out.print(String.format("%s.%s", ti.getName(), ri.getName()));
+                            //System.out.println(ti.getFieldByName("division") != null || ti.getFieldByName("discipline") != null ? " HAS" : " NOT");
+                            
+                            boolean easy = ti.getFieldByColumnName("DivisionID", true) != null ||
+                                           ti.getFieldByColumnName("DisciplineID", true) != null ||
+                                           ti.getFieldByColumnName("CollectionMemberId", true) != null;
+                            
+                            System.out.println(easy ? " EASY" : " HARD");
+                            cntHard += easy ? 0 : 1;
+                            cntEasy += easy ? 1 : 0;
+                            tiNames.add(ti.getName());
+                        }
+                    }
+                }
+                System.out.print(String.format("Easy %d  Hard %d  TI %d", cntEasy, cntHard, tiNames.size()));
+                
+                System.out.println("//----------------------------------------------------------------");
+                Vector<String> names = new Vector<String>(tiNames);
+                Collections.sort(names);
+                for (String nm : names)
+                {
+                    System.out.println("\n  //---------- "+nm);
+                }*/
+                
+                //----------------------------------------------------------------
+                
+                //---------- accessionagent
+                sql = "SELECT accessionagent.AccessionAgentID, accessionagent.AgentID, accession.DivisionID " +
+                "FROM accessionagent INNER JOIN accession ON accessionagent.AccessionID = accession.AccessionID ";
+                fixAgents(conn, sql, "accessionagent", "AgentID", divToAgentHash);
+                
+                //---------- addressofrecord (Accession, Borrow, ExchangeIn, EchangeOut, Gift, Loan, RepositoryAgreement)
+                
+                sql = "SELECT addressofrecord.AddressOfRecordID, addressofrecord.AgentID, accession.DivisionID " +
+                "FROM addressofrecord INNER JOIN accession ON addressofrecord.AddressOfRecordID = accession.AddressOfRecordID ";
+                fixAgents(conn, sql, "addressofrecord", "AgentID", divToAgentHash);
+                
+                sql = "SELECT addressofrecord.AddressOfRecordID, addressofrecord.AgentID, exchangein.DivisionID " +
+                "FROM addressofrecord INNER JOIN exchangein ON addressofrecord.AddressOfRecordID = exchangein.AddressOfRecordID ";
+                fixAgents(conn, sql, "addressofrecord", "AgentID", divToAgentHash);
+                
+                sql = "SELECT addressofrecord.AddressOfRecordID, addressofrecord.AgentID, exchangeout.DivisionID " +
+                "FROM addressofrecord INNER JOIN exchangeout ON addressofrecord.AddressOfRecordID = exchangeout.AddressOfRecordID ";
+                fixAgents(conn, sql, "addressofrecord", "AgentID", divToAgentHash);
+                
+                sql = "SELECT addressofrecord.AddressOfRecordID, addressofrecord.AgentID, gift.DivisionID " +
+                "FROM addressofrecord INNER JOIN gift ON addressofrecord.AddressOfRecordID = gift.AddressOfRecordID ";
+                fixAgents(conn, sql, "addressofrecord", "AgentID", divToAgentHash);
+                
+                sql = "SELECT addressofrecord.AddressOfRecordID, addressofrecord.AgentID, loan.DivisionID " +
+                "FROM addressofrecord INNER JOIN loan ON addressofrecord.AddressOfRecordID = loan.AddressOfRecordID ";
+                fixAgents(conn, sql, "addressofrecord", "AgentID", divToAgentHash);
+                
+                sql = "SELECT addressofrecord.AddressOfRecordID, addressofrecord.AgentID, repositoryagreement.DivisionID " +
+                "FROM addressofrecord INNER JOIN repositoryagreement ON addressofrecord.AddressOfRecordID = repositoryagreement.AddressOfRecordID ";
+                fixAgents(conn, sql, "addressofrecord", "AgentID", divToAgentHash);
+                
+                //---------- agentgeography
+                sql = "SELECT agentgeography.AgentGeographyID, agentgeography.AgentID, discipline.DivisionID " +
+                "FROM agentgeography INNER JOIN geography ON agentgeography.GeographyID = geography.GeographyID " +
+                "INNER JOIN discipline ON geography.GeographyTreeDefID = discipline.GeographyTreeDefID ";
+                fixAgents(conn, sql, "agentgeography", "AgentID", divToAgentHash);
+
+                //---------- agentspecialty
+                // (Don't Need To)
+                
+                //---------- agentvariant
+                // (Don't Need To)
+                
+                //---------- appraisal
+                sql = "SELECT appraisal.AppraisalID, appraisal.AgentID, accession.DivisionID " +
+                "FROM appraisal INNER JOIN accession ON appraisal.AccessionID = accession.AccessionID ";
+                fixAgents(conn, sql, "appraisal", "AgentID", divToAgentHash);
+                
+                //---------- author
+                // (Skipping for now - no way to know)
+                
+                //---------- borrowagent
+                sql = "SELECT BorrowAgentID, agent.AgentID, division.UserGroupScopeId " +
+                "FROM agent INNER JOIN borrowagent ON agent.AgentID = borrowagent.BorrowAgentID " +
+                "INNER JOIN borrow ON borrowagent.BorrowAgentID = borrow.CollectionMemberID " +
+                "INNER JOIN collection ON borrow.CollectionMemberID = collection.UserGroupScopeId " +
+                "INNER JOIN discipline ON collection.DisciplineID = discipline.UserGroupScopeId " +
+                "INNER JOIN division ON discipline.DivisionID = division.UserGroupScopeId";
+                fixAgents(conn, sql, "borrowagent", "AgentID", divToAgentHash);
+
+                //---------- borrowreturnmaterial
+                sql = "SELECT BorrowReturnMaterialID, borrowreturnmaterial.ReturnedByID, discipline.DivisionID " +
+                "FROM borrowreturnmaterial INNER JOIN borrowmaterial ON borrowreturnmaterial.BorrowMaterialID = borrowmaterial.BorrowMaterialID " +
+                "INNER JOIN collection ON borrowmaterial.CollectionMemberID = collection.UserGroupScopeId " +
+                "INNER JOIN discipline ON collection.DisciplineID = discipline.UserGroupScopeId";
+                fixAgents(conn, sql, "borrowreturnmaterial", "ReturnedByID", divToAgentHash);
+
+                //---------- collectionobject
+                sql = "SELECT CollectionObjectID, collectionobject.CatalogerID, discipline.DivisionID " +
+                "FROM collectionobject INNER JOIN collection ON collectionobject.CollectionID = collection.UserGroupScopeId " +
+                "INNER JOIN discipline ON collection.DisciplineID = discipline.UserGroupScopeId";
+                fixAgents(conn, sql, "collectionobject", "CatalogerID", divToAgentHash);
+
+                //---------- collector
+                sql = "SELECT CollectorID, collector.AgentID, discipline.DivisionID " +
+                "FROM collector INNER JOIN collection ON collector.CollectionMemberID = collection.UserGroupScopeId " +
+                "INNER JOIN discipline ON collection.DisciplineID = discipline.UserGroupScopeId";
+                fixAgents(conn, sql, "collector", "AgentID", divToAgentHash);
+
+                //---------- conservevent
+                // (Skipping for now - no way to know)
+                
+                //---------- deaccessionagent
+                // (Skipping for now - no way to know)
+                
+                //---------- determination
+                sql = "SELECT DeterminationID, determination.DeterminerID, discipline.DivisionID " +
+                "FROM determination INNER JOIN collection ON determination.CollectionMemberID = collection.UserGroupScopeId " +
+                "INNER JOIN discipline ON collection.DisciplineID = discipline.UserGroupScopeId";
+                fixAgents(conn, sql, "determination", "DeterminerID", divToAgentHash);
+                
+                //---------- dnasequence
+                sql = "SELECT DnaSequenceID, dnasequence.AgentID, discipline.DivisionID " +
+                "FROM collection INNER JOIN discipline ON collection.DisciplineID = discipline.UserGroupScopeId " +
+                "INNER JOIN dnasequence ON dnasequence.CollectionMemberID = collection.UserGroupScopeId";
+                fixAgents(conn, sql, "dnasequence", "AgentID", divToAgentHash);
+                
+                //---------- exchangein
+                sql = "SELECT ExchangeInID, CatalogedByID, DivisionID FROM exchangein";
+                fixAgents(conn, sql, "exchangein", "CatalogedByID", divToAgentHash);
+                
+                //---------- exchangeout
+                sql = "SELECT ExchangeOutID, CatalogedByID, DivisionID FROM exchangeout";
+                fixAgents(conn, sql, "exchangeout", "CatalogedByID", divToAgentHash);
+                
+                //---------- fieldnotebook
+                sql = "SELECT FieldNotebookID, fieldnotebook.AgentID, discipline.DivisionID " +
+                "FROM fieldnotebook INNER JOIN discipline ON fieldnotebook.DisciplineID = discipline.UserGroupScopeId";
+                fixAgents(conn, sql, "fieldnotebook", "AgentID", divToAgentHash);
+                
+                //---------- fieldnotebookpageset
+                sql = "SELECT FieldNotebookPageSetID, fieldnotebookpageset.AgentID, discipline.DivisionID " +
+                "FROM fieldnotebookpageset INNER JOIN discipline ON fieldnotebookpageset.DisciplineID = discipline.UserGroupScopeId";
+                fixAgents(conn, sql, "fieldnotebookpageset", "AgentID", divToAgentHash);
+                
+                //---------- geocoorddetail
+                sql = "SELECT GeoCoordDetailID, geocoorddetail.AgentID, discipline.DivisionID " +
+                "FROM geocoorddetail INNER JOIN locality ON geocoorddetail.LocalityID = locality.LocalityID " +
+                "INNER JOIN discipline ON locality.DisciplineID = discipline.UserGroupScopeId";
+                fixAgents(conn, sql, "geocoorddetail", "AgentID", divToAgentHash);
+               
+                //---------- giftagent
+                sql = "SELECT giftagent.GiftAgentID, giftagent.AgentID, giftagent.GiftID FROM giftagent";
+                fixAgents(conn, sql, "giftagent", "AgentID", divToAgentHash);
+                
+                //---------- groupperson (Don't need to)
+
+                //---------- inforequest
+                sql = "SELECT InfoRequestID, inforequest.AgentID, discipline.DivisionID " +
+                "FROM inforequest INNER JOIN collection ON inforequest.CollectionMemberID = collection.UserGroupScopeId " +
+                "INNER JOIN discipline ON collection.DisciplineID = discipline.UserGroupScopeId";
+                fixAgents(conn, sql, "inforequest", "AgentID", divToAgentHash);
+                
+                //---------- loanagent
+                sql = "SELECT LoanAgentID, loanagent.AgentID, discipline.DivisionID FROM loanagent INNER JOIN discipline ON loanagent.DisciplineID = discipline.UserGroupScopeId";
+                fixAgents(conn, sql, "loanagent", "AgentID", divToAgentHash);
+               
+                //---------- loanreturnpreparation
+                sql = "SELECT LoanReturnPreparationID, loanreturnpreparation.ReceivedByID, discipline.DivisionID " +
+                "FROM loanreturnpreparation INNER JOIN discipline ON loanreturnpreparation.DisciplineID = discipline.UserGroupScopeId";
+                fixAgents(conn, sql, "loanreturnpreparation", "ReceivedByID", divToAgentHash);
+                
+                //---------- permit (No way to know)
+
+                //---------- preparation
+                sql = "SELECT PreparationID, preparation.PreparedByID, discipline.DivisionID " +
+                "FROM preparation INNER JOIN collectionobject ON preparation.CollectionObjectID = collectionobject.CollectionObjectID " +
+                "INNER JOIN collection ON collectionobject.CollectionID = collection.UserGroupScopeId " +
+                "INNER JOIN discipline ON collection.DisciplineID = discipline.UserGroupScopeId";
+                fixAgents(conn, sql, "preparation", "PreparedByID", divToAgentHash);
+                
+                //---------- project (No way to know)
+
+                //---------- repositoryagreement
+                sql = "SELECT repositoryagreement.RepositoryAgreementID, repositoryagreement.AgentID, repositoryagreement.DivisionID FROM repositoryagreement";
+                fixAgents(conn, sql, "repositoryagreement", "AgentID", divToAgentHash);
+
+                //---------- shipment
+                
+                sql = "SELECT ShipmentID, shipment.ShipperID, discipline.DivisionID FROM shipment INNER JOIN discipline ON shipment.DisciplineID = discipline.UserGroupScopeId";
+                fixAgents(conn, sql, "shipment", "ShipperID", divToAgentHash);
+                
+                sql = "SELECT ShipmentID, shipment.ShippedToID, discipline.DivisionID FROM shipment INNER JOIN discipline ON shipment.DisciplineID = discipline.UserGroupScopeId";
+                fixAgents(conn, sql, "shipment", "ShippedToID", divToAgentHash);
+                
+                sql = "SELECT ShipmentID, shipment.ShippedByID, discipline.DivisionID  FROM shipment INNER JOIN discipline ON shipment.DisciplineID = discipline.UserGroupScopeId";
+                fixAgents(conn, sql, "shipment", "ShippedByID", divToAgentHash);
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            try
+            {
+                if (pStmt != null)
+                {
+                    pStmt.close();
+                }
+                if (pStmtDel != null)
+                {
+                    pStmtDel.close();
+                }
+                if (pStmtAdd != null)
+                {
+                    pStmtAdd.close();
+                }
+            } catch (Exception ex)
+            {
+                
+            }
+        }
+    }
+    
+    private void fixAgents(final Connection conn,
+                           final String sql, 
+                           final String tableName, 
+                           final String fldName, 
+                           final HashMap<Integer, Integer> divToAgentHash)
+    {
+        PreparedStatement pStmt    = null;
+        Statement         stmt     = null;
+        try
+        {
+            
+            stmt  = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            
+            
+            String recIdColName = rs.getMetaData().getColumnName(1);
+            pStmt = conn.prepareStatement(String.format("UPDATE %s SET %s=? WHERE %s = ?", tableName, fldName, recIdColName));
+            
+            while (rs.next())
+            {
+                Integer recID   = rs.getInt(1);
+                Integer agentId = rs.getInt(2);
+                Integer divId   = rs.getInt(3);
+                
+                Integer mappedAgentId = divToAgentHash.get(divId);
+                if (mappedAgentId != null)
+                {
+                    pStmt.setInt(1, mappedAgentId);
+                    pStmt.setInt(2, recID);
+                    pStmt.execute();
+                    log.debug(String.format("CNG %s.%s (%d)  Old: %d -> New: %d", tableName, fldName, recID, agentId, mappedAgentId));
+                }
+            }
+            rs.close();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            try
+            {
+                if (pStmt != null)
+                {
+                    pStmt.close();
+                }
+                if (stmt != null)
+                {
+                    stmt.close();
+                }
+            } catch (Exception ex)
+            {
+                
+            }
+        }
+    }
+   
     /**
      * @param conn
      * @param tblName

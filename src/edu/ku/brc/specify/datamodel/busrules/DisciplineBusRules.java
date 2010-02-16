@@ -281,22 +281,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                     
                     bldSampleDB.setSession(session);
                     
-                    
-                    Agent newUserAgent = null;
-                    try
-                    {
-                        newUserAgent = (Agent)userAgent.clone();
-                        specifyAdminUser.getAgents().add(newUserAgent);
-                        newUserAgent.setSpecifyUser(specifyAdminUser);
-                        session.saveOrUpdate(newUserAgent);
-                        session.saveOrUpdate(specifyAdminUser);
-                        
-                    } catch (CloneNotSupportedException ex)
-                    {
-                        ex.printStackTrace();
-                    }
-                    
-                    pair = bldSampleDB.createEmptyDisciplineAndCollection(division, props, dispType, newUserAgent, 
+                    pair = bldSampleDB.createEmptyDisciplineAndCollection(division, props, dispType, userAgent, 
                                                                           specifyAdminUser, true, true);
                     
                     if (pair != null && pair.first != null && pair.second != null)

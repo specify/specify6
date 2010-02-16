@@ -228,6 +228,8 @@ public class SpecifyDBSetupWizard extends JPanel
        
         if (wizardType == WizardType.Institution)
         {
+            props.put("fromwizard", "true");
+            
             dbPanel = new DatabasePanel(nextBtn, backBtn, "wizard_mysql_username", true);
             panels.add(dbPanel);
             HelpMgr.registerComponent(helpBtn, dbPanel.getHelpContext());

@@ -275,21 +275,6 @@ public class DivisionBusRules extends BaseBusRules implements CommandListener
                     
                     bldSampleDB.setSession(session);
                     
-                    
-                    Agent newUserAgent = null;
-                    try
-                    {
-                        newUserAgent = (Agent)userAgent.clone();
-                        specifyAdminUser.getAgents().add(newUserAgent);
-                        newUserAgent.setSpecifyUser(specifyAdminUser);
-                        session.saveOrUpdate(newUserAgent);
-                        session.saveOrUpdate(specifyAdminUser);
-                        
-                    } catch (CloneNotSupportedException ex)
-                    {
-                        ex.printStackTrace();
-                    }
-                    
                     DisciplineType dispType = (DisciplineType)props.get("disciplineType");
                     newDivision = bldSampleDB.createEmptyDivision(institution, dispType, specifyAdminUser, props, true, true);
                     

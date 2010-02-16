@@ -627,10 +627,51 @@ public class BuildSampleDatabase
         
         frame.incOverall();
         
-        Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email, division, null);
+        Agent userAgent    = AppContextMgr.getInstance().getClassObject(Agent.class);
+        Agent newUserAgent = null;
+        String fromWiz = props.getProperty("fromwizard");
+        if (userAgent == null || (StringUtils.isNotEmpty(fromWiz) && fromWiz.equals("true")))
+        {
+            userAgent  = createAgent(title, firstName, midInit, lastName, abbrev, email, division, null);
+            
+        } else
+        {
+            try
+            {
+                newUserAgent = (Agent)userAgent.clone();
+                specifyAdminUser.getAgents().add(newUserAgent);
+                newUserAgent.setSpecifyUser(specifyAdminUser);
+                
+                newUserAgent.setDivision(division); // Set the new Division
+                
+                session.saveOrUpdate(newUserAgent);
+                session.saveOrUpdate(specifyAdminUser);
+                
+            } catch (CloneNotSupportedException ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        
+        try
+        {
+            userAgent = (Agent)session.merge(userAgent);
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        
+        try
+        {
+            userAgent = (Agent)session.merge(userAgent);
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
         
         specifyAdminUser.addReference(userAgent, "agents");
         persist(specifyAdminUser);
+
         
         commitTx();
         

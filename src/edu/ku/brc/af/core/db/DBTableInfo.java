@@ -409,19 +409,29 @@ public class DBTableInfo extends DBInfoBase
      * @param columnName the name of the column
      * @return the field info
      */
-    public DBFieldInfo getFieldByColumnName(final String columnName)
+    public DBFieldInfo getFieldByColumnName(final String columnName, final boolean suppressError)
     {
         String      fName     = columnName.indexOf('.') > -1 ? StringUtils.substringAfterLast(columnName, ".") : columnName; //$NON-NLS-1$
         String      fieldName = fName.substring(0,1).toLowerCase() + fName.substring(1, fName.length());
         DBFieldInfo fi        = getFieldByName(fieldName);
         if (fi == null)
         {
-            if (!fieldName.endsWith("ID")) //$NON-NLS-1$
+            if (!suppressError && !fieldName.endsWith("ID")) //$NON-NLS-1$
             {
                 log.error("Couldn't find FieldName["+fieldName+"] in table ["+getTitle()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }
         }
         return fi;
+    }
+
+    /**
+     * Converts the Column Name to a field name and returns the FieldInfo
+     * @param columnName the name of the column
+     * @return the field info
+     */
+    public DBFieldInfo getFieldByColumnName(final String columnName)
+    {
+        return getFieldByColumnName(columnName, false);
     }
 
     /**
