@@ -437,7 +437,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         //log.debug("refreshing " + nodeDebugInfo(node));
         try
         {
-            session.refresh(node);
+            //session.refresh(node);
             Integer nodeNum = node.getNodeNumber();
             Integer highChild = node.getHighestChildNodeNumber();
             
