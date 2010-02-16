@@ -469,17 +469,21 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.treeutils.TreeDataService#deleteTreeNode(edu.ku.brc.specify.datamodel.Treeable)
      */
-    public synchronized boolean deleteTreeNode(final T node)
+    @SuppressWarnings("unchecked")
+    public synchronized boolean deleteTreeNode(final T nodeToDelete)
     {
-        Session session = getNewSession(node);
+        //Session session = getNewSession(node);
+    	Session session = HibernateUtil.getSessionFactory().openSession();
         try
         {
-            // refresh the node data so we have correct information for the following calculation
+            T node = (T )mergeIntoSession(session, nodeToDelete);
+        	// refresh the node data so we have correct information for the following calculation
             session.refresh(node);
             T parent = node.getParent();
             if (parent != null)
             {
-                session.refresh(parent);
+                parent = (T )mergeIntoSession(session, parent);
+            	session.refresh(parent);
             }
     
             Transaction tx = session.beginTransaction();
