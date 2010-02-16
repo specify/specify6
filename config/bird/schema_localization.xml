@@ -76,6 +76,19 @@
     <isHidden>false</isHidden>
     <isSystem>false</isSystem>
     <items>
+      <item name="text5" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Stomach</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </item>
       <item name="text4" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isHidden>false</isHidden>
@@ -84,19 +97,6 @@
           <str language="en">
             <version>0</version>
             <text>Body</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </item>
-      <item name="text8" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isHidden>false</isHidden>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Weight</text>
           </str>
         </names>
         <descs/>
@@ -115,19 +115,6 @@
         <descs/>
         <spExportSchemaItems/>
       </item>
-      <item name="text1" isUIFormatter="false" pickListName="Age" isRequired="false">
-        <version>0</version>
-        <isHidden>false</isHidden>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Age</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </item>
       <item name="text3" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isHidden>false</isHidden>
@@ -141,14 +128,14 @@
         <descs/>
         <spExportSchemaItems/>
       </item>
-      <item name="text7" isUIFormatter="false" isRequired="false">
+      <item name="text1" isUIFormatter="false" pickListName="Age" isRequired="false">
         <version>0</version>
         <isHidden>false</isHidden>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Molt</text>
+            <text>Age</text>
           </str>
         </names>
         <descs/>
@@ -167,14 +154,27 @@
         <descs/>
         <spExportSchemaItems/>
       </item>
-      <item name="text5" isUIFormatter="false" isRequired="false">
+      <item name="text7" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isHidden>false</isHidden>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Stomach</text>
+            <text>Molt</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </item>
+      <item name="text8" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Weight</text>
           </str>
         </names>
         <descs/>

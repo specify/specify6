@@ -70,7 +70,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     protected Long                      accumMinLoggedIn;
     
     //protected Short                     privLevel;
-    protected Set<RecordSet>            recordSets;
+    //protected Set<RecordSet>            recordSets;
     protected Set<Workbench>            workbenches;
     protected Set<WorkbenchTemplate>    workbenchTemplates;
     protected Set<SpAppResource>        spAppResources;
@@ -112,7 +112,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
 		loginOutTime = null;
         
         //privLevel          = null;
-        recordSets         = new HashSet<RecordSet>();
+        //recordSets         = new HashSet<RecordSet>();
         workbenches        = new HashSet<Workbench>();
         workbenchTemplates = new HashSet<WorkbenchTemplate>();
         spAppResources     = new HashSet<SpAppResource>();
@@ -371,21 +371,21 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
-    @OneToMany(cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY, mappedBy = "specifyUser")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<RecordSet> getRecordSets()
-    {
-        return this.recordSets;
-    }
-
-    /**
-     * @param recordSets - 
-     * void
-     */
-    public void setRecordSets(Set<RecordSet> recordSets)
-    {
-        this.recordSets = recordSets;
-    }
+//    @OneToMany(cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY, mappedBy = "specifyUser")
+//    //@org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+//    public Set<RecordSet> getRecordSets()
+//    {
+//        return this.recordSets;
+//    }
+//
+//    /**
+//     * @param recordSets - 
+//     * void
+//     */
+//    public void setRecordSets(Set<RecordSet> recordSets)
+//    {
+//        this.recordSets = recordSets;
+//    }
 
     /**
      * 
