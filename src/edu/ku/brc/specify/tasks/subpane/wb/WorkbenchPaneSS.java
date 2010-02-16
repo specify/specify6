@@ -618,7 +618,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             AppPreferences remotePrefs = AppPreferences.getRemote();
             final String tool = remotePrefs.get("georef_tool", "geolocate");
-            String iconName = "BioGeoMancer"; //tool.equalsIgnoreCase("geolocate") ? "GeoLocate" : "BioGeoMancer";
+            String iconName = "GEOLocate20"; //tool.equalsIgnoreCase("geolocate") ? "GeoLocate" : "BioGeoMancer";
             String toolTip = tool.equalsIgnoreCase("geolocate") ? "WB_DO_GEOLOCATE_LOOKUP"
             		: "WB_DO_BIOGEOMANCER_LOOKUP";
             biogeomancerBtn = createIconBtn(iconName, IconManager.IconSize.NonStd,

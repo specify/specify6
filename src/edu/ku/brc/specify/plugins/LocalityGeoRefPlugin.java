@@ -233,7 +233,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
     {
         if (doGeoLocate)
         {
-            setIcon(IconManager.getIcon("GEOLocate", IconManager.IconSize.Std16));
+            setIcon(IconManager.getIcon("GEOLocate16"));
             setText("GEOLocate");
             
         } else
