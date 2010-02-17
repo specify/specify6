@@ -101,6 +101,7 @@ import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.VerticalSeparator;
 import edu.ku.brc.util.Pair;
 
@@ -465,15 +466,21 @@ public class LoanReturnDlg extends JDialog
             {
                 if (deter.isCurrentDet())
                 {
-                    if (deter.getPreferredTaxon().getFullName() == null)
+                    if (deter.getPreferredTaxon() != null)
                     {
-                        Taxon parent = deter.getPreferredTaxon().getParent();
-                        String genus = parent.getFullName() == null ? parent.getName() : parent.getFullName();
-                        taxonName = genus + " " + deter.getPreferredTaxon().getName();
-                        
+                        if (deter.getPreferredTaxon().getFullName() == null)
+                        {
+                            Taxon parent = deter.getPreferredTaxon().getParent();
+                            String genus = parent.getFullName() == null ? parent.getName() : parent.getFullName();
+                            taxonName = genus + " " + deter.getPreferredTaxon().getName();
+                            
+                        } else
+                        {
+                            taxonName = deter.getPreferredTaxon().getFullName();
+                        }
                     } else
                     {
-                        taxonName = deter.getPreferredTaxon().getFullName();
+                        taxonName = UIRegistry.getResourceString("LOAN_NOT_DET");
                     }
 
                     break;
