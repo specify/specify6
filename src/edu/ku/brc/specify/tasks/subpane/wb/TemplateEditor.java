@@ -1413,6 +1413,7 @@ public class TemplateEditor extends CustomDialog
     protected void adjustMappings()
     {
         boolean doTaxOnlyRemap = true;
+        boolean unMapTaxOnlys = false;
         for (Integer tblId : getTblsMapped())
         {
         	if (!(tblId.equals(DBTableIdMgr.getInstance().getByClassName(Taxon.class.getName()).getTableId())
@@ -1420,7 +1421,10 @@ public class TemplateEditor extends CustomDialog
         			|| tblId.equals(4000)))
         	{
         		doTaxOnlyRemap = false;
-        		break;
+        	}
+        	if (tblId.equals(4000))
+        	{
+        		unMapTaxOnlys = true;
         	}
         }
         if (doTaxOnlyRemap)
@@ -1471,6 +1475,20 @@ public class TemplateEditor extends CustomDialog
                 newInfo.setInUse(true);
                 fmp.setFieldInfo(newInfo);
                 fmp.setIcon(DBTableIdMgr.getInstance().getByClassName(Taxon.class.getName()).getIcon(IconManager.STD_ICON_SIZE));
+            }
+        }
+        else if (unMapTaxOnlys)
+        {
+            for (int m=0; m<mapModel.getSize(); m++)
+            {
+                FieldMappingPanel fmp = mapModel.getElementAt(m);
+                if (fmp.getFieldInfo() != null && fmp.getFieldInfo().getTableinfo().getTableId() == 4000)
+                {
+                	log.info("unmapping " + fmp.getFieldName());
+                    fmp.getFieldInfo().setInUse(false);
+                    fmp.setFieldInfo(null);
+                    fmp.setIcon(blankIcon);
+                }
             }
         }
     }
