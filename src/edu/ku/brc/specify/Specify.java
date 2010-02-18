@@ -1915,19 +1915,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     public void doAbout()
     {
-        /*if (false)
-        {
-            ViewToSchemaReview.checkViews();
-        }
-        
-        if (true)
-        {
-            //StatsTrackerTask st = (StatsTrackerTask)TaskMgr.getInstance().getTask(StatsTrackerTask.STATS_TRACKER);
-            //st.sendStats(false, false, false);
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DbLoginCallbackHandler.class, new java.lang.RuntimeException("Test"));
-           return;
-        }*/
-        
         AppContextMgr acm        = AppContextMgr.getInstance();
         boolean       hasContext = acm.hasContext();
         
@@ -2537,7 +2524,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 });
             }
             
-            if (!AppPreferences.getGlobalPrefs().getBoolean("FixAgentToDisciplines", false))
+            if (!AppPreferences.getGlobalPrefs().getBoolean("FixAgentToDisciplinesV2", false))
             {
                 // Temp Code to Fix issues with Release 6.0.9 and below
                 SwingUtilities.invokeLater(new Runnable() 

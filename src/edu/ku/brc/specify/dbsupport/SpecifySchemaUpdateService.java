@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -856,8 +857,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 
                 //---------- agentgeography
                 sql = "SELECT agentgeography.AgentGeographyID, agentgeography.AgentID, discipline.DivisionID " +
-                "FROM agentgeography INNER JOIN geography ON agentgeography.GeographyID = geography.GeographyID " +
-                "INNER JOIN discipline ON geography.GeographyTreeDefID = discipline.GeographyTreeDefID ";
+                        "FROM agentgeography INNER JOIN geography ON agentgeography.GeographyID = geography.GeographyID " +
+                        "INNER JOIN discipline ON geography.GeographyTreeDefID = discipline.GeographyTreeDefID ";
                 fixAgents(conn, sql, "agentgeography", "AgentID", divToAgentHash);
 
                 //---------- agentspecialty
@@ -871,16 +872,20 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 "FROM appraisal INNER JOIN accession ON appraisal.AccessionID = accession.AccessionID ";
                 fixAgents(conn, sql, "appraisal", "AgentID", divToAgentHash);
                 
+                sql = "SELECT appraisal.AppraisalID, appraisal.AgentID, discipline.DivisionID " +
+                        "FROM appraisal INNER JOIN collectionobject ON appraisal.AppraisalID = collectionobject.AppraisalID " +
+                        "INNER JOIN collection ON collectionobject.CollectionID = collection.UserGroupScopeId " +
+                        "INNER JOIN discipline ON collection.DisciplineID = discipline.UserGroupScopeId ";
+                fixAgents(conn, sql, "appraisal", "AgentID", divToAgentHash);
+                
                 //---------- author
                 // (Skipping for now - no way to know)
                 
                 //---------- borrowagent
-                sql = "SELECT BorrowAgentID, agent.AgentID, division.UserGroupScopeId " +
-                "FROM agent INNER JOIN borrowagent ON agent.AgentID = borrowagent.BorrowAgentID " +
-                "INNER JOIN borrow ON borrowagent.BorrowAgentID = borrow.CollectionMemberID " +
-                "INNER JOIN collection ON borrow.CollectionMemberID = collection.UserGroupScopeId " +
-                "INNER JOIN discipline ON collection.DisciplineID = discipline.UserGroupScopeId " +
-                "INNER JOIN division ON discipline.DivisionID = division.UserGroupScopeId";
+                sql = "SELECT borrowagent.BorrowAgentID, borrowagent.AgentID, discipline.DivisionID " +
+                      "FROM borrowagent  " +
+                      "INNER JOIN collection ON borrowagent.CollectionMemberID = collection.UserGroupScopeId " +
+                      "INNER JOIN discipline ON collection.DisciplineID = discipline.UserGroupScopeId ";
                 fixAgents(conn, sql, "borrowagent", "AgentID", divToAgentHash);
 
                 //---------- borrowreturnmaterial
@@ -945,7 +950,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 fixAgents(conn, sql, "geocoorddetail", "AgentID", divToAgentHash);
                
                 //---------- giftagent
-                sql = "SELECT giftagent.GiftAgentID, giftagent.AgentID, giftagent.GiftID FROM giftagent";
+                sql = " SELECT giftagent.GiftAgentID, giftagent.AgentID, gift.DivisionID, discipline.DivisionID " +
+                "FROM giftagent INNER JOIN gift ON giftagent.GiftID = gift.GiftID " +
+                "INNER JOIN discipline ON gift.DisciplineID = discipline.UserGroupScopeId";
                 fixAgents(conn, sql, "giftagent", "AgentID", divToAgentHash);
                 
                 //---------- groupperson (Don't need to)
@@ -957,7 +964,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 fixAgents(conn, sql, "inforequest", "AgentID", divToAgentHash);
                 
                 //---------- loanagent
-                sql = "SELECT LoanAgentID, loanagent.AgentID, discipline.DivisionID FROM loanagent INNER JOIN discipline ON loanagent.DisciplineID = discipline.UserGroupScopeId";
+                sql = " SELECT loanagent.LoanAgentID, loanagent.AgentID, loan.DivisionID, discipline.DivisionID " +
+                "FROM loanagent INNER JOIN loan ON loanagent.LoanID = loan.LoanID " +
+                "INNER JOIN discipline ON loan.DisciplineID = discipline.UserGroupScopeId";
                 fixAgents(conn, sql, "loanagent", "AgentID", divToAgentHash);
                
                 //---------- loanreturnpreparation
@@ -1030,17 +1039,24 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         {
             
             stmt  = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-            
+            ResultSet         rs   = stmt.executeQuery(sql);
+            ResultSetMetaData rsmd = rs.getMetaData();
             
             String recIdColName = rs.getMetaData().getColumnName(1);
             pStmt = conn.prepareStatement(String.format("UPDATE %s SET %s=? WHERE %s = ?", tableName, fldName, recIdColName));
             
+            int itemsFixed = 0;
             while (rs.next())
             {
                 Integer recID   = rs.getInt(1);
                 Integer agentId = rs.getInt(2);
-                Integer divId   = rs.getInt(3);
+                Integer divId   = rs.getObject(3) != null ? rs.getInt(3) : null;
+                Integer divId2  = rsmd.getColumnCount() == 4 ? rs.getInt(4) : null;
+                
+                if (divId2 != null && divId == null)
+                {
+                    divId = divId2;
+                }
                 
                 Integer mappedAgentId = divToAgentHash.get(divId);
                 if (mappedAgentId != null)
@@ -1049,8 +1065,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     pStmt.setInt(2, recID);
                     pStmt.execute();
                     log.debug(String.format("CNG %s.%s (%d)  Old: %d -> New: %d", tableName, fldName, recID, agentId, mappedAgentId));
+                    itemsFixed++;
                 }
             }
+            
+            log.debug(String.format("%d Fixed ->%s.%s  (%s)", itemsFixed, tableName, fldName, sql));
+            
             rs.close();
             
         } catch (Exception ex)
