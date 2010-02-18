@@ -235,6 +235,7 @@ public class ReportsBaseTask extends BaseTask
         List<TaskCommandDef> result = new LinkedList<TaskCommandDef>();
         Vector<Integer> excludedTableIds = new Vector<Integer>();
         excludedTableIds.add(79);
+        Vector<String> subReports = new Vector<String>();
         for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType(mimeType))
         {
         	Properties params = ap.getMetaDataMap();
@@ -243,7 +244,16 @@ public class ReportsBaseTask extends BaseTask
             
             if (StringUtils.isNotEmpty(tableid))
 			{
-				String rptType = params.getProperty("reporttype"); //$NON-NLS-1$
+				String subReps = params.getProperty("subreports"); 
+				if (subReps != null)
+				{
+					String[] subRepNames = StringUtils.split(subReps, ",");
+					for (String subRepName : subRepNames)
+					{
+						subReports.add(subRepName.trim());
+					}
+				}
+            	String rptType = params.getProperty("reporttype"); //$NON-NLS-1$
 				Integer tblId = Integer.parseInt(tableid);
 				if (excludedTableIds.indexOf(tblId) == -1
 						&& (classTableId == null || tblId.equals(classTableId))
@@ -277,6 +287,18 @@ public class ReportsBaseTask extends BaseTask
 				}
 			}
 		}
+        if (subReports.size() > 0)
+        {
+        	for (int r = result.size() - 1; r >= 0; r--)
+        	{
+        		TaskCommandDef def = result.get(r);
+        		if (subReports.indexOf(def.getName()) != -1)
+        		{
+        			result.remove(r);
+        		}
+        			
+        	}
+        }
         return result;
     }
     
