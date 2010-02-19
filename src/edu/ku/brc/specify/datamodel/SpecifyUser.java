@@ -653,7 +653,6 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         int count = 0;
         for (SpPrincipal principal : getSpPrincipals())
         {
-            System.out.println(principal.getGroupSubClass());
             if (GroupPrincipal.class.getCanonicalName().equals(principal.getGroupSubClass()) ||
                 AdminPrincipal.class.getCanonicalName().equals(principal.getGroupSubClass()))
             {
@@ -661,7 +660,6 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
             }
         }
         
-        System.out.println(String.format(getName()+" belongs to %d groups.", count));
         return count;
     }
     

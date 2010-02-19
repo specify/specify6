@@ -163,14 +163,24 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
                 
                 addUserBtn.setEnabled(false);
                 addExtUserBtn.setEnabled(false);
-                
-                int     allAdminUsersCnt = 0;
-                int     grpUserCnt      = 0;
-                
+
+                String sqlFmt = "SELECT COUNT(*) FROM spprincipal Inner Join specifyuser_spprincipal ON spprincipal.SpPrincipalID = specifyuser_spprincipal.SpPrincipalID " + 
+                                "Inner Join specifyuser ON specifyuser_spprincipal.SpecifyUserID = specifyuser.SpecifyUserID WHERE GroupSubClass = '%s'";
+
                 boolean isLastAdminUser = false;
                 boolean isParentMgrGrp  = false;
                 boolean isParentAdmGrp  = false;
-                boolean isUserInAdmGrp  = specifyUser.isInAdminGroup();
+                
+                String sql = String.format(sqlFmt, AdminPrincipal.class.getCanonicalName());
+                sql += " AND specifyuser.SpecifyUserID = " + specifyUser.getId();
+                boolean isUserInAdmGrp = BasicSQLUtils.getCountAsInt(sql) > 0;
+                
+                sql = String.format(sqlFmt, AdminPrincipal.class.getCanonicalName());
+                int allAdminUsersCnt = BasicSQLUtils.getCountAsInt(sql); // count of all adminusers
+                
+                sql = String.format(sqlFmt, GroupPrincipal.class.getCanonicalName());
+                sql += " AND specifyuser.SpecifyUserID = " + specifyUser.getId();
+                int grpUserCnt = BasicSQLUtils.getCountAsInt(sql); // count of groups for this user
                 
                 DefaultMutableTreeNode parentTreeNode = (DefaultMutableTreeNode)lastClickComp.getParent();
                 if (parentTreeNode != null)
@@ -181,19 +191,9 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
                         SpPrincipal parentsPrin = (SpPrincipal)(pWrapper.getDataObj() instanceof SpPrincipal ? pWrapper.getDataObj() : null); 
                         if (parentsPrin != null)
                         {
-                            String sqlFmt = "SELECT COUNT(*) FROM spprincipal Inner Join specifyuser_spprincipal ON spprincipal.SpPrincipalID = specifyuser_spprincipal.SpPrincipalID " + 
-                                            "Inner Join specifyuser ON specifyuser_spprincipal.SpecifyUserID = specifyuser.SpecifyUserID WHERE GroupSubClass = '%s'";
-                            
-                            String sql = String.format(sqlFmt, AdminPrincipal.class.getCanonicalName());
-                            allAdminUsersCnt = BasicSQLUtils.getCountAsInt(sql); // count of all adminusers
-                            
-                            sql = String.format(sqlFmt, GroupPrincipal.class.getCanonicalName());
-                            sql += " AND specifyuser.SpecifyUserID = " + specifyUser.getId();
-                            grpUserCnt = BasicSQLUtils.getCountAsInt(sql); // count of groups for this user
-                            
                             isLastAdminUser = allAdminUsersCnt == 1;
-                            isParentMgrGrp     = parentsPrin.getGroupType() != null && parentsPrin.getGroupType().equals("Manager");
-                            isParentAdmGrp     =  parentsPrin.getGroupSubClass().equals(AdminPrincipal.class.getCanonicalName());
+                            isParentMgrGrp  = parentsPrin.getGroupType() != null && parentsPrin.getGroupType().equals("Manager");
+                            isParentAdmGrp  =  parentsPrin.getGroupSubClass().equals(AdminPrincipal.class.getCanonicalName());
                         }
                     }
                 }
