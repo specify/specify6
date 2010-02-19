@@ -747,7 +747,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
                             }
                         } else
                         {
-                            System.err.println("PickList item's value was null and it can't be.");
+                            System.err.println("PickList item's value was null and it can't be. Title["+item.getTitle()+"]");
                         }
                         inx++;
                     }

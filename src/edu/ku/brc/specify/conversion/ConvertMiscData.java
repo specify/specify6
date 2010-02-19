@@ -36,6 +36,12 @@ public class ConvertMiscData
 {
     protected static final Logger log = Logger.getLogger(ConvertMiscData.class);
     
+    /**
+     * @param oldDBConn
+     * @param newDBConn
+     * @param disciplineID
+     * @return
+     */
     public static boolean convertKUFishCruiseData(final Connection oldDBConn, final Connection newDBConn, final int disciplineID)
     {
         PreparedStatement pStmt1 = null;

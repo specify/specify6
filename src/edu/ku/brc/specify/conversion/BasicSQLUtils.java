@@ -2380,45 +2380,52 @@ public class BasicSQLUtils
         datePairArg.first  = "NULL";
         datePairArg.second = "NULL";
         
-        if (data != null && ((Integer)data) > 0)
+        if (data != null)
         {
-            // 012345678     012345678
-            // 20051314      19800307
-            Date   dateObj = null;
-            String dateStr = ((Integer)data).toString();
-            if (dateStr.length() == 8)
+            if (((Integer)data) > 0)
             {
-                //System.out.println("["+dateStr+"]["+data+"]");//["+(dateStr.length() >)+"]");
-                int fndInx  = dateStr.substring(4, 8).indexOf("00");
-                if (fndInx > -1)
+                // 012345678     012345678
+                // 20051314      19800307
+                Date   dateObj = null;
+                String dateStr = ((Integer)data).toString();
+                if (dateStr.length() == 8)
                 {
-                    if (fndInx == 0)
+                    //System.out.println("["+dateStr+"]["+data+"]");//["+(dateStr.length() >)+"]");
+                    int fndInx  = dateStr.substring(4, 8).indexOf("00");
+                    if (fndInx > -1)
                     {
-                        dateStr = dateStr.substring(0, 4) + "0101";
-                        dateObj = UIHelper.convertIntToDate(Integer.parseInt(dateStr)); 
-                        datePairArg.second = "3";
-                        
-                    } else if (fndInx == 2)
-                    {
-                        dateStr = dateStr.substring(0, 6) + "01";
-                        dateObj = UIHelper.convertIntToDate(Integer.parseInt(dateStr)); 
-                        datePairArg.second = "2";
-                        
+                        if (fndInx == 0)
+                        {
+                            dateStr = dateStr.substring(0, 4) + "0101";
+                            dateObj = UIHelper.convertIntToDate(Integer.parseInt(dateStr)); 
+                            datePairArg.second = "3";
+                            
+                        } else if (fndInx == 2)
+                        {
+                            dateStr = dateStr.substring(0, 6) + "01";
+                            dateObj = UIHelper.convertIntToDate(Integer.parseInt(dateStr)); 
+                            datePairArg.second = "2";
+                            
+                        } else
+                        {
+                            dateObj = UIHelper.convertIntToDate((Integer)data);
+                            datePairArg.second = "1";
+                        }
                     } else
                     {
-                        dateObj = UIHelper.convertIntToDate((Integer)data);
+                        dateObj = UIHelper.convertIntToDate((Integer)data); 
                         datePairArg.second = "1";
                     }
-                } else
+                    datePairArg.first = dateObj == null ? "NULL" : (includeQuotes ? "\"" : "") + dateFormatter.format(dateObj) + (includeQuotes ? "\"" : "");
+                    
+                } else 
                 {
-                    dateObj = UIHelper.convertIntToDate((Integer)data); 
-                    datePairArg.second = "1";
+                    log.error("Partial Date was't 8 digits! ["+dateStr+"]");
                 }
-                datePairArg.first = dateObj == null ? "NULL" : (includeQuotes ? "\"" : "") + dateFormatter.format(dateObj) + (includeQuotes ? "\"" : "");
-                
-            } else 
+            } else
             {
-                log.error("Partial Date was't 8 digits! ["+dateStr+"]");
+                datePairArg.first  = "NULL";
+                datePairArg.second = "1";
             }
         }
     }

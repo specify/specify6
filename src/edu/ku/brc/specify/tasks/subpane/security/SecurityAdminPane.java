@@ -457,9 +457,11 @@ public class SecurityAdminPane extends BaseSubPane
         TreeSet<Division> divisions = new TreeSet<Division>(institution.getDivisions()); 
         for (Division division : divisions)
         {
+            //log.debug("Adding Division "+division.getName());
             TreeSet<Discipline> disciplines = new TreeSet<Discipline>(division.getDisciplines()); 
             for (Discipline discipline : disciplines)
             {
+                //log.debug("  Adding Discipline "+discipline.getName());
                 DefaultMutableTreeNode discNode = new DefaultMutableTreeNode(new DataModelObjBaseWrapper(discipline));
                 instNode.add(discNode);
                 addCollectionsRecursively(session, discNode, discipline);
@@ -508,6 +510,7 @@ public class SecurityAdminPane extends BaseSubPane
         TreeSet<Collection> collections = new TreeSet<Collection>(discipline.getCollections()); 
         for (Collection collection : collections)
         {
+            //log.debug("    Adding Collection "+collection.getCollectionName());
             DefaultMutableTreeNode collNode = new DefaultMutableTreeNode(new DataModelObjBaseWrapper(collection));
             discNode.add(collNode);
             addGroup(session, collNode, collection);

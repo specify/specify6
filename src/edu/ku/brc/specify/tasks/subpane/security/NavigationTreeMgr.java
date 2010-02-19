@@ -23,6 +23,8 @@ import static edu.ku.brc.ui.UIRegistry.getMostRecentWindow;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Frame;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
@@ -53,7 +55,9 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.UserGroupScope;
 import edu.ku.brc.specify.datamodel.busrules.SpecifyUserBusRules;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * This class perform operations on the security administration navigation tree, such as 
@@ -110,8 +114,7 @@ public class NavigationTreeMgr
             Object                  object  = wrapper.getDataObj();
             SpecifyUser             user    = (SpecifyUser)object;
             
-            int numOfGrpsUserBelonedTo = user.getUserGroupCount(); // the number of groups this user belongs to
-            result = numOfGrpsUserBelonedTo > 1;
+            result = user.canRemoveFromGroup();
             
         } catch (final Exception e1)
         {
@@ -194,12 +197,84 @@ public class NavigationTreeMgr
             session = DataProviderFactory.getInstance().createSession();
             session.beginTransaction();
             
+            user = session.get(SpecifyUser.class, user.getId());
+            
+            ArrayList<UserGroupScope> dspDivList = new ArrayList<UserGroupScope>();
+            
             for (SpPrincipal p : new Vector<SpPrincipal>(user.getSpPrincipals()))
             {
+                session.attach(p);
                 if (p.getId().equals(group.getId()))
                 {
+                    UserGroupScope ugs = p.getScope();
+                    if (ugs.getDataClass() == Discipline.class || ugs.getDataClass() == Division.class || ugs.getDataClass() == Collection.class)
+                    {
+                        dspDivList.add(ugs);
+                    }
                     user.getSpPrincipals().remove(p);        
                 }
+            }
+            
+            // Get a Set of all the Disciplines the user can no longer access
+            // And get the DivisionID so we can get the correct Agent for this SpecifyUser
+            Integer          divIdForAgent = null;
+            HashSet<Integer> dispSet       = new HashSet<Integer>();
+            for (UserGroupScope ugs : dspDivList)
+            {
+                if (ugs.getDataClass() == Division.class)
+                {
+                    for (Integer id : BasicSQLUtils.queryForInts("SELECT DisciplineID FROM discipline WHERE DivisionID = "+ugs.getId()))
+                    {
+                        dispSet.add(id);
+                    }
+                    divIdForAgent = ugs.getId();
+                    
+                } else if (ugs.getDataClass() == Discipline.class)
+                {
+                    dispSet.add(ugs.getId());
+                    divIdForAgent = BasicSQLUtils.getCount("SELECT DivisionID FROM discipline WHERE DisciplineID = "+ugs.getId());
+                    
+                } else if (ugs.getDataClass() == Collection.class)
+                {
+                    dispSet.add(ugs.getId());
+                    Vector<Object[]> ids = BasicSQLUtils.query("SELECT d.DivisionID, d.UserGroupScopeId FROM collection c Inner Join discipline d ON c.DisciplineID = d.UserGroupScopeId WHERE c.CollectionID = "+ugs.getId());
+                    if (ids.size() == 1)
+                    {
+                        dispSet.add((Integer)ids.get(0)[1]);
+                        divIdForAgent = (Integer)ids.get(0)[0];
+                    }
+                }
+            }
+            
+            // Remove all the agent_discipline
+            if (divIdForAgent != null && dispSet.size() > 0)
+            {
+                String sql = "SELECT a.AgentID, a.DivisionID FROM specifyuser s Inner Join agent a ON s.SpecifyUserID = a.SpecifyUserID WHERE s.SpecifyUserID = " + user.getId();
+                for (Object[] cols : BasicSQLUtils.query(sql))
+                {
+                    Integer agtId = (Integer)cols[0];
+                    Integer divId = (Integer)cols[1];
+                    
+                    if (divId.equals(divIdForAgent))
+                    {
+                        for (Integer disciplineId : dispSet)
+                        {
+                            int cnt = BasicSQLUtils.getCount(String.format("SELECT COUNT(*) FROM agent_discipline WHERE DisciplineID = %d AND AgentID = %d", disciplineId, agtId));
+                            if (cnt > 0)
+                            {
+                                sql = String.format("DELETE FROM agent_discipline WHERE DisciplineID = %d AND AgentID = %d", disciplineId, agtId);
+                                if (cnt != BasicSQLUtils.update(sql))
+                                {
+                                    log.error("Error deleting: " + sql);
+                                }
+                            }
+                            
+                        }
+                    }
+                }
+            } else
+            {
+                // Error 
             }
             
             session.saveOrUpdate(user);
@@ -278,7 +353,7 @@ public class NavigationTreeMgr
 
         if (currentUser.getSpecifyUserId().equals(user.getSpecifyUserId()))
         {
-            // no one can delete the user who's logged in.
+            UIRegistry.showLocalizedMsg("NAVTREEMGR_NO_DEL_SELF");
             return false;
         }
         
@@ -293,19 +368,10 @@ public class NavigationTreeMgr
             {
                 wrapper.setDataObj(user);
                 
-                int     numOfGrpsUserBelonedTo = user.getUserGroupCount(); // the number of groups this user belongs to
-                //boolean isInAdminGroup         = user.isInAdminGroup();
-
-                // We can delete a user if that's the only group it belongs to
-                /*if (isInAdminGroup)
-                {
-                    result = false;
+                int    numOfGrpsUserBelonedTo = user.getUserGroupCount(); // the number of groups this user belongs to
+                return numOfGrpsUserBelonedTo == 1;
+                //return user.canRemoveFromGroup();
                     
-                } else
-                {*/
-                    return numOfGrpsUserBelonedTo == 1;
-                //}
-                
             } else
             {
                 result = true;
@@ -768,7 +834,12 @@ public class NavigationTreeMgr
             }
             
             // Add the New Agent or Existing Agent to the New Discipline.
-            clonedAgent.getDisciplines().add(parentDiscipline);
+            sql = String.format("SELECT COUNT(*) FROM agent_discipline WHERE AgentID = %d AND DisciplineID = %d", clonedAgent.getId(), parentDiscipline.getId());
+            int agtDspCnt = BasicSQLUtils.getCountAsInt(sql);
+            if (agtDspCnt < 1)
+            {
+                clonedAgent.getDisciplines().add(parentDiscipline);    
+            }
             
             clonedAgent.setSpecifyUser(specifyUser);
             specifyUser.getAgents().add(clonedAgent);

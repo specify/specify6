@@ -653,13 +653,37 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         int count = 0;
         for (SpPrincipal principal : getSpPrincipals())
         {
+            System.out.println(principal.getGroupSubClass());
             if (GroupPrincipal.class.getCanonicalName().equals(principal.getGroupSubClass()) ||
                 AdminPrincipal.class.getCanonicalName().equals(principal.getGroupSubClass()))
             {
                 ++count;
             }
         }
+        
+        System.out.println(String.format(getName()+" belongs to %d groups.", count));
         return count;
+    }
+    
+    /**
+     * Counts the actual number of user groups this user belongs to.
+     * That's not the same thing as counting the principals, because in JAAS a principal may be
+     * a single user or a group. 
+     * @return the actual number of user groups this user belongs to.
+     */
+    @Transient
+    public boolean canRemoveFromGroup()
+    {
+        /*int grpCnt   = 0;
+        for (SpPrincipal principal : getSpPrincipals())
+        {
+            if (GroupPrincipal.class.getCanonicalName().equals(principal.getGroupSubClass()))
+            {
+                ++grpCnt;
+            }
+        }*/
+        
+        return getUserGroupCount() > 1;
     }
     
     /**

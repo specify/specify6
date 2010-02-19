@@ -7029,18 +7029,30 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      * @param treeDef
      * @throws SQLException
      */
-    public void convertGeography(GeographyTreeDef treeDef) throws SQLException
+    public void convertGeography(final GeographyTreeDef treeDef, 
+                                 final boolean firstTime) throws SQLException
     {
         TableWriter tblWriter = convLogger.getWriter("Geography.html", "Geography");
         setTblWriter(tblWriter);
         
         IdHashMapper.setTblWriter(tblWriter);
 
-        // empty out any pre-existing records
-        deleteAllRecordsFromTable(newDBConn, "geography", BasicSQLUtils.myDestinationServerType);
+        if (firstTime)
+        {
+            // empty out any pre-existing records
+            deleteAllRecordsFromTable(newDBConn, "geography", BasicSQLUtils.myDestinationServerType);
+        }
 
-        // create an ID mapper for the geography table (mainly for use in converting localities)
-        IdTableMapper geoIdMapper = IdMapperMgr.getInstance().addTableMapper("geography", "GeographyID");
+        IdTableMapper geoIdMapper = (IdTableMapper)IdMapperMgr.getInstance().get("geography", "GeographyID");
+        if (geoIdMapper == null)
+        {
+            // create an ID mapper for the geography table (mainly for use in converting localities)
+            geoIdMapper = IdMapperMgr.getInstance().addTableMapper("geography", "GeographyID");
+        } else
+        {
+            geoIdMapper.clearRecords();
+        }
+        
         Hashtable<Integer, Geography> oldIdToGeoMap = new Hashtable<Integer, Geography>();
 
         // get a Hibernate session for saving the new records
@@ -7068,7 +7080,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         {
             oldGeoRecords.first();
         }
-
 
         // setup the root Geography record (planet Earth)
         Geography planetEarth = new Geography();
@@ -7198,8 +7209,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             }
         }
 
-        // set up Geography foreign key mapping for locality
-        idMapperMgr.mapForeignKey("Locality", "GeographyID", "Geography", "GeographyID");
+        if (firstTime)
+        {
+            // set up Geography foreign key mapping for locality
+            idMapperMgr.mapForeignKey("Locality", "GeographyID", "Geography", "GeographyID");
+        }
     }
 
     /**

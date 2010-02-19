@@ -121,7 +121,15 @@ public class IdTableMapper extends IdHashMapper
     {
         this.indexIncremeter = indexIncremeter;
     }
-
+    
+    /**
+     * Removes all the records from the mapper.
+     */
+    public void clearRecords()
+    {
+        BasicSQLUtils.deleteAllRecordsFromTable(mapTableName, BasicSQLUtils.myDestinationServerType);
+    }
+    
     /**
      * Map all the old IDs to new IDs
      * @param sqlArg the string to use to fill the map

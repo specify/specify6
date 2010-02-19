@@ -895,7 +895,7 @@ public class SpecifyDBConverter
                 if (!dbNameDest.startsWith("accessions") && doGeography)
                 {
                     GeographyTreeDef treeDef = conversion.createStandardGeographyDefinitionAndItems();
-                    conversion.convertGeography(treeDef);
+                    conversion.convertGeography(treeDef, true);
                     frame.incOverall();
                     
                 } else
@@ -1311,8 +1311,8 @@ public class SpecifyDBConverter
                 
                 // MySQL Only ???
                 String sql = "UPDATE determination SET PreferredTaxonID = CASE WHEN " +
-                "(SELECT AcceptedID FROM taxon WHERE taxon.TaxonID = determination.TaxonID) IS NULL " +
-                "THEN determination.TaxonID ELSE (SELECT AcceptedID FROM taxon WHERE taxon.TaxonID = determination.TaxonID) END";
+                             "(SELECT AcceptedID FROM taxon WHERE taxon.TaxonID = determination.TaxonID) IS NULL " +
+                             "THEN determination.TaxonID ELSE (SELECT AcceptedID FROM taxon WHERE taxon.TaxonID = determination.TaxonID) END";
                 System.out.println(sql);
                 BasicSQLUtils.setSkipTrackExceptions(true);
                 BasicSQLUtils.update(sql);
@@ -1368,8 +1368,8 @@ public class SpecifyDBConverter
                 
                 int convertTimeInSeconds = (int)((endTime - startTime - waitTime) / 1000.0);
                 
-                int colObjCnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM collectionobject");
-                ConvertStatSender sender = new ConvertStatSender();
+                int               colObjCnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM collectionobject");
+                ConvertStatSender sender    = new ConvertStatSender();
                 sender.senConvertInfo(dbNameDest, colObjCnt, convertTimeInSeconds);
                 
                 frame.incOverall();

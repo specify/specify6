@@ -165,12 +165,23 @@ public class UserAgentVSQBldr implements ViewBasedSearchQueryBuilderIFace
         
         criteria.append(")");
         
+        String sqlStr = null;
+        
         StringBuffer sb = new StringBuffer();
         sb.append(criteria);
-        sb.append(" ORDER BY ");
-        sb.append(orderBy);
+
         
-        String sqlStr = StringUtils.replace(sqlTemplate, "(%s)", sb.toString());
+        int inxGrpBy = sqlTemplate.toLowerCase().indexOf( "group by");
+        if (inxGrpBy == -1)
+        {
+            sb.append(" ORDER BY ");
+            sb.append(orderBy);
+            sqlStr = StringUtils.replace(sqlTemplate, "(%s)", sb.toString());
+        } else
+        {
+            sqlStr = StringUtils.replace(sqlTemplate, "(%s)", sb.toString());
+            sqlStr += " ORDER BY " + orderBy;
+        }
         
         log.debug(sqlStr);
         
