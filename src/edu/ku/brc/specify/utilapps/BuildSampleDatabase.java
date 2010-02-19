@@ -647,6 +647,8 @@ public class BuildSampleDatabase
                 session.saveOrUpdate(newUserAgent);
                 session.saveOrUpdate(specifyAdminUser);
                 
+                userAgent = newUserAgent;
+                
             } catch (CloneNotSupportedException ex)
             {
                 ex.printStackTrace();
@@ -656,14 +658,7 @@ public class BuildSampleDatabase
         try
         {
             userAgent = (Agent)session.merge(userAgent);
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-        
-        try
-        {
-            userAgent = (Agent)session.merge(userAgent);
+            
         } catch (Exception ex)
         {
             ex.printStackTrace();
