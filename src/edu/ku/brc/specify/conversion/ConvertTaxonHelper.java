@@ -44,6 +44,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
@@ -96,13 +97,16 @@ public class ConvertTaxonHelper
         collDispHash = new HashMap<Integer, Vector<CollectionInfo>>();
         for (CollectionInfo info : collectionInfoList)
         {
-            Vector<CollectionInfo> colInfoList = collDispHash.get(info.getTaxonomyTypeId());
-            if (colInfoList == null)
+            if (info.isTaxonomicUnitTypeInUse())
             {
-                colInfoList = new Vector<CollectionInfo>();
-                collDispHash.put(info.getTaxonomyTypeId(), colInfoList);
+                Vector<CollectionInfo> colInfoList = collDispHash.get(info.getTaxonomyTypeId());
+                if (colInfoList == null)
+                {
+                    colInfoList = new Vector<CollectionInfo>();
+                    collDispHash.put(info.getTaxonomyTypeId(), colInfoList);
+                }
+                colInfoList.add(info);
             }
-            colInfoList.add(info);
         }
     }
     
@@ -204,19 +208,6 @@ public class ConvertTaxonHelper
         
         idMapperMgr.addTableMapper("TaxonomyType", "TaxonomyTypeID", true);
         
-        /*StringBuilder sb = new StringBuilder("SELECT TaxonomyTypeID FROM taxonomytype WHERE TaxonomyTypeId in (");
-        sb.append(inSB);
-        sb.append(')');
-        log.debug(sb.toString());
-        
-        // This mapping is used by Discipline
-        IdTableMapper taxonomyTypeMapper = idMapperMgr.addTableMapper("TaxonomyType", "TaxonomyTypeID", true);
-        for (Object txTypIdObj : BasicSQLUtils.querySingleCol(oldDBConn, sb.toString()))
-        {
-            Integer txTypId = (Integer)txTypIdObj;
-            taxonomyTypeMapper.put(txTypId, indexIncremeter.getNextIndex());
-        }*/
-
         //---------------------------------
         // TaxonName
         //---------------------------------
@@ -241,8 +232,8 @@ public class ConvertTaxonHelper
                      "Inner Join taxonomytype ON taxonname.TaxonomyTypeID = taxonomytype.TaxonomyTypeID ";
                      */
         String sql = "SELECT DISTINCT taxonomytype.TaxonomyTypeID FROM taxonname " +
-                     "Inner Join taxonomytype ON taxonname.TaxonomyTypeID = taxonomytype.TaxonomyTypeID " +
-                     "WHERE taxonname.RankID >  0";
+                     "Inner Join taxonomytype ON taxonname.TaxonomyTypeID = taxonomytype.TaxonomyTypeID WHERE RankID > 0";
+        
         log.debug(sql);
         for (Object obj : BasicSQLUtils.querySingleCol(oldDBConn, sql))
         {
@@ -261,6 +252,63 @@ public class ConvertTaxonHelper
         {
             convertTaxonTreeDefinition((Integer)id);
         }
+        
+        Session session = null;
+        try
+        {
+            session = HibernateUtil.getNewSession();
+            
+            for (CollectionInfo ci : collectionInfoList)
+            {
+                if (!ci.isTaxonomicUnitTypeInUse())
+                {
+                    TaxonTreeDef taxonTreeDef = new TaxonTreeDef();
+                    taxonTreeDef.initialize();
+                    taxonTreeDef.setName(ci.getTaxonName() + " taxonomy tree");
+                    taxonTreeDef.setRemarks("Placeholder for empty tree");
+                    taxonTreeDef.setFullNameDirection(TreeDefIface.FORWARD);
+                    
+                    TaxonTreeDefItem ttdi = new TaxonTreeDefItem();
+                    ttdi.initialize();
+                    ttdi.setName("Root");
+                    ttdi.setFullNameSeparator(" ");
+                    ttdi.setRankId(0);
+                    ttdi.setTreeDef(taxonTreeDef);
+                    taxonTreeDef.getTreeDefItems().add(ttdi);
+                    
+                    Taxon taxonRoot = new Taxon();
+                    taxonRoot.initialize();
+                    
+                    taxonRoot.setName("Root");
+                    taxonRoot.setFullName("Root");
+                    taxonRoot.setDefinition(taxonTreeDef);
+                    taxonRoot.setDefinitionItem(ttdi);
+                    
+                    Transaction trans = session.beginTransaction();
+                    session.save(taxonTreeDef);
+                    session.save(taxonRoot);
+                    trans.commit();
+                    
+                    ci.setTaxonRoot(taxonRoot);
+                    ci.setTaxonTreeDef(taxonTreeDef);
+                }
+            }
+            
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            throw new RuntimeException(ex);
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
+        
+
     }
 
     /**

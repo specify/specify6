@@ -332,55 +332,60 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
     @Override
     public int getPermissions(final String username, final String dbName)
     {
+        BasicSQLUtils.setSkipTrackExceptions(true);
         Statement stmt = null;
+        String catName = null;
         try
         {
             if (connection != null)
             {
                 stmt = connection.createStatement();
-                String sql = String.format("SHOW GRANTS FOR '%s'@'%s'", username, hostName);
-                log.debug(sql);
+                String sql = String.format("SELECT * FROM SCHEMA_PRIVILEGES WHERE TABLE_SCHEMA = '%s'", dbName);
+                //log.debug(sql);
+                
+                catName = connection.getCatalog();
+                connection.setCatalog("INFORMATION_SCHEMA");
+                
                 Vector<Object[]> list = BasicSQLUtils.query(connection, sql);
                 if (list != null)
                 {
                     int perms = PERM_NONE;
                     for (Object[] row : list)
                     {
-                        if (StringUtils.contains(row[0].toString(), dbName))
+                        if (row[2].toString().equalsIgnoreCase(dbName))
                         {
-                            String[] tokens = StringUtils.split(row[0].toString(), ", ");
-                            int inx = 1;
-                            while (!tokens[inx].equals("ON"))
+                            String yesStr = row[4].toString();
+                            if (yesStr.equalsIgnoreCase("YES"))
                             {
-                                if (tokens[inx].equals("SELECT"))
+                                String permStr = row[3].toString();
+                                if (permStr.equals("SELECT"))
                                 {
                                     perms |= PERM_SELECT;
                                     
-                                } else if (tokens[inx].equals("UPDATE"))
+                                } else if (permStr.equals("UPDATE"))
                                 {
                                     perms |= PERM_UPDATE;
                                     
-                                } else if (tokens[inx].equals("DELETE"))
+                                } else if (permStr.equals("DELETE"))
                                 {
                                     perms |= PERM_DELETE;
                                     
-                                } else if (tokens[inx].equals("ALL"))
+                                } else if (permStr.equals("ALL"))
                                 {
                                     perms |= PERM_ALL;
                                     
-                                } else if (tokens[inx].equals("LOCK"))
+                                } else if (permStr.equals("LOCK TABLES"))
                                 {
-                                    if (inx+1 < tokens.length && tokens[inx+1].equals("TABLES"))
-                                    {
-                                        perms |= PERM_LOCK_TABLES;
-                                        inx++;
-                                    }
+                                    perms |= PERM_LOCK_TABLES;
                                     
-                                } else if (tokens[inx].equals("INSERT"))
+                                } else if (permStr.equals("INSERT"))
                                 {
                                     perms |= PERM_INSERT;
+                                    
+                                } else if (permStr.equals("ALTER"))
+                                {
+                                    perms |= PERM_ALTER_TABLE;
                                 }
-                                inx++;
                             }
                         }
                     }
@@ -401,6 +406,16 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
         } finally
         {
             close(stmt);
+            BasicSQLUtils.setSkipTrackExceptions(false);
+            
+            try
+            {
+                connection.setCatalog(catName);
+                
+            } catch (Exception ex)
+            {
+                
+            }
         }
         return PERM_NONE;
     }

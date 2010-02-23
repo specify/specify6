@@ -53,7 +53,7 @@ public class FixDBAfterLogin
         for (Object spObj : BasicSQLUtils.querySingleCol(sql))
         {
             Integer spuId = (Integer)spObj;
-            System.err.println("spuId: "+spuId);
+            //System.err.println("spuId: "+spuId);
             
             // Create a HashSet of the SpecifyUser's Disciplines that they have permission to access
             HashSet<Integer> spUserDispHash = new HashSet<Integer>();
@@ -65,7 +65,7 @@ public class FixDBAfterLogin
             {
                 Integer dspId = (Integer)idObj;
                 spUserDispHash.add(dspId);
-                System.err.println("dspId: "+dspId);
+                //System.err.println("dspId: "+dspId);
             }
             
             // Get a List of Agents for this user
@@ -75,15 +75,15 @@ public class FixDBAfterLogin
                 Integer agtId = (Integer)row[0];
                 Integer divId = (Integer)row[1];
                 
-                System.err.println("agtId: "+agtId);
-                System.err.println("divId: "+divId);
+                //System.err.println("agtId: "+agtId);
+                //System.err.println("divId: "+divId);
                 
                 // Gets all the Disciplines that this Agent 'might' have access to.
                 sql = "SELECT UserGroupScopeId FROM discipline WHERE DivisionID = " + divId;
                 for (Object idObj : BasicSQLUtils.querySingleCol(sql))
                 {
                     Integer dspId = (Integer)idObj;
-                    System.err.println("  dspId: "+dspId);
+                    //System.err.println("  dspId: "+dspId);
                     
                     // This determines if the Agent has permission to access a Disicpline
                     // that belongs to the Division they are in
@@ -91,12 +91,12 @@ public class FixDBAfterLogin
                     {
                         // Check the count to make sure we don't duplicate it
                         sql = String.format("SELECT COUNT(*) FROM agent_discipline WHERE AgentID = %d AND DisciplineID = %d", agtId, dspId);
-                        System.err.println(sql);
+                       // System.err.println(sql);
                         
                         if (BasicSQLUtils.getCountAsInt(sql) == 0) 
                         {
                             sql = String.format("INSERT INTO agent_discipline SET AgentID = %d, DisciplineID = %d", agtId, dspId);
-                            System.err.println(sql);
+                            //System.err.println(sql);
                             BasicSQLUtils.update(sql);
                         }
                     }

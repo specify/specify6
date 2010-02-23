@@ -20,8 +20,6 @@ package edu.ku.brc.specify.conversion;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * @author rods
  *
@@ -170,6 +168,21 @@ public class TableWriter extends PrintWriter
                 print(c);
                 print(TD_);
             }
+        }
+        println(TR_);
+        flush();
+    }
+    
+    public void logObjRow(final Object[] row)
+    {
+        lineCnt++;
+        
+        print(TR);
+        for (Object o : row)
+        {
+            print(TD);
+            print(o != null ? o.toString() : "&nbsp&");
+            print(TD_);
         }
         println(TR_);
         flush();

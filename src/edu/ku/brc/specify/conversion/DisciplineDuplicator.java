@@ -29,6 +29,7 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.ui.ProgressFrame;
 
 /**
@@ -46,6 +47,7 @@ public class DisciplineDuplicator
     protected Connection    newDBConn; 
     protected TableWriter   tblWriter;
     protected ProgressFrame prgFrame;
+    protected GenericDBConversion conversion;
     
     
     /**
@@ -53,12 +55,16 @@ public class DisciplineDuplicator
      * @param tblWriter
      * @param prgFrame
      */
-    public DisciplineDuplicator(final Connection newDBConn, final TableWriter tblWriter, final ProgressFrame prgFrame)
+    public DisciplineDuplicator(final Connection newDBConn, 
+                                final TableWriter tblWriter, 
+                                final ProgressFrame prgFrame,
+                                final GenericDBConversion conversion)
     {
         super();
-        this.newDBConn = newDBConn;
-        this.tblWriter = tblWriter;
-        this.prgFrame = prgFrame;
+        this.newDBConn  = newDBConn;
+        this.tblWriter  = tblWriter;
+        this.prgFrame   = prgFrame;
+        this.conversion = conversion;
     }
     
     
@@ -447,5 +453,39 @@ public class DisciplineDuplicator
             }
         }
     }
+    
+    /**
+     * 
+     */
+    public void duplicateGeography()
+    {
+        if (BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM discipline") > 1)
+        {
+            try
+            {
+    
+                int i = 0;
+                for (Object[] row : BasicSQLUtils.query("SELECT DisciplineID, Name FROM discipline"))
+                {
+                    Integer dspId   = (Integer)row[0];
+                    String  dspName = (String)row[1];
+                    
+                    i++;
+                    if (i == 1) continue;
+                    
+                    GeographyTreeDef geoTreeDef = conversion.createStandardGeographyDefinitionAndItems(false);
+                    BasicSQLUtils.update(String.format("UPDATE discipline SET GeographyTreeDefID=%d WHERE DisciplineID = %d",geoTreeDef.getId(), dspId));
+                    conversion.convertGeography(geoTreeDef, dspName, false);
+                    
+                }
+            } catch (SQLException ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+    }
+    
+
+
     
 }

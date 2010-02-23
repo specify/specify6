@@ -80,6 +80,7 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -332,6 +333,42 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         
         if (collectionInfoList != null && collectionInfoList.size() > 0)
         {
+            
+            DefaultTableModel model = CollectionInfo.getCollectionInfoTableModel();
+            if (model.getRowCount() > 1)
+            {
+                TableWriter colInfoTblWriter = convLogger.getWriter("colinfo.html", "Collection Info");
+                
+                colInfoTblWriter.startTable();
+                colInfoTblWriter.logHdr(CollectionInfo.getHeaders());
+                
+                
+                Object[] row = new Object[model.getColumnCount()];
+                for (int r=0;r<model.getRowCount();r++)
+                {
+                    for (int i=0;i<model.getColumnCount();i++)
+                    {
+                        row[i] = model.getValueAt(r, i);
+                    }
+                    colInfoTblWriter.logObjRow(row);
+                }
+                colInfoTblWriter.endTable();
+                colInfoTblWriter.close();
+                
+                File file = new File(colInfoTblWriter.getFileName());
+                if (file != null && file.exists())
+                {
+                    try
+                    {
+                        AttachmentUtils.openURI(file.toURI());
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+            
             JPanel panel = new JPanel(new BorderLayout());
             JTable table = new JTable(CollectionInfo.getCollectionInfoTableModel());
             
@@ -2020,9 +2057,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             while (st.hasMoreTokens())
             {
                 String name = st.nextToken().trim();
+                log.debug("Checking token["+name+"]");
                 dispType = getStandardDisciplineName(name);
                 if (dispType != null)
                 {
+                    log.debug("    Found["+dispType+"]");
                     return dispType;
                 }
             }
@@ -2081,6 +2120,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         } else if (checkName(new String[] { "ichthy", "Fish"}, name)) 
         { 
             type = STD_DISCIPLINES.fish;
+            
+        } else if (checkName(new String[] { "mammal", "mammals", "mammology"}, name)) 
+        { 
+            type = STD_DISCIPLINES.mammal;
             
         } else if (checkName(new String[] { "Paleo"}, name)) 
         { 
@@ -2419,7 +2462,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 }
                 colInfoList.add(info);
             }
-
+            
             String dateTimeNow = dateTimeFormatter.format(now);
             int collectionCnt      = 0;
             for (Integer taxonTypeId : collDispHash.keySet())
@@ -2475,6 +2518,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 String taxTypeName      = info.getTaxonomyTypeName();
                 lastEditedBy            = info.getCatSeriesLastEditedBy();
                 taxonomyTypeID          = info.getTaxonomyTypeId();
+                
+                //System.err.println(String.format("TaxonomyTypeName: %s  taxonomyTypeID: %d", taxTypeName, taxonomyTypeID, info.get));
                 
                 //---------------------------------------------------------------------------------
                 //-- Create Discipline
@@ -4090,7 +4135,18 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                 try
                 {
-                    updateStatement.executeUpdate(insertSql);
+                    String chkSQL = String.format("SELECT COUNT(*) FROM %s WHERE %s = %d AND Role = '%s' AND AgentID = %d", newTableName, refName, newLoanId, role, newAgentId);
+                    //System.err.println(chkSQL);
+                    int cnt = BasicSQLUtils.getCountAsInt(chkSQL);
+                    if (cnt < 1)
+                    {
+                        updateStatement.executeUpdate(insertSql);
+                    } else
+                    {
+                        String errStr = String.format("Duplciate key Tbl: %s WHERE %s = %d Role = '%s' AND AgentID = %d", newTableName, refName, newLoanId, role, newAgentId);
+                        log.error(errStr);
+                        tblWriter.log(errStr);
+                    }
 
                 } catch (SQLException e)
                 {
@@ -6427,11 +6483,14 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      * @return
      */
     @SuppressWarnings("unchecked")
-    public GeographyTreeDef createStandardGeographyDefinitionAndItems()
+    public GeographyTreeDef createStandardGeographyDefinitionAndItems(final boolean doDelete)
     {
-        // empty out any pre-existing tree definitions
-        deleteAllRecordsFromTable(newDBConn, "geographytreedef", BasicSQLUtils.myDestinationServerType);
-        deleteAllRecordsFromTable(newDBConn, "geographytreedefitem", BasicSQLUtils.myDestinationServerType);
+        if (doDelete)
+        {
+            // empty out any pre-existing tree definitions
+            deleteAllRecordsFromTable(newDBConn, "geographytreedef", BasicSQLUtils.myDestinationServerType);
+            deleteAllRecordsFromTable(newDBConn, "geographytreedefitem", BasicSQLUtils.myDestinationServerType);
+        }
 
         Session localSession = HibernateUtil.getCurrentSession();
         HibernateUtil.beginTransaction();
@@ -6442,8 +6501,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         def.setRemarks("A simple continent/country/state/county geography tree");
         def.setFullNameDirection(TreeDefIface.REVERSE);
 
-        // session.save(def);
-
         GeographyTreeDefItem planet = new GeographyTreeDefItem();
         planet.initialize();
         planet.setName("Planet");
@@ -6451,15 +6508,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         planet.setIsEnforced(true);
         planet.setFullNameSeparator(", ");
 
-        // session.save(planet);
-
         GeographyTreeDefItem cont = new GeographyTreeDefItem();
         cont.initialize();
         cont.setName("Continent");
         cont.setRankId(100);
         cont.setFullNameSeparator(", ");
-
-        // session.save(cont);
 
         GeographyTreeDefItem country = new GeographyTreeDefItem();
         country.initialize();
@@ -6468,16 +6521,12 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         country.setIsInFullName(true);
         country.setFullNameSeparator(", ");
 
-        // session.save(country);
-
         GeographyTreeDefItem state = new GeographyTreeDefItem();
         state.initialize();
         state.setName("State");
         state.setRankId(300);
         state.setIsInFullName(true);
         state.setFullNameSeparator(", ");
-
-        // session.save(state);
 
         GeographyTreeDefItem county = new GeographyTreeDefItem();
         county.initialize();
@@ -6486,14 +6535,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         county.setIsInFullName(true);
         county.setFullNameSeparator(", ");
 
-        // session.save(county);
-
         // setup parents
         county.setParent(state);
         state.setParent(country);
         country.setParent(cont);
         cont.setParent(planet);
-
 
         // set the tree def for each tree def item
         planet.setTreeDef(def);
@@ -6502,16 +6548,12 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         state.setTreeDef(def);
         county.setTreeDef(def);
 
-
-
         Set defItems = def.getTreeDefItems();
         defItems.add(planet);
         defItems.add(cont);
         defItems.add(country);
         defItems.add(state);
         defItems.add(county);
-
-
 
         localSession.save(def);
 
@@ -7029,10 +7071,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      * @param treeDef
      * @throws SQLException
      */
-    public void convertGeography(final GeographyTreeDef treeDef, 
+    public void convertGeography(final GeographyTreeDef treeDef,
+                                 final String dispName,
                                  final boolean firstTime) throws SQLException
     {
-        TableWriter tblWriter = convLogger.getWriter("Geography.html", "Geography");
+        TableWriter tblWriter = convLogger.getWriter("Geography" + (dispName != null ? dispName : "") + ".html", "Geography");
         setTblWriter(tblWriter);
         
         IdHashMapper.setTblWriter(tblWriter);
@@ -7336,8 +7379,190 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         }
         setIdentityInsertOFFCommandForSQLServer(newDBConn, "collectingeventattribute", BasicSQLUtils.myDestinationServerType);
         setFieldsToIgnoreWhenMappingNames(null);
-
+        
         return true;
+    }
+    
+    /**
+     * 
+     */
+    public void updateHabitatIds()
+    {
+        PreparedStatement pStmtUpd = null;
+        Statement         stmt     = null;
+        
+        IdMapperIFace ceMapper = IdMapperMgr.getInstance().get("collectingevent", "CollectingEventID");
+        IdMapperIFace hbMapper = IdMapperMgr.getInstance().get("habitat", "HabitatID");
+        
+        try
+        {
+            String sql = " SELECT CollectingEventID, HabitatID FROM collectingevent Inner Join habitat ON CollectingEventID = HabitatID";
+            
+            stmt       = oldDBConn.createStatement();
+            pStmtUpd   = newDBConn.prepareStatement("UPDATE collectingevent SET CollectingEventAttributeID=? WHERE CollectingEventID = ?");
+            
+            int cnt = 0;
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next())
+            {
+                Integer ceId   = rs.getInt(1);
+                Integer hbId   = rs.getInt(2);
+                
+                Integer newCEID = ceMapper.get(ceId);
+                Integer newHBID = hbMapper.get(hbId);
+                
+                if (newHBID != null)
+                {
+                    pStmtUpd.setInt(1, newHBID);
+                    pStmtUpd.setInt(2, newCEID);
+                    pStmtUpd.execute();
+                    cnt++;
+                }
+            }
+            rs.close();
+            
+            log.debug("Updated CollectingEvents: "+cnt);
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            try
+            {
+                stmt.close();
+                pStmtUpd.close();
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+
+    }
+    
+    /**
+     * Collection Object Attributes
+     */
+    public void updateBioLogicalObjAttrIds()
+    {
+        PreparedStatement pStmtUpd = null;
+        Statement         stmt     = null;
+        
+        IdMapperIFace ceMapper = IdMapperMgr.getInstance().get("collectionobjectcatalog",    "CollectionObjectCatalogID");
+        IdMapperIFace hbMapper = IdMapperMgr.getInstance().get("biologicalobjectattributes", "BiologicalObjectAttributesID");
+        
+        try
+        {
+            String sql = "SELECT c.CollectionObjectID, p.BiologicalObjectAttributesID FROM collectionobject c INNER Join biologicalobjectattributes p ON c.CollectionObjectID = p.BiologicalObjectAttributesID";
+            
+            stmt       = oldDBConn.createStatement();
+            pStmtUpd   = newDBConn.prepareStatement("UPDATE collectionobject SET CollectionObjectAttributeID=? WHERE CollectionObjectID = ?");
+            
+            int cnt = 0;
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next())
+            {
+                Integer ceId   = rs.getInt(1);
+                Integer hbId   = rs.getInt(2);
+                
+                Integer newCEID = ceMapper.get(ceId);
+                Integer newHBID = hbMapper.get(hbId);
+                
+                if (newHBID != null)
+                {
+                    pStmtUpd.setInt(1, newHBID);
+                    pStmtUpd.setInt(2, newCEID);
+                    pStmtUpd.execute();
+                    cnt++;
+                }
+            }
+            rs.close();
+            
+            log.debug("Updated Preparations: "+cnt);
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            try
+            {
+                stmt.close();
+                pStmtUpd.close();
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+    }
+    
+    /**
+     * Collection Object Attributes
+     */
+    public void updatePrepAttrIds()
+    {
+        PreparedStatement pStmtUpd = null;
+        Statement         stmt     = null;
+        
+        IdMapperIFace coMapper = IdMapperMgr.getInstance().get("collectionobject",        "CollectionObjectID");
+        IdMapperIFace ccMapper = IdMapperMgr.getInstance().get("collectionobjectcatalog", "CollectionObjectCatalogID");
+        IdMapperIFace ppMapper = IdMapperMgr.getInstance().get("preparation",             "PreparationID");
+        
+        try
+        {
+            String sql = "SELECT c.CollectionObjectID, p.PreparationID FROM collectionobject c INNER Join preparation p ON c.CollectionObjectID = p.PreparationID";
+            
+            stmt       = oldDBConn.createStatement();
+            pStmtUpd   = newDBConn.prepareStatement("UPDATE preparation SET PreparationAttributeID=? WHERE PreparationID = ?");
+            
+            int cnt = 0;
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next())
+            {
+                Integer coId   = rs.getInt(1);
+                Integer ppId   = rs.getInt(2);
+                
+                Integer newCOID = coMapper.get(coId);
+                Integer newPPID = ppMapper.get(ppId);
+                
+                if (newCOID == null)
+                {
+                    newCOID = ccMapper.get(coId);
+                }
+                
+                if (newPPID != null && newCOID != null)
+                {
+                    pStmtUpd.setInt(1, newPPID);
+                    pStmtUpd.setInt(2, newCOID);
+                    pStmtUpd.execute();
+                    cnt++;
+                    
+                } else
+                {
+                    log.debug("newPPID: "+newPPID+"  or newCOID: "+newCOID+"  was null coId: "+coId+"  ppId "+ppId);
+                }
+            }
+            rs.close();
+            
+            log.debug("Updated Preparations: "+cnt);
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            try
+            {
+                stmt.close();
+                pStmtUpd.close();
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
     }
     
     /**

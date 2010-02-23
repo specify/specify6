@@ -364,7 +364,7 @@ public class BasicSQLUtils
             else 
             {
                 //e.printStackTrace();
-                log.error(ex.getStackTrace().toString());
+                log.error(ex.getMessage());
                 log.error(cmdStr+"\n");
                 ex.printStackTrace();
                 //ex.getStackTrace().

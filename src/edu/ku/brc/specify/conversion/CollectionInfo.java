@@ -22,6 +22,7 @@ import java.lang.reflect.Modifier;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -44,7 +45,7 @@ import edu.ku.brc.util.Pair;
  * Created Date: Oct 9, 2009
  *
  */
-public class CollectionInfo
+public class CollectionInfo implements Comparable<CollectionInfo>
 {
     protected static final Logger           log         = Logger.getLogger(CollectionInfo.class);
     
@@ -66,11 +67,13 @@ public class CollectionInfo
     
     protected int          taxonomyTypeId;
     protected String       taxonomyTypeName;
+    protected Integer      taxonomicUnitTypeID;
     protected int          kingdomId;
+    
     protected TaxonTreeDef taxonTreeDef = null;
     protected Taxon        taxonRoot    = null;
     
-    protected int          taxonNameId;  // root node of the tree
+    protected Integer      taxonNameId;  // root node of the tree
     protected String       taxonName;
     
     protected Integer      disciplineId;
@@ -84,12 +87,16 @@ public class CollectionInfo
     protected long         srcHostTaxonCnt;
     protected DisciplineType disciplineTypeObj;
     
+    protected Connection   oldDBConn;
+    
+    
     /**
      * 
      */
-    public CollectionInfo()
+    public CollectionInfo(final Connection oldDBConn)
     {
         super();
+        this.oldDBConn = oldDBConn;
     }
 
     
@@ -167,7 +174,7 @@ public class CollectionInfo
                 ResultSet rs = stmt.executeQuery(sql);
                 while (rs.next())
                 {
-                    CollectionInfo info = new CollectionInfo();
+                    CollectionInfo info = new CollectionInfo(oldDBConn);
                     
                     info.setColObjTypeId(rs.getInt(1));
                     info.setColObjTypeName(rs.getString(2));
@@ -235,7 +242,7 @@ public class CollectionInfo
                 rs.close();
                 
                 // Do All
-                String sqlAllTx = "SELECT cot.CollectionObjectTypeID, cot.CollectionObjectTypeName, tt.TaxonomyTypeID, tt.TaxonomyTypeName, tt.KingdomID, tn.TaxonNameID, tn.TaxonName " + 
+                String sqlAllTx = "SELECT cot.CollectionObjectTypeID, cot.CollectionObjectTypeName, tt.TaxonomyTypeID, tt.TaxonomyTypeName, tt.KingdomID, tn.TaxonNameID, tn.TaxonName, tn.TaxonomicUnitTypeID " + 
                                   "FROM collectionobjecttype AS cot " +
                                   "Inner Join collectiontaxonomytypes as ctt ON cot.CollectionObjectTypeID = ctt.BiologicalObjectTypeID " + 
                                   "Inner Join taxonomytype as tt ON ctt.TaxonomyTypeID = tt.TaxonomyTypeID " + 
@@ -249,7 +256,7 @@ public class CollectionInfo
                     int taxonomyTypeID = (Integer)row[2];
                     if (taxonTypeIdHash.get(taxonomyTypeID) == null)
                     {
-                        CollectionInfo info = new CollectionInfo();
+                        CollectionInfo info = new CollectionInfo(oldDBConn);
                         
                         info.setColObjTypeId((Integer)row[0]);
                         info.setColObjTypeName((String)row[1]);
@@ -265,6 +272,8 @@ public class CollectionInfo
                         info.setKingdomId((Integer)row[4]);
                         info.setTaxonNameId((Integer)row[5]);
                         info.setTaxonName((String)row[6]);
+                        
+                        info.setTaxonomicUnitTypeID((Integer)row[7]);
                         
                         info.setTaxonNameCnt(BasicSQLUtils.getCountAsInt(oldDBConn, cntTaxonName + taxonomyTypeID));
                         info.setColObjDetTaxCnt(BasicSQLUtils.getCountAsInt(oldDBConn, cntColObjForTaxon + taxonomyTypeID));
@@ -304,6 +313,14 @@ public class CollectionInfo
     }
     
     /**
+     * @return
+     */
+    public boolean isTaxonomicUnitTypeInUse()
+    {
+        return BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM taxonname WHERE TaxonomicUnitTypeID = "+taxonomicUnitTypeID) > 1;
+    }
+    
+    /**
      * 
      */
     public static void dump()
@@ -327,7 +344,7 @@ public class CollectionInfo
             case  2 : return true; // catSeriesName;
             case  3 : return true; // catSeriesPrefix;
             case  4 : return true; // catSeriesRemarks;
-            case  5 : return false; // catSeriesLastEditedBy;
+            case  5 : return false; // taxonNameId;
             case  6 : return false; // taxonomyTypeName;
             case  7 : return false; // kingdomId;
             case  8 : return false; // taxonName;
@@ -352,7 +369,7 @@ public class CollectionInfo
             case  2 : return catSeriesName;
             case  3 : return catSeriesPrefix;
             case  4 : return catSeriesRemarks;
-            case  5 : return catSeriesLastEditedBy;
+            case  5 : return taxonNameId;
             case  6 : return taxonomyTypeName;
             case  7 : return kingdomId;
             case  8 : return taxonName;
@@ -377,7 +394,7 @@ public class CollectionInfo
                     "Cat Series Name", 
                     "Cat Series Prefix", 
                     "Cat Series Remarks", 
-                    "Last Edited By", 
+                    "Taxon Root ID", 
                     "Taxonomy Type Name", 
                     "Kingdom Id", 
                     "Taxon Name (Root)", 
@@ -402,7 +419,7 @@ public class CollectionInfo
             case  2 : return String.class;
             case  3 : return String.class;
             case  4 : return String.class;
-            case  5 : return String.class;
+            case  5 : return Integer.class;
             case  6 : return String.class;
             case  7 : return Integer.class;
             case  8 : return String.class;
@@ -414,12 +431,24 @@ public class CollectionInfo
         return String.class;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(CollectionInfo o)
+    {
+        return taxonNameId.compareTo(o.taxonNameId);
+    }
+
+
     /**
-     * @return
+     * @return932413666
      */
     public static DefaultTableModel getCollectionInfoTableModel()
     {
-        ColInfoTableModel model = (new CollectionInfo()).new ColInfoTableModel();
+        Collections.sort(collectionInfoList);
+        
+        ColInfoTableModel model = (new CollectionInfo(null)).new ColInfoTableModel();
         
         return model;
     }
@@ -513,6 +542,24 @@ public class CollectionInfo
     {
         return taxonNameCnt;
     }
+
+    /**
+     * @return the taxonomicUnitTypeID
+     */
+    public Integer getTaxonomicUnitTypeID()
+    {
+        return taxonomicUnitTypeID;
+    }
+
+
+    /**
+     * @param taxonomicUnitTypeID the taxonomicUnitTypeID to set
+     */
+    public void setTaxonomicUnitTypeID(Integer taxonomicUnitTypeID)
+    {
+        this.taxonomicUnitTypeID = taxonomicUnitTypeID;
+    }
+
 
     /**
      * @return the colObjCnt
