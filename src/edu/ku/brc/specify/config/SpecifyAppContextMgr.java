@@ -162,7 +162,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     public static final String COMMONDIR     = "Common"; //$NON-NLS-1$
     public static final String BACKSTOPDIR   = "BackStop"; //$NON-NLS-1$
 
-    protected List<SpAppResourceDir>                spAppResourceList = new ArrayList<SpAppResourceDir>();
+    protected Vector<SpAppResourceDir>              spAppResourceList = new Vector<SpAppResourceDir>();
     protected Hashtable<String, SpAppResourceDir>   spAppResourceHash = new Hashtable<String, SpAppResourceDir>();
     protected Hashtable<String, List<ViewSetIFace>> viewSetHash       = new Hashtable<String, List<ViewSetIFace>>();
     
@@ -294,6 +294,32 @@ public class SpecifyAppContextMgr extends AppContextMgr
     public String getUserName()
     {
         return userName;
+    }
+    
+    /**
+     * Replaces the the old Dir object with a new one.
+     * @param index the index of the old
+     * @param newDir the new Dir object
+     */
+    public void replaceSpDirItem(final int index, final SpAppResourceDir newDir)
+    {
+        SpAppResourceDir oldDir = spAppResourceList.get(index);
+        spAppResourceList.remove(index);
+        spAppResourceList.insertElementAt(newDir, index);
+        
+        String key = null;
+        for (String ky : spAppResourceHash.keySet())
+        {
+            if (spAppResourceHash.get(ky) == oldDir)
+            {
+                key = ky;
+                break;
+            }
+        }
+        if (key != null)
+        {
+            spAppResourceHash.put(key, newDir);
+        }
     }
     
     /**

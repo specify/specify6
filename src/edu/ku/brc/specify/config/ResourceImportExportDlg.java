@@ -401,17 +401,44 @@ public class ResourceImportExportDlg extends CustomDialog
         int levelIndex = levelCBX.getSelectedIndex();
         if (levelIndex > -1)
         {
+            DataProviderSessionIFace session = null;
             SpAppResourceDir dir = dirs.get(levelIndex);
+            try
+            {
+                session = DataProviderFactory.getInstance().createSession();
+                dir = session.merge(dir);
+                dir.forceLoad();
+                
+                dirs.remove(levelIndex);
+                ((SpecifyAppContextMgr)AppContextMgr.getInstance()).replaceSpDirItem(levelIndex, dir);
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, ex);
+                
+            } finally
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
+            }
             viewsModel.clear();
             levelIndex = viewSetsList.getSelectedIndex();
             if (levelIndex > -1)
             {
-                ViewSetIFace vs = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getViewSetList(dir).get(levelIndex);
-                Vector<ViewIFace> views = new Vector<ViewIFace>(vs.getViews().values());
-                Collections.sort(views);
-                for (ViewIFace view : views)
+                List<ViewSetIFace> vsList = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getViewSetList(dir);
+                if (vsList != null && levelIndex < vsList.size())
                 {
-                    viewsModel.addElement(view);
+                    ViewSetIFace vs = vsList.get(levelIndex);
+                    Vector<ViewIFace> views = new Vector<ViewIFace>(vs.getViews().values());
+                    Collections.sort(views);
+                    for (ViewIFace view : views)
+                    {
+                        viewsModel.addElement(view);
+                    }
                 }
             }
         }
@@ -629,9 +656,9 @@ public class ResourceImportExportDlg extends CustomDialog
                         
                     } catch (Exception ex)
                     {
+                        ex.printStackTrace();
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, ex);
-                        ex.printStackTrace();
                     }
                 }
             }
@@ -722,8 +749,9 @@ public class ResourceImportExportDlg extends CustomDialog
     	}
     	catch (Exception ex)
     	{
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, ex);
     		return null;
     	}
     }
@@ -931,9 +959,9 @@ public class ResourceImportExportDlg extends CustomDialog
     		{
     			((SpecifyAppContextMgr )AppContextMgr.getInstance()).removeAppResourceSp(dir, appRes);
     		}
+            e.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, e);
-            log.error(e);
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, e);
     	}
     	
     }
@@ -1042,9 +1070,9 @@ public class ResourceImportExportDlg extends CustomDialog
     		{
     			((SpecifyAppContextMgr )AppContextMgr.getInstance()).removeAppResourceSp(dir, appRes);
     		}
+            e.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, e);
-            log.error(e);
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, e);
             return null;
     	}
     	if (appRes != null)
@@ -1157,9 +1185,9 @@ public class ResourceImportExportDlg extends CustomDialog
 
 						} catch (Exception ex)
 						{
+	                        ex.printStackTrace();
 	                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
 	                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, ex);
-							ex.printStackTrace();
 						}
 					}
 

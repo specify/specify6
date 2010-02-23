@@ -124,6 +124,28 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+     */
+    @Override
+    public void forceLoad()
+    {
+        if (collection != null)
+        {
+            collection.getCollectionName();
+        }
+        if (discipline != null)
+        {
+            discipline.getName();
+        }
+        if (specifyUser != null)
+        {
+            specifyUser.getName();
+        }
+        getSpPersistedAppResources();
+        getSpPersistedViewSets();
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isChangeNotifier()
      */
     @Transient

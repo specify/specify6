@@ -219,7 +219,14 @@ public final class UIHelper
     
 
     static {
-        calendar = GregorianCalendar.getInstance();
+        try
+        {
+            calendar = GregorianCalendar.getInstance();
+            
+        } catch (Exception ex)
+        {
+            log.error(ex.getMessage());
+        }
         
         String osStr = System.getProperty("os.name");
         if (osStr.startsWith("Mac OS X"))
