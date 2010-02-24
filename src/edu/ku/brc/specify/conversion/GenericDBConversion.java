@@ -378,9 +378,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             CustomDialog dlg = new CustomDialog(null, "Taxononic Types", true, panel);
             dlg.createUI();
            
-            dlg.setSize(1024, 800);
+            dlg.setSize(1024, 500);
             
             UIHelper.centerWindow(dlg);
+            dlg.setAlwaysOnTop(true);
             dlg.setVisible(true);
             
             if (dlg.isCancelled())
@@ -2062,6 +2063,22 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 if (dispType != null)
                 {
                     log.debug("    Found["+dispType+"]");
+                    if (!dispType.isPaleo() &&
+                            (StringUtils.contains(taxonDefName.toLowerCase(), "paleo") ||
+                             StringUtils.contains(catSeriesName.toLowerCase(), "paleo")))
+                    {
+                        if (dispType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.botany)
+                        {
+                            return DisciplineType.getDiscipline(DisciplineType.STD_DISCIPLINES.paleobotany);
+                        } 
+                        
+                        if (dispType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.invertebrate)
+                        {
+                            return DisciplineType.getDiscipline(DisciplineType.STD_DISCIPLINES.invertpaleo);
+                        }
+                        
+                        return DisciplineType.getDiscipline(DisciplineType.STD_DISCIPLINES.vertpaleo);
+                    }
                     return dispType;
                 }
             }
@@ -7072,8 +7089,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      * @throws SQLException
      */
     public void convertGeography(final GeographyTreeDef treeDef,
-                                 final String dispName,
-                                 final boolean firstTime) throws SQLException
+                                 final String           dispName,
+                                 final boolean          firstTime) throws SQLException
     {
         TableWriter tblWriter = convLogger.getWriter("Geography" + (dispName != null ? dispName : "") + ".html", "Geography");
         setTblWriter(tblWriter);

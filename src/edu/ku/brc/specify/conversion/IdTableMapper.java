@@ -127,7 +127,43 @@ public class IdTableMapper extends IdHashMapper
      */
     public void clearRecords()
     {
-        BasicSQLUtils.deleteAllRecordsFromTable(mapTableName, BasicSQLUtils.myDestinationServerType);
+        BasicSQLUtils.deleteAllRecordsFromTable(oldConn, mapTableName, BasicSQLUtils.myDestinationServerType);
+    }
+    
+    /**
+     * Copies Mapping table to a destination mapping table.
+     * @param dest the insert into table.
+     */
+    public void copy(final IdTableMapper dest)
+    {
+        PreparedStatement pStmt = null;
+        Statement         stmt  = null;
+        try
+        {
+            pStmt = oldConn.prepareStatement(String.format("INSERT INTO %s SET OldID=?, NewID=?", dest.getName()));
+            stmt  = oldConn.createStatement();
+            
+            ResultSet rs = stmt.executeQuery("SELECT OldID, NewID FROM " + getName());
+            while (rs.next())
+            {
+                pStmt.setInt(1, rs.getInt(1));
+                pStmt.setInt(2, rs.getInt(2));
+                pStmt.execute();
+            }
+            rs.close();
+            
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            try
+            {
+                if (pStmt != null) pStmt.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException ex) {}
+        }
     }
     
     /**

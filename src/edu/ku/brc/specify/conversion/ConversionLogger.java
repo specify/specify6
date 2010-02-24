@@ -22,7 +22,6 @@ package edu.ku.brc.specify.conversion;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Vector;
 

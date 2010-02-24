@@ -114,6 +114,24 @@ public class DisciplineDuplicator
         
         return list;
     }
+    
+    /**
+     * @param tblName
+     * @return
+     * @throws SQLException
+     */
+    private String getFieldNameList(final String tblName) throws SQLException
+    {
+        StringBuilder fieldNames = new StringBuilder();
+        int cnt = 0;
+        for (String colName : getColumnNames(newDBConn, newDBConn.getCatalog(), tblName, true))
+        {
+            if (cnt > 0) fieldNames.append(',');
+            fieldNames.append(colName);
+            cnt++;
+        }
+        return fieldNames.toString();
+    }
 
 
     /**
@@ -121,19 +139,21 @@ public class DisciplineDuplicator
      */
     public void duplicateCollectingEvents()
     {
-        Statement stmt  = null;
+        Statement stmt   = null;
         Statement stmt2  = null;
         Statement stmt3  = null;
-        Statement uStmt = null;
+        Statement uStmt  = null;
         
-        int changeCOCnt = 0;
-        int changeCECnt = 0;
-        int insertCnt = 0;
+        int changeCOCnt  = 0;
+        int changeCECnt  = 0;
+        int insertCECnt    = 0;
+        int insertCEACnt = 0;
         
         try
         {
             PreparedStatement pStmt  = newDBConn.prepareStatement("UPDATE collectingevent SET DisciplineID=? WHERE CollectingEventID=?");
             PreparedStatement pStmt2 = newDBConn.prepareStatement("UPDATE collectionobject SET CollectingEventID=? WHERE CollectionObjectID=?");
+            PreparedStatement pCECEA = newDBConn.prepareStatement("UPDATE collectingevent SET CollectingEventAttributeID=? WHERE CollectingEventID=?");
             
             stmt  = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             stmt2 = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -141,18 +161,10 @@ public class DisciplineDuplicator
             uStmt = newDBConn.createStatement();
             
             String sql;
-            int cnt = 0;
             
-            StringBuilder fieldNames = new StringBuilder();
-            cnt = 0;
-            for (String colName : getColumnNames(newDBConn, newDBConn.getCatalog(), "collectingevent", true))
-            {
-                if (cnt > 0) fieldNames.append(',');
-                fieldNames.append(colName);
-                cnt++;
-            }
+            String ceFldNames  = getFieldNameList("collectingevent");
+            String ceaFldNames = getFieldNameList("collectingeventattribute");
             
-            cnt = 0;
             sql = " FROM (SELECT ce.CollectingEventID, COUNT(ce.CollectingEventID) as cnt FROM collectionobject co " +
                   "INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID GROUP BY ce.CollectingEventID) T1 WHERE cnt > 1";
             
@@ -162,6 +174,7 @@ public class DisciplineDuplicator
             
             log.debug("SELECT T1.CollectingEventID" + sql);
             
+            int cnt = 0;
             ResultSet rs = stmt.executeQuery("SELECT T1.CollectingEventID" + sql);
             while (rs.next())
             {
@@ -172,14 +185,14 @@ public class DisciplineDuplicator
                          2058,               7,               14930,                 4                       3
                          2058,               7,               7894,                  6                       7
                  */
-                sql = String.format("FROM (SELECT ce.CollectingEventID, ce.DisciplineID, co.CollectionObjectID, CollectionMemberID FROM collectionobject co " +
+                sql = String.format("FROM (SELECT ce.CollectingEventID, ce.DisciplineID, co.CollectionObjectID, CollectionMemberID, ce.CollectingEventAttributeID FROM collectionobject co " +
                                     "INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID WHERE ce.CollectingEventID = %d) T1 " +
                                     "INNER JOIN collection c ON CollectionMemberID = c.collectionId " +
                                     "WHERE T1.DisciplineID != c.DisciplineID", ceID);
                 //if (debug) log.debug("SELECT COUNT(*)" + sql);
                 //int count = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) " + sql + " GROUP BY CollectionMemberID");
                 
-                String sqlStr = String.format("SELECT T1.DisciplineID, c.DisciplineID, CollectionMemberID %s GROUP BY CollectionMemberID", sql);
+                String sqlStr = String.format("SELECT T1.DisciplineID, c.DisciplineID, CollectionMemberID, CollectingEventAttributeID %s GROUP BY CollectionMemberID", sql);
                 if (debug) log.debug(sqlStr);
                 
                 int ceCnt = 0;
@@ -189,6 +202,8 @@ public class DisciplineDuplicator
                     int ceDspID     = rs2.getInt(1);
                     int colDspID    = rs2.getInt(2);                    
                     int colMemID    = rs2.getInt(3);
+                    
+                    Integer ceAttrID = rs2.getObject(4) != null ? rs2.getInt(4) : null;
                     
                     if (debug) log.debug(String.format("ceDspID %d,  colDspID %d,  colMemID %d,  ", ceDspID, colDspID, colMemID));
                    
@@ -200,14 +215,22 @@ public class DisciplineDuplicator
                         
                     } else
                     {
-                        String insertSQL = String.format("INSERT INTO collectingevent (%s) (SELECT %s FROM collectingevent WHERE CollectingEventID = %d)", fieldNames.toString(), fieldNames.toString(), ceID);
+                        String insertSQL = String.format("INSERT INTO collectingevent (%s) (SELECT %s FROM collectingevent WHERE CollectingEventID = %d)", ceFldNames.toString(), ceFldNames.toString(), ceID);
                         if (debug) log.debug(insertSQL);
                         
                         uStmt.executeUpdate(insertSQL);
                         newCEId = BasicSQLUtils.getInsertedId(uStmt);
-                        insertCnt++;
+                        insertCECnt++;
                         tblWriter.log(String.format("Duplicated collectingevent Old %d to New %d", ceID, newCEId));
                         
+                        if (ceAttrID != null)
+                        {
+                            int newCEAttrsId = dupRecord(uStmt, "collectingeventattribute", "CollectingEventAttributeID", ceaFldNames, ceAttrID);
+                            pCECEA.setInt(1, newCEAttrsId);
+                            pCECEA.setInt(1, newCEId);
+                            pCECEA.executeUpdate();
+                            insertCEACnt++;
+                        }
                         
                         sqlStr = String.format("SELECT CollectionObjectID %s AND CollectionMemberID = %d", sql, colMemID);
                         if (debug) log.debug(sqlStr);
@@ -215,6 +238,7 @@ public class DisciplineDuplicator
                         ResultSet rs3 = stmt3.executeQuery(sqlStr);
                         while (rs3.next())
                         {
+                            // Update the ColObj's CE Id
                             int colObjId = rs3.getInt(1);
                             pStmt2.setInt(1, newCEId);
                             pStmt2.setInt(2, colObjId);
@@ -247,10 +271,12 @@ public class DisciplineDuplicator
             rs.close(); 
             pStmt.close();
             pStmt2.close();
+            pCECEA.close();
             
             tblWriter.log(String.format("There were %d CollectingEvent records changed.", changeCECnt));
             tblWriter.log(String.format("There were %d CollectionObject records changed.", changeCOCnt));
-            tblWriter.log(String.format("There were %d records CollectingEvent copied and inserted.", insertCnt));
+            tblWriter.log(String.format("There were %d records CollectingEvent copied and inserted.", insertCECnt));
+            tblWriter.log(String.format("There were %d records CollectingEvent copied and inserted.", insertCEACnt));
             
             tblWriter.log("<BR>");
 
@@ -273,25 +299,54 @@ public class DisciplineDuplicator
         }
     }
     
+    /**
+     * @param uStmt
+     * @param tblName
+     * @param idName
+     * @param fieldNames
+     * @param oldId
+     * @return
+     * @throws SQLException
+     */
+    private int dupRecord(final Statement uStmt, 
+                          final String    tblName,
+                          final String    idName,
+                          final String    fieldNames, 
+                          final int       oldId) throws SQLException
+    {
+        String insertSQL = String.format("INSERT INTO %s (%s) (SELECT %s FROM %s WHERE CollectingEventID = %d)", 
+                                          tblName, fieldNames, fieldNames, tblName, oldId);
+        //if (debug) log.debug(insertSQL);
+        
+        uStmt.executeUpdate(insertSQL);
+        int newId = BasicSQLUtils.getInsertedId(uStmt);
+        tblWriter.log(String.format("Duplicated %s Old %d to New %d", tblName, oldId, newId));
+        return newId;
+    }
+    
 
     /**
      * 
      */
     public void duplicateLocalities()
     {
-        Statement stmt  = null;
-        Statement stmt2  = null;
-        Statement stmt3  = null;
-        Statement uStmt = null;
+        Statement stmt    = null;
+        Statement stmt2   = null;
+        Statement stmt3   = null;
+        Statement uStmt   = null;
     
-        int changeCECnt = 0;
-        int changeLCCnt = 0;
-        int insertCnt = 0;
+        int changeCECnt   = 0;
+        int changeLCCnt   = 0;
+        int insertLocCnt  = 0;
+        int insertGCDCnt  = 0;
+        int insertLDCnt   = 0;
         
         try
         {
             PreparedStatement pStmt   = newDBConn.prepareStatement("UPDATE locality SET DisciplineID=? WHERE LocalityID=?");
             PreparedStatement pStmtCE = newDBConn.prepareStatement("UPDATE collectingevent SET LocalityID=? WHERE CollectingEventID=?");
+            PreparedStatement pGCDLoc = newDBConn.prepareStatement("UPDATE geocoorddetail SET LocalityID=? WHERE GeoCoordDetailID=?");
+            //PreparedStatement pLDLoc  = newDBConn.prepareStatement("UPDATE localitydetail SET LocalityID=? WHERE LocalityDetailID=?");
             
             stmt  = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             stmt2 = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -301,16 +356,10 @@ public class DisciplineDuplicator
             String sql;
             int cnt = 0;
             
-            StringBuilder fieldNames = new StringBuilder();
-            cnt = 0;
-            for (String colName : getColumnNames(newDBConn, newDBConn.getCatalog(), "locality", true))
-            {
-                if (cnt > 0) fieldNames.append(',');
-                fieldNames.append(colName);
-                cnt++;
-            }
+            String locFldNames = getFieldNameList("locality");
+            String gcdFldNames = getFieldNameList("geocoorddetail");
+            String ldFldNames  = getFieldNameList("localitydetail");
             
-            cnt = 0;
             String fromSQL = " FROM locality l INNER JOIN collectingevent ce ON l.LocalityID = ce.LocalityID WHERE l.DisciplineID != ce.DisciplineID";
             int total = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) " + fromSQL);
             
@@ -388,7 +437,7 @@ public class DisciplineDuplicator
                                 int ceID = rs3.getInt(3);
                                 if (ceLocCnt == 0)
                                 {
-                                    sql = String.format("INSERT INTO locality (%s) (SELECT %s FROM locality WHERE LocalityID = %d)", fieldNames.toString(), fieldNames.toString(), localityId);
+                                    sql = String.format("INSERT INTO locality (%s) (SELECT %s FROM locality WHERE LocalityID = %d)", locFldNames, locFldNames, localityId);
                                     uStmt.executeUpdate(sql);
                                     newLocID = BasicSQLUtils.getInsertedId(uStmt);
                                     
@@ -400,6 +449,26 @@ public class DisciplineDuplicator
                                     changeLCCnt++;
                                     
                                     tblWriter.log(String.format("Duplicated Locality Old %d to New %d", localityId, newLocID));
+                                    
+                                    Integer gcdId = BasicSQLUtils.getCount("SELECT GeoCoordDetailID FROM geocoorddetail WHERE LocalityID = " + localityId);
+                                    if (gcdId != null)
+                                    {
+                                        int newGCDId = dupRecord(uStmt, "geocoorddetail", "GeoCoordDetailID", gcdFldNames, gcdId);
+                                        pGCDLoc.setInt(1, newGCDId);
+                                        pGCDLoc.setInt(1, newLocID);
+                                        pGCDLoc.executeUpdate();
+                                        insertGCDCnt++;
+                                    }
+                                    
+                                    Integer ldId = BasicSQLUtils.getCount("SELECT LocalityDetailID FROM localitydetail WHERE LocalityID = " + localityId);
+                                    if (ldId != null)
+                                    {
+                                        int newLDId = dupRecord(uStmt, "localitydetail", "LocalityDetailID", ldFldNames, ldId);
+                                        pGCDLoc.setInt(1, newLDId);
+                                        pGCDLoc.setInt(1, newLocID);
+                                        pGCDLoc.executeUpdate();
+                                        insertLDCnt++;
+                                    }
                                 }
                                 
                                 pStmtCE.setInt(1, newLocID);
@@ -432,7 +501,7 @@ public class DisciplineDuplicator
             pStmtCE.close();
             
             tblWriter.log(String.format("There were %d Locality records changed.", changeLCCnt));
-            tblWriter.log(String.format("There were %d Locality records inserted.", insertCnt));
+            tblWriter.log(String.format("There were %d Locality records inserted.", insertLocCnt));
             tblWriter.log(String.format("There were %d Collecting Events records changed.", changeCECnt));
 
         } catch (Exception ex)
@@ -463,9 +532,16 @@ public class DisciplineDuplicator
         {
             try
             {
-    
+                IdTableMapper geoIdMapper     = (IdTableMapper)IdMapperMgr.getInstance().get("geography", "GeographyID");
+                IdTableMapper origGeoIdMapper = new IdTableMapper("geography", "orig", false, false);
+                IdMapperMgr.getInstance().addMapper(origGeoIdMapper);
+
+                origGeoIdMapper.clearRecords();
+                geoIdMapper.copy(origGeoIdMapper);
+                geoIdMapper.clearRecords();
+                
                 int i = 0;
-                for (Object[] row : BasicSQLUtils.query("SELECT DisciplineID, Name FROM discipline"))
+                for (Object[] row : BasicSQLUtils.query("SELECT DisciplineID, Name FROM discipline ORDER BY DisciplineID"))
                 {
                     Integer dspId   = (Integer)row[0];
                     String  dspName = (String)row[1];
@@ -477,6 +553,23 @@ public class DisciplineDuplicator
                     BasicSQLUtils.update(String.format("UPDATE discipline SET GeographyTreeDefID=%d WHERE DisciplineID = %d",geoTreeDef.getId(), dspId));
                     conversion.convertGeography(geoTreeDef, dspName, false);
                     
+                    PreparedStatement pStmt = newDBConn.prepareStatement("UPDATE locality SET GeographyID=? WHERE LocalityID=?");
+                    Statement         stmt  = newDBConn.createStatement();
+                    ResultSet         rs    = stmt.executeQuery("SELECT LocalityID, GeographyID FROM locality WHERE DisciplineID = " + dspId);
+                    while (rs.next())
+                    {
+                        int locId = rs.getInt(1);
+                        int geoId = rs.getInt(2);
+                        
+                        Integer oldId    = origGeoIdMapper.reverseGet(geoId);
+                        Integer newGeoId = geoIdMapper.get(oldId);
+                        
+                        pStmt.setInt(1, newGeoId);
+                        pStmt.setInt(2, locId);
+                        pStmt.execute();
+                    }
+                    
+                    rs.close();
                 }
             } catch (SQLException ex)
             {
@@ -484,8 +577,4 @@ public class DisciplineDuplicator
             }
         }
     }
-    
-
-
-    
 }

@@ -64,6 +64,8 @@ public class IdHashMapper implements IdMapperIFace
     
     protected boolean           doDelete      = true;
     protected boolean           wasEmpty      = true;
+    
+    protected Statement         stmtNew       = null;
 
     
     /**
@@ -178,13 +180,13 @@ public class IdHashMapper implements IdMapperIFace
             if (doDelete || mappingCount == 0)
             {
                 wasEmpty = true;
-                Statement stmtNew = oldConn.createStatement();
+                Statement stmt = oldConn.createStatement();
                 String str  = "DROP TABLE "+mapTableName;
                 
                 try
                 {
                     log.info(str);
-                    stmtNew.executeUpdate(str);
+                    stmt.executeUpdate(str);
                     
                 } catch (Exception ex)
                 {
@@ -198,17 +200,16 @@ public class IdHashMapper implements IdMapperIFace
                 log.info("orig sql: " + str);
                 str = BasicSQLUtils.getServerTypeSpecificSQL(str, BasicSQLUtils.myDestinationServerType);
                 log.info("sql standard query: " + str);
-                stmtNew.executeUpdate(str);
-                
+                stmt.executeUpdate(str);
                 
                 String str2 = "ALTER TABLE "+mapTableName+" ADD INDEX INX_"+mapTableName+" (NewID)";
                 log.info("orig sql: " + str2);
                 str2 =  BasicSQLUtils.createIndexFieldStatment(mapTableName, BasicSQLUtils.myDestinationServerType) ;
                 log.info("sql standard query: " + str2);
-                stmtNew.executeUpdate(str2);
+                stmt.executeUpdate(str2);
                 
-                stmtNew.clearBatch();
-                stmtNew.close();
+                stmt.clearBatch();
+                stmt.close();
             }
 
         } catch (SQLException ex)
@@ -358,15 +359,15 @@ public class IdHashMapper implements IdMapperIFace
      */
     public void cleanup()
     {
-        closePrepareStmt();
+        closeSQLStatements();
         
         if (mapTableName != null && doDelete)
         {
             try
             {
-                Statement stmtNew = oldConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-                stmtNew.executeUpdate("DROP TABLE `"+mapTableName+"`");
-                stmtNew.close();
+                Statement stmt = oldConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+                stmt.executeUpdate("DROP TABLE `"+mapTableName+"`");
+                stmt.close();
                 
             } catch (com.mysql.jdbc.exceptions.MySQLSyntaxErrorException ex)
             {
@@ -384,19 +385,26 @@ public class IdHashMapper implements IdMapperIFace
     /**
      * Closes internal Prepare Statement.
      */
-    public void closePrepareStmt()
+    public void closeSQLStatements()
     {
-        if (prepStmt != null)
+        try
         {
-            try
+            if (prepStmt != null)
             {
                 prepStmt.close();
-            } catch (Exception ex)
-            {
-                log.error(ex);
             }
+            
+            if (stmtNew != null)
+            {
+                stmtNew.close();
+            }
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
         }
         prepStmt = null;
+        stmtNew  = null;
     }
     
     //--------------------------------------------------
@@ -459,9 +467,14 @@ public class IdHashMapper implements IdMapperIFace
 
         try
         {
+            if (stmtNew == null)
+            {
+                stmtNew = oldConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            }
+            
             Integer   newId = null;
-            Statement stmtNew = oldConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-            ResultSet rs      = stmtNew.executeQuery("select NewID from "+mapTableName+" where OldID = " + oldId);
+            
+            ResultSet rs = stmtNew.executeQuery("SELECT NewID FROM "+mapTableName+" WHERE OldID = " + oldId);
             if (rs.next())
             {
                 newId = rs.getInt(1);
@@ -480,7 +493,6 @@ public class IdHashMapper implements IdMapperIFace
                 return null;
             }
             rs.close();
-            stmtNew.close();
 
             return newId;
 
@@ -495,6 +507,49 @@ public class IdHashMapper implements IdMapperIFace
             log.error(ex);
             throw new RuntimeException(msg);
         }
+    }
+
+    /**
+     * Looks the NewID and returns the OldID
+     * @param newId
+     * @return the OldID
+     */
+    public Integer reverseGet(final Integer newId)
+    {
+        if (newId == null )
+        {
+            return null;
+        }
+
+        try
+        {
+            if (stmtNew == null)
+            {
+                stmtNew = oldConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            }
+            
+            Integer oldId = null;
+            
+            ResultSet rs = stmtNew.executeQuery("SELECT OldID FROM "+mapTableName+" WHERE NewID = " + newId);
+            if (rs.next())
+            {
+                oldId = rs.getInt(1);
+
+            } else
+            {
+                rs.close();
+                return null;
+            }
+            rs.close();
+
+            return oldId;
+
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+            log.error(ex);
+        }
+        return null;
     }
     
     /**

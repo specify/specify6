@@ -723,11 +723,11 @@ public class SpecifyDBConverter
                 // NOTE: Within BasicSQLUtils the connection is for removing tables and records
                 BasicSQLUtils.setDBConnection(conversion.getNewDBConnection());
                 
-                if (false)
+                /*if (false)
                 {
                     addStorageTreeFomrXML(true);
                     return;
-                }
+                }*/
                 
                 //---------------------------------------------------------------------------------------
                 //-- Create basic set of information.
@@ -1383,6 +1383,11 @@ public class SpecifyDBConverter
                 
                 fixHibernateHiLo(newDBConn);
                 
+                DisciplineDuplicator d = new DisciplineDuplicator(DBConnection.getInstance().getConnection(), tblWriter, frame, conversion);
+                d.duplicateCollectingEvents();
+                d.duplicateLocalities();
+                d.duplicateGeography();
+                
                 frame.setDesc("Running Table Checker to report on fields with data.");
                 TableWriter tDSTblWriter = convLogger.getWriter("TableDataSummary.html", "Table Data Summary");
                 TableDataChecker tblDataChecker = new TableDataChecker(oldDBConn);
@@ -1846,6 +1851,16 @@ public class SpecifyDBConverter
 
         pb.add(UIHelper.createLabel("Host Name:", SwingConstants.RIGHT), cc.xy(1, y));
         pb.add(hostNameTF, cc.xy(3, y)); y += 2;
+        
+        
+        
+        if (System.getProperty("user.name").equals("rods"))
+        {
+            itPasswordTF.setText("root"); // password for converter database
+        } else
+        {
+            itPasswordTF.requestFocus();
+        }
 
         CustomDialog dlg = new CustomDialog(null, "Database Info", true, pb.getPanel());
         ((JPanel)dlg.getContentPanel()).setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
