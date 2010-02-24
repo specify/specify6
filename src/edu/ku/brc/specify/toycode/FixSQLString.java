@@ -1,4 +1,4 @@
-/* Copyright (C) 2009, University of Kansas Center for Research
+    /* Copyright (C) 2009, University of Kansas Center for Research
  * 
  * Specify Software Project, specify@ku.edu, Biodiversity Institute,
  * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
@@ -118,7 +118,9 @@ public class FixSQLString extends CustomDialog
         {
             String str = StringUtils.deleteWhitespace(line);
             
-            if (str.startsWith("INNER") || str.startsWith("FROM"))
+            if (str.toUpperCase().startsWith("INNER") || 
+                    str.toUpperCase().startsWith("ORDER") || 
+                    str.toUpperCase().startsWith("GROUP"))
             {
                 if (!wasInner)
                 {

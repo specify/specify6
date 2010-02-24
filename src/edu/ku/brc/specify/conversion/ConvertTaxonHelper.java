@@ -620,34 +620,6 @@ public class ConvertTaxonHelper
         }
     }
     
-    /**
-     * 
-     */
-    private void assignTreeDefToDisciplineOld2()
-    {
-        for (Integer txTypeId : collDispHash.keySet())
-        {
-            Vector<CollectionInfo> collInfoList = collDispHash.get(txTypeId);
-            
-            for (CollectionInfo ci : collInfoList)
-            {
-                Integer disciplineId = ci.getDisciplineId();
-                if (disciplineId != null)
-                {
-                    TaxonTreeDef txnTreeDef = ci.getTaxonTreeDef();
-                    String sql = "UPDATE discipline SET TaxonTreeDefID=" + txnTreeDef.getTaxonTreeDefId() + " WHERE DisciplineID = " + disciplineId;
-                    if (BasicSQLUtils.update(newDBConn, sql) != 1)
-                    {
-                        log.error("Error updating discipline["+disciplineId+"] with TaxonTreeDefID "+ txnTreeDef.getTaxonTreeDefId());
-                    }
-                } else
-                {
-                    log.error("Missing Discipline #");
-                }
-            }
-        }
-    }
-    
     private void assignTreeDefToDiscipline()
     {
         DataProviderSessionIFace session = null;

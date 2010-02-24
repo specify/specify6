@@ -556,6 +556,7 @@ public class SpecifyDBConverter
      * @param databaseNameDest name of new DB
      * @throws Exception xx
      */
+    @SuppressWarnings("unchecked")
     protected  void convertDB(final String dbNameSource, 
                               final String dbNameDest) throws Exception
     {
@@ -1383,7 +1384,7 @@ public class SpecifyDBConverter
                 
                 fixHibernateHiLo(newDBConn);
                 
-                DisciplineDuplicator d = new DisciplineDuplicator(DBConnection.getInstance().getConnection(), tblWriter, frame, conversion);
+                DisciplineDuplicator d = new DisciplineDuplicator(conversion.getOldDBConn(), conversion.getNewDBConn(), tblWriter, frame, conversion);
                 d.duplicateCollectingEvents();
                 d.duplicateLocalities();
                 d.duplicateGeography();

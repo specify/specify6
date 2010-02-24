@@ -168,6 +168,8 @@ import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.config.init.RegisterSpecify;
 import edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.conversion.DisciplineDuplicator;
+import edu.ku.brc.specify.conversion.TableWriter;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;

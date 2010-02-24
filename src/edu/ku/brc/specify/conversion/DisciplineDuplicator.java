@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.ui.ProgressFrame;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rods
@@ -44,6 +45,7 @@ public class DisciplineDuplicator
 {
     protected static final Logger            log         = Logger.getLogger(DisciplineDuplicator.class);
 
+    protected Connection    oldDBConn; 
     protected Connection    newDBConn; 
     protected TableWriter   tblWriter;
     protected ProgressFrame prgFrame;
@@ -55,12 +57,14 @@ public class DisciplineDuplicator
      * @param tblWriter
      * @param prgFrame
      */
-    public DisciplineDuplicator(final Connection newDBConn, 
+    public DisciplineDuplicator(final Connection oldDBConn, 
+                                final Connection newDBConn, 
                                 final TableWriter tblWriter, 
                                 final ProgressFrame prgFrame,
                                 final GenericDBConversion conversion)
     {
         super();
+        this.oldDBConn  = oldDBConn;
         this.newDBConn  = newDBConn;
         this.tblWriter  = tblWriter;
         this.prgFrame   = prgFrame;
@@ -165,34 +169,35 @@ public class DisciplineDuplicator
             String ceFldNames  = getFieldNameList("collectingevent");
             String ceaFldNames = getFieldNameList("collectingeventattribute");
             
-            sql = " FROM (SELECT ce.CollectingEventID, COUNT(ce.CollectingEventID) as cnt FROM collectionobject co " +
-                  "INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID GROUP BY ce.CollectingEventID) T1 WHERE cnt > 1";
+            sql = " FROM collectionobject " +
+                    "Inner Join collection ON collectionobject.CollectionID = collection.UserGroupScopeId " +
+                    "Inner Join collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID WHERE collection.DisciplineID <> collectingevent.DisciplineID";
             
             int total = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) " + sql);
             
             if (prgFrame != null) prgFrame.setProcess(0, total);
             
-            log.debug("SELECT T1.CollectingEventID" + sql);
+            
+            String selectPrefix = " SELECT collectingevent.DisciplineID, collection.DisciplineID, collectionobject.CollectionID, collectingevent.CollectingEventAttributeID  ";
+            log.debug(selectPrefix + sql);
+            
             
             int cnt = 0;
-            ResultSet rs = stmt.executeQuery("SELECT T1.CollectingEventID" + sql);
+            ResultSet rs = stmt.executeQuery(selectPrefix + sql);
             while (rs.next())
             {
                 int     ceID  = rs.getInt(1);
-                boolean debug = ceID == 49;
+                boolean debug = true;//ceID == 49;
                 /*
                      "CollectingEventID","DisciplineID","CollectionObjectID","CollectionMemberID", "Collection.DisciplineID"
                          2058,               7,               14930,                 4                       3
                          2058,               7,               7894,                  6                       7
                  */
-                sql = String.format("FROM (SELECT ce.CollectingEventID, ce.DisciplineID, co.CollectionObjectID, CollectionMemberID, ce.CollectingEventAttributeID FROM collectionobject co " +
-                                    "INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID WHERE ce.CollectingEventID = %d) T1 " +
-                                    "INNER JOIN collection c ON CollectionMemberID = c.collectionId " +
-                                    "WHERE T1.DisciplineID != c.DisciplineID", ceID);
+                String sqlStr = String.format(selectPrefix + sql + " AND collectingevent.CollectingEventID = %d", ceID);
                 //if (debug) log.debug("SELECT COUNT(*)" + sql);
                 //int count = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) " + sql + " GROUP BY CollectionMemberID");
                 
-                String sqlStr = String.format("SELECT T1.DisciplineID, c.DisciplineID, CollectionMemberID, CollectingEventAttributeID %s GROUP BY CollectionMemberID", sql);
+                //String sqlStr = String.format("SELECT T1.DisciplineID, collection.DisciplineID, CollectionMemberID, CollectingEventAttributeID %s GROUP BY CollectionMemberID", sql);
                 if (debug) log.debug(sqlStr);
                 
                 int ceCnt = 0;
@@ -375,7 +380,7 @@ public class DisciplineDuplicator
             {
                 int localityId = rs.getInt(1);
                 
-                debug = localityId == 326;
+                debug = localityId == 1116;
                 
                 // This returns how many different CollectingEvent Disciplines there are.
                 // If it returns a '1' then all the CEs using this Locality come from the same Discipline
@@ -503,6 +508,8 @@ public class DisciplineDuplicator
             tblWriter.log(String.format("There were %d Locality records changed.", changeLCCnt));
             tblWriter.log(String.format("There were %d Locality records inserted.", insertLocCnt));
             tblWriter.log(String.format("There were %d Collecting Events records changed.", changeCECnt));
+            tblWriter.log("<BR>");
+
 
         } catch (Exception ex)
         {
@@ -528,10 +535,40 @@ public class DisciplineDuplicator
      */
     public void duplicateGeography()
     {
+        String sql = " SELECT collectionobjectcatalog.CollectionObjectTypeID, Count(collectionobjectcatalog.CollectionObjectTypeID), collectionobjecttype.CollectionObjectTypeName FROM collectionobjectcatalog " +
+        "Inner Join collectionobject ON collectionobjectcatalog.CollectionObjectCatalogID = collectionobject.CollectionObjectID " +
+        "Inner Join collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID " +
+        "Inner Join locality ON collectingevent.LocalityID = locality.LocalityID " +
+        "Inner Join geography ON locality.GeographyID = geography.GeographyID " +
+        "Inner Join collectionobjecttype ON collectionobjectcatalog.CollectionObjectTypeID = collectionobjecttype.CollectionObjectTypeID  " +
+        "WHERE collectionobject.DerivedFromID IS NULL " +
+        "GROUP BY collectionobjectcatalog.CollectionObjectTypeID";
+        tblWriter.startTable();
+        tblWriter.logHdr("Discipline ID", "Number of ColObjs", "Discipline");
+        for (Object[] row : BasicSQLUtils.query(oldDBConn, sql))
+        {
+            tblWriter.logObjRow(row);
+        }
+        tblWriter.endTable();
+
         if (BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM discipline") > 1)
         {
             try
             {
+                Integer mainGeoDiscipline = null;
+                
+                sql = "SELECT DISTINCT d.UserGroupScopeId FROM discipline d Inner Join geographytreedef gtd ON d.GeographyTreeDefID = gtd.GeographyTreeDefID Inner Join geography g ON gtd.GeographyTreeDefID = g.GeographyTreeDefID";
+                Vector<Integer> dispsInGeo = BasicSQLUtils.queryForInts(sql);
+                if (dispsInGeo.size() == 0)
+                {
+                    UIRegistry.showError("There are no disciplines in the Geography tree and there should only be one.");
+                    return;
+                    
+                } else
+                {
+                    mainGeoDiscipline = dispsInGeo.get(0);
+                }
+                
                 IdTableMapper geoIdMapper     = (IdTableMapper)IdMapperMgr.getInstance().get("geography", "GeographyID");
                 IdTableMapper origGeoIdMapper = new IdTableMapper("geography", "orig", false, false);
                 IdMapperMgr.getInstance().addMapper(origGeoIdMapper);
@@ -540,14 +577,13 @@ public class DisciplineDuplicator
                 geoIdMapper.copy(origGeoIdMapper);
                 geoIdMapper.clearRecords();
                 
-                int i = 0;
+                int fixCnt = 0;
                 for (Object[] row : BasicSQLUtils.query("SELECT DisciplineID, Name FROM discipline ORDER BY DisciplineID"))
                 {
                     Integer dspId   = (Integer)row[0];
                     String  dspName = (String)row[1];
                     
-                    i++;
-                    if (i == 1) continue;
+                    if (mainGeoDiscipline.equals(dspId)) continue;
                     
                     GeographyTreeDef geoTreeDef = conversion.createStandardGeographyDefinitionAndItems(false);
                     BasicSQLUtils.update(String.format("UPDATE discipline SET GeographyTreeDefID=%d WHERE DisciplineID = %d",geoTreeDef.getId(), dspId));
@@ -567,10 +603,48 @@ public class DisciplineDuplicator
                         pStmt.setInt(1, newGeoId);
                         pStmt.setInt(2, locId);
                         pStmt.execute();
+                        
+                        fixCnt++;
                     }
                     
                     rs.close();
                 }
+                
+                tblWriter.log(String.format("There were %d Locality records changed.", fixCnt));
+                tblWriter.log("<BR>");
+                
+                sql = " SELECT discipline.UserGroupScopeId, COUNT(discipline.UserGroupScopeId), discipline.Name FROM discipline " +
+                "Inner Join collection ON discipline.UserGroupScopeId = collection.DisciplineID " +
+                "Inner Join collectionobject ON collection.UserGroupScopeId = collectionobject.CollectionMemberID " +
+                "Inner Join collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID " +
+                "Inner Join locality ON collectingevent.LocalityID = locality.LocalityID " +
+                "Inner Join geography ON locality.GeographyID = geography.GeographyID " +
+                "GROUP BY discipline.UserGroupScopeId ";
+                tblWriter.startTable();
+                tblWriter.logHdr("Discipline ID", "Number of ColObjs", "Discipline");
+                for (Object[] row : BasicSQLUtils.query(sql))
+                {
+                    tblWriter.logObjRow(row);
+                }
+                tblWriter.endTable();
+                tblWriter.log("<BR>");
+                
+                sql = " SELECT discipline.disciplineId, Count(discipline.disciplineId), discipline.Name FROM discipline " +
+                		"Inner Join geographytreedef ON discipline.GeographyTreeDefID = geographytreedef.GeographyTreeDefID " +
+                		"Inner Join geography ON geographytreedef.GeographyTreeDefID = geography.GeographyTreeDefID " +
+                		"Inner Join locality ON geography.GeographyID = locality.GeographyID " +
+                		"Inner Join collectingevent ON locality.LocalityID = collectingevent.LocalityID " +
+                		"Inner Join collectionobject ON collectingevent.CollectingEventID = collectionobject.CollectingEventID " +
+                		"GROUP BY discipline.disciplineId";
+                tblWriter.startTable();
+                tblWriter.logHdr("Discipline ID", "Number of ColObjs", "Discipline");
+                for (Object[] row : BasicSQLUtils.query(sql))
+                {
+                    tblWriter.logObjRow(row);
+                }
+                tblWriter.endTable();
+                tblWriter.log("<BR>");
+
             } catch (SQLException ex)
             {
                 ex.printStackTrace();
