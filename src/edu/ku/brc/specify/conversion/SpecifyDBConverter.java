@@ -34,6 +34,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -55,6 +56,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
@@ -116,6 +118,7 @@ import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.Triple;
 
 /**
  * Create more sample data, letting Hibernate persist it for us.
@@ -663,6 +666,12 @@ public class SpecifyDBConverter
             oldDBConn.close();
             newDBConn.close();
             System.exit(0);
+        }
+        
+        if (false) 
+        {
+            createTableSummaryPage();
+            return;
         }
         
         SwingUtilities.invokeLater(new Runnable() {
@@ -1587,8 +1596,133 @@ public class SpecifyDBConverter
         }
         tblWriter.println("<tr><td>Total Records</td><td>"+total+"</td></tr>");
         tblWriter.endTable();
-        tblWriter.startTable();
+       
+        String sql;
         
+        //----------------------------------------------------------------------------------
+        tblWriter.println("<H3>Col Obj Counts By Discipline/Collection</H3>");
+        sql = " SELECT cct.CollectionObjectTypeName, cs.SeriesName, Count(cc.CollectionObjectCatalogID) FROM catalogseries AS cs " +
+        "Inner Join collectionobjectcatalog AS cc ON cs.CatalogSeriesID = cc.CatalogSeriesID " +
+        "Inner Join collectionobjecttype AS cct ON cc.CollectionObjectTypeID = cct.CollectionObjectTypeID " +
+        "Inner Join collectionobject AS co ON cc.CollectionObjectCatalogID = co.CollectionObjectID " +    " WHERE co.DerivedFromID IS NULL " +
+        "GROUP BY cct.CollectionObjectTypeName, cs.SeriesName";
+        
+        showTable(tblWriter, "Specify 5", false, sql, "Discipline", "Collection", "Count");
+        
+        sql = "SELECT d.Name, c.CollectionName, Count(co.CollectionObjectID) AS `Count` FROM discipline AS d " +
+        "Inner Join collection AS c ON d.UserGroupScopeId = c.DisciplineID " +
+        "Inner Join collectionobject AS co ON co.CollectionID = c.UserGroupScopeId " +
+        "GROUP BY d.Name, c.CollectionName";
+        tblWriter.println("<BR>");
+        showTable(tblWriter, "Specify 6", true, sql, "Discipline", "Collection", "Count");
+        
+        //----------------------------------------------------------------------------------
+        /*tblWriter.println("<H3>Collecting Events Counts By Discipline</H3>");
+        sql = " SELECT ct.CollectionObjectTypeName, Count(ce.CollectingEventID) FROM collectionobjecttype AS ct " +
+        "Inner Join collectingevent AS ce ON ct.CollectionObjectTypeID = ce.BiologicalObjectTypeCollectedID " +
+        "GROUP BY ct.CollectionObjectTypeName";
+        showTable(tblWriter, "Specify 5", false, sql, "Discipline", "Count");
+        
+        sql = " SELECT d.Name, Count(ce.CollectingEventID) FROM discipline AS d " +
+        "Inner Join collectingevent AS ce ON d.UserGroupScopeId = ce.DisciplineID " +
+        "GROUP BY d.Name";
+        tblWriter.println("<BR>");
+        showTable(tblWriter, "Specify 6", true, sql, "Discipline", "Count");
+        */
+        //----------------------------------------------------------------------------------
+        tblWriter.println("<H3>Col Obj Counts By Collection</H3>");
+        sql = " SELECT cs.SeriesName, Count(cc.CollectionObjectCatalogID) FROM catalogseries AS cs " +
+        "Inner Join collectionobjectcatalog AS cc ON cs.CatalogSeriesID = cc.CatalogSeriesID " +
+        "Inner Join collectionobject AS co ON cc.CollectionObjectCatalogID = co.CollectionObjectID " +    " WHERE co.DerivedFromID IS NULL " +
+        "GROUP BY cs.SeriesName";
+        
+        showTable(tblWriter, "Specify 5", false, sql,  "Collection", "Count");
+        
+        sql = " SELECT c.CollectionName, Count(co.CollectionObjectID) FROM collection AS c " +
+        "Inner Join collectionobject AS co ON c.UserGroupScopeId = co.CollectionID " +
+        "GROUP BY c.CollectionName";
+        tblWriter.println("<BR>");
+        showTable(tblWriter, "Specify 6", true, sql, "Collection", "Count");
+        
+        //----------------------------------------------------------------------------------
+        tblWriter.println("<H3>Locality Counts</H3>");
+        sql = " SELECT Count(LocalityID) FROM locality";
+        showTable(tblWriter, "Specify 5", false, sql, "Count");
+        
+        sql = " SELECT Count(LocalityID) FROM locality";
+        tblWriter.println("<BR>");
+        showTable(tblWriter, "Specify 6", true, sql, "Count");
+
+        //----------------------------------------------------------------------------------
+        tblWriter.println("<H3>Locality Counts By Discipline</H3>");
+        sql = " SELECT ct.CollectionObjectTypeName, Count(locid) FROM collectionobjecttype AS ct " +
+        "Inner Join (SELECT ce.CollectingEventID as ceid, ce.BiologicalObjectTypeCollectedID as botid, locality.LocalityID as locid FROM collectingevent ce Inner Join locality ON ce.LocalityID = locality.LocalityID GROUP BY locality.LocalityID) T1 ON ct.CollectionObjectTypeID = T1.botid " +
+        "GROUP BY ct.CollectionObjectTypeName";
+        
+        showTable(tblWriter, "Specify 5", false, sql, "Discipline", "Count");
+        
+        sql = " SELECT d.Name, Count(l.LocalityID) FROM discipline AS d " +
+        "Inner Join locality AS l ON d.UserGroupScopeId = l.DisciplineID " +
+        "GROUP BY d.Name";
+        tblWriter.println("<BR>");
+        showTable(tblWriter, "Specify 6", true, sql, "Discipline", "Count");
+        
+        //----------------------------------------------------------------------------------
+        tblWriter.startTable();
+        tblWriter.logHdr(CollectionInfo.getHeaders());
+        
+        DefaultTableModel model = CollectionInfo.getCollectionInfoTableModel();
+        Object[] row = new Object[model.getColumnCount()];
+        for (int r=0;r<model.getRowCount();r++)
+        {
+            for (int i=0;i<model.getColumnCount();i++)
+            {
+                row[i] = model.getValueAt(r, i);
+            }
+            tblWriter.logObjRow(row);
+        }
+        tblWriter.endTable();
+        tblWriter.close();
+
+        /*
+        tblWriter.startTable();
+        tblWriter.logHdr("&nbsp;", "Specify 5", "Specify 6");
+        for (Triple<String, String, String> qry : getSummaryQueries())
+        {
+            
+        }
+        tblWriter.endTable();
+        */
+    }
+    
+    private void showTable(final TableWriter tblWriter, 
+                           final String title,
+                           final boolean isNewDB,
+                           final String sql, 
+                           String...cols)
+    {
+        tblWriter.println(title + "<BR>");
+        tblWriter.startTable();
+        tblWriter.logHdr(cols);
+        for (Object[] row : BasicSQLUtils.query(isNewDB ? conversion.getNewDBConn() : conversion.getOldDBConn(), sql))
+        {
+            tblWriter.logObjRow(row);
+        }
+        tblWriter.endTable();
+    }
+    
+    private List<Triple<String, String, String>> getSummaryQueries()
+    {
+        String[] desc = {};
+        String[] oldQ = {};
+        String[] newQ = {};
+        
+        ArrayList<Triple<String, String, String>> list = new ArrayList<Triple<String,String, String>>(oldQ.length);
+        for (int i=0;i<oldQ.length;i++)
+        {
+            list.add(new Triple<String, String, String>(desc[i], oldQ[i], newQ[i]));
+        }
+        return list;
     }
     
     /**
