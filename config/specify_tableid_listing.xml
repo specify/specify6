@@ -163,7 +163,7 @@
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.FieldNotebookPage" abbrev="fnbp" id="85" searchable="true">
-            <display view="FieldNotebookPage" dataobjformatter="FieldNotebookPage" newobjdlg="FieldNotebookPageDisplay"/>
+            <display view="FieldNotebookPage" dataobjformatter="FieldNotebookPage" searchdlg="FieldNotebookPageSearch" newobjdlg="FieldNotebookPage"/>
           	<businessrule>edu.ku.brc.specify.datamodel.busrules.FieldNotebookPageBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment" abbrev="fnbpat" id="129" searchable="true">

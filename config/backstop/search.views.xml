@@ -112,13 +112,24 @@
                 <altview name="DivisionSearch" viewdef="DivisionSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
+
+        <view 
+            name="FieldNotebookPageSearch"
+            class="edu.ku.brc.specify.datamodel.FieldNotebookPage"
+            usedefbusrule="false"
+            resourcelabels="false">
+            <desc><![CDATA[The FieldNotebookPage Search Form]]></desc>
+            <altviews>
+                <altview name="FieldNotebookPageSearch" viewdef="FieldNotebookPageSearch" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
         
         <view 
             name="JournalSearch"
             class="edu.ku.brc.specify.datamodel.Journal"
             usedefbusrule="false"
             resourcelabels="false">
-            <desc><![CDATA[The FieldNotebookPage Search Form]]></desc>
+            <desc><![CDATA[The Journal Search Form]]></desc>
             <altviews>
                 <altview name="JournalSearch" viewdef="JournalSearch" mode="edit" validated="true" default="true"/>
             </altviews>
@@ -488,6 +499,32 @@ Good: <cell type="field" name="FieldNum" ...>
             </rows>
         </viewdef> 
 
+        <viewdef type="form"
+            name="FieldNotebookPageSearch"
+            class="edu.ku.brc.specify.datamodel.FieldNotebookPage"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The CollectingEvent Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="Field Notebook Page" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="PageNumber" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="ScanDate" uitype="formattedtext" uifieldformatter="Date" initialize="ispartial=true;"/>
+                </row>
+            </rows>
+        </viewdef>
        
         <viewdef type="form"
             name="JournalSearch"

@@ -12,6 +12,7 @@
     <dialog type="search" viewset="Search" view="DisciplineSearch"         name="DisciplineSearch"         class="edu.ku.brc.specify.datamodel.Discipline"     idfield="disciplineId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="DivisionSearch"           name="DivisionSearch"           class="edu.ku.brc.specify.datamodel.Division"       idfield="divisionId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="DeterminationSearch"      name="DeterminationSearch"      class="edu.ku.brc.specify.datamodel.Determination"  idfield="determinationId" helpcontext="CBXQSearch"/>
+    <dialog type="search" viewset="Search" view="FieldNotebookPageSearch"  name="FieldNotebookPageSearch"  class="edu.ku.brc.specify.datamodel.FieldNotebookPage" idfield="fieldNotebookPageId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="GeographySearch"          name="GeographySearch"          class="edu.ku.brc.specify.datamodel.Geography"      idfield="geographyId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="ChronosStratSearch"       name="ChronosStratSearch"       class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" idfield="geologicTimePeriodId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="JournalSearch"            name="JournalSearch"            class="edu.ku.brc.specify.datamodel.Journal"        idfield="journalId" helpcontext="CBXQSearch"/>

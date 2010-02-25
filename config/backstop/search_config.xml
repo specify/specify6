@@ -1439,7 +1439,6 @@ repositoryagreement.RepositoryAgreementNumber,
                     <caption tableid="85" col="FieldNotebookPageID" visible="false"/>
                     <caption tableid="85" col="PageNumber"/>
                     <caption tableid="85" col="ScanDate"/>
-                    <caption tableid="41" col="Title"/>
                 </captions>
             </detailView>
         </table>
@@ -1595,6 +1594,8 @@ repositoryagreement.RepositoryAgreementNumber,
                 </captions>
             </detailView>
         </table>
+
+      
         
     </express>
     
@@ -1979,6 +1980,26 @@ repositoryagreement.RepositoryAgreementNumber,
                     <caption tableid="70" col="ProjectID" visible="false"/>
                     <caption tableid="70" col="RepositoryAgreementNumber"/>
                     <caption tableid="70" col="StartDate"/>
+                </captions>
+            </detailView>
+        </table>
+        
+                
+        <table id="126" tableid="85" indexed="false" name="FieldNotebookPageSearch" priority="1" color="30, 144, 144">
+            <detailView icon="FieldNotebookPage">
+                <sql>
+                    <![CDATA[SELECT fnbp.FieldNotebookPageID, PageNumber, ScanDate, fnps.StartDate, fnps.EndDate, fn.Name, fn.StartDate FROM fieldnotebookpage AS fnbp
+ Inner Join fieldnotebookpageset AS fnps ON fnbp.FieldNotebookPageSetID = fnps.FieldNotebookPageSetID
+ Inner Join fieldnotebook AS fn ON fnps.FieldNotebookID = fn.FieldNotebookID WHERE fnbp.DisciplineID = DSPLNID AND (%s)]]>
+                </sql>
+                <captions>
+                    <caption tableid="85" col="fnbp.FieldNotebookPageID" visible="false"/>
+                    <caption tableid="85" col="PageNumber"/>
+                    <caption tableid="85" col="ScanDate"/>
+                    <caption tableid="84" col="fnps.StartDate"/>
+                    <caption tableid="84" col="fnps.EndDate"/>
+                    <caption tableid="83" col="fn.Name"/>
+                    <caption tableid="83" col="fn.StartDate"/>
                 </captions>
             </detailView>
         </table>

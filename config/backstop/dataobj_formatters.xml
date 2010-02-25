@@ -272,6 +272,21 @@
             </fields>
         </switch>
     </format>
+    
+    <format
+        name="FieldNotebookPage"
+        title="FieldNotebookPage"
+        class="edu.ku.brc.specify.datamodel.FieldNotebookPage"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>pageNumber</field>
+                <field sep=" - ">pageSet.fieldNotebook.name</field>
+            </fields>
+        </switch>
+    </format>
+
 
     <format
         name="Geography"
