@@ -2052,6 +2052,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         {
             return dispType;
         }
+        
+        log.debug("**************** ["+taxonDefName+"]["+catSeriesName+"] *****************");
+        
         if (dispType == null && catSeriesName != null)
         {
             StringTokenizer st = new StringTokenizer(catSeriesName, " ,"); //$NON-NLS-1$

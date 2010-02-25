@@ -20,6 +20,9 @@
 package edu.ku.brc.specify.config;
 
 import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Enumeration;
@@ -38,12 +41,15 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
 import edu.ku.brc.util.LatLonConverter;
+import edu.ku.brc.util.Triple;
 
 /*
  * @code_status Unknown (auto-generated)
@@ -630,6 +636,328 @@ public class Scriptlet extends JRDefaultScriptlet
         labelNames.add("<style isItalic=\"true\">");
 
         return labelNames;
+    }
+    
+    protected static final int Genus                  = 1;
+    protected static final int SpeciesQualifier       = 2;
+    protected static final int Species                = 4;
+    protected static final int SpeciesAuthorFirstName = 8;
+    protected static final int SpeciesAuthorLastName  = 16;
+    protected static final int SubspeciesQualifier    = 32;
+    protected static final int Subspecies             = 64;
+    protected static final int InfraAuthorFirstName   = 128;
+    protected static final int InfraAuthorLastName    = 256;
+    protected static final int VarietyQualifier       = 512;
+    protected static final int Variety                = 1024;
+    
+    protected int mask;
+    protected Triple<String, Integer, Integer> info = new Triple<String, Integer, Integer>();
+    protected Triple<String, String, String>   cit   = new Triple<String, String, String>();
+    protected Statement stmt = null;
+    
+    protected boolean isOn(final int opt)
+    {
+        return (mask & opt) == opt;
+    }
+    
+    protected void setOn(final int opt)
+    {
+        mask |= opt;
+    }
+    
+    public String formatTaxonWithAuthors(final String genus,
+                                         final String speciesQualifier,
+                                         final String species,
+                                         final String speciesAuthorFirstName,
+                                         final String speciesAuthorLastName,
+                                         final String subspeciesQualifier,
+                                         final String subspecies,
+                                         final String infraAuthorFirstName,
+                                         final String infraAuthorLastName,
+                                         final String varietyQualifier,
+                                         final String variety)
+    {
+        //  1 - Genus
+        //  2 - speciesQualifier
+        //  3 - species
+        //  4 - speciesAuthorFirstName
+        //  5 - speciesAuthorLastName
+        //  6 - subspeciesQualifier
+        //  7 - subspecies
+        //  8 - infraAuthorFirstName
+        //  9 - infraAuthorLastName
+        // 10 - varietyQualifier
+        // 11 - variety
+        
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append(genus); // 1 Genus
+        sb.append(" ");
+        
+        if (isOn(SpeciesQualifier))
+        {
+            sb.append("<style isItalic=\"true\">");
+            sb.append(speciesQualifier); // 2
+            sb.append("</style>");
+        }
+        sb.append(species); // 3
+        
+        if (isOn(SpeciesAuthorFirstName) || isOn(SpeciesAuthorLastName))
+        {
+            sb.append(" ");
+            sb.append("<style isItalic=\"true\">(");
+            if (isOn(SpeciesAuthorFirstName))
+            {
+                sb.append(speciesAuthorFirstName); // 4
+                if (isOn(SpeciesAuthorLastName))
+                {
+                    sb.append(" ");  
+                }
+            }
+            if (isOn(SpeciesAuthorLastName))
+            {
+                sb.append(speciesAuthorLastName); // 5
+            }
+            sb.append(")</style>");
+        }
+
+        if (isOn(SubspeciesQualifier))
+        {
+            sb.append(" ");
+            sb.append(subspeciesQualifier); // 6
+        }
+        if (isOn(Subspecies))
+        {
+            sb.append(" ");
+            sb.append(subspecies); // 7
+        }
+        
+        if (isOn(InfraAuthorFirstName) || isOn(InfraAuthorLastName))
+        {
+            sb.append(" ");
+            sb.append("<style isItalic=\"true\">(");
+            if (isOn(InfraAuthorFirstName))
+            {
+                sb.append(infraAuthorFirstName); // 4
+                if (isOn(InfraAuthorLastName))
+                {
+                    sb.append(" ");  
+                }
+            }
+            if (isOn(InfraAuthorLastName))
+            {
+                sb.append(infraAuthorLastName); // 5
+            }
+            sb.append(")</style>");
+        }
+        
+        if (isOn(VarietyQualifier))
+        {
+            sb.append(" ");  
+            sb.append(varietyQualifier);  // 10
+        }
+        
+        if (isOn(Variety))
+        {
+            sb.append(" var.");
+            sb.append(variety);  // 11
+        }
+        
+        System.out.println(sb.toString());
+        
+        return sb.toString();
+    }
+    
+    /**
+     * @param taxonId
+     * @return
+     */
+    protected Triple<String, Integer, Integer> getTaxonInfo(final int taxonId)
+    {
+        if (stmt == null)
+        {
+            try
+            {
+                stmt = DBConnection.getInstance().getConnection().createStatement();
+            } catch (SQLException ex)
+            {
+                log.debug(ex);
+            }
+        }
+        
+        ResultSet rs = null;
+        try
+        {
+            rs = stmt.executeQuery("SELECT Name, RankID, ParentID FROM taxon WHERE TaxonID = "+taxonId);
+            if (rs.next())
+            {
+                info.first  = rs.getString(1);
+                info.second = rs.getInt(2);
+                info.third  = rs.getInt(3);
+            }
+            
+        } catch (SQLException ex)
+        {
+            log.debug(ex);
+            ex.printStackTrace();
+        } finally 
+        {
+            if (rs != null)
+            {
+                try
+                {
+                    rs.close();
+                } catch (SQLException ex) {}
+            }
+        }
+        return info;
+    }
+    
+    /**
+     * @param taxonId
+     * @return
+     */
+    protected Triple<String, String, String> getAuthor(final int taxonId)
+    {
+        if (stmt == null)
+        {
+            try
+            {
+                stmt = DBConnection.getInstance().getConnection().createStatement();
+            } catch (SQLException ex)
+            {
+                log.debug(ex);
+            }
+        }
+        
+        ResultSet rs = null;
+        try
+        {
+            String sql = "SELECT r.Title, r.WorkDate, a.FirstName, a.MiddleInitial, a.LastName " +
+                         "FROM taxoncitation ct INNER JOIN referencework r ON ct.ReferenceWorkID = r.ReferenceWorkID " +    
+                         "LEFT JOIN author au ON r.ReferenceWorkID = au.ReferenceWorkID " +
+                         "INNER JOIN agent a ON au.AgentID = a.AgentID WHERE ct.TaxonID = " + taxonId + " ORDER BY au.OrderNumber ASC";
+                        
+            rs = stmt.executeQuery(sql);
+            cit.third = "";
+            while (rs.next())
+            {
+                cit.first  = rs.getString(1);
+                cit.second = rs.getString(2);
+                
+                String first = rs.getString(3);
+                String mid   = rs.getString(4);
+                String last  = rs.getString(5);
+                if (StringUtils.isNotEmpty(cit.third)) cit.third += ", ";
+                cit.third += last;
+            }
+            
+        } catch (SQLException ex)
+        {
+            log.debug(ex);
+            ex.printStackTrace();
+        } finally 
+        {
+            if (rs != null)
+            {
+                try
+                {
+                    rs.close();
+                } catch (SQLException ex) {}
+            }
+        }
+        return cit;
+    }
+
+    
+    public String getTaxonWithAuthors(final Integer taxonIdArg)
+    {
+        int taxonId = taxonIdArg;
+        
+        String genus                  = null;
+        String speciesQualifier       = null;
+        String species                = null;
+        String speciesAuthorFirstName = null;
+        String speciesAuthorLastName  = null;
+        String subspeciesQualifier    = null;
+        String subspecies             = null;
+        String infraAuthorFirstName   = null;
+        String infraAuthorLastName    = null;
+        String varietyQualifier       = null;
+        String variety                = null;
+        
+        mask = 0;
+        
+        getTaxonInfo(taxonId);
+        if (info.second == TaxonTreeDef.VARIETY)
+        {
+            variety     = info.first;
+            taxonId     = info.third;
+            info.second = TaxonTreeDef.SUBSPECIES;
+            setOn(Variety);
+        }
+        
+        if (info.second == TaxonTreeDef.SUBSPECIES)
+        {
+            getTaxonInfo(taxonId);
+            getAuthor(taxonId);
+            if (cit.third != null)
+            {
+                infraAuthorLastName = cit.third;
+                setOn(InfraAuthorLastName);
+            }
+            
+            subspecies  = info.first;
+            taxonId     = info.third;
+            info.second = TaxonTreeDef.SPECIES;
+            setOn(Subspecies);
+        }
+        
+        if (info.second == TaxonTreeDef.SPECIES)
+        {
+            getTaxonInfo(taxonId);
+            getAuthor(taxonId);
+            if (cit.third != null)
+            {
+                speciesAuthorLastName = cit.third;
+                setOn(SpeciesAuthorLastName);
+            }
+            
+            species     = info.first;
+            taxonId     = info.third;
+            info.second = TaxonTreeDef.GENUS;
+            setOn(Species);
+        }
+        
+        if (info.second == TaxonTreeDef.GENUS)
+        {
+            getTaxonInfo(taxonId);
+            
+            genus       = info.first;
+            taxonId     = info.third;
+            info.second = TaxonTreeDef.SUBSPECIES;
+            setOn(Genus);
+        }
+        
+        if (stmt != null)
+        {
+            try
+            {
+                stmt.close();
+            } catch (SQLException ex) {}
+        }
+        
+        return formatTaxonWithAuthors(genus,
+                                      speciesQualifier,
+                                      species,
+                                      speciesAuthorFirstName,
+                                      speciesAuthorLastName,
+                                      subspeciesQualifier,
+                                      subspecies,
+                                      infraAuthorFirstName,
+                                      infraAuthorLastName,
+                                      varietyQualifier,
+                                      variety);
     }
 
 }
