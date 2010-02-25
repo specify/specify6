@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.dbsupport;
 
+import java.math.BigDecimal;
+
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -89,6 +91,10 @@ public class QueryResultsDataObj
     {
         if (StringUtils.isNotEmpty(formatStr))
         {
+            if (result instanceof BigDecimal && formatStr.startsWith("%")  && formatStr.endsWith("f"))
+            {
+                result = ((BigDecimal)result).doubleValue();
+            }
             return String.format(formatStr, new Object[] {result} );
         }
         return result;
