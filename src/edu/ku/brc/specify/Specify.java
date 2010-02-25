@@ -2540,6 +2540,17 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 });
             }
             
+            // Check for Duplicate LocalityDetail and GeoCoordDetail
+            SwingUtilities.invokeLater(new Runnable() 
+            {
+                @Override
+                public void run()
+                {
+                    FixDBAfterLogin fixer = new FixDBAfterLogin();
+                    fixer.checkMultipleLocalities();
+                }
+            });
+            
         } else if (status == AppContextMgr.CONTEXT_STATUS.Error)
         {
 

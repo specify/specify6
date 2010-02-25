@@ -105,4 +105,28 @@ public class FixDBAfterLogin
         }
         AppPreferences.getGlobalPrefs().putBoolean("FixAgentToDisciplines2", true);
     }
+    
+    
+    /**
+     * 
+     */
+    public void checkMultipleLocalities()
+    {
+         int cnt = BasicSQLUtils.getCountAsInt("select count(localitydetailid) - count(distinct localityid) from localitydetail");
+         if (cnt > 0)
+         {
+             
+             cnt = BasicSQLUtils.getCountAsInt("select count(collectionobjectid) from collectionobject co inner join collectingevent ce on ce.collectingeventid = co.collectingeventid  where ce.localityid in (select localityid from localitydetail group by localityid having count(localitydetailid) > 1)");
+             String str = String.format("Multiple Locality Detail Records - Count: %d", cnt);
+             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FixDBAfterLogin.class, str, new Exception(str));
+         }
+         
+         cnt = BasicSQLUtils.getCountAsInt("select count(geocoorddetailid) - count(distinct localityid) from geocoorddetail");
+         if (cnt > 0)
+         {
+             cnt = BasicSQLUtils.getCountAsInt("select count(collectionobjectid) from collectionobject co inner join collectingevent ce on ce.collectingeventid = co.collectingeventid  where ce.localityid in (select localityid from geocoorddetail group by localityid having count(geocoorddetailid) > 1)");
+             String str = String.format("Multiple GeoCoord Detail Records - Count: %d", cnt);
+             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FixDBAfterLogin.class, str, new Exception(str));
+         }
+    }
 }
