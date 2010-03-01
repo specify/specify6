@@ -708,6 +708,25 @@ public class UploadTable implements Comparable<UploadTable>
     {
         Vector<InvalidStructure> result = new Vector<InvalidStructure>();
         String tblTitle = getTable().getTableInfo().getTitle();
+
+        if (uploadFields.size() > 1)
+        {
+        	Integer fldCount = null;
+        	int seq = 1;
+        	for (Vector<UploadField> ups : uploadFields)
+        	{
+        		if (fldCount == null)
+        		{
+        			fldCount = ups.size();
+        		}
+        		else if (fldCount != ups.size())
+        		{
+                    String msg = String.format(getResourceString("WB_UPLOAD_INVALID_MANY_MAPPING"), seq) + ": " + tblTitle;
+                    result.add(new InvalidStructure(msg, this));
+        		}
+        		seq++;
+        	}
+        }
         if (!requiredLocalFldsArePresent())
         {
             for (Field fld : getMissingReqLocalFlds())
