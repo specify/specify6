@@ -123,9 +123,14 @@ public class TextFieldFromPickListTable extends JTextField implements GetSetValu
                 
             } else 
             {
+                setText("");
                 for (PickListItemIFace item : adapter.getList())
                 {
-                    if (item.getValue().equals(value.toString()))
+                    if (item.getValue() == null && value == null)
+                    {
+                        break;
+                        
+                    } else if (item.getValue() != null && value != null && item.getValue().equals(value.toString()))
                     {
                         setText(item.getTitle());
                         break;
@@ -143,7 +148,7 @@ public class TextFieldFromPickListTable extends JTextField implements GetSetValu
                     int inx = 0;
                     for (PickListItemIFace item : adapter.getList())
                     {
-                        if (item == null && item.getValue() == null && item.getValue().equals("|null|"))
+                        if (item != null && item.getValue() != null && item.getValue().equals("|null|"))
                         {
                             nullIndex = inx;
                             setText(item.getTitle());
