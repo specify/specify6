@@ -8438,8 +8438,10 @@ public class BuildSampleDatabase
     public static void makeFieldVisible(final String disciplineDirName,
                                         final Discipline discipline)
     {
+        final String showFieldsFileName = "show_fields.xml";
+        
         String dirName        = disciplineDirName != null ? disciplineDirName + File.separator : "";
-        String filePath       = XMLHelper.getConfigDirPath(dirName + "show_fields.xml");
+        String filePath       = XMLHelper.getConfigDirPath(dirName + showFieldsFileName);
         File   showFieldsFile = new File(filePath);
         
         if (showFieldsFile.exists())
@@ -8452,7 +8454,7 @@ public class BuildSampleDatabase
                 ex.printStackTrace();
             }*/
             
-            Element root = XMLHelper.readDOMFromConfigDir(dirName + "show_fields.xml");
+            Element root = XMLHelper.readDOMFromConfigDir(dirName + showFieldsFileName);
             if (root != null)
             {
                 List<?> tables = root.selectNodes("/tables/table");

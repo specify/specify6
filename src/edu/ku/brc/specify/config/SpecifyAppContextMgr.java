@@ -308,11 +308,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
         spAppResourceList.insertElementAt(newDir, index);
         
         String key = null;
-        for (String ky : spAppResourceHash.keySet())
+        for (String hashKey : spAppResourceHash.keySet())
         {
-            if (spAppResourceHash.get(ky) == oldDir)
+            if (spAppResourceHash.get(hashKey) == oldDir)
             {
-                key = ky;
+                key = hashKey;
                 break;
             }
         }

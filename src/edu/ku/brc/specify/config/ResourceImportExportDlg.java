@@ -409,7 +409,6 @@ public class ResourceImportExportDlg extends CustomDialog
                 dir = session.merge(dir);
                 dir.forceLoad();
                 
-                dirs.remove(levelIndex);
                 ((SpecifyAppContextMgr)AppContextMgr.getInstance()).replaceSpDirItem(levelIndex, dir);
                 
             } catch (Exception ex)
