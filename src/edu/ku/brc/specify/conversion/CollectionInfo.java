@@ -33,7 +33,6 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.util.Pair;
 
@@ -50,7 +49,6 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     protected static final Logger           log         = Logger.getLogger(CollectionInfo.class);
     
     protected static Vector<CollectionInfo> collectionInfoList = new Vector<CollectionInfo>();
-    protected static String[]               headers            = null;
 
     protected boolean      isIncluded    = true;
     protected Integer      colObjTypeId;
@@ -65,13 +63,12 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     protected String       catSeriesRemarks;
     protected String       catSeriesLastEditedBy;
     
-    protected int          taxonomyTypeId;
+    protected Integer      taxonomyTypeId;
     protected String       taxonomyTypeName;
     protected Integer      taxonomicUnitTypeID;
     protected int          kingdomId;
     
     protected TaxonTreeDef taxonTreeDef = null;
-    protected Taxon        taxonRoot    = null;
     
     protected Integer      taxonNameId;  // root node of the tree
     protected String       taxonName;
@@ -146,7 +143,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
             String catSeriesSQL = "SELECT SeriesName, CatalogSeriesPrefix, Remarks, LastEditedBy FROM catalogseries WHERE CatalogSeriesID = ";
             
             
-            String sqlTx = "SELECT tt.TaxonomyTypeID, tt.TaxonomyTypeName, tt.KingdomID, tn.TaxonNameID, tn.TaxonName " + 
+            String sqlTx = "SELECT tt.TaxonomyTypeID, tt.TaxonomyTypeName, tt.KingdomID, tn.TaxonNameID, tn.TaxonName, tn.TaxonomicUnitTypeID " + 
                            "FROM collectionobjecttype AS cot " +
                            "Inner Join collectiontaxonomytypes as ctt ON cot.CollectionObjectTypeID = ctt.BiologicalObjectTypeID " + 
                            "Inner Join taxonomytype as tt ON ctt.TaxonomyTypeID = tt.TaxonomyTypeID " + 
@@ -155,12 +152,30 @@ public class CollectionInfo implements Comparable<CollectionInfo>
             
             String cntTaxonName = "SELECT COUNT(TaxonNameID) FROM taxonname WHERE TaxonName IS NOT NULL AND taxonname.TaxonomyTypeId = ";
             
-            String cntColObjForTaxon = "SELECT COUNT(taxonomytype.TaxonomyTypeID) FROM  determination "+
-            "Inner Join taxonname ON determination.TaxonNameID = taxonname.TaxonNameID "+
-            "Inner Join taxonomytype ON taxonname.TaxonomyTypeID = taxonomytype.TaxonomyTypeID WHERE taxonomytype.TaxonomyTypeID = ";
+            /*String cntColObjForTaxon = "SELECT COUNT(taxonomytype.TaxonomyTypeID) FROM determination "+
+                                        "Inner Join taxonname ON determination.TaxonNameID = taxonname.TaxonNameID "+
+                                        "Inner Join taxonomytype ON taxonname.TaxonomyTypeID = taxonomytype.TaxonomyTypeID WHERE taxonomytype.TaxonomyTypeID = ";
+            */
+            //String cntColObj = "SELECT COUNT(CollectionObjectID) FROM collectionobject WHERE CollectionObjectTypeID = ";
 
-            String cntColObj = "SELECT COUNT(CollectionObjectID) FROM collectionobject WHERE CollectionObjectTypeID = ";
-
+            /*sql = " SELECT collectionobject.CollectionObjectTypeID, COUNT(collectionobject.CollectionObjectTypeID), collectionobjecttype.CollectionObjectTypeName " +
+                    "FROM collectionobject INNER JOIN collectionobjecttype ON collectionobject.CollectionObjectTypeID = collectionobjecttype.CollectionObjectTypeID " +
+                    "GROUP BY collectionobject.CollectionObjectTypeID";
+            */
+            
+            /*String colObjCountPerCatSeriesSQL = "SELECT COUNT(cs.CatalogSeriesID) FROM catalogseries cs " +
+            "INNER JOIN collectionobjectcatalog cc ON cs.CatalogSeriesID = cc.CatalogSeriesID " +
+            "INNER JOIN collectionobjecttype ct ON cc.CollectionObjectTypeID = ct.CollectionObjectTypeID " +
+            "WHERE cc.CollectionObjectTypeID > 9 AND cc.CollectionObjectTypeID < 20 AND cs.CatalogSeriesID = %d " +
+            "GROUP BY cs.CatalogSeriesID, cs.SeriesName, ct.CollectionObjectTypeID, ct.CollectionObjectTypeName";
+            */
+            String colObjCountPerCatSeriesSQL = "SELECT COUNT(cc.CatalogSeriesID) " + //, cc.CatalogSeriesID, cs.SeriesName " +
+            "FROM collectionobjectcatalog cc INNER JOIN catalogseries cs ON cc.CatalogSeriesID = cs.CatalogSeriesID WHERE cs.CatalogSeriesID = %d GROUP BY cs.CatalogSeriesID";
+            
+            String colObjDetCountPerCatSeriesSQL = "SELECT COUNT(cc.CatalogSeriesID) " +
+            "FROM determination d INNER JOIN collectionobject co ON d.BiologicalObjectID = co.CollectionObjectID " +
+            "INNER JOIN collectionobjectcatalog cc ON co.CollectionObjectID = cc.CollectionObjectCatalogID " +
+            "WHERE cc.CatalogSeriesID = %d AND d.TaxonNameID IS NOT NULL GROUP BY cc.CatalogSeriesID";
             
             Statement stmt = null;
             
@@ -180,6 +195,15 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                     info.setColObjTypeName(rs.getString(2));
                     info.setCatSeriesDefId(rs.getInt(3));
                     info.setCatSeriesId(rs.getInt(4));
+                    
+                    sql = String.format(colObjCountPerCatSeriesSQL, info.getCatSeriesId());
+                    log.debug(sql);
+                    int colObjCnt = BasicSQLUtils.getCountAsInt(oldDBConn, sql);
+                    info.setColObjCnt(colObjCnt);
+                    
+                    sql = String.format(colObjDetCountPerCatSeriesSQL, info.getCatSeriesId());
+                    log.debug(sql);
+                    info.setColObjDetTaxCnt(BasicSQLUtils.getCountAsInt(oldDBConn, sql));
                     
                     String s = catSeriesSQL + info.getCatSeriesId();
                     log.debug(s);
@@ -212,10 +236,9 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                         info.setKingdomId((Integer)row[2]);
                         info.setTaxonNameId((Integer)row[3]);
                         info.setTaxonName((String)row[4]);
+                        info.setTaxonomicUnitTypeID((Integer)row[5]);
                         
                         info.setTaxonNameCnt(BasicSQLUtils.getCountAsInt(oldDBConn, cntTaxonName + taxonomyTypeID));
-                        info.setColObjDetTaxCnt(BasicSQLUtils.getCountAsInt(oldDBConn, cntColObjForTaxon + taxonomyTypeID));
-                        info.setColObjCnt(BasicSQLUtils.getCountAsInt(oldDBConn, cntColObj + info.getColObjTypeId()));
                         
                         log.debug("TaxonomyTypeName: "+ info.getTaxonomyTypeName()+"  TaxonName: "+info.getTaxonName()+"  TaxonomyTypeId: "+info.getTaxonomyTypeId());
                         
@@ -276,8 +299,6 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                         info.setTaxonomicUnitTypeID((Integer)row[7]);
                         
                         info.setTaxonNameCnt(BasicSQLUtils.getCountAsInt(oldDBConn, cntTaxonName + taxonomyTypeID));
-                        info.setColObjDetTaxCnt(BasicSQLUtils.getCountAsInt(oldDBConn, cntColObjForTaxon + taxonomyTypeID));
-                        info.setColObjCnt(BasicSQLUtils.getCountAsInt(oldDBConn, cntColObj + info.getColObjTypeId()));
                         
                         Vector<Object> ttNames = BasicSQLUtils.querySingleCol(oldDBConn, hostTaxonID + taxonomyTypeID);
                         if (ttNames != null && ttNames.size() > 0 && ((Long)ttNames.get(0)) > 0)
@@ -309,6 +330,8 @@ public class CollectionInfo implements Comparable<CollectionInfo>
             }
         }
         
+        Collections.sort(collectionInfoList);
+        
         return collectionInfoList;
     }
     
@@ -330,107 +353,6 @@ public class CollectionInfo implements Comparable<CollectionInfo>
             System.out.println("-----------------\n"+ci.toString());
         }
     }
-    
-    /**
-     * @param col
-     * @return
-     */
-    public boolean canEdit(final int col)
-    {
-        switch (col)
-        {
-            case  0 : return true; // isIncluded;
-            case  1 : return false; // colObjTypeName;
-            case  2 : return true; // catSeriesName;
-            case  3 : return true; // catSeriesPrefix;
-            case  4 : return true; // catSeriesRemarks;
-            case  5 : return false; // taxonNameId;
-            case  6 : return false; // taxonomyTypeName;
-            case  7 : return false; // kingdomId;
-            case  8 : return false; // taxonName;
-            case  9 : return false; // taxonNameCnt;
-            case 10 : return false; // colObjDetTaxCnt;
-            case 11 : return false; // srcHostTaxonCnt;
-            case 12 : return false; // colObjCnt;
-        }
-        return false; 
-    }
-    
-    /**
-     * @param col
-     * @return
-     */
-    public Object getValueAt(final int col)
-    {
-        switch (col)
-        {
-            case  0 : return isIncluded;
-            case  1 : return colObjTypeName;
-            case  2 : return catSeriesName;
-            case  3 : return catSeriesPrefix;
-            case  4 : return catSeriesRemarks;
-            case  5 : return taxonNameId;
-            case  6 : return taxonomyTypeName;
-            case  7 : return kingdomId;
-            case  8 : return taxonName;
-            case  9 : return taxonNameCnt;
-            case 10 : return colObjDetTaxCnt;
-            case 11 : return srcHostTaxonCnt;
-            case 12 : return colObjCnt;
-        }
-        return ""; 
-    }
-    
-    /**
-     * @return
-     */
-    public static String[] getHeaders()
-    {
-        if (headers == null)
-        {
-            headers = new String[] {
-                    "Is Included",
-		            "Coll Obj Type Name",
-                    "Cat Series Name", 
-                    "Cat Series Prefix", 
-                    "Cat Series Remarks", 
-                    "Taxon Root ID", 
-                    "Taxonomy Type Name", 
-                    "Kingdom Id", 
-                    "Taxon Name (Root)", 
-                    "# of Taxon", 
-                    "# of Coll Objs",
-                    "Src Host Taxon",
-                    "Col Obj Count"};
-        }
-        return headers;
-    }
-    
-    /**
-     * @param columnIndex
-     * @return
-     */
-    private static Class<?> getColumnClassForModel(int columnIndex)
-    {
-        switch (columnIndex)
-        {
-            case  0 : return Boolean.class;
-            case  1 : return String.class;
-            case  2 : return String.class;
-            case  3 : return String.class;
-            case  4 : return String.class;
-            case  5 : return Integer.class;
-            case  6 : return String.class;
-            case  7 : return Integer.class;
-            case  8 : return String.class;
-            case  9 : return Integer.class;
-            case 10 : return Integer.class;
-            case 11 : return Long.class;
-            case 12 : return Integer.class;
-        }
-        return String.class;
-    }
-
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
@@ -444,95 +366,38 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     /**
      * @return932413666
      */
-    public static DefaultTableModel getCollectionInfoTableModel()
+    public static Vector<CollectionInfo> getFilteredCollectionInfoList()
     {
-        Collections.sort(collectionInfoList);
-        
-        ColInfoTableModel model = (new CollectionInfo(null)).new ColInfoTableModel();
+        Vector<CollectionInfo> colList = new Vector<CollectionInfo>();
+        for (CollectionInfo ci : collectionInfoList)
+        {
+            if (ci.getColObjCnt() > 0 || ci.getSrcHostTaxonCnt() > 0)
+            {
+                colList.add(ci);
+            }
+        }
+        return colList;
+    }
+
+
+    /**
+     * @return932413666
+     */
+    public static DefaultTableModel getCollectionInfoTableModel(final boolean doFilter)
+    {
+        CollectionInfoModel model;
+        if (doFilter)
+        {
+            model = new CollectionInfoModel(getFilteredCollectionInfoList());
+        } else
+        {
+            model = new CollectionInfoModel(collectionInfoList);    
+        }
         
         return model;
     }
     
-    //----------------------------------------------------------------
-    class ColInfoTableModel extends DefaultTableModel
-    {
-        /**
-         * 
-         */
-        public ColInfoTableModel()
-        {
-            super();
-            getHeaders();
-        }
-
-        /* (non-Javadoc)
-         * @see javax.swing.table.DefaultTableModel#getColumnCount()
-         */
-        @Override
-        public int getColumnCount()
-        {
-            return headers == null ? 0 : headers.length;
-        }
-
-        /* (non-Javadoc)
-         * @see javax.swing.table.DefaultTableModel#getColumnName(int)
-         */
-        @Override
-        public String getColumnName(int column)
-        {
-            return headers[column];
-        }
-
-        /* (non-Javadoc)
-         * @see javax.swing.table.DefaultTableModel#getRowCount()
-         */
-        @Override
-        public int getRowCount()
-        {
-            return collectionInfoList != null ? collectionInfoList.size() : 0;
-        }
-
-        /* (non-Javadoc)
-         * @see javax.swing.table.AbstractTableModel#getColumnClass(int)
-         */
-        @Override
-        public Class<?> getColumnClass(int columnIndex)
-        {
-            return getColumnClassForModel(columnIndex);
-        }
-
-        /* (non-Javadoc)
-         * @see javax.swing.table.DefaultTableModel#getValueAt(int, int)
-         */
-        @Override
-        public Object getValueAt(int row, int column)
-        {
-            CollectionInfo ci = collectionInfoList.get(row);
-            return ci.getValueAt(column);
-        }
-
-        /* (non-Javadoc)
-         * @see javax.swing.table.DefaultTableModel#setValueAt(java.lang.Object, int, int)
-         */
-        @Override
-        public void setValueAt(Object value, int row, int column)
-        {
-            
-        }
-
-        /* (non-Javadoc)
-         * @see javax.swing.table.DefaultTableModel#isCellEditable(int, int)
-         */
-        @Override
-        public boolean isCellEditable(int row, int column)
-        {
-            CollectionInfo ci = collectionInfoList.get(row);
-            return ci.canEdit(column);
-        }
-        
-    };
-    
-    //----- Getters and Setters ----------------------------
+     //----- Getters and Setters ----------------------------
     
     
     /**
@@ -555,9 +420,18 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     /**
      * @param taxonomicUnitTypeID the taxonomicUnitTypeID to set
      */
-    public void setTaxonomicUnitTypeID(Integer taxonomicUnitTypeID)
+    public void setTaxonomicUnitTypeID(final Integer taxonomicUnitTypeID)
     {
         this.taxonomicUnitTypeID = taxonomicUnitTypeID;
+    }
+
+
+    /**
+     * @return the taxonNameId
+     */
+    public Integer getTaxonNameId()
+    {
+        return taxonNameId;
     }
 
 
@@ -595,7 +469,6 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     {
         this.srcHostTaxonCnt = srcHostTaxonCnt;
     }
-
 
     /**
      * @return the isIncluded
@@ -641,25 +514,6 @@ public class CollectionInfo implements Comparable<CollectionInfo>
         this.colObjDetTaxCnt = colObjDetTaxCnt;
     }
 
-
-    /**
-     * @return the taxonRoot
-     */
-    public Taxon getTaxonRoot()
-    {
-        return taxonRoot;
-    }
-
-
-    /**
-     * @param taxonRoot the taxonRoot to set
-     */
-    public void setTaxonRoot(Taxon taxonRoot)
-    {
-        this.taxonRoot = taxonRoot;
-    }
-
-
     /**
      * @return the taxonTreeDef
      */
@@ -667,16 +521,6 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     {
         return taxonTreeDef;
     }
-
-
-    /**
-     * @param taxonTreeDef the taxonTreeDef to set
-     */
-    public void setTaxonTreeDef(TaxonTreeDef taxonTreeDef)
-    {
-        this.taxonTreeDef = taxonTreeDef;
-    }
-
 
     /**
      * @return the catSeriesLastEditedBy
@@ -825,7 +669,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     /**
      * @return the taxonomyTypeId
      */
-    public int getTaxonomyTypeId()
+    public Integer getTaxonomyTypeId()
     {
         return taxonomyTypeId;
     }
@@ -834,7 +678,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     /**
      * @param taxonomyTypeId the taxonomyTypeId to set
      */
-    public void setTaxonomyTypeId(int taxonomyTypeId)
+    public void setTaxonomyTypeId(Integer taxonomyTypeId)
     {
         this.taxonomyTypeId = taxonomyTypeId;
     }
@@ -852,11 +696,10 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     /**
      * @param taxonomyTypeName the taxonomyTypeName to set
      */
-    public void setTaxonomyTypeName(String taxonomyTypeName)
+    public void setTaxonomyTypeName(final String taxonomyTypeName)
     {
         this.taxonomyTypeName = taxonomyTypeName;
     }
-
 
     /**
      * @return the kingdomId
@@ -864,6 +707,19 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     public int getKingdomId()
     {
         return kingdomId;
+    }
+
+    public boolean isInUse()
+    {
+        return taxonNameCnt > 0;
+    }
+    
+    /**
+     * @param taxonTreeDef the taxonTreeDef to set
+     */
+    public void setTaxonTreeDef(TaxonTreeDef taxonTreeDef)
+    {
+        this.taxonTreeDef = taxonTreeDef;
     }
 
 

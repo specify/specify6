@@ -3806,7 +3806,7 @@ public class BuildSampleDatabase
                 return null;
             }
             
-            System.err.println(DBConnection.getInstance().getDatabaseName());
+            //System.err.println(DBConnection.getInstance().getDatabaseName());
             for (String nm : BasicSQLUtils.getTableNames(DBConnection.getInstance().getConnection()))
             {
                 System.err.println(nm);
@@ -8506,7 +8506,7 @@ public class BuildSampleDatabase
         {
             localSession = DataProviderFactory.getInstance().createSession();
             String sql = "FROM SpLocaleContainer as sp INNER JOIN sp.discipline as d WHERE sp.name = '" + tableName + "' AND d.id = "+discipline.getId();
-            System.err.println(sql);
+            //System.err.println(sql);
             Object[] cols = (Object[])localSession.getData(sql);
             if (cols != null && cols.length > 0)
             {

@@ -668,11 +668,11 @@ public class SpecifyDBConverter
             System.exit(0);
         }
         
-        if (false) 
+        /*if (false) 
         {
             createTableSummaryPage();
             return;
-        }
+        }*/
         
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -687,12 +687,62 @@ public class SpecifyDBConverter
 
             }
         });
+        
+        // Load Local Prefs
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        localPrefs.setDirPath(UIRegistry.getAppDataDir());
 
         
         if (startfromScratch)
         {
-            log.debug("Starting from scratch and generating the schema");
-            SpecifySchemaGenerator.generateSchema(driverInfo, hostName, dbNameDest, itUsrPwd.first, itUsrPwd.second);
+            boolean doBuild = true;
+            /*File    file    = new File("blank_6107.sql");
+            System.err.println(file.getAbsolutePath());
+            if (file.exists())
+            {
+                DBMSUserMgr dbMgr = DBMSUserMgr.getInstance();
+                if (dbMgr.connect(itUsrPwd.first, itUsrPwd.second, "localhost", dbNameDest))
+                {
+                    if (dbMgr.doesDBExists(dbNameDest))
+                    {
+                        dbMgr.dropDatabase(dbNameDest);
+                    }
+                    
+                    if (dbMgr.createDatabase(dbNameDest))
+                    {
+                        doBuild = false;
+                    }
+                    
+                    dbMgr.close();
+                }
+
+                
+                MySQLBackupService bkService = new MySQLBackupService();
+                
+                doBuild = !bkService.doRestore(file.getAbsolutePath(),"/usr/local/mysql/bin/mysql", dbNameDest, itUsrPwd.first, itUsrPwd.second);
+            } */
+            
+            if (doBuild)
+            {
+                DBMSUserMgr dbMgr = DBMSUserMgr.getInstance();
+                if (dbMgr.connect(itUsrPwd.first, itUsrPwd.second, "localhost", dbNameDest))
+                {
+                    if (dbMgr.doesDBExists(dbNameDest))
+                    {
+                        dbMgr.dropDatabase(dbNameDest);
+                    }
+                    
+                    if (dbMgr.createDatabase(dbNameDest))
+                    {
+                        doBuild = false;
+                    }
+                    
+                    dbMgr.close();
+                }
+
+                log.debug("Starting from scratch and generating the schema");
+                SpecifySchemaGenerator.generateSchema(driverInfo, hostName, dbNameDest, itUsrPwd.first, itUsrPwd.second);
+            }
         }
 
         log.debug("Preparing new database: completed");
@@ -1295,11 +1345,17 @@ public class SpecifyDBConverter
                         BasicSQLUtils.deleteAllRecordsFromTable("picklist", BasicSQLUtils.myDestinationServerType);
                         BasicSQLUtils.deleteAllRecordsFromTable("picklistitem", BasicSQLUtils.myDestinationServerType);
     
-                        conversion.convertUSYSTables(localSession, collection);
+                        for (Collection collectionObj : (List<Collection>)localSession.createQuery("FROM Collection").list())
+                        {
+                            conversion.convertUSYSTables(localSession, collectionObj);
+                            
+                            frame.setDesc("Creating PickLists from XML.");
+                            
+                            BuildSampleDatabase.createPickLists(localSession, null, true, collection);
+                            
+                            BuildSampleDatabase.createPickLists(localSession, collection.getDiscipline(), true, collection);
+                        }
                         
-                        frame.setDesc("Creating PickLists from XML.");
-                        BuildSampleDatabase.createPickLists(localSession, null, true, collection);
-                        BuildSampleDatabase.createPickLists(localSession, dscp, true, collection);
                     } else
                     {
                         log.error("STATUS was FALSE for PickList creation!");
@@ -1342,13 +1398,6 @@ public class SpecifyDBConverter
                 frame.setDesc("Localizing the Schema");
                 conversion.doLocalizeSchema();
 
-                //checkDisciplines();
-
-                BuildSampleDatabase.makeFieldVisible(null, dscp);
-                BuildSampleDatabase.makeFieldVisible(dscp.getType(), dscp);
-
-                //checkDisciplines();
-
                 frame.incOverall();
                 
                 //HabitatTaxonIdConverter habitatConverter = new HabitatTaxonIdConverter(oldDB.getConnection(), newDBConn);
@@ -1361,9 +1410,11 @@ public class SpecifyDBConverter
                 
                 frame.incOverall();
                 
-                GulfInvertsFixer giFixer = new GulfInvertsFixer(oldDBConn, newDBConn, dbNameSource, null);
-                giFixer.convert(conversion.getCollectionMemberId());
-                
+                if (dbNameSource.startsWith("gcf"))
+                {
+                    GulfInvertsFixer giFixer = new GulfInvertsFixer(oldDBConn, newDBConn, dbNameSource, null);
+                    giFixer.convert(conversion.getCollectionMemberId());
+                }
                 //checkDisciplines();
 
                 TableWriter tblWriter = convLogger.getWriter("ScopeUpdater.html", "Updating Scope Summary");
@@ -1394,6 +1445,7 @@ public class SpecifyDBConverter
                 fixHibernateHiLo(newDBConn);
                 
                 DisciplineDuplicator d = new DisciplineDuplicator(conversion.getOldDBConn(), conversion.getNewDBConn(), tblWriter, frame, conversion);
+                d.doShowFieldsForDiscipline();
                 d.duplicateCollectingEvents();
                 d.duplicateLocalities();
                 d.duplicateGeography();
@@ -1415,7 +1467,7 @@ public class SpecifyDBConverter
                 frame.setDesc("Done - " + dbNameDest + " " + convertTimeInSeconds);
 
 
-                System.setProperty(AppPreferences.factoryName, "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
+                //System.setProperty(AppPreferences.factoryName, "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
                 System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
                 
                 createTableSummaryPage();
@@ -1669,9 +1721,9 @@ public class SpecifyDBConverter
         
         //----------------------------------------------------------------------------------
         tblWriter.startTable();
-        tblWriter.logHdr(CollectionInfo.getHeaders());
+        tblWriter.logHdr(CollectionInfoModel.getHeaders());
         
-        DefaultTableModel model = CollectionInfo.getCollectionInfoTableModel();
+        DefaultTableModel model = CollectionInfo.getCollectionInfoTableModel(true);
         Object[] row = new Object[model.getColumnCount()];
         for (int r=0;r<model.getRowCount();r++)
         {

@@ -29,7 +29,12 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
+import edu.ku.brc.specify.datamodel.TaxonTreeDef;
+import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -71,6 +76,37 @@ public class DisciplineDuplicator
         this.conversion = conversion;
     }
     
+    /**
+     * 
+     */
+    public void doShowFieldsForDiscipline()
+    {
+    
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            
+            for (Discipline discipline : (List<Discipline>)session.createQuery("FROM Discipline", false).list())
+            {
+                BuildSampleDatabase.makeFieldVisible(null, discipline);
+                BuildSampleDatabase.makeFieldVisible(discipline.getType(), discipline);
+            }
+                
+        } catch(Exception ex)
+        {
+            log.error("Error while  show fields in Discipline.");
+            ex.printStackTrace();
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
+    }
+    
     
     /**
      * @param conn
@@ -85,7 +121,6 @@ public class DisciplineDuplicator
         Statement stmt = null;
         try
         {
-            
             stmt = conn.createStatement();
             String    sql = String.format("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'", catalog, tableName);
             ResultSet rs  = stmt.executeQuery(sql);
@@ -186,7 +221,7 @@ public class DisciplineDuplicator
             while (rs.next())
             {
                 int     ceID  = rs.getInt(1);
-                boolean debug = true;//ceID == 49;
+                boolean debug = false;//ceID == 49;
                 /*
                      "CollectingEventID","DisciplineID","CollectionObjectID","CollectionMemberID", "Collection.DisciplineID"
                          2058,               7,               14930,                 4                       3

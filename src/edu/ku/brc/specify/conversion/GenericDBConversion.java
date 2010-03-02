@@ -51,6 +51,7 @@ import static edu.ku.brc.specify.conversion.BasicSQLUtils.setTblWriter;
 import static edu.ku.brc.ui.UIRegistry.showError;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.io.File;
 import java.sql.Connection;
@@ -76,6 +77,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -91,6 +93,10 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Restrictions;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
@@ -224,6 +230,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     
     // New Multi-Collection data members
     protected Vector<CollectionInfo>                        collectionInfoList;
+    protected Vector<CollectionInfo>                        collectionInfoShortList;
     protected HashMap<Integer, AutoNumberingScheme>         catSeriesToAutoNumSchemeHash = new HashMap<Integer, AutoNumberingScheme>();
     
 
@@ -329,21 +336,156 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      */
     public CollectionResultType initialize()
     {
-        collectionInfoList = CollectionInfo.getCollectionInfoList(oldDBConn);
+        collectionInfoList      = CollectionInfo.getCollectionInfoList(oldDBConn);
+        collectionInfoShortList = CollectionInfo.getFilteredCollectionInfoList();
         
         if (collectionInfoList != null && collectionInfoList.size() > 0)
         {
+            int paleoCnt = 0;
             
-            DefaultTableModel model = CollectionInfo.getCollectionInfoTableModel();
+            // This is a Hash of TaxonObjectType to see how many collections use the same TaxonObjectType
+            HashMap<Integer, HashSet<CollectionInfo>> taxonomyTypeHash = new HashMap<Integer, HashSet<CollectionInfo>>();
+            
+            // Get a List for each type of Paleo Collection, hashed by the Root Id
+            HashMap<Integer, Vector<CollectionInfo>>                  paleoColInfoHash = new HashMap<Integer, Vector<CollectionInfo>>();
+            HashMap<Integer, HashSet<DisciplineType.STD_DISCIPLINES>> paleoDispTypeHash = new HashMap<Integer, HashSet<DisciplineType.STD_DISCIPLINES>>();
+            for (CollectionInfo colInfo : collectionInfoShortList)
+            {
+                // List tracks a 'set' of CollectionInfo objects for TaxonomyType
+                HashSet<CollectionInfo> taxonomyTpeSet = taxonomyTypeHash.get(colInfo.getTaxonomyTypeId());
+                if (taxonomyTpeSet == null)
+                {
+                    taxonomyTpeSet = new HashSet<CollectionInfo>();
+                    taxonomyTypeHash.put(colInfo.getTaxonNameId(), taxonomyTpeSet);
+                }
+                taxonomyTpeSet.add(colInfo);
+
+                //---
+                DisciplineType dType = getStandardDisciplineName(colInfo.getTaxonomyTypeName(), colInfo.getCatSeriesName());
+                colInfo.setDisciplineTypeObj(dType);
+                
+                if (dType.isPaleo())
+                {
+                    Vector<CollectionInfo> ciList = paleoColInfoHash.get(colInfo.getTaxonNameId());
+                    if (ciList == null)
+                    {
+                        ciList = new Vector<CollectionInfo>();
+                        paleoColInfoHash.put(colInfo.getTaxonNameId(), ciList);
+                    }
+                    ciList.add(colInfo);
+                    
+                    HashSet<DisciplineType.STD_DISCIPLINES> typeDispSet = paleoDispTypeHash.get(colInfo.getTaxonNameId());
+                    if (typeDispSet == null)
+                    {
+                        typeDispSet = new HashSet<DisciplineType.STD_DISCIPLINES>();
+                        paleoDispTypeHash.put(colInfo.getTaxonNameId(), typeDispSet);
+                    }
+                    typeDispSet.add(colInfo.getDisciplineTypeObj().getDisciplineType());
+                    
+                    paleoCnt++;
+                }
+            }
+            
+            int cnt = 0;
+            StringBuilder msg = new StringBuilder();
+            for (Integer taxonomyTypId : taxonomyTypeHash.keySet())
+            {
+                HashSet<CollectionInfo> taxonomyTpeSet = taxonomyTypeHash.get(taxonomyTypId);
+                if (taxonomyTpeSet.size() > 1)
+                {
+                    msg.append(String.format("<html>TaxonomyTypeId %d has more than one Discpline/Collection:<br><OL>", taxonomyTypId));
+                    for (CollectionInfo ci : taxonomyTpeSet)
+                    {
+                        msg.append("<LI>");
+                        msg.append(ci.getCatSeriesName());
+                        msg.append("</LI>");
+                    }
+                    cnt++;
+                }
+            }
+            
+            if (cnt > 0)
+            {
+                JOptionPane.showConfirmDialog(null, msg.toString(), "Taxomony Type Issues", JOptionPane.CLOSED_OPTION, JOptionPane.QUESTION_MESSAGE); 
+            }
+            
+            // Will be zero for no Paleo collections
+            if (paleoCnt > 1)
+            {
+                // Check to see if they all use the same tree
+                if (paleoColInfoHash.size() > 1)
+                {
+                    msg.setLength(0);
+                    // We get here when there is more than one Taxon Tree for the Paleo Collections
+                    for (Integer treeId : paleoColInfoHash.keySet())
+                    {
+                        Vector<CollectionInfo> ciList  = paleoColInfoHash.get(treeId);
+                        CollectionInfo         colInfo = ciList.get(0);
+                        msg.append(String.format("The following collections use Taxon Tree %s:\n", colInfo.getTaxonomyTypeName()));
+                        for (CollectionInfo ci : paleoColInfoHash.get(treeId))
+                        {
+                            msg.append(ci.getCatSeriesName());
+                            msg.append("\n");
+                        }
+                    }
+                    
+                    JOptionPane.showConfirmDialog(null, msg.toString(), "Paleo Taxon Tree Issues", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                        
+                } else
+                {
+                    StringBuilder colNames = new StringBuilder();
+                    for (Integer treeId : paleoColInfoHash.keySet())
+                    {
+                        for (CollectionInfo ci : paleoColInfoHash.get(treeId))
+                        {
+                            colNames.append("<LI>");
+                            colNames.append(ci.getCatSeriesName());
+                            colNames.append("</LI>");
+                        }
+                    }
+                    
+                    // You get here when all the Paleo Disciplines use the same tree
+                    String msgStr = "<html>All the Paleo Collections need to use the same Taxon Tree and<br>therefore needs to be in the same discipline:<br><ol>";
+                    JOptionPane.showConfirmDialog(null, msgStr + colNames.toString(), "Paleo Taxon Tree Issues", JOptionPane.CLOSED_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    
+                    for (Integer treeId : paleoColInfoHash.keySet())
+                    {
+                        Vector<CollectionInfo> ciList  = paleoColInfoHash.get(treeId);
+                        CollectionInfo         colInfo = ciList.get(0);
+                        for (CollectionInfo ci : paleoColInfoHash.get(treeId))
+                        {
+                            ci.setDisciplineTypeObj(colInfo.getDisciplineTypeObj());
+                        }
+                    }
+                }
+                //
+            }
+            
+            DefaultTableModel model = CollectionInfo.getCollectionInfoTableModel(false);
             if (model.getRowCount() > 1)
             {
                 TableWriter colInfoTblWriter = convLogger.getWriter("colinfo.html", "Collection Info");
                 
                 colInfoTblWriter.startTable();
-                colInfoTblWriter.logHdr(CollectionInfo.getHeaders());
+                colInfoTblWriter.logHdr(CollectionInfoModel.getHeaders());
                 
                 
                 Object[] row = new Object[model.getColumnCount()];
+                for (int r=0;r<model.getRowCount();r++)
+                {
+                    for (int i=0;i<model.getColumnCount();i++)
+                    {
+                        row[i] = model.getValueAt(r, i);
+                    }
+                    colInfoTblWriter.logObjRow(row);
+                }
+                colInfoTblWriter.endTable();
+                colInfoTblWriter.println("<BR><h3>Collections to be Created.</h3>");
+                colInfoTblWriter.startTable();
+                colInfoTblWriter.logHdr(CollectionInfoModel.getHeaders());
+                
+                model = CollectionInfo.getCollectionInfoTableModel(true);
+                row = new Object[model.getColumnCount()];
                 for (int r=0;r<model.getRowCount();r++)
                 {
                     for (int i=0;i<model.getColumnCount();i++)
@@ -369,13 +511,28 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 }
             }
             
-            JPanel panel = new JPanel(new BorderLayout());
-            JTable table = new JTable(CollectionInfo.getCollectionInfoTableModel());
+            CellConstraints cc = new CellConstraints();
+            PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p,2px,f:p:g,10px,p,2px,p:g,8px"));
             
-            panel.add(UIHelper.createLabel("Available Specify 5 Taxononmic Types", SwingConstants.CENTER), BorderLayout.NORTH);
-            panel.add(UIHelper.createScrollPane(table), BorderLayout.CENTER);
+            JTable tableTop = new JTable(CollectionInfo.getCollectionInfoTableModel(false));
+            JTable tableBot = new JTable(CollectionInfo.getCollectionInfoTableModel(true));
             
-            CustomDialog dlg = new CustomDialog(null, "Taxononic Types", true, panel);
+            int rows = 10;
+            tableTop.setPreferredScrollableViewportSize(new Dimension( 
+                    tableTop.getPreferredScrollableViewportSize().width, 
+                    rows*tableTop.getRowHeight()));
+            tableBot.setPreferredScrollableViewportSize(new Dimension( 
+                    tableBot.getPreferredScrollableViewportSize().width, 
+                    rows*tableBot.getRowHeight()));
+            
+            pb.add(UIHelper.createLabel("Available Specify 5 Taxononmic Types", SwingConstants.CENTER), cc.xy(1,1));
+            pb.add(UIHelper.createScrollPane(tableTop), cc.xy(1,3));
+            
+            pb.add(UIHelper.createLabel("Specify 5 Collections to be Created", SwingConstants.CENTER), cc.xy(1,5));
+            pb.add(UIHelper.createScrollPane(tableBot), cc.xy(1,7));
+            
+            pb.setDefaultDialogBorder();
+            CustomDialog dlg = new CustomDialog(null, "Taxononic Types", true, pb.getPanel());
             dlg.createUI();
            
             dlg.setSize(1024, 500);
@@ -2000,15 +2157,24 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      * @param name the name to be figured out
      * @return true if there is a match
      */
-    protected boolean checkName(String[] referenceNames, final String name)
+    protected boolean checkName(String[] referenceNames, final String nameArg)
     {
-        String[] tokens    = StringUtils.split(name.toLowerCase(), ' ');
+        String name = nameArg.toLowerCase();
+        String[] tokens = StringUtils.split(name.toLowerCase(), ' ');
         for (String tok : tokens)
         {
             for (String rn : referenceNames)
             {
-                if (StringUtils.contains(rn.toLowerCase(), tok)) { return true; }
+                if (tok.startsWith(rn.toLowerCase())) { return true; }
+                if (rn.toLowerCase().startsWith(tok)) { return true; }
+            }
+        }
+        for (String tok : tokens)
+        {
+            for (String rn : referenceNames)
+            {
                 if (StringUtils.contains(tok, rn.toLowerCase())) { return true; }
+                if (StringUtils.contains(rn.toLowerCase(), tok)) { return true; }
             }
         }
         return false;
@@ -2121,13 +2287,30 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
         STD_DISCIPLINES type = null;
         
-        if (checkName(new String[] { "Plant", "Herb", "Botan", "Fungi" }, name)) 
+        if (StringUtils.contains(name.toLowerCase(), "paleo")) 
+        { 
+            if (StringUtils.contains(name.toLowerCase(), "invert"))
+            {
+                type = STD_DISCIPLINES.invertpaleo;
+                
+            } else if (StringUtils.contains(name.toLowerCase(), "botan"))
+            {
+                type = STD_DISCIPLINES.paleobotany;
+            } else
+            {
+                type = STD_DISCIPLINES.vertpaleo; // Default (should have a generic 'paleo' default)
+            }
+        } else if (checkName(new String[] { "Plant", "Herb", "Botan", "Fungi" }, name)) 
         { 
             type = STD_DISCIPLINES.botany; 
             
         } else if (checkName(new String[] { "FishHerps", "Herps", "Herp", "Frog" }, name)) 
         { 
             type = STD_DISCIPLINES.herpetology; 
+            
+        } else if (checkName(new String[] { "Bird", "Ornithology", "Ornith"}, name)) 
+        { 
+            type = STD_DISCIPLINES.bird; 
             
         } else if (checkName(new String[] { "Insect", "Ento", "Bug", "Spider", "arachn" }, name)) 
         { 
@@ -2145,21 +2328,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         { 
             type = STD_DISCIPLINES.mammal;
             
-        } else if (checkName(new String[] { "Paleo"}, name)) 
-        { 
-            if (checkName(new String[] { "Invert", "Fossil"}, name)) 
-            {
-                type = STD_DISCIPLINES.invertpaleo;
-                
-            } else if (checkName(new String[] { "Botan"}, name)) 
-            {
-                type = STD_DISCIPLINES.paleobotany;
-            } else
-            {
-                type = STD_DISCIPLINES.invertpaleo; // Default (should have a generic 'paleo' default)
-            }
-            
-        } else if (checkName(new String[] { "Anthro" }, name)) 
+        } else if (checkName(new String[] { "history", "art", "anthro"}, name)) 
         { 
             type = STD_DISCIPLINES.anthropology;
         }
@@ -2437,7 +2606,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         {
             HashSet<Integer> hashSet = new HashSet<Integer>();
             StringBuilder    inSB    = new StringBuilder();
-            for (CollectionInfo ci : CollectionInfo.getCollectionInfoList(oldDBConn))
+            for (CollectionInfo ci : collectionInfoShortList)
             {
                 if (!hashSet.contains(ci.getTaxonomyTypeId()))
                 {
@@ -2472,7 +2641,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             // Create a Hashed List of CollectionInfo for each unique TaxonomyTypeId
             // where the TaxonomyTypeId is a Discipline
             HashMap<Integer, Vector<CollectionInfo>> collDispHash = new HashMap<Integer, Vector<CollectionInfo>>();
-            for (CollectionInfo info : collectionInfoList)
+            for (CollectionInfo info : collectionInfoShortList)
             {
                 Vector<CollectionInfo> colInfoList = collDispHash.get(info.getTaxonomyTypeId());
                 if (colInfoList == null)
@@ -2702,7 +2871,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
             } // for loop 
             
-            for (CollectionInfo ci : collectionInfoList)
+            for (CollectionInfo ci : collectionInfoShortList)
             {
                 if (ci.getCatSeriesId() != null)
                 {
@@ -2730,7 +2899,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     {
         try
         {
-            for (CollectionInfo ci : collectionInfoList)
+            for (CollectionInfo ci : collectionInfoShortList)
             {
                 log.debug(ci.getCatSeriesName()+"   ci.getDisciplineId(): "+ci.getDisciplineId());
                 List<?> list = (List<?>)HibernateUtil.getCurrentSession().createQuery("FROM Discipline WHERE id = " + ci.getDisciplineId()).list();
@@ -5424,7 +5593,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             }*/
             
             Hashtable<Integer, CollectionInfo> oldCatSeriesIDToCollInfo = new Hashtable<Integer, CollectionInfo>();
-            for (CollectionInfo ci : collectionInfoList)
+            for (CollectionInfo ci : collectionInfoShortList)
             {
                 if (ci.getCatSeriesId() != null)
                 {
@@ -8495,7 +8664,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             
         } catch (Exception ex)
         {
-            trans.rollback();
+            if (trans != null)
+            {
+                trans.rollback();
+            }
             
             ex.printStackTrace();
         } finally

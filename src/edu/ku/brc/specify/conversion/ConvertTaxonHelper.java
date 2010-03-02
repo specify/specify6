@@ -15,7 +15,6 @@
 package edu.ku.brc.specify.conversion;
 
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.copyTable;
-import static edu.ku.brc.specify.conversion.BasicSQLUtils.deleteAllRecordsFromTable;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getCount;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.query;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.setFieldsToIgnoreWhenMappingNames;
@@ -35,6 +34,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.axis.utils.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -67,8 +67,11 @@ public class ConvertTaxonHelper
     protected Vector<CollectionInfo>         collectionInfoList;
     protected HashMap<Integer, Vector<CollectionInfo>> collDispHash;
     
-    protected HashSet<Integer>               taxonTypesInUse = new HashSet<Integer>();
+    protected HashMap<Integer, TaxonTreeDef> newTaxonInfoHash = new HashMap<Integer, TaxonTreeDef>();
+    
+    protected HashSet<Integer>               taxonTypesInUse  = new HashSet<Integer>();
     protected HashMap<Integer, TaxonTreeDef> taxonTreeDefHash = new HashMap<Integer, TaxonTreeDef>(); // Key is old TaxonTreeTypeID
+    protected HashMap<Integer, Taxon>        taxonTreeHash    = new HashMap<Integer, Taxon>();        // Key is old TaxonTreeTypeID
     
     /**
      * @param oldDBConn
@@ -90,7 +93,9 @@ public class ConvertTaxonHelper
         this.indexIncremeter = indexIncremeter;
         
         
-        collectionInfoList = CollectionInfo.getCollectionInfoList(oldDBConn);
+        CollectionInfo.getCollectionInfoList(oldDBConn);
+        
+        collectionInfoList = CollectionInfo.getFilteredCollectionInfoList();
         
         // Create a Hashed List of CollectionInfo for each unique TaxonomyTypeId
         // where the TaxonomyTypeId is a Discipline
@@ -227,88 +232,22 @@ public class ConvertTaxonHelper
      */
     protected void getTaxonTreesTypesInUse()
     {
-        /*String sql = "SELECT DISTINCT taxonomytype.TaxonomyTypeID FROM  determination "+
-                     "Inner Join taxonname ON determination.TaxonNameID = taxonname.TaxonNameID "+
-                     "Inner Join taxonomytype ON taxonname.TaxonomyTypeID = taxonomytype.TaxonomyTypeID ";
-                     */
-        String sql = "SELECT DISTINCT taxonomytype.TaxonomyTypeID FROM taxonname " +
-                     "Inner Join taxonomytype ON taxonname.TaxonomyTypeID = taxonomytype.TaxonomyTypeID WHERE RankID > 0";
-        
-        log.debug(sql);
-        for (Object obj : BasicSQLUtils.querySingleCol(oldDBConn, sql))
+        for (CollectionInfo colInfo : collectionInfoList)
         {
-            Integer taxonTypeId = (Integer)obj;
-            log.debug("TaxonType in use ["+taxonTypeId+"]");
-            taxonTypesInUse.add(taxonTypeId);
+            //log.debug("TaxonType in use ["+taxonTypeId+"]");
+            taxonTypesInUse.add(colInfo.getTaxonNameId());
         }
     }
 
     /**
-     * @throws SQLException
+     * 
      */
     public void convertAllTaxonTreeDefs()
     {
-        for (Object id : taxonTypesInUse.toArray())
+        for (CollectionInfo colInfo : collectionInfoList)
         {
-            convertTaxonTreeDefinition((Integer)id);
+            convertTaxonTreeDefinition(colInfo);
         }
-        
-        Session session = null;
-        try
-        {
-            session = HibernateUtil.getNewSession();
-            
-            for (CollectionInfo ci : collectionInfoList)
-            {
-                if (!ci.isTaxonomicUnitTypeInUse())
-                {
-                    TaxonTreeDef taxonTreeDef = new TaxonTreeDef();
-                    taxonTreeDef.initialize();
-                    taxonTreeDef.setName(ci.getTaxonName() + " taxonomy tree");
-                    taxonTreeDef.setRemarks("Placeholder for empty tree");
-                    taxonTreeDef.setFullNameDirection(TreeDefIface.FORWARD);
-                    
-                    TaxonTreeDefItem ttdi = new TaxonTreeDefItem();
-                    ttdi.initialize();
-                    ttdi.setName("Root");
-                    ttdi.setFullNameSeparator(" ");
-                    ttdi.setRankId(0);
-                    ttdi.setTreeDef(taxonTreeDef);
-                    taxonTreeDef.getTreeDefItems().add(ttdi);
-                    
-                    Taxon taxonRoot = new Taxon();
-                    taxonRoot.initialize();
-                    
-                    taxonRoot.setName("Root");
-                    taxonRoot.setFullName("Root");
-                    taxonRoot.setDefinition(taxonTreeDef);
-                    taxonRoot.setDefinitionItem(ttdi);
-                    
-                    Transaction trans = session.beginTransaction();
-                    session.save(taxonTreeDef);
-                    session.save(taxonRoot);
-                    trans.commit();
-                    
-                    ci.setTaxonRoot(taxonRoot);
-                    ci.setTaxonTreeDef(taxonTreeDef);
-                }
-            }
-            
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            throw new RuntimeException(ex);
-            
-        } finally
-        {
-            if (session != null)
-            {
-                session.close();
-            }
-        }
-        
-
     }
 
     /**
@@ -319,13 +258,28 @@ public class ConvertTaxonHelper
      * @return the TaxonTreeDef object
      * @throws SQLException
      */
-    public void convertTaxonTreeDefinition(final int taxonomyTypeId)
+    public void convertTaxonTreeDefinition(final CollectionInfo colInfo)
     {
+        if (!colInfo.isInUse())
+        {
+            return;
+        }
+        
+        TaxonTreeDef taxonTreeDef = newTaxonInfoHash.get(colInfo.getTaxonNameId());
+        if (taxonTreeDef != null)
+        {
+            colInfo.setTaxonTreeDef(taxonTreeDef);
+            return;
+        }
+        
+        Integer oldTaxonRootId = colInfo.getTaxonNameId();
+        Integer taxonomyTypeId = colInfo.getTaxonomyTypeId();
+        
         try
         {
             Statement st = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
     
-            TaxonTreeDef taxonTreeDef = new TaxonTreeDef();
+            taxonTreeDef = new TaxonTreeDef();
             taxonTreeDef.initialize();
     
             String sql = "SELECT TaxonomyTypeName FROM taxonomytype WHERE TaxonomyTypeID = " + taxonomyTypeId;
@@ -358,6 +312,11 @@ public class ConvertTaxonHelper
                 requiredRank = rs.getInt(3);
                 
                 int taxUnitTypeId = rs.getInt(4);
+                
+                if (StringUtils.isEmpty(name) || (rank > 0 && requiredRank == 0))
+                {
+                    continue;
+                }
                 
                 rankId2TxnUntTypId.put(rank, taxUnitTypeId);
                 
@@ -405,7 +364,7 @@ public class ConvertTaxonHelper
             
             IdMapperMgr   idMapperMgr        = IdMapperMgr.getInstance();
             IdMapperIFace tutMapper          = idMapperMgr.get("TaxonomicUnitType", "TaxonomicUnitTypeID");
-            IdMapperIFace taxonomyTypeMapper = idMapperMgr.get("TaxonomyType", "TaxonomyTypeID");
+            IdMapperIFace taxonomyTypeMapper = idMapperMgr.get("TaxonomyType",      "TaxonomyTypeID");
             
             taxonomyTypeMapper.put(taxonomyTypeId, taxonTreeDef.getId());
             
@@ -416,6 +375,8 @@ public class ConvertTaxonHelper
                 log.debug("Mapping "+ttdiId+" -> "+ttdi.getId());
             }
             
+            newTaxonInfoHash.put(oldTaxonRootId, taxonTreeDef);
+
             CollectionInfo ci = getCIByTaxonTypeId(taxonomyTypeId);
             ci.setTaxonTreeDef(taxonTreeDef);
             
@@ -449,15 +410,14 @@ public class ConvertTaxonHelper
     /**
      * 
      */
-    public void convertTaxonRecords()
+    public void convertTaxonRecords(final CollectionInfo colInfo)
     {
-        deleteAllRecordsFromTable(newDBConn, "taxon", BasicSQLUtils.myDestinationServerType);
+        //deleteAllRecordsFromTable(newDBConn, "taxon", BasicSQLUtils.myDestinationServerType);
         
         setIdentityInsertONCommandForSQLServer(newDBConn, "taxon", BasicSQLUtils.myDestinationServerType);
         
-        String sql    = "SELECT * FROM taxonname WHERE TaxonName IS NOT NULL AND taxonname.TaxonomyTypeId = ";
-        String cntSQL = "SELECT COUNT(*) FROM taxonname WHERE TaxonName IS NOT NULL AND taxonname.TaxonomyTypeId = ";
-
+        String sql    = "SELECT *        FROM taxonname WHERE TaxonName IS NOT NULL AND TaxonomyTypeID = ";
+        String cntSQL = "SELECT COUNT(*) FROM taxonname WHERE TaxonName IS NOT NULL AND TaxonomyTypeID = ";
 
         Hashtable<String, String> newToOldColMap = new Hashtable<String, String>();
         newToOldColMap.put("TaxonID",            "TaxonNameID");
@@ -475,42 +435,71 @@ public class ConvertTaxonHelper
                                     "IsisNumber", "Text1", "Text2", "NcbiTaxonNumber", "Number1", "Number2",
                                     "CreatedByAgentID", "ModifiedByAgentID", "Version", "CultivarName", "LabelFormat", 
                                     "COLStatus", "VisibilitySetByID"};
+            
+        setFieldsToIgnoreWhenMappingNames(ignoredFields);
+        
+        // AcceptedID is typically NULL unless they are using synonymies
+        Integer cnt               = getCount(oldDBConn, "SELECT count(AcceptedID) FROM taxonname where AcceptedID IS NOT null");
+        boolean showMappingErrors = cnt != null && cnt > 0;
 
-        for (Integer txTypeId : collDispHash.keySet())
+        int errorsToShow = (BasicSQLUtils.SHOW_NAME_MAPPING_ERROR | BasicSQLUtils.SHOW_VAL_MAPPING_ERROR);
+        if (showMappingErrors)
         {
-            Vector<CollectionInfo> collInfoList = collDispHash.get(txTypeId);
-            
-            CollectionInfo ci = collInfoList.get(0);
-            
-            setFieldsToIgnoreWhenMappingNames(ignoredFields);
-            
-            // AcceptedID is typically NULL unless they are using synonimies
-            Integer cnt               = getCount(oldDBConn, "SELECT count(AcceptedID) FROM taxonname where AcceptedID IS NOT null");
-            boolean showMappingErrors = cnt != null && cnt > 0;
-    
-            int errorsToShow = (BasicSQLUtils.SHOW_NAME_MAPPING_ERROR | BasicSQLUtils.SHOW_VAL_MAPPING_ERROR);
-            if (showMappingErrors)
-            {
-                errorsToShow = errorsToShow | BasicSQLUtils.SHOW_PM_LOOKUP | BasicSQLUtils.SHOW_NULL_PM;// | BasicSQLUtils.SHOW_COPY_TABLE;
-            }
-            setShowErrors(errorsToShow);
-            
-            IdHashMapper.setTblWriter(tblWriter);
-    
-            log.info("Copying taxon records from 'taxonname' table");
-            log.info("SQL: "+ (sql + ci.getTaxonomyTypeId()));
-            if (!copyTable(oldDBConn, newDBConn, 
-                           sql + ci.getTaxonomyTypeId(), cntSQL + ci.getTaxonomyTypeId(), 
-                           "taxonname", "taxon", 
-                           newToOldColMap, null, null,
-                           BasicSQLUtils.mySourceServerType, BasicSQLUtils.myDestinationServerType))
-            {
-                String msg = "Table 'taxonname' didn't copy correctly";
-                log.error(msg);
-                tblWriter.logError(msg);
-            }
+            errorsToShow = errorsToShow | BasicSQLUtils.SHOW_PM_LOOKUP | BasicSQLUtils.SHOW_NULL_PM;// | BasicSQLUtils.SHOW_COPY_TABLE;
+        }
+        setShowErrors(errorsToShow);
+        
+        IdHashMapper.setTblWriter(tblWriter);
+
+        log.info("Copying taxon records from 'taxonname' table");
+        log.info("SQL: "+ (sql + colInfo.getTaxonomyTypeId()));
+        if (!copyTable(oldDBConn, newDBConn, 
+                       sql + colInfo.getTaxonomyTypeId(), cntSQL + colInfo.getTaxonomyTypeId(), 
+                       "taxonname", "taxon", 
+                       newToOldColMap, null, null,
+                       BasicSQLUtils.mySourceServerType, BasicSQLUtils.myDestinationServerType))
+        {
+            String msg = "Table 'taxonname' didn't copy correctly";
+            log.error(msg);
+            tblWriter.logError(msg);
         }
         
+        //sql = "SELECT TaxonNameID FROM taxonname WHERE TaxonName IS NOT NULL AND RankID = 0 AND TaxonomicUnitTypeID = " + colInfo.getTaxonomyTypeId();
+        
+        IdMapperIFace txMapper       = IdMapperMgr.getInstance().get("taxonname", "TaxonNameID");
+        int           newTaxonRootID = txMapper.get(colInfo.getTaxonNameId());
+        int taxonTreeDefId = BasicSQLUtils.getCountAsInt(newDBConn, "SELECT TaxonTreeDefID FROM taxon WHERE TaxonID = " + newTaxonRootID);
+        
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            
+            TaxonTreeDef ttd        = session.get(TaxonTreeDef.class, taxonTreeDefId);
+            Discipline   discipline = (Discipline)session.getData("FROM Discipline WHERE id = " + colInfo.getDisciplineId());
+            session.beginTransaction();
+            discipline.setTaxonTreeDef(ttd);
+            session.saveOrUpdate(discipline);
+            session.commit();
+            
+            colInfo.setDiscipline(discipline);
+            colInfo.setTaxonTreeDef(ttd);
+                
+        } catch(Exception ex)
+        {
+            session.rollback();
+            
+            log.error("Error while setting TaxonTreeDef into the Discipline.");
+            ex.printStackTrace();
+            throw new RuntimeException(ex);
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
         
         tblWriter.append("<H3>Taxon with null RankIDs</H3>");
         tblWriter.startTable();
@@ -530,7 +519,6 @@ public class ConvertTaxonHelper
         tblWriter.endTable();
         tblWriter.append("<BR>");
         
-        IdMapperIFace txMapper = IdMapperMgr.getInstance().get("taxonname", "TaxonNameID");
         if (txMapper instanceof IdHashMapper)
         {
             for (Integer oldId : ((IdHashMapper)txMapper).getOldIdNullList())
@@ -596,34 +584,12 @@ public class ConvertTaxonHelper
         }
     }
     
-
     /**
      * 
      */
-    public void assignTreeDefToDisciplineOld()
-    {
-        for (CollectionInfo ci : CollectionInfo.getCollectionInfoList(oldDBConn))
-        {
-            Integer      disciplineId = ci.getDisciplineId();
-            TaxonTreeDef ttd          = ci.getTaxonTreeDef();
-            if (ttd != null && disciplineId != null)
-            {
-                String sql = String.format("UPDATE discipline SET TaxonTreeDefID=%d WHERE DisciplineID=%d", ttd.getId(), disciplineId);
-                if (BasicSQLUtils.update(newDBConn, sql) != 1)
-                {
-                    log.error("Error updating discipline["+disciplineId+"] with TaxonTreeDefID "+ ttd.getId());
-                }
-            } else
-            {
-                log.error("Error updating (both are not null) discipline["+disciplineId+"] with TaxonTreeDefID "+ (ttd == null ? null : ttd.getId())+" TxnTypId: "+ci.getTaxonomyTypeId());
-            }
-        }
-    }
-    
     private void assignTreeDefToDiscipline()
     {
         DataProviderSessionIFace session = null;
-        
         try
         {
             session = DataProviderFactory.getInstance().createSession();
@@ -680,7 +646,11 @@ public class ConvertTaxonHelper
         
         convertAllTaxonTreeDefs();
         convertTaxonTreeDefSeparators();
-        convertTaxonRecords();
+        
+        for (CollectionInfo colInfo : collectionInfoList)
+        {
+            convertTaxonRecords(colInfo);
+        }
         
         assignTreeDefToDiscipline();
     }

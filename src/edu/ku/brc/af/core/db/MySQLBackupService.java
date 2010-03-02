@@ -1464,7 +1464,7 @@ public class MySQLBackupService extends BackupServiceFactory
         System.setProperty(DBMSUserMgr.factoryName, "edu.ku.brc.dbsupport.MySQLDMBSUserMgr");
 
         String usr = "root";
-        String pwd = "nessie1601";
+        String pwd = "";
         
         DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("MySQL");
         String             connStr    = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, "localhost", null, usr, pwd, driverInfo.getName());
