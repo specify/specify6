@@ -50,7 +50,6 @@ import static edu.ku.brc.specify.conversion.BasicSQLUtils.setShowErrors;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.setTblWriter;
 import static edu.ku.brc.ui.UIRegistry.showError;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.io.File;
@@ -78,7 +77,6 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -2767,6 +2765,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 log.info(msg);
                 tblWriter.log(msg);
                 
+                Session localSession = HibernateUtil.getNewSession();
+
                 for (CollectionInfo collInfo : collInfoList)
                 {
                     Integer catalogSeriesID = collInfo.getCatSeriesId();
@@ -2782,17 +2782,24 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         cns = catSeriesToAutoNumSchemeHash.get(catalogSeriesID);
                         if (cns == null)
                         {
-                            Session localSession = HibernateUtil.getNewSession();
-                            cns = new AutoNumberingScheme();
-                            cns.initialize();
-                            cns.setIsNumericOnly(true);
-                            cns.setSchemeClassName("");
-                            cns.setSchemeName(seriesName);
-                            cns.setTableNumber(CollectionObject.getClassTableId());
-                            Transaction trans = localSession.beginTransaction();
-                            localSession.save(cns);
-                            trans.commit();
-                            catSeriesToAutoNumSchemeHash.put(catalogSeriesID, cns);
+                            try
+                            {
+                                cns = new AutoNumberingScheme();
+                                cns.initialize();
+                                cns.setIsNumericOnly(true);
+                                cns.setSchemeClassName("");
+                                cns.setSchemeName(seriesName);
+                                cns.setTableNumber(CollectionObject.getClassTableId());
+                                Transaction trans = localSession.beginTransaction();
+                                localSession.save(cns);
+                                trans.commit();
+                                catSeriesToAutoNumSchemeHash.put(catalogSeriesID, cns);
+                                
+                            } catch (Exception ex)
+                            {
+                                ex.printStackTrace();
+                                throw new RuntimeException(ex);
+                            }
                         }
                     } else
                     {
@@ -2867,7 +2874,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     //stmt.close();
                     
                     collectionCnt++;
-                }
+                } // Collection for loop
+                
+                localSession.close();
                 
             } // for loop 
             
@@ -3250,6 +3259,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     public Map<String, PrepType> createPreparationTypesFromUSys(final Collection collection)
     {
         //deleteAllRecordsFromTable("preptype", BasicSQLUtils.myDestinationServerType);
+        
+        log.debug("Creating PrepTypes for Collection: " + collection.getCollectionName());
 
         Hashtable<String, PrepType> prepTypeMapper = new Hashtable<String, PrepType>();
 
@@ -3276,12 +3287,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             {
                 if (rs.getObject(2) != null && rs.getObject(3) != null)
                 {
-                    String name = rs.getString(4);
+                    String   name     = rs.getString(4);
                     PrepType prepType = AttrUtils.loadPrepType(name, collection);
-                    if (shouldCreateMapTables)
-                    {
-                        prepTypeMapper.put(name.toLowerCase(), prepType);
-                    }
+                    prepTypeMapper.put(name.toLowerCase(), prepType);
                     if (name.equalsIgnoreCase("misc"))
                     {
                         foundMisc = true;
@@ -3294,10 +3302,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             {
                 String name = "Misc";
                 PrepType prepType = AttrUtils.loadPrepType(name, collection);
-                // if (shouldCreateMapTables)
-                {
-                    prepTypeMapper.put(name.toLowerCase(), prepType);
-                }
+                prepTypeMapper.put(name.toLowerCase(), prepType);
                 count++;
             }
             log.info("Processed PrepType " + count + " records.");
