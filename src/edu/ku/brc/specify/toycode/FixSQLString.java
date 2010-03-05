@@ -84,9 +84,16 @@ public class FixSQLString extends CustomDialog
             @Override
             protected void changed(DocumentEvent e)
             {
-                if (srcTA.getText().length() > 0)
+                String str = srcTA.getText();
+                if (str.length() > 0)
                 {
-                    fix();
+                    if (StringUtils.contains(str, "\""))
+                    {
+                        fixFromtextToSQL();
+                    } else
+                    {
+                        fix();
+                    }
                 } else
                 {
                     dstTA.setText("");
@@ -109,6 +116,33 @@ public class FixSQLString extends CustomDialog
         pack();
     }
     
+    /**
+     * 
+     */
+    private void fixFromtextToSQL()
+    {
+        String srcStr = srcTA.getText();
+        srcStr = StringUtils.replace(srcStr, "\"", "");
+        srcStr = StringUtils.replace(srcStr, "+", "");
+        srcStr = StringUtils.replace(srcStr, ";", "");
+        
+        dstTA.setText(srcStr);
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run()
+            {
+                dstTA.requestFocus();
+                dstTA.selectAll();
+                UIHelper.setTextToClipboard(dstTA.getText());
+            }
+        });
+        
+    }
+
+    /**
+     * 
+     */
     private void fix()
     {
         StringBuilder sb       = new StringBuilder("sql = \"");
