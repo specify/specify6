@@ -2810,7 +2810,7 @@ public final class UIHelper
         try
         {
             File parmsFile = new File(UIRegistry.getUserHomeDir() + File.separator + "i4jparams.conf");
-            log.debug(parmsFile.getAbsolutePath());
+            //log.debug(parmsFile.getAbsolutePath());
             if (parmsFile.exists())
             {
                 root = XMLHelper.readFileToDOM4J(parmsFile);

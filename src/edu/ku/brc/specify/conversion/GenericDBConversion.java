@@ -509,6 +509,113 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 }
             }
             
+            for (CollectionInfo ci : CollectionInfo.getFilteredCollectionInfoList())
+            {
+                String sql = "select preparationmethod, ct.* from usyscollobjprepmeth pt inner join usysmetafieldsetsubtype st on st.fieldsetsubtypeid = pt.fieldsetsubtypeid " +
+                "inner join collectionobjecttype ct1 on ct1.collectionobjecttypeid = st.fieldvalue " +
+                "inner join collectionobjecttype ct on ct.collectionobjecttypename = replace(ct1.collectionobjecttypename, ' Preparation', '') " +
+                "inner join catalogseriesdefinition csd on csd.objecttypeid = ct.collectionobjecttypeid " +
+                "inner join catalogseries cs on cs.catalogseriesid = csd.catalogseriesid " +
+                "WHERE csd.catalogseriesid = " + ci.getCatSeriesId();
+                
+                
+                
+                System.out.println("\n------------------");
+                System.out.println(ci.getCatSeriesName());
+                System.out.println(sql);
+                System.out.println("------------------");
+                
+                int i = 0;
+                Vector<Object[]> list = BasicSQLUtils.query(oldDBConn, sql);
+                if (list.size() > 0)
+                {
+                    for (Object[] row : list)
+                    {
+                        System.out.print(i+" - ");
+                        for (Object col: row)
+                        {
+                            System.out.print(col != null ? col.toString() : "null");
+                            System.out.print(", ");
+                        }
+                        System.out.println();
+                        i++;
+                    }
+                } else
+                {
+                    System.out.println("No Results");
+                }
+                
+                
+                
+                sql = "select ct.*, (select relatedsubtypevalues from usysmetacontrol c " +
+                "left join usysmetafieldsetsubtype fst on fst.fieldsetsubtypeid = c.fieldsetsubtypeid " +
+                "where objectid = 10290 and ct.taxonomytypeid = c.relatedsubtypevalues) as DeterminationTaxonType " +
+                "from collectiontaxonomytypes ct where ct.biologicalobjecttypeid = " + ci.getColObjTypeId();
+                
+                sql = String.format("SELECT CollectionTaxonomyTypesID, BiologicalObjectTypeID, CollectionObjectTypeName FROM (select ct.*, " +
+                		"(SELECT relatedsubtypevalues FROM usysmetacontrol c " +
+                		"LEFT JOIN usysmetafieldsetsubtype fst ON fst.fieldsetsubtypeid = c.fieldsetsubtypeid " +
+                		"WHERE objectid = 10290 AND ct.taxonomytypeid = c.relatedsubtypevalues) AS DeterminationTaxonType " +
+                		"FROM collectiontaxonomytypes ct WHERE ct.biologicalobjecttypeid = %d) T1 " +
+                		"INNER JOIN collectionobjecttype cot ON T1.biologicalobjecttypeid = cot.CollectionObjectTypeID", ci.getColObjTypeId());
+                
+                System.out.println("\n------------------");
+                System.out.println(ci.getColObjTypeName());
+                System.out.println(sql);
+                System.out.println("------------------");
+                
+                i = 0;
+                list = BasicSQLUtils.query(oldDBConn, sql);
+                if (list.size() > 0)
+                {
+                    for (Object[] row : list)
+                    {
+                        System.out.print(i+" - ");
+                        for (Object col: row)
+                        {
+                            System.out.print(col != null ? col.toString() : "null");
+                            System.out.print(", ");
+                        }
+                        System.out.println();
+                        i++;
+                    }
+                } else
+                {
+                    System.out.println("No Results");
+                }
+            }
+            
+            /*
+            
+            String sql = " select ct.*, (select relatedsubtypevalues from usysmetacontrol c " +
+            		"left join usysmetafieldsetsubtype fst on fst.fieldsetsubtypeid = c.fieldsetsubtypeid " +
+            		"where objectid = 10290 and ct.taxonomytypeid = c.relatedsubtypevalues) as DeterminationTaxonType " +
+            		"from collectiontaxonomytypes ct where ct.biologicalobjecttypeid = 13";
+            
+            System.out.println("\n------------------");
+            System.out.println("List of the taxonomytypes associated with a CollectionObjectTypeID");
+            System.out.println(sql);
+            System.out.println("------------------");
+
+            int i = 0;
+            Vector<Object[]> list = BasicSQLUtils.query(oldDBConn, sql);
+            if (list.size() > 0)
+            {
+                for (Object[] row : list)
+                {
+                    System.out.print(i+" - ");
+                    for (Object col: row)
+                    {
+                        System.out.print(col != null ? col.toString() : "null");
+                        System.out.print(", ");
+                    }
+                    System.out.println();
+                }
+            } else
+            {
+                System.out.println("No Results");
+            }*/
+            
             CellConstraints cc = new CellConstraints();
             PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p,2px,f:p:g,10px,p,2px,p:g,8px"));
             
@@ -3227,7 +3334,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "usyspermittype",                 "PermitType", 
                 "usyspreparatiocontainertype",    "PrepContainertype",
                 "usyspreparatiomedium",           "PreparatioMedium", 
-                "usyspreparatiopreparationtype",  "PreparationType", 
+                //"usyspreparatiopreparationtype",  "PreparationType", 
                 "usysshipmentshipmentmethod",     "ShipmentMethod" };
 
         setProcess(0, tables.length);
@@ -3251,7 +3358,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         setProcess(tables.length);
         return true;
     }
-
+    
     /**
      * Creates a map from a String Preparation Type to its ID in the table.
      * @return map of name to PrepType
@@ -3264,54 +3371,51 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
         Hashtable<String, PrepType> prepTypeMapper = new Hashtable<String, PrepType>();
 
-        try
+            
+        CollectionInfo colInfo = CollectionInfo.getCollectionObjectTypeForNewCollection(collection);
+        if (colInfo == null)
         {
-            /*
-             * +-----------------------+-------------+------+-----+---------+-------+ | Field | Type |
-             * Null | Key | Default | Extra |
-             * +-----------------------+-------------+------+-----+---------+-------+ |
-             * USYSCollObjPrepMethID | int(11) | | PRI | 0 | | | InterfaceID | int(11) | YES | |
-             * NULL | | | FieldSetSubTypeID | int(11) | YES | | NULL | | | PreparationMethod |
-             * varchar(50) | YES | | NULL | |
-             * +-----------------------+-------------+------+-----+---------+-------+
-             */
-            Statement stmt   = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            String    sqlStr = "SELECT USYSCollObjPrepMethID, InterfaceID, FieldSetSubTypeID, PreparationMethod FROM usyscollobjprepmeth";
+            throw new RuntimeException("Couldn't locate a CollectionInfo for collection: "+collection.getId());
+        }
+        
+        String sql = "select preparationmethod FROM usyscollobjprepmeth pt inner join usysmetafieldsetsubtype st on st.fieldsetsubtypeid = pt.fieldsetsubtypeid " +
+                        "inner join collectionobjecttype ct1 on ct1.collectionobjecttypeid = st.fieldvalue " +
+                        "inner join collectionobjecttype ct on ct.collectionobjecttypename = replace(ct1.collectionobjecttypename, ' Preparation', '') " +
+                        "inner join catalogseriesdefinition csd on csd.objecttypeid = ct.collectionobjecttypeid " +
+                        "inner join catalogseries cs on cs.catalogseriesid = csd.catalogseriesid " +
+                        "WHERE csd.catalogseriesid = " + colInfo.getCatSeriesId() +"  GROUP BY preparationmethod";
 
-            log.info(sqlStr);
-
-            boolean   foundMisc = false;
-            ResultSet rs        = stmt.executeQuery(sqlStr);
-            int       count     = 0;
-            while (rs.next())
+        log.info(sql);
+        
+        boolean   foundMisc = false;
+        int       count     = 0;
+        Vector<Object> list = BasicSQLUtils.querySingleCol(oldDBConn, sql);
+        if (list.size() > 0)
+        {
+            for (Object nameObj : list)
             {
-                if (rs.getObject(2) != null && rs.getObject(3) != null)
+                String   name     = nameObj.toString();
+                log.debug("Creating prep type["+name+"] for collection "+ collection.getCollectionName());
+                PrepType prepType = AttrUtils.loadPrepType(name, collection);
+                prepTypeMapper.put(name.toLowerCase(), prepType);
+                if (name.equalsIgnoreCase("misc"))
                 {
-                    String   name     = rs.getString(4);
-                    PrepType prepType = AttrUtils.loadPrepType(name, collection);
-                    prepTypeMapper.put(name.toLowerCase(), prepType);
-                    if (name.equalsIgnoreCase("misc"))
-                    {
-                        foundMisc = true;
-                    }
+                    foundMisc = true;
                 }
                 count++;
             }
-
-            if (!foundMisc)
-            {
-                String name = "Misc";
-                PrepType prepType = AttrUtils.loadPrepType(name, collection);
-                prepTypeMapper.put(name.toLowerCase(), prepType);
-                count++;
-            }
-            log.info("Processed PrepType " + count + " records.");
-
-        } catch (SQLException e)
-        {
-            e.printStackTrace();
-            log.error(e);
         }
+
+        if (!foundMisc)
+        {
+            String name = "Misc";
+            PrepType prepType = AttrUtils.loadPrepType(name, collection);
+            prepTypeMapper.put(name.toLowerCase(), prepType);
+            count++;
+        }
+        
+        log.info("Processed PrepType " + count + " records.");
+
 
         return prepTypeMapper;
     }
@@ -4855,6 +4959,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             prepType.initialize();
                             prepType.setName(value);
                             prepType.setCollection(collection);
+                            
+                            prepTypeMap.put(value, prepType);
                             
                             Session tmpSession = null;
                             try

@@ -22,12 +22,15 @@ import java.lang.reflect.Modifier;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.config.DisciplineType;
@@ -84,6 +87,9 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     protected long         srcHostTaxonCnt;
     protected DisciplineType disciplineTypeObj;
     
+    protected String             determinationTaxonType = null;
+    protected ArrayList<Integer> detTaxonTypeIdList     = new ArrayList<Integer>();
+    
     protected Connection   oldDBConn;
     
     
@@ -138,7 +144,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
             
             String sql = "SELECT cot.CollectionObjectTypeID, cot.CollectionObjectTypeName, csd.CatalogSeriesDefinitionID, csd.CatalogSeriesID FROM collectionobjecttype cot " +
                          "INNER JOIN catalogseriesdefinition csd on " + 
-                         "csd.ObjectTypeId = cot.CollectionObjectTypeId WHERE cot.Category = 'Biological'";
+                         "csd.ObjectTypeId = cot.CollectionObjectTypeId WHERE cot.Category = 'Biological' ORDER BY cot.CollectionObjectTypeID, csd.CatalogSeriesID";
             
             String catSeriesSQL = "SELECT SeriesName, CatalogSeriesPrefix, Remarks, LastEditedBy FROM catalogseries WHERE CatalogSeriesID = ";
             
@@ -170,12 +176,17 @@ public class CollectionInfo implements Comparable<CollectionInfo>
             "GROUP BY cs.CatalogSeriesID, cs.SeriesName, ct.CollectionObjectTypeID, ct.CollectionObjectTypeName";
             */
             String colObjCountPerCatSeriesSQL = "SELECT COUNT(cc.CatalogSeriesID) " + //, cc.CatalogSeriesID, cs.SeriesName " +
-            "FROM collectionobjectcatalog cc INNER JOIN catalogseries cs ON cc.CatalogSeriesID = cs.CatalogSeriesID WHERE cs.CatalogSeriesID = %d GROUP BY cs.CatalogSeriesID";
+                                                "FROM collectionobjectcatalog cc INNER JOIN catalogseries cs ON cc.CatalogSeriesID = cs.CatalogSeriesID " +
+                                                "WHERE cs.CatalogSeriesID = %d GROUP BY cs.CatalogSeriesID";
             
             String colObjDetCountPerCatSeriesSQL = "SELECT COUNT(cc.CatalogSeriesID) " +
-            "FROM determination d INNER JOIN collectionobject co ON d.BiologicalObjectID = co.CollectionObjectID " +
-            "INNER JOIN collectionobjectcatalog cc ON co.CollectionObjectID = cc.CollectionObjectCatalogID " +
-            "WHERE cc.CatalogSeriesID = %d AND d.TaxonNameID IS NOT NULL GROUP BY cc.CatalogSeriesID";
+                                                    "FROM determination d INNER JOIN collectionobject co ON d.BiologicalObjectID = co.CollectionObjectID " +
+                                                    "INNER JOIN collectionobjectcatalog cc ON co.CollectionObjectID = cc.CollectionObjectCatalogID " +
+                                                    "WHERE cc.CatalogSeriesID = %d AND d.TaxonNameID IS NOT NULL GROUP BY cc.CatalogSeriesID";
+            
+            sql = "SELECT cot.CollectionObjectTypeID, cot.CollectionObjectTypeName, csd.CatalogSeriesDefinitionID, csd.CatalogSeriesID FROM collectionobjecttype cot " +
+                  "INNER JOIN catalogseriesdefinition csd on csd.ObjectTypeId = cot.CollectionObjectTypeId " +
+                  "WHERE cot.Category = 'Biological' ORDER BY cot.CollectionObjectTypeID, csd.CatalogSeriesID";
             
             Statement stmt = null;
             
@@ -191,6 +202,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                 {
                     CollectionInfo info = new CollectionInfo(oldDBConn);
                     
+                    System.err.println("CI: " + rs.getInt(1));
                     info.setColObjTypeId(rs.getInt(1));
                     info.setColObjTypeName(rs.getString(2));
                     info.setCatSeriesDefId(rs.getInt(3));
@@ -222,9 +234,28 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                         log.error("Error getting CollectionInfo for CollectionObjectTypeID: " + rs.getInt(1)+" number of CatlogSeries: " + rows.size());
                     }
                     
-                    s = sqlTx + rs.getInt(1);
-                    log.debug(s);
-                    rows = BasicSQLUtils.query(oldDBConn, s);
+                    // This represents a mapping from what would be the Discipline (Biological Object Type) to the Taxonomic Root
+                    sql = String.format("SELECT tt.TaxonomyTypeID, tt.TaxonomyTypeName, tt.KingdomID, tn.TaxonNameID, tn.TaxonName, tu.TaxonomicUnitTypeID FROM taxonomytype AS tt " +
+                                        "Inner Join taxonomicunittype AS tu ON tt.TaxonomyTypeID = tu.TaxonomyTypeID " +
+                                        "Inner Join taxonname AS tn ON tu.TaxonomyTypeID = tn.TaxonomyTypeID " +
+                                        "Inner Join collectiontaxonomytypes AS ct ON tn.TaxonomyTypeID = ct.TaxonomyTypeID " +
+                                        "WHERE tu.RankID =  0 AND tn.RankID =  0 AND ct.BiologicalObjectTypeID = %d " +
+                                        "ORDER BY ct.BiologicalObjectTypeID ASC", info.getColObjTypeId());
+                    
+                    String detSQLStr = "select (select relatedsubtypevalues from usysmetacontrol c " +
+                    	               "left join usysmetafieldsetsubtype fst on fst.fieldsetsubtypeid = c.fieldsetsubtypeid " +
+                    	               "where objectid = 10290 and ct.taxonomytypeid = c.relatedsubtypevalues) as DeterminationTaxonType " +
+                    	               "from collectiontaxonomytypes ct where ct.biologicalobjecttypeid = " + info.getColObjTypeId();
+                    
+                    String detTxnTypeStr = BasicSQLUtils.querySingleObj(oldDBConn, detSQLStr);
+                    info.setDeterminationTaxonType(detTxnTypeStr);
+                    for (Integer id : info.getDetTaxonTypeIdList())
+                    {
+                        log.debug("ID: "+id);
+                    }
+                    
+                    log.debug(sql);
+                    rows = BasicSQLUtils.query(oldDBConn, sql);
                     if (rows != null)
                     {
                         Object[] row = rows.get(0);
@@ -261,11 +292,12 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                     }
                     
                     collectionInfoList.add(info);
+                    System.out.println(info.toString());
                 }
                 rs.close();
                 
                 // Do All
-                String sqlAllTx = "SELECT cot.CollectionObjectTypeID, cot.CollectionObjectTypeName, tt.TaxonomyTypeID, tt.TaxonomyTypeName, tt.KingdomID, tn.TaxonNameID, tn.TaxonName, tn.TaxonomicUnitTypeID " + 
+                /*String sqlAllTx = "SELECT cot.CollectionObjectTypeID, cot.CollectionObjectTypeName, tt.TaxonomyTypeID, tt.TaxonomyTypeName, tt.KingdomID, tn.TaxonNameID, tn.TaxonName, tn.TaxonomicUnitTypeID " + 
                                   "FROM collectionobjecttype AS cot " +
                                   "Inner Join collectiontaxonomytypes as ctt ON cot.CollectionObjectTypeID = ctt.BiologicalObjectTypeID " + 
                                   "Inner Join taxonomytype as tt ON ctt.TaxonomyTypeID = tt.TaxonomyTypeID " + 
@@ -313,7 +345,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                         
                         collectionInfoList.add(info);
                     }
-                }
+                }*/
 
                 dump();
                 
@@ -335,6 +367,48 @@ public class CollectionInfo implements Comparable<CollectionInfo>
         return collectionInfoList;
     }
     
+    /**
+     * @return the determinationTaxonType
+     */
+    public String getDeterminationTaxonType()
+    {
+        return determinationTaxonType;
+    }
+
+
+    /**
+     * @param determinationTaxonType the determinationTaxonType to set
+     */
+    public void setDeterminationTaxonType(String determinationTaxonType)
+    {
+        this.determinationTaxonType = determinationTaxonType;
+        
+        if (StringUtils.isNotEmpty(determinationTaxonType))
+        {
+            for (String str : StringUtils.split(determinationTaxonType, ','))
+            {
+                if (StringUtils.isNumeric(str))
+                {
+                    Integer id = Integer.parseInt(str);
+                    detTaxonTypeIdList.add(id);
+                }
+            }
+        } else
+        {
+            determinationTaxonType = null;
+        }
+    }
+
+
+    /**
+     * @return the detTaxonTypeIdList
+     */
+    public List<Integer> getDetTaxonTypeIdList()
+    {
+        return detTaxonTypeIdList;
+    }
+
+
     /**
      * @return
      */
@@ -395,6 +469,27 @@ public class CollectionInfo implements Comparable<CollectionInfo>
         }
         
         return model;
+    }
+    
+    /**
+     * @param collection
+     * @return
+     */
+    public static CollectionInfo getCollectionObjectTypeForNewCollection(final Collection collection)
+    {
+        for (CollectionInfo ci : getFilteredCollectionInfoList())
+        {
+            log.debug(ci.toString()+"  "+collection.getId());
+        }
+        for (CollectionInfo ci : getFilteredCollectionInfoList())
+        {
+            log.debug(ci.getCatSeriesName()+" "+ ci.getCollectionId()+"  "+collection.getId());
+            if (ci.getCollectionId().equals(collection.getId()))
+            {
+                return ci;
+            }
+        }
+        return null;
     }
     
      //----- Getters and Setters ----------------------------

@@ -124,7 +124,7 @@ class CollectionInfoModel extends DefaultTableModel
             case  1 : return false; // colObjTypeName;
             case  2 : return true; // catSeriesName;
             case  3 : return true; // catSeriesPrefix;
-            case  4 : return true; // catSeriesRemarks;
+            case  4 : return true; // taxonomicUnitTypeID;
             case  5 : return false; // taxonNameId;
             case  6 : return false; // taxonomyTypeName;
             case  7 : return false; // disciplineTypeObj;
@@ -151,7 +151,8 @@ class CollectionInfoModel extends DefaultTableModel
             case  1 : return ci.colObjTypeName;
             case  2 : return ci.catSeriesName;
             case  3 : return ci.catSeriesPrefix;
-            case  4 : return ci.taxonomicUnitTypeID != null ? ci.taxonomicUnitTypeID.toString() : "N/A";
+            //case  4 : return ci.taxonomicUnitTypeID != null ? ci.taxonomicUnitTypeID.toString() : "N/A";
+            case  4 : return ci.taxonomyTypeId != null ? ci.taxonomyTypeId.toString() : "N/A";
             case  5 : return ci.taxonNameId;
             case  6 : return ci.taxonomyTypeName;
             case  7 : return ci.disciplineTypeObj != null ? ci.disciplineTypeObj.getTitle() : "N/A"; 
@@ -177,7 +178,7 @@ class CollectionInfoModel extends DefaultTableModel
                     "Coll Obj Type Name",
                     "Cat Series Name", 
                     "Cat Series Prefix", 
-                    "Cat Series Remarks", 
+                    "Taxonomic Unit Type ID", 
                     "Taxon Root ID", 
                     "Taxonomy Type Name",
                     "Discipline",

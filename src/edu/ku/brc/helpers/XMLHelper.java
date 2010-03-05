@@ -109,7 +109,7 @@ public class XMLHelper
         
         if (!file.exists())
         {
-            log.error("the file ["+file+"] doesn't exist."); //$NON-NLS-1$ //$NON-NLS-2$
+            //log.error("the file ["+file+"] doesn't exist."); //$NON-NLS-1$ //$NON-NLS-2$
             return null;
         }
 

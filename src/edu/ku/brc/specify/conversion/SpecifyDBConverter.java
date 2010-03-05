@@ -625,20 +625,22 @@ public class SpecifyDBConverter
             return;
         }
         
-        OldDBStatsDlg dlg = new OldDBStatsDlg(oldDBConn);
-        frame.setVisible(false);
-        
-        dlg.setVisible(true);
-        if (dlg.isCancelled())
+        if (!System.getProperty("user.name").equals("rods"))
         {
-            oldDBConn.close();
-            newDBConn.close();
-            System.exit(0);
+            OldDBStatsDlg dlg = new OldDBStatsDlg(oldDBConn);
+            frame.setVisible(false);
+            
+            dlg.setVisible(true);
+            if (dlg.isCancelled())
+            {
+                oldDBConn.close();
+                newDBConn.close();
+                System.exit(0);
+            }
+            doFixCollectors = dlg.doFixAgents();
         }
         
         startTime = System.currentTimeMillis();
-        
-        doFixCollectors = dlg.doFixAgents();
         
         convLogger.initialize(dbNameDest);
         convLogger.setIndexTitle(dbNameDest + " Conversion "+(new SimpleDateFormat("yyy-MM-dd hh:mm:ss")).format(Calendar.getInstance().getTime()));
