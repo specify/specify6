@@ -339,25 +339,23 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
         {
             if (connection != null)
             {
-                stmt = connection.createStatement();
-                String sql = String.format("SELECT * FROM SCHEMA_PRIVILEGES WHERE TABLE_SCHEMA = '%s'", dbName);
-                //log.debug(sql);
-                
+                stmt    = connection.createStatement();
                 catName = connection.getCatalog();
                 connection.setCatalog("INFORMATION_SCHEMA");
                 
-                Vector<Object[]> list = BasicSQLUtils.query(connection, sql);
+                Vector<Object[]> list = BasicSQLUtils.query(connection, "SELECT * FROM USER_PRIVILEGES");
                 if (list != null)
                 {
                     int perms = PERM_NONE;
                     for (Object[] row : list)
                     {
-                        if (row[2].toString().equalsIgnoreCase(dbName))
+                        String[] toks = StringUtils.split(row[0].toString(), "'");
+                        if (toks[0].equals(username))
                         {
-                            String yesStr = row[4].toString();
+                            String yesStr = row[3].toString();
                             if (yesStr.equalsIgnoreCase("YES"))
                             {
-                                String permStr = row[3].toString();
+                                String permStr = row[2].toString();
                                 if (permStr.equals("SELECT"))
                                 {
                                     perms |= PERM_SELECT;
@@ -410,7 +408,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
             
             try
             {
-                connection.setCatalog(catName);
+                connection.setCatalog(StringUtils.isNotEmpty(catName) ? catName : dbName);
                 
             } catch (Exception ex)
             {

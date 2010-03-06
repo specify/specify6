@@ -130,6 +130,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
                 {
                     items.add(new CEPlacemark(colEv, img));
                 }
+                
             } else if (locality != null)
             {
                 Locality geLoc = new Locality();
