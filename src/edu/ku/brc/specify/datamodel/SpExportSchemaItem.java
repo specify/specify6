@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -74,9 +76,10 @@ public class SpExportSchemaItem extends DataModelObjBase
     	sb.append("<spexportschemaitem ");
     	XMLHelper.addAttr(sb, "fieldName", fieldName);
     	XMLHelper.addAttr(sb, "dataType", dataType);
-    	XMLHelper.addAttr(sb, "description", description);
-    	XMLHelper.addAttr(sb, "formatter", formatter); //not currently used
-    	sb.append(" />\n");
+     	XMLHelper.addAttr(sb, "formatter", formatter); //not currently used
+     	sb.append("> ");
+       	XMLHelper.xmlNode(sb, "description", description, true);
+    	sb.append(" </spexportschemaitem>\n");
     }
     
     /**
@@ -84,12 +87,21 @@ public class SpExportSchemaItem extends DataModelObjBase
      * 
      * Loads attributes from a dom Element
      */
+    @SuppressWarnings("unchecked")
     public void fromXML(Element element)
     {
     	fieldName = XMLHelper.getAttr(element, "fieldName", null);
     	dataType = XMLHelper.getAttr(element, "dataType", null);
-    	description = XMLHelper.getAttr(element, "description", null);
     	formatter = XMLHelper.getAttr(element, "formatter", null); //not currently used
+    	List<Object> dNodes = element.selectNodes("description");
+    	if (dNodes.size() > 0)
+    	{
+    		description = ((Element )dNodes.get(0)).getStringValue();
+    	}
+    	else
+    	{
+    		description = null;
+    	}
     }
 
     /* (non-Javadoc)
