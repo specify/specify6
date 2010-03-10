@@ -23,9 +23,12 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.util.Hashtable;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.specify.datamodel.Division;
 
 /**
  * @author rod
@@ -88,6 +91,36 @@ public class CollectorBusRules extends BaseBusRules
         }
         
         return super.processBusinessRules(parentDataObj, dataObj, isExistingObject);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeMerge(dataObj, session);
+        
+        Collector collector = (Collector)dataObj;
+        if (collector.getDivision() == null)
+        {
+            collector.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeSave(dataObj, session);
+        
+        Collector collector = (Collector)dataObj;
+        if (collector.getDivision() == null)
+        {
+            collector.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
+        }
     }
 
 }

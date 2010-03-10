@@ -57,8 +57,8 @@ public class IdTableMapper extends IdHashMapper
      * Creates a Mapper for a table and the name of the primary or foreign key.
      * @param tableName name of the table
      * @param idName name of the key field
-     * @param doDelete
-     * @param doCheckOldDB
+     * @param doDelete should delete the mapping table
+     * @param doCheckOldDB checks the count of the table to be mapped
      */
     public IdTableMapper(final String tableName, final String idName, final boolean doDelete, final boolean doCheckOldDB)
     {
@@ -90,6 +90,7 @@ public class IdTableMapper extends IdHashMapper
      * @param tableName name of the table
      * @param idName name of the key field
      * @param sql the SQL statement to build the index
+     * @param doDelete should delete the mapping table
      * @throws SQLException any
      */
     public IdTableMapper(final String tableName, final String idName, final String sql, final boolean doDelete)
@@ -102,6 +103,8 @@ public class IdTableMapper extends IdHashMapper
      * @param tableName name of the table
      * @param idName name of the key field
      * @param sql the SQL statement to build the index
+     * @param doDelete should delete the mapping table
+     * @param doCheckOldDB checks the count of the table to be mapped
      * @throws SQLException any
      */
     public IdTableMapper(final String tableName, final String idName, final String sql, final boolean doDelete, final boolean doCheckOldDB)
@@ -287,7 +290,115 @@ public class IdTableMapper extends IdHashMapper
         }
     }
     
+    /**
+     * Map all the old IDs to new IDs
+     */
+    public void mapAllIdsNoIncrement()
+    {
+        mapAllIdsNoIncrement(sql);
+    }
     
+    /**
+     * Map all the old IDs to new IDs
+     * @param sqlArg the string to use to fill the map
+     */
+    public void mapAllIdsNoIncrement(final String sqlArg)
+    {
+        log.debug("mapAllIdsNoIncrement with sql: " + sqlArg) ;
+        this.sql = sqlArg;
+
+        int mappingCount = getMapCount(mapTableName);
+        wasEmpty = mappingCount == 0;
+        
+        if (doDelete || mappingCount == 0)
+        {
+            BasicSQLUtils.deleteAllRecordsFromTable(oldConn, mapTableName, BasicSQLUtils.myDestinationServerType);
+            if (frame != null)
+            {
+                String dMsg = "Mapping "+mapTableName;
+                frame.setDesc(dMsg);
+                log.debug(dMsg);
+            }
+            
+            try
+            {
+                log.debug("Executing: "+sql);
+                PreparedStatement pStmt   = oldConn.prepareStatement("INSERT INTO "+mapTableName+" VALUES (?,?)");
+                Statement         stmtOld = oldConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                ResultSet         rs      = stmtOld.executeQuery(sql);
+                
+                if (rs.last())
+                {
+                    if (frame != null)
+                    {
+                       frame.setProcess(0, rs.getRow()); 
+                    }
+                }            
+                
+                int cnt = 0;
+                if (rs.first())
+                {
+                    do
+                    {
+                        int oldIndex = rs.getInt(1);
+                        int toIndex = rs.getInt(2);
+                        pStmt.setInt(1, oldIndex); // Old Index
+                        pStmt.setInt(2, toIndex); // New Index
+                        if (pStmt.executeUpdate() != 1)
+                        {
+                            String msg = String.format("Error writing to Map table[%s] old: %d  new: %d", mapTableName, oldIndex, toIndex);
+                            log.error(msg);
+                            throw new RuntimeException(msg);
+                        }
+                        
+                        if (frame != null)
+                        {
+                            if (cnt % 1000 == 0)
+                            {
+                                frame.setProcess(cnt);
+                            }
+                            
+                        } else
+                        {
+                            if (cnt % 2000 == 0)
+                            {
+                                log.debug("Mapped "+cnt+" records from "+tableName);
+                            }                        
+                        }
+                        
+                        cnt++;
+                        
+                    } while (rs.next());
+                    
+                    log.info("Mapped "+cnt+" records from "+tableName);
+                    
+                } else
+                {
+                    log.info("No records to map in "+tableName);
+                }
+                rs.close();
+                stmtOld.close();
+                pStmt.close();
+    
+            } catch (SQLException ex)
+            {
+                ex.printStackTrace();
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(IdTableMapper.class, ex);
+                log.error(ex);
+                throw new RuntimeException(ex);
+            }
+        } else
+        {
+            log.debug("Skipping the build of mapper: "+mapTableName);
+        }
+        
+        if (frame != null)
+        {
+           frame.setProcess(0, 0); 
+        }
+    }
+
     //--------------------------------------------------
     // IdMapperIFace
     //--------------------------------------------------

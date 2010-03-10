@@ -90,6 +90,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     private static final String APP          = "App";
     private static final String APP_REQ_EXIT = "AppReqExit";
 
+    private Pair<String, String> itUserNamePassword = null;
     
     /**
      * 
@@ -259,22 +260,25 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 return SchemaUpdateType.Error;
                             }
                             
-                            Pair<String, String> usrPwd = getITUsernamePwd();
-                            if (usrPwd != null)
+                            itUserNamePassword = getITUsernamePwd();
+                            if (itUserNamePassword != null)
                             {
                                 DBConnection dbc = DBConnection.getInstance();
                                 
                                 DBMSUserMgr dbmsMgr = DBMSUserMgr.getInstance();
-                                if (dbmsMgr.connectToDBMS(usrPwd.first, usrPwd.second, dbc.getServerName()))
+                                if (dbmsMgr.connectToDBMS(itUserNamePassword.first, itUserNamePassword.second, dbc.getServerName()))
                                 {
-                                    int permissions = dbmsMgr.getPermissions(usrPwd.first, dbConn.getDatabaseName());
+                                    int permissions = dbmsMgr.getPermissions(itUserNamePassword.first, dbConn.getDatabaseName());
                                     if (!((permissions & DBMSUserMgr.PERM_ALTER_TABLE) == DBMSUserMgr.PERM_ALTER_TABLE))
                                     {
+                                        dbmsMgr.close();
+                                        
                                         errMsgList.add("You must have permissions to alter database tables.");
                                         //CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
                                         return SchemaUpdateType.Error;
                                     }
                                 }
+                                dbmsMgr.close();
         
                                 ProgressFrame frame = new ProgressFrame(getResourceString("UPDATE_SCHEMA_TITLE"));
                                 frame.adjustProgressFrame();
@@ -285,14 +289,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 
                                 UIHelper.centerAndShow(frame);
                                 
-                                boolean ok = manuallyFixDB(DatabaseDriverInfo.getDriver(dbc.getDriver()), dbc.getServerName(), dbc.getDatabaseName(), usrPwd.first,usrPwd.second);
+                                boolean ok = manuallyFixDB(DatabaseDriverInfo.getDriver(dbc.getDriver()), dbc.getServerName(), dbc.getDatabaseName(), itUserNamePassword.first,itUserNamePassword.second);
                                 if (!ok)
                                 {
                                     frame.setVisible(false);
                                     return SchemaUpdateType.Error;
                                 }
                                 
-                                ok = SpecifySchemaGenerator.updateSchema(DatabaseDriverInfo.getDriver(dbc.getDriver()), dbc.getServerName(), dbc.getDatabaseName(), usrPwd.first, usrPwd.second);
+                                ok = SpecifySchemaGenerator.updateSchema(DatabaseDriverInfo.getDriver(dbc.getDriver()), dbc.getServerName(), dbc.getDatabaseName(), itUserNamePassword.first, itUserNamePassword.second);
                                 if (!ok)
                                 {
                                     errMsgList.add("There was an error updating the schema.");
@@ -1267,69 +1271,163 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         //////////////////////////////////////////////
         // collectingeventattribute Schema 1.3
         //////////////////////////////////////////////
-        DBConnection dbConn = DBConnection.getInstance();
-        String sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'collectingeventattribute' AND COLUMN_NAME = 'CollectionMemberID'", dbConn.getDatabaseName());
-        count = BasicSQLUtils.getCountAsInt(sql);
-        
-        //int numCEAttrs = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM collectingeventattribute");
-        if (count > 0)
-        {
-            HashMap<Integer, Integer> collIdToDispIdHash = new HashMap<Integer, Integer>();
-            sql = "SELECT UserGroupScopeId, DisciplineID FROM collection";
-            for (Object[] cols : BasicSQLUtils.query(sql))
-            {
-                Integer colId = (Integer)cols[0];
-                Integer dspId = (Integer)cols[1];
-                collIdToDispIdHash.put(colId, dspId);
-            }
-            
-            Connection connection = dbConn.getConnection();
-            IdMapperMgr.getInstance().setDBs(connection, connection);
-            IdTableMapper mapper = new IdTableMapper("ceattrmapper","id", "SELECT CollectingEventAttributeID, CollectionMemberID FROM collectingeventattribute", false, false);
-            mapper.mapAllIdsWithSQL();
-            
-            Statement stmt = null;
+        DBConnection dbc     = DBConnection.getInstance();
+        DBMSUserMgr  dbmsMgr = DBMSUserMgr.getInstance();
+        if (dbmsMgr.connectToDBMS(itUserNamePassword.first, itUserNamePassword.second, dbc.getServerName()))
+        {       
+            Connection connection = dbmsMgr.getConnection();
             try
             {
+                // CollectingEventAttributes
+                String sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'collectingeventattribute' AND COLUMN_NAME = 'CollectionMemberID'", dbc.getDatabaseName());
+                count = BasicSQLUtils.getCountAsInt(sql);
                 
-                stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                connection.setCatalog(dbc.getDatabaseName());
                 
-                /*ResultSet rs = stmt.executeQuery("SELECT CollectingEventAttributeID, CollectionMemberID FROM collectingeventattribute");
-                while (rs.next())
+                //int numCEAttrs = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM collectingeventattribute");
+                if (count > 0)
                 {
-                    mapper.put(rs.getInt(1), rs.getInt(2));
+                    HashMap<Integer, Integer> collIdToDispIdHash = new HashMap<Integer, Integer>();
+                    sql = "SELECT UserGroupScopeId, DisciplineID FROM collection";
+                    for (Object[] cols : BasicSQLUtils.query(sql))
+                    {
+                        Integer colId = (Integer)cols[0];
+                        Integer dspId = (Integer)cols[1];
+                        collIdToDispIdHash.put(colId, dspId);
+                    }
+                    
+                    IdMapperMgr.getInstance().setDBs(connection, connection);
+                    IdTableMapper mapper = new IdTableMapper("ceattrmapper","id", "SELECT CollectingEventAttributeID, CollectionMemberID FROM collectingeventattribute", true, false);
+                    mapper.mapAllIdsNoIncrement();
+                    
+                    Statement stmt = null;
+                    try
+                    {
+                        
+                        stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                        BasicSQLUtils.update(conn, "DROP INDEX COLEVATSColMemIDX on collectingeventattribute");
+                        BasicSQLUtils.update(conn, "ALTER TABLE collectingeventattribute DROP COLUMN CollectionMemberID");
+                        BasicSQLUtils.update(conn, "ALTER TABLE collectingeventattribute ADD COLUMN DisciplineID int(11)");
+                        BasicSQLUtils.update(conn, "CREATE INDEX COLEVATSDispIDX ON collectingeventattribute(DisciplineID)");
+        
+                        PreparedStatement pStmt = conn.prepareStatement("UPDATE collectingeventattribute SET DisciplineID=? WHERE CollectingEventAttributeID=?");
+                        ResultSet rs = stmt.executeQuery("SELECT CollectingEventAttributeID FROM collectingeventattribute");
+                        while (rs.next())
+                        {
+                            Integer ceAttrId = rs.getInt(1);
+                            Integer oldColId = mapper.get(ceAttrId);
+                            if (oldColId != null)
+                            {
+                                Integer dispId = collIdToDispIdHash.get(oldColId);
+                                if (dispId != null)
+                                {
+                                    pStmt.setInt(1, dispId);
+                                    pStmt.setInt(2, ceAttrId);
+                                    pStmt.execute();
+                                    
+                                } else
+                                {
+                                    log.debug("Error getting hashed DisciplineID from Old Collection ID["+oldColId+"]  ceAttrId["+ceAttrId+"]");
+                                }
+                            } else
+                            {
+                                log.debug("Error getting mapped  Collection ID["+oldColId+"]  ceAttrId["+ceAttrId+"]");
+                            }
+                        }
+                        rs.close();
+                        pStmt.close();
+                        
+                    } catch (SQLException ex)
+                    {
+                        ex.printStackTrace();
+                        
+                    } finally
+                    {
+                        if (stmt != null) stmt.close();
+                    }
+                    mapper.cleanup();
                 }
-                rs.close();
-                */
                 
-                BasicSQLUtils.update(conn, "DROP INDEX COLEVATSColMemIDX on collectingeventattribute");
-                BasicSQLUtils.update(conn, "ALTER TABLE collectingeventattribute DROP COLUMN CollectionMemberID");
-                BasicSQLUtils.update(conn, "ALTER TABLE collectingeventattribute ADD COLUMN DisciplineID int(11)");
-                BasicSQLUtils.update(conn, "CREATE INDEX COLEVATSDispIDX ON collectingeventattribute(DisciplineID)");
-
-                PreparedStatement pStmt = conn.prepareStatement("UPDATE collectingeventattribute SET DisciplineID=? WHERE CollectingEventAttributeID=?");
-                ResultSet rs = stmt.executeQuery("SELECT CollectingEventAttributeID FROM collectingeventattribute");
-                while (rs.next())
+                //-----------------------------
+                // Collectors
+                //-----------------------------
+                sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'collector' AND COLUMN_NAME = 'CollectionMemberID'", dbc.getDatabaseName());
+                count = BasicSQLUtils.getCountAsInt(sql);
+                if (count > 0)
                 {
-                    Integer ceAttrId = rs.getInt(1);
-                    Integer oldColId = mapper.get(rs.getInt(1));
-                    Integer dispId   = collIdToDispIdHash.get(oldColId);
-                    pStmt.setInt(1, dispId);
-                    pStmt.setInt(2, ceAttrId);
-                    pStmt.execute();
+                    HashMap<Integer, Integer> collIdToDivIdHash = new HashMap<Integer, Integer>();
+                    sql = "SELECT c.UserGroupScopeId, d.DivisionID FROM collection c INNER JOIN discipline d ON c.DisciplineID = d.UserGroupScopeId";
+                    for (Object[] cols : BasicSQLUtils.query(sql))
+                    {
+                        Integer colId = (Integer)cols[0];
+                        Integer divId = (Integer)cols[1];
+                        collIdToDivIdHash.put(colId, divId);
+                    }
+                    
+                    IdMapperMgr.getInstance().setDBs(connection, connection);
+                    IdTableMapper mapper = new IdTableMapper("collectormap","id", "SELECT CollectorID, CollectionMemberID FROM collector", true, false);
+                    mapper.mapAllIdsNoIncrement();
+                    
+                    Statement stmt = null;
+                    try
+                    {
+                        stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                        BasicSQLUtils.update(conn, "DROP INDEX COLTRColMemIDX on collector");
+                        BasicSQLUtils.update(conn, "ALTER TABLE collector DROP COLUMN CollectionMemberID");
+                        BasicSQLUtils.update(conn, "ALTER TABLE collector ADD COLUMN DivisionID int(11)");
+                        BasicSQLUtils.update(conn, "CREATE INDEX COLTRDivIDX ON collector(DivisionID)");
+        
+                        int cnt = 0;
+                        PreparedStatement pStmt = conn.prepareStatement("UPDATE collector SET DivisionID=? WHERE CollectorID=?");
+                        ResultSet rs = stmt.executeQuery("SELECT CollectorID FROM collector");
+                        while (rs.next())
+                        {
+                            Integer coltrId = rs.getInt(1);
+                            Integer oldColId = mapper.get(coltrId);
+                            if (oldColId != null)
+                            {
+                                Integer divId = collIdToDivIdHash.get(oldColId);
+                                if (divId != null)
+                                {
+                                    pStmt.setInt(1, divId);
+                                    pStmt.setInt(2, coltrId);
+                                    pStmt.execute();
+                                    
+                                } else
+                                {
+                                    log.debug("Error getting hashed DisciplineID from Old Collection ID["+oldColId+"]");
+                                }
+                            } else
+                            {
+                                log.debug("Error getting mapped Collector ID["+oldColId+"]");
+                            }
+                            cnt++;
+                            if (cnt % 1000 == 0)
+                            {
+                                log.debug(cnt + " Collectors processed.");
+                            }
+                        }
+                        rs.close();
+                        pStmt.close();
+                        
+                    } catch (SQLException ex)
+                    {
+                        ex.printStackTrace();
+                        
+                    } finally
+                    {
+                        if (stmt != null) stmt.close();
+                    }
+                    mapper.cleanup();
                 }
-                rs.close();
-                pStmt.close();
-                
-            } catch (SQLException ex)
+            } catch (Exception ex)
             {
                 ex.printStackTrace();
                 
             } finally
             {
-                if (stmt != null) stmt.close();
+                dbmsMgr.close();
             }
-            mapper.cleanup();
         }
         
         return statusOK;

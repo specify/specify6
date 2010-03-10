@@ -33,7 +33,6 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPreferences.AppPrefsIOIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpAppResourceData;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
@@ -262,18 +261,15 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                     session.beginTransaction();
                     if (spAppResourceDir.getId() != null)
                     {
-                        session.merge(spAppResourceDir);
-                    } else
-                    {
-                        session.saveOrUpdate(spAppResourceDir);
+                        spAppResourceDir = session.merge(spAppResourceDir);
                     }
+                    session.saveOrUpdate(spAppResourceDir);
+                    
                     if (spAppResource.getId() != null)
                     {
-                        session.merge(spAppResource);
-                    } else
-                    {
-                        session.saveOrUpdate(spAppResourceDir);
+                        spAppResource = session.merge(spAppResource);
                     }
+                    session.saveOrUpdate(spAppResourceDir);
                     session.commit();
                     
                 } catch (Exception ex)
@@ -286,7 +282,7 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                     session.close();
                 }
                 
-                DataModelObjBase.save(true, spAppResourceDir, spAppResource);
+                //DataModelObjBase.save(true, spAppResourceDir, spAppResource);
                 
             } catch (IOException ex)
             {

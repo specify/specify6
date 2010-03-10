@@ -36,6 +36,7 @@ import javax.persistence.UniqueConstraint;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.util.Orderable;
 
 /**
@@ -47,9 +48,9 @@ import edu.ku.brc.util.Orderable;
 @Table(name = "collector", uniqueConstraints = { @UniqueConstraint(columnNames = {"AgentID", "CollectingEventID"}) })
 @org.hibernate.annotations.Table(appliesTo="collector", indexes =
     {   
-        @Index (name="COLTRColMemIDX", columnNames={"CollectionMemberID"})
+        @Index (name="COLTRDivIDX", columnNames={"DivisionID"})
     })
-public class Collector extends CollectionMember implements java.io.Serializable, 
+public class Collector extends DataModelObjBase implements java.io.Serializable, 
                                                            Orderable, 
                                                            Comparable<Collector>,
                                                            Cloneable
@@ -63,7 +64,7 @@ public class Collector extends CollectionMember implements java.io.Serializable,
      protected String          remarks;
      protected CollectingEvent collectingEvent;
      protected Agent           agent;
-
+     protected Division        division;
 
     // Constructors
 
@@ -90,6 +91,7 @@ public class Collector extends CollectionMember implements java.io.Serializable,
         remarks         = null;
         collectingEvent = null;
         agent           = null;
+        division        = AppContextMgr.getInstance() != null ? AppContextMgr.getInstance().getClassObject(Division.class) : null;
     }
     // End Initializer
 
@@ -202,6 +204,22 @@ public class Collector extends CollectionMember implements java.io.Serializable,
         this.agent = agent;
     }
     
+
+    /**
+     *  The Division this Agent belongs to.
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "DivisionID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Division getDivision() 
+    {
+        return this.division;
+    }
+    
+    public void setDivision(Division division) 
+    {
+        this.division = division;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
      */
@@ -299,6 +317,7 @@ public class Collector extends CollectionMember implements java.io.Serializable,
         obj.collectingEvent = collectingEvent;
         obj.agent           = agent;
         obj.orderNumber     = orderNumber;
+        obj.division        = division;
         
         obj.timestampCreated     = new Timestamp(System.currentTimeMillis());
         obj.timestampModified    = timestampCreated;
