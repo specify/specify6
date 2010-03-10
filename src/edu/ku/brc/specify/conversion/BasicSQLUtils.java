@@ -358,7 +358,7 @@ public class BasicSQLUtils
             {
                 log.error("ignoring a record because it makes a uncatchable SQL Exception: " + ex.getStackTrace().toString() );
                 log.error(cmdStr+"\n");
-                ex.printStackTrace();
+                //ex.printStackTrace();
                 return 0;  
             }
             else 
@@ -777,7 +777,7 @@ public class BasicSQLUtils
         {
             log.warn("The query ["+sql+"] returned more than one object.");
         }
-        return (T)list.get(0);
+        return list.size() > 0 ? (T)list.get(0) : null;
     }
 
     /**

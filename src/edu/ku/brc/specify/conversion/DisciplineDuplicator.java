@@ -33,7 +33,6 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
-import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIRegistry;
@@ -79,6 +78,7 @@ public class DisciplineDuplicator
     /**
      * 
      */
+    @SuppressWarnings("unchecked")
     public void doShowFieldsForDiscipline()
     {
     

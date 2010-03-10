@@ -37,6 +37,7 @@ import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -242,17 +243,66 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                                         "WHERE tu.RankID =  0 AND tn.RankID =  0 AND ct.BiologicalObjectTypeID = %d " +
                                         "ORDER BY ct.BiologicalObjectTypeID ASC", info.getColObjTypeId());
                     
-                    String detSQLStr = "select (select relatedsubtypevalues from usysmetacontrol c " +
-                    	               "left join usysmetafieldsetsubtype fst on fst.fieldsetsubtypeid = c.fieldsetsubtypeid " +
-                    	               "where objectid = 10290 and ct.taxonomytypeid = c.relatedsubtypevalues) as DeterminationTaxonType " +
-                    	               "from collectiontaxonomytypes ct where ct.biologicalobjecttypeid = " + info.getColObjTypeId();
+                    String detSQLStr = "SELECT ct.TaxonomyTypeID, (select relatedsubtypevalues FROM usysmetacontrol c " +
+                    	               "LEFT JOIN usysmetafieldsetsubtype fst ON fst.fieldsetsubtypeid = c.fieldsetsubtypeid " +
+                    	               "WHERE objectid = 10290 AND ct.taxonomytypeid = c.relatedsubtypevalues) AS DeterminationTaxonType " +
+                    	               "FROM collectiontaxonomytypes ct WHERE ct.biologicalobjecttypeid = " + info.getColObjTypeId();
                     
-                    String detTxnTypeStr = BasicSQLUtils.querySingleObj(oldDBConn, detSQLStr);
-                    info.setDeterminationTaxonType(detTxnTypeStr);
+                    String txNameSQL = "SELECT TaxonomyTypeName FROM taxonomytype WHERE TaxonomyTypeID = ";
+                    
+                    Vector<Object[]> detRows = BasicSQLUtils.query(oldDBConn, detSQLStr);
+                    
+                    
+                    for (Object[] row : detRows)
+                    {
+                        Integer txnTypeId    = (Integer)row[0];
+                        String  detTxnTypes  = (String)row[1];
+                        
+                        if (StringUtils.isNotEmpty(detTxnTypes))
+                        {
+                            if (StringUtils.contains(detTxnTypes, ','))
+                            {
+                                StringBuilder sb = new StringBuilder();
+                                String[] toks = StringUtils.split(detTxnTypes, ',');
+                                
+                                String dtName = BasicSQLUtils.querySingleObj(oldDBConn, txNameSQL + txnTypeId);
+                                sb.append(String.format("Warning - There are %d DeterminationTaxonTypes for TaxonObjectType %d (%s) they are:\n",  toks.length, txnTypeId, dtName));
+                                for (String id : toks)
+                                {
+                                    String name = BasicSQLUtils.querySingleObj(oldDBConn, txNameSQL + id);
+                                    sb.append(id);
+                                    sb.append(" - ");
+                                    sb.append(name);
+                                    sb.append("\n");
+                                }
+                                sb.append("\nThis database will need to be fixed by hand before it can be converted.");
+                                UIRegistry.showError(sb.toString());
+                                
+                                oldDBConn.close();
+                                
+                                System.exit(0);
+                                
+                            } else if (StringUtils.isNumeric(detTxnTypes))
+                            {
+                                Integer txnType = Integer.parseInt(detTxnTypes);
+                                if (!txnType.equals(txnTypeId))
+                                {
+                                    String tName  = BasicSQLUtils.querySingleObj(oldDBConn, txNameSQL + txnType);
+                                    String dtName = BasicSQLUtils.querySingleObj(oldDBConn, txNameSQL + txnTypeId);
+                                    StringBuilder sb = new StringBuilder();
+                                    sb.append(String.format("Warning - The TaxonObjectType %d (%s) in the DeterminationTaxonTypes field\ndoesn't match the actual TaxonObjectType %d (%s)",  txnType, tName, txnTypeId, dtName));
+                                    UIRegistry.showError(sb.toString());
+                                    System.exit(0);
+                                }
+                            }
+                        }
+                    }
+                    
+                    /*info.setDeterminationTaxonType(detTxnTypeStr);
                     for (Integer id : info.getDetTaxonTypeIdList())
                     {
                         log.debug("ID: "+id);
-                    }
+                    }*/
                     
                     log.debug(sql);
                     rows = BasicSQLUtils.query(oldDBConn, sql);

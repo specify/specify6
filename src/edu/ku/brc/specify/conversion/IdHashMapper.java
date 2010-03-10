@@ -169,7 +169,7 @@ public class IdHashMapper implements IdMapperIFace
         //newConn = IdMapperMgr.getInstance().getNewConnection();
         
         int numRecs      = checkOldDB ? BasicSQLUtils.getNumRecords(oldConn, tableName) : 0;
-        int mappingCount = getMapCount(mapTableName);
+        int mappingCount = oldConn != null ? getMapCount(mapTableName) : 0;
         
         wasEmpty = mappingCount == 0;
         log.info(numRecs+" Records in "+tableName);

@@ -125,7 +125,7 @@ public class ConvScopeFixer
         this.oldDBName = oldDBName;
         this.tblWriter = tblWriter;
         
-        for (CollectionInfo ci : CollectionInfo.getCollectionInfoList(oldDBConn))
+        for (CollectionInfo ci : CollectionInfo.getFilteredCollectionInfoList())
         {
             colObjTypeToCollMemId.put(ci.getColObjTypeId(), ci.getCollectionId());
             
@@ -139,7 +139,14 @@ public class ConvScopeFixer
             }
         }
         
-        for (CollectionInfo ci : CollectionInfo.getCollectionInfoList(oldDBConn))
+        log.debug("Collection Object Type Counts");
+        for (Integer key : colObjTypeCount.keySet())
+        {
+            log.debug(key+" -> " + colObjTypeCount.get(key));   
+        }
+        log.debug("");
+        
+        for (CollectionInfo ci : CollectionInfo.getFilteredCollectionInfoList())
         {
             if (ci.getCatSeriesId() != null)
             {
@@ -521,7 +528,7 @@ public class ConvScopeFixer
     {
         int cnt = 0;
         
-        if (fixCollectingEventAttributes()) cnt++;
+        //if (fixCollectingEventAttributes()) cnt++;
         if (fixCollectionObjectAttributes()) cnt++;
         if (fixCollectionObjectCitations()) cnt++;
         //if (fixCollectionObjects()) cnt++;

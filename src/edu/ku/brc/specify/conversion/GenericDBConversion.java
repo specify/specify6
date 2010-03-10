@@ -205,7 +205,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     protected Hashtable<String, Integer>                    dataTypeNameIndexes    = new Hashtable<String, Integer>();                   // Name to Index in Array
     protected Hashtable<String, Integer>                    dataTypeNameToIds      = new Hashtable<String, Integer>();                   // name  to Record ID
     
-    protected Hashtable<Integer, Integer>                   catSeriesToNewCollectionID = new Hashtable<Integer, Integer>();            
+    protected Hashtable<Integer, Vector<Integer>>           catSeriesToNewCollectionID = new Hashtable<Integer, Vector<Integer>>();            
 
     protected Hashtable<String, TableStats>                 tableStatHash          = new Hashtable<String, TableStats>();
 
@@ -359,7 +359,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 taxonomyTpeSet.add(colInfo);
 
                 //---
-                DisciplineType dType = getStandardDisciplineName(colInfo.getTaxonomyTypeName(), colInfo.getCatSeriesName());
+                DisciplineType dType = getStandardDisciplineName(colInfo.getTaxonomyTypeName(),
+                                                                 colInfo.getColObjTypeName(), 
+                                                                 colInfo.getCatSeriesName());
                 colInfo.setDisciplineTypeObj(dType);
                 
                 if (dType.isPaleo())
@@ -655,7 +657,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             if (pair == null || pair.second == null)
             {
                 CollectionInfo colInfo = pair.first;
-                disciplineType = getStandardDisciplineName(colInfo.getTaxonomyTypeName(), colInfo.getCatSeriesName());
+                disciplineType = getStandardDisciplineName(colInfo.getTaxonomyTypeName(), colInfo.getColObjTypeName(), colInfo.getCatSeriesName());
             } else
             {
                 disciplineType = pair.second;
@@ -1933,6 +1935,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 setFieldsToIgnoreWhenMappingNames(ignoredFields);
                 errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for
                                                                 // DeaccessionPhysicalObjectID
+            } else if (fromTableName.equals("localitycitation"))
+            {
+                String[] ignoredFields = { "Version", "CreatedByAgentID",  "ModifiedByAgentID", "DisciplineID" };
+                setFieldsToIgnoreWhenMappingNames(ignoredFields);
+                
             } else if (fromTableName.equals("otheridentifier"))
             {
                 String[] ignoredFields = { "Institution", "Version", "CreatedByAgentID",  "ModifiedByAgentID", "CollectionMemberID" };
@@ -2316,15 +2323,18 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      * @param taxonDefName the name
      * @return the Standard DataType
      */
-    public DisciplineType getStandardDisciplineName(final String taxonDefName, final String catSeriesName)
+    public DisciplineType getStandardDisciplineName(final String taxonDefName, 
+                                                    final String colObjTypeName, 
+                                                    final String catSeriesName)
     {
-        DisciplineType dispType = getStandardDisciplineName(taxonDefName);
+        String taxonDescrStr = taxonDefName.toLowerCase() + " " + colObjTypeName.toLowerCase();
+        DisciplineType dispType = getStandardDisciplineName(taxonDescrStr);
         if (dispType != null)
         {
             return dispType;
         }
         
-        log.debug("**************** ["+taxonDefName+"]["+catSeriesName+"] *****************");
+        log.debug("**************** ["+taxonDescrStr+"]["+catSeriesName+"] *****************");
         
         if (dispType == null && catSeriesName != null)
         {
@@ -2338,8 +2348,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 {
                     log.debug("    Found["+dispType+"]");
                     if (!dispType.isPaleo() &&
-                            (StringUtils.contains(taxonDefName.toLowerCase(), "paleo") ||
-                             StringUtils.contains(catSeriesName.toLowerCase(), "paleo")))
+                            (StringUtils.contains(taxonDescrStr, "paleo") || 
+                             StringUtils.contains(taxonDescrStr, "fossil") ||
+                             StringUtils.contains(catSeriesName.toLowerCase(), "paleo") ||
+                             StringUtils.contains(catSeriesName.toLowerCase(), "fossil")))
                     {
                         if (dispType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.botany)
                         {
@@ -2790,7 +2802,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 log.info(msg);
                 tblWriter.log(msg);
                 
-                DisciplineType  disciplineTypeObj = getStandardDisciplineName(info.getTaxonomyTypeName(), info.getCatSeriesName());
+                DisciplineType  disciplineTypeObj = getStandardDisciplineName(info.getTaxonomyTypeName(), info.getColObjTypeName(), info.getCatSeriesName());
                 STD_DISCIPLINES dspType           = disciplineTypeObj.getDisciplineType();
                 boolean         isEmbeddedCE      = dspType != STD_DISCIPLINES.fish;
 
@@ -2975,7 +2987,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     //log.info(msg);
                     //tblWriter.log(msg);
     
-                    tblWriter.close();
                     
                     //rs.close();
                     //stmt.close();
@@ -2987,11 +2998,20 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
             } // for loop 
             
+            tblWriter.close();
+            
             for (CollectionInfo ci : collectionInfoShortList)
             {
                 if (ci.getCatSeriesId() != null)
                 {
-                    catSeriesToNewCollectionID.put(ci.getCatSeriesId(), ci.getCollectionId());
+                    log.debug("Cat Series: " + ci.getCatSeriesId() + " "+ci.getCollectionId());
+                    Vector<Integer> colList = catSeriesToNewCollectionID.get(ci.getCatSeriesId());
+                    if (colList == null)
+                    {
+                        colList = new Vector<Integer>();
+                        catSeriesToNewCollectionID.put(ci.getCatSeriesId(), colList);
+                    }
+                    colList.add(ci.getCollectionId());
                 }
             }
             
@@ -4721,16 +4741,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 datePair.first  = null;
                 datePair.second = null;
                 
-                Integer catSeriesId  = rs.getInt(catSeriesIdInx);
-                Integer collectionId = catSeriesToNewCollectionID.get(catSeriesId);
-                if (collectionId == null)
-                {
-                    Integer colObjId = rs.getInt(idIndex);
-                    throw new RuntimeException("CollectionId is null when mapped from CatSeriesId["+catSeriesId+"] ColObjID["+colObjId+"]");
-                }
-                
-                Collection collection = getCollection(collectionId);
-                
                 Integer preparedById = null;
                 if (shouldCheckPrepAttrs)
                 {
@@ -4751,7 +4761,42 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     subQueryRS.close();
                 }
                 
-                Map<String, PrepType> prepTypeMap = collToPrepTypeHash.get(collection.getCollectionId());
+                Integer         catSeriesId      = rs.getInt(catSeriesIdInx);
+                //log.debug("catSeriesId "+catSeriesId+"  catSeriesIdInx "+catSeriesIdInx);
+                Vector<Integer> collectionIdList = catSeriesToNewCollectionID.get(catSeriesId);
+                if (collectionIdList == null)
+                {
+                    //Integer colObjId = rs.getInt(idIndex);
+                    throw new RuntimeException("There are no Collections mapped to CatSeriesId["+catSeriesId+"]");
+                }
+                
+                if (collectionIdList.size() == 0)
+                {
+                    UIRegistry.showError("There are NO Collections assigned to the same CatalogSeries and we can't handle that right now.");
+                    return false;
+                }
+                
+                if (collectionIdList.size() > 1)
+                {
+                    UIRegistry.showError("There are multiple Collections assigned to the same CatalogSeries and we can't handle that right now.");
+                    return false;
+                }
+                
+                Integer colId = collectionIdList.get(0);
+                Collection collection = collIdToCollObj.get(colId);
+                if (collection == null)
+                {
+                    Session localSession = HibernateUtil.getCurrentSession();
+                    List<Collection> colList = (List<Collection>)localSession.createQuery("FROM Collection WHERE id = "+colId).list();
+                    if (colList == null || colList.size() == 0)
+                    {
+                        UIRegistry.showError("The collection is null for Catalog Series ID: "+catSeriesId);
+                        return false;
+                    }
+                    collection = colList.get(0);
+                    collIdToCollObj.put(colId, collection);
+                }
+                Map<String, PrepType> prepTypeMap = collToPrepTypeHash.get(collectionIdList.get(0));
 
                 String lastEditedBy = rs.getString(lastEditedByInx);
 
@@ -5257,8 +5302,20 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
                 String lastEditedBy = rs.getString(lastEditedByInx);
                 
-                Integer catSeriesId = rs.getInt(catSeriesIdInx);
-                Integer collectionId = catSeriesToNewCollectionID.get(catSeriesId);
+                Integer         catSeriesId      = rs.getInt(catSeriesIdInx);
+                Vector<Integer> collectionIdList = catSeriesToNewCollectionID.get(catSeriesId);
+                if (collectionIdList == null)
+                {
+                    //Integer colObjId = rs.getInt(idIndex);
+                    throw new RuntimeException("There are no Collections mapped to CatSeriesId["+catSeriesId+"]");
+                }
+                
+                if (collectionIdList.size() > 1)
+                {
+                    UIRegistry.showError("There are multiple Collections assigned to the same CatalogSeries and we can't handle that right now.");
+                }
+                
+                Integer collectionId = collectionIdList.get(0);
                 if (collectionId == null)
                 {
                     throw new RuntimeException("CollectionId is null when mapped from CatSeriesId");
@@ -7699,7 +7756,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             String sql = " SELECT CollectingEventID, HabitatID FROM collectingevent Inner Join habitat ON CollectingEventID = HabitatID";
             
             stmt       = oldDBConn.createStatement();
-            pStmtUpd   = newDBConn.prepareStatement("UPDATE collectingevent SET CollectingEventAttributeID=? WHERE CollectingEventID = ?");
+            pStmtUpd   = newDBConn.prepareStatement("UPDATE collectingevent SET CollectingEventAttributeID=?,CollectionmemberID=? WHERE CollectingEventID = ?");
             
             int cnt = 0;
             ResultSet rs = stmt.executeQuery(sql);
@@ -7711,10 +7768,17 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 Integer newCEID = ceMapper.get(ceId);
                 Integer newHBID = hbMapper.get(hbId);
                 
+                Integer colMemID = BasicSQLUtils.getCount("SELECT CollectionMemberID FROM collectingevent WHERE CollectingEventID = " + newCEID);
+                if (colMemID == null)
+                {
+                    log.debug("CollectionMemberID is null for CE ID " + newCEID);    
+                }
+                
                 if (newHBID != null)
                 {
                     pStmtUpd.setInt(1, newHBID);
-                    pStmtUpd.setInt(2, newCEID);
+                    pStmtUpd.setInt(2, colMemID);
+                    pStmtUpd.setInt(3, newCEID);
                     pStmtUpd.execute();
                     cnt++;
                 }
