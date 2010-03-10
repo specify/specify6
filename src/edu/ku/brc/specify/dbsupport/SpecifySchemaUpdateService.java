@@ -58,6 +58,8 @@ import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.conversion.IdMapperMgr;
+import edu.ku.brc.specify.conversion.IdTableMapper;
 import edu.ku.brc.specify.conversion.TableWriter;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
@@ -1260,6 +1262,74 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     ex.printStackTrace();
                 }
             }
+        }
+        
+        //////////////////////////////////////////////
+        // collectingeventattribute Schema 1.3
+        //////////////////////////////////////////////
+        DBConnection dbConn = DBConnection.getInstance();
+        String sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'collectingeventattribute' AND COLUMN_NAME = 'CollectionMemberID'", dbConn.getDatabaseName());
+        count = BasicSQLUtils.getCountAsInt(sql);
+        
+        //int numCEAttrs = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM collectingeventattribute");
+        if (count > 0)
+        {
+            HashMap<Integer, Integer> collIdToDispIdHash = new HashMap<Integer, Integer>();
+            sql = "SELECT UserGroupScopeId, DisciplineID FROM collection";
+            for (Object[] cols : BasicSQLUtils.query(sql))
+            {
+                Integer colId = (Integer)cols[0];
+                Integer dspId = (Integer)cols[1];
+                collIdToDispIdHash.put(colId, dspId);
+            }
+            
+            Connection connection = dbConn.getConnection();
+            IdMapperMgr.getInstance().setDBs(connection, connection);
+            IdTableMapper mapper = new IdTableMapper("ceattrmapper","id", "SELECT CollectingEventAttributeID, CollectionMemberID FROM collectingeventattribute", false, false);
+            mapper.mapAllIdsWithSQL();
+            
+            Statement stmt = null;
+            try
+            {
+                
+                stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                
+                /*ResultSet rs = stmt.executeQuery("SELECT CollectingEventAttributeID, CollectionMemberID FROM collectingeventattribute");
+                while (rs.next())
+                {
+                    mapper.put(rs.getInt(1), rs.getInt(2));
+                }
+                rs.close();
+                */
+                
+                BasicSQLUtils.update(conn, "DROP INDEX COLEVATSColMemIDX on collectingeventattribute");
+                BasicSQLUtils.update(conn, "ALTER TABLE collectingeventattribute DROP COLUMN CollectionMemberID");
+                BasicSQLUtils.update(conn, "ALTER TABLE collectingeventattribute ADD COLUMN DisciplineID int(11)");
+                BasicSQLUtils.update(conn, "CREATE INDEX COLEVATSDispIDX ON collectingeventattribute(DisciplineID)");
+
+                PreparedStatement pStmt = conn.prepareStatement("UPDATE collectingeventattribute SET DisciplineID=? WHERE CollectingEventAttributeID=?");
+                ResultSet rs = stmt.executeQuery("SELECT CollectingEventAttributeID FROM collectingeventattribute");
+                while (rs.next())
+                {
+                    Integer ceAttrId = rs.getInt(1);
+                    Integer oldColId = mapper.get(rs.getInt(1));
+                    Integer dispId   = collIdToDispIdHash.get(oldColId);
+                    pStmt.setInt(1, dispId);
+                    pStmt.setInt(2, ceAttrId);
+                    pStmt.execute();
+                }
+                rs.close();
+                pStmt.close();
+                
+            } catch (SQLException ex)
+            {
+                ex.printStackTrace();
+                
+            } finally
+            {
+                if (stmt != null) stmt.close();
+            }
+            mapper.cleanup();
         }
         
         return statusOK;

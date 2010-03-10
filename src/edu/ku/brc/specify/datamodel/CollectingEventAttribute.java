@@ -53,9 +53,9 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 @Table(name = "collectingeventattribute")
 @org.hibernate.annotations.Table(appliesTo="collectingeventattribute", indexes =
     {   
-        @Index (name="COLEVATSColMemIDX", columnNames={"CollectionMemberID"})
+        @Index (name="COLEVATSDispIDX", columnNames={"DisciplineID"})
     })
-public class CollectingEventAttribute extends CollectionMember implements Cloneable
+public class CollectingEventAttribute extends DisciplineMember implements Cloneable
 {
     protected Integer collectingEventAttributeId;
     
