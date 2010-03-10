@@ -1187,6 +1187,38 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         }
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    /*@Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        CollectionObject obj = (CollectionObject)super.clone();
+        obj.init();
+        
+        obj.collectionObjectId = null;
+        obj.collectionObjectAttribute     = null;
+        obj.collectionObjectAttrs         = new HashSet<CollectionObjectAttr>();
+        obj.collectionObjectAttachments   = new HashSet<CollectionObjectAttachment>();
+        
+        for (Collector collector : collectors)
+        {
+            Collector newCollector = (Collector)collector.clone();
+            newCollector.setCollectionObject(obj);
+            obj.collectors.add(newCollector);
+        }
+        
+        // Clone Attributes
+        obj.collectionObjectAttribute    = collectionObjectAttribute != null ? (CollectionObjectAttribute)collectionObjectAttribute.clone() : null;
+        obj.collectionObjectAttrs        = new HashSet<CollectionObjectAttr>();
+        for (CollectionObjectAttr cea : collectionObjectAttrs)
+        {
+            obj.collectionObjectAttrs.add((CollectionObjectAttr)cea.clone());
+        }
+         
+        return obj;
+    }*/
+    
     //----------------------------------------------------------------------
     //-- Comparable Interface
     //----------------------------------------------------------------------

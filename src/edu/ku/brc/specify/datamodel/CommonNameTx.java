@@ -54,7 +54,7 @@ import org.hibernate.annotations.Index;
     {   @Index (name="CommonNameTxNameIDX", columnNames={"Name"}),
         @Index (name="CommonNameTxCountryIDX", columnNames={"Country"})
     })
-public class CommonNameTx extends DataModelObjBase implements Serializable
+public class CommonNameTx extends DataModelObjBase implements Serializable, Cloneable
 {
     protected Integer					commonNameTxId;
 	protected String					country;		// Java Two Character
@@ -292,5 +292,20 @@ public class CommonNameTx extends DataModelObjBase implements Serializable
 		this.citations = citations;
 	}
 
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        CommonNameTx cnt = (CommonNameTx)super.clone();
+        cnt.init();
+        
+        cnt.commonNameTxId = null;
+        cnt.taxon = null;
+        cnt.citations    = new HashSet<CommonNameTxCitation>(); 
+        
+        return cnt;
+    }
 }

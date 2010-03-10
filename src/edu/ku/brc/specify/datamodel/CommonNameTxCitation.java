@@ -38,7 +38,7 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "commonnametxcitation")
-public class CommonNameTxCitation extends DataModelObjBase implements java.io.Serializable 
+public class CommonNameTxCitation extends DataModelObjBase implements java.io.Serializable, Cloneable
 {
     protected Integer commonNameTxCitationId;
     protected String remarks;
@@ -342,4 +342,19 @@ public class CommonNameTxCitation extends DataModelObjBase implements java.io.Se
 		commonNameTx = null;
 	}
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        CommonNameTxCitation cntc = (CommonNameTxCitation)super.clone();
+        cntc.init();
+        
+        cntc.commonNameTxCitationId = null;
+        cntc.referenceWork = null;
+        cntc.commonNameTx  = null;
+        
+        return cntc;
+    }
 }

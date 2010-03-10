@@ -44,7 +44,7 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "geocoorddetail")
-public class GeoCoordDetail extends DataModelObjBase
+public class GeoCoordDetail extends DataModelObjBase implements Cloneable
 {
     // Manis Fields
     protected Integer               geoCoordDetailId;
@@ -429,7 +429,21 @@ public class GeoCoordDetail extends DataModelObjBase
     {
         return getClassTableId();
     }
-
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        GeoCoordDetail gd = (GeoCoordDetail)super.clone();
+        gd.init();
+        
+        gd.geoCoordDetailId = null;
+        gd.locality         = null;
+        
+        return gd;
+    }
+    
     /**
      * @return the Table ID for the class.
      */
