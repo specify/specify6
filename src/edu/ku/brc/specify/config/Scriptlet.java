@@ -651,7 +651,7 @@ public class Scriptlet extends JRDefaultScriptlet
     protected static final int Variety                = 1024;
     
     protected int mask;
-    protected Triple<String, Integer, Integer> info = new Triple<String, Integer, Integer>();
+    protected TaxonInfo info = new TaxonInfo();
     protected Triple<String, String, String>   cit   = new Triple<String, String, String>();
     protected Statement stmt = null;
     
@@ -728,7 +728,7 @@ public class Scriptlet extends JRDefaultScriptlet
         }
         if (isOn(Subspecies))
         {
-            sb.append(" ");
+            sb.append(" subsp. ");
             sb.append(subspecies); // 7
         }
         
@@ -759,7 +759,7 @@ public class Scriptlet extends JRDefaultScriptlet
         
         if (isOn(Variety))
         {
-            sb.append(" var.");
+            sb.append(" var. ");
             sb.append(variety);  // 11
         }
         
@@ -772,7 +772,7 @@ public class Scriptlet extends JRDefaultScriptlet
      * @param taxonId
      * @return
      */
-    protected Triple<String, Integer, Integer> getTaxonInfo(final int taxonId)
+    protected TaxonInfo getTaxonInfo(final int taxonId)
     {
         if (stmt == null)
         {
@@ -788,18 +788,17 @@ public class Scriptlet extends JRDefaultScriptlet
         ResultSet rs = null;
         try
         {
-            rs = stmt.executeQuery("SELECT Name, RankID, ParentID FROM taxon WHERE TaxonID = "+taxonId);
+            rs = stmt.executeQuery("SELECT Name, RankID, ParentID, Author FROM taxon WHERE TaxonID = "+taxonId);
             if (rs.next())
             {
-                info.first  = rs.getString(1);
-                info.second = rs.getInt(2);
-                info.third  = rs.getInt(3);
+                info.set(rs.getString(1), rs.getInt(2), rs.getInt(3), rs.getString(4));
             }
             
         } catch (SQLException ex)
         {
             log.debug(ex);
             ex.printStackTrace();
+            
         } finally 
         {
             if (rs != null)
@@ -845,8 +844,8 @@ public class Scriptlet extends JRDefaultScriptlet
                 cit.first  = rs.getString(1);
                 cit.second = rs.getString(2);
                 
-                String first = rs.getString(3);
-                String mid   = rs.getString(4);
+                //String first = rs.getString(3);
+                //String mid   = rs.getString(4);
                 String last  = rs.getString(5);
                 if (StringUtils.isNotEmpty(cit.third)) cit.third += ", ";
                 cit.third += last;
@@ -856,6 +855,7 @@ public class Scriptlet extends JRDefaultScriptlet
         {
             log.debug(ex);
             ex.printStackTrace();
+            
         } finally 
         {
             if (rs != null)
@@ -868,9 +868,61 @@ public class Scriptlet extends JRDefaultScriptlet
         }
         return cit;
     }
-
     
-    public String getTaxonWithAuthors(final Integer taxonIdArg)
+    /**
+     * @param taxonId
+     * @return
+     */
+    protected Triple<String, String, String> getDeterminationQualifiers(final int detId)
+    {
+        if (stmt == null)
+        {
+            try
+            {
+                stmt = DBConnection.getInstance().getConnection().createStatement();
+                
+            } catch (SQLException ex)
+            {
+                log.debug(ex);
+            }
+        }
+        
+        ResultSet rs = null;
+        try
+        {
+            String sql = "SELECT Qualifier, SubSpQualifier, VarQualifier FROM determination WHERE DeterminationID = " + detId;
+            rs = stmt.executeQuery(sql);
+            cit.third = "";
+            while (rs.next())
+            {
+                info.spQualifer    = rs.getString(1);
+                info.subSpQualifer = rs.getString(2);
+                info.varQualifer   = rs.getString(3);
+            }
+            
+        } catch (SQLException ex)
+        {
+            log.debug(ex);
+            ex.printStackTrace();
+            
+        } finally 
+        {
+            if (rs != null)
+            {
+                try
+                {
+                    rs.close();
+                } catch (SQLException ex) {}
+            }
+        }
+        return cit;
+    }
+    
+    /**
+     * @param taxonIdArg
+     * @return
+     */
+    public String getTaxonNameWithAuthors(final Integer taxonIdArg, final Integer detIdArg)
     {
         int taxonId = taxonIdArg;
         
@@ -888,54 +940,89 @@ public class Scriptlet extends JRDefaultScriptlet
         
         mask = 0;
         
-        getTaxonInfo(taxonId);
-        if (info.second == TaxonTreeDef.VARIETY)
+        info.clear();
+        
+        if (detIdArg != null)
         {
-            variety     = info.first;
-            taxonId     = info.third;
-            info.second = TaxonTreeDef.SUBSPECIES;
+            getDeterminationQualifiers(detIdArg);
+            
+            if (StringUtils.isNotEmpty(info.spQualifer))
+            {
+                speciesQualifier = info.spQualifer;
+                setOn(SpeciesQualifier);
+            }
+            if (StringUtils.isNotEmpty(info.spQualifer))
+            {
+                speciesQualifier = info.spQualifer;
+                setOn(SubspeciesQualifier);
+            }
+            if (StringUtils.isNotEmpty(info.varQualifer))
+            {
+                varietyQualifier = info.varQualifer;
+                setOn(VarietyQualifier);
+            }
+        }
+        
+        getTaxonInfo(taxonId);
+        if (info.rankId == TaxonTreeDef.VARIETY)
+        {
+            variety     = info.name;
+            taxonId     = info.parentId;
+            info.rankId = TaxonTreeDef.SUBSPECIES;
             setOn(Variety);
         }
         
-        if (info.second == TaxonTreeDef.SUBSPECIES)
+        if (info.rankId == TaxonTreeDef.SUBSPECIES)
         {
             getTaxonInfo(taxonId);
-            getAuthor(taxonId);
+            if (StringUtils.isNotEmpty(info.author))
+            {
+                cit.third = info.author;
+            } else
+            {
+                getAuthor(taxonId);
+            }
             if (cit.third != null)
             {
                 infraAuthorLastName = cit.third;
                 setOn(InfraAuthorLastName);
             }
             
-            subspecies  = info.first;
-            taxonId     = info.third;
-            info.second = TaxonTreeDef.SPECIES;
+            subspecies  = info.name;
+            taxonId     = info.parentId;
+            info.rankId = TaxonTreeDef.SPECIES;
             setOn(Subspecies);
         }
         
-        if (info.second == TaxonTreeDef.SPECIES)
+        if (info.rankId == TaxonTreeDef.SPECIES)
         {
             getTaxonInfo(taxonId);
-            getAuthor(taxonId);
+            if (StringUtils.isNotEmpty(info.author))
+            {
+                cit.third = info.author;
+            } else
+            {
+                getAuthor(taxonId);
+            }
             if (cit.third != null)
             {
                 speciesAuthorLastName = cit.third;
                 setOn(SpeciesAuthorLastName);
             }
             
-            species     = info.first;
-            taxonId     = info.third;
-            info.second = TaxonTreeDef.GENUS;
+            species     = info.name;
+            taxonId     = info.parentId;
+            info.rankId = TaxonTreeDef.GENUS;
             setOn(Species);
         }
         
-        if (info.second == TaxonTreeDef.GENUS)
+        if (info.rankId == TaxonTreeDef.GENUS)
         {
             getTaxonInfo(taxonId);
             
-            genus       = info.first;
-            taxonId     = info.third;
-            info.second = TaxonTreeDef.SUBSPECIES;
+            genus       = info.name;
+            taxonId     = info.parentId;
+            info.rankId = TaxonTreeDef.SUBSPECIES;
             setOn(Genus);
         }
         
@@ -958,6 +1045,64 @@ public class Scriptlet extends JRDefaultScriptlet
                                       infraAuthorLastName,
                                       varietyQualifier,
                                       variety);
+    }
+    
+    class TaxonInfo
+    {
+        String  name;
+        Integer rankId;
+        Integer parentId;
+        String  author;
+        
+        // Qualifiers
+        String spQualifer;
+        String subSpQualifer;
+        String varQualifer;
+        
+        /**
+         * 
+         */
+        public TaxonInfo()
+        {
+            super();
+            // TODO Auto-generated constructor stub
+        }
+
+        /**
+         * @param name
+         * @param rankId
+         * @param parentId
+         * @param author
+         */
+        public TaxonInfo(String name, Integer rankId, Integer parentId, String author)
+        {
+            super();
+            this.name = name;
+            this.rankId = rankId;
+            this.parentId = parentId;
+            this.author = author;
+        }
+        
+        public void set(String name, Integer rankId, Integer parentId, String author)
+        {
+            this.name = name;
+            this.rankId = rankId;
+            this.parentId = parentId;
+            this.author = author;
+        }
+        
+        public void clear()
+        {
+            this.name = null;
+            this.rankId = null;
+            this.parentId = null;
+            this.author = null;
+            
+            // Qualifiers
+            spQualifer = null;
+            subSpQualifer = null;
+            varQualifer = null;
+        }
     }
 
 }

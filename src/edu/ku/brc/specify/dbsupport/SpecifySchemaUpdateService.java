@@ -1278,8 +1278,17 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             Connection connection = dbmsMgr.getConnection();
             try
             {
+                // Add New Fields to Determination
+                String sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'determination' AND COLUMN_NAME = 'VarQualifer'", dbc.getDatabaseName());
+                count = BasicSQLUtils.getCountAsInt(sql);
+                if (count == 0)
+                {
+                    BasicSQLUtils.update(conn, "ALTER TABLE determination ADD COLUMN SubSpQualifier VARCHAR(16) AFTER Qualifier");
+                    BasicSQLUtils.update(conn, "ALTER TABLE determination ADD COLUMN VarQualifier VARCHAR(16) AFTER SubSpQualifier");
+                }
+
                 // CollectingEventAttributes
-                String sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'collectingeventattribute' AND COLUMN_NAME = 'CollectionMemberID'", dbc.getDatabaseName());
+                sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'collectingeventattribute' AND COLUMN_NAME = 'CollectionMemberID'", dbc.getDatabaseName());
                 count = BasicSQLUtils.getCountAsInt(sql);
                 
                 connection.setCatalog(dbc.getDatabaseName());
