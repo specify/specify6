@@ -150,14 +150,9 @@ public class SpecifySchemaUpdateScopeFixer
     protected boolean fieldExists(final Connection conn,  final String tableName, final String fieldName)
     {
         DBMSUserMgr dbUserMgr = DBMSUserMgr.getInstance();
-        
-        Connection cachedConn = dbUserMgr.getConnection();
         dbUserMgr.setConnection(conn);
-        
         boolean fieldExists = dbUserMgr.doesFieldExistInTable(tableName, fieldName);
-        
-        dbUserMgr.setConnection(cachedConn);
-        
+        dbUserMgr.setConnection(null);
         return fieldExists;
     }
     
@@ -173,13 +168,11 @@ public class SpecifySchemaUpdateScopeFixer
     {
         log.info(tableName + " - " + oldIndexName);
         
-        // check to see if the fix has already been done
+        //check to see if the fix has already been done
         if (!fieldExists(conn, tableName, "CollectionMemberID")) 
         {
-        	return true; //successfully did nothing
+            return true; //successfully did nothing
         }
-        
-        boolean hasDisciplineID = fieldExists(conn, tableName, "DisciplineID");
         
         DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(tableName);
         if (tblInfo != null && tblInfo.getTableIndexMap() != null)
@@ -196,7 +189,7 @@ public class SpecifySchemaUpdateScopeFixer
             
             if (newIndexName != null)
             {
-                String tblName = tableName.toLowerCase();
+                String tblName      = tableName.toLowerCase();
                 
                 int cnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM " + tblName);
                 log.debug(String.format("Fixing %d %s records", cnt, tblName));
@@ -229,10 +222,7 @@ public class SpecifySchemaUpdateScopeFixer
                     return false; 
                 }*/
                 
-                if (!hasDisciplineID)
-                {
-                    rv = BasicSQLUtils.update(conn, createNewCol);
-                }
+                rv = BasicSQLUtils.update(conn, createNewCol);
 /*                if (rv != 0)
                 {
                     log.error("Error on ["+createNewCol+"] for table["+tblName+"]");
@@ -274,10 +264,10 @@ public class SpecifySchemaUpdateScopeFixer
     {
         if (!fieldExists(conn, "groupperson", "CollectionMemberID"))
         {
-        	return true; //already fixed
+            return true; //already fixed
         }
         
-    	String dropOldInx   = "DROP INDEX GPColMemIDX on groupperson";
+        String dropOldInx   = "DROP INDEX GPColMemIDX on groupperson";
         String dropOldCol   = "ALTER TABLE groupperson DROP COLUMN CollectionMemberID";
         String createNewCol = "ALTER TABLE groupperson Add COLUMN DivisionID int(11)";
         String createNewInx = "CREATE INDEX GPDivMemIDX ON groupperson (DivisionID)";
