@@ -30,8 +30,10 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.AttachmentOwnerIFace;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentUtils;
@@ -102,6 +104,7 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
     {
@@ -109,6 +112,18 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
         
         for (AttachmentOwnerIFace<?> aOwner : attachOwners)
         {
+            DataModelObjBase dob = (DataModelObjBase)aOwner;
+            if (dob.getId() != null)
+            {
+                try
+                {
+                    aOwner = (AttachmentOwnerIFace)session.merge(dob);
+                } catch (StaleObjectException ex)
+                {
+                    
+                }
+            }
+            
             for (ObjectAttachmentIFace<?> objAtt : aOwner.getAttachmentReferences())
             {
                 Attachment a = objAtt.getAttachment();
