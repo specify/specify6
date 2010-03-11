@@ -364,21 +364,24 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 
         log.debug("Creating database connection to: " + connectionStr);
         
-        DBMSUserMgr dbmsMgr = DBMSUserMgr.getInstance();
-        // Now connect to other databases and "create" the Derby database
-        DBConnection dbConn = null;
+        DBConnection dbConn  = DBConnection.getInstance();
+        DBMSUserMgr  dbmsMgr = DBMSUserMgr.getInstance();
         try
         {
-            dbConn = DBConnection.createInstance(dbdriverInfo.getDriverClassName(), dbdriverInfo.getDialectClassName(), 
-                                                 databaseName, connectionStr, userName, password);
-            if (dbConn != null && dbConn.getConnection() != null)
-            {
-                Connection conn = dbConn.getConnection();
+            if (dbmsMgr.connectToDBMS(itUserNamePassword.first, itUserNamePassword.second, dbConn.getServerName()))
+            {       
+                Connection conn = dbmsMgr.getConnection();
+                conn.setCatalog(dbConn.getDatabaseName());
+                
+                String sqlStr = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'spauditlog' AND COLUMN_NAME = 'Description'", dbConn.getDatabaseName());
+                if (BasicSQLUtils.getCountAsInt(conn, sqlStr) == 1)
+                {
+                    BasicSQLUtils.update(conn, "ALTER TABLE spauditlog DROP COLUMN Description");
+                }
+                
                 Statement  stmt = null;
                 try
                 {
-                    dbmsMgr.setConnection(conn);
-                    
                     Integer count = null;
                 	stmt = conn.createStatement();
                     int rv = 0;
@@ -491,10 +494,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     	}
                     }
                     
-                    if (!dbmsMgr.doesFieldExistInTable("collectingeventattachment", "HostTaxonID"))
-                    {
-                        
-                    }
+                    //if (!dbmsMgr.doesFieldExistInTable("collectingeventattachment", "HostTaxonID"))
+                    //{
+                    //    
+                    //}
                     
                     SpecifySchemaUpdateScopeFixer collectionMemberFixer = new SpecifySchemaUpdateScopeFixer(databaseName);
                     if (!collectionMemberFixer.fix(conn))
@@ -502,9 +505,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         errMsgList.add("Error fixing CollectionMember tables");
                         return false;
                     }
-                    
-                    // Do updates for Schema 1.2
-                    doFixesForDBSchema1_2(conn);
                     
                     // Find Accession NumberingSchemes that 'attached' to Collections
                     String postfix = " FROM autonumsch_coll ac Inner Join autonumberingscheme ans ON ac.AutoNumberingSchemeID = ans.AutoNumberingSchemeID WHERE ans.TableNumber = '7'";
@@ -662,6 +662,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     
                     //fixLocaleSchema();
                     
+                    //-----------------------------------------------------------------------------
+                    // Do updates for Schema 1.2 & 1.3
+                    //-----------------------------------------------------------------------------
+                    doFixesForDBSchema1_2(conn);
+                    
                     return true;
                     
                 } catch (SQLException ex)
@@ -687,7 +692,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             
         } finally
         {
-            dbConn.close();
+            DBConnection.shutdown();
         }
         return false;
     }
@@ -831,34 +836,34 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 //----------------------------------------------------------------
                 
                 //---------- accessionagent
-                sql = "SELECT accessionagent.AccessionAgentID, accessionagent.AgentID, accession.DivisionID " +
-                "FROM accessionagent INNER JOIN accession ON accessionagent.AccessionID = accession.AccessionID ";
+                sql = "SELECT aa.AccessionAgentID, aa.AgentID, a.DivisionID " +
+                "FROM accessionagent aa INNER JOIN accession a ON aa.AccessionID = a.AccessionID ";
                 fixAgents(conn, sql, "accessionagent", "AgentID", divToAgentHash);
                 
                 //---------- addressofrecord (Accession, Borrow, ExchangeIn, EchangeOut, Gift, Loan, RepositoryAgreement)
                 
-                sql = "SELECT addressofrecord.AddressOfRecordID, addressofrecord.AgentID, accession.DivisionID " +
-                "FROM addressofrecord INNER JOIN accession ON addressofrecord.AddressOfRecordID = accession.AddressOfRecordID ";
+                sql = "SELECT aor.AddressOfRecordID, aor.AgentID, a.DivisionID " +
+                "FROM addressofrecord aor INNER JOIN accession a ON aor.AddressOfRecordID = a.AddressOfRecordID ";
                 fixAgents(conn, sql, "addressofrecord", "AgentID", divToAgentHash);
                 
-                sql = "SELECT addressofrecord.AddressOfRecordID, addressofrecord.AgentID, exchangein.DivisionID " +
-                "FROM addressofrecord INNER JOIN exchangein ON addressofrecord.AddressOfRecordID = exchangein.AddressOfRecordID ";
+                sql = "SELECT aor.AddressOfRecordID, aor.AgentID, exchangein.DivisionID " +
+                "FROM addressofrecord aor INNER JOIN exchangein ON aor.AddressOfRecordID = exchangein.AddressOfRecordID ";
                 fixAgents(conn, sql, "addressofrecord", "AgentID", divToAgentHash);
                 
-                sql = "SELECT addressofrecord.AddressOfRecordID, addressofrecord.AgentID, exchangeout.DivisionID " +
-                "FROM addressofrecord INNER JOIN exchangeout ON addressofrecord.AddressOfRecordID = exchangeout.AddressOfRecordID ";
+                sql = "SELECT aor.AddressOfRecordID, aor.AgentID, exchangeout.DivisionID " +
+                "FROM addressofrecord aor INNER JOIN exchangeout ON aor.AddressOfRecordID = exchangeout.AddressOfRecordID ";
                 fixAgents(conn, sql, "addressofrecord", "AgentID", divToAgentHash);
                 
-                sql = "SELECT addressofrecord.AddressOfRecordID, addressofrecord.AgentID, gift.DivisionID " +
-                "FROM addressofrecord INNER JOIN gift ON addressofrecord.AddressOfRecordID = gift.AddressOfRecordID ";
+                sql = "SELECT aor.AddressOfRecordID, aor.AgentID, gift.DivisionID " +
+                "FROM addressofrecord aor INNER JOIN gift ON aor.AddressOfRecordID = gift.AddressOfRecordID ";
                 fixAgents(conn, sql, "addressofrecord", "AgentID", divToAgentHash);
                 
-                sql = "SELECT addressofrecord.AddressOfRecordID, addressofrecord.AgentID, loan.DivisionID " +
-                "FROM addressofrecord INNER JOIN loan ON addressofrecord.AddressOfRecordID = loan.AddressOfRecordID ";
+                sql = "SELECT aor.AddressOfRecordID, aor.AgentID, loan.DivisionID " +
+                "FROM addressofrecord aor INNER JOIN loan ON aor.AddressOfRecordID = loan.AddressOfRecordID ";
                 fixAgents(conn, sql, "addressofrecord", "AgentID", divToAgentHash);
                 
-                sql = "SELECT addressofrecord.AddressOfRecordID, addressofrecord.AgentID, repositoryagreement.DivisionID " +
-                "FROM addressofrecord INNER JOIN repositoryagreement ON addressofrecord.AddressOfRecordID = repositoryagreement.AddressOfRecordID ";
+                sql = "SELECT aor.AddressOfRecordID, aor.AgentID, repositoryagreement.DivisionID " +
+                "FROM addressofrecord aor INNER JOIN repositoryagreement ON aor.AddressOfRecordID = repositoryagreement.AddressOfRecordID ";
                 fixAgents(conn, sql, "addressofrecord", "AgentID", divToAgentHash);
                 
                 //---------- agentgeography
@@ -874,8 +879,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 // (Don't Need To)
                 
                 //---------- appraisal
-                sql = "SELECT appraisal.AppraisalID, appraisal.AgentID, accession.DivisionID " +
-                "FROM appraisal INNER JOIN accession ON appraisal.AccessionID = accession.AccessionID ";
+                sql = "SELECT appraisal.AppraisalID, appraisal.AgentID, a.DivisionID " +
+                "FROM appraisal INNER JOIN accession a ON appraisal.AccessionID = a.AccessionID ";
                 fixAgents(conn, sql, "appraisal", "AgentID", divToAgentHash);
                 
                 sql = "SELECT appraisal.AppraisalID, appraisal.AgentID, discipline.DivisionID " +
@@ -909,8 +914,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 
                 //---------- collector
                 sql = "SELECT CollectorID, collector.AgentID, discipline.DivisionID " +
-                "FROM collector INNER JOIN collection ON collector.CollectionMemberID = collection.UserGroupScopeId " +
-                "INNER JOIN discipline ON collection.DisciplineID = discipline.UserGroupScopeId";
+                      "FROM collector INNER JOIN collection ON collector.CollectionMemberID = collection.UserGroupScopeId " +
+                      "INNER JOIN discipline ON collection.DisciplineID = discipline.UserGroupScopeId";
                 fixAgents(conn, sql, "collector", "AgentID", divToAgentHash);
 
                 //---------- conservevent
@@ -1033,6 +1038,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         }
     }
     
+    /**
+     * @param conn
+     * @param sql
+     * @param tableName
+     * @param fldName
+     * @param divToAgentHash
+     */
     private void fixAgents(final Connection conn,
                            final String sql, 
                            final String tableName, 
@@ -1131,13 +1143,25 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     }
     
     /**
+     * @param dbc
+     * @param tblName
+     * @param fldName
+     * @return
+     */
+    private boolean fieldExsists(final DBConnection dbc, final String tblName, final String fldName)
+    {
+        String sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s' AND COLUMN_NAME = '%s'", tblName, fldName, dbc.getDatabaseName());
+        return BasicSQLUtils.getCountAsInt(sql) > 0;
+    }
+    
+    /**
      * Fixes the Schema for Database Version 1.2
      * @param conn
      * @throws Exception
      */
     private boolean doFixesForDBSchema1_2(final Connection conn) throws Exception
     {
-        //DBMSUserMgr.getInstance().setConnection(conn);
+        DBConnection dbc = DBConnection.getInstance();
 
         /////////////////////////////
         // PaleoContext
@@ -1146,8 +1170,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         alterFieldLength(conn, "paleocontext", "Text1", 32, 64);
         alterFieldLength(conn, "paleocontext", "Text2", 32, 64);
         
-        len = DBMSUserMgr.getInstance().getFieldLength("paleocontext", "Remarks");
-        if (len == null)
+        if (fieldExsists(dbc, "paleocontext", "Text1"))
         {
             int count = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM paleocontext");
             int rv    = BasicSQLUtils.update(conn, "ALTER TABLE paleocontext ADD Remarks VARCHAR(60)");
@@ -1179,7 +1202,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         
         boolean statusOK = true;
         int     count    = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM localitydetail WHERE UtmScale IS NOT NULL");
-        if (count > 0)
+        if (count > 0 && !fieldExsists(dbc, "localitydetail", "MgrsZone"))
         {
             Vector<Object[]> values = BasicSQLUtils.query("SELECT ld.LocalityDetailID, ld.UtmScale, l.LocalityName FROM localitydetail ld INNER JOIN locality l ON ld.LocalityID = l.LocalityID");
             
@@ -1271,33 +1294,26 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         //////////////////////////////////////////////
         // collectingeventattribute Schema 1.3
         //////////////////////////////////////////////
-        DBConnection dbc     = DBConnection.getInstance();
-        DBMSUserMgr  dbmsMgr = DBMSUserMgr.getInstance();
-        if (dbmsMgr.connectToDBMS(itUserNamePassword.first, itUserNamePassword.second, dbc.getServerName()))
+        //DBMSUserMgr  dbmsMgr = DBMSUserMgr.getInstance();
+        //if (dbmsMgr.connectToDBMS(itUserNamePassword.first, itUserNamePassword.second, dbc.getServerName()))
         {       
-            Connection connection = dbmsMgr.getConnection();
+            //Connection connection = dbmsMgr.getConnection();
+            //connection.setCatalog(dbc.getDatabaseName());
+            
             try
             {
                 // Add New Fields to Determination
-                String sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'determination' AND COLUMN_NAME = 'VarQualifer'", dbc.getDatabaseName());
-                count = BasicSQLUtils.getCountAsInt(sql);
-                if (count == 0)
+                if (!fieldExsists(dbc, "determination", "SubSpQualifier"))
                 {
                     BasicSQLUtils.update(conn, "ALTER TABLE determination ADD COLUMN SubSpQualifier VARCHAR(16) AFTER Qualifier");
                     BasicSQLUtils.update(conn, "ALTER TABLE determination ADD COLUMN VarQualifier VARCHAR(16) AFTER SubSpQualifier");
                 }
 
                 // CollectingEventAttributes
-                sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'collectingeventattribute' AND COLUMN_NAME = 'CollectionMemberID'", dbc.getDatabaseName());
-                count = BasicSQLUtils.getCountAsInt(sql);
-                
-                connection.setCatalog(dbc.getDatabaseName());
-                
-                //int numCEAttrs = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM collectingeventattribute");
-                if (count > 0)
+                if (!fieldExsists(dbc, "collectingeventattribute", "CollectionMemberID"))
                 {
                     HashMap<Integer, Integer> collIdToDispIdHash = new HashMap<Integer, Integer>();
-                    sql = "SELECT UserGroupScopeId, DisciplineID FROM collection";
+                    String sql = "SELECT UserGroupScopeId, DisciplineID FROM collection";
                     for (Object[] cols : BasicSQLUtils.query(sql))
                     {
                         Integer colId = (Integer)cols[0];
@@ -1305,7 +1321,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         collIdToDispIdHash.put(colId, dspId);
                     }
                     
-                    IdMapperMgr.getInstance().setDBs(connection, connection);
+                    IdMapperMgr.getInstance().setDBs(conn, conn);
                     IdTableMapper mapper = new IdTableMapper("ceattrmapper","id", "SELECT CollectingEventAttributeID, CollectionMemberID FROM collectingeventattribute", true, false);
                     mapper.mapAllIdsNoIncrement();
                     
@@ -1313,7 +1329,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     try
                     {
                         
-                        stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                        stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                         BasicSQLUtils.update(conn, "DROP INDEX COLEVATSColMemIDX on collectingeventattribute");
                         BasicSQLUtils.update(conn, "ALTER TABLE collectingeventattribute DROP COLUMN CollectionMemberID");
                         BasicSQLUtils.update(conn, "ALTER TABLE collectingeventattribute ADD COLUMN DisciplineID int(11)");
@@ -1360,12 +1376,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 //-----------------------------
                 // Collectors
                 //-----------------------------
-                sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'collector' AND COLUMN_NAME = 'CollectionMemberID'", dbc.getDatabaseName());
-                count = BasicSQLUtils.getCountAsInt(sql);
-                if (count > 0)
+                if (!fieldExsists(dbc, "collector", "CollectionMemberID"))
                 {
                     HashMap<Integer, Integer> collIdToDivIdHash = new HashMap<Integer, Integer>();
-                    sql = "SELECT c.UserGroupScopeId, d.DivisionID FROM collection c INNER JOIN discipline d ON c.DisciplineID = d.UserGroupScopeId";
+                    String sql = "SELECT c.UserGroupScopeId, d.DivisionID FROM collection c INNER JOIN discipline d ON c.DisciplineID = d.UserGroupScopeId";
                     for (Object[] cols : BasicSQLUtils.query(sql))
                     {
                         Integer colId = (Integer)cols[0];
@@ -1373,14 +1387,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         collIdToDivIdHash.put(colId, divId);
                     }
                     
-                    IdMapperMgr.getInstance().setDBs(connection, connection);
+                    IdMapperMgr.getInstance().setDBs(conn, conn);
                     IdTableMapper mapper = new IdTableMapper("collectormap","id", "SELECT CollectorID, CollectionMemberID FROM collector", true, false);
                     mapper.mapAllIdsNoIncrement();
                     
                     Statement stmt = null;
                     try
                     {
-                        stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                        stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                         BasicSQLUtils.update(conn, "DROP INDEX COLTRColMemIDX on collector");
                         BasicSQLUtils.update(conn, "ALTER TABLE collector DROP COLUMN CollectionMemberID");
                         BasicSQLUtils.update(conn, "ALTER TABLE collector ADD COLUMN DivisionID int(11)");
@@ -1432,10 +1446,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             } catch (Exception ex)
             {
                 ex.printStackTrace();
-                
-            } finally
-            {
-                dbmsMgr.close();
             }
         }
         

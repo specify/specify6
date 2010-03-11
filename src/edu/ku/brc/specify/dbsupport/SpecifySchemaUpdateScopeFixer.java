@@ -173,11 +173,13 @@ public class SpecifySchemaUpdateScopeFixer
     {
         log.info(tableName + " - " + oldIndexName);
         
-        //check to see if the fix has already been done
+        // check to see if the fix has already been done
         if (!fieldExists(conn, tableName, "CollectionMemberID")) 
         {
         	return true; //successfully did nothing
         }
+        
+        boolean hasDisciplineID = fieldExists(conn, tableName, "DisciplineID");
         
         DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(tableName);
         if (tblInfo != null && tblInfo.getTableIndexMap() != null)
@@ -194,7 +196,7 @@ public class SpecifySchemaUpdateScopeFixer
             
             if (newIndexName != null)
             {
-                String tblName      = tableName.toLowerCase();
+                String tblName = tableName.toLowerCase();
                 
                 int cnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM " + tblName);
                 log.debug(String.format("Fixing %d %s records", cnt, tblName));
@@ -227,7 +229,10 @@ public class SpecifySchemaUpdateScopeFixer
                     return false; 
                 }*/
                 
-                rv = BasicSQLUtils.update(conn, createNewCol);
+                if (!hasDisciplineID)
+                {
+                    rv = BasicSQLUtils.update(conn, createNewCol);
+                }
 /*                if (rv != 0)
                 {
                     log.error("Error on ["+createNewCol+"] for table["+tblName+"]");
