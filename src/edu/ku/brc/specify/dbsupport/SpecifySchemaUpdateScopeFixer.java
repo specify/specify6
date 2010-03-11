@@ -150,9 +150,13 @@ public class SpecifySchemaUpdateScopeFixer
     protected boolean fieldExists(final Connection conn,  final String tableName, final String fieldName)
     {
         DBMSUserMgr dbUserMgr = DBMSUserMgr.getInstance();
+        Connection connCache = dbUserMgr.getConnection();
         dbUserMgr.setConnection(conn);
+        
         boolean fieldExists = dbUserMgr.doesFieldExistInTable(tableName, fieldName);
-        dbUserMgr.setConnection(null);
+        
+        dbUserMgr.setConnection(connCache);
+        
         return fieldExists;
     }
     
@@ -174,6 +178,8 @@ public class SpecifySchemaUpdateScopeFixer
             return true; //successfully did nothing
         }
         
+        boolean hasDisciplineID = fieldExists(conn, tableName, "DisciplineID");
+
         DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(tableName);
         if (tblInfo != null && tblInfo.getTableIndexMap() != null)
         {
@@ -222,7 +228,11 @@ public class SpecifySchemaUpdateScopeFixer
                     return false; 
                 }*/
                 
-                rv = BasicSQLUtils.update(conn, createNewCol);
+                if (!hasDisciplineID)
+                {
+                    rv = BasicSQLUtils.update(conn, createNewCol);
+                }
+
 /*                if (rv != 0)
                 {
                     log.error("Error on ["+createNewCol+"] for table["+tblName+"]");
@@ -258,6 +268,7 @@ public class SpecifySchemaUpdateScopeFixer
         }
         return false;
     }
+
     
 
     public boolean fixGroupPerson(final Connection conn)
