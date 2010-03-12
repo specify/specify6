@@ -8731,7 +8731,7 @@ public class BuildSampleDatabase
 
                 default:
                     value = "";
-                    log.error("unsuported cell type");
+                    log.error("unsuported cell type["+cell.getCellType()+"]");
                     break;
             }
         }
@@ -8829,7 +8829,7 @@ public class BuildSampleDatabase
             rows = sheet.rowIterator();
             while (rows.hasNext())
             {
-                System.out.println(rowCnt);
+                //System.out.println(rowCnt);
                 rowCnt++;
                 
                 for (int i=0;i<cells.length;i++)
@@ -8908,6 +8908,7 @@ public class BuildSampleDatabase
                     if (cell != null)
                     {
                         cells[i] = getXLSCellValueAsStr(cell);
+                        i++;
                     }
                 }
 
@@ -9094,12 +9095,12 @@ public class BuildSampleDatabase
         gSQLStr.append("INSERT INTO taxon (Name, TaxonTreeDefID, FullName, TaxonTreeDefItemID, RankID, ParentID, TimestampCreated, Version");
         addExtraColumns(gSQLStr, tdi.getRankId(), levelNames, true);
         gSQLStr.append(") VALUES (");
-        gSQLStr.append("'");
+        gSQLStr.append("\"");
         gSQLStr.append(name);
-        gSQLStr.append("',");
+        gSQLStr.append("\",");
         gSQLStr.append(txTreeDefId);
         gSQLStr.append(",");
-        gSQLStr.append('\'');
+        gSQLStr.append("\"");
         if (StringUtils.isNotEmpty(fullName))
         {
             gSQLStr.append(fullName);
@@ -9108,7 +9109,7 @@ public class BuildSampleDatabase
         {
             gSQLStr.append(name);
         }
-        gSQLStr.append('\'');        
+        gSQLStr.append("\"");        
         gSQLStr.append(",");
         gSQLStr.append(tdi.getId());
         gSQLStr.append(',');
@@ -9132,7 +9133,7 @@ public class BuildSampleDatabase
         }
         
         recCnt++;
-        System.out.println("rec: "+recCnt);
+        //System.out.println("rec: "+recCnt);
         
         if (recycler.size() > 0)
         {
