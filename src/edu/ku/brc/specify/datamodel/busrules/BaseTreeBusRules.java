@@ -49,6 +49,7 @@ import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace.CreationMode;
 import edu.ku.brc.af.ui.forms.validation.UIValidator;
+import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
@@ -571,10 +572,11 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             
             final I nodeInForm = (I)formViewObj.getDataObj();
             //disable FullName -related fields if TreeDefItem is used by nodes in the tree
+        	//NOTE: Can remove the edit restriction. Tree rebuilds now update fullname fields. Need to add tree rebuild after fullname def edits.
             if (nodeInForm != null && nodeInForm.getTreeDef() != null)
             {
-            	boolean canEditFullNameFlds = nodeInForm.hasTreeEntries();
-            	if (canEditFullNameFlds)
+            	boolean canNOTEditFullNameFlds = nodeInForm.hasTreeEntries();
+            	if (canNOTEditFullNameFlds)
             	{
             		ValTextField ftCtrl = (ValTextField )formViewObj.getControlByName("textAfter");
             		if (ftCtrl != null)
@@ -591,6 +593,11 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             		{
             			ftCtrl.setEnabled(false);
             		}
+            		ValCheckBox ftBox = (ValCheckBox )formViewObj.getControlByName("isInFullName");
+            		if (ftBox != null)
+            		{
+            			ftBox.setEnabled(false);
+            		}
             	}
             
             	if (!viewName.endsWith("TreeDefItem"))
@@ -603,7 +610,8 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                 TreeDefItemStandardEntry stdLevel = null;
                 for (TreeDefItemStandardEntry std : stds)
                 {
-                    if (std.getTitle().equals(nodeInForm.getName()) && std.getRank() == nodeInForm.getRankId())
+                   //if (std.getTitle().equals(nodeInForm.getName()) && std.getRank() == nodeInForm.getRankId())
+                   if (std.getRank() == nodeInForm.getRankId())
                     {
                         stdLevel = std;
                         break;
