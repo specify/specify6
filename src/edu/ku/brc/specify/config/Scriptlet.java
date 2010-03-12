@@ -699,6 +699,7 @@ public class Scriptlet extends JRDefaultScriptlet
             sb.append("<style isItalic=\"true\">");
             sb.append(speciesQualifier); // 2
             sb.append("</style>");
+            sb.append(" ");
         }
         sb.append(species); // 3
         
@@ -763,7 +764,8 @@ public class Scriptlet extends JRDefaultScriptlet
             sb.append(variety);  // 11
         }
         
-        System.out.println(sb.toString());
+        //System.err.println("----------------------------------------------------------------------------");
+        //System.err.println(sb.toString());
         
         return sb.toString();
     }
@@ -951,9 +953,9 @@ public class Scriptlet extends JRDefaultScriptlet
                 speciesQualifier = info.spQualifer;
                 setOn(SpeciesQualifier);
             }
-            if (StringUtils.isNotEmpty(info.spQualifer))
+            if (StringUtils.isNotEmpty(info.subSpQualifer))
             {
-                speciesQualifier = info.spQualifer;
+                subspeciesQualifier = info.subSpQualifer;
                 setOn(SubspeciesQualifier);
             }
             if (StringUtils.isNotEmpty(info.varQualifer))
@@ -1031,6 +1033,8 @@ public class Scriptlet extends JRDefaultScriptlet
             try
             {
                 stmt.close();
+                stmt = null;
+                
             } catch (SQLException ex) {}
         }
         

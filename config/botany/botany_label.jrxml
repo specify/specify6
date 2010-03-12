@@ -31,10 +31,11 @@
 	<import value="net.sf.jasperreports.engine.data.*" />
 
 	<parameter name="itemnum" isForPrompting="false" class="java.lang.String"/>
-	<queryString><![CDATA[Select collectionobject.FieldNumber as fieldNum, collectionobject.CatalogNumber as cat_no, 
+	<queryString><![CDATA[SELECT collectionobject.FieldNumber as fieldNum, collectionobject.CatalogNumber as cat_no, 
 	collectionobject.TimestampCreated as date, collectionobject.Name as name, taxon.FullName as species, 
 	agent.LastName as catalogedBy, locality.LocalityName as locality, locality.Latitude1 as latitude, 
-	locality.Longitude1 as longitude, preptype.Name as prepname, preparation.countAmt as prepcount
+	locality.Longitude1 as longitude, preptype.Name as prepname, preparation.countAmt as prepcount, 
+	dt.DeterminationID as detId, taxon.TaxonID as txnId
 FROM collectionobject INNER JOIN determination dt ON collectionobject.CollectionObjectID = dt.CollectionObjectID
 	 INNER JOIN collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID
 	 INNER JOIN preparation ON collectionobject.CollectionObjectID = preparation.CollectionObjectID
@@ -54,7 +55,9 @@ WHERE dt.IsCurrent <> 0 AND collectionobject.CollectionObjectID $P!{itemnum}]]><
 	<field name="name" class="java.lang.String"/>
 	<field name="species" class="java.lang.String"/>
 	<field name="prepname" class="java.lang.String"/>
-	<field name="prepcount" class="java.lang.Integer"/>
+    <field name="prepcount" class="java.lang.Integer"/>
+    <field name="detId" class="java.lang.Integer"/>
+    <field name="txnId" class="java.lang.Integer"/>
 
 		<background>
 			<band height="0"  isSplitAllowed="true" >
@@ -93,7 +96,7 @@ WHERE dt.IsCurrent <> 0 AND collectionobject.CollectionObjectID $P!{itemnum}]]><
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="SansSerif" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{name}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{name}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement
@@ -305,10 +308,10 @@ WHERE dt.IsCurrent <> 0 AND collectionobject.CollectionObjectID $P!{itemnum}]]><
 					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
 </box>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					<textElement isStyledText="true" textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="7" isBold="false" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{species}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[((edu.ku.brc.specify.config.Scriptlet)$P{REPORT_SCRIPTLET}).getTaxonNameWithAuthors($F{txnId}, $F{detId})]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
