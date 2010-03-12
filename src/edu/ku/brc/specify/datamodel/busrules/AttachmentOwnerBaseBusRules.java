@@ -112,7 +112,7 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
         
         for (AttachmentOwnerIFace<?> aOwner : attachOwners)
         {
-            DataModelObjBase dob = (DataModelObjBase)aOwner;
+            /*DataModelObjBase dob = (DataModelObjBase)aOwner;
             if (dob.getId() != null)
             {
                 try
@@ -122,7 +122,7 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
                 {
                     
                 }
-            }
+            }*/
             
             for (ObjectAttachmentIFace<?> objAtt : aOwner.getAttachmentReferences())
             {

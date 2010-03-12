@@ -27,7 +27,6 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -111,6 +110,7 @@ public class MultiView extends JPanel
     protected boolean                      editable             = false;
     protected AltViewIFace.CreationMode    createWithMode       = AltViewIFace.CreationMode.NONE;
     protected boolean                      ignoreDataChanges    = false;
+    protected boolean                      isNewForm            = false;
 
     protected int                          createOptions        = 0;
 
@@ -570,6 +570,14 @@ public class MultiView extends JPanel
         }
         showDisplayFrames(show);
     }
+    
+    /**
+     * @return
+     */
+    public boolean isNewForm()
+    {
+        return isNewForm;
+    }
 
     /**
      * Tells all the Viewables that have validators that the form is new or old.
@@ -581,6 +589,8 @@ public class MultiView extends JPanel
      */
     public void setIsNewForm(final boolean isNewForm, final boolean traverseKids)
     {
+        this.isNewForm = isNewForm;
+        
         for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
         {
             Viewable viewable = e.nextElement();
@@ -903,7 +913,7 @@ public class MultiView extends JPanel
         //ViewIFace newView = view;
         if (newView != null)
         {
-            if (false)
+            /*if (false)
             {
                 log.debug("--------------------------");
                 for (int i=0;i<getComponentCount();i++)
@@ -918,7 +928,7 @@ public class MultiView extends JPanel
                     }
                 }
                 log.debug("--------------------------");
-            }
+            }*/
 
             int tmpCreateOptions = createOptions | (createWithMode == AltViewIFace.CreationMode.EDIT ? (IS_EDITTING) : 0);
             //MultiView.printCreateOptions("createViewable", createOptions);

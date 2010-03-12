@@ -2617,10 +2617,10 @@ public class TableViewObj implements Viewable,
                 }
                 
                 Object dataVal = dataValues[0];
-                if (session != null && session.isOpen() && dataVal instanceof FormDataObjIFace && ((FormDataObjIFace)dataVal).getId() != null)
+                /*if (session != null && session.isOpen() && dataVal instanceof FormDataObjIFace && ((FormDataObjIFace)dataVal).getId() != null)
                 {
                     session.attach(dataVal);
-                }
+                }*/
                 String dataObjFormatName = colInfo.getDataObjFormatName();
                 if (StringUtils.isNotEmpty(dataObjFormatName))
                 {

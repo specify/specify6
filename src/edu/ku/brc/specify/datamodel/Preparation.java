@@ -119,9 +119,6 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     {
         this.preparationId = preparationId;
     }
-   
-    
-    
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#initialize()
@@ -748,6 +745,15 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     public Set<PreparationAttachment> getAttachmentReferences()
     {
         return preparationAttachments;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+     */
+    @Override
+    public void forceLoad()
+    {
+        preparationAttachments.size();
     }
     
     /* (non-Javadoc)

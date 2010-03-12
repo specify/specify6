@@ -1180,6 +1180,11 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     {
         determinations.size();
         preparations.size();
+        for (Preparation prep : preparations)
+        {
+            prep.forceLoad();
+        }
+        collectionObjectAttachments.size();
         projects.size();
         if (collection != null)
         {

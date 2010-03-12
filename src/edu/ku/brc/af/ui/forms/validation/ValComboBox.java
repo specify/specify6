@@ -43,6 +43,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.text.JTextComponent;
@@ -60,6 +61,7 @@ import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.ui.AutoCompletion;
 import edu.ku.brc.ui.ColorWrapper;
@@ -95,6 +97,9 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     protected String                  defaultValue   = null;
     protected String                  currTypedValue = null;
     protected PickListDBAdapterIFace  adapter        = null;
+    
+    protected MultiView               multiView      = null;
+    protected boolean                 isFormObjNew   = false;
 
     /**
      * Constructor
@@ -643,7 +648,27 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
         // do nothing
     }
 
-
+    private MultiView getMultiView()
+    {
+        Component comp = getParent();
+        do
+        {
+            if (comp instanceof MultiView)
+            {
+                return (MultiView)comp;
+            }
+            if (comp != null)
+            {
+                comp = comp.getParent();
+            } else
+            {
+                break;
+            }
+        } while (true);
+        
+        return null;
+    }
+    
     //--------------------------------------------------------
     // GetSetValueIFace
     //--------------------------------------------------------
@@ -653,6 +678,16 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
      */
     public void setValue(Object value, String defaultValue)
     {
+        if (multiView == null)
+        {
+            multiView = getMultiView();
+        }
+        
+        if (multiView != null)
+        {
+            isNew = isFormObjNew = multiView.isNewForm();
+        }
+        
         Integer fndInx = -1;
         
         if (value != null)
@@ -745,7 +780,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
                                 comboBox.setSelectedIndex(nullIndex);
                                 break;
                             }
-                        } else
+                        } else if (item.getValueObject() == null)
                         {
                             System.err.println("PickList item's value was null and it can't be. Title["+item.getTitle()+"]");
                         }
@@ -762,10 +797,30 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
                 return;
             }
             
-            valState = isRequired && comboBox.getSelectedIndex() == -1 ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
-            if (textEditor != null)
+            if (isRequired && comboBox.getSelectedIndex() == -1 && adapter.getList().size() == 1)
             {
-                textEditor.setText("");
+                fndInx = -1;
+                valState = isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
+                SwingUtilities.invokeLater(new Runnable() 
+                {
+                    @Override
+                    public void run()
+                    {
+                        if (isNew)
+                        {
+                            valState = UIValidatable.ErrorType.Valid;
+                            comboBox.setSelectedIndex(0);
+                        }
+                    }
+                });
+                
+            } else
+            {
+                valState = isRequired && comboBox.getSelectedIndex() == -1 ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
+                if (textEditor != null)
+                {
+                    textEditor.setText("");
+                }
             }
         }
         
