@@ -3962,6 +3962,12 @@ public class FormViewObj implements Viewable,
      */
     public void setDataObj(final Object dataObj)
     {
+        // Setting up Carry Forward Object when the object already exists
+        // usually from a search
+        if (dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() != null)
+        {
+            carryFwdDataObj = dataObj;
+        }
         setDataObj(dataObj, false);
     }
     
