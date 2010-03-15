@@ -166,6 +166,9 @@ public class DefaultFieldEntry
         return setter;
     }
 
+    /**
+     * @return true if a default value has been defined.
+     */
     public boolean isDefined()
     {
         return defaultValues.get(0) != null;
