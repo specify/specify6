@@ -326,6 +326,86 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
 		return false;
 	}
     
+    /**
+     * @param username
+     * @param dbName
+     * @return
+     */
+    public int getPermissionsUsingGrants(final String username, final String serverName, final String dbName)
+    {
+        Statement stmt = null;
+        try
+        {
+            if (connection != null)
+            {
+                stmt = connection.createStatement();
+                String sql = String.format("SHOW GRANTS FOR '%s'@'%s'", username, serverName);
+                log.debug(sql);
+                Vector<Object[]> list = BasicSQLUtils.query(connection, sql);
+                if (list != null)
+                {
+                    int perms = PERM_NONE;
+                    for (Object[] row : list)
+                    {
+                        if (StringUtils.contains(row[0].toString(), dbName))
+                        {
+                            String[] tokens = StringUtils.split(row[0].toString(), ", ");
+                            int inx = 1;
+                            while (!tokens[inx].equals("ON"))
+                            {
+                                if (tokens[inx].equals("SELECT"))
+                                {
+                                    perms |= PERM_SELECT;
+                                    
+                                } else if (tokens[inx].equals("UPDATE"))
+                                {
+                                    perms |= PERM_UPDATE;
+                                    
+                                } else if (tokens[inx].equals("DELETE"))
+                                {
+                                    perms |= PERM_DELETE;
+                                    
+                                } else if (tokens[inx].equals("ALL"))
+                                {
+                                    perms |= PERM_ALL;
+                                    
+                                } else if (tokens[inx].equals("LOCK"))
+                                {
+                                    if (inx+1 < tokens.length && tokens[inx+1].equals("TABLES"))
+                                    {
+                                        perms |= PERM_LOCK_TABLES;
+                                        inx++;
+                                    }
+                                    
+                                } else if (tokens[inx].equals("INSERT"))
+                                {
+                                    perms |= PERM_INSERT;
+                                }
+                                inx++;
+                            }
+                        }
+                    }
+                    log.debug("PERMS: "+perms);
+                    
+                    if (perms == 0 && username.equalsIgnoreCase("root"))
+                    {
+                        perms = PERM_ALL;
+                    }
+                    return perms;
+                }
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            close(stmt);
+        }
+        return PERM_NONE;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DBMSUserMgr#getPermissions(java.lang.String, java.lang.String)
      */
@@ -384,6 +464,9 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                                 {
                                     perms |= PERM_ALTER_TABLE;
                                 }
+                            } else if (list.size() == 1)
+                            {
+                                perms = getPermissionsUsingGrants(toks[0].toString(), toks[2].toString(), dbName);
                             }
                         }
                     }
@@ -393,6 +476,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                     {
                         perms = PERM_ALL;
                     }
+                    
                     return perms;
                 }
             }
