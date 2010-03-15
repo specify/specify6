@@ -46,4 +46,14 @@ public class DefaultIsPrimaryEntry extends DefaultFieldEntry
         return params[0].equals(0);
     }
 
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DefaultFieldEntry#isDefined()
+	 */
+	@Override
+	public boolean isDefined()
+	{
+		return true;
+	}
+
+    
 }
