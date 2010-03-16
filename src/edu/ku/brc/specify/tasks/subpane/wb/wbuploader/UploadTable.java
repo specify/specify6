@@ -2941,6 +2941,22 @@ public class UploadTable implements Comparable<UploadTable>
         {
         	return true;
         }
+        
+        for (UploadTable child : matchChildren)
+        {
+        	try
+        	{
+        		child.loadFromDataSet(wbCurrentRow);
+        		if (child.needToWrite(recNum))
+        		{
+        			return true;
+        		}
+        	} finally
+        	{
+        		child.loadFromDataSet(child.wbCurrentRow);
+        	}
+        }
+        
         if (parentTables.size() == 0)
         {
         	return false;
@@ -2978,6 +2994,7 @@ public class UploadTable implements Comparable<UploadTable>
     			}
     		}
     	}
+    	        
     	return false;
     }
 
