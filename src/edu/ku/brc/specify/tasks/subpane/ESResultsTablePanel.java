@@ -458,24 +458,33 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         {
             public void mouseClicked(MouseEvent e) 
             {
-                //System.out.println(e.getButton());
-                if (e.getClickCount() == 2 && e.getButton() == 1)
+                synchronized (((JTable)e.getSource()).getTreeLock()) 
                 {
-                    if (propChangeListener != null) 
+                    if (e.getClickCount() == 2 && e.getButton() == 1)
                     {
-                        propChangeListener.propertyChange(new PropertyChangeEvent(this, "doubleClick", 2, 0));
-                    }
-                    
-                    if (serviceBtns != null)
-                    {
-                        for (ServiceInfo si : serviceBtns.keySet())
+                        if (propChangeListener != null) 
                         {
-                            if (si.isDefault())
+                            propChangeListener.propertyChange(new PropertyChangeEvent(this, "doubleClick", 2, 0));
+                        }
+                        
+                        if (serviceBtns != null)
+                        {
+                            for (ServiceInfo si : serviceBtns.keySet())
                             {
-                                JButton defBtn = serviceBtns.get(si);
-                                if (defBtn != null)
+                                if (si.isDefault())
                                 {
-                                    defBtn.doClick();
+                                    final JButton defBtn = serviceBtns.get(si);
+                                    if (defBtn != null)
+                                    {
+                                        SwingUtilities.invokeLater(new Runnable() {
+                                            @Override
+                                            public void run()
+                                            {
+                                                defBtn.doClick();
+                                            }
+                                        });
+                                        break;
+                                    }
                                 }
                             }
                         }
