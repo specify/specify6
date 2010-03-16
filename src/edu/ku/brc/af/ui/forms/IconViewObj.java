@@ -367,8 +367,8 @@ public class IconViewObj implements Viewable
     {
         try
         {
-            Class<?> dataClass = Class.forName(dataClassName != null ? dataClassName : view.getClassName());
-            if (Orderable.class.isAssignableFrom(dataClass))
+            Class<?> dataClss = Class.forName(dataClassName != null ? dataClassName : view.getClassName());
+            if (Orderable.class.isAssignableFrom(dataClss))
             {
                 // this IconViewObj is showing Orderable objects
                 // so we should use an OrderedIconTray
@@ -1030,7 +1030,18 @@ public class IconViewObj implements Viewable
     {
         // do nothing
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.Viewable#enableMultiViewSwitch(boolean)
+     */
+    public void enableMultiViewSwitch(boolean enabled)
+    {
+        if (switcherUI != null)
+        {
+            switcherUI.setEnabled(enabled);   
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.Viewable#dataHasChanged()
      */

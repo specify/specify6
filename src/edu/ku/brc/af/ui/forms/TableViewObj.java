@@ -1753,6 +1753,18 @@ public class TableViewObj implements Viewable,
         }
         */
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.Viewable#enableMultiViewSwitch(boolean)
+     */
+    public void enableMultiViewSwitch(boolean enabled)
+    {
+        if (switcherUI != null)
+        {
+            switcherUI.setEnabled(enabled);   
+            switcherUI.repaint();
+        }
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.Viewable#dataHasChanged()

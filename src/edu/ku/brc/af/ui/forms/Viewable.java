@@ -209,6 +209,12 @@ public interface Viewable
     public abstract void hideMultiViewSwitch(boolean hide);
 
     /**
+     * Enables/Disables the UI Switcher control
+     * @param enable true - hide, false disable
+     */
+    public abstract void enableMultiViewSwitch(boolean hide);
+
+    /**
      * Tell the viewable whether the validation was OK so it knows to update the UI appropriately; this usually means it should update an OK or save button.
      * @param wasOK whether validation was OK
      */

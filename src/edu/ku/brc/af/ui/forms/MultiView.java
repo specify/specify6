@@ -1150,6 +1150,11 @@ public class MultiView extends JPanel
             return;
         }
         
+        for (Viewable v : viewMapByName.values())
+        {
+            v.enableMultiViewSwitch(false);
+        }
+        
         this.data = data;
         
         ignoreDataChanges = true;
@@ -1182,6 +1187,12 @@ public class MultiView extends JPanel
                 }
             });
         }
+        
+        for (Viewable v : viewMapByName.values())
+        {
+            v.enableMultiViewSwitch(true);
+        }
+
         
         ignoreDataChanges = false;
 

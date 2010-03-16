@@ -573,7 +573,10 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
                     if (StringUtils.isNotEmpty(fi.getTitle()))
                     {
                         lbl.setText(fi.getTitle()+":");
-                        lbl.setFont(lbl.getFont().deriveFont(Font.BOLD));
+                        if (isRequired)
+                        {
+                            lbl.setFont(lbl.getFont().deriveFont(Font.BOLD));
+                        }
                     }
                     
                     if (lbl != null)

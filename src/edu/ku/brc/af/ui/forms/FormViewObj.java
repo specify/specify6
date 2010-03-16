@@ -5477,7 +5477,18 @@ public class FormViewObj implements Viewable,
             switcherUI.setVisible(!hide);
         }
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.Viewable#enableMultiViewSwitch(boolean)
+     */
+    public void enableMultiViewSwitch(boolean enabled)
+    {
+        if (switcherUI != null)
+        {
+            switcherUI.setEnabled(enabled);   
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#dataHasChanged()
      */
