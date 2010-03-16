@@ -88,6 +88,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.TypeMismatchException;
 import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.exception.SQLGrammarException;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.debug.FormDebugPanel;
@@ -244,6 +245,7 @@ public class FormViewObj implements Viewable,
     protected boolean                       isAutoNumberOn  = true; 
     protected RestrictablePanel             restrictablePanel = null;
     protected JPanel                        sepController   = null;
+    protected boolean                       doingDiscard    = false;
     
     
     protected String                        searchName      = null;
@@ -1685,98 +1687,104 @@ public class FormViewObj implements Viewable,
         
         //if ((formValidator != null && formValidator.hasChanged()) ||
         //    (mvParent != null && mvParent.isTopLevel() && mvParent.hasChanged()))
-        if (mvParent != null && mvParent.isTopLevel() && mvParent.hasChanged())
+        if (!doingDiscard && mvParent != null && mvParent.isTopLevel() && mvParent.hasChanged())
         {
-            String title = null;
-            if (dataObj != null)
+            try
             {
-                if (tableInfo == null)
+                doingDiscard = true;
+                String title = null;
+                if (dataObj != null)
                 {
-                    tableInfo = DBTableIdMgr.getInstance().getByShortClassName(dataObj.getClass().getSimpleName());
+                    if (tableInfo == null)
+                    {
+                        tableInfo = DBTableIdMgr.getInstance().getByShortClassName(dataObj.getClass().getSimpleName());
+                    }
+                    
+                    title = tableInfo != null ? tableInfo.getTitle() : null;
+                    
+                    if (StringUtils.isEmpty(title))
+                    {
+                        title = UIHelper.makeNamePretty(dataObj.getClass().getSimpleName());
+                    }
                 }
-                
-                title = tableInfo != null ? tableInfo.getTitle() : null;
                 
                 if (StringUtils.isEmpty(title))
                 {
-                    title = UIHelper.makeNamePretty(dataObj.getClass().getSimpleName());
-                }
-            }
-            
-            if (StringUtils.isEmpty(title))
-            {
-                title = "data"; // I18N, not really sure what to put here.
-            }
-            
-            // For the DISCARD
-            // Since JOptionPane doesn't have a YES_CANCEL_OPTION 
-            // I have to use YES_NO_OPTION and since this is a Discard question
-            // the rv has completely different meanings:
-            // YES -> Means don't save (Discard) and close dialog (return true)
-            // NO  -> Means do nothing so return false
-            
-            String[] optionLabels;
-            int      dlgOptions;
-            int      defaultRV;
-            if (!isNewAndComplete || (formValidator != null && !formValidator.isFormValid()))
-            {
-                dlgOptions = JOptionPane.YES_NO_OPTION;
-                optionLabels = new String[] {getResourceString("DiscardChangesBtn"), 
-                                             getResourceString("CANCEL")};
-                defaultRV = JOptionPane.NO_OPTION;
-            } else
-            {
-                dlgOptions = JOptionPane.YES_NO_CANCEL_OPTION;
-                optionLabels = new String[] {getResourceString("SaveChangesBtn"), 
-                                             getResourceString("DiscardChangesBtn"), 
-                                             getResourceString("CANCEL")};
-                defaultRV = JOptionPane.CANCEL_OPTION;
-            }
-            
-            int rv = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(),
-                        isNewAndComplete ? UIRegistry.getLocalizedMessage("DiscardChanges", title) : UIRegistry.getLocalizedMessage("SaveChanges", title),
-                        isNewAndComplete ? getResourceString("DiscardChangesTitle") : getResourceString("SaveChangesTitle"),
-                        dlgOptions,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        optionLabels,
-                        optionLabels[0]);
-        
-            if (rv == JOptionPane.CLOSED_OPTION)
-            {
-                rv = defaultRV;
-            }
-
-            if ( dlgOptions == JOptionPane.YES_NO_OPTION)
-            {
-                if (rv == JOptionPane.YES_OPTION)
-                {
-                    discardCurrentObject(throwAwayOnDiscard);
-                    return true;
-                    
-                } else if (rv == JOptionPane.NO_OPTION)
-                {
-                  return false;
+                    title = "data"; // I18N, not really sure what to put here.
                 }
                 
-            } else
-            {
-                if (rv == JOptionPane.YES_OPTION)
+                // For the DISCARD
+                // Since JOptionPane doesn't have a YES_CANCEL_OPTION 
+                // I have to use YES_NO_OPTION and since this is a Discard question
+                // the rv has completely different meanings:
+                // YES -> Means don't save (Discard) and close dialog (return true)
+                // NO  -> Means do nothing so return false
+                
+                String[] optionLabels;
+                int      dlgOptions;
+                int      defaultRV;
+                if (!isNewAndComplete || (formValidator != null && !formValidator.isFormValid()))
                 {
-                    return saveObject();
-                    
-                } else if (rv == JOptionPane.CANCEL_OPTION)
+                    dlgOptions = JOptionPane.YES_NO_OPTION;
+                    optionLabels = new String[] {getResourceString("DiscardChangesBtn"), 
+                                                 getResourceString("CANCEL")};
+                    defaultRV = JOptionPane.NO_OPTION;
+                } else
                 {
-                    return false; 
-                    
-                } else if (rv == JOptionPane.NO_OPTION)
-                {
-                    // NO means Discard
-                    discardCurrentObject(throwAwayOnDiscard);
-                    return true;
+                    dlgOptions = JOptionPane.YES_NO_CANCEL_OPTION;
+                    optionLabels = new String[] {getResourceString("SaveChangesBtn"), 
+                                                 getResourceString("DiscardChangesBtn"), 
+                                                 getResourceString("CANCEL")};
+                    defaultRV = JOptionPane.CANCEL_OPTION;
                 }
-            }
+                
+                int rv = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(),
+                            isNewAndComplete ? UIRegistry.getLocalizedMessage("DiscardChanges", title) : UIRegistry.getLocalizedMessage("SaveChanges", title),
+                            isNewAndComplete ? getResourceString("DiscardChangesTitle") : getResourceString("SaveChangesTitle"),
+                            dlgOptions,
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            optionLabels,
+                            optionLabels[0]);
             
+                if (rv == JOptionPane.CLOSED_OPTION)
+                {
+                    rv = defaultRV;
+                }
+    
+                if ( dlgOptions == JOptionPane.YES_NO_OPTION)
+                {
+                    if (rv == JOptionPane.YES_OPTION)
+                    {
+                        discardCurrentObject(throwAwayOnDiscard);
+                        return true;
+                        
+                    } else if (rv == JOptionPane.NO_OPTION)
+                    {
+                      return false;
+                    }
+                    
+                } else
+                {
+                    if (rv == JOptionPane.YES_OPTION)
+                    {
+                        return saveObject();
+                        
+                    } else if (rv == JOptionPane.CANCEL_OPTION)
+                    {
+                        return false; 
+                        
+                    } else if (rv == JOptionPane.NO_OPTION)
+                    {
+                        // NO means Discard
+                        discardCurrentObject(throwAwayOnDiscard);
+                        return true;
+                    }
+                }
+            } finally
+            {
+                doingDiscard = false;  
+            }
             
         } else
         {
@@ -2671,11 +2679,25 @@ public class FormViewObj implements Viewable,
             }
             catch (Exception e)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, e);
-                log.error("******* " + e);
-                e.printStackTrace();
                 session.rollback();
+                
+                // This happens when MySQL doesn't have permissions
+                // to INSERT, UPDATE, OR DELETE
+                if (e instanceof SQLGrammarException)
+                {
+                    String msg = e.getCause().getMessage();
+                    if (StringUtils.contains(msg.toLowerCase(), "denied"))
+                    {
+                        UIRegistry.showLocalizedError("FormViewObj.MISSING_DB_PERMS");
+                        
+                    }
+                } else
+                {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, e);
+                    log.error("******* " + e);
+                    e.printStackTrace();
+                }
                 
                 recoverFromStaleObject("UNRECOVERABLE_DB_ERROR", null);
                 saveState = SAVE_STATE.StaleRecovery;

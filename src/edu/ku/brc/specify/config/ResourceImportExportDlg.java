@@ -139,7 +139,7 @@ public class ResourceImportExportDlg extends CustomDialog
     protected JButton                revertBtn;
 
     protected List<SpAppResource>    resources = new Vector<SpAppResource>();
-    protected List<SpAppResourceDir> dirs;
+    protected List<SpAppResourceDir> dirs      = new Vector<SpAppResourceDir>();
     
     protected boolean                hasChanged = false;
 
@@ -208,11 +208,45 @@ public class ResourceImportExportDlg extends CustomDialog
         
         levelCBX = createComboBox();
         
-        SpecifyAppContextMgr context = (SpecifyAppContextMgr)AppContextMgr.getInstance();
-        dirs = context.getSpAppResourceList();
-        for (SpAppResourceDir dir : dirs)
+        DataProviderSessionIFace session = null;
+        try
         {
-            levelCBX.addItem(getHierarchicalTitle(dir));
+            session = DataProviderFactory.getInstance().createSession();
+            
+            SpecifyAppContextMgr context = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+            for (SpAppResourceDir curDir : context.getSpAppResourceList())
+            {
+                SpAppResourceDir dir;
+                if (curDir.getId() != null)
+                {
+                    dir = session.get(SpAppResourceDir.class, curDir.getId());
+                    dir.setTitle(curDir.getTitle());
+                    
+                    // ForceLoad
+                    dir.getSpAppResources().size();
+                    dir.getSpViewSets().size();
+                    
+                } else
+                {
+                    dir = (SpAppResourceDir)curDir.clone();
+                }
+                dirs.add(dir);
+                
+                levelCBX.addItem(dir);
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, ex);
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
         }
         
         PanelBuilder  centerPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p"));
@@ -401,29 +435,7 @@ public class ResourceImportExportDlg extends CustomDialog
         int levelIndex = levelCBX.getSelectedIndex();
         if (levelIndex > -1)
         {
-            DataProviderSessionIFace session = null;
             SpAppResourceDir dir = dirs.get(levelIndex);
-            try
-            {
-                session = DataProviderFactory.getInstance().createSession();
-                dir = session.merge(dir);
-                dir.forceLoad();
-                
-                ((SpecifyAppContextMgr)AppContextMgr.getInstance()).replaceSpDirItem(levelIndex, dir);
-                
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, ex);
-                
-            } finally
-            {
-                if (session != null)
-                {
-                    session.close();
-                }
-            }
             viewsModel.clear();
             levelIndex = viewSetsList.getSelectedIndex();
             if (levelIndex > -1)
@@ -440,6 +452,7 @@ public class ResourceImportExportDlg extends CustomDialog
                     }
                 }
             }
+            
         }
     }
     
@@ -457,9 +470,14 @@ public class ResourceImportExportDlg extends CustomDialog
             importBtn.setEnabled(enable && levelCBX.getSelectedIndex() < 5);
             exportBtn.setEnabled(enable && viewSetsModel.size() > 0);
             
-            SpViewSetObj vso = (SpViewSetObj)viewSetsList.getSelectedValue();
-            
-            revertBtn.setEnabled(vso != null && vso.getId() != null);
+            if (viewSetsList.getSelectedValue() instanceof SpViewSetObj)
+            {
+                SpViewSetObj vso = (SpViewSetObj)viewSetsList.getSelectedValue();
+                revertBtn.setEnabled(vso != null && vso.getId() != null);
+            } else
+            {
+                revertBtn.setEnabled(false);
+            }
             
         } else if (currentTabIndex != -1)
         {
@@ -527,13 +545,14 @@ public class ResourceImportExportDlg extends CustomDialog
                     if (index > -1)
                     {
                         viewSetsModel.remove(index);
-                        SpViewSetObj revertedNewVSO = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).revertViewSet(virtualDirName, vso.getName());
+                        /*SpViewSetObj revertedNewVSO = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).revertViewSet(virtualDirName, vso.getName());
                         if (revertedNewVSO != null)
                         {
                             viewSetsModel.insertElementAt(revertedNewVSO, index);
                             viewSetsList.setSelectedIndex(index);
                             setHasChanged(true);
-                        }
+                        }*/
+                        setHasChanged(true);
                     }
                 }
             }
@@ -1137,6 +1156,7 @@ public class ResourceImportExportDlg extends CustomDialog
 				int viewIndex = viewSetsList.getSelectedIndex();
 				if (viewIndex > -1)
 				{
+				    boolean isAddItemForImport = viewSetsList.getSelectedValue() instanceof String;
 					boolean isOK = false;
 					SpViewSetObj vso = null;
 
@@ -1146,21 +1166,35 @@ public class ResourceImportExportDlg extends CustomDialog
 						session = DataProviderFactory.getInstance().createSession();
 						session.beginTransaction();
 
-						vso = (SpViewSetObj) viewSetsList.getSelectedValue();
-						//if (vso.getId() == null)
-						//{
-							// vso = (SpViewSetObj)vso.clone();
-						//}
-						SpAppResourceDir appResDir = vso.getSpAppResourceDir();
-						importedName = vso.getName();
-
-						if (vso.getSpViewSetObjId() == null)
+						if (!isAddItemForImport)
 						{
-							appResDir.getSpPersistedViewSets().add(vso);
-							vso.setSpAppResourceDir(appResDir);
+    						vso = (SpViewSetObj) viewSetsList.getSelectedValue();
+    						SpAppResourceDir appResDir = vso.getSpAppResourceDir();
+    						importedName = vso.getName();
+    
+    						if (vso.getSpViewSetObjId() == null)
+    						{
+    							appResDir.getSpPersistedViewSets().add(vso);
+    							vso.setSpAppResourceDir(appResDir);
+    						}
+    						vso.setDataAsString(data);
+    						session.saveOrUpdate(appResDir);
+    						
+						} else
+						{
+						    SpAppResourceDir appResDir = dirs.get(levelIndex);
+						    vso = new SpViewSetObj();
+						    vso.initialize();
+						    vso.setLevel((short)levelIndex);
+						    vso.setName(FilenameUtils.getBaseName(importFile.getName()));
+						    
+						    appResDir.getSpPersistedViewSets().add(vso);
+                            vso.setSpAppResourceDir(appResDir);
+                            
+						    vso.setDataAsString(data);
+                            session.saveOrUpdate(appResDir);
 						}
-						vso.setDataAsString(data);
-						session.saveOrUpdate(appResDir);
+						
 						session.saveOrUpdate(vso);
 						session.commit();
 						session.flush();
@@ -1170,11 +1204,11 @@ public class ResourceImportExportDlg extends CustomDialog
 
 					} catch (Exception ex)
 					{
+					    ex.printStackTrace();
+					    
 						edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
 						edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, ex);
 						session.rollback();
-
-						ex.printStackTrace();
 
 					} finally
 					{
@@ -1192,9 +1226,16 @@ public class ResourceImportExportDlg extends CustomDialog
 
 					if (isOK)
 					{
-						viewSetsModel.remove(viewIndex);
-						viewSetsModel.insertElementAt(vso, viewIndex);
-						viewSetsList.repaint();
+					    if (isAddItemForImport)
+					    {
+					        viewSetsModel.clear();
+					        viewSetsModel.addElement(vso);
+					    } else
+					    {
+					        viewSetsModel.remove(viewIndex);
+					        viewSetsModel.insertElementAt(vso, viewIndex);
+					    }
+					    viewSetsList.repaint();
 					}
 				}
 
@@ -1418,7 +1459,11 @@ public class ResourceImportExportDlg extends CustomDialog
                 viewSetsModel.addElement(vso);
             }
             
-            viewSetsList.setSelectedIndex(viewSetsModel.size() > 0 ? 0 : -1);
+            if (viewSetsModel.size() == 0)
+            {
+                viewSetsModel.addElement(UIRegistry.getResourceString("RIE_ADD_NEW_VIEWSETOBJ"));
+            }
+            viewSetsList.setSelectedIndex(0);
             
             enableUI();
             

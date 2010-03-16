@@ -49,7 +49,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 @org.hibernate.annotations.Table(appliesTo="spappresourcedir", indexes =
     {   @Index (name="SpAppResourceDirDispTypeIDX", columnNames={"DisciplineType"})
     })
-public class SpAppResourceDir extends DataModelObjBase implements java.io.Serializable
+public class SpAppResourceDir extends DataModelObjBase implements java.io.Serializable, Cloneable
 {
 
     // Fields
@@ -549,4 +549,38 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
         }
         return false; 
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        SpAppResourceDir dir = (SpAppResourceDir)super.clone();
+        dir.spPersistedAppResources = new HashSet<SpAppResource>();
+        dir.spPersistedViewSets     = new HashSet<SpViewSetObj>();
+        dir.spAppResources          = new HashSet<SpAppResource>();
+        dir.spViewSets              = new HashSet<SpViewSetObj>();
+        
+        for (SpAppResource ar : spPersistedAppResources)
+        {
+            dir.spPersistedAppResources.add(ar);
+        }
+        for (SpViewSetObj vso : spPersistedViewSets)
+        {
+            dir.spPersistedViewSets.add(vso);
+        }
+        
+        for (SpAppResource ar : spAppResources)
+        {
+            dir.spAppResources.add(ar);
+        }
+        for (SpViewSetObj vso : spViewSets)
+        {
+            dir.spViewSets.add(vso);
+        }
+        return dir;
+    }
+    
+    
 }
