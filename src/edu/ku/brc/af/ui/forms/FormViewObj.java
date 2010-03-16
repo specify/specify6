@@ -3984,12 +3984,6 @@ public class FormViewObj implements Viewable,
      */
     public void setDataObj(final Object dataObj)
     {
-        // Setting up Carry Forward Object when the object already exists
-        // usually from a search
-        if (dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() != null)
-        {
-            carryFwdDataObj = dataObj;
-        }
         setDataObj(dataObj, false);
     }
     
@@ -4254,6 +4248,13 @@ public class FormViewObj implements Viewable,
     @SuppressWarnings("unchecked")
     protected void setDataObj(final Object dataObj, final boolean alreadyInTheList)
     {
+        // Setting up Carry Forward Object when the object already exists
+        // usually from a search
+        if (dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() != null)
+        {
+            carryFwdDataObj = dataObj;
+        }
+        
         //log.debug("Setting DataObj["+dataObj+"]");
         
         // rods - Added 3/21/08 because switching from the Grid View
