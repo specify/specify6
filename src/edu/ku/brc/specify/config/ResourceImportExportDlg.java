@@ -545,13 +545,7 @@ public class ResourceImportExportDlg extends CustomDialog
                     if (index > -1)
                     {
                         viewSetsModel.remove(index);
-                        /*SpViewSetObj revertedNewVSO = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).revertViewSet(virtualDirName, vso.getName());
-                        if (revertedNewVSO != null)
-                        {
-                            viewSetsModel.insertElementAt(revertedNewVSO, index);
-                            viewSetsList.setSelectedIndex(index);
-                            setHasChanged(true);
-                        }*/
+                        ((SpecifyAppContextMgr)AppContextMgr.getInstance()).revertViewSet(virtualDirName, vso.getName());
                         setHasChanged(true);
                     }
                 }
