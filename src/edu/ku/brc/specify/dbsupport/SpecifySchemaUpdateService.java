@@ -87,10 +87,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
+    private final int OVERALL_TOTAL = 16;
+    
     private static final String APP          = "App";
     private static final String APP_REQ_EXIT = "AppReqExit";
 
     private Pair<String, String> itUserNamePassword = null;
+    private ProgressFrame        frame;
     
     /**
      * 
@@ -280,12 +283,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 }
                                 dbmsMgr.close();
         
-                                ProgressFrame frame = new ProgressFrame(getResourceString("UPDATE_SCHEMA_TITLE"));
+                                frame = new ProgressFrame(getResourceString("UPDATE_SCHEMA_TITLE"));
                                 frame.adjustProgressFrame();
-                                frame.turnOffOverAll();
                                 frame.getCloseBtn().setVisible(false);
                                 frame.getProcessProgress().setIndeterminate(true);
                                 frame.setDesc(UIRegistry.getLocalizedMessage("UPDATE_SCHEMA", dbVersion));
+                                
+                                frame.setOverall(0, OVERALL_TOTAL);
                                 
                                 UIHelper.centerAndShow(frame);
                                 
@@ -421,6 +425,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             }
                         }
                     }
+                    frame.incOverall();
                     
                     len = getFieldLength(conn, databaseName, "specifyuser", "Password");
                     if (len == null)
@@ -438,6 +443,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             return false;
                         }
                     }
+                    frame.incOverall();
                     
                     len = getFieldLength(conn, databaseName, "spexportschemaitem", "FieldName");
                     if (len == null)
@@ -455,6 +461,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             return false;
                         }
                     }
+                    frame.incOverall();
                     
                     len = getFieldLength(conn, databaseName, "agent", "LastName");
                     if (len == null)
@@ -472,6 +479,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             return false;
                         }
                     }
+                    frame.incOverall();
                     
                     len = getFieldLength(conn, databaseName, "spexportschema", "SchemaName");
                     if (len == null)
@@ -489,6 +497,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             return false;
                         }
                     }
+                    frame.incOverall();
                     
                     len = getFieldLength(conn, databaseName, "spexportschema", "SchemaVersion");
                     if (len == null)
@@ -506,6 +515,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             return false;
                         }
                     }
+                    frame.incOverall();
+                    
                     SpecifySchemaUpdateScopeFixer collectionMemberFixer = new SpecifySchemaUpdateScopeFixer(databaseName);
                     if (!collectionMemberFixer.fix(conn))
                     {
@@ -554,7 +565,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         {
                             rv = count;
                         }
-                        
+                        frame.incOverall();
+
                     } else
                     {
                         rv = count;
@@ -659,12 +671,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 
                         }
                     }
-                    
+                    frame.incOverall();
+
                     //-----------------------------------------------------------------------------
                     //-- This will fix any Agents messed up by creating new Divisions
                     //-----------------------------------------------------------------------------
                     fixAgentsDivsDisps(conn);
-                    
+                    frame.incOverall();
+
                     //-----------------------------------------------------------------------------
                     //-- This will add any new fields to the schema
                     //-----------------------------------------------------------------------------
@@ -1163,7 +1177,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 return false;
             }
         }
-        
+        frame.incOverall();
+
         /////////////////////////////
         // FieldNotebookPage
         /////////////////////////////
@@ -1173,12 +1188,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             alterFieldLength(conn, databaseName, "fieldnotebookpage", "PageNumber", 16, 32);
             BasicSQLUtils.update(conn, "ALTER TABLE fieldnotebookpage ALTER COLUMN ScanDate DROP DEFAULT");
         }
+        frame.incOverall();
 
         /////////////////////////////
         // Project Table
         /////////////////////////////
         alterFieldLength(conn, databaseName, "project", "projectname", 50, 128);
-        
+        frame.incOverall();
+
         /////////////////////////////
         // LocalityDetail
         /////////////////////////////
@@ -1273,7 +1290,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 }
             }
         }
-        
+        frame.incOverall();
+
         //////////////////////////////////////////////
         // collectingeventattribute Schema 1.3
         //////////////////////////////////////////////
@@ -1289,9 +1307,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 count = BasicSQLUtils.getCountAsInt(sql);
                 if (count == 0)
                 {
+                    frame.setDesc("Updating SubSpQualifier...");
                     BasicSQLUtils.update(conn, "ALTER TABLE determination ADD COLUMN SubSpQualifier VARCHAR(16) AFTER Qualifier");
+                    frame.setDesc("Updating VarQualifier...");
                     BasicSQLUtils.update(conn, "ALTER TABLE determination ADD COLUMN VarQualifier VARCHAR(16) AFTER SubSpQualifier");
                 }
+                frame.incOverall();
 
                 // CollectingEventAttributes
                 sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'collectingeventattribute' AND COLUMN_NAME = 'CollectionMemberID'", dbc.getDatabaseName());
@@ -1311,20 +1332,29 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         collIdToDispIdHash.put(colId, dspId);
                     }
                     
+                    count = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM collectingeventattribute");
+                    
                     IdMapperMgr.getInstance().setDBs(connection, connection);
                     IdTableMapper mapper = new IdTableMapper("ceattrmapper","id", "SELECT CollectingEventAttributeID, CollectionMemberID FROM collectingeventattribute", true, false);
-                    mapper.mapAllIdsNoIncrement();
+                    mapper.setFrame(frame);
+                    mapper.mapAllIdsNoIncrement(count > 0 ? count : null);
                     
                     Statement stmt = null;
                     try
                     {
-                        
                         stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                         BasicSQLUtils.update(conn, "DROP INDEX COLEVATSColMemIDX on collectingeventattribute");
                         BasicSQLUtils.update(conn, "ALTER TABLE collectingeventattribute DROP COLUMN CollectionMemberID");
                         BasicSQLUtils.update(conn, "ALTER TABLE collectingeventattribute ADD COLUMN DisciplineID int(11)");
                         BasicSQLUtils.update(conn, "CREATE INDEX COLEVATSDispIDX ON collectingeventattribute(DisciplineID)");
-        
+                        
+                        double inc     = count > 0 ? (100.0 / (double)count) : 0;
+                        double cnt     = 0;
+                        int    percent = 0;
+                        frame.setProcess(0, 100);
+                        frame.setProcessPercent(true);
+                        frame.setDesc("Updating Collecting Event Attributes...");
+                        
                         PreparedStatement pStmt = conn.prepareStatement("UPDATE collectingeventattribute SET DisciplineID=? WHERE CollectingEventAttributeID=?");
                         ResultSet rs = stmt.executeQuery("SELECT CollectingEventAttributeID FROM collectingeventattribute");
                         while (rs.next())
@@ -1348,9 +1378,18 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             {
                                 log.debug("Error getting mapped  Collection ID["+oldColId+"]  ceAttrId["+ceAttrId+"]");
                             }
+                            
+                            cnt += inc;
+                            if (((int)cnt) > percent)
+                            {
+                                percent = (int)cnt;
+                                frame.setProcess(percent);
+                            }
                         }
                         rs.close();
                         pStmt.close();
+                        
+                        frame.setProcess(100);
                         
                     } catch (SQLException ex)
                     {
@@ -1362,7 +1401,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     mapper.cleanup();
                 }
-                
+                frame.incOverall();
+
                 //-----------------------------
                 // Collectors
                 //-----------------------------
@@ -1379,10 +1419,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         collIdToDivIdHash.put(colId, divId);
                     }
                     
+                    count = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM collector");
+                    
                     IdMapperMgr.getInstance().setDBs(connection, connection);
                     IdTableMapper mapper = new IdTableMapper("collectormap","id", "SELECT CollectorID, CollectionMemberID FROM collector", true, false);
-                    mapper.mapAllIdsNoIncrement();
+                    mapper.setFrame(frame);
+                    mapper.mapAllIdsNoIncrement(count > 0 ? count : null);
                     
+                    frame.setDesc("Updating Collectors...");
                     Statement stmt = null;
                     try
                     {
@@ -1391,8 +1435,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         BasicSQLUtils.update(conn, "ALTER TABLE collector DROP COLUMN CollectionMemberID");
                         BasicSQLUtils.update(conn, "ALTER TABLE collector ADD COLUMN DivisionID int(11)");
                         BasicSQLUtils.update(conn, "CREATE INDEX COLTRDivIDX ON collector(DivisionID)");
+                        
+                        double inc     = count > 0 ? (100.0 / (double)count) : 0;
+                        double cnt     = 0;
+                        int    percent = 0;
+                        frame.setProcess(0, 100);
+                        frame.setProcessPercent(true);
         
-                        int cnt = 0;
                         PreparedStatement pStmt = conn.prepareStatement("UPDATE collector SET DivisionID=? WHERE CollectorID=?");
                         ResultSet rs = stmt.executeQuery("SELECT CollectorID FROM collector");
                         while (rs.next())
@@ -1416,14 +1465,18 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             {
                                 log.debug("Error getting mapped Collector ID["+oldColId+"]");
                             }
-                            cnt++;
-                            if (cnt % 1000 == 0)
+                            
+                            cnt += inc;
+                            if (((int)cnt) > percent)
                             {
-                                log.debug(cnt + " Collectors processed.");
+                                percent = (int)cnt;
+                                frame.setProcess(percent);
                             }
                         }
                         rs.close();
                         pStmt.close();
+                        
+                        frame.setProcess(100);
                         
                     } catch (SQLException ex)
                     {
@@ -1434,6 +1487,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         if (stmt != null) stmt.close();
                     }
                     mapper.cleanup();
+                    
+                    frame.incOverall();
+
+                    frame.getProcessProgress().setIndeterminate(true);
+                    frame.setDesc("Loading updated schema...");
                 }
             } catch (Exception ex)
             {
@@ -1471,9 +1529,16 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             frame.adjustProgressFrame();
             frame.turnOffOverAll();
             frame.getCloseBtn().setVisible(false);
-            frame.getProcessProgress().setIndeterminate(false);
             
-            frame.setProcess(0, disciplines.size());
+            frame.setDesc("Merging New Schema Fields...");
+            if (disciplines.size() > 1)
+            {
+                frame.getProcessProgress().setIndeterminate(false);
+                frame.setProcess(0, disciplines.size());
+            } else
+            {
+                frame.getProcessProgress().setIndeterminate(true);
+            }
             frame.setVisible(true);
             
             UIHelper.centerAndShow(frame);

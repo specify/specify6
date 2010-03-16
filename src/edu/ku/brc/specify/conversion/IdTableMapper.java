@@ -293,21 +293,21 @@ public class IdTableMapper extends IdHashMapper
     /**
      * Map all the old IDs to new IDs
      */
-    public void mapAllIdsNoIncrement()
+    public void mapAllIdsNoIncrement(final Integer numRecords)
     {
-        mapAllIdsNoIncrement(sql);
+        mapAllIdsNoIncrement(sql, numRecords);
     }
     
     /**
      * Map all the old IDs to new IDs
      * @param sqlArg the string to use to fill the map
      */
-    public void mapAllIdsNoIncrement(final String sqlArg)
+    public void mapAllIdsNoIncrement(final String sqlArg, final Integer numRecords)
     {
         log.debug("mapAllIdsNoIncrement with sql: " + sqlArg) ;
         this.sql = sqlArg;
 
-        int mappingCount = getMapCount(mapTableName);
+        int mappingCount = numRecords != null ? numRecords : getMapCount(mapTableName);
         wasEmpty = mappingCount == 0;
         
         if (doDelete || mappingCount == 0)
