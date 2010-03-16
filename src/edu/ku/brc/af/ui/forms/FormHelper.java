@@ -599,7 +599,7 @@ public final class FormHelper
             ViewBasedDisplayIFace dialog = getViewbasedFactory().createDisplay(UIHelper.getWindow(mainComp),
                                                                         defFormName,
                                                                         title,
-                                                                        getResourceString(isEditMode ? "Accept" : "CLOSE"),
+                                                                        getResourceString(isEditMode ? "ACCEPT" : "CLOSE"),
                                                                         isEditMode,
                                                                         opts,
                                                                         null,
