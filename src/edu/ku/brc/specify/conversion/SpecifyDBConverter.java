@@ -81,6 +81,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.core.db.MySQLBackupService;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
@@ -698,7 +699,7 @@ public class SpecifyDBConverter
         if (startfromScratch)
         {
             boolean doBuild = true;
-            /*File    file    = new File("blank_6107.sql");
+            File    file    = new File("blank.sql");
             System.err.println(file.getAbsolutePath());
             if (file.exists())
             {
@@ -722,7 +723,7 @@ public class SpecifyDBConverter
                 MySQLBackupService bkService = new MySQLBackupService();
                 
                 doBuild = !bkService.doRestore(file.getAbsolutePath(),"/usr/local/mysql/bin/mysql", dbNameDest, itUsrPwd.first, itUsrPwd.second);
-            } */
+            } 
             
             if (doBuild)
             {
@@ -894,7 +895,7 @@ public class SpecifyDBConverter
                 // Really need to create or get a proper Discipline Record
                 /////////////////////////////////////////////////////////////
                 TableWriter taxonTblWriter = convLogger.getWriter("FullTaxon.html", "Taxon Conversion");
-                ConvertTaxonHelper           taxonHelper    = new ConvertTaxonHelper(oldDBConn, newDBConn, dbNameDest, taxonTblWriter, conversion);
+                ConvertTaxonHelper           taxonHelper    = new ConvertTaxonHelper(oldDBConn, newDBConn, dbNameDest, taxonTblWriter, conversion, conversion);
                 taxonHelper.createTaxonIdMappings();
                 taxonHelper.doForeignKeyMappings();
                 

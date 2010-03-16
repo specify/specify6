@@ -2248,7 +2248,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      * @param modifierAgent
      * @return
      */
-    protected Integer getModifiedByAgentId(@SuppressWarnings("unused") final String modifierAgentName)
+    public Integer getModifiedByAgentId(@SuppressWarnings("unused") final String modifierAgentName)
     {
         return modifierAgent == null ? null : modifierAgent.getAgentId();
     }
@@ -5389,6 +5389,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         str.append(getModifiedByAgentId(lastEditedBy));
 
                     } else if (newFieldName.equals("Qualifier") || 
+                               newFieldName.equals("SubSpQualifier") || 
+                               newFieldName.equals("VarQualifier") || 
                                newFieldName.equals("Addendum") || 
                                newFieldName.equals("AlternateName") || 
                                newFieldName.equals("NameUsage") || 
