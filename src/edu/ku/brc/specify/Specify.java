@@ -3082,6 +3082,18 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                   
                   SpecialMsgNotifier smn = new SpecialMsgNotifier();
                   smn.checkForMessages();
+                  
+                  
+                  if (UIRegistry.isEmbedded() && !UIRegistry.isMobile())
+                  {
+                      String EZDB_FIRSTTIME = "ezdb.firsttime";
+                      if (localPrefs.getBoolean(EZDB_FIRSTTIME, null) == null)
+                      {
+                          UIRegistry.showLocalizedMsg("EZDB_FIRSTTIME");
+                          localPrefs.putBoolean(EZDB_FIRSTTIME, true);
+                          localPrefs.flush();
+                      }
+                  }
 
                   String EXTRA_CHECK = "extra.check";
                   Boolean isExtraCheck = localPrefs.getBoolean(EXTRA_CHECK, true);
