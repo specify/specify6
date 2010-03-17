@@ -107,7 +107,8 @@ public class ConvertVerifier
     public static final long DO_COLLEVENTS          =  512; 
     public static final long DO_TAXON_CIT           = 1024; 
     public static final long DO_SHIPMENTS           = 2048; 
-    public static final long DO_CO_ALL              = 4095; 
+    public static final long DO_OTHER_IDENT         = 4096; 
+    public static final long DO_CO_ALL              = 8191; 
     
     private String[] labels = {"None", "Preparations", "CO Collecting Events", "Localities", "Preparers", 
                                "Catalogers", "Determiners", "Taxon", "Geographies", "Collectors", 
@@ -427,6 +428,15 @@ public class ConvertVerifier
                     }
                 }
                 
+                if (isCOOn(DO_OTHER_IDENT))
+                {
+                    tblWriter = tblWriterHash.get(DO_OTHER_IDENT);
+                    if (!verifyOtherIdentifier(oldCatNum, newCatNum))
+                    {
+                        catNumsInErrHash.put(newCatNum, oldCatNum);
+                    }
+                }
+                
                 if ((i % 100) == 0)
                 {
                     System.out.println(i+"  "+oldCatNum);
@@ -507,7 +517,7 @@ public class ConvertVerifier
         {
             long id = (long)Math.pow(2, i-1);
             id = Math.max(id, 1);
-            tblWriter = convLogger.getWriter(accLabels[i] + ".html", accLabels[i]);
+            tblWriter = convLogger.getWriter("accession_"+accLabels[i] + ".html", "Accession "+accLabels[i]);
             tblWriter.startTable();
             tblWriter.logHdr("ID", "Desc");
             accTblWriterHash.put(id, tblWriter);
@@ -636,6 +646,35 @@ public class ConvertVerifier
         return status == StatusType.COMPARE_OK;
     }
     
+    
+    /**
+     * @param oldCatNum
+     * @param newCatNum
+     * @throws SQLException
+     */
+    private boolean verifyOtherIdentifier(final int oldCatNum, final String newCatNum) throws SQLException
+    {
+        newSQL = "SELECT collectionobject.CatalogNumber, otheridentifier.Identifier FROM collectionobject " +
+                 "Inner Join otheridentifier ON collectionobject.CollectionObjectID = otheridentifier.CollectionObjectID " +
+                 "WHERE CatalogNumber = '"+ newCatNum + "'" +
+                 "ORDER BY collectionobject.CatalogNumber ASC, otheridentifier.Identifier ASC";
+
+        oldSQL = "SELECT cc.CatalogNumber, i.Identifier FROM collectionobject AS c " +
+                    "Inner Join collectionobjectcatalog AS cc ON c.CollectionObjectID = cc.CollectionObjectCatalogID " +
+                    "Inner Join otheridentifier AS i ON cc.CollectionObjectCatalogID = i.CollectionObjectID " +    
+                    "WHERE c.CollectionObjectTypeID <  21 AND cc.SubNumber > -1 AND cc.CatalogNumber = " + oldCatNum + " " + 
+                    "ORDER BY " +    " cc.CatalogNumber ASC, i.Identifier ASC";
+        if (debug)
+        {
+             log.debug("New SQL: "+newSQL);
+             log.debug("Old SQL: "+oldSQL);
+        }
+        
+        StatusType status = compareRecords("OtherIdentifier", oldCatNum, newCatNum, oldSQL, newSQL);
+        dumpStatus(status);
+        return status == StatusType.COMPARE_OK;
+    }
+
     /**
      * @param status
      */
@@ -1075,12 +1114,12 @@ public class ConvertVerifier
          newSQL = "SELECT co.CollectionObjectID, p.CountAmt, preptype.Name, p.Text1, p.Text2 " +
                   "FROM collectionobject co INNER JOIN preparation p ON co.CollectionObjectID = p.CollectionObjectID " +
                   "INNER JOIN preptype ON p.PrepTypeID = preptype.PrepTypeID " +
-                  "WHERE CatalogNumber = '"+ newCatNum + "' ORDER BY p.PreparationID";
+                  "WHERE CatalogNumber = '"+ newCatNum + "' ORDER BY preptype.Name, p.TimestampCreated";
 
          
          oldSQL = "SELECT cc.CollectionObjectCatalogID, co.Count, co.PreparationMethod, co.Text1, co.Text2 FROM collectionobject co " +
                   "INNER JOIN collectionobjectcatalog cc ON co.DerivedFromID = cc.CollectionObjectCatalogID " + 
-                  "WHERE cc.SubNumber > -1 AND co.CollectionObjectTypeID > 20 AND CatalogNumber = " + oldCatNum + "  ORDER BY cc.CollectionObjectCatalogID";
+                  "WHERE cc.SubNumber > -1 AND co.CollectionObjectTypeID > 20 AND CatalogNumber = " + oldCatNum + "  ORDER BY co.PreparationMethod, co.TimestampCreated";
          
          
          /*oldSQL = "SELECT co.Count, co.PreparationMethod, co.Text1, co.Text2 FROM collectionobject co WHERE CollectionObjectID IN " +
@@ -1120,15 +1159,15 @@ public class ConvertVerifier
     private boolean verifyAccessionAgents(final String oldAccNum, final String newAccNum) throws SQLException
     {
         newSQL = "SELECT ac.AccessionID, aa.Role, a.FirstName, a.MiddleInitial, a.LastName " +
-                 "FROM accession ac INNER JOIN accessionagent aa ON ac.AccessionID = aa.AccessionID "+
-                 "INNER JOIN agent a ON aa.AgentID = a.AgentID  " +
-                 "WHERE ac.AccessionNumber = '" + newAccNum + "' ORDER BY a.LastName";
+        "FROM accession ac INNER JOIN accessionagent aa ON ac.AccessionID = aa.AccessionID "+
+        "INNER JOIN agent a ON aa.AgentID = a.AgentID  " +
+        "WHERE ac.AccessionNumber = '" + newAccNum + "' ORDER BY aa.Role, aa.TimestampCreated,  a.LastName";
 
         oldSQL = "SELECT ac.AccessionID, aa.Role, a.FirstName, a.MiddleInitial, a.LastName, a.Name " +
-                 "FROM accession ac INNER JOIN accessionagents aa ON ac.AccessionID = aa.AccessionID " +
-                 "INNER JOIN agentaddress ON aa.AgentAddressID = agentaddress.AgentAddressID " +
-                 "INNER JOIN agent a ON agentaddress.AgentID = a.AgentID " +
-                 "WHERE ac.Number = '" + oldAccNum + "' ORDER BY a.Name, a.LastName";
+        "FROM accession ac INNER JOIN accessionagents aa ON ac.AccessionID = aa.AccessionID " +
+        "INNER JOIN agentaddress ON aa.AgentAddressID = agentaddress.AgentAddressID " +
+        "INNER JOIN agent a ON agentaddress.AgentID = a.AgentID " +
+        "WHERE ac.Number = '" + oldAccNum + "' ORDER BY aa.Role, aa.TimestampCreated, a.Name, a.LastName";
 
         StatusType status = compareRecords("Accession", oldAccNum, newAccNum, oldSQL, newSQL);
         dumpStatus(status);
@@ -1379,6 +1418,8 @@ public class ConvertVerifier
                         continue;
                     }
                     
+                    String colName = newRsmd.getColumnName(col);
+                    
                     //System.out.println(newObj.getClass().getName()+"  "+oldObj.getClass().getName());
                     
                     if (newObj instanceof java.sql.Date)
@@ -1508,6 +1549,19 @@ public class ConvertVerifier
                             if (!newLastName.equals(lastName) && (compareTo6DBs || !newLastName.equals(agentName)))
                             {
                                 String msg = idMsgStr + "Columns don't compare["+newObj+"]["+oldObj+"]  ["+newColName+"]["+oldColName+"]";
+                                log.error(desc+ " - "+msg);
+                                tblWriter.logErrors(oldNewIdStr, msg);
+                                return StatusType.NO_COMPARE;
+                            }
+                            
+                        } else if (StringUtils.contains(newColName, "YesNo"))
+                        {
+                            boolean yesNoNew = newDBRS.getBoolean(newColInx);
+                            boolean yesNoOld = oldDBRS.getInt(oldColInx) != 0;
+                            
+                            if (yesNoNew != yesNoOld)
+                            {
+                                String msg = idMsgStr + "Columns don't Cat Num["+oldCatNum+"] compare["+yesNoNew+"]["+yesNoOld+"]  ["+newColName+"]["+oldColName+"]";
                                 log.error(desc+ " - "+msg);
                                 tblWriter.logErrors(oldNewIdStr, msg);
                                 return StatusType.NO_COMPARE;
@@ -2500,7 +2554,7 @@ public class ConvertVerifier
                     @Override
                     public int compare(Pair<String, String> o1, Pair<String, String> o2)
                     {
-                        return o1.first.compareTo(o2.first);
+                        return o1.second.compareTo(o2.second);
                     }
                 };
                 Collections.sort(availOldPairs, comparator);
@@ -2732,7 +2786,7 @@ public class ConvertVerifier
         @Override
         public String toString()
         {
-            return first + "   ("+ second + ")";
+            return second + "   ("+ first + ")";
         }
         
     }

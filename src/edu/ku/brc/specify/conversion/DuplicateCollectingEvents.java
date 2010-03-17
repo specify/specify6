@@ -67,7 +67,7 @@ public class DuplicateCollectingEvents
      * @param collectionId
      * @return
      */
-    protected Vector<Object> getCollectingEventsWithManyCollectionObjects(final int collectionId)
+    private Vector<Object> getCollectingEventsWithManyCollectionObjects(final int collectionId)
     {
         String sql = "SELECT * FROM (SELECT CollectingEventID, count(*) AS cnt FROM collectionobject c WHERE " +
                      "CollectingEventID IS NOT NULL AND CollectionMemberID = " + collectionId + " GROUP BY CollectingEventID) T1 WHERE cnt > 1";
@@ -75,7 +75,11 @@ public class DuplicateCollectingEvents
         
     }
     
-    protected int getCollectingEventsWithManyCollectionObjectsCount(final int collectionId)
+    /**
+     * @param collectionId
+     * @return
+     */
+    private int getCollectingEventsWithManyCollectionObjectsCount(final int collectionId)
     {
         String sql = "SELECT SUM(CNT) FROM (SELECT CollectingEventID, count(*) AS cnt FROM collectionobject c WHERE " +
                      "CollectingEventID IS NOT NULL AND CollectionMemberID = " + collectionId + " GROUP BY CollectingEventID) T1 WHERE cnt > 1";
@@ -94,6 +98,8 @@ public class DuplicateCollectingEvents
             PreparedStatement prepStmt   = createPreparedStmt(CollectingEvent.getClassTableId());
             String            selectSQL  = createSelectStmt(CollectingEvent.getClassTableId(), "CollectingEventID = %d");
             Statement         stmt       = connection.createStatement();
+            
+            log.debug(selectSQL);
             
             int totalCnt = getCollectingEventsWithManyCollectionObjectsCount(collectionId);
             
@@ -141,7 +147,8 @@ public class DuplicateCollectingEvents
             ResultSet rs = stmt.executeQuery(selectStr);
             while (rs.next())
             {
-                ResultSet coRS = stmt2.executeQuery("SELECT CollectionObjectID FROM collectionobject WHERE CollectingEventID = " + ceID);
+                String sql = "SELECT CollectionObjectID FROM collectionobject WHERE CollectingEventID = " + ceID;
+                ResultSet coRS = stmt2.executeQuery(sql);
                 if (coRS.next()) // skip the first one, that one is already hooked up.
                 {
                     cnt++;
@@ -160,7 +167,7 @@ public class DuplicateCollectingEvents
                         int newCEID = BasicSQLUtils.getInsertedId(prepStmt);
                         cnt++;
                         
-                        String sql = String.format("UPDATE collectionobject SET CollectingEventID=%d WHERE CollectionObjectID = %d", newCEID, coRS.getInt(1));
+                        sql = String.format("UPDATE collectionobject SET CollectingEventID=%d WHERE CollectionObjectID = %d", newCEID, coRS.getInt(1));
                         if (BasicSQLUtils.update(sql) != 1)
                         {
                             throw new RuntimeException(sql+" didn't update correctly.");
@@ -289,7 +296,7 @@ public class DuplicateCollectingEvents
      */
     public void performMaint()
     {
-        //showStats(true);
+        showStats(true);
         
         final ArrayList<Integer> collectionsIds = new ArrayList<Integer>(16);
         for (Object[] row : BasicSQLUtils.query("SELECT CollectionID FROM collection WHERE IsEmbeddedCollectingEvent = TRUE"))

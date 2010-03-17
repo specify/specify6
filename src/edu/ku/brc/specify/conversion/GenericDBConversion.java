@@ -555,7 +555,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "from collectiontaxonomytypes ct where ct.biologicalobjecttypeid = " + ci.getColObjTypeId();
                 
                 sql = String.format("SELECT CollectionTaxonomyTypesID, BiologicalObjectTypeID, CollectionObjectTypeName FROM (select ct.*, " +
-                		"(SELECT relatedsubtypevalues FROM usysmetacontrol c " +
+                		"(SELECT distinct relatedsubtypevalues FROM usysmetacontrol c " +
                 		"LEFT JOIN usysmetafieldsetsubtype fst ON fst.fieldsetsubtypeid = c.fieldsetsubtypeid " +
                 		"WHERE objectid = 10290 AND ct.taxonomytypeid = c.relatedsubtypevalues) AS DeterminationTaxonType " +
                 		"FROM collectiontaxonomytypes ct WHERE ct.biologicalobjecttypeid = %d) T1 " +
@@ -1871,9 +1871,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK;           // Turn off this error for LocalityID
                 errorsToShow &= ~BasicSQLUtils.SHOW_VAL_MAPPING_ERROR; // Turn off this error for Habitat
 
-            } else if (fromTableName.equals("collector"))
+            } else if (fromTableName.equals("collector") || fromTableName.equals("collectors"))
             {
-                String[] ignoredFields = { "IsPrimary", "Version", "CreatedByAgentID",  "ModifiedByAgentID", "CollectionMemberID" };
+                String[] ignoredFields = { "IsPrimary", "Version", "CreatedByAgentID",  "ModifiedByAgentID", "CollectionMemberID", "DisciplineID" , "DivisionID" };
                 setFieldsToIgnoreWhenMappingNames(ignoredFields);
                 //errorsToShow &= ~BasicSQLUtils.SHOW_NAME_MAPPING_ERROR;
                 
@@ -2179,7 +2179,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                               "CollectionMemberID", "Number10",  "Number12", "DivisionID",
                               "Number13",  "Number9", "Text12", 
                               "Text13", "Text14", "Text15", 
-                              "Text16", "Text17", "Version"};
+                              "Text16", "Text17", "Version", "DisciplineID"};
     }
 
     /**
@@ -2802,9 +2802,13 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 log.info(msg);
                 tblWriter.log(msg);
                 
-                DisciplineType  disciplineTypeObj = getStandardDisciplineName(info.getTaxonomyTypeName(), info.getColObjTypeName(), info.getCatSeriesName());
-                STD_DISCIPLINES dspType           = disciplineTypeObj.getDisciplineType();
-                boolean         isEmbeddedCE      = dspType != STD_DISCIPLINES.fish;
+                DisciplineType disciplineTypeObj = info.getDisciplineTypeObj();
+                if (disciplineTypeObj == null)
+                {
+                    disciplineTypeObj = getStandardDisciplineName(info.getTaxonomyTypeName(), info.getColObjTypeName(), info.getCatSeriesName());
+                }
+                STD_DISCIPLINES dspType      = disciplineTypeObj.getDisciplineType();
+                boolean         isEmbeddedCE = dspType != STD_DISCIPLINES.fish;
 
                 taxonomyTypeName = disciplineTypeObj.getName();
 
@@ -4665,9 +4669,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                 "WHERE NOT (co.DerivedFromID IS NULL) AND CatalogSeriesID IS NOT NULL ORDER BY co.CollectionObjectID";
             sql.append(sqlPostfix);
             
-            int totalPrepCount = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*)" + sqlPostfix);
-            setProcess(0, totalPrepCount);
-            
             log.info(sql);
 
             List<FieldMetaData> newFieldMetaData = getFieldMetaDataFromSchema(newDBConn, "preparation");
@@ -4724,13 +4725,16 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             }
             
             String    insertStmtStr        = null;
-            boolean   shouldCheckPrepAttrs = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM preparation WHERE PreparedByID IS NOT NULL || PreparedDate IS NOT NULL") > 0;
+            boolean   shouldCheckPrepAttrs = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM preparation WHERE PreparedByID IS NOT NULL OR PreparedDate IS NOT NULL") > 0;
             Statement prepTypeStmt         = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             
             Pair<String, String> datePair = new Pair<String, String>();
             
             prepIdMapper.setShowLogErrors(false);
-
+            
+            int totalPrepCount = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*)" + sqlPostfix);
+            setProcess(0, totalPrepCount);
+            
             //int     prepDateInx     = oldNameIndex.get("CatalogedDate") + 1;
             int     lastEditedByInx = oldNameIndex.get("LastEditedBy");
             Integer idIndex         = oldNameIndex.get("CollectionObjectID");
@@ -7726,6 +7730,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         addToValueMapper("IsPrimary",          getIsPrimaryValueMapper());
         addToValueMapper("SrcLatLongUnit",     getSrcLatLongUnitValueMapper());
         
+        int errorsToShow = BasicSQLUtils.SHOW_ALL;
+        errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for DeaccessionPhysicalObjectID
+        setShowErrors(errorsToShow);
+        
         // Need to add Fields to ignore!
         
         if (copyTable(oldDBConn, newDBConn, "habitat", "collectingeventattribute", 
@@ -7738,6 +7746,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         }
         setIdentityInsertOFFCommandForSQLServer(newDBConn, "collectingeventattribute", BasicSQLUtils.myDestinationServerType);
         setFieldsToIgnoreWhenMappingNames(null);
+        setShowErrors(BasicSQLUtils.SHOW_ALL);
         
         return true;
     }
@@ -7758,7 +7767,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             String sql = " SELECT CollectingEventID, HabitatID FROM collectingevent Inner Join habitat ON CollectingEventID = HabitatID";
             
             stmt       = oldDBConn.createStatement();
-            pStmtUpd   = newDBConn.prepareStatement("UPDATE collectingevent SET CollectingEventAttributeID=?,CollectionmemberID=? WHERE CollectingEventID = ?");
+            pStmtUpd   = newDBConn.prepareStatement("UPDATE collectingevent SET CollectingEventAttributeID=?, DisciplineID=? WHERE CollectingEventID = ?");
             
             int cnt = 0;
             ResultSet rs = stmt.executeQuery(sql);
@@ -7770,10 +7779,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 Integer newCEID = ceMapper.get(ceId);
                 Integer newHBID = hbMapper.get(hbId);
                 
-                Integer colMemID = BasicSQLUtils.getCount("SELECT CollectionMemberID FROM collectingevent WHERE CollectingEventID = " + newCEID);
+                Integer colMemID = BasicSQLUtils.getCount("SELECT DisciplineID FROM collectingevent WHERE CollectingEventID = " + newCEID);
                 if (colMemID == null)
                 {
-                    log.debug("CollectionMemberID is null for CE ID " + newCEID);    
+                    log.debug("DisciplineID is null for CE ID " + newCEID);    
                 }
                 
                 if (newHBID != null)

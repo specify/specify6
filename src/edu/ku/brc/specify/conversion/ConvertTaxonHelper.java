@@ -20,7 +20,6 @@ import static edu.ku.brc.specify.conversion.BasicSQLUtils.query;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.setFieldsToIgnoreWhenMappingNames;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.setIdentityInsertONCommandForSQLServer;
-import static edu.ku.brc.specify.conversion.BasicSQLUtils.setShowErrors;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -230,7 +229,7 @@ public class ConvertTaxonHelper
         //---------------------------------
         
         int    count = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM taxonname WHERE taxonname.TaxonomyTypeId "+taxonomyTypeIdInClause);
-        String sql   = "SELECT TaxonNameID FROM taxonname WHERE taxonname.TaxonomyTypeId " + taxonomyTypeIdInClause;
+        String sql   = "SELECT TaxonNameID FROM taxonname WHERE RankID IS NOT NULL AND taxonname.TaxonomyTypeId " + taxonomyTypeIdInClause;
         log.debug(count+" - " + sql);
         
         //sb.setLength(0);
@@ -529,12 +528,12 @@ public class ConvertTaxonHelper
 
         // Ignore new fields
         // These were added for supporting the new security model and hybrids
-        String[] ignoredFields = { "GUID", "Visibility", "VisibilitySetBy", "IsHybrid",
+        /*String[] ignoredFields = { "GUID", "Visibility", "VisibilitySetBy", "IsHybrid",
                                     "HybridParent1ID", "HybridParent2ID", "EsaStatus", "CitesStatus", "UsfwsCode",
                                     "IsisNumber", "Text1", "Text2", "NcbiTaxonNumber", "Number1", "Number2",
                                     "CreatedByAgentID", "ModifiedByAgentID", "Version", "CultivarName", "LabelFormat", 
                                     "COLStatus", "VisibilitySetByID"};
-        
+        */
         
         StringBuilder sb = new StringBuilder();
         StringBuilder vl = new StringBuilder();
@@ -563,7 +562,7 @@ public class ConvertTaxonHelper
         
         String sqlStr = String.format("SELECT %s FROM taxon", sb.toString());
         
-        String sql = String.format("SELECT %s FROM taxonname WHERE TaxonomyTypeID %s", oldSB.toString(), taxonomyTypeIdInClause);
+        String sql = String.format("SELECT %s FROM taxonname WHERE RankID IS NOT NULL AND TaxonomyTypeID %s", oldSB.toString(), taxonomyTypeIdInClause);
         log.debug(sql);
         
         //String cntSQL = "SELECT COUNT(*) FROM taxonname WHERE TaxonomyTypeID " + taxonomyTypeIdInClause;
@@ -586,6 +585,8 @@ public class ConvertTaxonHelper
             }
             rs1.close();
             stmt.close();
+            
+            int missingParentTaxonCount = 0;
             
             int lastEditedByInx = oldFieldToColHash.get("LastEditedBy");
             
@@ -613,7 +614,9 @@ public class ConvertTaxonHelper
                             newInx = fieldToColHash.get(newName);
                             if (newInx == -1)
                             {
-                                log.error("Couldn't find column index for New Name["+newName+"]");
+                                String msg = "Couldn't find column index for New Name["+newName+"]";
+                                log.error(msg);
+                                tblWriter.logError(msg);
                             }
                         } else if (colInx == lastEditedByInx)
                         {
@@ -626,7 +629,9 @@ public class ConvertTaxonHelper
                             
                         } else if (colInx != 20)
                         {
-                            log.error("Couldn't find Old Name["+oldName+"]");
+                            String msg = "Couldn't find Old Name["+oldName+"]";
+                            log.error(msg);
+                            tblWriter.logError(msg);
                         } else
                         {
                             continue; // GroupToView
@@ -638,6 +643,7 @@ public class ConvertTaxonHelper
                         Integer oldID = rs.getInt(colInx);
                         if (!rs.wasNull())
                         {
+                            boolean skipError = false; 
                             Integer newID = mappers[colInx-1].get(oldID);
                             if (newID == null)
                             {
@@ -646,12 +652,29 @@ public class ConvertTaxonHelper
                                     skip = true;
                                 } else
                                 {
-                                    log.error("***** Couldn't get NewID ["+oldID+"] from mapper for column ["+colToFieldHash.get(colInx)+"]");
+                                    boolean wasInOldTaxonTable = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM taxonname WHERE TaxonNameID = " + oldID) != 1;
+                                    boolean isDetPointToTaxon  = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM determination WHERE TaxonNameID = " + oldID) != 1;
+                                    String msg = String.format("***** Couldn't get NewID [%s] from mapper for column [%s]  In Old taxonname table: %s  WasParentID: %s  Det Using: %s", 
+                                            oldID, colToFieldHash.get(colInx), (wasInOldTaxonTable ? "YES" : "no"), (colInx == 2 ? "YES" : "no"), (isDetPointToTaxon ? "YES" : "no"));
+                                    log.error(msg);
+                                    tblWriter.logError(msg);
+                                    skipError = true;
+                                    missingParentTaxonCount++;
                                 }
                             }
+                            
                             if (!skip)
                             {
-                                pStmt.setInt(newInx, newID);
+                                if (newID != null)
+                                {
+                                    pStmt.setInt(newInx, newID);
+                                    
+                                } else if (!skipError)
+                                {
+                                    String msg = "Unable to map old TaxonNameID["+oldID+"]";
+                                    log.error(msg);
+                                    tblWriter.logError(msg);
+                                }
                             }
                         } else
                         {
@@ -693,7 +716,14 @@ public class ConvertTaxonHelper
                         case java.sql.Types.VARCHAR:
                         {
                             String val = rs.getString(colInx);
-                            if (!rs.wasNull()) pStmt.setString(newInx, val);
+                            if (!rs.wasNull()) 
+                            {
+                                pStmt.setString(newInx, val);
+                                
+                            } else if (colInx == 7)
+                            {
+                                pStmt.setString(newInx, "Empty");
+                            }
                             break;
                         }
                         default:
@@ -716,6 +746,8 @@ public class ConvertTaxonHelper
                 }
             }
             rs.close();
+            
+            // select COUNT(*) FROM taxonname t1 LEFT JOIN taxonname t2 ON t1.ParentTaxonNameID = t2.TaxonNameID WHERE t2.TaxonNameID IS NULL AND t1.RankID > 0
             
         } catch (SQLException ex)
         {

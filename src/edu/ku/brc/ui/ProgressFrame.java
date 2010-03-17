@@ -264,9 +264,10 @@ public class ProgressFrame extends JFrame
             
         } else 
         {
-            if (value >=  processProgress.getMaximum())
+            int maxVal = processProgress.getMaximum();
+            if (value >=  maxVal)
             {
-                processProgress.setString(processProgress.getMaximum() +" / "+ processProgress.getMaximum());
+                processProgress.setString(maxVal +" / "+maxVal);
             } else
             {
                 processProgress.setValue(value);

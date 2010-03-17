@@ -381,7 +381,7 @@ public class SpecifyDBConverter
                 @Override
                 public int compare(Pair<String, String> o1, Pair<String, String> o2)
                 {
-                    return o1.first.compareTo(o2.first);
+                    return o1.second.compareTo(o2.second);
                 }
             });
             
@@ -1423,9 +1423,17 @@ public class SpecifyDBConverter
                 convScopeFixer.checkTables();
                 
                 long stTime = System.currentTimeMillis();
+                
+                sql = "SELECT count(*) FROM (SELECT ce.CollectingEventID, Count(ce.CollectingEventID) as cnt FROM collectingevent AS ce " +
+                "Inner Join collectionobject AS co ON ce.CollectingEventID = co.CollectingEventID " +
+                "Inner Join collectionobjectcatalog AS cc ON co.CollectionObjectID = cc.CollectionObjectCatalogID " +    
+                "WHERE ce.BiologicalObjectTypeCollectedID <  21 " +
+                "GROUP BY ce.CollectingEventID) T1 WHERE cnt > 1";
+                int numCESharing = BasicSQLUtils.getCountAsInt(sql);
 
-                String msg = String.format("Will this Collection share Collecting Events?\n(Sp5 was %ssharing them.)", isUsingEmbeddedCEsInSp5() ? "NOT " : "");
-                if (!UIHelper.promptForAction("Share", "Adjust CEs", "Duplicate Collecting Events", msg))
+                String msg = String.format("Will this Collection share Collecting Events?\nThere are %d Collecting Events that are sharing now.\n(Sp5 was %ssharing them.)", numCESharing, isUsingEmbeddedCEsInSp5() ? "NOT " : "");
+                boolean doingOneToOneForColObjToCE = !UIHelper.promptForAction("Share", "Adjust CEs", "Duplicate Collecting Events", msg);
+                if (doingOneToOneForColObjToCE)
                 {
                     DuplicateCollectingEvents dce = new DuplicateCollectingEvents(newDBConn, frame, conversion.getCurAgentCreatorID(), dscp.getId());
                     dce.performMaint();
@@ -1462,6 +1470,50 @@ public class SpecifyDBConverter
                 {
                     ConvertMiscData.convertKUFishCruiseData(oldDBConn, newDBConn, conversion.getCurDisciplineID());
                 }
+                
+                // Check for mismatched Disciplines for CE and CE Attrs
+                sql = "SELECT Count(ce.CollectingEventID) FROM collectingevent AS ce " +
+                        "Inner Join collectingeventattribute AS cea ON ce.CollectingEventAttributeID = cea.CollectingEventAttributeID " +    
+                        "WHERE ce.DisciplineID <> cea.DisciplineID";
+                
+                int ceCnt = BasicSQLUtils.getCountAsInt(sql);
+                if (ceCnt > 0)
+                {
+                    UIRegistry.showError(String.format("There are %d CollectingEvents and CE Attributes where their DisciplineID do not match.", ceCnt));
+                }
+                
+                // Check for ColObjs that have bad DisciplineIDs compared to the Collection's Discipline
+                sql = "SELECT Count(ce.CollectingEventID) FROM collectingevent AS ce " +
+                        "Inner Join collectionobject AS co ON ce.CollectingEventID = co.CollectingEventID " +
+                        "Inner Join collection ON co.CollectionID = collection.UserGroupScopeId " +    
+                        "WHERE ce.DisciplineID <>  collection.DisciplineID";
+                int dspCnt = BasicSQLUtils.getCountAsInt(sql);
+                if (dspCnt > 0)
+                {
+                    UIRegistry.showError(String.format("There are %d mismatches between the Collection Object Discipline and the Discipline of the Colleciton it is in", dspCnt));
+                }
+                
+                // Check for One-To-One for ColObj -> CE
+                if (doingOneToOneForColObjToCE)
+                {
+                    sql = "SELECT COUNT(*) FROM (SELECT ce.CollectingEventID, Count(ce.CollectingEventID) AS cnt FROM collectingevent AS ce " +
+                            "Inner Join collectionobject AS co ON ce.CollectingEventID = co.CollectingEventID " +
+                            "GROUP BY ce.CollectingEventID) T1 WHERE cnt > 1";
+                    ceCnt = BasicSQLUtils.getCountAsInt(sql);
+                    if (ceCnt > 0)
+                    {
+                        sql = "SELECT id,cnt FROM (SELECT ce.CollectingEventID as id, Count(ce.CollectingEventID) AS cnt FROM collectingevent AS ce " +
+                                "Inner Join collectionobject AS co ON ce.CollectingEventID = co.CollectingEventID " +
+                                "GROUP BY ce.CollectingEventID) T1 WHERE cnt > 1";
+                        for (Object[] row : BasicSQLUtils.query(sql))
+                        {
+                            log.debug(String.format("CE[%s] has %s Collection Objects.", row[0].toString(), row[1].toString()));
+                        }
+                        UIRegistry.showError(String.format("There are %d CollectingEvents that have more than one Collection Object and they are suppose to be a One-To-One", ceCnt));
+                    }
+                }
+                
+                
                 
                 log.info("Done - " + dbNameDest + " " + convertTimeInSeconds);
                 frame.setDesc("Done - " + dbNameDest + " " + convertTimeInSeconds);
@@ -2119,7 +2171,7 @@ public class SpecifyDBConverter
         @Override
         public String toString()
         {
-            return first + "   ("+ second + ")";
+            return second + "   ("+ first + ")";
         }
         
     }

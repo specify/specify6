@@ -66,6 +66,8 @@ public class IdHashMapper implements IdMapperIFace
     protected boolean           wasEmpty      = true;
     
     protected Statement         stmtNew       = null;
+    
+    protected boolean           debug         = false;
 
     
     /**
@@ -197,15 +199,15 @@ public class IdHashMapper implements IdMapperIFace
                                     "`OldID` int(11) NOT NULL default '0', "+
                                     "`NewID` int(11) NOT NULL default '0', "+
                                     " PRIMARY KEY (`OldID`) ) ENGINE=InnoDB DEFAULT CHARSET=latin1";
-                log.info("orig sql: " + str);
+                if (debug) log.info("orig sql: " + str);
                 str = BasicSQLUtils.getServerTypeSpecificSQL(str, BasicSQLUtils.myDestinationServerType);
-                log.info("sql standard query: " + str);
+                if (debug) log.info("sql standard query: " + str);
                 stmt.executeUpdate(str);
                 
                 String str2 = "ALTER TABLE "+mapTableName+" ADD INDEX INX_"+mapTableName+" (NewID)";
-                log.info("orig sql: " + str2);
+                if (debug) log.info("orig sql: " + str2);
                 str2 =  BasicSQLUtils.createIndexFieldStatment(mapTableName, BasicSQLUtils.myDestinationServerType) ;
-                log.info("sql standard query: " + str2);
+                if (debug) log.info("sql standard query: " + str2);
                 stmt.executeUpdate(str2);
                 
                 stmt.clearBatch();

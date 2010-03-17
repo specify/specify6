@@ -356,8 +356,8 @@ public class BasicSQLUtils
             }
             else if (cmdStr.contains("INSERT INTO accessionagent"))
             {
-                log.error("ignoring a record because it makes a uncatchable SQL Exception: " + ex.getStackTrace().toString() );
-                log.error(cmdStr+"\n");
+                log.error("ignoring a record because it makes a uncatchable SQL Exception: " + ex.getMessage() );
+                log.error("    "+cmdStr+"\n");
                 //ex.printStackTrace();
                 return 0;  
             }

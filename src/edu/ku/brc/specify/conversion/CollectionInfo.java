@@ -204,6 +204,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                     CollectionInfo info = new CollectionInfo(oldDBConn);
                     
                     System.err.println("CI: " + rs.getInt(1));
+                    
                     info.setColObjTypeId(rs.getInt(1));
                     info.setColObjTypeName(rs.getString(2));
                     info.setCatSeriesDefId(rs.getInt(3));
@@ -243,13 +244,14 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                                         "WHERE tu.RankID =  0 AND tn.RankID =  0 AND ct.BiologicalObjectTypeID = %d " +
                                         "ORDER BY ct.BiologicalObjectTypeID ASC", info.getColObjTypeId());
                     
-                    String detSQLStr = "SELECT ct.TaxonomyTypeID, (select relatedsubtypevalues FROM usysmetacontrol c " +
+                    String detSQLStr = "SELECT ct.TaxonomyTypeID, (select distinct relatedsubtypevalues FROM usysmetacontrol c " +
                     	               "LEFT JOIN usysmetafieldsetsubtype fst ON fst.fieldsetsubtypeid = c.fieldsetsubtypeid " +
                     	               "WHERE objectid = 10290 AND ct.taxonomytypeid = c.relatedsubtypevalues) AS DeterminationTaxonType " +
                     	               "FROM collectiontaxonomytypes ct WHERE ct.biologicalobjecttypeid = " + info.getColObjTypeId();
                     
                     String txNameSQL = "SELECT TaxonomyTypeName FROM taxonomytype WHERE TaxonomyTypeID = ";
                     
+                    log.debug(detSQLStr);
                     Vector<Object[]> detRows = BasicSQLUtils.query(oldDBConn, detSQLStr);
                     
                     
@@ -464,7 +466,12 @@ public class CollectionInfo implements Comparable<CollectionInfo>
      */
     public boolean isTaxonomicUnitTypeInUse()
     {
-        return BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM taxonname WHERE TaxonomicUnitTypeID = "+taxonomicUnitTypeID) > 1;
+        String sql = "SELECT COUNT(*) FROM taxonname WHERE TaxonomicUnitTypeID = "+taxonomicUnitTypeID;
+        log.debug(sql);
+        
+        int count = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM taxonname WHERE TaxonomicUnitTypeID = "+taxonomicUnitTypeID);
+        log.debug("Count: "+count);
+        return count > 0;
     }
     
     /**
