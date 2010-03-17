@@ -740,7 +740,17 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             {
             	return getComparatorListForClass(Number.class);
             }
-            return getComparatorListForClass(String.class);
+            OperatorType[] stringCmps = getComparatorListForClass(String.class);
+            OperatorType[] result = new OperatorType[stringCmps.length + 3];
+            int c = 0;
+            for (OperatorType ot : stringCmps)
+            {
+            	result[c++] = ot;
+            }
+            result[c++] = SpQueryField.OperatorType.GREATERTHAN;
+            result[c++] = SpQueryField.OperatorType.LESSTHAN;
+            result[c++] = SpQueryField.OperatorType.BETWEEN;
+            return result;
         }
         //else
         return getComparatorListForClass(field.getDataClass());
