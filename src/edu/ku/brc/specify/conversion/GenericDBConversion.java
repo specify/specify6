@@ -5091,7 +5091,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 // log.info("\n"+str.toString());
                 if (hasFrame)
                 {
-                    if (count % 5000 == 0)
+                    if (count % 500 == 0)
                     {
                         setProcess(count);
                         log.info("Preparation Records: " + count);
@@ -7020,6 +7020,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         TableWriter tblWriter = convLogger.getWriter(capName + ".html", capName);
         setTblWriter(tblWriter);
         IdHashMapper.setTblWriter(tblWriter);
+        
+        setDesc("Converting " + capName);
         
         List<String> localityDetailNamesTmp = getFieldNamesFromSchema(newDBConn, tableName);
 

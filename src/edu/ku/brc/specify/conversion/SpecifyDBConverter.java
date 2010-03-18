@@ -1402,7 +1402,6 @@ public class SpecifyDBConverter
                 
                 //HabitatTaxonIdConverter habitatConverter = new HabitatTaxonIdConverter(oldDB.getConnection(), newDBConn);
                 //habitatConverter.convert(conversion.getCollectionMemberId());
-
                 
                 frame.incOverall();
                 
@@ -1425,20 +1424,23 @@ public class SpecifyDBConverter
                 long stTime = System.currentTimeMillis();
                 
                 sql = "SELECT count(*) FROM (SELECT ce.CollectingEventID, Count(ce.CollectingEventID) as cnt FROM collectingevent AS ce " +
-                "Inner Join collectionobject AS co ON ce.CollectingEventID = co.CollectingEventID " +
-                "Inner Join collectionobjectcatalog AS cc ON co.CollectionObjectID = cc.CollectionObjectCatalogID " +    
-                "WHERE ce.BiologicalObjectTypeCollectedID <  21 " +
-                "GROUP BY ce.CollectingEventID) T1 WHERE cnt > 1";
-                int numCESharing = BasicSQLUtils.getCountAsInt(sql);
+                        "Inner Join collectionobject AS co ON ce.CollectingEventID = co.CollectingEventID " +
+                        "Inner Join collectionobjectcatalog AS cc ON co.CollectionObjectID = cc.CollectionObjectCatalogID " +    
+                        "WHERE ce.BiologicalObjectTypeCollectedID <  21 " +
+                        "GROUP BY ce.CollectingEventID) T1 WHERE cnt > 1";
+                
+                int numCESharing = BasicSQLUtils.getCountAsInt(oldDBConn, sql);
 
                 String msg = String.format("Will this Collection share Collecting Events?\nThere are %d Collecting Events that are sharing now.\n(Sp5 was %ssharing them.)", numCESharing, isUsingEmbeddedCEsInSp5() ? "NOT " : "");
                 boolean doingOneToOneForColObjToCE = !UIHelper.promptForAction("Share", "Adjust CEs", "Duplicate Collecting Events", msg);
+                
+                waitTime = System.currentTimeMillis() - stTime;
+                
                 if (doingOneToOneForColObjToCE)
                 {
                     DuplicateCollectingEvents dce = new DuplicateCollectingEvents(newDBConn, frame, conversion.getCurAgentCreatorID(), dscp.getId());
                     dce.performMaint();
                 }
-                waitTime = System.currentTimeMillis() - stTime;
                 
                 endTime = System.currentTimeMillis();
                 
@@ -1512,8 +1514,6 @@ public class SpecifyDBConverter
                         UIRegistry.showError(String.format("There are %d CollectingEvents that have more than one Collection Object and they are suppose to be a One-To-One", ceCnt));
                     }
                 }
-                
-                
                 
                 log.info("Done - " + dbNameDest + " " + convertTimeInSeconds);
                 frame.setDesc("Done - " + dbNameDest + " " + convertTimeInSeconds);

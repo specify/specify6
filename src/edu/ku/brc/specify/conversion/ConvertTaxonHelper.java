@@ -423,69 +423,6 @@ public class ConvertTaxonHelper
     /**
      * 
      */
-    public void convertTaxonRecordsOld()
-    {
-        //deleteAllRecordsFromTable(newDBConn, "taxon", BasicSQLUtils.myDestinationServerType);
-        
-        setIdentityInsertONCommandForSQLServer(newDBConn, "taxon", BasicSQLUtils.myDestinationServerType);
-        
-        String sql    = "SELECT *        FROM taxonname WHERE TaxonomyTypeID " + taxonomyTypeIdInClause;
-        String cntSQL = "SELECT COUNT(*) FROM taxonname WHERE TaxonomyTypeID " + taxonomyTypeIdInClause;
-
-        Hashtable<String, String> newToOldColMap = new Hashtable<String, String>();
-        newToOldColMap.put("TaxonID",            "TaxonNameID");
-        newToOldColMap.put("ParentID",           "ParentTaxonNameID");
-        newToOldColMap.put("TaxonTreeDefID",     "TaxonomyTypeID");
-        newToOldColMap.put("TaxonTreeDefItemID", "TaxonomicUnitTypeID");
-        newToOldColMap.put("Name",               "TaxonName");
-        newToOldColMap.put("FullName",           "FullTaxonName");
-        newToOldColMap.put("IsAccepted",         "Accepted");
-
-        // Ignore new fields
-        // These were added for supporting the new security model and hybrids
-        String[] ignoredFields = { "GUID", "Visibility", "VisibilitySetBy", "IsHybrid",
-                                    "HybridParent1ID", "HybridParent2ID", "EsaStatus", "CitesStatus", "UsfwsCode",
-                                    "IsisNumber", "Text1", "Text2", "NcbiTaxonNumber", "Number1", "Number2",
-                                    "CreatedByAgentID", "ModifiedByAgentID", "Version", "CultivarName", "LabelFormat", 
-                                    "COLStatus", "VisibilitySetByID"};
-            
-        setFieldsToIgnoreWhenMappingNames(ignoredFields);
-        
-        // AcceptedID is typically NULL unless they are using synonymies
-        Integer cnt               = getCount(oldDBConn, "SELECT count(AcceptedID) FROM taxonname where AcceptedID IS NOT null");
-        boolean showMappingErrors = false;//cnt != null && cnt > 0;
-
-        //int errorsToShow = (BasicSQLUtils.SHOW_NAME_MAPPING_ERROR,  BasicSQLUtils.SHOW_VAL_MAPPING_ERROR);
-        //if (showMappingErrors)
-        //{
-            //errorsToShow = errorsToShow",  BasicSQLUtils.SHOW_PM_LOOKUP",  BasicSQLUtils.SHOW_NULL_PM;//",  BasicSQLUtils.SHOW_COPY_TABLE;
-        //}
-        //setShowErrors(errorsToShow);
-        
-        IdHashMapper.setTblWriter(tblWriter);
-
-        log.info("Copying taxon records from 'taxonname' table");
-        log.info("SQL: "+ sql);
-        if (!copyTable(oldDBConn, newDBConn, 
-                       sql, cntSQL, 
-                       "taxonname", "taxon", 
-                       newToOldColMap, null, null,
-                       BasicSQLUtils.mySourceServerType, BasicSQLUtils.myDestinationServerType))
-        {
-            String msg = "Table 'taxonname' didn't copy correctly";
-            log.error(msg);
-            tblWriter.logError(msg);
-        }
-        
-        setFieldsToIgnoreWhenMappingNames(null);
-        setIdentityInsertOFFCommandForSQLServer(newDBConn, "taxon", BasicSQLUtils.myDestinationServerType);
-        
-        IdHashMapper.setTblWriter(null);
-    }
-    
-    /**
-     * 
-     */
     private void convertTaxonRecords()
     {
         
