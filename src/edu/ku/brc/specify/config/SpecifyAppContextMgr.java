@@ -511,7 +511,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // First get the Collections the User has access to.
             Hashtable<String, Pair<String, Integer>> collectionHash = new Hashtable<String, Pair<String, Integer>>();
             
-            String sqlStr = "SELECT cln.CollectionName, cln.CollectionID FROM collection AS cln " + 
+            String sqlStr = "SELECT cln.CollectionName, cln.CollectionID, cln.DisciplineID FROM collection AS cln " + 
                             "INNER JOIN spprincipal AS p ON cln.UserGroupScopeId = p.userGroupScopeID " + 
                             "INNER JOIN specifyuser_spprincipal AS su_pr ON p.SpPrincipalID = su_pr.SpPrincipalID " + 
                             "INNER JOIN specifyuser AS su ON su_pr.SpecifyUserID = su.SpecifyUserID " + 
@@ -522,6 +522,17 @@ public class SpecifyAppContextMgr extends AppContextMgr
             {
                 String  collName = row[0].toString();
                 Integer collId   = (Integer)row[1];
+                
+                if (collectionHash.get(collName) != null)
+                {
+                    String dispName = BasicSQLUtils.querySingleObj("SELECT Name FROM discipline WHERE DisciplineID = " + row[2]);
+                    collName += " - " + dispName;
+                    if (collectionHash.get(collName) != null)
+                    {
+                        String divName = BasicSQLUtils.querySingleObj("SELECT d.DivisionID FROM collection c INNER JOIN discipline d ON c.DisciplineID = d.UserGroupScopeId WHERE DisciplineID = " + row[2]);
+                        collName += " - " + divName;
+                    }
+                }
                 collectionHash.put(collName, new Pair<String, Integer>(collName, collId));
             }
     
