@@ -615,12 +615,12 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
             etrb.setPropertyChangeListener(this);
             etrbPanel.startFilling();
             
-        } else
+        }/* else
         {
             etrb = null; // Instantiate your class here
             etrb.initialize(this, results);
             etrb.setPropertyChangeListener(this);
-        }
+        }*/
         
         scrollPane = new JScrollPane(etrb.getUIComponent(), ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         add(scrollPane, BorderLayout.CENTER);

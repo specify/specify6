@@ -612,7 +612,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                      colNames.addElement(caption.getColLabel());
                      
                      int      inx = caption.getPosIndex() + 1;
-                     log.debug(metaData.getColumnClassName(inx));
+                     //log.debug(metaData.getColumnClassName(inx));
                      Class<?> cls = null;
                      try
                      {

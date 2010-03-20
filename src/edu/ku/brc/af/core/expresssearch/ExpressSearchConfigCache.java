@@ -244,7 +244,12 @@ public class ExpressSearchConfigCache
         return null;
     }
     
-    protected static String getResourceString(ResourceBundle resBundle, final String key)
+    /**
+     * @param resBundle
+     * @param key
+     * @return
+     */
+    protected static String getResourceString(final ResourceBundle resBundle, final String key)
     {
         try 
         {

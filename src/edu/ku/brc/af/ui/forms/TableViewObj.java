@@ -2370,7 +2370,7 @@ public class TableViewObj implements Viewable,
                 } else if (formCell instanceof FormCellSubView)
                 {
                     FormCellSubView subViewDef = (FormCellSubView)formCell;
-                    DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(subViewDef.getClassDesc());
+                    DBTableInfo ti = subViewDef.getClassDesc() == null ? null : DBTableIdMgr.getInstance().getByClassName(subViewDef.getClassDesc());
                     if (ti != null)
                     {
                         label = ti.getTitle();

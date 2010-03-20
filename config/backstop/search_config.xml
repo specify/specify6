@@ -1155,7 +1155,8 @@ repositoryagreement.RepositoryAgreementNumber,
                 <sql>
                     <![CDATA[SELECT DISTINCT
  collectionobject.CollectionObjectID, 
-  collectionobject.CatalogNumber,
+ collectionobject.CatalogNumber,
+ storage.Name,
  storage.FullName,
   %s 
  FROM 
@@ -1167,6 +1168,7 @@ repositoryagreement.RepositoryAgreementNumber,
                 <captions>
                     <caption tableid="1" col="CollectionObjectID" visible="false"/>
                     <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber" />
+                    <caption tableid="58" col="Name" />
                     <caption tableid="58" col="FullName" />
                  </captions>
             </detailView>
@@ -1758,11 +1760,12 @@ repositoryagreement.RepositoryAgreementNumber,
         <table id="109" tableid="58" name="StorageSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT StorageID, FullName FROM storage WHERE StorageTreeDefID = STORTREEDEFID AND (%s)]]>
+                    <![CDATA[SELECT StorageID, Name, FullName FROM storage WHERE StorageTreeDefID = STORTREEDEFID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="58" col="StorageID" visible="false"/>
-                    <caption tableid="58" col="FullName" key="StorageName"/>
+                    <caption tableid="58" col="Name"/>
+                    <caption tableid="58" col="FullName"/>
                 </captions>
             </detailView>
         </table>
@@ -1774,7 +1777,7 @@ repositoryagreement.RepositoryAgreementNumber,
                 </sql>
                 <captions>
                     <caption tableid="46" col="GeologicTimePeriodID" visible="false"/>
-                    <caption tableid="46" col="FullName" key="Name"/>
+                    <caption tableid="46" col="FullName"/>
                 </captions>
             </detailView>
         </table>
@@ -1786,7 +1789,7 @@ repositoryagreement.RepositoryAgreementNumber,
                 </sql>
                 <captions>
                     <caption tableid="100" col="LithoStratID" visible="false"/>
-                    <caption tableid="100" col="FullName" key="Name"/>
+                    <caption tableid="100" col="FullName"/>
                 </captions>
             </detailView>
         </table>
@@ -1888,7 +1891,7 @@ repositoryagreement.RepositoryAgreementNumber,
                 </sql>
                 <captions>
                     <caption tableid="46" col="GeologicTimePeriodID" visible="false"/>
-                    <caption tableid="46" col="FullName" key="Name"/>
+                    <caption tableid="46" col="FullName"/>
                 </captions>
             </detailView>
         </table>
