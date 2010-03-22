@@ -266,7 +266,9 @@ public class DuplicateCollectingEvents
                                 sql = String.format("UPDATE collectingevent SET CollectingEventAttributeID=%d WHERE CollectionEventID = %d", newCEAID, newCEID);
                                 if (BasicSQLUtils.update(sql) != 1)
                                 {
-                                    throw new RuntimeException(sql+" didn't update CE correctly.");
+                                    String msg = "["+sql+"] didn't update CE correctly.";
+                                    log.error("************************ "+msg);
+                                    //throw new RuntimeException("["+sql+"] didn't update CE correctly.");
                                 }
                             }
                             ceaRS.close();

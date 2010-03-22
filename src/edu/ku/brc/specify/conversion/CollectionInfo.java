@@ -149,14 +149,14 @@ public class CollectionInfo implements Comparable<CollectionInfo>
             
             String catSeriesSQL = "SELECT SeriesName, CatalogSeriesPrefix, Remarks, LastEditedBy FROM catalogseries WHERE CatalogSeriesID = ";
             
-            
+            /*
             String sqlTx = "SELECT tt.TaxonomyTypeID, tt.TaxonomyTypeName, tt.KingdomID, tn.TaxonNameID, tn.TaxonName, tn.TaxonomicUnitTypeID " + 
                            "FROM collectionobjecttype AS cot " +
                            "Inner Join collectiontaxonomytypes as ctt ON cot.CollectionObjectTypeID = ctt.BiologicalObjectTypeID " + 
                            "Inner Join taxonomytype as tt ON ctt.TaxonomyTypeID = tt.TaxonomyTypeID " + 
                            "Inner Join taxonname as tn ON tt.TaxonomyTypeID = tn.TaxonomyTypeID " + 
                            "WHERE  cot.Category = 'Biological' AND tn.ParentTaxonNameID IS NULL AND RankID = 0 AND cot.CollectionObjectTypeID = ";
-            
+            */
             String cntTaxonName = "SELECT COUNT(TaxonNameID) FROM taxonname WHERE TaxonName IS NOT NULL AND taxonname.TaxonomyTypeId = ";
             
             /*String cntColObjForTaxon = "SELECT COUNT(taxonomytype.TaxonomyTypeID) FROM determination "+

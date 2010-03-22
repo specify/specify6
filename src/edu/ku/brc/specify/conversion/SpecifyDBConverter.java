@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -76,16 +77,11 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
-import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.db.MySQLBackupService;
-import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
-import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
@@ -95,6 +91,8 @@ import edu.ku.brc.dbsupport.ResultsPager;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -113,8 +111,10 @@ import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.StorageTreeDefItem;
 import edu.ku.brc.specify.dbsupport.PostInsertEventListener;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
+import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -127,7 +127,7 @@ import edu.ku.brc.util.Triple;
  * @code_status Beta
  * @author rods
  */
-public class SpecifyDBConverter
+public class SpecifyDBConverter extends AppBase
 {
     protected static final Logger log = Logger.getLogger(SpecifyDBConverter.class);
 
@@ -165,6 +165,21 @@ public class SpecifyDBConverter
         
         setUpSystemProperties();
         
+        AppContextMgr.getInstance().setHasContext(true);
+        
+        // Load Local Prefs
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        localPrefs.setDirPath(UIRegistry.getAppDataDir());
+
+        // Then set this
+        IconManager.setApplicationClass(Specify.class);
+        IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml")); //$NON-NLS-1$
+        IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml")); //$NON-NLS-1$
+        IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml")); //$NON-NLS-1$
+        
+        appIcon = new JLabel("  "); //$NON-NLS-1$
+        setAppIcon(null); //$NON-NLS-1$
+
     }
 
     /**
@@ -180,36 +195,7 @@ public class SpecifyDBConverter
         
         UIRegistry.setEmbeddedDBPath(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
         
-        for (String s : args)
-        {
-            String[] pairs = s.split("="); //$NON-NLS-1$
-            if (pairs.length == 2)
-            {
-                if (pairs[0].startsWith("-D")) //$NON-NLS-1$
-                {
-                    //System.err.println("["+pairs[0].substring(2, pairs[0].length())+"]["+pairs[1]+"]");
-                    System.setProperty(pairs[0].substring(2, pairs[0].length()), pairs[1]);
-                } 
-            } else
-            {
-                String symbol = pairs[0].substring(2, pairs[0].length());
-                //System.err.println("["+symbol+"]");
-                System.setProperty(symbol, symbol);
-            }
-        }
-        
-        // Now check the System Properties
-        String appDir = System.getProperty("appdir");
-        if (StringUtils.isNotEmpty(appDir))
-        {
-            UIRegistry.setDefaultWorkingPath(appDir);
-        }
-        
-        String appdatadir = System.getProperty("appdatadir");
-        if (StringUtils.isNotEmpty(appdatadir))
-        {
-            UIRegistry.setBaseAppDataDir(appdatadir);
-        }
+        AppBase.processArgs(args);
         
         final SpecifyDBConverter converter = new  SpecifyDBConverter();
         
@@ -250,7 +236,7 @@ public class SpecifyDBConverter
                 {
                     if (converter.selectedDBsToConvert(false))
                     {
-                        namePair = converter.chooseTable("Select a DB to Convert", true);
+                        namePair = converter.chooseTable("Select a DB to Convert", "Specify 5 Databases", true);
                     }
                        
                 } catch (SQLException ex)
@@ -269,7 +255,6 @@ public class SpecifyDBConverter
                     JOptionPane.showConfirmDialog(null, "The Converter was unable to login.", "Error", JOptionPane.CLOSED_OPTION);
                     System.exit(0);
                 }
-                
             }
         });
     }
@@ -309,7 +294,9 @@ public class SpecifyDBConverter
      * @return
      * @throws SQLException
      */
-    public Pair<String, String> chooseTable(final String title, final boolean doSp5DBs) throws SQLException
+    public Pair<String, String> chooseTable(final String title, 
+                                            final String subTitle,
+                                            final boolean doSp5DBs) throws SQLException
     {
         MySQLDMBSUserMgr mgr = new MySQLDMBSUserMgr();
         
@@ -325,7 +312,7 @@ public class SpecifyDBConverter
             {
                 String dbName = row[0].toString();
                 
-                System.out.print("Database Found ["+dbName+"]  ");
+                //System.out.print("Database Found ["+dbName+"]  ");
                 conn.setCatalog(dbName);
                 
                 boolean isSp5DB = false;
@@ -390,8 +377,9 @@ public class SpecifyDBConverter
             
             final JList     list = new JList(availPairs);
             CellConstraints cc   = new CellConstraints();
-            PanelBuilder    pb   = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"));
-            pb.add(UIHelper.createScrollPane(list, true), cc.xy(1,1));
+            PanelBuilder    pb   = new PanelBuilder(new FormLayout("f:p:g", "p,4px,f:p:g"));
+            pb.add(UIHelper.createLabel(subTitle), cc.xy(1, 1));
+            pb.add(UIHelper.createScrollPane(list, true), cc.xy(1,3));
             pb.setDefaultDialogBorder();
             
             final CustomDialog dlg = new CustomDialog(null, title, true, pb.getPanel());
@@ -485,7 +473,7 @@ public class SpecifyDBConverter
     /**
      * 
      */
-    protected void setUpSystemProperties()
+    /*protected void setUpSystemProperties()
     {
         // Name factories
         System.setProperty(AppContextMgr.factoryName,                   "edu.ku.brc.specify.config.SpecifyAppContextMgr");      // Needed by AppContextMgr
@@ -502,7 +490,7 @@ public class SpecifyDBConverter
         System.setProperty(SecurityMgr.factoryName,                     "edu.ku.brc.af.auth.specify.SpecifySecurityMgr");
 
         AppContextMgr.getInstance().setHasContext(true);
-    }
+    }*/
     
     /**
      * @param oldDBConn
@@ -564,7 +552,7 @@ public class SpecifyDBConverter
     protected  void convertDB(final String dbNameSource, 
                               final String dbNameDest) throws Exception
     {
-        System.setProperty(DBMSUserMgr.factoryName, "edu.ku.brc.dbsupport.MySQLDMBSUserMgr");
+        //System.setProperty(DBMSUserMgr.factoryName, "edu.ku.brc.dbsupport.MySQLDMBSUserMgr");
 
         AppContextMgr.getInstance().clear();
         
@@ -626,7 +614,7 @@ public class SpecifyDBConverter
             return;
         }
         
-        if (!System.getProperty("user.name").equals("rods"))
+        if (!System.getProperty("user.name").equals("rodsX"))
         {
             OldDBStatsDlg dlg = new OldDBStatsDlg(oldDBConn);
             frame.setVisible(false);
@@ -691,10 +679,6 @@ public class SpecifyDBConverter
             }
         });
         
-        // Load Local Prefs
-        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        localPrefs.setDirPath(UIRegistry.getAppDataDir());
-
         
         if (startfromScratch)
         {
@@ -1815,6 +1799,10 @@ public class SpecifyDBConverter
         tblWriter.endTable();
     }
     
+    /**
+     * @return
+     */
+    @SuppressWarnings("unused")
     private List<Triple<String, String, String>> getSummaryQueries()
     {
         String[] desc = {};
@@ -2091,8 +2079,6 @@ public class SpecifyDBConverter
         pb.add(UIHelper.createLabel("Host Name:", SwingConstants.RIGHT), cc.xy(1, y));
         pb.add(hostNameTF, cc.xy(3, y)); y += 2;
         
-        
-        
         if (System.getProperty("user.name").equals("rods"))
         {
             itPasswordTF.setText("root"); // password for converter database
@@ -2100,8 +2086,12 @@ public class SpecifyDBConverter
         {
             itPasswordTF.requestFocus();
         }
+        
+        PanelBuilder panel = new PanelBuilder(new FormLayout("f:p:g,10px,f:p:g", "f:p:g"));
+        panel.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(1, 1));
+        panel.add(pb.getPanel(), cc.xy(3, 1));
 
-        CustomDialog dlg = new CustomDialog(null, "Database Info", true, pb.getPanel());
+        CustomDialog dlg = new CustomDialog(null, "Specify Converter", true, panel.getPanel());
         ((JPanel)dlg.getContentPanel()).setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         UIHelper.centerAndShow(dlg);
         

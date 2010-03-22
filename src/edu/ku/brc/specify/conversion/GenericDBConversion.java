@@ -2421,6 +2421,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         { 
             type = STD_DISCIPLINES.botany; 
             
+        } else if (checkName(new String[] { "ichthy", "Fish"}, name)) 
+        { 
+            type = STD_DISCIPLINES.fish;
+            
         } else if (checkName(new String[] { "FishHerps", "Herps", "Herp", "Frog" }, name)) 
         { 
             type = STD_DISCIPLINES.herpetology; 
@@ -2436,10 +2440,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         } else if (checkName(new String[] { "Mineral", "Rock" }, name)) 
         { 
             type = STD_DISCIPLINES.minerals;
-            
-        } else if (checkName(new String[] { "ichthy", "Fish"}, name)) 
-        { 
-            type = STD_DISCIPLINES.fish;
             
         } else if (checkName(new String[] { "mammal", "mammals", "mammology"}, name)) 
         { 

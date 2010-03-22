@@ -65,7 +65,7 @@ public class OldDBStatsDlg extends CustomDialog
      */
     public OldDBStatsDlg(final Connection oldDBConn)
     {
-        super((Frame)UIRegistry.getMostRecentWindow(), "Source DB Statistic", true, null);
+        super((Frame)UIRegistry.getMostRecentWindow(), "Source DB Statistics", true, null);
         this.oldDBConn = oldDBConn;
     }
     
@@ -101,8 +101,8 @@ public class OldDBStatsDlg extends CustomDialog
         
         String[] descs = {"Stranded Preparations",
                           "Number of Taxon with a NULL RankId",
-                          "CollectionObjects",
-                          "Collection Object Catalogs",
+                          "CollectionObjects Table",
+                          "Collection Object Catalogs Table",
                           "Taxon",
                           "Determinations",
                           "Agents",
@@ -180,14 +180,14 @@ public class OldDBStatsDlg extends CustomDialog
             i++;
         }
         
-        pb.addSeparator("Collectors with Semicolons", cc.xyw(1, 3, 3));
+        //pb.addSeparator("Collectors with Semicolons", cc.xyw(1, 3, 3));
         JTable collTable = new JTable(rows, new Object[] {"Combined", "Last Name", "First Name", "Middle"});
-        pb.add(UIHelper.createScrollPane(collTable, true), cc.xyw(1, 5, 3));
+        //pb.add(UIHelper.createScrollPane(collTable, true), cc.xyw(1, 5, 3));
         
         collTable.setPreferredScrollableViewportSize(new Dimension( collTable.getPreferredScrollableViewportSize().width, 10*collTable.getRowHeight()));
         
         doFixAgentsChkbx = UIHelper.createCheckBox("Fix Agents");
-        pb.add(doFixAgentsChkbx, cc.xyw(3, 7, 1));
+        //pb.add(doFixAgentsChkbx, cc.xyw(3, 7, 1));
         
         contentPanel = pb.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);
