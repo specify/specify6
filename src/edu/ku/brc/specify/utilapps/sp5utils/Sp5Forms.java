@@ -792,7 +792,7 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
             final SpecifyDBConverter converter = new  SpecifyDBConverter();
             if (converter.selectedDBsToConvert(true))
             {
-                namePair = converter.chooseTable("Select a DB for Forms", true);
+                namePair = converter.chooseTable("Select a DB for Forms", "Select a Form", true);
                 hostName = converter.getHostName();
                 itUsrPwd = converter.getItUsrPwd();
             }
@@ -839,7 +839,7 @@ public class Sp5Forms extends JFrame implements FrameworkAppIFace
            
             if (converter.selectedDBsToConvert(true))
             {
-                namePair = converter.chooseTable("Select Specify 6 Database", false);
+                namePair = converter.chooseTable("Choose", "Select a Specify 6 Database", false);
                 usrNmPwd = converter.getItUsrPwd();
             }
                
