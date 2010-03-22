@@ -41,6 +41,7 @@ import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -64,13 +65,20 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.MySQLDMBSUserMgr;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.Specify;
+import edu.ku.brc.specify.dbsupport.PostInsertEventListener;
+import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIHelper;
@@ -79,7 +87,7 @@ import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
 
-public class ConvertVerifier
+public class ConvertVerifier extends AppBase
 {
     private static final Logger log = Logger.getLogger(ConvertVerifier.class);
     
@@ -171,7 +179,24 @@ public class ConvertVerifier
     {
         super();
         
-        UIRegistry.setAppName("Specify");
+        PostInsertEventListener.setAuditOn(false);
+        
+        setUpSystemProperties();
+        
+        AppContextMgr.getInstance().setHasContext(true);
+        
+        // Load Local Prefs
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        localPrefs.setDirPath(UIRegistry.getAppDataDir());
+
+        // Then set this
+        IconManager.setApplicationClass(Specify.class);
+        IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml")); //$NON-NLS-1$
+        IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml")); //$NON-NLS-1$
+        IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml")); //$NON-NLS-1$
+        
+        appIcon = new JLabel("  "); //$NON-NLS-1$
+        setAppIcon(null); //$NON-NLS-1$
     }
 
     /**
@@ -2342,6 +2367,9 @@ public class ConvertVerifier
      */
     public static void main(String[] args)
     {
+        
+        UIRegistry.setAppName("Specify");
+
         // Create Specify Application
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
@@ -2460,8 +2488,12 @@ public class ConvertVerifier
 
         pb.add(UIHelper.createLabel("Host Name:", SwingConstants.RIGHT), cc.xy(1, y));
         pb.add(hostNameTF, cc.xy(3, y)); y += 2;
+        
+        PanelBuilder panel = new PanelBuilder(new FormLayout("f:p:g,10px,f:p:g", "f:p:g"));
+        panel.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(1, 1));
+        panel.add(pb.getPanel(), cc.xy(3, 1));
 
-        CustomDialog dlg = new CustomDialog(null, "Database Info", true, pb.getPanel());
+        CustomDialog dlg = new CustomDialog(null, "Database Info", true, panel.getPanel());
         ((JPanel)dlg.getContentPanel()).setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         UIHelper.centerAndShow(dlg);
         
