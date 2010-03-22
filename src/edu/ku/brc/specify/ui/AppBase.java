@@ -143,10 +143,10 @@ public class AppBase extends JPanel implements DatabaseLoginListener, CommandLis
     private static AppBase       appInstance         = null; // needed for ActionListeners etc.
 
     // Status Bar
-    private JStatusBar           statusField        = null;
-    private JMenuBar             menuBar            = null;
-    private JFrame               topFrame           = null;
-    private JLabel               appIcon            = null;
+    protected JStatusBar         statusField        = null;
+    protected JMenuBar           menuBar            = null;
+    protected JFrame             topFrame           = null;
+    protected JLabel             appIcon            = null;
 
     protected DatabaseLoginPanel dbLoginPanel        = null;
     protected String             databaseName        = null;
@@ -259,7 +259,10 @@ public class AppBase extends JPanel implements DatabaseLoginListener, CommandLis
         CustomFrame.setAppIcon(appImgIcon);
         IconManager.register(innerAppIconName, appImgIcon, null, IconManager.IconSize.Std32);
         
-        this.topFrame.setIconImage(appImgIcon.getImage());
+        if (this.topFrame != null)
+        {
+            this.topFrame.setIconImage(appImgIcon.getImage());
+        }
     }
 
     /**
