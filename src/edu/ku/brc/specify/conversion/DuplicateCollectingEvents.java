@@ -11,7 +11,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -263,7 +262,7 @@ public class DuplicateCollectingEvents
                                 
                                 int newCEAID = BasicSQLUtils.getInsertedId(prepCEAStmt);
                                 
-                                sql = String.format("UPDATE collectingevent SET CollectingEventAttributeID=%d WHERE CollectionEventID = %d", newCEAID, newCEID);
+                                sql = String.format("UPDATE collectingevent SET CollectingEventAttributeID=%d WHERE CollectingEventID = %d", newCEAID, newCEID);
                                 if (BasicSQLUtils.update(sql) != 1)
                                 {
                                     String msg = "["+sql+"] didn't update CE correctly.";
@@ -415,7 +414,7 @@ public class DuplicateCollectingEvents
      */
     public void performMaint()
     {
-        showStats(true);
+        //showStats(true);
         
         Vector<Integer> collectionsIds = BasicSQLUtils.queryForInts("SELECT CollectionID FROM collection WHERE IsEmbeddedCollectingEvent <> 0");
         if (collectionsIds == null || collectionsIds.size() == 0)
@@ -431,7 +430,7 @@ public class DuplicateCollectingEvents
         
         log.debug("*** Total for Collections: " + count);
         
-        showStats(false);
+        //showStats(false);
     }
     
     private void addCEsForCOWithNone()

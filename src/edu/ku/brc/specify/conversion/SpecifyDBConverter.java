@@ -538,6 +538,7 @@ public class SpecifyDBConverter extends AppBase
                 }
             }
         }
+        frame.setProcess(tableNames.size());
         log.debug("Done setting Timestamps");
     }
     
@@ -659,6 +660,18 @@ public class SpecifyDBConverter extends AppBase
             System.exit(0);
         }
         
+        String sql = "SELECT count(*) FROM (SELECT ce.CollectingEventID, Count(ce.CollectingEventID) as cnt FROM collectingevent AS ce " +
+        "Inner Join collectionobject AS co ON ce.CollectingEventID = co.CollectingEventID " +
+        "Inner Join collectionobjectcatalog AS cc ON co.CollectionObjectID = cc.CollectionObjectCatalogID " +    
+        "WHERE ce.BiologicalObjectTypeCollectedID <  21 " +
+        "GROUP BY ce.CollectingEventID) T1 WHERE cnt > 1";
+
+        int numCESharing = BasicSQLUtils.getCountAsInt(oldDBConn, sql);
+
+        String msg = String.format("Will this Collection share Collecting Events?\nThere are %d Collecting Events that are sharing now.\n(Sp5 was %ssharing them.)", numCESharing, isUsingEmbeddedCEsInSp5() ? "NOT " : "");
+        boolean doingOneToOneForColObjToCE = !UIHelper.promptForAction("Share", "Adjust CEs", "Duplicate Collecting Events", msg);
+
+        
         /*if (false) 
         {
             createTableSummaryPage();
@@ -731,7 +744,7 @@ public class SpecifyDBConverter extends AppBase
                 SpecifySchemaGenerator.generateSchema(driverInfo, hostName, dbNameDest, itUsrPwd.first, itUsrPwd.second);
             }
         }
-
+        
         log.debug("Preparing new database: completed");
 
         setSession(HibernateUtil.getNewSession());
@@ -1364,7 +1377,7 @@ public class SpecifyDBConverter extends AppBase
                 frame.setDesc("Fixing Preferred Taxon");
                 
                 // MySQL Only ???
-                String sql = "UPDATE determination SET PreferredTaxonID = CASE WHEN " +
+                sql = "UPDATE determination SET PreferredTaxonID = CASE WHEN " +
                              "(SELECT AcceptedID FROM taxon WHERE taxon.TaxonID = determination.TaxonID) IS NULL " +
                              "THEN determination.TaxonID ELSE (SELECT AcceptedID FROM taxon WHERE taxon.TaxonID = determination.TaxonID) END";
                 System.out.println(sql);
@@ -1405,6 +1418,9 @@ public class SpecifyDBConverter extends AppBase
                 convScopeFixer.doFixTables();
                 convScopeFixer.checkTables();
                 
+                waitTime = 0;
+                
+                /*
                 long stTime = System.currentTimeMillis();
                 
                 sql = "SELECT count(*) FROM (SELECT ce.CollectingEventID, Count(ce.CollectingEventID) as cnt FROM collectingevent AS ce " +
@@ -1419,6 +1435,7 @@ public class SpecifyDBConverter extends AppBase
                 boolean doingOneToOneForColObjToCE = !UIHelper.promptForAction("Share", "Adjust CEs", "Duplicate Collecting Events", msg);
                 
                 waitTime = System.currentTimeMillis() - stTime;
+                */
                 
                 if (doingOneToOneForColObjToCE)
                 {
@@ -1426,7 +1443,7 @@ public class SpecifyDBConverter extends AppBase
                     dce.performMaint();
                 }
                 
-                endTime = System.currentTimeMillis();
+                //endTime = System.currentTimeMillis();
                 
                 int convertTimeInSeconds = (int)((endTime - startTime - waitTime) / 1000.0);
                 
@@ -1584,10 +1601,10 @@ public class SpecifyDBConverter extends AppBase
      */
     private void updateVersionInfo(final Connection newDBConn) throws SQLException
     {
-        String  appVersion     = null;
+        String  appVerStr      = null;
         String  schemaVersion  = null;
         Integer spverId        = null;
-        Integer recVerNum     = 1;
+        Integer recVerNum      = 1;
         
         try
         {
@@ -1603,25 +1620,25 @@ public class SpecifyDBConverter extends AppBase
         if (rows.size() == 1)
         {
             Object[] row  = (Object[])rows.get(0);
-            appVersion    = row[0].toString();
+            appVerStr     = row[0].toString();
             schemaVersion = row[1].toString();
             spverId       = (Integer)row[2];
             recVerNum     = (Integer)row[3];
         }
         
-        if (appVersion != null)
+        if (appVerStr != null)
         {
-            appVersion = UIHelper.getInstall4JInstallString();
-            if (appVersion == null)
+            appVerStr = UIHelper.getInstall4JInstallString();
+            if (appVerStr == null)
             {
                 do
                 {
-                    appVersion = JOptionPane.showInputDialog("Enter Specify App version:"); 
-                } while (StringUtils.isEmpty(appVersion));
+                    appVerStr = JOptionPane.showInputDialog("Enter Specify App version:"); 
+                } while (StringUtils.isEmpty(appVerStr));
             }
             
             PreparedStatement pStmt = newDBConn.prepareStatement("UPDATE spversion SET AppVersion=?, SchemaVersion=?, Version=? WHERE SpVersionID = ?");
-            pStmt.setString(1, appVersion);
+            pStmt.setString(1, appVerStr);
             pStmt.setString(2, SchemaUpdateService.getInstance().getDBSchemaVersionFromXML());
             pStmt.setInt(3, ++recVerNum);
             pStmt.setInt(4, spverId);
@@ -1632,17 +1649,17 @@ public class SpecifyDBConverter extends AppBase
             
         } else
         {
-            appVersion = UIHelper.getInstall4JInstallString();
-            if (appVersion == null)
+            appVerStr = UIHelper.getInstall4JInstallString();
+            if (appVerStr == null)
             {
                 do
                 {
-                    appVersion = JOptionPane.showInputDialog("Enter Specify App version:"); 
-                } while (StringUtils.isEmpty(appVersion));
+                    appVerStr = JOptionPane.showInputDialog("Enter Specify App version:"); 
+                } while (StringUtils.isEmpty(appVerStr));
             }
             
             PreparedStatement pStmt = newDBConn.prepareStatement("INSERT INTO spversion (AppVersion, SchemaVersion, Version, TimestampCreated) VALUES(?,?,?,?)");
-            pStmt.setString(1, appVersion);
+            pStmt.setString(1, appVerStr);
             pStmt.setString(2, schemaVersion);
             pStmt.setInt(3, 0);
             pStmt.setTimestamp(4, new Timestamp(Calendar.getInstance().getTime().getTime()));
