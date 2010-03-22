@@ -3665,7 +3665,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             listModel.nodeValuesChanged(parentNode);
             return childNodes;
         }
-        parentNode.setHasVisualChildren(true);
+        
+        if (parentNode != null)
+        {
+        	parentNode.setHasVisualChildren(true);
+        }
+        
         listModel.showChildNodes(childNodes, parentNode);
 
         if (parentNode != null)
