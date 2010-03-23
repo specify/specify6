@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.dbsupport;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.log4j.Logger;
 import org.hibernate.event.PostInsertEvent;
 
@@ -26,6 +28,8 @@ import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.SpAuditLog;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 
 /**
  * This class listens for Insert events from Hibernate so it can update the Lucene index.  This
@@ -45,17 +49,34 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
     
     private static boolean isAuditOn = true;
     
+    public static final String DB_CMD_TYPE       = "Database"; //$NON-NLS-1$
+    public static final String SAVE_CMD_ACT      = "Save"; //$NON-NLS-1$
+    public static final String INSERT_CMD_ACT    = "Insert"; //$NON-NLS-1$
+    public static final String DELETE_CMD_ACT    = "Delete"; //$NON-NLS-1$
+    public static final String UPDATE_CMD_ACT    = "Update"; //$NON-NLS-1$
+    
     /* (non-Javadoc)
      * @see org.hibernate.event.PostInsertEventListener#onPostInsert(org.hibernate.event.PostInsertEvent)
      */
     @Override
-    public void onPostInsert(PostInsertEvent obj)
+    public void onPostInsert(final PostInsertEvent obj)
     {
-        if (isAuditOn() && obj.getEntity() instanceof FormDataObjIFace)
+        if (obj.getEntity() instanceof FormDataObjIFace)
         {
-            if (((FormDataObjIFace)obj.getEntity()).isChangeNotifier())
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run()
+                {
+                    CommandDispatcher.dispatch(new CommandAction(PostInsertEventListener.DB_CMD_TYPE, PostInsertEventListener.INSERT_CMD_ACT, obj.getEntity())); 
+                }
+            });
+            
+            if (PostInsertEventListener.isAuditOn())
             {
-                saveOnAuditTrail((byte)0, obj.getEntity());
+                if (((FormDataObjIFace)obj.getEntity()).isChangeNotifier())
+                {
+                    saveOnAuditTrail((byte)0, obj.getEntity());
+                }
             }
         }
     }

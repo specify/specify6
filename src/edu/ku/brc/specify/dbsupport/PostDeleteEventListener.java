@@ -19,9 +19,13 @@
 */
 package edu.ku.brc.specify.dbsupport;
 
+import javax.swing.SwingUtilities;
+
 import org.hibernate.event.PostDeleteEvent;
 
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 
 /**
  * This class listens for Insert events from Hibernate so it can update the Lucene index. 
@@ -44,11 +48,23 @@ public class PostDeleteEventListener implements org.hibernate.event.PostDeleteEv
     @Override
     public void onPostDelete(PostDeleteEvent obj)
     {
-        if (PostInsertEventListener.isAuditOn() && obj.getEntity() instanceof FormDataObjIFace)
+        if (obj.getEntity() instanceof FormDataObjIFace)
         {
-            if (((FormDataObjIFace)obj.getEntity()).isChangeNotifier())
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run()
+                {
+                    
+                }
+            });
+            CommandDispatcher.dispatch(new CommandAction(PostInsertEventListener.DB_CMD_TYPE, PostInsertEventListener.DELETE_CMD_ACT, obj.getEntity()));
+            
+            if (PostInsertEventListener.isAuditOn())
             {
-                PostInsertEventListener.saveOnAuditTrail((byte)2, obj.getEntity());
+                if (((FormDataObjIFace)obj.getEntity()).isChangeNotifier())
+                {
+                    PostInsertEventListener.saveOnAuditTrail((byte)2, obj.getEntity());
+                }
             }
         }
     }

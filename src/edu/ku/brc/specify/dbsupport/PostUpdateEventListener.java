@@ -19,9 +19,13 @@
 */
 package edu.ku.brc.specify.dbsupport;
 
+import javax.swing.SwingUtilities;
+
 import org.hibernate.event.PostUpdateEvent;
 
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 
 /**
  * THis class listens for Update events from Hibernate so it can update the Lucene index.<br>
@@ -42,13 +46,24 @@ public class PostUpdateEventListener implements org.hibernate.event.PostUpdateEv
      * @see org.hibernate.event.PostUpdateEventListener#onPostUpdate(org.hibernate.event.PostUpdateEvent)
      */
     @Override
-    public void onPostUpdate(PostUpdateEvent obj)
+    public void onPostUpdate(final PostUpdateEvent obj)
     {
-        if (PostInsertEventListener.isAuditOn() && obj.getEntity() instanceof FormDataObjIFace)
+        if (obj.getEntity() instanceof FormDataObjIFace)
         {
-            if (((FormDataObjIFace)obj.getEntity()).isChangeNotifier())
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run()
+                {
+                    CommandDispatcher.dispatch(new CommandAction(PostInsertEventListener.DB_CMD_TYPE, PostInsertEventListener.UPDATE_CMD_ACT, obj.getEntity()));
+                }
+            });
+            
+            if (PostInsertEventListener.isAuditOn())
             {
-                PostInsertEventListener.saveOnAuditTrail((byte)1, obj.getEntity());
+                if (((FormDataObjIFace)obj.getEntity()).isChangeNotifier())
+                {
+                    PostInsertEventListener.saveOnAuditTrail((byte)1, obj.getEntity());
+                }
             }
         }
     }
