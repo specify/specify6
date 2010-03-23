@@ -4354,6 +4354,7 @@ public class FormViewObj implements Viewable,
             if (list.size() > 0)
             {
                 this.dataObj = list.get(0);
+                carryFwdDataObj = this.dataObj;
                 //log.debug("Getting DO from list "+this.dataObj.getClass().getSimpleName()+" "+this.dataObj.hashCode());
                 
             } else
