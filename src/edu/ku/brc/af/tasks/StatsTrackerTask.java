@@ -32,6 +32,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
@@ -55,6 +56,8 @@ import edu.ku.brc.util.Pair;
  */
 public class StatsTrackerTask extends BaseTask
 {
+    private static final Logger log = Logger.getLogger(StatsTrackerTask.class);
+    
     public  static final String           STATS_TRACKER   = "StatsTracker"; //$NON-NLS-1$
     
     protected StatsSwingWorker<?, ?> worker;
@@ -292,8 +295,11 @@ public class StatsTrackerTask extends BaseTask
                 System.err.println(responseString);
             }
 
-        }
-        catch (Exception e)
+        } catch (java.net.UnknownHostException ex)
+        {
+            log.debug("Couldn't reach host.");
+            
+        } catch (Exception e)
         {
             //e.printStackTrace();
             //UsageTracker.incrHandledUsageCount();

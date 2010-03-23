@@ -30,6 +30,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.helpers.SwingWorker;
@@ -47,6 +48,7 @@ import edu.ku.brc.helpers.SwingWorker;
  */
 public abstract class FeedBackSender
 {
+    private static final Logger log = Logger.getLogger(FeedBackSender.class);
     
     /**
      * 

@@ -1949,7 +1949,7 @@ public class ViewFactory
                                 {
                                     ((TableViewObj)viewable).setVisibleRowCount(cellSubView.getTableRows());
                                 }
-                                if (viewable.getValidator() != null)
+                                if (viewable.getValidator() != null && childInfo != null)
                                 {
                                     viewable.getValidator().setRequired(childInfo.isRequired());
                                 }
@@ -2226,8 +2226,11 @@ public class ViewFactory
                     
                 } catch (java.lang.NoSuchFieldException ex)
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewFactory.class, ex);
+                    //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewFactory.class, ex);
+                    
+                    UIRegistry.showError(String.format("There is no field named '%s' for class %s", fieldNames[i], parentCls));
+                    
                     String parentTitle = parentCls.getSimpleName();
                     DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(parentCls.getName());
                     if (ti != null)

@@ -5770,7 +5770,8 @@ public class FormViewObj implements Viewable,
 
             if (!formCell.getName().equals("this") && controlsByName.get(formCell.getName()) != null)
             {
-                throw new RuntimeException("Two controls have the same Name ["+formCell.getName()+"] "+formViewDef.getName());
+                UIRegistry.showError("Two controls have the same Name ["+formCell.getName()+"] "+formViewDef.getName());
+                return;
             }
 
             if (addIt)

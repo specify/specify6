@@ -27,6 +27,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.UIRegistry;
 
@@ -40,7 +41,8 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class SpecialMsgNotifier
 {
-
+    private static final Logger log = Logger.getLogger(SpecialMsgNotifier.class);
+    
     /**
      * 
      */
@@ -144,8 +146,11 @@ public class SpecialMsgNotifier
                     return responseString;
                 }
             }
-        }
-        catch (Exception e)
+        } catch (java.net.UnknownHostException ex)
+        {
+            log.debug("Couldn't reach host.");
+            
+        } catch (Exception e)
         {
             e.printStackTrace();
             // die silently

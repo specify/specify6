@@ -31,6 +31,8 @@ import java.util.Date;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.jfree.util.Log;
 
 import edu.ku.brc.af.core.db.AutoNumberIFace;
 import edu.ku.brc.af.prefs.AppPrefsCache;
@@ -52,7 +54,7 @@ import edu.ku.brc.util.Pair;
  */
 public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
 {
-    //private static final Logger log = Logger.getLogger(UIFieldFormatter.class);
+    private static final Logger log = Logger.getLogger(UIFieldFormatter.class);
     protected static DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
     
     public static int[]            daysInMon = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}; 
@@ -829,8 +831,16 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
         
         if (month != null)
         {
-            String val    = text.substring(monthInx, monthInx+month.getSize());
-            int    monVal = Integer.parseInt(val);
+            String val    = text.substring(monthInx, monthInx+month.getSize()).trim();
+            int    monVal = 0;
+            try
+            {
+                monVal = Integer.parseInt(val);
+            } catch (NumberFormatException ex)
+            {
+                log.debug(ex.toString());
+                return false;
+            }
             if (monVal < 1 || monVal > 12)
             {
                 return false;

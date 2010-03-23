@@ -568,12 +568,6 @@ public class ViewLoader
                     // or pick the first one.
                     cellDef = (Element)list.get(0);
                 }
-                
-                if (cellDef == null)
-                {
-                    int x = 0;
-                    x++;
-                }
             }
         } else
         {
@@ -606,7 +600,9 @@ public class ViewLoader
                     return autoStr;
                 }
                 // else
-                throw new RuntimeException("Element ["+element.getName()+"] Cell or Sep is null for 'dup' or 'auto 'on column def.");
+                //throw new RuntimeException("Element ["+element.getName()+"] Cell or Sep is null for 'dup' or 'auto 'on column def.");
+                UIRegistry.showError("Element ["+element.getName()+"] Cell or Sep is null for 'dup' or 'auto 'on column def.");
+                return "";
             }
             // else
             item.setAuto(false);

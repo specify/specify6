@@ -30,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * A view is a virtual object that may contain one or more "alternate" views. Typically, there is a 
@@ -115,20 +116,34 @@ public class View implements ViewIFace
             List<AltViewIFace> list = new ArrayList<AltViewIFace>();
             for (AltViewIFace altView : altViews)
             {
-                ViewDef.ViewType type = altView.getViewDef().getType();
-                //System.err.println("View.getDefaultAltView ["+type+"]["+altView.getName()+"] mode["+altView.getMode()+"]["+creationMode+"] isDef "+altView.isDefault());
-                if (isForm && type == ViewDefIFace.ViewType.form ||
-                    !isForm && type != ViewDefIFace.ViewType.form)
+                if (altView.getViewDef() != null)
                 {
-                    if (altView.getMode() == creationMode)
+                    ViewDef.ViewType type = altView.getViewDef().getType();
+                    if (type != null)
                     {
-                        list.add(altView);
+                        //System.err.println("View.getDefaultAltView ["+type+"]["+altView.getName()+"] mode["+altView.getMode()+"]["+creationMode+"] isDef "+altView.isDefault());
+                        if (isForm && type == ViewDefIFace.ViewType.form ||
+                            !isForm && type != ViewDefIFace.ViewType.form)
+                        {
+                            if (altView.getMode() == creationMode)
+                            {
+                                list.add(altView);
+                            }
+                        }
+                        
+                        if (altView.isDefault()) // keep track of the one and only default
+                        {
+                            defAltView = altView;
+                        }
+                    } else
+                    {
+                        // new RuntimeException
+                        UIRegistry.showError(String.format("ViewDef's (%s) Type is null for AltView %s", altView.getViewDef().getName(), altView.getName()));
                     }
-                }
-                
-                if (altView.isDefault()) // keep track of the one and only default
+                } else
                 {
-                    defAltView = altView;
+                    // new RuntimeException
+                    UIRegistry.showError(String.format("ViewDef is null for AltView %s", altView.getName()));
                 }
             }
             

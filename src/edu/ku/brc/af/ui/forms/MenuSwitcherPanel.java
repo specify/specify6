@@ -183,31 +183,34 @@ public class MenuSwitcherPanel extends JPanel
                 
                 ViewDefIFace viewDef = av.getViewDef();
                 boolean      isEdit  = av.getMode() == AltViewIFace.CreationMode.EDIT;
-                if (viewDef.getType() == ViewDefIFace.ViewType.form)
+                
+                if (viewDef != null)
                 {
-                    label = "Form";
-                    imgIcon = IconManager.getImage(isEdit ? "EditForm" : "ViewForm", IconManager.IconSize.Std16);
-                    toolTip = getResourceString(isEdit ? "ShowEditViewTT" : "ShowViewTT");
-
-                } else if (viewDef.getType() == ViewDefIFace.ViewType.table ||
-                           viewDef.getType() == ViewDefIFace.ViewType.formtable)
-                {
-                    label = "Grid";
-                    imgIcon = IconManager.getImage(isEdit ? "SpreadsheetEdit" : "Spreadsheet", IconManager.IconSize.Std16);
-                    toolTip = getResourceString("ShowSpreadsheetTT");
-
-                } else
-                {
-                    label = "Icon";
-                    imgIcon = IconManager.getImage("image", IconManager.IconSize.Std16);
-                    toolTip = getResourceString("ShowViewTT");
+                    if (viewDef.getType() == ViewDefIFace.ViewType.form)
+                    {
+                        label = "Form";
+                        imgIcon = IconManager.getImage(isEdit ? "EditForm" : "ViewForm", IconManager.IconSize.Std16);
+                        toolTip = getResourceString(isEdit ? "ShowEditViewTT" : "ShowViewTT");
+    
+                    } else if (viewDef.getType() == ViewDefIFace.ViewType.table ||
+                               viewDef.getType() == ViewDefIFace.ViewType.formtable)
+                    {
+                        label = "Grid";
+                        imgIcon = IconManager.getImage(isEdit ? "SpreadsheetEdit" : "Spreadsheet", IconManager.IconSize.Std16);
+                        toolTip = getResourceString("ShowSpreadsheetTT");
+    
+                    } else
+                    {
+                        label = "Icon";
+                        imgIcon = IconManager.getImage("image", IconManager.IconSize.Std16);
+                        toolTip = getResourceString("ShowViewTT");
+                    }
                 }
                 
                 // Override when Top Level Form
                 if (mvParentArg.isTopLevel())
                 {
                     label = isEdit ? "Edit" : "View";
-                    
                 }
 
                 items.add(new DropDownMenuInfo(label, imgIcon, toolTip));
