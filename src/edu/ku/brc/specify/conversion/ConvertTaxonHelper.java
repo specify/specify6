@@ -589,10 +589,10 @@ public class ConvertTaxonHelper
                                     skip = true;
                                 } else
                                 {
-                                    boolean wasInOldTaxonTable = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM taxonname WHERE TaxonNameID = " + oldID) != 1;
-                                    boolean isDetPointToTaxon  = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM determination WHERE TaxonNameID = " + oldID) != 1;
+                                    boolean wasInOldTaxonTable = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM taxonname WHERE TaxonNameID = " + oldID) > 0;
+                                    boolean isDetPointToTaxon  = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM determination WHERE TaxonNameID = " + oldID)  > 0;
                                     String msg = String.format("***** Couldn't get NewID [%s] from mapper for column [%s]  In Old taxonname table: %s  WasParentID: %s  Det Using: %s", 
-                                            oldID, colToFieldHash.get(colInx), (wasInOldTaxonTable ? "YES" : "no"), (colInx == 2 ? "YES" : "no"), (isDetPointToTaxon ? "YES" : "no"));
+                                            oldID, oldFieldToColHash.get(colInx), (wasInOldTaxonTable ? "YES" : "no"), (colInx == 2 ? "YES" : "no"), (isDetPointToTaxon ? "YES" : "no"));
                                     log.error(msg);
                                     tblWriter.logError(msg);
                                     skipError = true;
