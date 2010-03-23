@@ -1649,11 +1649,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
     /**
      * Returns a list of ViewSets from a AppResourceDefault, The ViewSets are created from the ViewSetObj.
-     * @param dir the AppResourceDefault
+     * @param dirArg the AppResourceDefault
      * @return list of ViewSet objects
      */
-    public List<ViewSetIFace> getViewSetList(final SpAppResourceDir dir)
+    public List<ViewSetIFace> getViewSetList(final SpAppResourceDir dirArg)
     {
+        SpAppResourceDir dir = dirArg;
         if (debug) log.debug("Looking up ["+dir.toString()+"] ["+dir.getUniqueIdentifer()+"]["+dir.getVerboseUniqueIdentifer()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         
         Boolean reloadViews = AppPreferences.getLocalPrefs().getBoolean("reload_views", false); //$NON-NLS-1$
@@ -1677,8 +1678,16 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 session = openSession();
                 if (dir.getSpAppResourceDirId() != null)
                 {
-                    session.attach(dir);
+                    try
+                    {
+                        session.attach(dir);
+                        
+                    } catch (org.hibernate.HibernateException ex)
+                    {
+                        dir = session.merge(dir);
+                    }
                 }
+                
                 viewSetList = new Vector<ViewSetIFace>();
                 for (SpViewSetObj vso : dir.getSpViewSets())
                 {
@@ -1907,6 +1916,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             	session.commit();
             	session.flush();
             	return true;
+            	
             } catch (Exception ex)
             {
                 ex.printStackTrace();

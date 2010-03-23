@@ -503,6 +503,31 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
     }
     
     /**
+     * For AppResourceDirs that have not been saved yet, this will take the transient resources
+     * and move them over to the Persistent Sets so they too will be saved.
+     */
+    public void mergeTransientResourceAndViewSets()
+    {
+        if (spAppResources != null)
+        {
+            for (SpAppResource appRes : spAppResources)
+            {
+                appRes.setSpAppResourceDir(this);
+                spPersistedAppResources.add(appRes);
+            }
+        }
+        
+        if (spViewSets != null)
+        {
+            for (SpViewSetObj vso : spViewSets)
+            {
+                vso.setSpAppResourceDir(this);
+                spPersistedViewSets.add(vso);
+            }
+        }
+    }
+    
+    /**
      * @param appRes
      * 
      * Removes appRes from spPersistedAppResources and spAppResources sets.
