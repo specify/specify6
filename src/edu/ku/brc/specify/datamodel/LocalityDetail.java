@@ -731,7 +731,7 @@ public class LocalityDetail extends DataModelObjBase
             ((utmScale == null && o.utmScale == null) || ((utmScale != null && o.utmScale != null) && utmScale.equals(o.utmScale))) &&
             ((hucCode == null && o.hucCode == null) || ((hucCode != null && o.hucCode != null) && hucCode.equals(o.hucCode))) &&
             ((text1 == null && o.text1 == null) || ((text1 != null && o.text1 != null) && text1.equals(o.text1))) &&
-            ((text2 == null && o.text2 == null) || ((text2 != null && o.text2 != null) & text2.equals(o.text2))) &&
+            ((text2 == null && o.text2 == null) || ((text2 != null && o.text2 != null) && text2.equals(o.text2))) &&
             ((number1 == null && o.number1 == null) || ((number1 != null && o.number1 != null) && number1.equals(o.number1))) &&
             ((number2 == null && o.number2 == null) || ((number2 != null && o.number2 != null) && number2.equals(o.number2))) &&
             ((yesNo1 == null && o.yesNo1 == null) || ((yesNo1 != null && o.yesNo1 != null) && yesNo1.equals(o.yesNo1))) &&
