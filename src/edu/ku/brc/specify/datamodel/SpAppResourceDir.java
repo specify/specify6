@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.datamodel;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,6 +35,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
@@ -508,12 +512,32 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
      */
     public void mergeTransientResourceAndViewSets()
     {
+
         if (spAppResources != null)
         {
             for (SpAppResource appRes : spAppResources)
             {
-                appRes.setSpAppResourceDir(this);
-                spPersistedAppResources.add(appRes);
+                if (appRes.getSpAppResourceDatas().size() == 0)
+                {
+                    File file = new File(appRes.getFileName());
+                    if (file.exists())
+                    {
+                        try
+                        {
+                            String data = FileUtils.readFileToString(file);
+                            if (StringUtils.isNotEmpty(data))
+                            {
+                                appRes.setDataStr(data);
+                                appRes.setSpAppResourceDir(this);
+                                spPersistedAppResources.add(appRes);
+                            }
+                            
+                        } catch (IOException ex)
+                        {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
             }
         }
         
@@ -521,8 +545,28 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
         {
             for (SpViewSetObj vso : spViewSets)
             {
-                vso.setSpAppResourceDir(this);
-                spPersistedViewSets.add(vso);
+                if (vso.getSpAppResourceDatas().size() == 0)
+                {
+                    File file = new File(vso.getFileName());
+                    if (file.exists())
+                    {
+                        try
+                        {
+                            String data = FileUtils.readFileToString(file);
+                            if (StringUtils.isNotEmpty(data))
+                            {
+                                vso.setDataAsString(data);
+                                vso.setSpAppResourceDir(this);
+                                spPersistedViewSets.add(vso);
+                            }
+                            
+                        } catch (IOException ex)
+                        {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+                
             }
         }
     }

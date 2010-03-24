@@ -89,6 +89,7 @@ import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpAppResource;
+import edu.ku.brc.specify.datamodel.SpAppResourceData;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpViewSetObj;
@@ -222,9 +223,17 @@ public class ResourceImportExportDlg extends CustomDialog
                     dir = session.get(SpAppResourceDir.class, curDir.getId());
                     dir.setTitle(curDir.getTitle());
                     
-                    // ForceLoad
+                    // Force Load
                     dir.getSpAppResources().size();
                     dir.getSpViewSets().size();
+                    
+                    for (SpAppResource appRes : curDir.getSpAppResources())
+                    {
+                        if (appRes.getId() == null)
+                        {
+                            dir.getSpAppResources().add(appRes);
+                        }
+                    }
                     
                 } else
                 {
@@ -326,6 +335,7 @@ public class ResourceImportExportDlg extends CustomDialog
                 	if (selectedComp == viewsPanel)
                 	{
                 		viewSetsList.setSelectedIndex(-1);
+                		
                 	} else if (selectedComp == resPanel)
                 	{
                 		resList.setSelectedIndex(-1);
@@ -334,7 +344,7 @@ public class ResourceImportExportDlg extends CustomDialog
                 	{
                 		repList.setSelectedIndex(-1);
                 	}
-                	revertBtn.setVisible(selectedComp != repPanel);
+                	//revertBtn.setVisible(selectedComp != repPanel);
                 }
                 enableUI();
             }
@@ -504,10 +514,10 @@ public class ResourceImportExportDlg extends CustomDialog
                 			(appRes.getMimeType().equals(ReportsBaseTask.REPORTS_MIME) 
                 					|| appRes.getMimeType().equals(ReportsBaseTask.LABELS_MIME)))
                 	{
-                		if (!isSpReportResource((SpAppResource )appRes))
+                		//if (!isSpReportResource((SpAppResource )appRes))
                 		{
                 			//XXX what if appres is imported report with no config file???
-                			//enable = true;
+                			enable = true;
                 			
                 			//revert not currently working
                 		}
@@ -552,12 +562,12 @@ public class ResourceImportExportDlg extends CustomDialog
             }
             else
             {
-            	JList theList = tabbedPane.getSelectedComponent() == repPanel ? repList : resList;
+            	JList            theList  = tabbedPane.getSelectedComponent() == repPanel ? repList : resList;
             	DefaultListModel theModel = theList == repList ? repModel : resModel;
             	index = theList.getSelectedIndex(); 
             	if (index > 0)
             	{
-            		AppResourceIFace appRes = resources.get(index - 1); 
+            		AppResourceIFace appRes = (AppResourceIFace)theList.getSelectedValue(); 
                 
             		AppResourceIFace revertedNewAR = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).revertResource(virtualDirName, appRes);
                 
@@ -621,7 +631,7 @@ public class ResourceImportExportDlg extends CustomDialog
                     SpViewSetObj vso = (SpViewSetObj)viewSetsList.getSelectedValue();
                     exportedName = vso.getName();
                     fileName     = FilenameUtils.getName(vso.getFileName());
-                    data         = vso.getDataAsString();
+                    data         = vso.getDataAsString(true);
                 }
             }
             else 
@@ -899,24 +909,21 @@ public class ResourceImportExportDlg extends CustomDialog
     }
 
     /**
-     * @param file
-     * 
      * Imports a report resource from a zip file (see writeReportResToZipFile())
      * 
      * If resource contains an SpReport, the SpReport's data source query will be imported
      * as well if an equivalent query does not exist in the database.
      *  
+     * @param file
+     * @param dir
+     * @return
      */
-    protected String importSpReportZipResource(final File file)
+    protected SpAppResource importSpReportZipResource(final File file, final SpAppResource appRes, final SpAppResourceDir dirArg)
     {
-    	boolean          resourceSaved = false;
-        int              index         = levelCBX.getSelectedIndex();
-        AppResourceIFace appRes        = null;
-        SpAppResourceDir dir           = dirs.get(index);
-
+        SpAppResourceDir dir           = dirArg;
+        
         try
     	{
-    		
         	ZipInputStream zin = new ZipInputStream(new FileInputStream(file));
         	
         	//Assuming they come out in the order they were put in.
@@ -936,126 +943,93 @@ public class ResourceImportExportDlg extends CustomDialog
     		String data = readZipEntryToString(zin, entry);
     		zin.closeEntry();
     		
-            appRes = ((SpecifyAppContextMgr )AppContextMgr.getInstance()).createAppResourceForDir(dir);
-            appRes.setDataAsString(data);
-            
     		Element appRoot     = XMLHelper.readStrToDOM4J(app);
             Node    metadata    = appRoot.selectSingleNode("metadata");
             String  metadataStr = metadata.getStringValue() + ";";
-            appRes.setMetaData(metadataStr.trim());
             
-            String repType = appRes.getMetaDataMap().getProperty("reporttype");
-            if (repType != null && repType.equalsIgnoreCase("label"))
-            {
-                appRes.setMimeType("jrxml/label"); 
-            }
-            else
-            {
-            	appRes.setMimeType("jrxml/report"); 
-            }
-            //XXX level?????????????????
-            appRes.setLevel((short )3);
-
             entry = zin.getNextEntry();
             if (entry != null)
             {
-        		String spReport = readZipEntryToString(zin, entry);
-        		zin.closeEntry();
-        		Element repElement = XMLHelper.readStrToDOM4J(spReport);
-        		
-        		SpReport rep = new SpReport();
-				rep.initialize();
-				rep.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
-				rep.fromXML(repElement);
-				appRes.setName(rep.getName());
-				appRes.setDescription(appRes.getName());
-				
-				DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        		try
-        		{
-        		    if (dir.getId() == null)
-        		    {
-        		        session.beginTransaction();
-        		        session.saveOrUpdate(dir);
-                        session.commit();
-        		    }
-                } catch (Exception ex)
+                appRes.setDataAsString(data);
+                appRes.setMetaData(metadataStr.trim());
+                
+                String mimeType = null;
+                String repType  = appRes.getMetaDataMap().getProperty("reporttype");
+                if (repType != null && repType.equalsIgnoreCase("label"))
                 {
-                    session.rollback();
-                    ex.printStackTrace();
+                    mimeType = "jrxml/label"; 
                 }
-                finally
+                else
                 {
-                    if (session != null) session.close();
-                    session = null;
+                    mimeType = "jrxml/report";
                 }
                 
-                AppContextMgr.getInstance().saveResource(appRes);
-                resourceSaved = true;
+                appRes.setMimeType(mimeType); 
+                appRes.setLevel((short )3);//XXX level?????????????????
+
+                String spReport = readZipEntryToString(zin, entry);
+                zin.closeEntry();
+                zin.close();
+                
+                Element repElement = XMLHelper.readStrToDOM4J(spReport);
+                
+                SpReport rep = new SpReport();
+                rep.initialize();
+                rep.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
+                rep.fromXML(repElement);
+                appRes.setName(rep.getName());
+                appRes.setDescription(appRes.getName());
+                
                 rep.setAppResource((SpAppResource) appRes);
                 ((SpAppResource)appRes).getSpReports().add(rep);
                 
-                boolean transOpen = false;
-
+                DataProviderSessionIFace session = null;
                 try
                 {
                     session = DataProviderFactory.getInstance().createSession();
                 	session.beginTransaction();
-                	transOpen = true;
+                	
+                	if (dir.getId() != null)
+                	{
+                	    dir = session.get(SpAppResourceDir.class, dir.getId());
+                	}
+                	
+                	dir.getSpPersistedAppResources().add(appRes);
+                	appRes.setSpAppResourceDir(dir);
+                	
+                    session.saveOrUpdate(dir);
+                    session.saveOrUpdate(appRes);
+                	
                 	if (rep.getReportObject() != null && rep.getReportObject().getId() == null)
                 	{
                 		session.saveOrUpdate(rep.getReportObject());
                 	}
                 	session.saveOrUpdate(rep);
                 	session.commit();
-                	//AppContextMgr.getInstance().saveResource(appRes);
-                	transOpen = false;
+                	
                 } catch (Exception ex)
                 {
+                    session.rollback();
                     ex.printStackTrace();
-                }
-                finally
+                    
+                } finally
                 {
-                	if (transOpen)
-                	{
-                		session.rollback();
-                	}
-                	session.close();
+                	if (session != null) session.close();
                 }
             }
-    		zin.close();
+    		
         }
     	catch (Exception e)
     	{
-    		if (resourceSaved)
-    		{
-    			((SpecifyAppContextMgr )AppContextMgr.getInstance()).removeAppResourceSp(dir, appRes);
-    		}
             e.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, e);
             return null;
     	}
-    	if (appRes != null)
-    	{
-    		return appRes.getName();
-    	}
-    	else
-    	{
-    		return null;
-    	}
+    	
+    	return appRes;
     }
 
-    /**
-     * @param appRes
-     * 
-     * removes appRes and its associated SpReport
-     */
-    protected void removeSpResource(SpAppResource appRes)
-    {
-    	ReportsBaseTask.deleteReportAndResource(null, appRes);
-    }
-    
     /**
      * 
      */
@@ -1081,7 +1055,7 @@ public class ResourceImportExportDlg extends CustomDialog
 			boolean isJRRepRes      = false;
 			try
 			{
-				data = FileUtils.readFileToString(importFile);
+				data       = FileUtils.readFileToString(importFile);
 				isJRRepRes = isJasperReport(data);
 
 			} catch (Exception ex)
@@ -1099,9 +1073,9 @@ public class ResourceImportExportDlg extends CustomDialog
 				int viewIndex = viewSetsList.getSelectedIndex();
 				if (viewIndex > -1)
 				{
-				    boolean isAddItemForImport = viewSetsList.getSelectedValue() instanceof String;
-					boolean isOK = false;
-					SpViewSetObj vso = null;
+				    boolean      isAddItemForImport = viewSetsList.getSelectedValue() instanceof String;
+					boolean      isOK               = false;
+					SpViewSetObj vso                = null;
 
 					DataProviderSessionIFace session = null;
 					try
@@ -1120,7 +1094,7 @@ public class ResourceImportExportDlg extends CustomDialog
     							appResDir.getSpPersistedViewSets().add(vso);
     							vso.setSpAppResourceDir(appResDir);
     						}
-    						vso.setDataAsString(data);
+    						vso.setDataAsString(data, true);
     						session.saveOrUpdate(appResDir);
     						
 						} else
@@ -1139,6 +1113,10 @@ public class ResourceImportExportDlg extends CustomDialog
 						}
 						
 						session.saveOrUpdate(vso);
+						for (SpAppResourceData ard : vso.getSpAppResourceDatas())
+						{
+						    session.saveOrUpdate(ard);
+						}
 						session.commit();
 						session.flush();
 
@@ -1215,8 +1193,30 @@ public class ResourceImportExportDlg extends CustomDialog
 								// resource to override by the same name
 								// and ask whether they want to override it
 								// or not
-								String title = getResourceString("RIE_ConfirmResourceOverwriteTitle");
-								String msg   = String.format(getResourceString("RIE_ConfirmResourceOverwriteMsg"), fndAppRes.getName(), getHierarchicalTitle(fndAppRes.getSpAppResourceDir()));
+                                String msg      = null;
+                                String ardTitle = null;
+							    DataProviderSessionIFace session = null;
+			                    try
+			                    {
+			                        session = DataProviderFactory.getInstance().createSession();
+			                        dir = session.get(SpAppResourceDir.class, fndAppRes.getSpAppResourceDir().getId());
+			                        dir.getSpPersistedAppResources().size(); // Force Load
+			                        
+			                        if (dir != null)
+			                        {
+			                            ardTitle = getHierarchicalTitle(dir);
+			                        }
+    								msg = String.format(getResourceString("RIE_ConfirmResourceOverwriteMsg"), fndAppRes.getName(), StringUtils.isNotEmpty(ardTitle) ? ardTitle : "Level");
+    								
+			                    } catch (Exception ex)
+			                    {
+			                        ex.printStackTrace();
+			                    } finally
+			                    {
+			                        if (session != null) session.close();
+			                    }
+			                    
+			                    String title = getResourceString("RIE_ConfirmResourceOverwriteTitle");
 								if (!UIRegistry.displayConfirm(title, msg, getResourceString("Yes"), getResourceString("Cancel"), JOptionPane.WARNING_MESSAGE))
 								{
 									return;
@@ -1225,12 +1225,11 @@ public class ResourceImportExportDlg extends CustomDialog
 
 							if (isRepRes)
 							{
-								// importReportResource(reportDom, data);
 								if (fndAppRes != null)
 								{
 									if (isSpRepRes)
 									{
-										this.removeSpResource(fndAppRes);
+									    ReportsBaseTask.deleteReportAndResource(null, fndAppRes);
 									}
 									else
 									{
@@ -1243,7 +1242,11 @@ public class ResourceImportExportDlg extends CustomDialog
 								}
 								if (isSpRepRes)
 								{
-									importedName = importSpReportZipResource(importFile);
+									appRes = importSpReportZipResource(importFile, appRes, dir);
+									if (appRes != null)
+									{
+									    importedName = appRes.getName();
+									}
 								}
 								else
 								{
@@ -1282,8 +1285,7 @@ public class ResourceImportExportDlg extends CustomDialog
 								dir.getSpAppResources().add(appRes);
 
 								appRes.setDataAsString(data);
-								SpecifyAppContextMgr mgr = (SpecifyAppContextMgr) AppContextMgr.getInstance();
-								mgr.saveResource(appRes);
+								((SpecifyAppContextMgr) AppContextMgr.getInstance()).saveResource(appRes);
 							}
 							setHasChanged(true);
 							
@@ -1401,6 +1403,15 @@ public class ResourceImportExportDlg extends CustomDialog
             
             resources.clear();
             resources.addAll(dir.getSpAppResources());
+            Collections.sort(resources);
+            if (true)
+            {
+                for (SpAppResource appRes : resources)
+                {
+                    System.err.println(appRes.getName());
+                }
+            }
+            
             resModel.addElement(UIRegistry.getResourceString("RIE_ADD_NEW_RESOURCE"));
             repModel.addElement(UIRegistry.getResourceString("RIE_ADD_NEW_RESOURCE"));
             for (SpAppResource appRes : resources)
@@ -1415,7 +1426,9 @@ public class ResourceImportExportDlg extends CustomDialog
                 }
             }
              
-            for (SpViewSetObj vso : dir.getSpViewSets())
+            Vector<SpViewSetObj> viewSetList = new Vector<SpViewSetObj>(dir.getSpViewSets());
+            Collections.sort(viewSetList);
+            for (SpViewSetObj vso : viewSetList)
             {
                 viewSetsModel.addElement(vso);
             }

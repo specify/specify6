@@ -41,6 +41,8 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.core.AppResourceIFace;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.XMLHelper;
 
 /**
@@ -56,7 +58,7 @@ import edu.ku.brc.helpers.XMLHelper;
 @org.hibernate.annotations.Table(appliesTo="spviewsetobj", indexes =
     {   @Index (name="SpViewObjNameIDX", columnNames={"Name"})
     })
-public class SpViewSetObj extends DataModelObjBase implements java.io.Serializable, AppResourceIFace 
+public class SpViewSetObj extends DataModelObjBase implements java.io.Serializable, AppResourceIFace, Comparable<SpViewSetObj>
 {
      //private static final Logger  log       = Logger.getLogger(SpViewSetObj.class);
             
@@ -367,30 +369,57 @@ public class SpViewSetObj extends DataModelObjBase implements java.io.Serializab
      */
     public void setDataAsString(final String dataStr)
     {
-        if (StringUtils.isNotEmpty(dataStr))
+        setDataAsString(dataStr, false);
+    }
+
+    /**
+     * @param dataStr
+     * @param doCreateSession
+     */
+    public void setDataAsString(final String dataStr, final boolean doCreateSession)
+    {
+        DataProviderSessionIFace session = null;
+        try
         {
-            SpAppResourceData appResData;
-            if (spAppResourceDatas.size() == 0)
-            {
-                appResData = new SpAppResourceData();
-                appResData.initialize();
-                appResData.setSpViewSetObj(this);
-                spAppResourceDatas.add(appResData);
+                if (StringUtils.isNotEmpty(dataStr))
+                {
+
+                if (getId() != null && doCreateSession)
+                {
+                    session = DataProviderFactory.getInstance().createSession();
+                    session.attach(this);
+                }
                 
-            } else
+                SpAppResourceData appResData;
+                if (spAppResourceDatas.size() == 0)
+                {
+                    appResData = new SpAppResourceData();
+                    appResData.initialize();
+                    appResData.setSpViewSetObj(this);
+                    spAppResourceDatas.add(appResData);
+                    
+                } else
+                {
+                    appResData = spAppResourceDatas.iterator().next();
+                }
+    
+                appResData.setData(dataStr.getBytes());
+
+            } else if (spAppResourceDatas.size() > 0)
             {
-                appResData = spAppResourceDatas.iterator().next();
+                spAppResourceDatas.iterator().next().setData(null);
             }
-
-            appResData.setData(dataStr.getBytes());
-
-
-        } else if (spAppResourceDatas.size() > 0)
-        {
-            spAppResourceDatas.iterator().next().setData(null);
-        }
         
-        setSpAppResourceDatas(spAppResourceDatas); // Must call this to make sure it knows we changed it
+            setSpAppResourceDatas(spAppResourceDatas); // Must call this to make sure it knows we changed it
+        
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            if (session != null) session.close();
+        }
     }
 
     /* (non-Javadoc)
@@ -399,32 +428,59 @@ public class SpViewSetObj extends DataModelObjBase implements java.io.Serializab
     @Transient
     public String getDataAsString()
     {
+        return getDataAsString(false);
+    }
+
+    /**
+     * @param doCreateSession
+     * @return
+     */
+    @Transient
+    public String getDataAsString(boolean doCreateSession)
+    {
         //log.debug("********* "+getFileName()+" size:"+spAppResourceDatas.size());
         
-        getSpAppResourceDatas(); // Must call this before accessing it as a local data member
-        
-        SpAppResourceData ard = null;
-        if (spAppResourceDatas.size() > 0)
+        DataProviderSessionIFace session = null;
+        try
         {
-            ard = spAppResourceDatas.iterator().next();
-            if (ard != null)
+            if (getId() != null && doCreateSession)
             {
-                return new String(ard.getData());
+                session = DataProviderFactory.getInstance().createSession();
+                session.attach(this);
             }
-        }
-        
-        String str = null;
-        if (StringUtils.isNotEmpty(fileName))
+            
+            getSpAppResourceDatas(); // Must call this before accessing it as a local data member
+            
+            SpAppResourceData ard = null;
+            if (spAppResourceDatas.size() > 0)
+            {
+                ard = spAppResourceDatas.iterator().next();
+                if (ard != null)
+                {
+                    return new String(ard.getData());
+                }
+            }
+            
+            String str = null;
+            if (StringUtils.isNotEmpty(fileName))
+            {
+                File file         = new File(fileName);
+                str               = XMLHelper.getContents(file);
+                timestampCreated  = new Timestamp(file.lastModified());
+            }
+    
+            if (StringUtils.isNotEmpty(str))
+            {
+               return StringEscapeUtils.unescapeXml(str);
+            }
+            
+        } catch (Exception ex)
         {
-            File file = new File(fileName);
-            str = XMLHelper.getContents(file);
-            timestampCreated  = new Timestamp(file.lastModified());
-            //timestampModified = timestampCreated;
-        }
-
-        if (str != null && str.length() > 0)
+            ex.printStackTrace();
+            
+        } finally
         {
-           return StringEscapeUtils.unescapeXml(str);
+            if (session != null) session.close();
         }
 
         return null;
@@ -446,6 +502,15 @@ public class SpViewSetObj extends DataModelObjBase implements java.io.Serializab
     public static int getClassTableId()
     {
         return 86;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(SpViewSetObj o)
+    {
+        return name.compareToIgnoreCase(o.name);
     }
     
     

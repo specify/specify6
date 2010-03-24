@@ -597,7 +597,7 @@ public class ReportsBaseTask extends BaseTask
      */
     protected Properties convertDataToMap(final Object data)
     {
-        if (data instanceof Map)
+        if (data instanceof Map<?,?>)
         {
             return (Properties)data; // ok to Cast
         }

@@ -47,7 +47,6 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -105,7 +104,6 @@ import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.datamodel.SpAppResource;
-import edu.ku.brc.specify.datamodel.SpAppResourceData;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpViewSetObj;
@@ -874,56 +872,27 @@ public class SpecifyAppContextMgr extends AppContextMgr
         String[] levels           = getVirtualDirNames();
         
         SpAppResource    fndAppRes = null;
-        for (int i=virtualNameIndex;i<levels.length;i++)
+        for (int i=virtualNameIndex;i<levels.length && fndAppRes == null;i++)
         {
         	SpAppResourceDir fndAppDir = spAppResourceList.get(i);
             for (SpAppResource appRes : (new ArrayList<SpAppResource>(fndAppDir.getSpAppResources())))
             {
-                //System.out.println(appRes.getFileName());
-                
                 if (appRes.getName() != null && appRes.getName().equals(appResource.getName()))
                 {
                     fndAppRes = appRes;
-                    
-                    if (fndAppRes.getSpAppResourceId() == null)
-                    {
-                    	break;
-                    }
-                    fndAppRes = null;
+                    break;
                 }
             }
         }
         
         if (fndAppRes == null)
         {
-            throw new RuntimeException("Couldn't find resource with name["+appResource.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-        
-        if (fndAppRes.getSpAppResourceId() == null)
-        {
-            removeAppResource(virtualDirName, appResource);
             return null;
         }
         
-        try
-        {
-            SpAppResource newAppRes = (SpAppResource)fndAppRes.clone();
-            for (SpAppResourceData data : fndAppRes.getSpAppResourceDatas())
-            {
-                SpAppResourceData newData = (SpAppResourceData)data.clone();
-                newAppRes.addReference(newData, "spAppResourceDatas"); //$NON-NLS-1$
-            }
-            removeAppResource(virtualDirName, appResource);
-            saveResource(newAppRes);
+        removeAppResource(virtualDirName, appResource);
             
-            return newAppRes;
-            
-        } catch (CloneNotSupportedException ex)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
-            throw new RuntimeException(ex);
-        }
+        return null;
     }
     
     /**
@@ -958,7 +927,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         spAppResourceDir.getSpPersistedViewSets().remove(fndVSO);
                         spAppResourceDir.getSpViewSets().remove(fndVSO);
                         
-                        boolean shouldDelDir = spAppResourceDir.getSpPersistedViewSets().size() == 0 && spAppResourceDir.getSpViewSets().size() == 0;
+                        boolean shouldDelDir = spAppResourceDir.getSpPersistedViewSets().size() == 0 && 
+                                               spAppResourceDir.getSpViewSets().size() == 0 &&
+                                               spAppResourceDir.getSpAppResources().size() == 0 &&
+                                               spAppResourceDir.getSpPersistedViewSets().size() == 0;
                         
                         session.beginTransaction();
                         
@@ -1078,23 +1050,31 @@ public class SpecifyAppContextMgr extends AppContextMgr
         Hashtable<String, SpAppResource> hash = new Hashtable<String, SpAppResource>();
         for (SpAppResource appRes : spAppResourceDir.getSpPersistedAppResources())
         {
-            String fName = FilenameUtils.getName(appRes.getFileName());
+            String fName = appRes.getName();//FilenameUtils.getName(appRes.getFileName());
             hash.put(fName, appRes);
+            if (debug) log.debug("Persisted AppRes ["+fName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         
         // Now check and merge the two
         for (SpAppResource appRes : appResMgr.getSpAppResources())
         {
-            String fName = FilenameUtils.getName(appRes.getFileName());
+            String        fName      = appRes.getName();//FilenameUtils.getName(appRes.getFileName());
             SpAppResource permAppRes = hash.get(fName);
             if (permAppRes == null)
             {
                 appRes.setSpAppResourceDir(spAppResourceDir);
                 spAppResourceDir.getSpAppResources().add(appRes);
+                if (debug) log.debug("Add File AppRes ["+fName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             } else
             {
                 spAppResourceDir.getSpAppResources().add(permAppRes);
+                if (debug) log.debug("Add DB AppRes ["+fName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             }
+        }
+        
+        for (SpAppResource appRes : spAppResourceDir.getSpAppResources())
+        {
+            if (debug) log.debug("In AppResDir ["+appRes.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         
         return spAppResourceDir;
@@ -1655,7 +1635,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     public List<ViewSetIFace> getViewSetList(final SpAppResourceDir dirArg)
     {
         SpAppResourceDir dir = dirArg;
-        if (debug) log.debug("Looking up ["+dir.toString()+"] ["+dir.getUniqueIdentifer()+"]["+dir.getVerboseUniqueIdentifer()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        //if (debug) log.debug("Looking up ["+dir.toString()+"] ["+dir.getUniqueIdentifer()+"]["+dir.getVerboseUniqueIdentifer()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         
         Boolean reloadViews = AppPreferences.getLocalPrefs().getBoolean("reload_views", false); //$NON-NLS-1$
         if (reloadViews || forceReloadViews)
@@ -2326,7 +2306,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @param appResDir
      * @return
      */
-    public AppResourceIFace createAppResourceForDir(SpAppResourceDir appResDir)
+    public AppResourceIFace createAppResourceForDir(final SpAppResourceDir appResDir)
     {
         SpAppResource appRes = new SpAppResource();
         appRes.initialize();
@@ -2347,7 +2327,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             return false;
         }
-        SpAppResource appRes = (SpAppResource)appResource;
+        
+        SpAppResource    appRes    = (SpAppResource)appResource;
         SpAppResourceDir appResDir = spAppResourceHash.get(appResDirName);
         if (appResDir != null)
         {
@@ -2374,6 +2355,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 session.commit();
                 session.flush();
                 return true;
+                
             } catch (Exception ex)
             {
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
@@ -2381,6 +2363,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 session.rollback();
                 log.error(ex);
                 return false;
+                
             } finally 
             {
                 if (session != null)

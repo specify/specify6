@@ -70,7 +70,6 @@ import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
-import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
@@ -662,7 +661,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             
             if (dataItems != null)
             {
-                if (false)
+                /*if (false)
                 {
                     //DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(clazz.getSimpleName());
                     ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UIRegistry.getTopWindow(),
@@ -685,7 +684,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                     dlg.setWhichBtns(CustomDialog.OK_BTN);
                     dlg.setData(dataItems);
                     UIHelper.centerAndShow(dlg);
-                } else
+                } else*/
                 {
                     FormPane     pane = new FormPane(tableInfo.getTitle(), this, "SystemSetup", viewName, "edit", null, MultiView.RESULTSET_CONTROLLER, null); // not new data object
                     CustomDialog dlg  = new CustomDialog((Frame)UIRegistry.getTopWindow(), tableInfo.getTitle(), true, pane);

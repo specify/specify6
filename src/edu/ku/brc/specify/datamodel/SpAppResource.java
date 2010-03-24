@@ -67,7 +67,7 @@ import edu.ku.brc.ui.UIRegistry;
     {   @Index (name="SpAppResNameIDX", columnNames={"Name"}),
         @Index (name="SpAppResMimeTypeIDX", columnNames={"MimeType"})
     })
-public class SpAppResource extends DataModelObjBase implements java.io.Serializable, AppResourceIFace, Cloneable
+public class SpAppResource extends DataModelObjBase implements java.io.Serializable, AppResourceIFace, Cloneable, Comparable<SpAppResource>
 {
     private static final Logger  log = Logger.getLogger(SpAppResource.class);
     
@@ -86,7 +86,7 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
      protected SpAppResourceDir          spAppResourceDir;
      protected Set<SpReport>             spReports;
      protected SpecifyUser               specifyUser;
-     protected SpPrincipal                 group;
+     protected SpPrincipal               group;
      
      // Non Persisted Fields
      protected String                    fileName     = null;
@@ -668,6 +668,15 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
         int id1 = getId();
         int id2 = app.getId();
         return id1 == id2;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(SpAppResource o)
+    {
+        return name.compareToIgnoreCase(o.name);
     }
     
     
