@@ -32,11 +32,17 @@ import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
+import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
+import edu.ku.brc.specify.datamodel.TreeDefItemStandardEntry;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
@@ -91,6 +97,13 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     protected String             determinationTaxonType = null;
     protected ArrayList<Integer> detTaxonTypeIdList     = new ArrayList<Integer>();
     
+    // First is RankId, Second is the Taxon Record Id
+    protected HashMap<Integer, Taxon>            placeHolderTreeHash = new HashMap<Integer, Taxon>();
+    protected List<TaxonTreeDefItem>             treeDefItems        = null;
+    protected HashMap<Integer, TaxonTreeDefItem> treeDefItemHash     = new HashMap<Integer, TaxonTreeDefItem>();
+    protected HashMap<Integer, Integer>          rankParentHash      = new HashMap<Integer, Integer>();
+
+    
     protected Connection   oldDBConn;
     
     
@@ -104,6 +117,107 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     }
 
     
+    /**
+     * @return the placeHolderTreeHash
+     */
+    public HashMap<Integer, Taxon> getPlaceHolderTreeHash()
+    {
+        return placeHolderTreeHash;
+    }
+
+    /**
+     * @return the treeDefItems
+     */
+    public List<TaxonTreeDefItem> getTreeDefItems()
+    {
+        buildPlaceHolderInfo();
+        
+        return treeDefItems;
+    }
+    
+    /**
+     * 
+     */
+    private void buildPlaceHolderInfo()
+    {
+        if (treeDefItems == null)
+        {
+            treeDefItems = new Vector<TaxonTreeDefItem>(taxonTreeDef.getTreeDefItems());
+            Collections.sort(treeDefItems);
+            
+            int i = 0;
+            for (TaxonTreeDefItem item : treeDefItems)
+            {
+                if (i > 0)
+                {
+                    rankParentHash.put(item.getRankId(), treeDefItems.get(i-1).getRankId());
+                }
+                i++;
+                treeDefItemHash.put(item.getRankId(), item);
+            }
+            buildPlaceHolders();
+        }
+    }
+    
+    /**
+     * 
+     */
+    private void buildPlaceHolders()
+    {
+        if (placeHolderTreeHash.size() == 0)
+        {
+            Taxon        txRoot    = taxonTreeDef.getTreeRootNode();
+            Taxon        parent    = txRoot;
+            
+            for (TaxonTreeDefItem item : treeDefItems)
+            {
+                Taxon taxon = new Taxon();
+                taxon.initialize();
+                taxon.setRankId(item.getRankId());
+                taxon.setName("Placeholder");
+                taxon.setFullName(taxon.getName());
+                
+                taxon.setDefinition(taxonTreeDef);
+                taxon.setDefinitionItem(item);
+                taxon.setParent(parent);
+                
+                Transaction trans = null;
+                try
+                {
+                    Session session = HibernateUtil.getCurrentSession();
+                    trans = session.beginTransaction();
+                    session.save(taxon);
+                    trans.commit();
+                    
+                    placeHolderTreeHash.put(item.getRankId(), taxon);
+                    
+                } catch (Exception ex)
+                {
+                    if (trans != null) trans.rollback();
+                }
+            }
+        }
+    }
+    
+    
+    /**
+     * @return the treeDefItemHash
+     */
+    public HashMap<Integer, TaxonTreeDefItem> getTreeDefItemHash()
+    {
+        buildPlaceHolderInfo();
+        return treeDefItemHash;
+    }
+
+    /**
+     * @return the rankParentHash
+     */
+    public HashMap<Integer, Integer> getRankParentHash()
+    {
+        buildPlaceHolderInfo();
+        return rankParentHash;
+    }
+
     /**
      * @param oldDBConn
      * @return

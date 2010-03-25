@@ -357,6 +357,14 @@ public class IdHashMapper implements IdMapperIFace
     }
 
     /**
+     * Removes all the records but keeps the table.
+     */
+    public void reset()
+    {
+        BasicSQLUtils.deleteAllRecordsFromTable(oldConn, mapTableName, BasicSQLUtils.myDestinationServerType);
+    }
+
+    /**
      * Cleans up temporary data.
      */
     public void cleanup()

@@ -82,4 +82,9 @@ public interface IdMapperIFace
      * @param index the initial index to use for mapping.
      */
     public abstract void setInitialIndex(int index);
+    
+    /**
+     * Removes the table.
+     */
+    public abstract void reset();
 }

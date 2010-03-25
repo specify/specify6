@@ -29,6 +29,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -49,6 +52,7 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
+import edu.ku.brc.specify.datamodel.TreeDefItemStandardEntry;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
@@ -77,6 +81,8 @@ public class ConvertTaxonHelper
     protected HashSet<Integer>               taxonTypesInUse  = new HashSet<Integer>();
     protected HashMap<Integer, TaxonTreeDef> taxonTreeDefHash = new HashMap<Integer, TaxonTreeDef>(); // Key is old TaxonTreeTypeID
     protected HashMap<Integer, Taxon>        taxonTreeHash    = new HashMap<Integer, Taxon>();        // Key is old TaxonTreeTypeID
+    
+    
     
     /**
      * @param oldDBConn
@@ -331,6 +337,10 @@ public class ConvertTaxonHelper
                     continue;
                 }
                 
+                while (rankId2TxnUntTypId.get(rank) != null)
+                {
+                    rank += 2;
+                }
                 rankId2TxnUntTypId.put(rank, taxUnitTypeId);
                 
                 log.debug(rank + "  " + name+"  TaxonomicUnitTypeID: "+taxUnitTypeId);
@@ -379,13 +389,15 @@ public class ConvertTaxonHelper
             IdMapperIFace tutMapper          = idMapperMgr.get("TaxonomicUnitType", "TaxonomicUnitTypeID");
             IdMapperIFace taxonomyTypeMapper = idMapperMgr.get("TaxonomyType",      "TaxonomyTypeID");
             
+            tutMapper.reset();
+            
             taxonomyTypeMapper.put(taxonomyTypeId, taxonTreeDef.getId());
             
             for (TaxonTreeDefItem ttdi : taxonTreeDef.getTreeDefItems())
             {
                 int ttdiId = rankId2TxnUntTypId.get(ttdi.getRankId());
+                log.debug("Mapping "+ttdiId+" -> "+ttdi.getId() +"  RankId: "+ttdi.getRankId());
                 tutMapper.put(ttdiId, ttdi.getId());
-                log.debug("Mapping "+ttdiId+" -> "+ttdi.getId());
             }
             
             newTaxonInfoHash.put(oldTaxonRootId, taxonTreeDef);
@@ -419,31 +431,50 @@ public class ConvertTaxonHelper
         log.error("Couldn't find ["+taxonomyTypeId+"] in CollectionInfo list");
         return null;
     }
+    
+    IdMapperIFace txMapper        = null;
+    IdMapperIFace txTypMapper     = null;
+    IdMapperIFace txUnitTypMapper = null;
+    IdMapperIFace[] mappers       = null;
+    
+    String[] oldCols = {"TaxonNameID", "ParentTaxonNameID", "TaxonomyTypeID", "AcceptedID", "TaxonomicUnitTypeID", "TaxonomicSerialNumber", "TaxonName", "UnitInd1", "UnitName1", 
+                        "UnitInd2", "UnitName2", "UnitInd3", "UnitName3", "UnitInd4", "UnitName4", "FullTaxonName", "CommonName", "Author", "Source", "GroupPermittedToView", 
+                        "EnvironmentalProtectionStatus", "Remarks", "NodeNumber", "HighestChildNodeNumber", "LastEditedBy", "Accepted", 
+                        "RankID", "GroupNumber", "TimestampCreated", "TimestampModified"};
+
+    String[] cols = {"TaxonID", "Author", "CitesStatus", "COLStatus", "CommonName", "CultivarName", "EnvironmentalProtectionStatus",
+                     "EsaStatus", "FullName", "GroupNumber", "GUID", "HighestChildNodeNumber", "IsAccepted", "IsHybrid", "IsisNumber", "LabelFormat", "Name", "NcbiTaxonNumber", "NodeNumber", "Number1", "Number2",
+                     "RankID", "Remarks", "Source", "TaxonomicSerialNumber", "Text1", "Text2", "UnitInd1", "UnitInd2", "UnitInd3", "UnitInd4", "UnitName1", "UnitName2", "UnitName3", "UnitName4", "UsfwsCode", "Visibility",
+                     "ParentID", "AcceptedID", "ModifiedByAgentID", "TaxonTreeDefItemID", "VisibilitySetByID", "CreatedByAgentID", "HybridParent1ID", "TaxonTreeDefID", "HybridParent2ID",
+                     "TimestampCreated", "TimestampModified", "Version"};
+    
+    int[] colTypes = null;
+    
+    Hashtable<String, String> newToOldColMap = new Hashtable<String, String>();
+    Hashtable<String, String> oldToNewColMap = new Hashtable<String, String>();
+    HashMap<String, Integer> fieldToColHash = new HashMap<String, Integer>();
+    HashMap<Integer, String> colToFieldHash = new HashMap<Integer, String>();
+    HashMap<String, Integer> oldFieldToColHash = new HashMap<String, Integer>();
+
+    
+    PreparedStatement pStmtTx = null;
+    Statement         stmtTx  = null;
+    
+    int missingParentTaxonCount = 0;
+    
+    int lastEditedByInx;
+
 
     /**
      * 
      */
     private void convertTaxonRecords()
     {
+        txMapper        = IdMapperMgr.getInstance().get("taxonname", "TaxonNameID");
+        txTypMapper     = IdMapperMgr.getInstance().get("TaxonomyType", "TaxonomyTypeID");
+        txUnitTypMapper = IdMapperMgr.getInstance().get("TaxonomicUnitType", "TaxonomicUnitTypeID");
+        mappers         = new IdMapperIFace[] {txMapper, txMapper, txTypMapper, txMapper, txUnitTypMapper};
         
-        IdMapperIFace txMapper        = IdMapperMgr.getInstance().get("taxonname", "TaxonNameID");
-        IdMapperIFace txTypMapper     = IdMapperMgr.getInstance().get("TaxonomyType", "TaxonomyTypeID");
-        IdMapperIFace txUnitTypMapper = IdMapperMgr.getInstance().get("TaxonomicUnitType", "TaxonomicUnitTypeID");
-        IdMapperIFace[] mappers       = {txMapper, txMapper, txTypMapper, txMapper, txUnitTypMapper};
-        
-        String[] oldCols = {"TaxonNameID", "ParentTaxonNameID", "TaxonomyTypeID", "AcceptedID", "TaxonomicUnitTypeID", "TaxonomicSerialNumber", "TaxonName", "UnitInd1", "UnitName1", 
-                            "UnitInd2", "UnitName2", "UnitInd3", "UnitName3", "UnitInd4", "UnitName4", "FullTaxonName", "CommonName", "Author", "Source", "GroupPermittedToView", 
-                            "EnvironmentalProtectionStatus", "Remarks", "NodeNumber", "HighestChildNodeNumber", "LastEditedBy", "Accepted", 
-                            "RankID", "GroupNumber", "TimestampCreated", "TimestampModified"};
-        
-        String[] cols = {"TaxonID", "Author", "CitesStatus", "COLStatus", "CommonName", "CultivarName", "EnvironmentalProtectionStatus",
-                         "EsaStatus", "FullName", "GroupNumber", "GUID", "HighestChildNodeNumber", "IsAccepted", "IsHybrid", "IsisNumber", "LabelFormat", "Name", "NcbiTaxonNumber", "NodeNumber", "Number1", "Number2",
-                         "RankID", "Remarks", "Source", "TaxonomicSerialNumber", "Text1", "Text2", "UnitInd1", "UnitInd2", "UnitInd3", "UnitInd4", "UnitName1", "UnitName2", "UnitName3", "UnitName4", "UsfwsCode", "Visibility",
-                         "ParentID", "AcceptedID", "ModifiedByAgentID", "TaxonTreeDefItemID", "VisibilitySetByID", "CreatedByAgentID", "HybridParent1ID", "TaxonTreeDefID", "HybridParent2ID",
-                         "TimestampCreated", "TimestampModified", "Version"};
-
-
-        Hashtable<String, String> newToOldColMap = new Hashtable<String, String>();
         newToOldColMap.put("TaxonID",            "TaxonNameID");
         newToOldColMap.put("ParentID",           "ParentTaxonNameID");
         newToOldColMap.put("TaxonTreeDefID",     "TaxonomyTypeID");
@@ -452,7 +483,7 @@ public class ConvertTaxonHelper
         newToOldColMap.put("FullName",           "FullTaxonName");
         newToOldColMap.put("IsAccepted",         "Accepted");
         
-        Hashtable<String, String> oldToNewColMap = new Hashtable<String, String>();
+        
         oldToNewColMap.put("TaxonNameID",         "TaxonID");
         oldToNewColMap.put("ParentTaxonNameID",   "ParentID");
         oldToNewColMap.put("TaxonomyTypeID",      "TaxonTreeDefID");
@@ -460,8 +491,6 @@ public class ConvertTaxonHelper
         oldToNewColMap.put("TaxonName",           "Name");
         oldToNewColMap.put("FullTaxonName",       "FullName");
         oldToNewColMap.put("Accepted",            "IsAccepted");
-        
-        
 
         // Ignore new fields
         // These were added for supporting the new security model and hybrids
@@ -474,8 +503,6 @@ public class ConvertTaxonHelper
         
         StringBuilder sb = new StringBuilder();
         StringBuilder vl = new StringBuilder();
-        HashMap<String, Integer> fieldToColHash = new HashMap<String, Integer>();
-        HashMap<Integer, String> colToFieldHash = new HashMap<Integer, String>();
         for (int i=0;i<cols.length;i++)
         {
             fieldToColHash.put(cols[i], i+1);
@@ -488,18 +515,18 @@ public class ConvertTaxonHelper
             vl.append('?');
         }
         
-        HashMap<String, Integer> oldFieldToColHash = new HashMap<String, Integer>();
         StringBuilder oldSB = new StringBuilder();
         for (int i=0;i<oldCols.length;i++)
         {
             oldFieldToColHash.put(oldCols[i], i+1);
             if (oldSB.length() > 0) oldSB.append(", ");
+            oldSB.append("t1.");
             oldSB.append(oldCols[i]);
         }
         
         String sqlStr = String.format("SELECT %s FROM taxon", sb.toString());
         
-        String sql = String.format("SELECT %s FROM taxonname WHERE RankID IS NOT NULL AND TaxonomyTypeID %s", oldSB.toString(), taxonomyTypeIdInClause);
+        String sql = String.format("SELECT %s FROM taxonname t1 WHERE RankID IS NOT NULL AND TaxonomyTypeID %s", oldSB.toString(), taxonomyTypeIdInClause);
         log.debug(sql);
         
         //String cntSQL = "SELECT COUNT(*) FROM taxonname WHERE TaxonomyTypeID " + taxonomyTypeIdInClause;
@@ -507,174 +534,30 @@ public class ConvertTaxonHelper
         String pStr = String.format("INSERT INTO taxon (%s) VALUES (%s)", sb.toString(), vl.toString());
         log.debug(pStr);
         
-        PreparedStatement pStmt = null;
-        Statement         stmt  = null;
         try
         {
-            int cnt = 0;
-            stmt  = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            ResultSet rs1 = stmt.executeQuery(sqlStr);
+            stmtTx = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet         rs1   = stmtTx.executeQuery(sqlStr);
             ResultSetMetaData rsmd1 = rs1.getMetaData();
-            int[] colTypes = new int[rsmd1.getColumnCount()];
+            colTypes = new int[rsmd1.getColumnCount()];
             for (int i=0;i<colTypes.length;i++)
             {
                 colTypes[i] = rsmd1.getColumnType(i+1); 
             }
             rs1.close();
-            stmt.close();
+            stmtTx.close();
             
-            int missingParentTaxonCount = 0;
+            missingParentTaxonCount = 0;
+            lastEditedByInx         = oldFieldToColHash.get("LastEditedBy");
+            stmtTx                  = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            pStmtTx                 = newDBConn.prepareStatement(pStr);
             
-            int lastEditedByInx = oldFieldToColHash.get("LastEditedBy");
-            
-            stmt  = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            pStmt = newDBConn.prepareStatement(pStr);
-            ResultSet rs = stmt.executeQuery(sql);
+            int               cnt  = 0;
+            ResultSet         rs   = stmtTx.executeQuery(sql);
             ResultSetMetaData rsmd = rs.getMetaData();
             while (rs.next())
             {
-                for (int colInx=1;colInx<=cols.length;colInx++)
-                {
-                    pStmt.setNull(colInx, colTypes[colInx-1]);
-                }
-                
-                boolean skip = false;
-                for (int colInx=1;colInx<=oldCols.length && !skip;colInx++)
-                {
-                    String  oldName = oldCols[colInx-1];
-                    Integer newInx  = fieldToColHash.get(oldName);
-                    if (newInx == null)
-                    {
-                        String newName = oldToNewColMap.get(oldName);
-                        if (newName != null)
-                        {
-                            newInx = fieldToColHash.get(newName);
-                            if (newInx == -1)
-                            {
-                                String msg = "Couldn't find column index for New Name["+newName+"]";
-                                log.error(msg);
-                                tblWriter.logError(msg);
-                            }
-                        } else if (colInx == lastEditedByInx)
-                        {
-                            Integer agtId = conversion.getModifiedByAgentId(rs.getString(colInx));
-                            if (agtId != null)
-                            {
-                                pStmt.setInt(colInx, agtId);
-                                continue;
-                            }
-                            
-                        } else if (colInx != 20)
-                        {
-                            String msg = "Couldn't find Old Name["+oldName+"]";
-                            log.error(msg);
-                            tblWriter.logError(msg);
-                        } else
-                        {
-                            continue; // GroupToView
-                        }
-                    }
-                    
-                    if (colInx < 6)
-                    {
-                        Integer oldID = rs.getInt(colInx);
-                        if (!rs.wasNull())
-                        {
-                            boolean skipError = false; 
-                            Integer newID = mappers[colInx-1].get(oldID);
-                            if (newID == null)
-                            {
-                                if (colInx == 3 || colInx == 5)
-                                {
-                                    skip = true;
-                                } else
-                                {
-                                    boolean wasInOldTaxonTable = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM taxonname WHERE TaxonNameID = " + oldID) > 0;
-                                    boolean isDetPointToTaxon  = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM determination WHERE TaxonNameID = " + oldID)  > 0;
-                                    String msg = String.format("***** Couldn't get NewID [%s] from mapper for column [%s]  In Old taxonname table: %s  WasParentID: %s  Det Using: %s", 
-                                            oldID, oldFieldToColHash.get(colInx), (wasInOldTaxonTable ? "YES" : "no"), (colInx == 2 ? "YES" : "no"), (isDetPointToTaxon ? "YES" : "no"));
-                                    log.error(msg);
-                                    tblWriter.logError(msg);
-                                    skipError = true;
-                                    missingParentTaxonCount++;
-                                }
-                            }
-                            
-                            if (!skip)
-                            {
-                                if (newID != null)
-                                {
-                                    pStmt.setInt(newInx, newID);
-                                    
-                                } else if (!skipError)
-                                {
-                                    String msg = "Unable to map old TaxonNameID["+oldID+"]";
-                                    log.error(msg);
-                                    tblWriter.logError(msg);
-                                }
-                            }
-                        } else
-                        {
-                            //log.error("***** Old ID Col ["+colInx+"] was null");
-                            //skip = true;
-                        }
-                        continue;
-                    }
-                    
-                    
-                    
-                    switch (colTypes[newInx-1])
-                    {
-                        case java.sql.Types.BIT:
-                        {
-                            boolean val = rs.getBoolean(colInx);
-                            if (!rs.wasNull()) pStmt.setBoolean(newInx, val);
-                            break;
-                        }
-                        case java.sql.Types.INTEGER:
-                        {
-                            int val = rs.getInt(colInx);
-                            if (!rs.wasNull()) pStmt.setInt(newInx, val);
-                            break;
-                        }
-                        case java.sql.Types.SMALLINT:
-                        {
-                            short val = rs.getShort(colInx);
-                            if (!rs.wasNull()) pStmt.setShort(newInx, val);
-                            break;
-                        }
-                        case java.sql.Types.TIMESTAMP:
-                        {
-                            Timestamp val = rs.getTimestamp(colInx);
-                            if (!rs.wasNull()) pStmt.setTimestamp(newInx, val);
-                            break;
-                        }
-                        case java.sql.Types.LONGVARCHAR:
-                        case java.sql.Types.VARCHAR:
-                        {
-                            String val = rs.getString(colInx);
-                            if (!rs.wasNull()) 
-                            {
-                                pStmt.setString(newInx, val);
-                                
-                            } else if (colInx == 7)
-                            {
-                                pStmt.setString(newInx, "Empty");
-                            }
-                            break;
-                        }
-                        default:
-                            log.error("Didn't support SQL Type: "+rsmd.getColumnType(colInx));
-                            break;
-                    }
-                    
-                }
-                
-                if (!skip)
-                {
-                    pStmt.setInt(fieldToColHash.get("Version"), 0);
-                    pStmt.execute();
-                }
+                processRow(rs, rsmd, null);
                 
                 cnt++;
                 if (cnt % 1000 == 0)
@@ -684,7 +567,7 @@ public class ConvertTaxonHelper
             }
             rs.close();
             
-            // select COUNT(*) FROM taxonname t1 LEFT JOIN taxonname t2 ON t1.ParentTaxonNameID = t2.TaxonNameID WHERE t2.TaxonNameID IS NULL AND t1.RankID > 0
+            fixStrandedTaxon(oldSB);
             
         } catch (SQLException ex)
         {
@@ -694,13 +577,291 @@ public class ConvertTaxonHelper
         {
             try
             {
-                stmt.close();
-                pStmt.close();
+                stmtTx.close();
+                pStmtTx.close();
             } catch (Exception ex) {}
         }
     }
 
+    /**
+     * @param rs
+     * @param rsmd
+     * @param parentNodeId
+     * @return
+     * @throws SQLException
+     */
+    protected boolean processRow(final ResultSet         rs, 
+                                 final ResultSetMetaData rsmd,
+                                 final Integer           parentNodeId) throws SQLException
+    {
+        for (int colInx=1;colInx<=cols.length;colInx++)
+        {
+            pStmtTx.setNull(colInx, colTypes[colInx-1]);
+        }
+        
+        boolean skip = false;
+        for (int colInx=1;colInx<=oldCols.length && !skip;colInx++)
+        {
+            String  oldName = oldCols[colInx-1];
+            Integer newInx  = fieldToColHash.get(oldName);
+            if (newInx == null)
+            {
+                String newName = oldToNewColMap.get(oldName);
+                if (newName != null)
+                {
+                    newInx = fieldToColHash.get(newName);
+                    if (newInx == -1)
+                    {
+                        String msg = "Couldn't find column index for New Name["+newName+"]";
+                        log.error(msg);
+                        tblWriter.logError(msg);
+                    }
+                } else if (colInx == lastEditedByInx)
+                {
+                    Integer agtId = conversion.getModifiedByAgentId(rs.getString(colInx));
+                    if (agtId != null)
+                    {
+                        pStmtTx.setInt(colInx, agtId);
+                        continue;
+                    }
+                    
+                } else if (colInx != 20)
+                {
+                    String msg = "Couldn't find Old Name["+oldName+"]";
+                    log.error(msg);
+                    tblWriter.logError(msg);
+                } else
+                {
+                    continue; // GroupToView
+                }
+            }
+            
+            if (colInx < 6)
+            {
+                Integer oldID = rs.getInt(colInx);
+                if (!rs.wasNull())
+                {
+                    boolean skipError = false; 
+                    Integer newID = mappers[colInx-1].get(oldID);
+                    if (newID == null)
+                    {
+                        if (colInx == 3 || colInx == 5)
+                        {
+                            skip = true;
+                            
+                        } else if (colInx == 2 && parentNodeId != null)
+                        {
+                            newID = parentNodeId;
+                            
+                        } else
+                        {
+                            boolean wasInOldTaxonTable = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM taxonname WHERE TaxonNameID = " + oldID) > 0;
+                            boolean isDetPointToTaxon  = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM determination WHERE TaxonNameID = " + oldID)  > 0;
+                            String msg = String.format("***** Couldn't get NewID [%s] from mapper for column [%s]  In Old taxonname table: %s  WasParentID: %s  Det Using: %s", 
+                                    oldID, oldFieldToColHash.get(colInx), (wasInOldTaxonTable ? "YES" : "no"), (colInx == 2 ? "YES" : "no"), (isDetPointToTaxon ? "YES" : "no"));
+                            log.error(msg);
+                            tblWriter.logError(msg);
+                            skipError = true;
+                            missingParentTaxonCount++;
+                        }
+                    }
+                    
+                    if (!skip)
+                    {
+                        if (newID != null)
+                        {
+                            pStmtTx.setInt(newInx, newID);
+                            
+                        } else if (!skipError)
+                        {
+                            String msg = "Unable to map old TaxonNameID["+oldID+"]";
+                            log.error(msg);
+                            tblWriter.logError(msg);
+                        }
+                    }
+                } else
+                {
+                    //log.error("***** Old ID Col ["+colInx+"] was null");
+                    //skip = true;
+                }
+                continue;
+            }
+            
+            switch (colTypes[newInx-1])
+            {
+                case java.sql.Types.BIT:
+                {
+                    boolean val = rs.getBoolean(colInx);
+                    if (!rs.wasNull()) pStmtTx.setBoolean(newInx, val);
+                    break;
+                }
+                case java.sql.Types.INTEGER:
+                {
+                    int val = rs.getInt(colInx);
+                    if (!rs.wasNull()) pStmtTx.setInt(newInx, val);
+                    break;
+                }
+                case java.sql.Types.SMALLINT:
+                {
+                    short val = rs.getShort(colInx);
+                    if (!rs.wasNull()) pStmtTx.setShort(newInx, val);
+                    break;
+                }
+                case java.sql.Types.TIMESTAMP:
+                {
+                    Timestamp val = rs.getTimestamp(colInx);
+                    if (!rs.wasNull()) pStmtTx.setTimestamp(newInx, val);
+                    break;
+                }
+                case java.sql.Types.LONGVARCHAR:
+                case java.sql.Types.VARCHAR:
+                {
+                    String val = rs.getString(colInx);
+                    if (!rs.wasNull()) 
+                    {
+                        pStmtTx.setString(newInx, val);
+                        
+                    } else if (colInx == 7)
+                    {
+                        pStmtTx.setString(newInx, "Empty");
+                    }
+                    break;
+                }
+                default:
+                    log.error("Didn't support SQL Type: "+rsmd.getColumnType(colInx));
+                    break;
+            }
+            
+        }
+        
+        if (!skip)
+        {
+            pStmtTx.setInt(fieldToColHash.get("Version"), 0);
+            pStmtTx.execute();
+        }
+
+        return true;
+    }
     
+    /**
+     * @param colDBColumns
+     */
+    private void fixStrandedTaxon(final StringBuilder colDBColumns)
+    {
+        String sql = "SELECT COUNT(*) FROM taxonname t1 LEFT JOIN taxonname t2 ON t1.ParentTaxonNameID = t2.TaxonNameID WHERE t2.TaxonNameID IS NULL AND t1.RankID > 0";
+        int numStrandedTaxon = BasicSQLUtils.getCountAsInt(oldDBConn, sql);
+        if (numStrandedTaxon > 0)
+        {
+            // process stranded rows
+            String sqlStr = String.format("SELECT %s FROM taxonname t1 LEFT JOIN taxonname t2 ON t1.ParentTaxonNameID = t2.TaxonNameID " +
+            		                      "WHERE t2.TaxonNameID IS NULL AND t1.RankID > 0 AND TaxonomyTypeID %s", 
+            		                      colDBColumns.toString(), taxonomyTypeIdInClause);
+            log.debug(sqlStr);
+            
+            int parentIdInx     = oldFieldToColHash.get("ParentTaxonNameID");
+            int taxonomyTypeInx = oldFieldToColHash.get("TaxonomyTypeID");
+            
+            try
+            {
+                ResultSet         rs   = stmtTx.executeQuery(sqlStr);
+                ResultSetMetaData rsmd = rs.getMetaData();
+                while (rs.next())
+                {
+                    int taxonomyTypeId = rs.getInt(taxonomyTypeInx);
+                    
+                    CollectionInfo colInfo = getCIByTaxonTypeId(taxonomyTypeId);
+                    if (colInfo != null)
+                    {
+                        int              rankId       = rs.getInt(parentIdInx);
+                        Integer          parentRankId = colInfo.getRankParentHash().get(rankId);
+                        if (parentRankId != null)
+                        {
+                            TaxonTreeDefItem item = colInfo.getTreeDefItemHash().get(rankId); 
+                            if (item != null)
+                            {
+                                Taxon taxonParent = colInfo.getPlaceHolderTreeHash().get(parentRankId);
+                                if (taxonParent != null)
+                                {
+                                    processRow(rs, rsmd, taxonParent.getId());
+
+                                } else
+                                {
+                                    log.error("Taxon PlaceHolder parent was missing for RankId: "+rankId);
+                                }
+                            } else
+                            {
+                                log.error("TaxonTreeDefItem was missing for RankId: "+rankId);
+                            }
+                        } else
+                        {
+                            log.error("No Parent RankID mapping for RankId: "+rankId);
+                        }
+                    } else
+                    {
+                        log.error("Couldn't find CollectionInfo for taxonomyTypeId: "+taxonomyTypeId);
+                    }
+                }
+                rs.close();
+
+            } catch (SQLException ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+    }
+    
+    /**
+    * 
+    */
+   private void convertTaxonTreeDefSeparators()
+   {
+       // fix the fullNameDirection field in each of the converted tree defs
+       Session session = HibernateUtil.getCurrentSession();
+       Query q = session.createQuery("FROM TaxonTreeDef");
+       List<?> allTTDs = q.list();
+       HibernateUtil.beginTransaction();
+       for(Object o: allTTDs)
+       {
+           TaxonTreeDef ttd = (TaxonTreeDef)o;
+           ttd.setFullNameDirection(TreeDefIface.FORWARD);
+           session.saveOrUpdate(ttd);
+       }
+       try
+       {
+           HibernateUtil.commitTransaction();
+       }
+       catch(Exception ex)
+       {
+           log.error("Error while setting the fullname direction of taxonomy tree definitions.");
+           ex.printStackTrace();
+           throw new RuntimeException(ex);
+       }
+       
+       // fix the fullNameSeparator field in each of the converted tree def items
+       session = HibernateUtil.getCurrentSession();
+       q = session.createQuery("FROM TaxonTreeDefItem");
+       List<?> allTTDIs = q.list();
+       HibernateUtil.beginTransaction();
+       for(Object o : allTTDIs)
+       {
+           TaxonTreeDefItem ttdi = (TaxonTreeDefItem)o;
+           ttdi.setFullNameSeparator(" ");
+           session.saveOrUpdate(ttdi);
+       }
+       try
+       {
+           HibernateUtil.commitTransaction();
+       }
+       catch (Exception ex)
+       {
+           log.error("Error while setting the fullname separator of taxonomy tree definition items.");
+           ex.printStackTrace();
+           throw new RuntimeException(ex);
+       }
+   }
+   
+   
+
     /**
      * @param disciplineId
      * @param taxonRootId
@@ -779,56 +940,7 @@ public class ConvertTaxonHelper
     }
 
     
-    /**
-     * 
-     */
-    private void convertTaxonTreeDefSeparators()
-    {
-        // fix the fullNameDirection field in each of the converted tree defs
-        Session session = HibernateUtil.getCurrentSession();
-        Query q = session.createQuery("FROM TaxonTreeDef");
-        List<?> allTTDs = q.list();
-        HibernateUtil.beginTransaction();
-        for(Object o: allTTDs)
-        {
-            TaxonTreeDef ttd = (TaxonTreeDef)o;
-            ttd.setFullNameDirection(TreeDefIface.FORWARD);
-            session.saveOrUpdate(ttd);
-        }
-        try
-        {
-            HibernateUtil.commitTransaction();
-        }
-        catch(Exception ex)
-        {
-            log.error("Error while setting the fullname direction of taxonomy tree definitions.");
-            ex.printStackTrace();
-            throw new RuntimeException(ex);
-        }
-        
-        // fix the fullNameSeparator field in each of the converted tree def items
-        session = HibernateUtil.getCurrentSession();
-        q = session.createQuery("FROM TaxonTreeDefItem");
-        List<?> allTTDIs = q.list();
-        HibernateUtil.beginTransaction();
-        for(Object o : allTTDIs)
-        {
-            TaxonTreeDefItem ttdi = (TaxonTreeDefItem)o;
-            ttdi.setFullNameSeparator(" ");
-            session.saveOrUpdate(ttdi);
-        }
-        try
-        {
-            HibernateUtil.commitTransaction();
-        }
-        catch (Exception ex)
-        {
-            log.error("Error while setting the fullname separator of taxonomy tree definition items.");
-            ex.printStackTrace();
-            throw new RuntimeException(ex);
-        }
-    }
-    
+
     /**
      * 
      */
