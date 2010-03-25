@@ -2743,11 +2743,14 @@ public class TableViewObj implements Viewable,
                     return data;
                 }
 
-                for (PickListItemIFace item : adapter.getList())
+                if (value != null)
                 {
-                    if (item.getValue().equals(value.toString()))
+                    for (PickListItemIFace item : adapter.getList())
                     {
-                        return item.getTitle();
+                        if (item.getValue() != null && item.getValue().equals(value.toString()))
+                        {
+                            return item.getTitle();
+                        }
                     }
                 }
             }
