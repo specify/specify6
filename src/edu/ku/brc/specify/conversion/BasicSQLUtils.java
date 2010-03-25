@@ -107,9 +107,9 @@ public class BasicSQLUtils
     protected static Pair<String, String> datePair = new Pair<String, String>();
     
     // Missing Mapping File
-    protected static PrintWriter missingPW;
+    protected static PrintWriter missingPW = null;
     
-    static
+    /*static
     {
         try
         {
@@ -119,7 +119,7 @@ public class BasicSQLUtils
         {
             ex.printStackTrace();
         }
-    }
+    }*
 
     /**
      * Singleton
@@ -1606,7 +1606,7 @@ public class BasicSQLUtils
         	tblWriter.logError(msg);
         	tblWriter.flush();
         	
-        } else
+        } else if (missingPW != null)
         {
         	missingPW.println(msg);
         	missingPW.flush();

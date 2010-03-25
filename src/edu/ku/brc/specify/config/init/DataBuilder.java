@@ -42,6 +42,7 @@ import edu.ku.brc.af.auth.specify.principal.AdminPrincipal;
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.PickListIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.AttributeIFace;
@@ -2543,15 +2544,19 @@ public class DataBuilder
     public static void writePerms(final Hashtable<String, Hashtable<String, PermissionOptionPersist>> hash,
                                   final String fileName)
     {
-        XStream xstream = new XStream();
-        PermissionOptionPersist.config(xstream);
-        try
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        if (localPrefs != null && localPrefs.getBoolean("perms.write.xml", false))
         {
-            FileUtils.writeStringToFile(new File(fileName), xstream.toXML(hash)); //$NON-NLS-1$
-            
-        } catch (IOException ex)
-        {
-            ex.printStackTrace();
+            XStream xstream = new XStream();
+            PermissionOptionPersist.config(xstream);
+            try
+            {
+                FileUtils.writeStringToFile(new File(fileName), xstream.toXML(hash)); //$NON-NLS-1$
+                
+            } catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
         }
     }
     
