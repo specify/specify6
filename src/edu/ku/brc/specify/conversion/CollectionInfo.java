@@ -35,6 +35,8 @@ import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -142,20 +144,27 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     {
         if (treeDefItems == null)
         {
-            treeDefItems = new Vector<TaxonTreeDefItem>(taxonTreeDef.getTreeDefItems());
-            Collections.sort(treeDefItems);
-            
-            int i = 0;
-            for (TaxonTreeDefItem item : treeDefItems)
+            try
             {
-                if (i > 0)
+                treeDefItems = new Vector<TaxonTreeDefItem>(taxonTreeDef.getTreeDefItems());
+                Collections.sort(treeDefItems);
+                
+                int i = 0;
+                for (TaxonTreeDefItem item : treeDefItems)
                 {
-                    rankParentHash.put(item.getRankId(), treeDefItems.get(i-1).getRankId());
+                    if (i > 0)
+                    {
+                        rankParentHash.put(item.getRankId(), treeDefItems.get(i-1).getRankId());
+                    }
+                    i++;
+                    treeDefItemHash.put(item.getRankId(), item);
                 }
-                i++;
-                treeDefItemHash.put(item.getRankId(), item);
+                buildPlaceHolders();
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
             }
-            buildPlaceHolders();
         }
     }
     
@@ -166,36 +175,57 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     {
         if (placeHolderTreeHash.size() == 0)
         {
-            Taxon        txRoot    = taxonTreeDef.getTreeRootNode();
-            Taxon        parent    = txRoot;
             
-            for (TaxonTreeDefItem item : treeDefItems)
+            DataProviderSessionIFace session = null;
+            try
             {
-                Taxon taxon = new Taxon();
-                taxon.initialize();
-                taxon.setRankId(item.getRankId());
-                taxon.setName("Placeholder");
-                taxon.setFullName(taxon.getName());
+                session = DataProviderFactory.getInstance().createSession();
                 
-                taxon.setDefinition(taxonTreeDef);
-                taxon.setDefinitionItem(item);
-                taxon.setParent(parent);
+                taxonTreeDef = session.get(TaxonTreeDef.class, taxonTreeDef.getId());
                 
-                Transaction trans = null;
-                try
+                Taxon        txRoot    = taxonTreeDef.getTreeRootNode();
+                Taxon        parent    = txRoot;
+                
+                for (TaxonTreeDefItem item : treeDefItems)
                 {
-                    Session session = HibernateUtil.getCurrentSession();
-                    trans = session.beginTransaction();
-                    session.save(taxon);
-                    trans.commit();
+                    Taxon taxon = new Taxon();
+                    taxon.initialize();
+                    taxon.setRankId(item.getRankId());
+                    taxon.setName("Placeholder");
+                    taxon.setFullName(taxon.getName());
                     
-                    placeHolderTreeHash.put(item.getRankId(), taxon);
+                    taxon.setDefinition(taxonTreeDef);
+                    taxon.setDefinitionItem(item);
+                    taxon.setParent(parent);
                     
-                } catch (Exception ex)
+                    Transaction trans = null;
+                    try
+                    {
+                        session.beginTransaction();
+                        session.save(taxon);
+                        session.commit();
+                        
+                        placeHolderTreeHash.put(item.getRankId(), taxon);
+                        
+                    } catch (Exception ex)
+                    {
+                        if (trans != null) trans.rollback();
+                    }
+                }
+                
+            } catch(Exception ex)
+            {
+                session.rollback();
+                ex.printStackTrace();
+                
+            } finally
+            {
+                if (session != null)
                 {
-                    if (trans != null) trans.rollback();
+                    session.close();
                 }
             }
+
         }
     }
     

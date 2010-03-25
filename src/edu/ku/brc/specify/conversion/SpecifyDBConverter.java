@@ -328,11 +328,6 @@ public class SpecifyDBConverter extends AppBase
                     }
                 }
                 
-                if (!isSp5DB)
-                {
-                    System.out.println(" is NOT Sp5");
-                }
-                
                 if ((!isSp5DB && doSp5DBs) || (isSp5DB && !doSp5DBs))
                 {
                     continue;
