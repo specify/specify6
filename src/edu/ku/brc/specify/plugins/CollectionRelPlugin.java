@@ -19,8 +19,11 @@
 */
 package edu.ku.brc.specify.plugins;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -51,15 +54,15 @@ import edu.ku.brc.specify.datamodel.CollectionRelationship;
  */
 public class CollectionRelPlugin extends UIPluginBase
 {
-    protected boolean              isLeftSide   = false;
-    protected CollectionRelType    colRelType   = null;
-    protected Collection           leftSideCol  = null;
-    protected Collection           rightSideCol = null;
+    protected boolean                isLeftSide    = false;
+    protected CollectionRelType      colRelType    = null;
+    protected Collection             leftSideCol   = null;
+    protected Collection             rightSideCol  = null;
     
     protected CollectionRelationship collectionRel = null;
     protected CollectionObject       otherSide     = null;
     
-    protected ValComboBoxFromQuery cbx;
+    protected ValComboBoxFromQuery   cbx;
     
     /**
      * 
@@ -82,7 +85,6 @@ public class CollectionRelPlugin extends UIPluginBase
         CellConstraints cc = new CellConstraints();
         PanelBuilder pb = new PanelBuilder(new FormLayout("p",  "p"), this);
         
-        
         int btnOpts = ValComboBoxFromQuery.CREATE_EDIT_BTN | ValComboBoxFromQuery.CREATE_NEW_BTN | ValComboBoxFromQuery.CREATE_SEARCH_BTN;
         cbx = new ValComboBoxFromQuery(DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()),
                                 "catalogNumber",
@@ -104,6 +106,32 @@ public class CollectionRelPlugin extends UIPluginBase
                 itemSelected();
             }
         });
+    }
+    
+    /**
+     * @return will return a list or empty list, but not NULL
+     */
+    @SuppressWarnings("unchecked")
+    public static List<CollectionRelationship> getCollectionRelationships()
+    {
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            return (List<CollectionRelationship>)session.getDataList("FROM CollectionRelationship");
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
+        return new ArrayList<CollectionRelationship>();
     }
     
     /* (non-Javadoc)

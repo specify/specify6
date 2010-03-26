@@ -226,4 +226,15 @@ public class CollectionRelType extends DataModelObjBase implements java.io.Seria
     {
         return name != null ? name : super.getIdentityTitle();
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return getIdentityTitle();
+    }
+    
+    
 }
