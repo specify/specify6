@@ -343,7 +343,6 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     /**
      * 
      */
-    @SuppressWarnings("unchecked")
     protected void showForm()
     {
         //boolean isParentNew = parentObj instanceof FormDataObjIFace ? ((FormDataObjIFace)parentObj).getId() == null : false;
@@ -640,7 +639,12 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             sessionLocal = hasSession ? null : DataProviderFactory.getInstance().createSession();
             if (!isSkippingAttach && sessionLocal != null && parentObj != null && parentObj.getId() != null)
             {
-                sessionLocal.attach(parentObj);
+                // I really really hate doing this: Catch an exception (dirty exception)
+                // and doing nothing, but Hibernate just isn't my friend - 03/26/10
+                try
+                {
+                    sessionLocal.attach(parentObj);
+                } catch (Exception ex) {}
             }
             
             // Retrieve lazy object while in the context of a session (just like a subform would do)
