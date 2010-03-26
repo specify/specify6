@@ -125,6 +125,7 @@ import edu.ku.brc.af.ui.forms.persist.FormCellIFace;
 import edu.ku.brc.af.ui.forms.persist.FormCellLabel;
 import edu.ku.brc.af.ui.forms.persist.FormCellSubView;
 import edu.ku.brc.af.ui.forms.persist.FormCellSubViewIFace;
+import edu.ku.brc.af.ui.forms.persist.FormDevHelper;
 import edu.ku.brc.af.ui.forms.persist.FormViewDef;
 import edu.ku.brc.af.ui.forms.persist.ViewDef;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
@@ -3863,7 +3864,7 @@ public class FormViewObj implements Viewable,
                 FormViewObj.FVOFieldInfo fieldInfo = controlsById.get(idFor);
                 if (fieldInfo == null)
                 {
-                    UIRegistry.showError("Setting Label -Form control with id["+idFor+"] is not in the form or subform.");
+                    FormDevHelper.appendFormDevError("Setting Label -Form control with id["+idFor+"] is not in the form or subform.");
                     continue;
                 }
                 
@@ -3878,7 +3879,7 @@ public class FormViewObj implements Viewable,
                         derivedCI = FormHelper.getChildInfoFromPath(fieldName, ti);
                         if (derivedCI == null)
                         {
-                            UIRegistry.showError("The name 'path' ["+fieldName+"] was not valid.");
+                            FormDevHelper.appendFormDevError("The name 'path' ["+fieldName+"] was not valid.");
                             continue; 
                         }
                     }
