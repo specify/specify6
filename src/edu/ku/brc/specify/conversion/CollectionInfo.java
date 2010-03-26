@@ -32,19 +32,16 @@ import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
-import edu.ku.brc.specify.datamodel.TreeDefItemStandardEntry;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
@@ -62,49 +59,48 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     
     protected static Vector<CollectionInfo> collectionInfoList = new Vector<CollectionInfo>();
 
-    protected boolean      isIncluded    = true;
-    protected Integer      colObjTypeId;
-    protected String       colObjTypeName;
+    protected boolean            isIncluded    = true;
+    protected Integer            colObjTypeId;
+    protected String             colObjTypeName;
     
-    protected int          colObjCnt = 0;
+    protected int                colObjCnt = 0;
     
-    protected Integer      catSeriesDefId;
-    protected Integer      catSeriesId;
-    protected String       catSeriesName;
-    protected String       catSeriesPrefix;
-    protected String       catSeriesRemarks;
-    protected String       catSeriesLastEditedBy;
+    protected Integer            catSeriesDefId;
+    protected Integer            catSeriesId;
+    protected String             catSeriesName;
+    protected String             catSeriesPrefix;
+    protected String             catSeriesRemarks;
+    protected String             catSeriesLastEditedBy;
     
-    protected Integer      taxonomyTypeId;
-    protected String       taxonomyTypeName;
-    protected Integer      taxonomicUnitTypeID;
-    protected int          kingdomId;
+    protected Integer            taxonomyTypeId;
+    protected String             taxonomyTypeName;
+    protected Integer            taxonomicUnitTypeID;
+    protected int                kingdomId;
     
-    protected TaxonTreeDef taxonTreeDef = null;
+    protected TaxonTreeDef       taxonTreeDef = null;
     
-    protected Integer      taxonNameId;  // root node of the tree
-    protected String       taxonName;
+    protected Integer            taxonNameId;  // root node of the tree
+    protected String             taxonName;
     
-    protected Integer      disciplineId;
-    protected Discipline   discipline = null;
+    protected Integer            disciplineId;
+    protected Discipline         discipline = null;
     
-    protected Integer      collectionId;
-    protected Collection   collection = null;
+    protected Integer            collectionId;
+    protected Collection         collection = null;
     
-    protected int          taxonNameCnt;
-    protected int          colObjDetTaxCnt;
-    protected long         srcHostTaxonCnt;
-    protected DisciplineType disciplineTypeObj;
+    protected int                taxonNameCnt;
+    protected int                colObjDetTaxCnt;
+    protected long               srcHostTaxonCnt;
+    protected DisciplineType     disciplineTypeObj;
     
     protected String             determinationTaxonType = null;
     protected ArrayList<Integer> detTaxonTypeIdList     = new ArrayList<Integer>();
     
-    // First is RankId, Second is the Taxon Record Id
     protected HashMap<Integer, Taxon>            placeHolderTreeHash = new HashMap<Integer, Taxon>();
     protected List<TaxonTreeDefItem>             treeDefItems        = null;
     protected HashMap<Integer, TaxonTreeDefItem> treeDefItemHash     = new HashMap<Integer, TaxonTreeDefItem>();
     protected HashMap<Integer, Integer>          rankParentHash      = new HashMap<Integer, Integer>();
-
+    protected Integer                            taxonRootId         = null;
     
     protected Connection   oldDBConn;
     
@@ -137,6 +133,22 @@ public class CollectionInfo implements Comparable<CollectionInfo>
         return treeDefItems;
     }
     
+    /**
+     * @return the taxonRootId
+     */
+    public Integer getTaxonRootId()
+    {
+        return taxonRootId;
+    }
+
+    /**
+     * @param taxonRootId the taxonRootId to set
+     */
+    public void setTaxonRootId(Integer taxonRootId)
+    {
+        this.taxonRootId = taxonRootId;
+    }
+
     /**
      * 
      */
@@ -183,39 +195,53 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                 
                 taxonTreeDef = session.get(TaxonTreeDef.class, taxonTreeDef.getId());
                 
-                Taxon        txRoot    = taxonTreeDef.getTreeRootNode();
-                Taxon        parent    = txRoot;
-                
-                for (TaxonTreeDefItem item : treeDefItems)
+                String msg = "SELECT TaxonID FROM taxon WHERE RankID = 0 AND TaxonTreeDefID = " + taxonTreeDef.getId();
+                log.debug(msg);
+                Integer taxonId = BasicSQLUtils.getCount(msg);
+                if (taxonId != null)
                 {
-                    Taxon taxon = new Taxon();
-                    taxon.initialize();
-                    taxon.setRankId(item.getRankId());
-                    taxon.setName("Placeholder");
-                    taxon.setFullName(taxon.getName());
+                    Taxon  txRoot = (Taxon)session.getData("FROM Taxon WHERE id = " + taxonId);
+                    Taxon  parent = txRoot;
                     
-                    taxon.setDefinition(taxonTreeDef);
-                    taxon.setDefinitionItem(item);
-                    taxon.setParent(parent);
-                    
-                    Transaction trans = null;
-                    try
+                    for (TaxonTreeDefItem item : treeDefItems)
                     {
-                        session.beginTransaction();
-                        session.save(taxon);
-                        session.commit();
-                        
-                        placeHolderTreeHash.put(item.getRankId(), taxon);
-                        
-                    } catch (Exception ex)
-                    {
-                        if (trans != null) trans.rollback();
+                        if (item.getRankId() > 0)
+                        {
+                            Taxon taxon = new Taxon();
+                            taxon.initialize();
+                            taxon.setRankId(item.getRankId());
+                            taxon.setName("Placeholder");
+                            taxon.setFullName(taxon.getName());
+                            
+                            taxon.setDefinition(taxonTreeDef);
+                            taxon.setDefinitionItem(item);
+                            taxon.setParent(parent);
+                            
+                            parent = taxon;
+                            
+                            Transaction trans = null;
+                            try
+                            {
+                                session.beginTransaction();
+                                session.save(taxon);
+                                session.commit();
+                                
+                                placeHolderTreeHash.put(item.getRankId(), taxon);
+                                
+                            } catch (Exception ex)
+                            {
+                                if (trans != null) trans.rollback();
+                            }
+                        }
                     }
+                } else
+                {
+                    log.error("Couldn't find the Root Taxon Node");
                 }
                 
             } catch(Exception ex)
             {
-                session.rollback();
+                //session.rollback();
                 ex.printStackTrace();
                 
             } finally

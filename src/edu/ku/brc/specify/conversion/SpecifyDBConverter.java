@@ -323,7 +323,6 @@ public class SpecifyDBConverter extends AppBase
                     if (tableName.equalsIgnoreCase("usysversion"))
                     {
                         isSp5DB = true;
-                        System.out.println(" is Sp5");
                         break;
                     }
                 }
@@ -887,7 +886,7 @@ public class SpecifyDBConverter extends AppBase
                 // Really need to create or get a proper Discipline Record
                 /////////////////////////////////////////////////////////////
                 TableWriter taxonTblWriter = convLogger.getWriter("FullTaxon.html", "Taxon Conversion");
-                ConvertTaxonHelper           taxonHelper    = new ConvertTaxonHelper(oldDBConn, newDBConn, dbNameDest, taxonTblWriter, conversion, conversion);
+                ConvertTaxonHelper           taxonHelper    = new ConvertTaxonHelper(oldDBConn, newDBConn, dbNameDest, frame, taxonTblWriter, conversion, conversion);
                 taxonHelper.createTaxonIdMappings();
                 taxonHelper.doForeignKeyMappings();
                 
