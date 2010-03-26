@@ -39,6 +39,7 @@ import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.persist.FormDevHelper;
 import edu.ku.brc.af.ui.forms.persist.ViewLoader;
 import edu.ku.brc.specify.extras.ViewToSchemaReview;
 import edu.ku.brc.specify.tools.FormDisplayer;
@@ -230,6 +231,24 @@ public class FormEditTask extends BaseTask
                     });
             mid = new MenuItemDesc(mi, FULL_SYSTEM_MENU);
             menuItems.add(mid);
+            
+            if (FormDevHelper.isFormDevMode())
+            {
+                ttle = "Specify.SHOW_DEV_WIN";//$NON-NLS-1$ 
+                mneu = "Specify.SHOW_DEV_WIN_MNEU";//$NON-NLS-1$ 
+                desc = "Specify.SHOW_DEV_WIN";//$NON-NLS-1$ 
+                mi = UIHelper.createLocalizedMenuItem(ttle , mneu, desc, true, null);  
+                mi.addActionListener(new ActionListener()
+                        {
+                            @SuppressWarnings("synthetic-access") //$NON-NLS-1$
+                            public void actionPerformed(ActionEvent ae)
+                            {
+                                FormDevHelper.getLogFrame().setVisible(true);
+                            }
+                        });
+                mid = new MenuItemDesc(mi, FULL_SYSTEM_MENU);
+                menuItems.add(mid);
+            }
             
         }
         

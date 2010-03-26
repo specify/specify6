@@ -49,6 +49,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.af.ui.forms.UIPluginable;
+import edu.ku.brc.af.ui.forms.persist.FormDevHelper;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -184,11 +185,13 @@ public class TaskMgr implements CommandListener
 
             } else
             {
-                throw new RuntimeException("Registering a plugin with an existing name["+plugin.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                //throw new RuntimeException("Registering a plugin with an existing name["+plugin.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                FormDevHelper.appendFormDevError("Registering a plugin with an existing name["+plugin.getName()+"]");//$NON-NLS-1$ //$NON-NLS-2$
             }
         } else
         {
-            throw new NullPointerException("Trying to register a null plugin!"); //$NON-NLS-1$
+            //throw new NullPointerException("Trying to register a null plugin!"); //$NON-NLS-1$
+            FormDevHelper.appendFormDevError("Trying to register a null plugin!"); //$NON-NLS-1$
         }
     }
 

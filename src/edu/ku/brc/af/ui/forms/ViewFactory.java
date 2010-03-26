@@ -95,6 +95,7 @@ import edu.ku.brc.af.ui.forms.persist.FormCellPanel;
 import edu.ku.brc.af.ui.forms.persist.FormCellSeparatorIFace;
 import edu.ku.brc.af.ui.forms.persist.FormCellSubView;
 import edu.ku.brc.af.ui.forms.persist.FormCellSubViewIFace;
+import edu.ku.brc.af.ui.forms.persist.FormDevHelper;
 import edu.ku.brc.af.ui.forms.persist.FormRowIFace;
 import edu.ku.brc.af.ui.forms.persist.FormViewDef;
 import edu.ku.brc.af.ui.forms.persist.FormViewDefIFace;
@@ -1305,37 +1306,20 @@ public class ViewFactory
         {
             FormCellField cellField = (FormCellField)cell;
             
-            /*if (StringUtils.isEmpty(cellField.getIdent()))
-            {
-                UIRegistry.showLocalizedError("ViewFactory.NO_ID", cellField.getName(), formViewDef.getName());
-                
-            }*
-            
-            /* DEBUG
-            String fieldName = cellField.getName();
-            if (childInfo == null && 
-                fieldName != null && 
-                fieldName.indexOf('.') == -1 &&
-                !fieldName.equals("this")
-                )
-            {
-               log.debug("No DBChild ["+cellField.getName()+"]"); 
-            }*/
-            
             bi.isRequired = bi.isRequired || cellField.isRequired() || (childInfo != null && childInfo.isRequired());
             
             DBRelationshipInfo relInfo   = null;
             DBFieldInfo        fieldInfo = childInfo instanceof DBFieldInfo ? (DBFieldInfo)childInfo : null;
             if (fieldInfo != null && fieldInfo.isHidden())
             {
-                UIRegistry.showLocalizedError("ViewFactory.FORM_FIELD_HIDDEN", cellField.getIdent(), cellField.getName(), formViewDef.getName());
+                FormDevHelper.appendLocalizedFormDevError("ViewFactory.FORM_FIELD_HIDDEN", cellField.getIdent(), cellField.getName(), formViewDef.getName());
             } else
             {
                 
                 relInfo = childInfo instanceof DBRelationshipInfo ? (DBRelationshipInfo)childInfo : null;
                 if (fieldInfo != null && fieldInfo.isHidden())
                 {
-                    UIRegistry.showLocalizedError("ViewFactory.FORM_REL_HIDDEN", cellField.getIdent(), cellField.getName(), formViewDef.getName());
+                    FormDevHelper.appendLocalizedFormDevError("ViewFactory.FORM_REL_HIDDEN", cellField.getIdent(), cellField.getName(), formViewDef.getName());
                 }
             }
             

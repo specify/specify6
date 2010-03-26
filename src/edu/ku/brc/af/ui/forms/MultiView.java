@@ -37,6 +37,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jfree.data.xy.VectorDataItem;
 
 import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.auth.SecurityMgr;
@@ -368,6 +369,14 @@ public class MultiView extends JPanel
         } 
     }
     
+    /**
+     * @return the cellName
+     */
+    public String getCellName()
+    {
+        return cellName;
+    }
+
     /**
      * Get the short class name for the cell's data type.
      * @param dataClass the class of the data that is put into the form
@@ -1460,7 +1469,7 @@ public class MultiView extends JPanel
             deletedItems = new Vector<Object>();
         }
         boolean addToList = true;
-        if (deletedItem instanceof FormDataObjIFace && ((FormDataObjIFace)deletedItem).getId() == null)
+        if (!(deletedItem instanceof Vector<?>))
         {
             addToList = false;
         }

@@ -457,14 +457,16 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
                         {
                             String msg = "ViewSet["+name+"] View["+view+"] AltView ["+av.getName()+"] refers to a non-existent ViewDef with name["+av.getViewDefName()+"]";
                             log.error(msg);
-                            //throw new RuntimeException(msg);
+                            FormDevHelper.appendFormDevError(msg);
+                            return;
                         }
                         
                     } else
                     {
                         String msg = "ViewSet["+name+"] Couldn't find the ViewDef Name for the AltView!";
                         log.error(msg);
-                        throw new RuntimeException(msg);
+                        FormDevHelper.appendFormDevError(msg);
+                        return;
                     }
                 }
             }

@@ -30,7 +30,6 @@ import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
-import edu.ku.brc.ui.UIRegistry;
 
 /**
  * A view is a virtual object that may contain one or more "alternate" views. Typically, there is a 
@@ -138,12 +137,12 @@ public class View implements ViewIFace
                     } else
                     {
                         // new RuntimeException
-                        UIRegistry.showError(String.format("ViewDef's (%s) Type is null for AltView %s", altView.getViewDef().getName(), altView.getName()));
+                        FormDevHelper.appendFormDevError(String.format("ViewDef's (%s) Type is null for AltView %s", altView.getViewDef().getName(), altView.getName()));
                     }
                 } else
                 {
                     // new RuntimeException
-                    UIRegistry.showError(String.format("ViewDef is null for AltView %s", altView.getName()));
+                    FormDevHelper.appendFormDevError(String.format("ViewDef is null for AltView %s", altView.getName()));
                 }
             }
             
@@ -176,7 +175,9 @@ public class View implements ViewIFace
             }
         }
 
-        throw new RuntimeException("No default Alt View in View["+name+"]");
+        FormDevHelper.appendFormDevError("No default Alt View in View["+name+"]");
+        return null;
+        //throw new RuntimeException("No default Alt View in View["+name+"]");
     }
     
     /* (non-Javadoc)

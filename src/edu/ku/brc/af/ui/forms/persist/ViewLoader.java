@@ -61,7 +61,6 @@ import edu.ku.brc.af.ui.forms.validation.TypeSearchForQueryFactory;
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Factory that creates Views from ViewSet files. This class uses the singleton ViewSetMgr to verify the View Set Name is unique.
@@ -601,7 +600,7 @@ public class ViewLoader
                 }
                 // else
                 //throw new RuntimeException("Element ["+element.getName()+"] Cell or Sep is null for 'dup' or 'auto 'on column def.");
-                UIRegistry.showError("Element ["+element.getName()+"] Cell or Sep is null for 'dup' or 'auto 'on column def.");
+                FormDevHelper.appendFormDevError("Element ["+element.getName()+"] Cell or Sep is null for 'dup' or 'auto 'on column def.");
                 return "";
             }
             // else
@@ -610,7 +609,9 @@ public class ViewLoader
             return cellText;
         }
         // else
-        log.error("Element ["+element.getName()+"] must have a columnDef");
+        String msg = "Element ["+element.getName()+"] must have a columnDef";
+        log.error(msg);
+        FormDevHelper.appendFormDevError(msg);
         return "";
     }
 
@@ -681,9 +682,19 @@ public class ViewLoader
                         System.err.println(String.format("%s\t%s\t%s\t%s", gViewDef.getName(), cellId, cellName, tableinfo != null ? tableinfo.getTitle() : "N/A"));
                     }*/
 
-                    FormCell.CellType cellType = FormCellIFace.CellType.valueOf(cellElement.attributeValue(TYPE));
+                    FormCell.CellType cellType = null;
                     FormCellIFace     cell     = null;
                     
+                    try
+                    {
+                        cellType = FormCellIFace.CellType.valueOf(cellElement.attributeValue(TYPE));
+                        
+                    } catch (java.lang.IllegalArgumentException ex)
+                    {
+                        FormDevHelper.appendFormDevError(ex.toString());
+                        FormDevHelper.appendFormDevError(String.format("Cell Name[%s] Id[%s] Type[%s]", cellName, cellId, cellElement.attributeValue(TYPE)));
+                        return;
+                    }
                     
                     if (doFieldVerification &&
                         fldVerTableInfo != null && 
@@ -763,7 +774,9 @@ public class ViewLoader
                             if (isNotEmpty(format) && isNotEmpty(formatName))
                             {
                                 //throw new RuntimeException("Both format and formatname cannot both be set! ["+cellName+"]");
-                                log.error("Both format and formatname cannot both be set! ["+cellName+"] ignoring format");
+                                String msg = "Both format and formatname cannot both be set! ["+cellName+"] ignoring format";
+                                log.error(msg);
+                                FormDevHelper.appendFormDevError(msg);
                                 format = "";
                             }
                             
@@ -780,8 +793,19 @@ public class ViewLoader
 
                             // THis switch is used to get the "display type" and 
                             // set up other vars needed for creating the controls
-                            FormCellFieldIFace.FieldType uitype       = FormCellFieldIFace.FieldType.valueOf(uitypeStr);
-                            String                  dspUITypeStr = null;
+                            FormCellFieldIFace.FieldType uitype = null;
+                            try
+                            {
+                                uitype = FormCellFieldIFace.FieldType.valueOf(uitypeStr);
+                                
+                            } catch (java.lang.IllegalArgumentException ex)
+                            {
+                                FormDevHelper.appendFormDevError(ex.toString());
+                                FormDevHelper.appendFormDevError(String.format("Cell Name[%s] Id[%s] uitype[%s] is in error", cellName, cellId, uitypeStr));
+                                uitype = FormCellFieldIFace.FieldType.text; // default to text
+                            }
+                            
+                            String dspUITypeStr = null;
                             switch (uitype)
                             {
                                 case textarea:
@@ -818,7 +842,10 @@ public class ViewLoader
                                         UIFieldFormatterIFace uiFormatter = UIFieldFormatterMgr.getInstance().getFormatter(uiFieldFormatterName);
                                         if (uiFormatter == null)
                                         {
-                                            log.error("Couldn't find formatter["+uiFieldFormatterName+"]");
+                                            String msg = "Couldn't find formatter["+uiFieldFormatterName+"]";
+                                            log.error(msg);
+                                            FormDevHelper.appendFormDevError(msg);
+                                            
                                             uiFieldFormatterName = "";
                                             uitype = FormCellFieldIFace.FieldType.text;
                                         }
@@ -835,7 +862,10 @@ public class ViewLoader
                                             } else if (fieldInfo.getDataClass().isAssignableFrom(Date.class) ||
                                                        fieldInfo.getDataClass().isAssignableFrom(Calendar.class))
                                             {
-                                                log.debug("Missing Date Formatter for ["+cellName+"]");
+                                                String msg = "Missing Date Formatter for ["+cellName+"]";
+                                                log.error(msg);
+                                                FormDevHelper.appendFormDevError(msg);
+                                                
                                                 uiFieldFormatterName = "Date";
                                                 UIFieldFormatterIFace uiFormatter = UIFieldFormatterMgr.getInstance().getFormatter(uiFieldFormatterName);
                                                 if (uiFormatter == null)
@@ -902,6 +932,17 @@ public class ViewLoader
                             } //switch
 
                             FormCellFieldIFace.FieldType dspUIType = FormCellFieldIFace.FieldType.valueOf(dspUITypeStr);
+                            
+                            try
+                            {
+                                dspUIType = FormCellFieldIFace.FieldType.valueOf(dspUITypeStr);
+                                
+                            } catch (java.lang.IllegalArgumentException ex)
+                            {
+                                FormDevHelper.appendFormDevError(ex.toString());
+                                FormDevHelper.appendFormDevError(String.format("Cell Name[%s] Id[%s] dspuitype[%s] is in error", cellName, cellId, dspUIType));
+                                uitype = FormCellFieldIFace.FieldType.label; // default to text
+                            }
                             
                             // check to see see if the validation is a node in the cell
                             if (isEmpty(validationRule))
@@ -1084,17 +1125,16 @@ public class ViewLoader
                     
                 } catch (ClassNotFoundException ex)
                 {
-                    String comments = "ClassNotFoundException["+className+"]  Name["+name+"]";
-                    log.error(comments);
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewLoader.class, comments, ex);
+                    String msg = "ClassNotFoundException["+className+"]  Name["+name+"]";
+                    log.error(msg);
+                    FormDevHelper.appendFormDevError(msg);
+                    //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewLoader.class, comments, ex);
                     
                 } catch (Exception ex)
                 {
-                    
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewLoader.class, ex);
-                    
                 }
             }
             List<FormRowIFace> rows = formViewDef.getRows();
@@ -1126,7 +1166,11 @@ public class ViewLoader
                     return formViewDef;
                 }
             }
-            throw new RuntimeException("formtable is missing or has empty <defintion> node");
+            
+            String msg = "formtable is missing or has empty <defintion> node";
+            log.error(msg);
+            FormDevHelper.appendFormDevError(msg);
+            return null;
         }
 
         return formViewDef;
@@ -1146,7 +1190,7 @@ public class ViewLoader
             if (derivedCI == null)
             {
                 String msg = "The name 'path' ["+fieldName+"] was not valid in ViewSet ["+instance.viewSetName+"]";
-                UIRegistry.showError(msg);
+                FormDevHelper.appendFormDevError(msg);
                 log.error(msg);
                 return "";
             }
@@ -1155,7 +1199,7 @@ public class ViewLoader
         if (tblChild == null)
         {
             String msg = "The Field Name ["+fieldName+"] was not in the Table ["+tableInfo.getTitle()+"] in ViewSet ["+instance.viewSetName+"]";
-            //UIRegistry.showError(msg);
+            FormDevHelper.appendFormDevError(msg);
             log.error(msg);
             return "";
         }
@@ -1215,7 +1259,7 @@ public class ViewLoader
                             } else
                             {
                                 String msg = "Setting Label - Form control with id["+idFor+"] is not in ViewDef or Panel ["+name+"] in ViewSet ["+instance.viewSetName+"]";
-                                UIRegistry.showError(msg);
+                                FormDevHelper.appendFormDevError(msg);
                                 log.error(msg);
                             }
                         }

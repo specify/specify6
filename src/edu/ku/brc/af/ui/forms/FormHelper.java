@@ -23,10 +23,14 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getViewbasedFactory;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Set;
 
 import javax.swing.JComponent;
 
@@ -42,7 +46,12 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.FieldNotebook;
+import edu.ku.brc.specify.datamodel.FieldNotebookPage;
+import edu.ku.brc.specify.datamodel.FieldNotebookPageSet;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.UIHelper;
@@ -629,7 +638,7 @@ public final class FormHelper
     /**
      * Retrieves a string for restricted values.
      * @param tableId the ID of the table info
-     * @return a localized string "(Resticted)" or null
+     * @return a localized string "(Restricted)" or null
      */
     public static String checkForRestrictedValue(final int tableId)
     {    
@@ -660,4 +669,75 @@ public final class FormHelper
         }
         return null;
     }
+    
+    
+    public static void dumpDataObj(final DataProviderSessionIFace session, final Object dataObj, final Hashtable<Class<?>, Boolean> clsHash, final int level)
+    {
+        if (dataObj == null || clsHash.get(dataObj.getClass()) != null) return;
+        
+        String clsName = dataObj.getClass().toString();
+        if (clsName.indexOf("CGLIB") > -1) return;
+        
+        
+        StringBuilder indent = new StringBuilder();
+        for (int i=0;i<level;i++) indent.append("  ");
+        
+        for (Method method : dataObj.getClass().getMethods())
+        {
+            String methodName = method.getName();
+            if (!methodName.startsWith("get") || method.getModifiers() == 9)
+            {
+                continue;
+            }
+            
+            String fieldName = methodName.substring(3,4).toLowerCase() + methodName.substring(4, methodName.length());
+            Object kidData   = null;
+            try
+            {
+                kidData = getValue((FormDataObjIFace)dataObj, fieldName);
+                
+            } catch (Exception ex)
+            {
+                System.out.println(indent+fieldName+" = <no data>");
+            }
+            if (kidData != null)
+            {
+                if (kidData instanceof Set<?>)
+                {
+                    for (Object obj : ((Set<?>)kidData))
+                    {
+                        System.out.println(indent+fieldName+" = "+obj);
+                        if (obj instanceof FormDataObjIFace)
+                        {
+                            dumpDataObj(session, obj, clsHash, level+1);
+                        }
+                    }
+                } else
+                {
+                    System.out.println(indent+fieldName+" = "+kidData);
+                    if (kidData instanceof FormDataObjIFace)
+                    {
+                        session.attach(kidData);
+                        dumpDataObj(session, kidData, clsHash, level+1);
+                    }
+                }
+                    
+            }
+            
+        }
+    }
+    
+    public static void dumpFieldNotebook(final String msg, final FieldNotebook fn)
+    {
+        System.out.println("-----------"+msg+"---------------\n"+fn.getName());
+        for (FieldNotebookPageSet ps : fn.getPageSets())
+        {
+            System.out.println("    "+ps.getStartDate());
+            for (FieldNotebookPage p : ps.getPages())
+            {
+                System.out.println("        "+p.getPageNumber());
+            }
+        }
+    }
+    
 }
