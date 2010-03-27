@@ -360,7 +360,7 @@ public class CollectionRelTask extends BaseTask
             @Override
             public void adjustForm(final FormViewObj fvo)
             {
-                JLabel     leftLbl  = fvo.getLabel("left");
+                /*JLabel     leftLbl  = fvo.getLabel("left");
                 JLabel     rightLbl = fvo.getLabel("right");
                 
                 Collection leftCol  = (Collection)leftList.getSelectedValue();
@@ -377,7 +377,7 @@ public class CollectionRelTask extends BaseTask
                 
                 Font bold = leftLbl.getFont().deriveFont(Font.BOLD).deriveFont(leftLbl.getFont().getSize2D()+2.0f);
                 leftLbl.setFont(bold);
-                rightLbl.setFont(bold);
+                rightLbl.setFont(bold);*/
             }
         
         });
