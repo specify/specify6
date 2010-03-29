@@ -25,6 +25,7 @@ import java.util.Stack;
 
 import org.apache.commons.io.FileUtils;
 
+import edu.ku.brc.af.ui.forms.persist.FormDevHelper;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewSetIFace;
 import edu.ku.brc.helpers.XMLHelper;
@@ -125,7 +126,6 @@ public class ViewSetMgrManager
                 {
                     return view;
                 }
-
             }
         }
         return null;
@@ -158,19 +158,16 @@ public class ViewSetMgrManager
                     
                 } catch (IOException ex)
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewSetMgrManager.class, ex);
-                    throw new RuntimeException(ex);
+                    FormDevHelper.appendFormDevError("IOException: ", ex);
                 }
                 
             } else
             {
-                throw new RuntimeException("ViewSet ["+viewSetName+"] cannot be found in source ViewSet.");
+                FormDevHelper.appendFormDevError("ViewSet ["+viewSetName+"] cannot be found in source ViewSet.");
             }
         } else
         {
-            throw new RuntimeException("ViewSet ["+viewSetName+"] is already in the destination and override was false.");
+            FormDevHelper.appendFormDevError("ViewSet ["+viewSetName+"] is already in the destination and override was false.");
         }
     }
-    
 }

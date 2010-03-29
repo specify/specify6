@@ -215,6 +215,7 @@ public class FormViewObj implements Viewable,
     protected Hashtable<String, FVOFieldInfo>  controlsById   = new Hashtable<String, FVOFieldInfo>();
     protected Hashtable<String, FVOFieldInfo>  controlsByName = new Hashtable<String, FVOFieldInfo>();
     protected Hashtable<String, FVOFieldInfo>  labels         = new Hashtable<String, FVOFieldInfo>(); // ID is the Key
+    protected Hashtable<String, JLabel>        allLabels      = new Hashtable<String, JLabel>(); // ID is the Key
     
     protected FormLayout                    formLayout;
     protected PanelBuilder                  builder;
@@ -853,9 +854,7 @@ public class FormViewObj implements Viewable,
 
             } catch (ClassNotFoundException ex)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
-                throw new RuntimeException(ex);
+                FormDevHelper.showFormDevError(ex);
             }
         }
         return carryFwdInfo;
@@ -1880,6 +1879,21 @@ public class FormViewObj implements Viewable,
     public boolean isFieldAutoNumberedById(final String id)
     {
         return isFieldAutoNumbered(controlsById.get(id));
+    }
+    
+    /**
+     * Tells the Form it was cancelled when it was displayed from a SubViewBtn.
+     */
+    public void doWasCacelled()
+    {
+        for (FVOFieldInfo fieldInfo : controlsById.values())
+        {
+            System.out.println(fieldInfo.getFormCell().getType()+"  "+fieldInfo.getComp());
+            if (fieldInfo.isOfType(FormCellIFace.CellType.subview) && fieldInfo.getComp() instanceof SubViewBtn)
+            {
+                ((SubViewBtn)fieldInfo.getComp()).wasCancelled();
+            }
+        }
     }
 
     /**
@@ -3786,7 +3800,10 @@ public class FormViewObj implements Viewable,
             return (JLabel)fi.getComp();
         }
         // else
-        throw new RuntimeException("Couldn't find FieldInfo for ID["+id+"]");
+        String msg = "Couldn't find FieldInfo for ID["+id+"]";
+        log.error(msg);
+        FormDevHelper.appendFormDevError(msg);
+        return UIHelper.createLabel("Missing Label");
     }
 
     /**
@@ -4609,7 +4626,11 @@ public class FormViewObj implements Viewable,
     protected void setDataIntoUI(final boolean doResetAfterFill,
                                  final boolean forceCreateSession)
     {
-        
+        if (formViewDef == null)
+        {
+            return;
+        }
+         
         if (dataObj != null)
         {
             if (AppContextMgr.isSecurityOn())
@@ -4626,7 +4647,7 @@ public class FormViewObj implements Viewable,
         {
             businessRules.beforeFormFill();
         }
-        
+
         if (!isSkippingAttach && dataObj != null && dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() != null)
         {
             if (mvParent == null || mvParent.isTopLevel() || forceCreateSession)
@@ -4774,8 +4795,6 @@ public class FormViewObj implements Viewable,
         boolean hasDefault = false;
         if (weHaveData)
         {
-            //log.debug("*************************** weHaveData!" + dataObj);
-            
             Object[] defaultDataArray = new Object[1]; // needed for setting the default value
             
             // Now we know the we have data, so loop through all the controls
@@ -4799,8 +4818,6 @@ public class FormViewObj implements Viewable,
                     {
                         continue;
                     }
-                    
-                    //System.out.println(this.dataObj);
                     
                     boolean hasID = dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() != null;
                     if (this.dataObj != null && !hasID && !hasDefault && StringUtils.isNotEmpty(defaultValue))
@@ -4861,7 +4878,7 @@ public class FormViewObj implements Viewable,
                             {
                                 if (cellField.getFieldNames().length > 1)
                                 {
-                                    throw new RuntimeException("No Format but mulitple fields were specified for["+cellField.getName()+"]");
+                                    throw new RuntimeException("No Format but multiple fields were specified for["+cellField.getName()+"]");
                                 }
 
                                 if (values[0] == null)
@@ -4872,7 +4889,6 @@ public class FormViewObj implements Viewable,
                                 {
                                     setDataIntoUIComp(comp, isTextFieldPerMode && !(values[0] instanceof Number) ? values[0].toString() : values[0], defaultValue);
                                 }
-
                             }
                         } else
                         {
@@ -4907,8 +4923,8 @@ public class FormViewObj implements Viewable,
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
                         
-                        log.error("FieldCell["+fieldInfo.getFormCell().getName()+" data["+dataObj+"]");
-                        throw new RuntimeException(ex);
+                        FormDevHelper.appendFormDevError("FieldCell["+fieldInfo.getFormCell().getName()+" data["+dataObj+"]");
+                        return;
                     }
                     
                     if (data != null)
@@ -4954,7 +4970,6 @@ public class FormViewObj implements Viewable,
             }
         }
         
-        
         // Adjust the formValidator now that all the data is in the controls
         //boolean doReset = !hasDefault || formValidator == null || !formValidator.hasChanged();
         /*if (dataObj != null)
@@ -4981,7 +4996,6 @@ public class FormViewObj implements Viewable,
             businessRules.afterFillForm(dataObj);
         }
 
-
         //if (doResetAfterFill && mvParent != null && mvParent.isTopLevel() && saveControl != null && isEditing)
         //{
         //    saveControl.setEnabled(false);
@@ -4992,9 +5006,9 @@ public class FormViewObj implements Viewable,
         {
             UIValidator.setIgnoreAllValidation(this, false);
         }
-        
+
         updateControllerUI();
-        
+
         if (session != null && (mvParent == null || mvParent.isTopLevel() || forceCreateSession))
         {
             session.close();
@@ -5005,7 +5019,6 @@ public class FormViewObj implements Viewable,
                 mvParent.setSession(session);  
             }
         }
-
     }
 
     /* (non-Javadoc)
@@ -5631,16 +5644,29 @@ public class FormViewObj implements Viewable,
     public void addLabel(final FormCellLabel formCell, final JLabel label)
     {
 
-        if (formCell != null && StringUtils.isNotEmpty(formCell.getLabelFor()))
+        if (formCell != null)
         {
-            if (labels.get(formCell.getLabelFor()) != null)
+            if (StringUtils.isNotEmpty(formCell.getLabelFor()))
             {
-                String str = "Two labels have the same id ["+formCell.getLabelFor()+"] "+formViewDef.getName();
-                UIRegistry.showError(str);
-                //throw new RuntimeException("Two labels have the same id ["+formCell.getLabelFor()+"] "+formViewDef.getName());
+                if (labels.get(formCell.getLabelFor()) != null)
+                {
+                    String msg = "Two labels have the same id ["+formCell.getLabelFor()+"] "+formViewDef.getName();
+                    FormDevHelper.showFormDevError(msg);
+                }
+                labels.put(formCell.getLabelFor(), new FVOFieldInfo(formCell, label, null, labels.size()));
             }
-            labels.put(formCell.getLabelFor(), new FVOFieldInfo(formCell, label, null, labels.size()));
+            allLabels.put(formCell.getIdent(), label);
         }
+    }
+    
+    /**
+     * Gets a label by id.
+     * @param id the id
+     * @return the JLabel
+     */
+    public JLabel getLabelById(final String id)
+    {
+        return allLabels.get(id);
     }
 
     /* (non-Javadoc)
@@ -6076,8 +6102,8 @@ public class FormViewObj implements Viewable,
 
         // rods - 07/22/08 - Trying to force a session to be created.
         // so child Sets can get lazy loaded.
-        setDataIntoUI(true, true);
         
+        setDataIntoUI(true, true);
         //log.debug("After setDataIntoUI");
         //log.debug("Form     Val: "+(formValidator != null && formValidator.hasChanged()));
         //log.debug("mvParent Val: "+(mvParent != null && mvParent.isTopLevel() && mvParent.hasChanged()));

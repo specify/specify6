@@ -51,6 +51,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -92,6 +93,8 @@ import javax.swing.event.MenuListener;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.install4j.api.launcher.ApplicationLauncher;
@@ -168,8 +171,6 @@ import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.config.init.RegisterSpecify;
 import edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.conversion.DisciplineDuplicator;
-import edu.ku.brc.specify.conversion.TableWriter;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
@@ -198,6 +199,7 @@ import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.prefs.SystemPrefs;
+import edu.ku.brc.specify.tasks.BaseTreeTask;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.AppBase;
@@ -3014,6 +3016,26 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       } 
   }*/
   
+  public static void checkDebugLoggerSettings()
+  {
+      AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+      
+      for (Enumeration<?> e=LogManager.getCurrentLoggers(); e.hasMoreElements();)
+      {
+          Logger logger = (Logger)e.nextElement();
+          int inx = logger.getName().lastIndexOf('.');
+          if (inx > -1)
+          {
+              String  className = logger.getName().substring(inx+1);
+              boolean isOn      = localPrefs.getBoolean(className+".debug", false);
+              if (isOn)
+              {
+                  logger.setLevel(Level.DEBUG); 
+              }
+          }
+      }
+  }
+  
   /**
    *
    */
@@ -3070,6 +3092,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                   // Load Local Prefs
                   AppPreferences localPrefs = AppPreferences.getLocalPrefs();
                   localPrefs.setDirPath(UIRegistry.getAppDataDir());
+                  
+                  checkDebugLoggerSettings();
                   
                   //System.err.println("LocalPrefs: "+(new File(UIRegistry.getAppDataDir())).getCanonicalPath());
                   

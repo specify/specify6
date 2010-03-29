@@ -79,6 +79,7 @@ import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.af.ui.forms.persist.FormDevHelper;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.ColorWrapper;
@@ -111,10 +112,11 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 {
     protected static final Logger log = Logger.getLogger(ValComboBoxFromQuery.class);
 
-    public static final int CREATE_EDIT_BTN   = 1;
-    public static final int CREATE_NEW_BTN    = 2;
-    public static final int CREATE_SEARCH_BTN = 4;
-    public static final int CREATE_ALL        = 7;
+    public static final int CREATE_EDIT_BTN   =  1;
+    public static final int CREATE_NEW_BTN    =  2;
+    public static final int CREATE_SEARCH_BTN =  4;
+    public static final int CREATE_CLONE_BTN  =  8;
+    public static final int CREATE_ALL        = 15;
     
     protected enum MODE {Unknown, Editting, NewAndEmpty, NewAndNotEmpty}
 
@@ -135,6 +137,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected JButton            searchBtn  = null;
     protected JButton            createBtn  = null;
     protected JButton            editBtn    = null;
+    protected JButton            cloneBtn   = null;
     protected DBTableInfo        tableInfo;
     protected String             frameTitle = null;
     protected String             keyName;
@@ -161,6 +164,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected ActionListener defaultSearchAction;
     protected ActionListener defaultEditAction;
     protected ActionListener defaultNewAction;
+    protected ActionListener defaultCloneAction;
     
     protected ViewBasedSearchQueryBuilderIFace builder = null;
     
@@ -191,15 +195,18 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     {
         if (StringUtils.isEmpty(displayColumn))
         {
-            throw new RuntimeException("For ValComboBoxFromQuery table["+tableInfo.getName()+"] displayColumn null.");
+            FormDevHelper.showFormDevError("For ValComboBoxFromQuery table["+tableInfo.getName()+"] displayColumn null.");
+            return;
         }
         if (StringUtils.isEmpty(format) && StringUtils.isEmpty(uiFieldFormatterName))
         {
-            throw new RuntimeException("For ValComboBoxFromQuery table["+tableInfo.getName()+"] both format and fieldFormatterName are null.");
+            FormDevHelper.showFormDevError("For ValComboBoxFromQuery table["+tableInfo.getName()+"] both format and fieldFormatterName are null.");
+            return;
         }
         if (StringUtils.isEmpty(tableInfo.getNewObjDialog()))
         {
-            throw new RuntimeException("For ValComboBoxFromQuery table["+tableInfo.getName()+"] displayInfoDialogName is null.");
+            FormDevHelper.showFormDevError("For ValComboBoxFromQuery table["+tableInfo.getName()+"] displayInfoDialogName is null.");
+            return;
         }
         
         this.tableInfo             = tableInfo;
@@ -299,6 +306,22 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     }
     
     /**
+     * @return the cellName
+     */
+    public String getCellName()
+    {
+        return cellName;
+    }
+
+    /**
+     * @return the tableInfo
+     */
+    public DBTableInfo getTableInfo()
+    {
+        return tableInfo;
+    }
+
+    /**
      * Sets the "cell" name of this control, this is the name of this control in the form.
      * @param cellName the cell name
      */
@@ -336,6 +359,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         if (createBtn != null)
         {
             createBtn.setEnabled(enabled);
+        }
+        if (cloneBtn != null)
+        {
+            cloneBtn.setEnabled(enabled && (dataObj != null || textWithQuery.getSelectedId() != null));
         }
         
         // Cheap easy way of setting the Combobox's Text Field to the proper BG Color
@@ -413,8 +440,18 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         }
         
         boolean hasSearchBtn = StringUtils.isNotEmpty(tableInfo.getSearchDialog());
+        boolean hasCloneBtn  = (btnMask & CREATE_EDIT_BTN) != 0;
 
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p:g,1px,p,1px,p"+(hasSearchBtn ? ",1px,p" : ""), "c:p"), this);
+        StringBuilder sb = new StringBuilder("p:g,1px,p,1px,p");
+        if (hasSearchBtn)
+        {
+            sb.append(",1px,p");
+        }
+        if (hasCloneBtn)
+        {
+            sb.append(",1px,p");
+        }
+        PanelBuilder    pb = new PanelBuilder(new FormLayout(sb.toString(), "c:p"), this);
         CellConstraints cc = new CellConstraints();
 
         pb.add(textWithQuery, cc.xy(1,1));
@@ -447,6 +484,13 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         {
             createBtn = createBtn("CreateObj", "NewRecordTT", objTitle); 
             pb.add(createBtn, cc.xy(x,1));
+            x += 2;
+        }
+
+        if (hasCloneBtn && (perm == null || (perm != null && perm.canAdd())))
+        {
+            cloneBtn = createBtn("CloneObj", "CloneRecordTT", objTitle); 
+            pb.add(cloneBtn, cc.xy(x,1));
             x += 2;
         }
 
@@ -492,7 +536,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 {
                     currentMode = MODE.Editting;
                     textWithQuery.setIgnoreFocusLost(true);
-                    createEditFrame(false);
+                    createEditFrame(false, false);
                 }
             };
             editBtn.addActionListener(defaultEditAction);
@@ -507,10 +551,24 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                     //currentMode = dataObj != null ? MODE.NewAndNotEmpty : MODE.NewAndEmpty;
                     currentMode = MODE.NewAndNotEmpty;
                     textWithQuery.setIgnoreFocusLost(true);
-                    createEditFrame(true);
+                    createEditFrame(true, false);
                 }
             };
             createBtn.addActionListener(defaultNewAction);
+        }
+        
+        if (cloneBtn != null)
+        {
+            defaultCloneAction = new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    currentMode = MODE.NewAndNotEmpty;
+                    textWithQuery.setIgnoreFocusLost(true);
+                    createEditFrame(true, true);
+                }
+            };
+            cloneBtn.addActionListener(defaultCloneAction);
         }
     }
     
@@ -662,8 +720,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     /**
      * Creates a Dialog (non-modal) that will display detail information
      * for the object in the text field.
+     * @param isNewObject
+     * @param isCloned
      */
-    protected void createEditFrame(final boolean isNewObject)
+    protected void createEditFrame(final boolean isNewObject, final boolean isCloned)
     {
         boolean canModify = true;
         if (AppContextMgr.isSecurityOn() && tableInfo.getPermissions() != null)
@@ -692,7 +752,20 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         
         if (isNewObject)
         {
-            newDataObj = FormHelper.createAndNewDataObj(tableInfo.getClassObj());
+            if (isCloned)
+            {
+                try
+                {
+                    newDataObj = (FormDataObjIFace) dataObj.clone();
+                    
+                } catch (CloneNotSupportedException e)
+                {
+                    e.printStackTrace();
+                }
+            } else
+            {
+                newDataObj = FormHelper.createAndNewDataObj(tableInfo.getClassObj());
+            }
             
             // Now get the setter for an object and set the value they typed into the combobox and place it in
             // the first field name

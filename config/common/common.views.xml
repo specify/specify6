@@ -888,7 +888,7 @@
                     <cell type="field" id="2" name="status"  uitype="combobox"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="4"/>
+                    <cell type="label" id="divLabel" label=" " initialize="align=right"/>
                     <cell type="field" id="4" name="divisionCBX" uitype="combobox" ignore="true"/>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="dateAccessioned" uitype="formattedtext" uifieldformatter="Date" default="today"/>
@@ -1004,7 +1004,7 @@
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="type" uitype="combobox" />
                     
-                    <cell type="label" labelfor="4"/>
+                    <cell type="label" id="divLabel" label=" " initialize="align=right"/>
                     <cell type="field" id="4" name="divisionCBX" uitype="combobox" ignore="true"/>
                     
                 </row>

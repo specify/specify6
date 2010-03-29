@@ -39,6 +39,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import edu.ku.brc.af.ui.forms.persist.FormDevHelper;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewSet;
 import edu.ku.brc.af.ui.forms.persist.ViewSetIFace;
@@ -232,7 +233,8 @@ public class ViewSetMgr
             {
                 log.error(vs.getName());
             }
-            throw new RuntimeException("There are multiple User ViewSets so I don't know which one to choose for the default.");
+            FormDevHelper.showFormDevError("There are multiple User ViewSets so I don't know which one to choose for the default.");
+            return null;
         }
         return viewsHash.get(viewSetName);        
     }
@@ -316,21 +318,25 @@ public class ViewSetMgr
                     // these can go away once we validate the XML
                     if (StringUtils.isEmpty(typeStr))
                     {
-                        throw new RuntimeException("ViewSet type cannot be null!");
+                        FormDevHelper.appendFormDevError("ViewSet type cannot be null!");
+                        return;
                     }
                     if (StringUtils.isEmpty(title))
                     {
-                        throw new RuntimeException("ViewSet title cannot be null!");
+                        FormDevHelper.appendFormDevError("ViewSet title cannot be null!");
+                        return;
                     }                       
                     if (StringUtils.isEmpty(fileName))
                     {
-                        throw new RuntimeException("ViewSet file cannot be null!");
+                        FormDevHelper.appendFormDevError("ViewSet file cannot be null!");
+                        return;
                     }
                     // else
                     File viewSetFile = new File(contextDir.getAbsoluteFile() + File.separator + fileName);
                     if (!viewSetFile.exists())
                     {
-                        throw new RuntimeException("ViewSet file cannot be found at["+viewSetFile.getAbsolutePath()+"]");
+                        FormDevHelper.appendFormDevError("ViewSet file cannot be found at["+viewSetFile.getAbsolutePath()+"]");
+                        return;
                     }
                     
                     ViewSet viewSet = new ViewSet(ViewSet.parseType(typeStr), fName, title, fileName, contextDir);
@@ -338,14 +344,16 @@ public class ViewSetMgr
                     
                 } else
                 {
-                    log.error("ViewSet Name["+fName+"] is in use.");
+                    String msg = "ViewSet Name["+fName+"] is in use.";
+                    log.error(msg);
+                    FormDevHelper.appendFormDevError(msg);
                 }
             }
         } else
         {
             String msg = "The root element for the document was null!";
             log.error(msg);
-            throw new ConfigurationException(msg);
+            FormDevHelper.appendFormDevError(msg);
         } 
     }
 

@@ -233,6 +233,28 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DBMSUserMgr#dropTable(java.lang.String)
+     */
+    @Override
+    public boolean dropTable(String tableName)
+    {
+        try
+        {
+            if (connection != null)
+            {
+                int rv = BasicSQLUtils.update(connection, "DROP TABLE "+tableName); // Returns number of tables
+                
+                return rv > -1;
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } 
+        return false;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DBMSUserMgr#dropUser(java.lang.String)
      */
     @Override

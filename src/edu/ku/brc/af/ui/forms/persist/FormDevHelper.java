@@ -19,6 +19,8 @@ package edu.ku.brc.af.ui.forms.persist;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -40,10 +42,10 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class FormDevHelper
 {
-    protected static Boolean       isFormDevMode = null;
-    protected static CustomDialog   frame         = null;
-    protected static JTextArea     msgArea;
-    protected static StringBuilder buffer        = new StringBuilder();
+    private static Boolean       isFormDevMode = null;
+    private static CustomDialog  frame         = null;
+    private static JTextArea     msgArea;
+    private static StringBuilder buffer        = new StringBuilder();
     
     
     /**
@@ -53,19 +55,35 @@ public class FormDevHelper
     {
         if (frame == null)
         {
-            msgArea = UIHelper.createTextArea();
+            msgArea = UIHelper.createTextArea(10, 60);
             msgArea.setLineWrap(true);
             msgArea.setWrapStyleWord(true);
             
             JPanel p = new JPanel(new BorderLayout());
             p.add(UIHelper.createScrollPane(msgArea, true), BorderLayout.CENTER);
             
-            frame = new CustomDialog((Frame)UIRegistry.getTopWindow(), "Form Development Errors", false, CustomDialog.OK_BTN, p);
+            /*CellConstraints cc = new CellConstraints();
+            PanelBuilder    pb = new PanelBuilder(new FormLayout("p,f:p:g", "p"));
+            JButton*/
+            
+            frame = new CustomDialog((Frame)UIRegistry.getTopWindow(), "Form Development Errors", false, CustomDialog.OKCANCEL, p)
+            {
+                @Override
+                protected void cancelButtonPressed()
+                {
+                    buffer.setLength(0);
+                    msgArea.setText("");
+                }
+            };
+            frame.setOkLabel("Close");
+            frame.setCancelLabel("Clear");
+            
             frame.setSize(800, 600);
             frame.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         }
         return frame;
     }
+    
     /**
      * @return the isFormDevMode
      */
@@ -84,6 +102,41 @@ public class FormDevHelper
     public static void setIsFormDevMode(Boolean isFormDevMode)
     {
         FormDevHelper.isFormDevMode = isFormDevMode;
+    }
+    
+    /**
+     * @param msg
+     * @param throwable
+     */
+    public static void appendFormDevError(final String msg, final Throwable throwable)
+    {
+        appendFormDevError(msg + " Exception "+throwable.getMessage());
+    }
+    
+    /**
+     * @param msg
+     * @param throwable
+     */
+    public static void appendFormDevError(final Throwable throwable)
+    {
+        appendFormDevError(" Exception "+throwable.getMessage());
+    }
+    
+    /**
+     * @param msg
+     */
+    public static void showFormDevError(final String msg)
+    {
+        appendFormDevError(msg);
+        UIRegistry.showError(msg);
+    }
+    
+    /**
+     * @param msg
+     */
+    public static void showFormDevError(final Throwable throwable)
+    {
+        showFormDevError(throwable);
     }
     
     /**
@@ -110,8 +163,8 @@ public class FormDevHelper
             
             if (showFirstTime)
             {
-                frame.setVisible(true);
                 frame.setSize(800, 600);
+                UIHelper.centerAndShow(frame);
                 
             } else
             {

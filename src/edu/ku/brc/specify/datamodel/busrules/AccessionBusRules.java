@@ -141,7 +141,7 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
         
         DBTableInfo divisionTI = DBTableIdMgr.getInstance().getInfoById(Division.getClassTableId());
         FormViewObj fvo = (FormViewObj)viewable;
-        JLabel label = (JLabel)fvo.getLabelFor("4");
+        JLabel label = (JLabel)fvo.getLabelById("divLabel");
         if (label != null)
         {
             label.setText(divisionTI.getTitle()+":");

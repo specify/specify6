@@ -613,6 +613,8 @@ public class ConvertTaxonHelper
             {
                 fixStrandedTaxon(oldSB);
                 
+                frame.setDesc("Renumbering the tree nodes, this may take a while...");
+                
                 HashSet<Integer> ttdHash = new HashSet<Integer>();
                 for (CollectionInfo colInfo : CollectionInfo.getFilteredCollectionInfoList())
                 {
@@ -630,10 +632,6 @@ public class ConvertTaxonHelper
                             log.debug(sql);
                             Integer txRootId = BasicSQLUtils.getCount(sql);
                             Taxon   txRoot   = (Taxon)session.getData("FROM Taxon WHERE id = " + txRootId);
-                            
-                            //TreeHelper.fixFullnameForNodeAndDescendants(txRoot);
-                            //txRoot.setNodeNumber(1);
-                            //GenericDBConversion.fixNodeNumbersFromRoot(txRoot);
                             
                             NodeNumberer<Taxon,TaxonTreeDef,TaxonTreeDefItem> nodeNumberer = new NodeNumberer<Taxon,TaxonTreeDef,TaxonTreeDefItem>(txRoot.getDefinition());
                             nodeNumberer.doInBackground();
@@ -653,6 +651,7 @@ public class ConvertTaxonHelper
                         ttdHash.add(colInfo.getTaxonTreeDef().getId());
                     }
                 }
+                frame.setDesc("Renumbering done.");
             }
             missingParentTaxonCount = 0;
             

@@ -62,6 +62,7 @@ import edu.ku.brc.af.ui.db.PickListIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.persist.FormDevHelper;
 import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.ui.AutoCompletion;
 import edu.ku.brc.ui.ColorWrapper;
@@ -186,7 +187,8 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
             }
         } else
         {
-            throw new RuntimeException("PickListDBAdapterIFace is not an instanceof ComboBoxModel and MUST BE!");
+            String msg = "PickListDBAdapterIFace is not an instanceof ComboBoxModel and MUST BE!";
+            FormDevHelper.appendFormDevError(msg);
         }
         
         this.adapter = adapter;

@@ -32,7 +32,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
-import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -327,7 +326,10 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
             
         } else if (transientViews.get(viewDef.getName()) != null)
         {
-            throw new RuntimeException("Transient View Name ["+viewDef.getName()+"] is already being used!");
+            String msg = "Transient View Name ["+viewDef.getName()+"] is already being used!";
+            log.error(msg);
+            FormDevHelper.appendFormDevError(msg);
+            return;
         }
         
         transientViewDefs.put(viewDef.getName(), viewDef);
@@ -384,49 +386,56 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
             i18NResourceName = getAttr(rootDOM, "i18nresname", null);
 
             String viewsName = ViewLoader.getViews(rootDOM, views, altViewsViewDefName);
-            if (doSetName)
+            if (viewsName != null)
             {
-                name = viewsName;
-
-            } else if (!viewsName.equals(name))
-            {
-                String msg = "The name in the registry doesn't match the name in the file!["+name+"]["+viewsName+"]";
-                log.error(msg);
-                throw new ConfigurationException(msg);
-            }
-            
-            boolean hasResBundleName = StringUtils.isNotEmpty(i18NResourceName);
-            if (hasResBundleName)
-            {
-                UIRegistry.loadAndPushResourceBundle(i18NResourceName);
-            }
-            
-            try
-            {
-                // Do these first so the view can check their altViews against them 
-                ViewLoader.getViewDefs(rootDOM, viewDefs, views, doMapDefinitions);
+                if (doSetName)
+                {
+                    name = viewsName;
+    
+                } else if (!viewsName.equals(name))
+                {
+                    String msg = "The name in the registry doesn't match the name in the file!["+name+"]["+viewsName+"]";
+                    log.error(msg);
+                    FormDevHelper.appendFormDevError(msg);
+                    return;
+                }
                 
-            } catch (Exception ex)
-            {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewSet.class, ex);
-                ex.printStackTrace();
-                
-            } finally
-            {
+                boolean hasResBundleName = StringUtils.isNotEmpty(i18NResourceName);
                 if (hasResBundleName)
                 {
-                    UIRegistry.popResourceBundle();
+                    UIRegistry.loadAndPushResourceBundle(i18NResourceName);
                 }
+                
+                try
+                {
+                    // Do these first so the view can check their altViews against them 
+                    ViewLoader.getViewDefs(rootDOM, viewDefs, views, doMapDefinitions);
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewSet.class, ex);
+                   
+                    
+                } finally
+                {
+                    if (hasResBundleName)
+                    {
+                        UIRegistry.popResourceBundle();
+                    }
+                }
+    
+                verifyViewsAndViewDefs(altViewsViewDefName);
             }
-
-            verifyViewsAndViewDefs(altViewsViewDefName);
             
         } else
         {
             String msg = "The root element for the document was null!";
             log.error(msg);
-            throw new ConfigurationException(msg);
+            FormDevHelper.appendFormDevError(msg);
+            hasLoadedViews = false;
+            return;
         }
         hasLoadedViews = true;
     }

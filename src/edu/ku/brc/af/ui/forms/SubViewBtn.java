@@ -28,6 +28,7 @@ import java.awt.Component;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
@@ -55,6 +56,7 @@ import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.af.ui.forms.persist.FormCellSubViewIFace;
+import edu.ku.brc.af.ui.forms.persist.FormDevHelper;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.validation.FormValidator;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable;
@@ -107,6 +109,8 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     protected Object                newDataObj;
     protected Class<?>              classObj;
     protected FormDataObjIFace      parentObj;
+    
+    protected HashSet<Object>       cachedSet = null;
     
     // Security
     private PermissionSettings      perm = null;
@@ -221,10 +225,8 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
 
         } catch (ClassNotFoundException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SubViewBtn.class, ex);
            log.error(ex);
-           throw new RuntimeException(ex);
+           FormDevHelper.showFormDevError(ex);
         }
     }
     
@@ -655,6 +657,15 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             
             updateBtnText(); // note: that by calling this, 'size' gets called and that loads the Set (this must be done).
             
+            if (dataObj instanceof Set)
+            {
+                cachedSet = new HashSet<Object>();
+                for (Object obj : (Set<?>)dataObj)
+                {
+                    cachedSet.add(obj);
+                }
+            }
+            
         } catch (Exception ex)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
@@ -667,6 +678,20 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             {
                 sessionLocal.close();
             }
+        }
+    }
+    
+    /**
+     * 
+     */
+    @SuppressWarnings("unchecked")
+    public void wasCancelled()
+    {
+        if (cachedSet != null && cachedSet.size() != ((Set<?>)dataObj).size())
+        {
+            Set<Object> dataSet = (Set<Object>)dataObj;
+            dataSet.clear();
+            dataSet.addAll(cachedSet);
         }
     }
 

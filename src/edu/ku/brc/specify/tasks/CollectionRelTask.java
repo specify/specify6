@@ -17,16 +17,13 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.ui.UIRegistry.getFormattedResStr;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
@@ -34,62 +31,37 @@ import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.event.DocumentEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxAction;
-import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
-import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.FormPane;
-import edu.ku.brc.af.ui.PasswordStrengthUI;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
-import edu.ku.brc.af.ui.forms.validation.ValPasswordField;
-import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionRelType;
-import edu.ku.brc.specify.datamodel.CollectionRelationship;
-import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.plugins.CollectionRelPlugin;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.EditDeleteAddPanel;
-import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.JStatusBar;
-import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.dnd.GhostActionable;
-import edu.ku.brc.ui.dnd.GhostActionableDropManager;
-import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
-import edu.ku.brc.ui.dnd.Trash;
-import edu.ku.brc.util.Pair;
 
 /**
  * @author rods
@@ -360,8 +332,8 @@ public class CollectionRelTask extends BaseTask
             @Override
             public void adjustForm(final FormViewObj fvo)
             {
-                /*JLabel     leftLbl  = fvo.getLabel("left");
-                JLabel     rightLbl = fvo.getLabel("right");
+                JLabel     leftLbl  = fvo.getLabelById("left");
+                JLabel     rightLbl = fvo.getLabelById("right");
                 
                 Collection leftCol  = (Collection)leftList.getSelectedValue();
                 Collection rightCol = (Collection)rightList.getSelectedValue();
@@ -377,7 +349,7 @@ public class CollectionRelTask extends BaseTask
                 
                 Font bold = leftLbl.getFont().deriveFont(Font.BOLD).deriveFont(leftLbl.getFont().getSize2D()+2.0f);
                 leftLbl.setFont(bold);
-                rightLbl.setFont(bold);*/
+                rightLbl.setFont(bold);
             }
         
         });

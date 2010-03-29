@@ -542,7 +542,6 @@ public class DatabaseLoginPanel extends JTiledPanel
         {
             public void actionPerformed(ActionEvent e)
             {
-                log.debug("panel action performed"); //$NON-NLS-1$
                 doLogin();
             }
         });
@@ -846,7 +845,7 @@ public class DatabaseLoginPanel extends JTiledPanel
         }
         else
         {
-            log.debug("lister is NULL"); //$NON-NLS-1$
+            log.debug("listener is NULL"); //$NON-NLS-1$
         }
     }
 
@@ -920,10 +919,7 @@ public class DatabaseLoginPanel extends JTiledPanel
      */
     public void doLogin()
     {
-        log.debug("doLogin()"); //$NON-NLS-1$
-        
         isLoggingIn = true;
-        log.debug("preparing to save"); //$NON-NLS-1$
         save();
         
         if (masterUsrPwdProvider != null && !masterUsrPwdProvider.hasMasterUserAndPwdInfo(getUserName(), getPassword()))
@@ -984,12 +980,12 @@ public class DatabaseLoginPanel extends JTiledPanel
                     }
                     
                     UIRegistry.setEmbeddedDBPath(mobileTmpDir.getAbsolutePath());
-                    log.debug(UIRegistry.getEmbeddedDBPath());
+                    //log.debug(UIRegistry.getEmbeddedDBPath());
                     
                     if (UIRegistry.getMobileEmbeddedDBPath() == null)
                     {
                         UIRegistry.setMobileEmbeddedDBPath(UIRegistry.getDefaultMobileEmbeddedDBPath(getDatabaseName()));
-                        log.debug(UIRegistry.getMobileEmbeddedDBPath());
+                        //log.debug(UIRegistry.getMobileEmbeddedDBPath());
                     }
                 }
                 

@@ -94,7 +94,6 @@ public class SpDBLoginModule implements LoginModule
                            final Map<String, ?> sharedState, 
                            final Map<String, ?> options)
     {
-        log.debug("initialize");
         this.callbackHandler = callbackHandlerArg;
         this.subject         = subjectArg;
     }
@@ -184,7 +183,6 @@ public class SpDBLoginModule implements LoginModule
      */
     public boolean commit() throws LoginException
     {
-        log.debug("commit");
         if (!authenticated)
         {
             log.debug("user was not authenticated");

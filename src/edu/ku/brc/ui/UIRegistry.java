@@ -108,9 +108,6 @@ public class UIRegistry
     protected static final String MOBILE_EMBEDDED_DB_PATH = "mobile.embedded.dbpath";
     protected static final String EMBEDDED_DB_DIR         = "SPECIFY_DATA";
     
-    protected static final boolean debugPaths  = true;
-
-    
     public static final String FRAME        = "frame";
     public static final String MENUBAR      = "menubar";
     public static final String TOOLBAR      = "toolbar";
@@ -587,12 +584,10 @@ public class UIRegistry
     	}
     	//log.debug("Def Working Path["+instance.defaultWorkingPath+"]");
     	
-        if (debugPaths)
-        {
-            try {
-                log.debug("************************ getDefaultWorkingPath: ["+(new File(instance.defaultWorkingPath).getCanonicalPath())+"]");
-            } catch (Exception ex) {}
-        }
+        try {
+            log.debug("************************ getDefaultWorkingPath: ["+(new File(instance.defaultWorkingPath).getCanonicalPath())+"]");
+        } catch (Exception ex) {}
+        
         return instance.defaultWorkingPath;
     }
 
@@ -658,12 +653,11 @@ public class UIRegistry
                 throw new RuntimeException("Couldn't create data directory for "+instance.appName+" ["+dir.getAbsolutePath()+"]");
             }
         }
-        if (debugPaths)
-        {
-            try {
-                log.debug("************************ setDefaultWorkingPath: ["+dir.getCanonicalPath()+"]");
-            } catch (Exception ex) {}
-        }
+        
+        try {
+            log.debug("************************ setDefaultWorkingPath: ["+dir.getCanonicalPath()+"]");
+        } catch (Exception ex) {}
+        
         try
         {
         	return dir.getCanonicalPath();
@@ -740,15 +734,16 @@ public class UIRegistry
                 mobile = (new File(getMobileEmbeddedDBPath())).getCanonicalPath();
             }
         } catch (IOException ex) {}
-            System.err.println("AppDataDir:                  "+getAppDataDir());
-            System.err.println("UserHomeAppDir:              "+getUserHomeAppDir());
-            System.err.println("UserHomeDir:                 "+getUserHomeDir());
-            
-            System.err.println("DefaultEmbeddedDBPath:       "+getDefaultEmbeddedDBPath());
-            System.err.println("DefaultMobileEmbeddedDBPath: "+getEmbeddedDBPath());
-            System.err.println("MobileEmbeddedDBPath:        "+mobile);
-            System.err.println("DefaultWorkingPath:          "+getDefaultWorkingPath());
-            //System.err.println("MobileMachineDir:            "+DBConnection.getMobileMachineDir("<database name>"));
+        
+        log.debug("AppDataDir:                  "+getAppDataDir());
+        log.debug("UserHomeAppDir:              "+getUserHomeAppDir());
+        log.debug("UserHomeDir:                 "+getUserHomeDir());
+        
+        log.debug("DefaultEmbeddedDBPath:       "+getDefaultEmbeddedDBPath());
+        log.debug("DefaultMobileEmbeddedDBPath: "+getEmbeddedDBPath());
+        log.debug("MobileEmbeddedDBPath:        "+mobile);
+        log.debug("DefaultWorkingPath:          "+getDefaultWorkingPath());
+        //System.err.println("MobileMachineDir:            "+DBConnection.getMobileMachineDir("<database name>"));
     }
 
     /**
@@ -1764,12 +1759,9 @@ public class UIRegistry
      */
     private static void dumpCanonicalPath(final String desc, final File path)
     {
-        if (debugPaths)
-        {
-            try {
-                log.debug("***** dumpCanonicalPath: "+desc+": ["+path.getCanonicalPath()+"]");
-            } catch (Exception ex) {}
-        }
+        try {
+            log.debug("***** dumpCanonicalPath: "+desc+": ["+path.getCanonicalPath()+"]");
+        } catch (Exception ex) {}
     }
     
     /**
@@ -2436,8 +2428,6 @@ public class UIRegistry
         }
     }
 
-
-    
     //-----------------------------------------------------------------
     //-- Inner Classes
     //-----------------------------------------------------------------

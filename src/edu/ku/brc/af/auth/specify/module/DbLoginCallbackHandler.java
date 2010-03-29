@@ -123,7 +123,7 @@ public class DbLoginCallbackHandler implements CallbackHandler
                     } else if ((((TextInputCallback)callbacks[i]).getPrompt()).equals("DBPwd:")) //$NON-NLS-1$
                     {
                         ((TextInputCallback)callbacks[i]).setText(dbPwd);
-                        log.debug("handle - got dbPwd:" + dbPwd); //$NON-NLS-1$
+                        //log.debug("handle - got dbPwd:" + dbPwd); //$NON-NLS-1$
                     }
                 }
                 else
@@ -133,10 +133,10 @@ public class DbLoginCallbackHandler implements CallbackHandler
             }
         } catch (Exception e)
         {
+            e.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DbLoginCallbackHandler.class, e);
             log.error("Exception: " + e.getMessage()); //$NON-NLS-1$
-            e.printStackTrace();
         }
     }
 }

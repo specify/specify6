@@ -135,6 +135,7 @@
     
     
     <icon name="CreateObj" alias="PlusSign"/>
+    <icon name="CloneObj"  file="clone.png"          sizes="all"/>
     <icon name="RelatedTable" file="related_table.png"  sizes="32"/>
     <icon name="TableField" file="field.png"  sizes="all"/>
     

@@ -265,9 +265,9 @@ public class ViewFactory
                 
         } else
         {
-            throw new RuntimeException("Form Type not covered by builder ["+viewDef.getType()+"]");
+            FormDevHelper.appendFormDevError("Form Type not covered by builder ["+viewDef.getType()+"]");
         }
-
+        return null;
     }
 
     /**
@@ -417,8 +417,8 @@ public class ViewFactory
             {
                 String msg = "Field["+cellField.getName()+ "] is missing formatter by name ["+uiFormatterName+"]";
                 log.debug(msg);
-                //throw new RuntimeException(msg);
-                 formatter = new GenericStringUIFieldFormatter("Temp", tableClass, cellField.getName(), "", len);
+                FormDevHelper.appendFormDevError(msg);
+                formatter = new GenericStringUIFieldFormatter("Temp", tableClass, cellField.getName(), "", len);
             }
             
             if (formatter.isDate() || formatter.isNumeric())
@@ -695,6 +695,7 @@ public class ViewFactory
             btnOpts |= cellField.getPropertyAsBoolean("editbtn", true) ? ValComboBoxFromQuery.CREATE_EDIT_BTN : 0;
             btnOpts |= cellField.getPropertyAsBoolean("newbtn", true) ? ValComboBoxFromQuery.CREATE_NEW_BTN : 0;
             btnOpts |= cellField.getPropertyAsBoolean("searchbtn", true) ? ValComboBoxFromQuery.CREATE_SEARCH_BTN : 0;
+            btnOpts |= cellField.getPropertyAsBoolean("clonebtn", true) ? ValComboBoxFromQuery.CREATE_CLONE_BTN : 0;
             
             String helpContext = cellField.getProperty("hc");
             
@@ -726,7 +727,8 @@ public class ViewFactory
 
         }
         // else
-        throw new RuntimeException("CBX Name for ValComboBoxFromQuery ["+cbxName+"] is empty!");
+        FormDevHelper.appendFormDevError("CBX Name for ValComboBoxFromQuery ["+cbxName+"] is empty!");
+        return null;
     }
 
     /**
@@ -912,11 +914,15 @@ public class ViewFactory
                 
             } else
             {
-                log.error("Could TypeSearchForQueryFactory.getTextFieldWithInfo("+txtName+")");
+                String msg = "Could TypeSearchForQueryFactory.getTextFieldWithInfo("+txtName+")";
+                log.error(msg);
+                FormDevHelper.appendFormDevError(msg);
             }
         } else
         {
-            throw new RuntimeException("textfieldinfo Name for textFieldWithInfo ["+txtName+"] is empty!");
+            String msg = "textfieldinfo Name for textFieldWithInfo ["+txtName+"] is empty!";
+            log.error(msg);
+            FormDevHelper.appendFormDevError(msg);
         }
         return textFieldInfo;
     }
@@ -1050,7 +1056,10 @@ public class ViewFactory
         String pluginName = cellField.getProperty("name");
         if (StringUtils.isEmpty(pluginName))
         {
-            throw new RuntimeException("Creating plugin and the name property was missing. ["+cellField.getName()+"]");
+            String msg = "Creating plugin and the name property was missing. ["+cellField.getName()+"]";
+            log.error(msg);
+            FormDevHelper.appendFormDevError(msg);
+            return null;
         }
         
         // We should refactor the plugin manager.
@@ -1104,7 +1113,8 @@ public class ViewFactory
                 // check for another required interface (GetSetValueIFace)
                 if (!(uiPlugin instanceof GetSetValueIFace))
                 {
-                    throw new RuntimeException("Plugin of class ["+pluginClass.getName()+"] doesn't implement the GetSetValueIFace!");
+                    FormDevHelper.appendFormDevError("Plugin of class ["+pluginClass.getName()+"] doesn't implement the GetSetValueIFace!");
+                    return null;
                 }
                 
                 if (validator != null)
@@ -1121,11 +1131,9 @@ public class ViewFactory
                 
             } catch (Exception ex)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewFactory.class, ex);
                log.error(ex);
                ex.printStackTrace();
-               throw new RuntimeException(ex);
+               FormDevHelper.appendFormDevError(ex);
             }
         }
         log.error("Couldn't find plugin by name["+pluginName+"]");
@@ -1340,7 +1348,8 @@ public class ViewFactory
                 
                 if (adapter == null || adapter.getPickList() == null)
                 {
-                    throw new RuntimeException("PickList Adapter ["+pickListName+"] cannot be null!");
+                    FormDevHelper.appendFormDevError("PickList Adapter ["+pickListName+"] cannot be null!");
+                    return false;
                 }
             }
             
@@ -1694,7 +1703,7 @@ public class ViewFactory
                     break;
                 
                 default:
-                    throw new RuntimeException("Don't recognize uitype=["+uiType+"]");
+                    FormDevHelper.appendFormDevError("Don't recognize uitype=["+uiType+"]");
                 
             } // switch
 
@@ -2005,7 +2014,8 @@ public class ViewFactory
                 
             } else
             {
-                throw new RuntimeException("Panel Type is not implemented.");
+                FormDevHelper.appendFormDevError("Panel Type is not implemented.");
+                return false;
             }
        }
         
@@ -2520,10 +2530,10 @@ public class ViewFactory
 
         } catch (Exception e)
         {
+            e.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewFactory.class, e);
             log.error("buildPanel - Outer Name["+altView.getName()+"]");
-            e.printStackTrace();
         }
         return null;
     }
@@ -2756,7 +2766,7 @@ public class ViewFactory
                 } else
                 {
                     // This is bad to have when you don't have any items yet. - rods
-                    //throw new RuntimeException("Form could be created because the data was null! ["+view.getName()+"]["+altView.getName()+"]");
+                    //FormDevHelper.appendFormDevError("Form could be created because the data was null! ["+view.getName()+"]["+altView.getName()+"]");
                 }
                 return viewable;
             }

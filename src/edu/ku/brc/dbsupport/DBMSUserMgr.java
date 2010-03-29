@@ -80,6 +80,13 @@ public abstract class DBMSUserMgr
     public abstract boolean dropDatabase(String dbName);
     
     /**
+     * Drops a database table with a given name.
+     * @param tableName the name of the table
+     * @return true on success
+     */
+    public abstract boolean dropTable(String tableName);
+    
+    /**
      * Drops a user with a given name.
      * @param username the name of the user's login
      * @return true on success

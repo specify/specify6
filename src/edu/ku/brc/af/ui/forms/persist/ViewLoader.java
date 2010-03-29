@@ -58,7 +58,6 @@ import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.forms.validation.TypeSearchForQueryFactory;
-import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.UIHelper;
 
@@ -214,7 +213,9 @@ public class ViewLoader
                             
                         } else
                         {
-                            throw new RuntimeException("Selector Value is missing for viewDefName["+viewDefName+"] altName["+altName+"]");
+                            String msg = "Selector Value is missing for viewDefName["+viewDefName+"] altName["+altName+"]";
+                            FormDevHelper.appendFormDevError(msg);
+                            return null;
                         }
                     }
                     
@@ -262,37 +263,35 @@ public class ViewLoader
         
         if (isEmpty(name))
         {
-            throw new RuntimeException("name is null.");
+            FormDevHelper.appendFormDevError("Name is null for element["+element.asXML()+"]");
+            return null;
         }
 
         if (isEmpty(className))
         {
-            throw new RuntimeException("className is null. name["+name+"]");
+            FormDevHelper.appendFormDevError("className is null. name["+name+"] for element["+element.asXML()+"]");
+            return null;
         }
 
         if (isEmpty(gettableClassName))
         {
-            throw new RuntimeException("gettableClassName Name is null.name["+name+"] classname["+className+"]");
+            FormDevHelper.appendFormDevError("gettableClassName Name is null.name["+name+"] classname["+className+"]");
+            return null;
         }
 
-        if (isEmpty(settableClassName))
-        {
-            //throw new RuntimeException("settableClassName Name is null.name["+name+"] classname["+className+"] settableClassName["+settableClassName+"]");
-        }
-        
         DBTableInfo tableinfo = DBTableIdMgr.getInstance().getByClassName(className);
 
-        ViewDef.ViewType type;
+        ViewDef.ViewType type = null;
         try
         {
             type = ViewDefIFace.ViewType.valueOf(element.attributeValue(TYPE));
 
         } catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewLoader.class, ex);
-            log.error("view["+name+"] has illegal type["+element.attributeValue(TYPE)+"]", ex);
-            throw ex;
+            String msg = "view["+name+"] has illegal type["+element.attributeValue(TYPE)+"]";
+            log.error(msg, ex);
+            FormDevHelper.appendFormDevError(msg, ex);
+            return null;
         }
 
         ViewDef viewDef = null;//new ViewDef(type, name, className, gettableClassName, settableClassName, desc);
@@ -365,14 +364,18 @@ public class ViewLoader
                 Element   element = (Element) i.next(); // assume element is NOT null, if it is null it will cause an exception
                 ViewIFace view    = createView(element, altViewsViewDefName);
                 
-                if (views.get(view.getName()) == null)
+                if (view != null)
                 {
-                    views.put(view.getName(), view);
-                } else
-                {
-                    String msg = "View Set ["+instance.viewSetName+"] ["+view.getName()+"] is not unique.";
-                    log.error(msg);
-                    throw new ConfigurationException(msg);
+                    if (views.get(view.getName()) == null)
+                    {
+                        views.put(view.getName(), view);
+                    } else
+                    {
+                        String msg = "View Set ["+instance.viewSetName+"] ["+view.getName()+"] is not unique.";
+                        log.error(msg);
+                        FormDevHelper.appendFormDevError(msg);
+                        return null;
+                    }
                 }
             }
         }
@@ -404,17 +407,20 @@ public class ViewLoader
             {
                 Element  element = (Element) i.next(); // assume element is NOT null, if it is null it will cause an exception
                 ViewDef  viewDef = createViewDef(element);
-                
-                //log.debug("Loaded ViewDef["+viewDef.getName()+"]");
-                if (viewDefs.get(viewDef.getName()) == null)
+                if (viewDef != null)
                 {
-                    viewDefs.put(viewDef.getName(), viewDef);
-                    
-                } else
-                {
-                    String msg = "View Set ["+instance.viewSetName+"] the View Def Name ["+viewDef.getName()+"] is not unique.";
-                    log.error(msg);
-                    throw new ConfigurationException(msg);
+                    //log.debug("Loaded ViewDef["+viewDef.getName()+"]");
+                    if (viewDefs.get(viewDef.getName()) == null)
+                    {
+                        viewDefs.put(viewDef.getName(), viewDef);
+                        
+                    } else
+                    {
+                        String msg = "View Set ["+instance.viewSetName+"] the View Def Name ["+viewDef.getName()+"] is not unique.";
+                        log.error(msg);
+                        FormDevHelper.appendFormDevError(msg);
+                        return null;
+                    }
                 }
             }
             
@@ -455,7 +461,10 @@ public class ViewLoader
                         
                     } else
                     {
-                        throw new RuntimeException("Couldn't find the ViewDef for formtable definition name["+((FormViewDefIFace)viewDef).getDefinitionName()+"]");
+                        String msg = "Couldn't find the ViewDef for formtable definition name["+((FormViewDefIFace)viewDef).getDefinitionName()+"]";
+                        log.error(msg);
+                        FormDevHelper.appendFormDevError(msg);
+                        return;
                     }
                 }
             }
@@ -487,7 +496,9 @@ public class ViewLoader
                         rulesList.put(id, ruleElement.getTextTrim());
                     } else
                     {
-                        throw new RuntimeException("The name is missing for rule["+ruleElement.getTextTrim()+"] is missing.");
+                        String msg = "The name is missing for rule["+ruleElement.getTextTrim()+"] is missing.";
+                        log.error(msg);
+                        FormDevHelper.appendFormDevError(msg);
                     }
                 }
             }
@@ -599,7 +610,6 @@ public class ViewLoader
                     return autoStr;
                 }
                 // else
-                //throw new RuntimeException("Element ["+element.getName()+"] Cell or Sep is null for 'dup' or 'auto 'on column def.");
                 FormDevHelper.appendFormDevError("Element ["+element.getName()+"] Cell or Sep is null for 'dup' or 'auto 'on column def.");
                 return "";
             }
@@ -773,7 +783,6 @@ public class ViewLoader
                             
                             if (isNotEmpty(format) && isNotEmpty(formatName))
                             {
-                                //throw new RuntimeException("Both format and formatname cannot both be set! ["+cellName+"]");
                                 String msg = "Both format and formatname cannot both be set! ["+cellName+"] ignoring format";
                                 log.error(msg);
                                 FormDevHelper.appendFormDevError(msg);
@@ -1181,7 +1190,8 @@ public class ViewLoader
      * @param tableInfo
      * @return
      */
-    protected static String getTitleFromFieldName(final String fieldName, final DBTableInfo tableInfo)
+    protected static String getTitleFromFieldName(final String fieldName, 
+                                                  final DBTableInfo tableInfo)
     {
         DBTableChildIFace derivedCI = null;
         if (fieldName.indexOf(".") > -1)
@@ -1195,12 +1205,13 @@ public class ViewLoader
                 return "";
             }
         }
+        
         DBTableChildIFace tblChild = derivedCI != null ? derivedCI : tableInfo.getItemByName(fieldName);
         if (tblChild == null)
         {
             String msg = "The Field Name ["+fieldName+"] was not in the Table ["+tableInfo.getTitle()+"] in ViewSet ["+instance.viewSetName+"]";
-            FormDevHelper.appendFormDevError(msg);
             log.error(msg);
+            FormDevHelper.appendFormDevError(msg);
             return "";
         }
         return tblChild.getTitle();
@@ -1253,14 +1264,15 @@ public class ViewLoader
                             {
                                 if (!fieldName.equals("this"))
                                 {
+                                    //FormCellFieldIFace fcf = get
                                     lblCell.setLabel(getTitleFromFieldName(fieldName, tableInfo));
                                 }
                                 
                             } else
                             {
                                 String msg = "Setting Label - Form control with id["+idFor+"] is not in ViewDef or Panel ["+name+"] in ViewSet ["+instance.viewSetName+"]";
-                                FormDevHelper.appendFormDevError(msg);
                                 log.error(msg);
+                                FormDevHelper.appendFormDevError(msg);
                             }
                         }
                     }

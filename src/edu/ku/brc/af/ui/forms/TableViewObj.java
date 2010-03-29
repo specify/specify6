@@ -99,6 +99,7 @@ import edu.ku.brc.af.ui.forms.persist.FormCellLabel;
 import edu.ku.brc.af.ui.forms.persist.FormCellLabelIFace;
 import edu.ku.brc.af.ui.forms.persist.FormCellSubView;
 import edu.ku.brc.af.ui.forms.persist.FormCellSubViewIFace;
+import edu.ku.brc.af.ui.forms.persist.FormDevHelper;
 import edu.ku.brc.af.ui.forms.persist.FormViewDef;
 import edu.ku.brc.af.ui.forms.persist.FormViewDefIFace;
 import edu.ku.brc.af.ui.forms.persist.TableViewDef;
@@ -1039,6 +1040,8 @@ public class TableViewObj implements Viewable,
                     if (dObj.getId() != null)
                     {
                         localSession = DataProviderFactory.getInstance().createSession();
+                        //dObj = localSession.merge(dObj);
+                        localSession.attach(dObj);
                         try
                         {
                             localSession.attach(dObj);
@@ -1151,10 +1154,15 @@ public class TableViewObj implements Viewable,
                         parentDataObj.removeReference(dObj, dataSetFieldName);
                     }
                     
-                    if (mvParent.getMultiViewParent() != null && mvParent.getMultiViewParent().getCurrentValidator() != null)
+                    if (mvParent.getMultiViewParent() != null)
                     {
-                        mvParent.getCurrentValidator().setHasChanged(true);
-                        mvParent.getMultiViewParent().getCurrentValidator().validateForm();
+                        if (mvParent.getMultiViewParent().getCurrentValidator() != null)
+                        {
+                            mvParent.getCurrentValidator().setHasChanged(true);
+                            mvParent.getMultiViewParent().getCurrentValidator().validateForm();
+                        }
+                        
+                        multiView.getCurrentViewAsFormViewObj().doWasCacelled();
                     }
                 }
             }
@@ -2676,7 +2684,8 @@ public class TableViewObj implements Viewable,
                                 
                                 if (adapter == null || adapter.getPickList() == null)
                                 {
-                                    throw new RuntimeException("PickList Adapter ["+pickListName+"] cannot be null!");
+                                    FormDevHelper.showFormDevError("PickList Adapter ["+pickListName+"] cannot be null!");
+                                    return null;
                                 }
                                 colInfo.setAdaptor(adapter);
                             }

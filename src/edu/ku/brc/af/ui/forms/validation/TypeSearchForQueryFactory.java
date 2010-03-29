@@ -30,6 +30,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.db.TextFieldWithInfo;
+import edu.ku.brc.af.ui.forms.persist.FormDevHelper;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -219,10 +220,10 @@ public class TypeSearchForQueryFactory
         {
             log.error("Object Type Search Name ["+name+"] not found.");
         }
-
-        UIRegistry.showError("Couldn't create ValComboBoxFromQuery because the entry ["+name+"] is not in the typesearch_def.xml");
+        String msg = "Couldn't create ValComboBoxFromQuery because the entry ["+name+"] is not in the typesearch_def.xml";
+        FormDevHelper.appendFormDevError(msg);
+        UIRegistry.showError(msg);
         return null;
-        //throw new RuntimeException("Couldn't create ValComboBoxFromQuery by name["+name+"]");
     }
 
     /**

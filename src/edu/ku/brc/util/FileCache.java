@@ -270,7 +270,7 @@ public class FileCache implements DataCacheIFace
      */
     protected synchronized void loadCacheMappingFile()
 	{
-		log.info("Loading old cache mapping data from " + mappingFilename);
+		log.debug("Loading old cache mapping data from " + mappingFilename);
 		File mappingFile = new File(cacheDir, mappingFilename);
         if (!cacheDir.exists())
         {
@@ -302,7 +302,7 @@ public class FileCache implements DataCacheIFace
 	protected synchronized void loadCacheAccessTimesFile()
 	{
 		String accessTimeFilename = getAccessTimeFilename();
-		log.info("Loading old cache access times from " + accessTimeFilename);
+		log.debug("Loading old cache access times from " + accessTimeFilename);
 		File accessTimesFile = new File(cacheDir,accessTimeFilename);
 		if( accessTimesFile.exists() )
 		{
@@ -461,7 +461,7 @@ public class FileCache implements DataCacheIFace
             return false;
         }
 
-        log.info("Purging " + filename + " from cache");
+        log.debug("Purging " + filename + " from cache");
         File f = new File(filename);
         long filesize = f.length();
         if( !f.delete() )
@@ -603,7 +603,7 @@ public class FileCache implements DataCacheIFace
 		int result = httpClient.executeMethod(get);
 		if( result != 200 )
 		{
-			log.info("Retrieving "+url+" resulted in unexpected code: "+result);
+			log.debug("Retrieving "+url+" resulted in unexpected code: "+result);
 			throw new HttpException("Unexpected HTTP code received: " + result);
 		}
 
@@ -653,7 +653,7 @@ public class FileCache implements DataCacheIFace
 		
 		// the resource was previously cached, but the cache file is missing
 		// cleanup the cache mapping
-		log.info("Previously cached file '"+filename+"' is missing.  Cleaning up cache map data.");
+		log.debug("Previously cached file '"+filename+"' is missing.  Cleaning up cache map data.");
 		handleToFilenameHash.remove(key);
 		return null;
 	}
@@ -700,15 +700,18 @@ public class FileCache implements DataCacheIFace
 		return totalCacheSize;
 	}
 
-    /////////////////////////////////
-    // Implementation of DataCacheIFace
-    /////////////////////////////////
-    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.DataCacheIFace#shutdown()
+     */
     public void shutdown() throws Exception
     {
         saveCacheMapping();
     }
     
+
+    /////////////////////////////////
+    // Implementation of DataCacheIFace
+    /////////////////////////////////
     
 
 //	public static void main(String[] args) throws IOException
@@ -719,7 +722,7 @@ public class FileCache implements DataCacheIFace
 //		fc.setMaxCacheSize(1000);
 //		fc.setEnforceMaxCacheSize(true);
 //
-//		log.info("Current cache size: " + fc.getCurrentCacheSize());
+//		log.debug("Current cache size: " + fc.getCurrentCacheSize());
 //
 //		// a little File caching test
 //        String filename = "/home/jstewart/Desktop/jds.asc";
@@ -727,16 +730,16 @@ public class FileCache implements DataCacheIFace
 //        String fileKey = null;
 //		if( fileFile == null )
 //		{
-//			log.info("Cached file not found.");
+//			log.debug("Cached file not found.");
 //			fileKey = fc.cacheFile(new File(filename));
-//			log.info("Cached " + filename + " under key value " + fileKey);
+//			log.debug("Cached " + filename + " under key value " + fileKey);
 //		}
 //		else
 //		{
-//			log.info("Found cached file under " + fileFile.getAbsolutePath());
+//			log.debug("Found cached file under " + fileFile.getAbsolutePath());
 //		}
 //
-//		log.info("Current cache size: " + fc.getCurrentCacheSize());
+//		log.debug("Current cache size: " + fc.getCurrentCacheSize());
 //
 //		// a little web resource caching test
 //        String httpUrl = "http://www.google.com/";
@@ -744,23 +747,23 @@ public class FileCache implements DataCacheIFace
 //        String urlKey = null;
 //		if( urlFile == null )
 //		{
-//			log.info("Cached web resource not found.");
+//			log.debug("Cached web resource not found.");
 //			urlKey = fc.cacheWebResource("http://www.google.com/");
-//			log.info("Cached http://www.google.com/ under key value " + urlKey);
+//			log.debug("Cached http://www.google.com/ under key value " + urlKey);
 //		}
 //		else
 //		{
-//			log.info("Found cached web resource under " + urlFile.getAbsolutePath());
+//			log.debug("Found cached web resource under " + urlFile.getAbsolutePath());
 //		}
 //
-//		log.info("Current cache size: " + fc.getCurrentCacheSize());
+//		log.debug("Current cache size: " + fc.getCurrentCacheSize());
 //
 //		// a little data caching test
 //		File dataFile = fc.getCacheFile("31a55ff8-763b-4ee6-92e8-485c29f8a937");
 //        String dataKey = null;
 //		if( dataFile == null )
 //		{
-//			log.info("Cached data not found.");
+//			log.debug("Cached data not found.");
 //			Random r = new Random();
 //			int count = r.nextInt(100000);
 //			StringBuilder sb = new StringBuilder();
@@ -769,24 +772,24 @@ public class FileCache implements DataCacheIFace
 //				sb.append("X");
 //			}
 //			dataKey = fc.cacheData(sb.toString().getBytes());
-//			log.info("Cached data bytes under key value " + dataKey);
+//			log.debug("Cached data bytes under key value " + dataKey);
 //		}
 //		else
 //		{
-//			log.info("Found cached data under " + dataFile.getAbsolutePath());
+//			log.debug("Found cached data under " + dataFile.getAbsolutePath());
 //		}
 //
-//		log.info("Current cache size: " + fc.getCurrentCacheSize());
+//		log.debug("Current cache size: " + fc.getCurrentCacheSize());
 //        
 //        long fileTime = fc.getLastAccessTime(fileKey);
 //        long urlTime  = fc.getLastAccessTime(urlKey);
 //        long dataTime = fc.getLastAccessTime(dataKey);
 //        
-//        log.info("File was last accessed at " + fileTime);
-//        log.info("URL was last accessed at " + urlTime);
-//        log.info("Data was last accessed at " + dataTime);
+//        log.debug("File was last accessed at " + fileTime);
+//        log.debug("URL was last accessed at " + urlTime);
+//        log.debug("Data was last accessed at " + dataTime);
 //
-//        log.info("Requesting cached web resource: " + urlKey);
+//        log.debug("Requesting cached web resource: " + urlKey);
 //        
 //        fc.getCacheFile(urlKey);
 //
@@ -794,13 +797,13 @@ public class FileCache implements DataCacheIFace
 //        urlTime  = fc.getLastAccessTime(urlKey);
 //        dataTime = fc.getLastAccessTime(dataKey);
 //        
-//        log.info("File was last accessed at " + fileTime);
-//        log.info("URL was last accessed at " + urlTime);
-//        log.info("Data was last accessed at " + dataTime);
+//        log.debug("File was last accessed at " + fileTime);
+//        log.debug("URL was last accessed at " + urlTime);
+//        log.debug("Data was last accessed at " + dataTime);
 //
 //        fc.clear();
 //        
-//        log.info("Current cache size: " + fc.getCurrentCacheSize());
+//        log.debug("Current cache size: " + fc.getCurrentCacheSize());
 //
 //		fc.saveCacheMapping();
 //	}

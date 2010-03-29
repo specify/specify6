@@ -42,12 +42,14 @@ import edu.ku.brc.specify.datamodel.SpPrincipal;
 public class UserPrincipalSQLService
 {
     protected static final Logger log = Logger.getLogger(UserPrincipalSQLService.class);
-
+    protected static final boolean isDebug = false;
+    
     /**
      * 
      */
     public UserPrincipalSQLService()
     {
+        
     }
 
     /**
@@ -79,22 +81,24 @@ public class UserPrincipalSQLService
             }
         } catch (SQLException e)
         {
+            e.printStackTrace();
+            log.error("Exception caught: " + e);
             edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalSQLService.class, e);
-            log.error("Exception caught: " + e);
-            e.printStackTrace();
+            
         } finally
         {
             try
             {
                 if (conn != null)  conn.close();
                 if(pstmt != null)  pstmt.close(); 
+                
             } catch (SQLException e)
             {
-                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalSQLService.class, e);
                 log.error("Exception caught: " + e.toString());
                 e.printStackTrace();
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalSQLService.class, e);
             }
         }
         return result;
@@ -111,14 +115,14 @@ public class UserPrincipalSQLService
         PreparedStatement pstmt = null;
         try
         {
-            log.debug("getUsersPrincipalsByUserId: " + userId); //$NON-NLS-1$
+            if (isDebug) log.debug("getUsersPrincipalsByUserId: " + userId); //$NON-NLS-1$
             conn = DatabaseService.getInstance().getConnection();
             if (conn != null)
             {
                 pstmt = conn.prepareStatement("SELECT specifyuser_spprincipal.SpPrincipalID " //$NON-NLS-1$
                                 + " FROM specifyuser_spprincipal WHERE SpecifyUserID=?"); //$NON-NLS-1$
                 pstmt.setString(1, userId);
-                log.debug("executing: " + pstmt.toString()); //$NON-NLS-1$
+                if (isDebug) log.debug("executing: " + pstmt.toString()); //$NON-NLS-1$
                 rs = pstmt.executeQuery();
             } else
             {
@@ -190,10 +194,10 @@ public class UserPrincipalSQLService
             }
         } catch (SQLException e)
         {
-            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalSQLService.class, e);
             log.error("Exception caught: " + e); //$NON-NLS-1$
             e.printStackTrace();
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalSQLService.class, e);
         } finally
         {
             try
@@ -201,13 +205,7 @@ public class UserPrincipalSQLService
                 if (conn != null)  conn.close();
                 if(pstmt != null)  pstmt.close(); 
                 
-            } catch (SQLException e)
-            {
-                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalSQLService.class, e);
-                log.error("Exception caught: " + e.toString()); //$NON-NLS-1$
-                e.printStackTrace();
-            }
+            } catch (SQLException e) { }
         }
         return false;
     }
@@ -261,11 +259,11 @@ public class UserPrincipalSQLService
         PreparedStatement pstmt = null;
         try
         {
-            log.debug("getUsersIdByName: " + userName); //$NON-NLS-1$
+            if (isDebug) log.debug("getUsersIdByName: " + userName); //$NON-NLS-1$
             conn  = DatabaseService.getInstance().getConnection();
             pstmt = conn.prepareStatement("SELECT specifyuser.SpecifyUserID FROM specifyuser WHERE name=?"); //$NON-NLS-1$
             pstmt.setString(1, userName);
-            log.debug("executing: " + pstmt.toString()); //$NON-NLS-1$
+            if (isDebug) log.debug("executing: " + pstmt.toString()); //$NON-NLS-1$
             ResultSet rs = pstmt.executeQuery();
             while (rs.next())
             {
@@ -304,20 +302,20 @@ public class UserPrincipalSQLService
      */
     public static Set<SpPrincipal> getUsersGroupsByUsername(final String user) throws Exception
     {
-        log.debug("findGroups() called"); //$NON-NLS-1$
+        if (isDebug) log.debug("findGroups() called"); //$NON-NLS-1$
         Set<SpPrincipal>  principals = new HashSet<SpPrincipal>();
         Connection        conn       = null;
         PreparedStatement pstmt      = null;
         try
         {
             conn = DatabaseService.getInstance().getConnection();
-            log.debug("findGroups() called.  user:" + user); //$NON-NLS-1$
+            if (isDebug) log.debug("findGroups() called.  user:" + user); //$NON-NLS-1$
             conn = DatabaseService.getInstance().getConnection();
             String myUserId = UserPrincipalSQLService.getUsersIdByName(user);
             String sql = "SELECT specifyuser_spprincipal.SpPrincipalID FROM specifyuser_spprincipal WHERE SpecifyUserID=?"; //$NON-NLS-1$
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, myUserId);
-            log.debug("executing: " + pstmt.toString()); //$NON-NLS-1$
+            if (isDebug) log.debug("executing: " + pstmt.toString()); //$NON-NLS-1$
             
             ResultSet spPrincipalIDSet = pstmt.executeQuery();
             while (spPrincipalIDSet.next())
@@ -333,7 +331,7 @@ public class UserPrincipalSQLService
                 pstmt.setString(1, myUserId);
                 pstmt.setString(2, princId);
                 pstmt.setString(3, princId);
-                //log.debug("findGroups() executing query:" + pstmt.toString()); //$NON-NLS-1$
+                //if (isDebug) log.debug("findGroups() executing query:" + pstmt.toString()); //$NON-NLS-1$
                 ResultSet rs = pstmt.executeQuery();
                 while (rs.next())
                 {
@@ -348,10 +346,11 @@ public class UserPrincipalSQLService
 
         } catch (SQLException e)
         {
-            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalSQLService.class, e);
             log.error("Exception caught: " + e); //$NON-NLS-1$
             e.printStackTrace();
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalSQLService.class, e);
+            
         } finally
         {
             try
@@ -359,13 +358,7 @@ public class UserPrincipalSQLService
                 if (conn != null)   conn.close();
                 if (pstmt != null)  pstmt.close();
                 
-            } catch (SQLException e)
-            {
-                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalSQLService.class, e);
-                log.error("addUser Exception caught: " + e.toString()); //$NON-NLS-1$
-                e.printStackTrace();
-            }
+            } catch (SQLException e) {}
         }
         return principals;
     }
