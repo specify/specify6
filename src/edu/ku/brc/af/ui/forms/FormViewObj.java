@@ -3090,7 +3090,7 @@ public class FormViewObj implements Viewable,
                                 carryFwdDataObj = null;
                             }
                             
-                            if (carryFwdDataObj == null)
+                            if (carryFwdDataObj == null && isCarryForwardConfgured())
                             {
                                 UIRegistry.showLocalizedError("FormViewObj.NO_CF_OBJ");
                             }
