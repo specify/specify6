@@ -4735,6 +4735,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             int totalPrepCount = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*)" + sqlPostfix);
             setProcess(0, totalPrepCount);
             
+            Statement updateStatement = newDBConn.createStatement();
+            
             //int     prepDateInx     = oldNameIndex.get("CatalogedDate") + 1;
             int     lastEditedByInx = oldNameIndex.get("LastEditedBy");
             Integer idIndex         = oldNameIndex.get("CollectionObjectID");
@@ -5109,7 +5111,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 {
 	                try
 	                {
-	                    Statement updateStatement = newDBConn.createStatement();
+	                    
 	                    // updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
 	                    if (BasicSQLUtils.myDestinationServerType != BasicSQLUtils.SERVERTYPE.MS_SQLServer)
 	                    {
@@ -5122,9 +5124,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 	                    }
 	                    //log.debug(str.toString());
 	                    updateStatement.executeUpdate(str.toString());
-	                    updateStatement.clearBatch();
-	                    updateStatement.close();
-	                    updateStatement = null;
 	
 	                } catch (Exception e)
 	                {
@@ -5141,8 +5140,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             } while (rs.next());
             
             prepTypeStmt.close();
-
             prepStmt.close();
+            updateStatement.clearBatch();
+            updateStatement.close();
+            updateStatement = null;
 
             if (hasFrame)
             {
@@ -5164,6 +5165,48 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 {
                     log.info("Processed CollectionObject " + count + " records.");
                 }
+            }
+            
+            
+            String postSQL = " FROM collectionobject co " +
+            	             "INNER JOIN collectionobjectcatalog cc ON co.CollectionObjectID = cc.CollectionObjectCatalogID " +
+                             "WHERE NOT (co.DerivedFromID IS NOT NULL) AND Location IS NOT NULL";
+            
+            int cntTotal = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) " + postSQL);
+            if (cntTotal > 0)
+            {
+                frame.setProcess(0, cntTotal);
+                frame.setDesc("Moving Location data to Preparations...");
+                
+                IdMapperIFace idMapper = idMapperMgr.get("collectionobjectcatalog", "CollectionObjectCatalogID");
+                
+                PreparedStatement pStmt = newDBConn.prepareStatement("UPDATE preparation SET StorageLocation=? WHERE PreparationID=?");
+                stmt  = oldDBConn.createStatement();
+                rs    = stmt.executeQuery("SELECT CollectionObjectID, Location " + postSQL);
+                int cnt = 0;
+                while (rs.next())
+                {
+                    int    id     = rs.getInt(1);
+                    String locStr = rs.getString(2);
+                    
+                    Integer newId = idMapper.get(id);
+                    if (newId != null)
+                    {
+                        pStmt.setString(1, locStr);
+                        pStmt.setInt(2, newId);
+                        pStmt.execute();
+                    }
+                    cnt++;
+                    if (cnt % 100 == 0)
+                    {
+                        frame.setProcess(cnt);
+                    }
+                }
+                rs.close();
+                stmt.close();
+                pStmt.close();
+                frame.setProcess(cntTotal);
+                
             }
 
         } catch (SQLException e)
@@ -5291,6 +5334,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             String insertStmtStr = null;
             Pair<String, String> datePair = new Pair<String, String>();
             
+            IdMapperIFace detIdMapper = idMapperMgr.get("determination", "DeterminationID");
+            
             Integer catSeriesIdInx  = oldNameIndex.get("CatSeriesID");
             Integer oldRecIDInx     = oldNameIndex.get("DeterminationID");
             int     lastEditedByInx = oldNameIndex.get("LastEditedBy");
@@ -5360,8 +5405,21 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                     if (i == 0)
                     {
-                        Integer recId = count + 1;
-                        str.append(getStrValue(recId));
+                        Integer recId = rs.getInt(oldRecIDInx);
+                        Integer newId = detIdMapper.get(recId);
+                        if (newId != null)
+                        {
+                            str.append(getStrValue(newId));
+                            
+                        } else 
+                        {
+                            String msg = String.format("Error - Unable to map old id %d to new Id", recId);
+                            log.error(msg);
+                            tblWriter.logError(msg);
+                            isError = true;
+                            continue;
+                        }
+                        
 
                     } else if (newFieldName.equals("Version")) // User/Security changes
                     {

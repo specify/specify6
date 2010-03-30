@@ -852,7 +852,6 @@ public class ConvertTaxonHelper
      */
     private void fixStrandedTaxon(final StringBuilder colDBColumns)
     {
-        
         String fromClause = String.format(" FROM taxonname tx LEFT JOIN taxonname t2 ON tx.ParentTaxonNameID = t2.TaxonNameID " +
                                           "Inner Join taxonomicunittype tu ON tx.TaxonomicUnitTypeID = tu.TaxonomicUnitTypeID " +
                                           "WHERE t2.TaxonNameID IS NULL AND tx.RankID IS NOT NULL AND tx.RankID > 0 AND tx.TaxonomyTypeID %s AND tu.Kingdom %s", 
