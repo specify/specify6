@@ -252,6 +252,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     protected DisciplineType                                disciplineType         = null;
     protected ConversionLogger                              convLogger             = null;
     protected SimpleDateFormat                              sdf                    = new SimpleDateFormat("yyyy-MM-dd");
+    
+    private Hashtable<Integer, Collection>                  collIdToCollObj        = new Hashtable<Integer, Collection>();
+
 
     /**
      * "Old" means the database you want to copy "from"
@@ -2266,7 +2269,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     /**
      * Checks to see if any of the names in the array are in passed in name
      * @param referenceNames array of reference names
-     * @param name the name to be figured out
+     * @param kingdomTaxonName the name to be figured out
      * @return true if there is a match
      */
     protected boolean checkName(String[] referenceNames, final String nameArg)
@@ -4596,40 +4599,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     }
     
     //-------------------------------------------------------------------------------------------------
-    private Hashtable<Integer, Collection> collIdToCollObj = new Hashtable<Integer, Collection>();
-    private Collection getCollection(final int colId)
-    {
-        Collection collection = collIdToCollObj.get(colId);
-        if (collection == null)
-        {
-            Session tmpSession = null;
-            try
-            {
-                tmpSession = HibernateUtil.getNewSession();
-                Query q = tmpSession.createQuery("FROM Collection WHERE id = "+getCollectionMemberId());
-                List<?> colList = q.list();
-                if (colList != null && colList.size() == 1)
-                {
-                    collection = (Collection)colList.get(0);
-                    collection.forceLoad();
-                    collIdToCollObj.put(colId, collection);
-                }
-                
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-                throw new RuntimeException(ex);
-                
-            } finally
-            {
-                if (tmpSession != null)
-                {
-                    tmpSession.close();
-                }
-            }
-        }
-        return collection;
-    }
 
 
     /**
@@ -5334,7 +5303,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             String insertStmtStr = null;
             Pair<String, String> datePair = new Pair<String, String>();
             
-            IdMapperIFace detIdMapper = idMapperMgr.get("determination", "DeterminationID");
+            IdMapperIFace detIdMapper = IdMapperMgr.getInstance().get("determination", "DeterminationID");
             
             Integer catSeriesIdInx  = oldNameIndex.get("CatSeriesID");
             Integer oldRecIDInx     = oldNameIndex.get("DeterminationID");
@@ -5419,7 +5388,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             isError = true;
                             continue;
                         }
-                        
 
                     } else if (newFieldName.equals("Version")) // User/Security changes
                     {

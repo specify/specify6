@@ -38,8 +38,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import com.mchange.v2.async.StrandedTaskReporting;
-
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -49,7 +47,6 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.treeutils.NodeNumberer;
-import edu.ku.brc.specify.treeutils.TreeHelper;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
@@ -72,7 +69,6 @@ public class ConvertTaxonHelper
     protected ProgressFrame                  frame;
     
     protected String                         taxonomyTypeIdInClause = null;
-    protected String                         kingdomIdInClause      = null;
     protected String                         taxonFromClause        = null;
     
     protected Vector<CollectionInfo>         collectionInfoList;
@@ -251,26 +247,23 @@ public class ConvertTaxonHelper
         // TaxonomyType
         //---------------------------------
         
-        HashSet<Integer> hashSet = new HashSet<Integer>();
-        StringBuilder    inSB    = new StringBuilder();
-        StringBuilder    kgInSB  = new StringBuilder();
+        HashSet<Integer> txTypHashSet = new HashSet<Integer>();
+        StringBuilder    inSB         = new StringBuilder();
+        
+        //HashMap<Integer, StringBuilder> txTypToKgdmHash = new HashMap<Integer, StringBuilder>();
         for (CollectionInfo ci : CollectionInfo.getFilteredCollectionInfoList())
         {
-            log.debug("For Collection["+ci.getCatSeriesName()+"]  TaxonomyTypeId: "+ci.getTaxonomyTypeId() +"  "+ (hashSet.contains(ci.getTaxonomyTypeId()) ? "Done" : "not Done."));
-            if (!hashSet.contains(ci.getTaxonomyTypeId()))
+            log.debug("For Collection["+ci.getCatSeriesName()+"]  TaxonomyTypeId: "+ci.getTaxonomyTypeId() +"  "+ (txTypHashSet.contains(ci.getTaxonomyTypeId()) ? "Done" : "not Done."));
+            if (!txTypHashSet.contains(ci.getTaxonomyTypeId()))
             {
                 log.debug("Mapping TaxonomyTypeId ["+ci.getTaxonomyTypeId()+"]  For Collection["+ci.getCatSeriesName()+"]");
                 if (inSB.length() > 0) inSB.append(',');
                 inSB.append(ci.getTaxonomyTypeId());
-                hashSet.add(ci.getTaxonomyTypeId());
-                
-                if (kgInSB.length() > 0) kgInSB.append(',');
-                kgInSB.append(ci.getKingdomId());
+                txTypHashSet.add(ci.getTaxonomyTypeId());
             }
         }
         
         taxonomyTypeIdInClause = " in (" + inSB.toString() + ")";
-        kingdomIdInClause = " in (" + kgInSB.toString() + ")";
         
         idMapperMgr.addTableMapper("TaxonomyType", "TaxonomyTypeID", true);
         
@@ -279,16 +272,14 @@ public class ConvertTaxonHelper
         //---------------------------------
         
         taxonFromClause = String.format(" FROM taxonname tx Inner Join taxonomicunittype tu ON tx.TaxonomicUnitTypeID = tu.TaxonomicUnitTypeID " +
-        		"WHERE tx.TaxonomyTypeId %s AND (tu.Kingdom %s OR (tx.RankID = 0 AND tu.Kingdom = 0)) ORDER BY tx.RankID", taxonomyTypeIdInClause, kingdomIdInClause);
+        		                        "WHERE tx.TaxonomyTypeId %s ORDER BY tx.RankID", 
+        		                        taxonomyTypeIdInClause);
         String sql      = "SELECT COUNT(*)" + taxonFromClause;
         log.debug(sql);
         int    count    = BasicSQLUtils.getCountAsInt(oldDBConn, sql);
         
         sql   = "SELECT tx.TaxonNameID" + taxonFromClause;
         log.debug(count+" - " + sql);
-        
-        //sb.setLength(0);
-        //sb.append("SELECT TaxonNameID FROM taxonname");
         
         // This mapping is used by Discipline
         idMapper = idMapperMgr.addTableMapper("TaxonName", "TaxonNameID", sql, false);
@@ -486,8 +477,9 @@ public class ConvertTaxonHelper
         return null;
     }
     
-    /**
-     * 
+    /** =============================================================================
+     *                      Convert Taxon
+     *  =============================================================================
      */
     private void convertTaxonRecords()
     {
@@ -854,8 +846,8 @@ public class ConvertTaxonHelper
     {
         String fromClause = String.format(" FROM taxonname tx LEFT JOIN taxonname t2 ON tx.ParentTaxonNameID = t2.TaxonNameID " +
                                           "Inner Join taxonomicunittype tu ON tx.TaxonomicUnitTypeID = tu.TaxonomicUnitTypeID " +
-                                          "WHERE t2.TaxonNameID IS NULL AND tx.RankID IS NOT NULL AND tx.RankID > 0 AND tx.TaxonomyTypeID %s AND tu.Kingdom %s", 
-                                          taxonomyTypeIdInClause, kingdomIdInClause);
+                                          "WHERE t2.TaxonNameID IS NULL AND tx.RankID IS NOT NULL AND tx.RankID > 0 AND tx.TaxonomyTypeID %s", 
+                                          taxonomyTypeIdInClause);
         
         String sql = "SELECT COUNT(*)" + fromClause;
         int numStrandedTaxon = BasicSQLUtils.getCountAsInt(oldDBConn, sql);
