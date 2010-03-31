@@ -26,7 +26,6 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.specify.datamodel.Attachment;
@@ -215,6 +214,8 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
         {
             AttachmentOwnerIFace<?> owner = (AttachmentOwnerIFace<?>)dataObj;
             
+            owner = session.merge(owner);
+            
             // now check to see if the attachments referenced by this owner have no other
             // references in the DB
             
@@ -229,25 +230,8 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
                 
                 if (totalCount != null && totalCount == 1)
                 {
-                    // rods - We have decided that will automatically go ahead and delete
-                    // the file on disk. We can make this a preference later if we wish.
-                    /*if (false)
-                    {
-                        int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
-                                UIRegistry.getResourceString("AttachmentOwnerBaseBusRules.DEL_FROM_DISK"),  //$NON-NLS-1$
-                                UIRegistry.getResourceString("AttachmentOwnerBaseBusRules.DEL_FROM_DISK_TITLE"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.NO_OPTION); // I18N //$NON-NLS-1$
-                        
-                        if (option == JOptionPane.YES_OPTION)
-                        {
-                            log.debug("delete the file from disk: " + attach.getAttachmentLocation()); //$NON-NLS-1$
-                            session.delete(attach);
-                            owner.getAttachmentReferences().remove(attach);
-                        }
-                    } else*/
-                    {
-                        session.delete(attach);
-                        owner.getAttachmentReferences().remove(attach);
-                    }
+                    session.delete(attach);
+                    owner.getAttachmentReferences().remove(attach);
                 }
             }
         }
