@@ -411,7 +411,7 @@ public class ConvScopeFixer
         String cntSQL = "SELECT COUNT(oi.OtherIdentifierID) FROM otheridentifier AS oi " + 
                         "Inner Join collectionobjectcatalog AS cc ON oi.CollectionObjectID = cc.CollectionObjectCatalogID";
         
-        String qrySQL = "SELECT oi.OtherIdentifierID, cc.CollectionObjectTypeID FROM otheridentifier AS oi " + 
+        String qrySQL = "SELECT oi.OtherIdentifierID, cc.CatalogSeriesID FROM otheridentifier AS oi " + 
                         "Inner Join collectionobjectcatalog AS cc ON oi.CollectionObjectID = cc.CollectionObjectCatalogID";
         
         return fixTableWithColMemId(cntSQL, qrySQL, "OtherIdentifier", "OtherIdentifierID", null);
@@ -451,8 +451,7 @@ public class ConvScopeFixer
         PreparedStatement pStmt = null;
         try
         {
-            stmt  = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            
+            stmt  = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             pStmt = newDBConn.prepareStatement("UPDATE paleocontext SET CollectionMemberID=? WHERE PaleoContextID=?");
             
             ResultSet rs = stmt.executeQuery(qrySQL);

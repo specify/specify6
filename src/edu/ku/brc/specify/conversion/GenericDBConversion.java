@@ -7985,41 +7985,40 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             Session localSession = HibernateUtil.getCurrentSession();
             HibernateUtil.beginTransaction();
     
-            // get all of the old records
-            String sql  = "SELECT s.StratigraphyID, s.SuperGroup, s.Group, s.Formation, s.Member, s.Bed, Remarks, Text1, Text2, Number1, Number2, YesNo1, YesNo2, GeologicTimePeriodID FROM stratigraphy s";
-            stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            rs   = stmt.executeQuery(sql);
-    
-            boolean isOK = false;
+            int count = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM stratigraphy");
+            if (count < 1) return;
+            
             if (hasFrame)
             {
-                if (rs.last())
-                {
-                    setProcess(0, rs.getRow());
-                    isOK = rs.first();
-                }
-            } else
-            {
-                isOK = rs.first();
+                setProcess(0, count);
             }
             
-            if (!isOK) return;
-    
             // create an ID mapper for the geography table (mainly for use in converting localities)
-            IdHashMapper  lithoStratIdMapper = IdMapperMgr.getInstance().addHashMapper("stratigraphy_stratigraphyid", false);
-            IdMapperIFace gtpIdMapper        = IdMapperMgr.getInstance().get("geologictimeperiod", "GeologicTimePeriodID");
-            
+            IdHashMapper lithoStratIdMapper = IdMapperMgr.getInstance().addHashMapper("stratigraphy_stratigraphyid", false);
             if (lithoStratIdMapper == null)
             {
                 UIRegistry.showError("The lithoStratIdMapper was null.");
                 return;
             }
             
-            Hashtable<Integer, Integer> stratGTPIdHash   = new Hashtable<Integer, Integer>();
+            IdTableMapper gtpIdMapper = IdMapperMgr.getInstance().addTableMapper("geologictimeperiod", "GeologicTimePeriodID");
             
+            gtpIdMapper.mapAllIds();
+            
+            Hashtable<Integer, Integer> stratGTPIdHash     = new Hashtable<Integer, Integer>();
+            Hashtable<Integer, Integer> ceToNewStratIdHash = new Hashtable<Integer, Integer>();
+            
+            IdMapperIFace ceMapper = IdMapperMgr.getInstance().get("collectingevent", "CollectingEventID");
+
+            // get all of the old records
+            String sql  = "SELECT s.StratigraphyID, s.SuperGroup, s.Group, s.Formation, s.Member, s.Bed, Remarks, Text1, Text2, Number1, Number2, YesNo1, YesNo2, GeologicTimePeriodID FROM stratigraphy s ORDER BY s.StratigraphyID";
+            
+            stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            rs   = stmt.executeQuery(sql);
+    
             int counter = 0;
             // for each old record, convert the record
-            do
+            while (rs.next())
             {
                 if (counter % 500 == 0)
                 {
@@ -8034,7 +8033,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 }
     
                 // grab the important data fields from the old record
-                int oldId         = rs.getInt(1);
+                int oldStratId    = rs.getInt(1);
                 String superGroup = rs.getString(2);
                 String lithoGroup = rs.getString(3);
                 String formation  = rs.getString(4);
@@ -8054,7 +8053,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     gtpId = gtpIdMapper.get(gtpId);
                     if (gtpId == null)
                     {
-                        tblWriter.logError("Old GTPID["+gtpId+"] could not be mapped for StratID["+oldId+"]");
+                        tblWriter.logError("Old GTPID["+gtpId+"] in the Strat record could not be mapped for Old StratID["+oldStratId+"]");
                     }
                 }
     
@@ -8065,13 +8064,28 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     
                 counter++;
     
-                lithoStratIdMapper.put(oldId, newStrat.getLithoStratId());
+                // Map Old LithoStrat ID to the new Tree Id
+                lithoStratIdMapper.put(oldStratId, newStrat.getLithoStratId());
+                
+                // Convert Old CEId to new CEId, then map the new CEId -> new StratId
+                Integer ceId = ceMapper.get(oldStratId);
+                if (ceId != null)
+                {
+                    ceToNewStratIdHash.put(ceId, newStrat.getLithoStratId());
+                } else
+                {
+                    String msg = String.format("No CE mapping for OldStratId %d, when they are a one-to-one.", oldStratId);
+                    tblWriter.logError(msg);
+                    log.error(msg);
+                }
+                
+                // Map the New StratId to the new GTP Id
                 if (gtpId != null && stratGTPIdHash.get(newStrat.getLithoStratId()) == null)
                 {
                     stratGTPIdHash.put(newStrat.getLithoStratId(), gtpId);  // new ID to new ID
                 }
-    
-            } while (rs.next());
+            }
+            stmt.close();
     
             if (hasFrame)
             {
@@ -8095,29 +8109,53 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             
             Hashtable<Integer, Integer> ceToPCHash = new Hashtable<Integer, Integer>();
             
-            sql  = "SELECT CollectingEventID FROM collectingevent ORDER BY CollectingEventID";
+            int ceCnt    = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT Count(CollectingEventID) FROM collectingevent");
+            int stratCnt = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT Count(CollectingEventID) FROM collectingevent INNER Join stratigraphy ON CollectingEventID = StratigraphyID");
+            
+            String msg = String.format("There are %d CE->Strat and %d CEs. The diff is %d", stratCnt, ceCnt, (ceCnt - stratCnt));
+            tblWriter.log(msg);
+            log.debug(msg);
+            
+            // Create a PaleoContext for each ColObj
+            stmt = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            
+            int processCnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM collectionobject WHERE CollectingEventID IS NOT NULL");
+            if (frame != null) 
+            {
+                frame.setDesc("Converting PaleoContext...");
+                frame.setProcess(0, processCnt);
+            }
+            
+            int missingStrat = 0;
+            int missingGTP   = 0;
+            int coUpdateCnt  = 0;
+            int cnt          = 0;
+            sql  = "SELECT CollectionObjectID, CollectingEventID FROM collectionobject WHERE CollectingEventID IS NOT NULL ORDER BY CollectionObjectID";
             rs   = stmt.executeQuery(sql);
             while (rs.next())
             {
-                int     oldCEId = rs.getInt(1);
-                Integer lithoId = lithoStratIdMapper.get(oldCEId);
+                int     coId = rs.getInt(1);
+                Integer ceId = rs.getInt(2);
                 
-                if (lithoId == null)
+                // Use the new CE ID to get the new Strat Id
+                Integer newLithoId = ceToNewStratIdHash.get(ceId);
+                
+                if (newLithoId == null)
                 {
+                    missingStrat++;
                     continue;
                 }
                 
-                Integer gtpId = stratGTPIdHash.get(lithoId);
+                // Use the new StratID to get the new GTP Id (ChronosStratigraphy) 
+                Integer gtpId = stratGTPIdHash.get(newLithoId);
                 if (gtpId == null)
                 {
-                    continue;
+                    missingGTP++;
                 }
-                
                 
                 try
                 {
-                   
-                    String updateStr = "INSERT INTO paleocontext ( TimestampCreated, TimestampModified, CollectionMemberID, Version, CreatedByAgentID, ModifiedByAgentID, LithoStratID, ChronosStratID) "
+                    String updateStr = "INSERT INTO paleocontext (TimestampCreated, TimestampModified, CollectionMemberID, Version, CreatedByAgentID, ModifiedByAgentID, LithoStratID, ChronosStratID) "
                             + "VALUES ('"
                             + nowStr
                             + "','"
@@ -8126,7 +8164,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             + getCollectionMemberId()
                             + ", 0, " 
                             + getCreatorAgentId(null) + "," + getModifiedByAgentId(null) 
-                            +"," + lithoId
+                            +"," + newLithoId
                             +"," + (gtpId != null ? gtpId : "NULL")
                             + ")";
                     updateStatement.executeUpdate(updateStr);
@@ -8136,7 +8174,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     {
                         throw new RuntimeException("Couldn't get the Agent's inserted ID");
                     }
-                    ceToPCHash.put(lithoId, paleoContextID);
+                    
+                    String sqlUpdate = "UPDATE collectionobject SET PaleoContextID=" + paleoContextID + " WHERE CollectionObjectID = " + coId;
+                    updateStatement.executeUpdate(sqlUpdate);
+                    coUpdateCnt++;
                     
                 } catch (SQLException e)
                 {
@@ -8145,50 +8186,23 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     showError(e.getMessage());
                     throw new RuntimeException(e);
                 }
+                processCnt++;
+                if (frame != null && cnt % 100 == 0) frame.setProcess(cnt);
+                    
             }
             rs.close();
             stmt.close();
             
-            if (lithoStratIdMapper != null)
-            {
-                // Now assign the appropriate PaleoContext to the CollectionObject
-                stmt = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-                
-                sql  = "SELECT CollectionObjectID, CollectingEventID FROM collectionobject";
-                rs   = stmt.executeQuery(sql);
-                
-                while (rs.next())
-                {
-                    if (rs.getObject(1) == null || rs.getObject(2) == null) continue;
-                        
-                    Integer coId = lithoStratIdMapper.get(rs.getInt(1));
-                    Integer ceId = lithoStratIdMapper.get(rs.getInt(2));
-                    
-                    if (coId == null || ceId == null) continue;
-                    
-                    try
-                    {
-                        Integer paleoContextID = ceToPCHash.get(ceId);
-                        
-                        String sqlUpdate = "UPDATE collectionobject SET PaleoContextID=" + paleoContextID + " WHERE CollectingEventID = " + coId;
-                        updateStatement.executeUpdate(sqlUpdate);
-    
-                    } catch (SQLException e)
-                    {
-                        e.printStackTrace();
-                        log.error(e);
-                        showError(e.getMessage());
-                        throw new RuntimeException(e);
-                    }
-                }
-                
-                rs.close();
-                stmt.close();
-            }
+            if (frame != null) frame.setProcess(processCnt);
+            
+            msg = String.format("There are %d unmappable Strat Records and %d unmappable GTP records.", missingStrat, missingGTP);
+            tblWriter.log(msg);
+            log.debug(msg);
+            
+            msg = String.format("There are %d CO records updated.", coUpdateCnt);
+            tblWriter.log(msg);
+            log.debug(msg);
             updateStatement.close();
-    
-            // set up Geography foreign key mapping for locality
-            //idMapperMgr.mapForeignKey("Locality", "StratigraphyID", "LithoStrat", "LithoStratID");
             
         } catch (Exception ex)
         {
