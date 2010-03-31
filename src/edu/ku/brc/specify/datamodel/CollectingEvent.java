@@ -523,6 +523,21 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+     */
+    @Override
+    public void forceLoad()
+    {
+        if (collectingEventAttribute != null)
+        {
+            collectingEventAttribute.getId();
+        }
+        collectingEventAttachments.size();
+        collectionObjects.size();
+        collectors.size();
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
      */
     @Override

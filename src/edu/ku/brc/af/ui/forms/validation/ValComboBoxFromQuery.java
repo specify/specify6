@@ -1328,6 +1328,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         if (value == null || value instanceof FormDataObjIFace)
         {
             dataObj = (FormDataObjIFace)value;
+            if (dataObj != null)
+            {
+                dataObj.forceLoad();
+            }
             refreshUIFromData(false);
             
         } else
