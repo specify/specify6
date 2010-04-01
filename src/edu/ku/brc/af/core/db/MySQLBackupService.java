@@ -312,9 +312,10 @@ public class MySQLBackupService extends BackupServiceFactory
                         }
                     }
                     
-                    String port = DatabaseDriverInfo.getDriver(DBConnection.getInstance().getDriverName()).getPort();
+                    String port   = DatabaseDriverInfo.getDriver(DBConnection.getInstance().getDriverName()).getPort();
+                    String server = DBConnection.getInstance().getServerName();
                     
-                    String cmdLine  = String.format("%s -u %s --password=%s %s %s", mysqldumpLoc, userName, password, (port != null ? ("--port="+port) : ""), databaseName);
+                    String cmdLine  = String.format("%s -u %s --password=%s --host=%s %s %s", mysqldumpLoc, userName, password, server, (port != null ? ("--port="+port) : ""), databaseName);
                     String[] args   = StringUtils.split(cmdLine, ' ');
                     Process process = Runtime.getRuntime().exec(args);
                     
@@ -606,8 +607,9 @@ public class MySQLBackupService extends BackupServiceFactory
                     String userName  = itUsername != null ? itUsername : DBConnection.getInstance().getUserName();
                     String password  = itPassword != null ? itPassword : DBConnection.getInstance().getPassword();
                     String port      = DatabaseDriverInfo.getDriver(DBConnection.getInstance().getDriverName()).getPort();
+                    String server    = DBConnection.getInstance().getServerName();
                     
-                    String   cmdLine = mysqlLoc+" -u "+userName+" --password="+password + " " + (port != null ? ("--port="+port) : "") + " "+  databaseName;
+                    String cmdLine  = String.format("%s -u %s --password=%s --host=%s %s %s", mysqlLoc, userName, password, server, (port != null ? ("--port="+port) : ""), databaseName);
                     String[] args    = StringUtils.split(cmdLine, ' ');
                     Process  process = Runtime.getRuntime().exec(args); 
                     
