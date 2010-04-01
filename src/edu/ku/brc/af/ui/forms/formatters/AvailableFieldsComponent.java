@@ -20,7 +20,7 @@
 package edu.ku.brc.af.ui.forms.formatters;
 
 import java.awt.event.MouseListener;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
@@ -34,6 +34,7 @@ import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo.RelationshipType;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author Ricardo
@@ -47,7 +48,8 @@ import edu.ku.brc.af.core.db.DBRelationshipInfo.RelationshipType;
 public class AvailableFieldsComponent
 {
     protected DBTableInfo               tableInfo;
-    protected Hashtable<String, Object> fieldsByName = new Hashtable<String, Object>();
+    protected HashMap<String, DataObjDataFieldWrapper> fieldsByName = new HashMap<String, DataObjDataFieldWrapper>();
+    protected HashMap<String, Pair<DefaultMutableTreeNode, DefaultMutableTreeNode>> treeInfoHash = new HashMap<String, Pair<DefaultMutableTreeNode, DefaultMutableTreeNode>>();
     protected DataObjFieldFormatMgr     dataObjFieldFormatMgrCache;
     protected UIFieldFormatterMgr       uiFieldFormatterMgrCache;
     
@@ -182,7 +184,7 @@ public class AvailableFieldsComponent
         }
         
         DefaultMutableTreeNode node = new DefaultMutableTreeNode(infoBase);
-        
+        //System.out.println(currentLevel + " " + maxLevel);
         if (currentLevel >= maxLevel)
         {
             return node;
@@ -200,8 +202,7 @@ public class AvailableFieldsComponent
                                                               field.getDataClass(), null, "", null, null);
             dataField.setDbInfo(currentTableInfo, field, relInfo);
             DataObjDataFieldWrapper fieldWrapper = new DataObjDataFieldWrapper(dataField);
-            node.add(new DefaultMutableTreeNode(fieldWrapper)); // leaf (field)
-            fieldsByName.put(fieldWrapper.toString(), fieldWrapper);
+            addWrapper(node, fieldWrapper);
             
             // add UI field formatters for this field here
             List<UIFieldFormatterIFace> formatters = uiFieldFormatterMgrCache.getFormatterList(field.getTableInfo().getClassObj(), field.getName());
@@ -211,8 +212,7 @@ public class AvailableFieldsComponent
                         field.getDataClass(), null, "", null, formatter.getName());
                 dataField.setDbInfo(currentTableInfo, field, relInfo);
                 fieldWrapper = new DataObjDataFieldWrapper(dataField);
-                node.add(new DefaultMutableTreeNode(fieldWrapper)); // leaf (data obj formatter)
-                fieldsByName.put(fieldWrapper.toString(), fieldWrapper);
+                addWrapper(node, fieldWrapper);
             }
         }
 
@@ -229,8 +229,7 @@ public class AvailableFieldsComponent
                         clazz, null, "", formatter.getName(), null);
                 dataField.setDbInfo(currentTableInfo, null, relInfo);
                 DataObjDataFieldWrapper fieldWrapper = new DataObjDataFieldWrapper(dataField);
-                node.add(new DefaultMutableTreeNode(fieldWrapper)); // leaf (data obj formatter)
-                fieldsByName.put(fieldWrapper.toString(), fieldWrapper);
+                addWrapper(node, fieldWrapper);
             }
         }
 
@@ -253,11 +252,36 @@ public class AvailableFieldsComponent
             {
                 node.add(child);
             }
+            tableStack.pop();
         }
         
         return node;
     }
+    
+    private void addWrapper(final DefaultMutableTreeNode node, final DataObjDataFieldWrapper fieldWrapper)
+    {
+        String key = fieldWrapper.toString();
+        DataObjDataFieldWrapper dfw = fieldsByName.get(key);
+        boolean okToUpdate = dfw != null && dfw.getFormatterField().getFieldInfo() == null && fieldWrapper.getFormatterField().getFieldInfo() != null;
+        if (dfw == null || okToUpdate)
+        {
+            if (okToUpdate)
+            {
+                Pair<DefaultMutableTreeNode, DefaultMutableTreeNode> oldPair = treeInfoHash.get(key);
+                oldPair.first.remove(oldPair.second);
+            }
+            DefaultMutableTreeNode nodeWrapper = new DefaultMutableTreeNode(fieldWrapper);
+            node.add(nodeWrapper); // leaf (data obj formatter)
+            fieldsByName.put(key, fieldWrapper);
+            treeInfoHash.put(key, new Pair<DefaultMutableTreeNode, DefaultMutableTreeNode>(node, nodeWrapper));
+        }
+    }
 
+    /**
+     * @param tableStack
+     * @param fieldName
+     * @return
+     */
     private String getFieldNameFromStack(final Stack<DBInfoBase> tableStack, final String fieldName)
     {
         StringBuilder sb = new StringBuilder();
