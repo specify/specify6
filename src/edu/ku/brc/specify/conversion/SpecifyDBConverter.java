@@ -608,7 +608,7 @@ public class SpecifyDBConverter extends AppBase
         {
             return;
         }
-        
+
         if (!System.getProperty("user.name").equals("rodsX"))
         {
             OldDBStatsDlg dlg = new OldDBStatsDlg(oldDBConn);
@@ -628,7 +628,6 @@ public class SpecifyDBConverter extends AppBase
         
         convLogger.initialize(dbNameDest);
         convLogger.setIndexTitle(dbNameDest + " Conversion "+(new SimpleDateFormat("yyy-MM-dd hh:mm:ss")).format(Calendar.getInstance().getTime()));
-
         
         frame.setSize(500, frame.getPreferredSize().height);
         

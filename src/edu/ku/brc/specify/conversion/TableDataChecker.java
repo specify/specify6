@@ -28,6 +28,8 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.util.Pair;
+
 /**
  * @author rods
  *
@@ -55,10 +57,10 @@ public class TableDataChecker
      * @param skipNames
      * @return
      */
-    public List<String> getColumnNamesWithData(final String tableName, 
-                                               final HashSet<String> skipNames)
+    public List<Pair<String, String>> getColumnNamesWithData(final String tableName, 
+                                                             final HashSet<String> skipNames)
     {
-        List<String> fieldsWithData = new Vector<String>();
+        List<Pair<String, String>> fieldsWithData = new Vector<Pair<String, String>>();
         
         int numRows = BasicSQLUtils.getNumRecords(connection, tableName);
         if (numRows > 0)
@@ -66,8 +68,8 @@ public class TableDataChecker
             try
             {
                 Vector<Object[]> rows = BasicSQLUtils.query(connection, String.format("SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE, COLUMN_DEFAULT FROM INFORMATION_SCHEMA.COLUMNS " +
-                                                                          "WHERE table_name = '%s' AND table_schema = '%s'", 
-                                                                          tableName, connection.getCatalog()));
+                                                                                      "WHERE table_name = '%s' AND table_schema = '%s'", 
+                                                                                      tableName, connection.getCatalog()));
                              
                 for (Object[] cols : rows)
                 {
@@ -78,11 +80,22 @@ public class TableDataChecker
                         if (cols[2].equals("YES"))
                         {
                             String sql = String.format("SELECT COUNT(*) FROM `%s` WHERE `%s` IS NOT NULL", tableName, fieldName);
-                            //System.out.println(sql);
-                            int cnt = BasicSQLUtils.getCountAsInt(connection, sql);
+                            int    cnt = BasicSQLUtils.getCountAsInt(connection, sql);
                             if (cnt > 0)
                             {
-                                fieldsWithData.add(fieldName);
+                                sql = String.format("SELECT DISTINCT c.caption, fst.TextForValue from usysmetacontrol c INNER JOIN usysmetaobject o on o.objectid = c.objectid " +
+                                                    "INNER JOIN usysmetafieldset fs on fs.fieldsetid = o.fieldsetid LEFT JOIN usysmetafieldsetsubtype fst on fst.fieldsetsubtypeid = c.fieldsetsubtypeid " +
+                                                    "WHERE fs.fieldsetname = '%s' and o.objectname = '%s' and (fst.TextForValue is null or (fst.TextForValue not in('TissueOrExtract', 'KaryoSlide', 'HistoSlideSeries', 'Image', 'Sound', 'SoundRecording', 'ImagePrint', 'Spectrogram', 'Container')))",
+                                                    tableName, fieldName);
+                                 
+                                Pair<String, String> namePair = new Pair<String, String>();
+                                Vector<Object[]> captions = BasicSQLUtils.query(connection, sql);
+                                if (captions.size() > 0)
+                                {
+                                    namePair.second = (String)captions.get(0)[0];
+                                }
+                                namePair.first = fieldName;
+                                fieldsWithData.add(namePair);
                             }
                         }
                     }
@@ -110,40 +123,68 @@ public class TableDataChecker
         
         try
         {
-            String titleStr = String.format("Nullable Table Columns with Data for %s", connection.getCatalog());
+            tblWriter.print("<center>");
+            String titleStr = String.format("Nullable Table Columns with Data", connection.getCatalog());
             tblWriter.print("<H3>");
             tblWriter.print(titleStr);
             tblWriter.print("</H3>");
+            
             Vector<Object> tableNames = BasicSQLUtils.querySingleCol(connection, "SHOW TABLES");
+            
+            tblWriter.startTable();
+            tblWriter.print("<caption style=\"text-align: center; font-weight: bold; font-size: 14pt;\">");
+            tblWriter.print(connection.getCatalog());
+            tblWriter.print("</caption>");
+            
+            String[] headings = {"Table", "Field Name", "Sp5 Caption"};
+            tblWriter.print("<tr>");
+            for (String head : headings)
+            {
+                tblWriter.print("<th>");// style=\"text-align: center; font-weight: bold;\">");
+                tblWriter.print(head);
+                tblWriter.println("</th>");
+            }
+            tblWriter.println("</tr>");
+            
             for (Object tblObj : tableNames)
             {
                 String tblName = tblObj.toString();
                 
-                if (tblName.startsWith("usys") || tblName.startsWith("web") || tblName.startsWith("ft_") || StringUtils.contains(tblName, "fulltext"))
+                if (tblName.startsWith("usys") || 
+                    tblName.startsWith("web") || 
+                    tblName.startsWith("ft_") || 
+                    tblName.startsWith("data") || 
+                    tblName.startsWith("rave") || 
+                    tblName.startsWith("reports") || 
+                    StringUtils.contains(tblName, "_tmp") || 
+                    StringUtils.contains(tblName, "_dup") || 
+                    StringUtils.contains(tblName, "fulltext"))
                 {
                     continue;
                 }
                 System.out.println("Processing "+tblName);
                 
-                List<String> cols = getColumnNamesWithData(tblName, skipNames);
+                List<Pair<String, String>> cols = getColumnNamesWithData(tblName, skipNames);
                 if (cols.size() > 0)
                 {
-                    tblWriter.print("<center>");
-                    tblWriter.startTable();
-                    tblWriter.print("<tr><th>");
-                    tblWriter.print(tblName);
-                    tblWriter.println("</td></th>");
-                    for (String colName : cols)
+                    tblWriter.println("<tr>");
+                    tblWriter.println("<td valign=\"top\" rowspan=\"" + cols.size() + "\"><span style=\"font-weight:bold;\">"+tblName+"</span></td>");
+                    int cnt = 0;
+                    for (Pair<String, String> colName : cols)
                     {
-                        tblWriter.print("<tr><td>");
-                        tblWriter.print(colName);
+                        if (cnt > 0) tblWriter.print("<tr>");
+                        
+                        tblWriter.print("<td>");
+                        tblWriter.print(colName.first);
+                        tblWriter.println("</td><td>");
+                        tblWriter.println(colName.second != null ? colName.second : "&nbsp;");
                         tblWriter.println("</td></tr>");
+                        cnt++;
                     }
-                    tblWriter.endTable();
-                    tblWriter.print("</center>");
-                    tblWriter.log("<br>");
                 }
             }
+            tblWriter.endTable();
+            tblWriter.print("</center>");
             
         } catch (Exception e)
         {
@@ -174,7 +215,7 @@ public class TableDataChecker
             
             if (fnd)
             {
-                TableWriter tDSTblWriter = new TableWriter(dbName+"_TableDataSummary.html", "Table Data Summary");
+                TableWriter tDSTblWriter = new TableWriter(dbName+"_TableDataSummary.html", "Table Data Summary", true);
                 createHTMLReport(tDSTblWriter);
                 tDSTblWriter.flush();
                 tDSTblWriter.close();
@@ -222,7 +263,7 @@ public class TableDataChecker
                 {
                     pw.println("<a href='"+dbName+".html'>"+dbName+"</a><br>");
                     
-                    TableWriter tDSTblWriter = new TableWriter(dbName+"_TableDataSummary.html", "Table Data Summary");
+                    TableWriter tDSTblWriter = new TableWriter(dbName+"_TableDataSummary.html", "Table Data Summary", true);
                     createHTMLReport(tDSTblWriter);
                     tDSTblWriter.flush();
                     tDSTblWriter.close();

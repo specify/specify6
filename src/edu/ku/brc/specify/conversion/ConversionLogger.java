@@ -92,14 +92,23 @@ public class ConversionLogger
      */
     public TableWriter getWriter(final String fileName, final String title)
     {
-        
+        return getWriter(fileName, title, false);
+    }
+
+    /**
+     * @param tableName
+     * @return
+     * @throws IOException
+     */
+    public TableWriter getWriter(final String fileName, final String title, final boolean doCenterTitle)
+    {
         TableWriter tblWriter = null;
         try
         {
             if (printWritersNameHash.get(fileName) == null)
             {
                 String path = dir.getAbsolutePath() + File.separator + StringUtils.replace(fileName, " ", "_");
-                tblWriter = new TableWriter(path, title);
+                tblWriter = new TableWriter(path, title, doCenterTitle);
                 printWritersNameHash.put(fileName, path);
                 printWritersHash.put(fileName, tblWriter);
             } else

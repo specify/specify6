@@ -49,7 +49,7 @@ public class TableWriter extends PrintWriter
      * @param title
      * @throws FileNotFoundException
      */
-    public TableWriter(final String fileName, final String title) throws FileNotFoundException
+    public TableWriter(final String fileName, final String title, final boolean doCenterTitle) throws FileNotFoundException
     {
         super(fileName);
         this.fName = fileName;
@@ -58,7 +58,25 @@ public class TableWriter extends PrintWriter
         println("<HTML>\n<HEAD>\n<TITLE>"+title+"</TITLE>\n");
         writeStyle(this);
         println("</HEAD>\n<BODY>");
-        println("<H2>"+title+"</H2>");
+        if (doCenterTitle) 
+        {
+            println("<center><span style=\"font-weight: bold;font-size:14pt;\">");
+            println(title);
+            println("</span></center>");
+        } else
+        {
+            println("<H2>"+title+"</H2>");
+        }
+    }
+    
+    /**
+     * @param fileName
+     * @param title
+     * @throws FileNotFoundException
+     */
+    public TableWriter(final String fileName, final String title) throws FileNotFoundException
+    {
+        this(fileName, title, false);
     }
     
     /**
@@ -67,6 +85,7 @@ public class TableWriter extends PrintWriter
     private void writeStyle(final PrintWriter pwOut)
     {
         pwOut.println("<STYLE>");
+        pwOut.println("body { font-family: sans-serif; }");
         pwOut.println(" SPAN.err { color: red; }");
         pwOut.println(" TABLE.o { border-top: solid 1px rgb(128, 128, 128); border-left: solid 1px rgb(128, 128, 128); }");
         pwOut.println(" TABLE.o td { border-bottom: solid 1px rgb(128, 128, 128); border-right: solid 1px rgb(128, 128, 128); }");
