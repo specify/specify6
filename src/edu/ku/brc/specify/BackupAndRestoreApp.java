@@ -25,7 +25,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
@@ -38,7 +37,6 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 
 import javax.swing.ImageIcon;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -70,11 +68,11 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.tasks.BaseTask;
-import edu.ku.brc.af.ui.db.DatabaseLoginDlg;
 import edu.ku.brc.af.ui.db.DatabaseLoginListener;
 import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.af.ui.db.DatabaseLoginPanel.MasterPasswordProviderIFace;
 import edu.ku.brc.af.ui.forms.FormHelper;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
@@ -661,6 +659,8 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         }
         
         showApp();
+        
+        statusField.setText(DBConnection.getInstance().getDatabaseName());
         
         if (dbLoginPanel != null)
         {

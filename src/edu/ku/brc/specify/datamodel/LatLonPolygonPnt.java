@@ -48,7 +48,7 @@ import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "latlonpolygonpnt")
 @org.hibernate.annotations.Table(appliesTo="latlonpolygonpnt")
-public class LatLonPolygonPnt implements FormDataObjIFace
+public class LatLonPolygonPnt implements FormDataObjIFace, Cloneable
 {
     protected Integer       latLonPolygonPntId;
     protected BigDecimal    latitude;
@@ -456,7 +456,11 @@ public class LatLonPolygonPnt implements FormDataObjIFace
     @Override
     public Object clone() throws CloneNotSupportedException
     {
-        return super.clone();
+        LatLonPolygonPnt p = (LatLonPolygonPnt)super.clone();
+        
+        p.latLonPolygonPntId = null;
+        
+        return p;
     }
     
 }

@@ -44,6 +44,7 @@ import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
+import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
@@ -66,7 +67,8 @@ import edu.ku.brc.ui.UIRegistry;
     })
 public class Locality extends DisciplineMember implements AttachmentOwnerIFace<LocalityAttachment>, 
                                                           java.io.Serializable, 
-                                                          MapLocationIFace
+                                                          MapLocationIFace,
+                                                          Cloneable
 {
     // Fields    
     protected Integer               localityId;
@@ -835,10 +837,99 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     {
         return 2;
     }
+    
+    private Locality doClone(final Locality l) throws CloneNotSupportedException
+    {
+        l.localityCitations = new HashSet<LocalityCitation>();
+        for (LocalityCitation obj : localityCitations)
+        {
+            l.localityCitations.add((LocalityCitation)obj.clone());
+        } 
+        
+        l.localityNameAliass  = new HashSet<LocalityNameAlias>();
+        for (LocalityNameAlias obj : localityNameAliass)
+        {
+            l.localityNameAliass.add((LocalityNameAlias)obj.clone());
+        } 
+        
+        l.localityAttachments = new HashSet<LocalityAttachment>();
+        
+        
+        l.localityDetails     = new HashSet<LocalityDetail>();
+        for (LocalityDetail obj : localityDetails)
+        {
+            l.localityDetails.add((LocalityDetail)obj.clone());
+        }
+        
+        
+        l.geoCoordDetails = new HashSet<GeoCoordDetail>();
+        for (GeoCoordDetail obj : geoCoordDetails)
+        {
+            l.geoCoordDetails.add((GeoCoordDetail)obj.clone());
+        }
+        
+        
+        l.latLonpolygons = new HashSet<LatLonPolygon>();
+        for (LatLonPolygon obj : latLonpolygons)
+        {
+            l.latLonpolygons.add((LatLonPolygon)obj.clone());
+        }
+        
+        return l;
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        Locality l = (Locality)super.clone();
+        l.localityId = null;
+        
+        try
+        {
+            try
+            {
+                l = doClone(l);
+                
+            } catch (org.hibernate.LazyInitializationException hex)
+            {
+                DataProviderSessionIFace session = null;
+                try
+                {
+                    session = DataProviderFactory.getInstance().createSession();
+                    session.attach(this);
+                    
+                    l = doClone(l);
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ValComboBoxFromQuery.class, ex);
+                    
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                } 
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ValComboBoxFromQuery.class, ex);
+        }
+        return l;
+    }
+    
     // //////////////////////////////
     // MapLocationIFace methods
     // //////////////////////////////
+
 
     /*
      * (non-Javadoc)

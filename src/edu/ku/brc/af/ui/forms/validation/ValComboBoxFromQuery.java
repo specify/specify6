@@ -440,7 +440,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         }
         
         boolean hasSearchBtn = StringUtils.isNotEmpty(tableInfo.getSearchDialog());
-        boolean hasCloneBtn  = (btnMask & CREATE_EDIT_BTN) != 0;
+        boolean hasCloneBtn  = (btnMask & CREATE_CLONE_BTN) != 0;
 
         StringBuilder sb = new StringBuilder("p:g,1px,p,1px,p");
         if (hasSearchBtn)
@@ -775,7 +775,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             {
                 log.info("ID: ["+textWithQuery.getSelectedId()+"]  PrevText["+textWithQuery.getPrevEnteredText()+"] Cached["+textWithQuery.getCachedPrevText()+"]");
                 String value = textWithQuery.getSelectedId() == null ? textWithQuery.getPrevEnteredText() : "";
-                ds.setFieldValue(newDataObj, fieldNames[0], value);
+                if (!isCloned)
+                {
+                    ds.setFieldValue(newDataObj, fieldNames[0], value);
+                }
                 
                 MultiView mv = frame.getMultiView();
                 if (mv != null)
@@ -1333,6 +1336,11 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 dataObj.forceLoad();
             }
             refreshUIFromData(false);
+            
+            if (cloneBtn != null)
+            {
+                cloneBtn.setEnabled(dataObj != null || textWithQuery.getSelectedId() != null);
+            }
             
         } else
         {

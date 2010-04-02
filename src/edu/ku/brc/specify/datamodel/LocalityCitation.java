@@ -45,15 +45,15 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Table(appliesTo="localitycitation", indexes =
     {   @Index (name="LocCitDspMemIDX", columnNames={"DisciplineID"})
     })
-public class LocalityCitation extends DisciplineMember implements java.io.Serializable 
+public class LocalityCitation extends DisciplineMember implements java.io.Serializable, Cloneable
 {
 
     // Fields    
 
-     protected Integer localityCitationId;
-     protected String remarks;
+     protected Integer       localityCitationId;
+     protected String        remarks;
      protected ReferenceWork referenceWork;
-     protected Locality locality;
+     protected Locality      locality;
 
 
     // Constructors
@@ -68,14 +68,13 @@ public class LocalityCitation extends DisciplineMember implements java.io.Serial
         this.localityCitationId = localityCitationId;
     }
    
-    
-    
 
     // Initializer
     @Override
     public void initialize()
     {
         super.init();
+        
         localityCitationId = null;
         remarks = null;
         referenceWork = null;
@@ -131,6 +130,18 @@ public class LocalityCitation extends DisciplineMember implements java.io.Serial
     
     public void setRemarks(String remarks) {
         this.remarks = remarks;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        LocalityCitation lc = (LocalityCitation)super.clone();
+        localityCitationId = null;
+        
+        return lc;
     }
 
     /**

@@ -695,7 +695,7 @@ public class ViewFactory
             btnOpts |= cellField.getPropertyAsBoolean("editbtn", true) ? ValComboBoxFromQuery.CREATE_EDIT_BTN : 0;
             btnOpts |= cellField.getPropertyAsBoolean("newbtn", true) ? ValComboBoxFromQuery.CREATE_NEW_BTN : 0;
             btnOpts |= cellField.getPropertyAsBoolean("searchbtn", true) ? ValComboBoxFromQuery.CREATE_SEARCH_BTN : 0;
-            btnOpts |= cellField.getPropertyAsBoolean("clonebtn", true) ? ValComboBoxFromQuery.CREATE_CLONE_BTN : 0;
+            btnOpts |= cellField.getPropertyAsBoolean("clonebtn", false) ? ValComboBoxFromQuery.CREATE_CLONE_BTN : 0;
             
             String helpContext = cellField.getProperty("hc");
             

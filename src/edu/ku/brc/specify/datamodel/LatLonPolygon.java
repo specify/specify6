@@ -47,7 +47,7 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "latlonpolygon")
 @org.hibernate.annotations.Table(appliesTo="latlonpolygon")
-public class LatLonPolygon extends DataModelObjBase
+public class LatLonPolygon extends DataModelObjBase implements Cloneable
 {
     protected Integer                 latLonPolygonId;
     protected String                  name;
@@ -212,6 +212,26 @@ public class LatLonPolygon extends DataModelObjBase
     }
 
 
+    /* (non-Javadoc)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        LatLonPolygon p = (LatLonPolygon)super.clone();
+        
+        p.latLonPolygonId = null;
+        
+        p.points = new HashSet<LatLonPolygonPnt>();
+        for (LatLonPolygonPnt pnt : points)
+        {
+            p.points.add((LatLonPolygonPnt)pnt.clone());
+        }
+        return p;
+    }
+
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
      */
