@@ -2407,7 +2407,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
         STD_DISCIPLINES type = null;
         
-        if (StringUtils.contains(name.toLowerCase(), "paleo")) 
+        if (StringUtils.contains(name.toLowerCase(), "paleo") ||
+            StringUtils.contains(name.toLowerCase(), "fossil")) 
         { 
             if (StringUtils.contains(name.toLowerCase(), "invert"))
             {
