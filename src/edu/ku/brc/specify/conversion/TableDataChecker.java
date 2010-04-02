@@ -114,6 +114,8 @@ public class TableDataChecker
      */
     public void createHTMLReport(final TableWriter tblWriter)
     {
+        tblWriter.setHasLines();
+        
         HashSet<String> skipNames = new HashSet<String>();
         String[] sknames = new String[] {"TimestampCreated", "TimestampModified", "LastEditedBy"};
         for (String n : sknames)

@@ -22,6 +22,7 @@ package edu.ku.brc.specify.conversion;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -132,6 +133,7 @@ public class ConversionLogger
             indexWriter.startTable();
             
             Vector<String> names = new Vector<String>(printWritersHash.keySet());
+            Collections.sort(names);
             
             for (String nm : names)
             {

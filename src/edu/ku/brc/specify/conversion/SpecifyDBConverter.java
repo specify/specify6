@@ -1455,10 +1455,10 @@ public class SpecifyDBConverter extends AppBase
                 d.duplicateGeography();
                 
                 frame.setDesc("Running Table Checker to report on fields with data.");
-                TableWriter tDSTblWriter = convLogger.getWriter("TableDataSummary.html", "Table Data Summary");
+                TableWriter      tDSTblWriter   = convLogger.getWriter("TableDataSummary.html", "Table Data Summary", true);
                 TableDataChecker tblDataChecker = new TableDataChecker(oldDBConn);
                 tblDataChecker.createHTMLReport(tDSTblWriter);
-                tDSTblWriter.close();
+                //tDSTblWriter.close();
                 
                 updateVersionInfo(newConn);
                 

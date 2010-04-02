@@ -1165,10 +1165,10 @@ public class ConvertVerifier extends AppBase
     private boolean verifyAccessions(final String oldAccNum, final String newAccNum) throws SQLException
     {
          newSQL = "SELECT AccessionID, AccessionNumber, Status, Type, VerbatimDate, DateAccessioned, DateReceived, Number1, Number2, YesNo1, YesNo2 FROM accession  " +
-                  "WHERE AccessionNumber = '"+ newAccNum + "'";
+                  "WHERE AccessionNumber = \"" + newAccNum + "\"";
 
          oldSQL = "SELECT AccessionID, Number, Status, Type, VerbatimDate, DateAccessioned, DateReceived, Number1, Number2, YesNo1, YesNo2 FROM accession " +
-                  "WHERE Number = '" + oldAccNum + "'";
+                  "WHERE Number = \"" + oldAccNum + "\"";
         
          StatusType status = compareRecords("Accession", oldAccNum, newAccNum, oldSQL, newSQL);
          dumpStatus(status);
@@ -1208,8 +1208,15 @@ public class ConvertVerifier extends AppBase
      */
     private void getResultSets(final String oldSQLArg, final String newSQLArg)  throws SQLException
     {
-        newDBRS   = newDBStmt.executeQuery(newSQLArg);  
-        oldDBRS   = oldDBStmt.executeQuery(compareTo6DBs ? newSQLArg : oldSQLArg);  
+        try
+        {
+            newDBRS   = newDBStmt.executeQuery(newSQLArg);  
+            oldDBRS   = oldDBStmt.executeQuery(compareTo6DBs ? newSQLArg : oldSQLArg);
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
     
     /**

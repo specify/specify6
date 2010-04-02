@@ -7368,11 +7368,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         
         PreparedStatement pStmt = null;
         Statement         stmt  = null;
-        sql = "SELECT LocalityID, LocalityName, NamedPlace, RelationToNamedPlace FROM locality ORDER BY LocalityID";
+        sql = "SELECT LocalityID, LocalityName, NamedPlace, RelationToNamedPlace, Remarks FROM locality ORDER BY LocalityID";
         try
         {
             IdMapperIFace locMapper = idMapperMgr.get("locality_LocalityID");
-            pStmt = newDBConn.prepareStatement("UPDATE locality SET LocalityName=?, NamedPlace=?, RelationToNamedPlace=? WHERE LocalityID=?");
+            pStmt = newDBConn.prepareStatement("UPDATE locality SET LocalityName=?, NamedPlace=?, RelationToNamedPlace=?, Remarks=? WHERE LocalityID=?");
             stmt  = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             ResultSet rs = stmt.executeQuery(sql);
             int cnt = 0;
@@ -7385,7 +7385,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     pStmt.setString(1, rs.getString(2));
                     pStmt.setString(2, rs.getString(3));
                     pStmt.setString(3, rs.getString(4));
-                    pStmt.setInt(4,    newId);
+                    pStmt.setString(4, rs.getString(5));
+                    pStmt.setInt(5,    newId);
                     
                     pStmt.execute();
                     

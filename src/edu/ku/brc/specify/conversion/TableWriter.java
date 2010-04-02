@@ -132,6 +132,14 @@ public class TableWriter extends PrintWriter
         flush();
     }
     
+    public void setHasLines()
+    {
+        lineCnt++;
+    }
+
+    /**
+     * @param cols
+     */
     public void logErrors(final String...cols)
     {
         errCount++;
