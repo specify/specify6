@@ -134,7 +134,15 @@ public class CollectionRelTask extends BaseTask
         try
         {
             session = DataProviderFactory.getInstance().createSession();
-            return session.getDataList("FROM "+clsObj.getSimpleName());
+            List<?> list = session.getDataList("FROM "+clsObj.getSimpleName());
+            for (Object dataObj : list)
+            {
+                if (dataObj instanceof FormDataObjIFace)
+                {
+                    ((FormDataObjIFace)dataObj).forceLoad();
+                }
+            }
+            return list;
             
         } catch (Exception ex)
         {
@@ -198,7 +206,7 @@ public class CollectionRelTask extends BaseTask
             }
         };
         
-        edaPanel = new EditDeleteAddPanel(editAL, addAL, delAL);
+        edaPanel = new EditDeleteAddPanel(editAL, delAL, addAL);
         
         
         pb.add(UIHelper.createI18NLabel("LEFT_SIDE", SwingConstants.CENTER),  cc.xy(1, 1));
@@ -266,17 +274,20 @@ public class CollectionRelTask extends BaseTask
     
     private void editRel()
     {
-        createRelType();
+        CollectionRelType crt = (CollectionRelType)relList.getSelectedValue();
+        if (crt != null)
+        {
+            createRelType(crt);
+        }
     }
     
     private void addRel()
     {
-        createRelType();
+        createRelType(null);
     }
     
     private void delRel()
     {
-        createRelType();
     }
     
     /**
@@ -313,7 +324,7 @@ public class CollectionRelTask extends BaseTask
     /**
      * @return
      */
-    private CollectionRelType createRelType()
+    private CollectionRelType createRelType(final CollectionRelType crt)
     {
         final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UIRegistry.getTopWindow(),
                 "SystemSetup",
@@ -324,9 +335,10 @@ public class CollectionRelTask extends BaseTask
                 null,
                 null,
                 true,
-                MultiView.HIDE_SAVE_BTN | MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE |
+                MultiView.HIDE_SAVE_BTN | 
+                MultiView.DONT_ADD_ALL_ALTVIEWS | 
+                MultiView.USE_ONLY_CREATION_MODE |
                 MultiView.IS_EDITTING);
-        //dlg.setWhichBtns(CustomDialog.OK_BTN | CustomDialog.CANCEL_BTN);
         
         dlg.setFormAdjuster(new FormPane.FormPaneAdjusterIFace() {
             @Override
@@ -335,8 +347,8 @@ public class CollectionRelTask extends BaseTask
                 JLabel     leftLbl  = fvo.getLabelById("left");
                 JLabel     rightLbl = fvo.getLabelById("right");
                 
-                Collection leftCol  = (Collection)leftList.getSelectedValue();
-                Collection rightCol = (Collection)rightList.getSelectedValue();
+                Collection leftCol  = crt != null ? crt.getLeftSideCollection() : (Collection)leftList.getSelectedValue();
+                Collection rightCol = crt != null ? crt.getRightSideCollection() : (Collection)rightList.getSelectedValue();
                 
                 if (leftCol != null)
                 {
@@ -354,27 +366,72 @@ public class CollectionRelTask extends BaseTask
         
         });
         
-        CollectionRelType colRelType = new CollectionRelType();
-        colRelType.initialize();
+        
+        CollectionRelType colRelType;
+        if (crt != null)
+        {
+            colRelType = crt;
+            
+        } else
+        {
+            colRelType = new CollectionRelType();
+            colRelType.initialize();
+        }
         
         dlg.setData(colRelType);
         UIHelper.centerAndShow(dlg);
         
         if (!dlg.isCancelled())
         {
-            Collection left  = (Collection)leftList.getSelectedValue();
-            Collection right = (Collection)rightList.getSelectedValue();
-            if (left != null && right != null)
+            if (crt == null)
             {
-                colRelType.setLeftSideCollection(left);
-                colRelType.setRightSideCollection(right);
-                left.getLeftSideRelTypes().add(colRelType);
-                right.getRightSideRelTypes().add(colRelType);
-                
-                if (save(colRelType))
+                Collection left  = (Collection)leftList.getSelectedValue();
+                Collection right = (Collection)rightList.getSelectedValue();
+                if (left != null && right != null)
                 {
-                    ((DefaultListModel)relList.getModel()).addElement(colRelType);
-                    return colRelType;
+                    try
+                    {
+                        DataProviderSessionIFace session = null;
+                        try
+                        {
+                            session = DataProviderFactory.getInstance().createSession();
+                            left  = session.get(Collection.class, left.getId());
+                            right = session.get(Collection.class, right.getId());
+                            
+                            colRelType.setLeftSideCollection(left);
+                            colRelType.setRightSideCollection(right);
+                            left.getLeftSideRelTypes().add(colRelType);
+                            right.getRightSideRelTypes().add(colRelType);
+                            
+                        } catch (Exception ex)
+                        {
+                            ex.printStackTrace();
+                            
+                        } finally
+                        {
+                            if (session != null)
+                            {
+                                session.close();
+                            }
+                        }
+                        
+                        if (save(colRelType))
+                        {
+                            ((DefaultListModel)relList.getModel()).addElement(colRelType);
+                            return colRelType;
+                        }
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                    
+                } else
+                {
+                    if (save(colRelType))
+                    {
+                        return colRelType;
+                    }
                 }
             }
         }
