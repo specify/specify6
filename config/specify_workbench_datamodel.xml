@@ -538,14 +538,14 @@
     <field column="Section Part" name="sectionPart" type="java.lang.String" length="50"/>
     <field column="Township" name="township" type="java.lang.String" length="50"/>
     <field column="Township Direction" name="townshipDirection" type="java.lang.String" length="50"/>
-    <field column="UtmDatum" name="utmDatum" type="java.lang.String" length="32"/>
+    <field column="UtmDatum" name="utmDatum" type="java.lang.String" length="255"/>
     <field column="UtmEasting" name="utmEasting" type="java.lang.Double"/>
     <field column="UtmNorthing" name="utmNorthing" type="java.lang.Double"/>
     <field column="UtmFalseEasting" name="utmFalseEasting" type="java.lang.Integer"/>
     <field column="UtmFalseNorthing" name="utmFalseNorthing" type="java.lang.Integer"/>
     <field column="UtmOrigLatitude" name="utmOrigLatitude" type="java.math.BigDecimal"/>
     <field column="UtmOrigLongitude" name="utmOrigLongitude" type="java.math.BigDecimal"/>
-    <field column="UtmScale" name="utmScale" type="java.lang.Float" />
+    <field column="UtmScale" name="utmScale" type="java.lang.String" length="8" />
     <field column="UtmZone" name="utmZone" type="java.lang.Short" />
     <field column="Water Body" name="waterBody" type="java.lang.String" length="64"/>
     <field column="Number 1 (Locality)" name="localityNumber1" type="java.lang.Double"/>

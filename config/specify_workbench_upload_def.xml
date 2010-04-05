@@ -446,8 +446,15 @@
     <field table="Locality" name="baseMeridian" actualtable="LocalityDetail" relationshipname="locality"/>
     <field table="Locality" name="utmOrigLatitude" actualtable="LocalityDetail" relationshipname="locality"/>
     <field table="Locality" name="utmOrigLongitude" actualtable="LocalityDetail" relationshipname="locality"/>
-    <field table="Locality" name="utmNorthing" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="utmDatum" actualtable="LocalityDetail" relationshipname="locality"/>
     <field table="Locality" name="utmEasting" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="utmFalseEasting" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="utmFalseNorthing" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="utmNorthing" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="utmOrigLatitude" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="utmOrigLongitude" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="utmScale" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="utmZone" actualtable="LocalityDetail" relationshipname="locality"/>
     
     <field table="Locality" name="localityCitation1" onetomanysequence="0" actualtable="LocalityCitation" relationshipname="referenceWork" relatedfieldname="title"/>
     <field table="Locality" name="localityCitation2" onetomanysequence="1" actualtable="LocalityCitation" relationshipname="referenceWork" relatedfieldname="title"/>
