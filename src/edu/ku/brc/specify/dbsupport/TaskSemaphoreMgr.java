@@ -338,7 +338,8 @@ public class TaskSemaphoreMgr
                 }
                 
                 String userStr = prevLockedBy != null ? prevLockedBy : semaphore.getOwner().getIdentityTitle();
-                String msg = UIRegistry.getLocalizedMessage("SpTaskSemaphore.IN_USE_OV_UNLK", title, userStr, semaphore.getLockedTime().toString());
+                String msg = UIRegistry.getLocalizedMessage("SpTaskSemaphore.IN_USE_OV_UNLK", title, userStr, 
+                		semaphore.getLockedTime() == null ? "?" : semaphore.getLockedTime().toString());
                 
                 int      options;
                 Object[] optionLabels;
