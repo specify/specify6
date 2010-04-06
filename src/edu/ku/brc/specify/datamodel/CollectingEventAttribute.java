@@ -708,22 +708,22 @@ public class CollectingEventAttribute extends DisciplineMember implements Clonea
             ((number13 == null && o.number13 == null) || ((number13 != null && o.number13 != null) && number13.equals(o.number13))) &&
             ((remarks == null && o.remarks == null) || ((remarks != null && o.remarks != null) && remarks.equals(o.remarks))) &&
             ((text1 == null && o.text1 == null) || ((text1 != null && o.text1 != null) && text1.equals(o.text1))) &&
-            ((text2 == null && o.text2 == null) || ((text2 != null && o.text2 != null) & text2.equals(o.text2))) &&
-            ((text3 == null && o.text3 == null) || ((text3 != null && o.text3 != null) & text3.equals(o.text3))) &&
-            ((text4 == null && o.text4 == null) || ((text4 != null && o.text4 != null) & text4.equals(o.text4))) &&
-            ((text5 == null && o.text5 == null) || ((text5 != null && o.text5 != null) & text5.equals(o.text5))) &&
-            ((text6 == null && o.text6 == null) || ((text6 != null && o.text6 != null) & text6.equals(o.text6))) &&
-            ((text7 == null && o.text7 == null) || ((text7 != null && o.text7 != null) & text7.equals(o.text7))) &&
-            ((text8 == null && o.text8 == null) || ((text8 != null && o.text8 != null) & text8.equals(o.text8))) &&
-            ((text9 == null && o.text9 == null) || ((text9 != null && o.text9 != null) & text9.equals(o.text9))) &&
-            ((text10 == null && o.text10 == null) || ((text10 != null && o.text10 != null) & text10.equals(o.text10))) &&
-            ((text11 == null && o.text11 == null) || ((text11 != null && o.text11 != null) & text11.equals(o.text11))) &&
-            ((text12 == null && o.text12 == null) || ((text12 != null && o.text12 != null) & text12.equals(o.text12))) &&
-            ((text13 == null && o.text13 == null) || ((text13 != null && o.text13 != null) & text13.equals(o.text13))) &&
-            ((text14 == null && o.text14 == null) || ((text14 != null && o.text14 != null) & text14.equals(o.text14))) &&
-            ((text15 == null && o.text15 == null) || ((text15 != null && o.text15 != null) & text15.equals(o.text15))) &&
-            ((text16 == null && o.text16 == null) || ((text16 != null && o.text16 != null) & text16.equals(o.text16))) &&
-            ((text17 == null && o.text17 == null) || ((text17 != null && o.text17 != null) & text17.equals(o.text17))) &&
+            ((text2 == null && o.text2 == null) || ((text2 != null && o.text2 != null) && text2.equals(o.text2))) &&
+            ((text3 == null && o.text3 == null) || ((text3 != null && o.text3 != null) && text3.equals(o.text3))) &&
+            ((text4 == null && o.text4 == null) || ((text4 != null && o.text4 != null) && text4.equals(o.text4))) &&
+            ((text5 == null && o.text5 == null) || ((text5 != null && o.text5 != null) && text5.equals(o.text5))) &&
+            ((text6 == null && o.text6 == null) || ((text6 != null && o.text6 != null) && text6.equals(o.text6))) &&
+            ((text7 == null && o.text7 == null) || ((text7 != null && o.text7 != null) && text7.equals(o.text7))) &&
+            ((text8 == null && o.text8 == null) || ((text8 != null && o.text8 != null) && text8.equals(o.text8))) &&
+            ((text9 == null && o.text9 == null) || ((text9 != null && o.text9 != null) && text9.equals(o.text9))) &&
+            ((text10 == null && o.text10 == null) || ((text10 != null && o.text10 != null) && text10.equals(o.text10))) &&
+            ((text11 == null && o.text11 == null) || ((text11 != null && o.text11 != null) && text11.equals(o.text11))) &&
+            ((text12 == null && o.text12 == null) || ((text12 != null && o.text12 != null) && text12.equals(o.text12))) &&
+            ((text13 == null && o.text13 == null) || ((text13 != null && o.text13 != null) && text13.equals(o.text13))) &&
+            ((text14 == null && o.text14 == null) || ((text14 != null && o.text14 != null) && text14.equals(o.text14))) &&
+            ((text15 == null && o.text15 == null) || ((text15 != null && o.text15 != null) && text15.equals(o.text15))) &&
+            ((text16 == null && o.text16 == null) || ((text16 != null && o.text16 != null) && text16.equals(o.text16))) &&
+            ((text17 == null && o.text17 == null) || ((text17 != null && o.text17 != null) && text17.equals(o.text17))) &&
             ((yesNo1 == null && o.yesNo1 == null) || ((yesNo1 != null && o.yesNo1 != null) && yesNo1.equals(o.yesNo1))) &&
             ((yesNo2 == null && o.yesNo2 == null) || ((yesNo2 != null && o.yesNo2 != null) && yesNo2.equals(o.yesNo2))) &&
             ((yesNo3 == null && o.yesNo3 == null) || ((yesNo3 != null && o.yesNo3 != null) && yesNo3.equals(o.yesNo3))) &&
