@@ -688,6 +688,10 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     @Transient
     public String getColumnAliasTitle()
     {
+    	if (columnAlias == null)
+    	{
+    		columnAlias = fieldName;
+    	}
     	DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoById(contextTableIdent);
     	if (tbl != null)
     	{
