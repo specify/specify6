@@ -549,9 +549,34 @@ public class RegisterSpecify
     /**
      * Registers the Institution and makes it be not Anonymous anymore.
      */
-    public static void register(final boolean forceRegistration)
+    public static void register(final boolean forceRegistration, final int delayInSecs)
     {
-        getInstance().registerInternal(forceRegistration);
+        if (delayInSecs == 0)
+        {
+            getInstance().registerInternal(forceRegistration);
+        } else {
+            javax.swing.SwingWorker<Object, Object> worker  = new javax.swing.SwingWorker<Object, Object>()
+            {
+                @Override
+                protected Object doInBackground() throws Exception
+                {
+                    try
+                    {
+                        Thread.sleep(delayInSecs * 1000);
+                    } catch (InterruptedException ex) {}
+                    return null;
+                }
+
+                @Override
+                protected void done()
+                {
+                    getInstance().registerInternal(forceRegistration);
+                    super.done();
+                }
+                
+            };
+            worker.execute();
+        }
     }
 
     /**

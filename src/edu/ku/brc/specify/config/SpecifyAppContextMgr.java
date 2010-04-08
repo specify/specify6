@@ -1270,8 +1270,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             AppPreferences.startup();
             
-            RegisterSpecify.register(false);
-            
             //--------------------------------------------------------------------------------
             // Check for locks set on uploader, tree update, ...
             //--------------------------------------------------------------------------------
@@ -1556,6 +1554,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
             
             currentStatus = CONTEXT_STATUS.OK;
+            
+            RegisterSpecify.register(false, 0);
             
             return currentStatus;
             

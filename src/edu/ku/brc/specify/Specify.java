@@ -1465,7 +1465,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             @Override
             public void actionPerformed(ActionEvent ae)
             {
-                RegisterSpecify.register(true);
+                RegisterSpecify.register(true, 0);
             }
         });
         
