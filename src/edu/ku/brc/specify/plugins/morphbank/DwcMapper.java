@@ -7,8 +7,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Vector;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
@@ -24,15 +22,33 @@ public class DwcMapper
 {
 	final Integer mappingId; //SpExportSchemaMappingID - key for spexportschemamappingid.
 	final String mappingName;
-	final Map<String, String> concepts = new HashMap<String, String>();
+	final String schemaName;
+	final Integer mappingContextTableId;
+	final String schemaURL;
+	
+	final Vector<MappingInfo> concepts = new Vector<MappingInfo>();
 	
 	public static Connection connection; //for testing
 	
 	public DwcMapper(Integer mappingId)
 	{
 		this.mappingId = mappingId;
-		this.mappingName = getMappingName(mappingId);
+		Vector<Object[]> rec = BasicSQLUtils.query(connection, getMappingQuery(mappingId));
+		mappingName = (String )rec.get(0)[0];
+		schemaName = (String )rec.get(0)[1];
+		mappingContextTableId = (Integer )rec.get(0)[2];
+		schemaURL = (String )rec.get(0)[3];
 		fillConcepts();
+	}
+	
+	protected String getMappingQuery(Integer mappingId)
+	{
+		return "select esm.MappingName, es.SchemaName, q.ContextTableId, es.Description from spexportschemamapping esm inner join "
+			+ "spexportschemaitemmapping esim on esim.SpExportSchemaMappingID = esm.SpExportSchemaMappingID "
+			+ "inner join spexportschemaitem esi on esi.SpExportSchemaItemID = esim.ExportSchemaItemID inner join " 
+			+ "spexportschema es on es.SpExportSchemaID = esi.SpExportSchemaID inner join spqueryfield qf on "
+			+ "qf.SpQueryFieldID = esim.SpQueryFieldID inner join spquery q on q.SpQueryID = qf.SpQueryID where "
+			+ "esm.SpExportSchemaMappingID = " + mappingId;
 	}
 	
 	protected void fillConcepts()
@@ -41,9 +57,11 @@ public class DwcMapper
 		concepts.clear();
 		for (Object[] concept : cpts)
 		{
-			concepts.put((String )concept[0], (String )concept[1]);
+			concepts.add(new MappingInfo((String )concept[0], (String )concept[1], (String )concept[2], 
+					mappingContextTableId));
 		}		
 	}
+	
 	protected String getMappingName(Integer mappingId)
 	{
 		return BasicSQLUtils.querySingleObj(connection, 
@@ -53,17 +71,17 @@ public class DwcMapper
 	
 	protected String getConceptQuery()
 	{
-		return "select esi.FieldName, esi.DataType from spexportschemaitemmapping esim inner join spexportschemaitem esi on "
-			+ "esi.SpExportSchemaItemID = esim.ExportSchemaItemID where esim.SpExportSchemaMappingID = "
+		return "select esi.FieldName, esi.DataType, qf.StringId from spexportschemaitemmapping esim inner join spexportschemaitem esi on "
+			+ "esi.SpExportSchemaItemID = esim.ExportSchemaItemID inner join spqueryfield qf on qf.SpQueryFieldID = esim.SpQueryFieldID where esim.SpExportSchemaMappingID = "
 			+ mappingId;
 	}
 	
 	public void setDarwinCoreConcepts(DarwinCoreSpecimen spec) throws Exception
 	{
 		spec.clearConcepts();
-		for (String conceptName : concepts.keySet())
+		for (MappingInfo mi : concepts)
 		{
-			spec.add(conceptName, null);
+			spec.add(mi.getName(), null);
 		}
 	}
 	
@@ -75,6 +93,8 @@ public class DwcMapper
 	{
 		return "select * from " + mappingName.toLowerCase() + " where " + mappingName + "id = " + collectionObjectId; 
 	}
+	
+	
 	
 	/**
 	 * @param spec
@@ -88,8 +108,28 @@ public class DwcMapper
 	 * Current idea for use when cache won't work is to get the ExportMapper to fill in the SpQuery.sql field
 	 * with something that can be run without having to setup a querybuilder -- though perhaps something
 	 * like what is done with the qb when reports run will work...
+	 * 
+	 * Also, given a CollectionObject object it should be possible to use MappingInfo.mapping to follow relationships from the CO to the mapped fields.
+	 * 
 	 */
+	
 	public void setDarwinCoreValues(DarwinCoreSpecimen spec) throws Exception
+	{
+		if (spec.hasDataModelObject())
+		{
+			setDarwinCoreValuesForObj(spec);
+		}
+		else
+		{
+			setDarwinCoreValuesForId(spec);
+		}
+	}
+	
+	/**
+	 * @param spec
+	 * @throws Exception
+	 */
+	protected void setDarwinCoreValuesForId(DarwinCoreSpecimen spec) throws Exception
 	{
 		Statement stmt = null;
 		ResultSet rs = null;
@@ -113,6 +153,15 @@ public class DwcMapper
 			if (rs != null) rs.close();
 			if (stmt != null) stmt.close();
 		}
+	}
+	
+	/**
+	 * @param spec
+	 * @throws Exception
+	 */
+	protected void setDarwinCoreValuesForObj(DarwinCoreSpecimen spec) throws Exception
+	{
+		
 	}
 	
 	/**

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -21,6 +22,7 @@ public class DarwinCoreSpecimen
 {
 	final protected DwcMapper mapper;
 	protected Integer collectionObjectId;
+	protected CollectionObject collectionObject;
 	protected Map<String, Object> concepts = new HashMap<String, Object>();
 	
 	public DarwinCoreSpecimen(DwcMapper mapper) throws Exception
@@ -32,6 +34,7 @@ public class DarwinCoreSpecimen
 	public void setCollectionObjectId(Integer collectionObjectId) throws Exception
 	{
 		this.collectionObjectId = collectionObjectId;
+		this.collectionObject = null;
 		mapper.setDarwinCoreValues(this);
 	}
 	
@@ -98,7 +101,6 @@ public class DarwinCoreSpecimen
 	 */
 	public static void main(String[] args) 
 	{
- 	    
 		try
 		{
 			String connStr = "jdbc:mysql://localhost/lsusmollusca?characterEncoding=UTF-8&autoReconnect=true"; 
@@ -118,5 +120,31 @@ public class DarwinCoreSpecimen
 			System.exit(1);
 		}
 	}
+	
+	/**
+	 * @return the collectionobject
+	 */
+	public CollectionObject getCollectionObject()
+	{
+		return collectionObject;
+	}
 
+	/**
+	 * @param collectionObject
+	 * @throws Exception
+	 */
+	public void setCollectionObject(CollectionObject collectionObject) throws Exception
+	{
+		this.collectionObject = collectionObject;
+		this.collectionObjectId = collectionObject != null ? collectionObject.getId() : null;
+		mapper.setDarwinCoreValues(this);
+	}
+	
+	/**
+	 * @return true if a hibernate object has been associated with the DarwinCoreSpecimen
+	 */
+	public boolean hasDataModelObject()
+	{
+		return collectionObject != null;
+	}
 }
