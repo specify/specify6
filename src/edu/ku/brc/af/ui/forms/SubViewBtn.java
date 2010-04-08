@@ -411,16 +411,20 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         
         
         // Only get the data from the parent the first time.
-        if (parentObj != null && parentObj.getId() != null && dataObj == null)
+        if (parentObj != null && dataObj == null)
         {
             DataProviderSessionIFace sessionLocal = null;
             try
             {
                 DataObjectGettable getter = DataObjectGettableFactory.get(parentObj.getClass().getName(), FormHelper.DATA_OBJ_GETTER);
-                sessionLocal = DataProviderFactory.getInstance().createSession();
+                sessionLocal = parentObj.getId() != null ? DataProviderFactory.getInstance().createSession() : null;
+                
                 // rods - 07/22/08 - Apparently Merge just doesn't work the way it seems it should
                 // so instead we will just go get the parent again.
-                parentObj = (FormDataObjIFace)sessionLocal.get(parentObj.getDataClass(), parentObj.getId());
+                if (parentObj.getId() != null)
+                {
+                    parentObj = (FormDataObjIFace)sessionLocal.get(parentObj.getDataClass(), parentObj.getId());
+                }
                 
                 Object[] objs = UIHelper.getFieldValues(subviewDef, parentObj, getter);
                 if (objs == null)

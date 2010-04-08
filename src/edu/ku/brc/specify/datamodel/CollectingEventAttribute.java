@@ -35,8 +35,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
 /**
@@ -614,7 +616,25 @@ public class CollectingEventAttribute extends DisciplineMember implements Clonea
         
         return obj;
     }
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
+    @Override
+    @Transient
+    public String getIdentityTitle()
+    {
+        return toString();
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#toString()
+     */
+    @Override
+    public String toString()
+    {
+        String str = DataObjFieldFormatMgr.getInstance().format(this, getDataClass());
+        return StringUtils.isNotEmpty(str) ? str : "1";
+    }
 
 
     /* (non-Javadoc)
