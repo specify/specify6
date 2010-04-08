@@ -880,6 +880,7 @@ public class SpecifyDBSetupWizard extends JPanel
                     progressFrame.adjustProgressFrame();
                     progressFrame.setProcessPercent(true);
                     progressFrame.setOverall(0, 12);
+                    UIRegistry.pushWindow(progressFrame);
                     
                     UIHelper.centerAndShow(progressFrame);
                     
