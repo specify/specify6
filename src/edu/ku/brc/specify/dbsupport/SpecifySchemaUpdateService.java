@@ -188,10 +188,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 
                 if (dbMgr.doesDBHaveTable("spversion"))
                 {
-                    Vector<Object[]> rows = BasicSQLUtils.query(dbConn.getConnection(), "SELECT AppVersion, SchemaVersion, SpVersionID, Version FROM spversion");
-                    if (rows.size() == 1)
+                    Vector<Object[]> rows = BasicSQLUtils.query(dbConn.getConnection(), "SELECT AppVersion, SchemaVersion, SpVersionID, Version FROM spversion ORDER BY TimestampCreated DESC");
+                    if (rows.size() > 0)
                     {
-                        Object[] row  = (Object[])rows.get(0);
+                        Object[] row  = (Object[])rows.get(rows.size()-1);
                         appVerFromDB    = row[0].toString();
                         schemaVerFromDB = row[1].toString();
                         spverId       = (Integer)row[2];
