@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
+import java.util.Collections;
 import java.util.Vector;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
@@ -161,8 +162,26 @@ public class DwcMapper
 	 */
 	protected void setDarwinCoreValuesForObj(DarwinCoreSpecimen spec) throws Exception
 	{
-		
+		throw new Exception("No code is present to do this thing.");
 	}
+	
+	/**
+	 * @return number of concepts
+	 */
+	public int getConceptCount()
+	{
+		return concepts.size();
+	}
+	
+	/**
+	 * @param c
+	 * @return concept c
+	 */
+	public MappingInfo getConcept(int c)
+	{
+		return concepts.get(c);
+	}
+		
 	
 	/**
 	 * @param args
