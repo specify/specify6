@@ -2216,6 +2216,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         {
                             lbl = lbl.replaceAll(" ", "_");
                             lbl = lbl.replaceAll("/", "_");
+                            lbl = lbl.replaceAll("#", "_");
                         }
                         ERTICaptionInfo erti;
                         if (fi != null)
