@@ -22,7 +22,7 @@ package edu.ku.brc.specify.config;
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.createLabel;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.*;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -977,7 +977,7 @@ public class ResourceImportExportDlg extends CustomDialog
                 SpReport report = new SpReport();
                 report.initialize();
                 report.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
-                report.fromXML(repElement);
+                report.fromXML(repElement, newResName != null);
                 
                 if (newResName != null)
                 {
@@ -985,6 +985,11 @@ public class ResourceImportExportDlg extends CustomDialog
                 }
                 appRes.setName(report.getName());
                 appRes.setDescription(appRes.getName());
+                
+                if (newResName != null && report.getQuery() != null)
+                {
+                    showLocalizedMsg("RIE_ReportNewQueryTitle", "RIE_ReportNewQueryMsg", report.getQuery().getName(), report.getName());
+                }
                 
                 report.setAppResource((SpAppResource) appRes);
                 ((SpAppResource)appRes).getSpReports().add(report);
@@ -1310,7 +1315,7 @@ public class ResourceImportExportDlg extends CustomDialog
                                                 ((SpecifyAppContextMgr) AppContextMgr.getInstance()).removeAppResourceSp(fndAppRes.getSpAppResourceDir(), fndAppRes);
                                             }
                                         }
-                                    } else
+                                    } else if (newResName == null)
                                     {
                                         return;
                                     }

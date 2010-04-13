@@ -456,12 +456,12 @@ public class SpReport extends DataModelObjBase
     /**
      * @param element
      */
-    public void fromXML(final Element element)
+    public void fromXML(final Element element, final boolean alwaysMakeNew)
     {
-        name            = getAttr(element, "name", null);
-        remarks     	=  getAttr(element, "remarks", null);
         String repeatCountStr = getAttr(element, "repeatCount", null);
-        repeatCount = StringUtils.isBlank(repeatCountStr) ? null : Integer.valueOf(repeatCountStr);
+        name             = getAttr(element, "name", null);
+        remarks     	 =  getAttr(element, "remarks", null);
+        repeatCount      = StringUtils.isBlank(repeatCountStr) ? null : Integer.valueOf(repeatCountStr);
         repeatField      = getAttr(element, "repeatField", null);
         if (StringUtils.isBlank(repeatField))
         {
@@ -476,7 +476,7 @@ public class SpReport extends DataModelObjBase
         	newQ.initialize();
         	newQ.fromXML(qryNode);
         	newQ.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
-        	query = determineQueryForImport(newQ);
+        	query = alwaysMakeNew ? newQ : determineQueryForImport(newQ);
         	if (query.getId() == null)
         	{
         		query.setName(getUniqueNameForImportQuery(query.getName()));
