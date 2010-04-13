@@ -67,6 +67,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -111,7 +112,6 @@ import edu.ku.brc.specify.tasks.subpane.JRConnectionFieldDef;
 import edu.ku.brc.specify.tasks.subpane.SpJRIReportConnection;
 import edu.ku.brc.specify.tasks.subpane.qb.QBJRIReportConnection;
 import edu.ku.brc.specify.tasks.subpane.wb.WBJRIReportConnection;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
 import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.ChooseFromListDlg;
@@ -417,9 +417,13 @@ public class MainFrameSpecify extends MainFrame
 
     /**
      * @param jasperFile
+     * @param confirmOverwrite
+     * @param newResName this name override the name of the report (which is usually the file name sans the extension)
      * @return true if the report is successfully imported, otherwise return false.
      */
-    public static boolean importJasperReport(final File jasperFile, boolean confirmOverwrite)
+    public static boolean importJasperReport(final File    jasperFile, 
+                                             final boolean confirmOverwrite,
+                                             final String  newResName)
     {
         ByteArrayOutputStream xml = null;
         try
@@ -434,7 +438,9 @@ public class MainFrameSpecify extends MainFrame
             UIRegistry.getStatusBar().setErrorMessage(e.getLocalizedMessage(), e);
             return false;
         }
-        AppResAndProps resApp = getAppRes(jasperFile.getName(), null, confirmOverwrite);
+        
+        String resName = newResName != null ? newResName : FilenameUtils.getBaseName(jasperFile.getName());
+        AppResAndProps resApp = getAppRes(resName, null, confirmOverwrite);
         if (resApp != null)
         {
             String metaData = resApp.getAppRes().getMetaData();
@@ -522,7 +528,7 @@ public class MainFrameSpecify extends MainFrame
         		newRep = true;
         	}
         }
-        boolean result = false;
+        boolean result      = false;
         boolean savedAppRes = false;
         String xmlString = xml.toString();
         if (rep != null)
@@ -536,6 +542,7 @@ public class MainFrameSpecify extends MainFrame
         }
         catch (Exception ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, ex);
             return false;
@@ -625,11 +632,9 @@ public class MainFrameSpecify extends MainFrame
 				}
 				if (newRep && !result)
 				{
-					SpecifyAppContextMgr spMgr = (SpecifyAppContextMgr) AppContextMgr
-							.getInstance();
+					SpecifyAppContextMgr spMgr = (SpecifyAppContextMgr) AppContextMgr.getInstance();
 					SpAppResource spRes = (SpAppResource) appRes;
-					spMgr.removeAppResourceSp(spRes.getSpAppResourceDir(),
-							spRes);
+					spMgr.removeAppResourceSp(spRes.getSpAppResourceDir(), spRes);
 				}
 				session.close();
 			}
@@ -828,13 +833,15 @@ public class MainFrameSpecify extends MainFrame
     /**
      * @param repResName
      * @param tableId
-     * @param rep
+     * @param spReport
      * @param appRes
      * 
      * Allows editing of SpReport and SpAppResource properties for reports.
      */
-    protected static AppResAndProps getProps(final String repResName, final Integer tableId, final ReportSpecify rep, 
-    		final AppResourceIFace appRes)
+    protected static AppResAndProps getProps(final String           repResName, 
+                                             final Integer          tableId, 
+                                             final ReportSpecify    spReport, 
+    		                                 final AppResourceIFace appRes)
     {
         String repType;
         if (appRes == null)
@@ -865,7 +872,8 @@ public class MainFrameSpecify extends MainFrame
             	}
             }
         }
-        RepResourcePropsPanel propPanel = new RepResourcePropsPanel(repResName, repType, tableId == null, rep);
+        
+        RepResourcePropsPanel propPanel = new RepResourcePropsPanel(repResName, repType, tableId == null, spReport);
         boolean goodProps = false;
         boolean overwrite = false;
         SpAppResource match = null;
@@ -881,11 +889,14 @@ public class MainFrameSpecify extends MainFrame
             {
                 return null;
             }
-            if (StringUtils.isEmpty(propPanel.getNameTxt().getText().trim()))
+            
+            String   repName = propPanel.getNameTxt().getText().trim();
+            boolean isNameOK = repName.matches("[a-zA-Z0-9\\-. '`_]*");
+            if (StringUtils.isEmpty(repName))
             {
                 JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), String.format(UIRegistry.getResourceString("REP_NAME_MUST_NOT_BE_BLANK"), propPanel.getNameTxt().getText()));
             }
-            else if (!UIHelper.isValidNameForDB(propPanel.getNameTxt().getText().trim()))
+            else if (!isNameOK)
             {
                 Toolkit.getDefaultToolkit().beep();
             	JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), UIRegistry.getResourceString("INVALID_CHARS_NAME"));

@@ -1412,7 +1412,7 @@ public class ReportsBaseTask extends BaseTask
 
         if (file.exists())
         {
-            if (MainFrameSpecify.importJasperReport(file, true))
+            if (MainFrameSpecify.importJasperReport(file, true, null))
             {
                 refreshCommands();
             }

@@ -19,6 +19,13 @@
 */
 package edu.ku.brc.specify.tools.ireportspecify;
 
+import static edu.ku.brc.ui.UIHelper.centerAndShow;
+import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
+import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
+import static edu.ku.brc.ui.UIHelper.createTextField;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -45,8 +52,6 @@ import edu.ku.brc.specify.tasks.LithoStratTreeTask;
 import edu.ku.brc.specify.tasks.StorageTreeTask;
 import edu.ku.brc.specify.tasks.TaxonTreeTask;
 import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author timbo
@@ -125,10 +130,15 @@ public class RepResourcePropsPanel extends JPanel
     }
     
     /**
-     * @param report
-     * @param resource
+     * @param reportName
+     * @param reportType
+     * @param showTableIds
+     * @param rep
      */
-    public RepResourcePropsPanel(final String reportName, final String reportType, final boolean showTableIds, final ReportSpecify rep)
+    public RepResourcePropsPanel(final String reportName, 
+                                 final String reportType, 
+                                 final boolean showTableIds, 
+                                 final ReportSpecify rep)
     {
         super();
         this.reportName = reportName;
@@ -144,39 +154,36 @@ public class RepResourcePropsPanel extends JPanel
      */
     protected void createUI(final  ReportSpecify rep)
     {
-//        String rowDefStr = showTableIds ? "p,p,p,p,p,p,p,10dlu" : "p,p,p,p,p,p,10dlu"; //adding 10dlu lower padding to try  
-//                                                                                       // to try to prevent selection
-//                                                                                       // problems in ReportRepeatPanel 
-//                                                                                       // typeCombo.
+        String rowDefStr = createDuplicateJGoodiesDef("p", "2px", showTableIds ? 7 : 6);
 
-        //Hiding Collection and Level
-        String rowDefStr = showTableIds ? "p,p,p,p,p,p,p,10dlu" : "p,p,p,p,p,p,10dlu"; 
-
-        PanelBuilder builder = new PanelBuilder(new FormLayout("right:p, 2dlu, fill:p:grow", rowDefStr), this);
-        CellConstraints cc = new CellConstraints();
+        PanelBuilder    builder = new PanelBuilder(new FormLayout("p, 2px, fill:p:grow", rowDefStr), this);
+        CellConstraints cc      = new CellConstraints();
         
-        builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_NAME_LBL")), cc.xy(1,1));
-        nameTxt = UIHelper.createTextField(reportName != null? reportName : "untitled");
-        builder.add(nameTxt, cc.xy(3, 1));
+        int y = 1;
+        builder.add(createI18NFormLabel("REP_NAME_LBL"), cc.xy(1,y));
+        nameTxt = createTextField(reportName != null? reportName : "untitled");
+        builder.add(nameTxt, cc.xy(3, y)); 
+        y += 2;
         
-        JLabel titleLbl = UIHelper.createLabel(UIRegistry.getResourceString("REP_TITLE_DESC_LBL"));
-        builder.add(titleLbl, cc.xy(1,2));
-        titleTxt = UIHelper.createTextField("none");
-        builder.add(titleTxt, cc.xy(3, 2));
+        JLabel titleLbl = createI18NFormLabel("REP_TITLE_DESC_LBL");
+        builder.add(titleLbl, cc.xy(1, y));
+        titleTxt = createTextField("none");
+        builder.add(titleTxt, cc.xy(3, y));
         titleLbl.setVisible(false);
         titleTxt.setVisible(false);
+        y += 2;
         
-//        builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_LEVEL_LBL")), cc.xy(1,3));
-        levelTxt = UIHelper.createTextField("0");
+//        builder.add(createI18NFormLabel("REP_LEVEL_LBL"), cc.xy(1,y));
+        levelTxt = createTextField("0");
         levelTxt.setEnabled(false);
-//        builder.add(levelTxt, cc.xy(3, 3));
+//        builder.add(levelTxt, cc.xy(3, y));
         
-        builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_REPTYPE_LBL")), cc.xy(1,3));
-        typeCombo = UIHelper.createComboBox();
-        typeCombo.addItem(UIRegistry.getResourceString("REP_REPORT"));
-        typeCombo.addItem(UIRegistry.getResourceString("REP_LABEL"));
-        typeCombo.addItem(UIRegistry.getResourceString("REP_INVOICE"));
-        //typeCombo.addItem(UIRegistry.getResourceString("REP_SUBREPORT"));
+        builder.add(createI18NFormLabel("REP_REPTYPE_LBL"), cc.xy(1,y));
+        typeCombo = createComboBox();
+        typeCombo.addItem(getResourceString("REP_REPORT"));
+        typeCombo.addItem(getResourceString("REP_LABEL"));
+        typeCombo.addItem(getResourceString("REP_INVOICE"));
+        //typeCombo.addItem(getResourceString("REP_SUBREPORT"));
         if (reportType != null && reportType.equals("Label"))
         {
             typeCombo.setSelectedIndex(1);
@@ -190,10 +197,11 @@ public class RepResourcePropsPanel extends JPanel
             typeCombo.setSelectedIndex(2);
         }
 
-        builder.add(typeCombo, cc.xy(3, 3));
+        builder.add(typeCombo, cc.xy(3, y));
+        y += 2;
         
-        builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_RESDIR_LBL")), cc.xy(1,4));
-        resDirCombo = UIHelper.createComboBox();
+        builder.add(createI18NFormLabel("REP_RESDIR_LBL"), cc.xy(1,y));
+        resDirCombo = createComboBox();
         fillResDirCombo();
         if (rep != null && rep.getAppResource() != null)
         {
@@ -209,33 +217,36 @@ public class RepResourcePropsPanel extends JPanel
         	}
         }
         
-        builder.add(resDirCombo, cc.xy(3, 4));
+        builder.add(resDirCombo, cc.xy(3, y));
+        y += 2;
+        
+        builder.setDefaultDialogBorder();
 
-        int row = 5;
         if (rep == null)
         {
-        	builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_SUBREPS_LBL")), cc.xy(1,row));
-        	subReportsTxt = UIHelper.createTextField(null);
-        	builder.add(subReportsTxt, cc.xy(3, row));
-        	row++;
+        	builder.add(createI18NFormLabel("REP_SUBREPS_LBL"), cc.xy(1, y));
+        	subReportsTxt = createTextField(null);
+        	builder.add(subReportsTxt, cc.xy(3, y));
+        	y += 2;
         }
         
         if (showTableIds)
         {
-            builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_TBL_LBL")), cc.xy(1,row));
-            tblCombo = UIHelper.createComboBox();
+            builder.add(createI18NFormLabel("REP_TBL_LBL"), cc.xy(1, y));
+            tblCombo = createComboBox();
             fillTblCombo();
             tblCombo.setSelectedIndex(0);
-            builder.add(tblCombo, cc.xy(3, row));
-            row++;
+            builder.add(tblCombo, cc.xy(3, y));
+            y += 2;
         }
         
         if (rep != null)
         {
-            builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_REPEAT_LBL")), cc.xy(1, row));
+            builder.add(createI18NFormLabel("REP_REPEAT_LBL"), cc.xy(1, y));
             repeatPanel = new ReportRepeatPanel(rep.getConnection(), canceller);
             repeatPanel.createUI(rep.getSpReport() == null ? null : rep.getSpReport().getRepeats());
-            builder.add(repeatPanel, cc.xy(3, row));
+            builder.add(repeatPanel, cc.xy(3, y));
+            y += 2;
         }
         else
         {
@@ -260,8 +271,8 @@ public class RepResourcePropsPanel extends JPanel
      */
     protected void fillResDirCombo()
     {
-    	resDirCombo.addItem(new ResDirItem(UIRegistry.getResourceString("SpecifyAppContextMgr.Discipline"), "Discipline"));
-    	resDirCombo.addItem(new ResDirItem(UIRegistry.getResourceString("SpecifyAppContextMgr.Personal"), "Personal"));
+    	resDirCombo.addItem(new ResDirItem(getResourceString("SpecifyAppContextMgr.Discipline"), "Discipline"));
+    	resDirCombo.addItem(new ResDirItem(getResourceString("SpecifyAppContextMgr.Personal"), "Personal"));
     }
     
     /**
@@ -418,7 +429,7 @@ public class RepResourcePropsPanel extends JPanel
     {
         CustomDialog tcd = new CustomDialog(null, "Testing", false, 
                 new RepResourcePropsPanel(null, null, true, null));
-        UIHelper.centerAndShow(tcd);
+        centerAndShow(tcd);
     }
 
     /**

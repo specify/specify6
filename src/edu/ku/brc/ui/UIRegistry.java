@@ -1180,7 +1180,7 @@ public class UIRegistry
     }
     
     /**
-     * Display an Confirmation Dialog where everything comes ffrom the bundle.
+     * Display an Confirmation Dialog where everything comes from the bundle.
      * @param titleKey the key to the dialog title
      * @param msgKey the key to the dialog message
      * @param keyBtn1 the key to the first button 
@@ -1203,7 +1203,7 @@ public class UIRegistry
     }
 
     /**
-     * Display an Confirmation Dialog where everything comes ffrom the bundle.
+     * Display an Confirmation Dialog where everything comes from the bundle.
      * @param titleKey the key to the dialog title
      * @param msgKey the key to the dialog message
      * @param keyBtn1 the key to the first button 
@@ -1218,6 +1218,51 @@ public class UIRegistry
                                                   final int    iconOption)
     {
         return displayConfirm(getResourceString(titleKey), getResourceString(msgKey), getResourceString(keyBtn1), getResourceString(keyBtn2), iconOption);
+    }
+
+    /**
+     * Display an Confirmation Dialog where everything comes from the bundle.
+     * @param titleKey the key to the dialog title
+     * @param msgKey the key to the dialog message
+     * @param keyBtn1 the key to the first button 
+     * @param keyBtn2 the key to the second button
+     * @param keyBtn3 the key to the third button
+     * @param iconOption the icon to show
+     * @return YES_OPTION, NO_OPTION, CANCEL_OPTION
+     */
+    public static int displayConfirm(final String title, 
+                                     final String msg,
+                                     final String keyBtn1, // Yes
+                                     final String keyBtn2, // No
+                                     final String keyBtn3, // Cancel
+                                     final int    iconOption)
+    {
+        // Custom button text
+        Object[] options = { keyBtn1, keyBtn2, keyBtn3 };
+        
+        return JOptionPane.showOptionDialog(getMostRecentWindow(), msg, 
+                title, JOptionPane.YES_NO_CANCEL_OPTION,
+                iconOption, null, options, options[2]);
+    }
+
+    /**
+     * Display an Confirmation Dialog where everything comes from the bundle.
+     * @param titleKey the key to the dialog title
+     * @param msgKey the key to the dialog message
+     * @param keyBtn1 the key to the first button 
+     * @param keyBtn2 the key to the second button
+     * @param keyBtn3 the key to the third button
+     * @param iconOption the icon to show
+     * @return YES_OPTION, NO_OPTION, CANCEL_OPTION
+     */
+    public static int displayConfirmLocalized(final String titleKey, 
+                                              final String msgKey,
+                                              final String keyBtn1,
+                                              final String keyBtn2,
+                                              final String keyBtn3,
+                                              final int    iconOption)
+    {
+        return displayConfirm(getResourceString(titleKey), getResourceString(msgKey), getResourceString(keyBtn1), getResourceString(keyBtn2), getResourceString(keyBtn3), iconOption);
     }
 
     //----------------------------------------------------------------------------------
