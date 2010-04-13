@@ -15,11 +15,19 @@ import edu.ku.brc.helpers.XMLHelper;
 /**
  * @author timo
  *
+ * @code_status Alpha
  */
 public class ConceptMapUtils
 {
+	//TODO: more then just the concept name is really needed for the key in the map.
+	// concept namespace and other stuff will probably turn out to be necessary.
 	protected static Map<String, MappedFieldInfo> autoMaps = null;
 	
+	/**
+	 * @return default mappings for darwin core concepts.
+	 * 
+	 * 
+	 */
 	public static Map<String, MappedFieldInfo> getDefaultDarwinCoreMappings()
 	{
 		if (autoMaps == null)

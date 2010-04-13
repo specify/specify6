@@ -79,7 +79,7 @@ public class ImportFileSplitter extends CustomDialog
 {
 	private static final Logger log = Logger.getLogger(ImportFileSplitter.class);
 
-	protected int defaultChunkSize = 2000;
+	protected int defaultChunkSize = 5000;
 	protected JTextField fileName;
 	protected JCheckBox headerChk;
 	protected JProgressBar progBar;
@@ -638,7 +638,7 @@ public class ImportFileSplitter extends CustomDialog
 						}
 						else if (!result.isCancelled())
 						{
-							UIRegistry.displayErrorDlg(StringUtils.isBlank(result.getMessage()) ? "Massive catastrophic total failure" : result.getMessage());
+							UIRegistry.displayErrorDlg(StringUtils.isBlank(result.getMessage()) ? "File could not be split." : result.getMessage());
 						}
 					}
 				}

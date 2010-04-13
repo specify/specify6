@@ -9,7 +9,6 @@ import java.lang.reflect.Modifier;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.Date;
 import java.util.Vector;
 
 import javax.xml.bind.JAXBElement;
@@ -137,52 +136,6 @@ public class CollectionObjectFieldMapper
 		return result + spec.getCollectionObjectId();
 	}
 	
-	/**
-	 * @param dwcType
-	 * @return
-	 */
-	protected Class<?> getClassForDwcType(MappingInfo mi)
-	{
-		String dwcType = mi.getDataType();
-		
-		if (dwcType == null)
-		{
-			//Some concepts don't have type is spexportschemaitem - possibly an import problem or a problem with our .xsd files??
-			String name = mi.getName();
-			if (name.startsWith("DecimalLatitude") || name.equals("DecimalLongitude"))
-			{
-				return Double.class;
-			}
-			if (name.endsWith("Collected") || name.endsWith("Identified"))
-			{
-				return Integer.class;
-			}
-			
-			return String.class;
-		}
-		
-		if (dwcType.equals("xsd:string"))
-		{
-			return String.class;
-		}
-		if (dwcType.equals("xsd:dateTime"))
-		{
-			return Date.class;
-		}
-		if (dwcType.equals("xsd:decimal"))
-		{
-			return Double.class;
-		}
-		if (dwcType.equals("xsd:nonNegativeInteger"))
-		{
-			return Integer.class;
-		}
-		if (dwcType.equals("xsd:gYear"))
-		{
-			return Integer.class;
-		}
-		return null;
-	}
 	
 	/**
 	 * @param xmlSpec
@@ -194,7 +147,7 @@ public class CollectionObjectFieldMapper
 		for (int c = 0; c < dwcMapper.getConceptCount(); c++)
 		{
 			MappingInfo mi = dwcMapper.getConcept(c);
-			Class<?> dataType = getClassForDwcType(mi);
+			Class<?> dataType = mi.getDataType();
 			if (dataType == null)
 			{
 				System.out.println("CollectionObjectMapper:setDwcSpecimenFields: skipping " + mi.getName() + ": unrecognized data type.");

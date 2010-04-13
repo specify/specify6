@@ -3,14 +3,25 @@
  */
 package edu.ku.brc.specify.plugins.morphbank;
 
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
+import edu.ku.brc.specify.datamodel.Determination;
+import edu.ku.brc.specify.tools.export.ConceptMapUtils;
+import edu.ku.brc.specify.tools.export.MappedFieldInfo;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author timo
@@ -31,6 +42,9 @@ public class DwcMapper
 	
 	public static Connection connection; //for testing
 	
+	/**
+	 * @param mappingId
+	 */
 	public DwcMapper(Integer mappingId)
 	{
 		this.mappingId = mappingId;
@@ -40,8 +54,31 @@ public class DwcMapper
 		mappingContextTableId = (Integer )rec.get(0)[2];
 		schemaURL = (String )rec.get(0)[3];
 		fillConcepts();
+		Collections.sort(concepts);
+		for (MappingInfo mi : concepts)
+		{
+			System.out.println(mi.getMapping() + "  " + mi.getName());
+		}
 	}
 	
+	/**
+	 * 
+	 */
+	public DwcMapper()
+	{
+		mappingId = null;
+		mappingName = UIRegistry.getResourceString("DwcMapper.Default");
+		schemaName = null;
+		mappingContextTableId = CollectionObject.getClassTableId();
+		schemaURL = null;
+		fillDefaultConcepts();
+		Collections.sort(concepts);
+	}
+	
+	/**
+	 * @param mappingId
+	 * @return query to extract mapping from 'sp' tables for given mapping key
+	 */
 	protected String getMappingQuery(Integer mappingId)
 	{
 		return "select esm.MappingName, es.SchemaName, q.ContextTableId, es.Description from spexportschemamapping esm inner join "
@@ -52,6 +89,9 @@ public class DwcMapper
 			+ "esm.SpExportSchemaMappingID = " + mappingId;
 	}
 	
+	/**
+	 * 
+	 */
 	protected void fillConcepts()
 	{
 		Vector<Object[]> cpts = BasicSQLUtils.query(connection, getConceptQuery());
@@ -59,10 +99,26 @@ public class DwcMapper
 		for (Object[] concept : cpts)
 		{
 			concepts.add(new MappingInfo((String )concept[0], (String )concept[1], (String )concept[2], 
-					mappingContextTableId));
-		}		
+					mappingContextTableId, (Boolean )concept[3]));
+		}	
 	}
 	
+	/**
+	 * 
+	 */
+	protected void fillDefaultConcepts()
+	{
+		concepts.clear();
+		for (Map.Entry<String, MappedFieldInfo> me : ConceptMapUtils.getDefaultDarwinCoreMappings().entrySet())
+		{
+			concepts.add(new MappingInfo(me.getKey(), me.getValue()));
+		}
+	}
+	
+	/**
+	 * @param mappingId
+	 * @return
+	 */
 	protected String getMappingName(Integer mappingId)
 	{
 		return BasicSQLUtils.querySingleObj(connection, 
@@ -70,13 +126,20 @@ public class DwcMapper
 				+ " SpExportSchemaMappingID = " + mappingId);
 	}
 	
+	/**
+	 * @return
+	 */
 	protected String getConceptQuery()
 	{
-		return "select esi.FieldName, esi.DataType, qf.StringId from spexportschemaitemmapping esim inner join spexportschemaitem esi on "
+		return "select esi.FieldName, esi.DataType, qf.StringId, qf.IsRelFld from spexportschemaitemmapping esim inner join spexportschemaitem esi on "
 			+ "esi.SpExportSchemaItemID = esim.ExportSchemaItemID inner join spqueryfield qf on qf.SpQueryFieldID = esim.SpQueryFieldID where esim.SpExportSchemaMappingID = "
 			+ mappingId;
 	}
 	
+	/**
+	 * @param spec
+	 * @throws Exception
+	 */
 	public void setDarwinCoreConcepts(DarwinCoreSpecimen spec) throws Exception
 	{
 		spec.clearConcepts();
@@ -116,7 +179,7 @@ public class DwcMapper
 	
 	public void setDarwinCoreValues(DarwinCoreSpecimen spec) throws Exception
 	{
-		if (spec.hasDataModelObject())
+		if (/*true*/spec.hasDataModelObject())
 		{
 			setDarwinCoreValuesForObj(spec);
 		}
@@ -162,9 +225,112 @@ public class DwcMapper
 	 */
 	protected void setDarwinCoreValuesForObj(DarwinCoreSpecimen spec) throws Exception
 	{
-		throw new Exception("No code is present to do this thing.");
+		//throw new Exception("No code is present to do this thing.");
+		
+		//Using hibernate objects and reflection ...
+		for (MappingInfo mi : concepts)
+		{
+			spec.set(mi.getName(), getMappedValue(mi, spec.getCollectionObject()));
+		}
+		
+		//But maybe it is easier to construct a query or to create and save a query for this purpose into SpQuery.SqlStr (even though it will have to be hql for now)
+		//hibernate strategy is beginning to suck. And what about lazy-loading and session attachment, and the chance for messing things up in the form system's session...???
 	}
 	
+	/**
+	 * @param mi
+	 * @param obj
+	 * @return
+	 */
+	protected Object getMappedValue(MappingInfo mi, DataModelObjBase obj) throws Exception
+	{
+		String[] mapSegments = mi.getMapping().split(",");
+		DataModelObjBase currentObject = obj;
+		for (int s = 0; s < mapSegments.length; s++)
+		{
+			if (s < mapSegments.length - 1 || !mi.isFormatted())
+			{
+				currentObject = getRelatedObject(currentObject, mapSegments[s]);
+			}
+			if (s == mapSegments.length - 1)
+			{
+				return getValueFromObject(currentObject, mapSegments[s], mi.isFormatted());
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * @param object
+	 * @param mapping
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	protected DataModelObjBase getRelatedObject(DataModelObjBase object, String mapping) throws Exception
+	{
+		String[] mapInfo = mapping.split("-");
+		int tableId = Integer.parseInt(mapInfo[0]);
+		String relationshipName = mapInfo.length > 1 ? mapInfo[1] : null;
+		Class<? extends DataModelObjBase> relatedClass = (Class<? extends DataModelObjBase> )DBTableIdMgr.getInstance().getInfoById(tableId).getClassObj();
+		if (relationshipName != null)
+		{
+			//this means we have a 1-many (?)
+			String methName = "get" + relationshipName.substring(0, 1).toUpperCase().concat(relationshipName.substring(1));
+			Method meth = object.getClass().getMethod(methName);
+			return selectRelatedObject(object, meth, relatedClass);
+		}
+		return null;
+	}
+	
+	/**
+	 * @param parent
+	 * @param getter
+	 * @return appropriate related object
+	 * 
+	 * This is used for one-to-many relationships where getter returns a set of related objects.
+	 * In most cases it should be safe to assume a criterion for picking based on the related class type.
+	 * 
+	 * Currently criteria are Determination - isCurrent, Collector - isPrimary, others just the first...
+	 * 
+	 * Hopefully, in the vast majority of cases, one-to-many's will be handled by aggregations or formatters and this method will not be needed.
+	 */
+	@SuppressWarnings("unchecked")
+	protected DataModelObjBase selectRelatedObject(DataModelObjBase parent, Method getter, Class<? extends DataModelObjBase> relatedClass) throws Exception
+	{
+		Set<? extends DataModelObjBase> objects = (Set<? extends DataModelObjBase> )getter.invoke(parent);
+		if (objects.size() > 0)
+		{
+			Iterator<? extends DataModelObjBase> iter = objects.iterator();
+			while(iter.hasNext())
+			{
+				DataModelObjBase obj = iter.next();
+				if (isObjectToSelect(parent, obj))
+				{
+					return obj;
+				}
+			}
+		}
+		return null;
+	}
+	
+	protected boolean isObjectToSelect(DataModelObjBase parent, DataModelObjBase obj) throws Exception
+	{
+		if (parent.getClass().equals(CollectionObject.class))
+		{
+			if (obj.getClass().equals(Determination.class))
+			{
+				return ((Determination )obj).getIsCurrent();
+			}
+			//
+		}
+		throw new Exception("Unsupported parent class " + parent.getClass().getName());
+	}
+	
+	protected Object getValueFromObject(DataModelObjBase object, String mapping, boolean isFormatted)
+	{
+		
+		return null;
+	}
 	/**
 	 * @return number of concepts
 	 */
