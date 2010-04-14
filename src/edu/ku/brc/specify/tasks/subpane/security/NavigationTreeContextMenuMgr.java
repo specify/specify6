@@ -42,7 +42,6 @@ import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.UIHelper;
@@ -230,9 +229,13 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
                 addExtUserBtn.setEnabled(enable);
                 delUserBtn.setEnabled(false);
                 
-            } else if (dmObject instanceof Collection)
+            } else //if (dmObject instanceof Collection)
             {
                 // object is a collection: offer to add new group and to delete the collection
+                boolean enable = getTreeMgr().canAddNewUser(lastClickComp);
+                addUserBtn.setEnabled(enable);
+                addExtUserBtn.setEnabled(enable);
+                delUserBtn.setEnabled(false);
             }
         } else
         {

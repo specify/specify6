@@ -65,6 +65,7 @@ import edu.ku.brc.ui.UIRegistry;
  * Collection, SpPrincipal (user group) or SpecifyUser. 
  * 
  * @author Ricardo
+ * @author rods
  *
  */
 public class NavigationTreeMgr
@@ -643,13 +644,8 @@ public class NavigationTreeMgr
         dlg.setOkLabel(getResourceString("SAVE"));
         dlg.createUI();
         
-        int divCnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM division");
         ValComboBoxFromQuery cbx = (ValComboBoxFromQuery)dlg.getMultiView().getCurrentViewAsFormViewObj().getControlByName("agent");
-        if (cbx != null && divCnt > 1)
-        {
-            cbx.registerQueryBuilder(new UserAgentVSQBldr(cbx));
-            cbx.setReadOnlyMode();
-        }
+        cbx.registerQueryBuilder(new UserAgentVSQBldr(cbx));
         
         AppContextMgr acMgr          = AppContextMgr.getInstance();
         Discipline    currDiscipline = acMgr.getClassObject(Discipline.class);
@@ -765,9 +761,11 @@ public class NavigationTreeMgr
      */
     public DefaultMutableTreeNode addExistingUser(final DefaultMutableTreeNode grpNode) 
     {
+        Discipline discipline = getParentOfClass(grpNode, Discipline.class);
+        
         DataModelObjBaseWrapper wrp       = (DataModelObjBaseWrapper) grpNode.getUserObject();
         SpPrincipal             prinGroup = (SpPrincipal) wrp.getDataObj();
-        AddExistingUserDlg      dlg       = new AddExistingUserDlg(null, prinGroup);
+        AddExistingUserDlg      dlg       = new AddExistingUserDlg(null, prinGroup, discipline);
         dlg.setVisible(true);
         
         if (dlg.isCancelled())

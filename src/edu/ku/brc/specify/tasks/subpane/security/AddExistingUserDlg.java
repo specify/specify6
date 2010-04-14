@@ -41,6 +41,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.CustomDialog;
@@ -61,20 +62,22 @@ public class AddExistingUserDlg extends CustomDialog
     
     final private String AED = "AddExistingUserDlg.";
     
-    private JList      userList;
+    private JList       userList;
     private SpPrincipal group;
+    private Discipline  discipline;
     
     /**
      * @param parentDlg
      * @param group
      */
     public AddExistingUserDlg(final CustomDialog parentDlg, 
-                              final SpPrincipal  group) 
+                              final SpPrincipal  group,
+                              final Discipline discipline) 
     {
         super(parentDlg, getResourceString("AddExistingUserDlg.TITLE"), true, OKCANCEL, null);
         //helpContext = "SECURITY_EXIST_USR";
-        
         this.group  = group;
+        this.discipline = discipline;
     }
     
     /* (non-Javadoc)
@@ -112,11 +115,21 @@ public class AddExistingUserDlg extends CustomDialog
      */
     @SuppressWarnings("unchecked")
     private static List<SpecifyUser> getUsers(final int     groupId, 
-                                              final boolean inGroup)
+                                              final boolean inGroup,
+                                              final Discipline discipline)
     {
-        String sql = "SELECT DISTINCT u.SpecifyUserID FROM specifyuser u INNER JOIN specifyuser_spprincipal upr ON u.SpecifyUserID = upr.SpecifyUserID " +
+        String sql = "SELECT su.SpecifyUserID FROM specifyuser su INNER JOIN agent a ON su.SpecifyUserID = a.SpecifyUserID " +
+                     "INNER JOIN agent_discipline ad ON a.AgentID = ad.AgentID WHERE ad.DisciplineID = " + discipline.getId();
+        StringBuilder sbIds = new StringBuilder();
+        for (Integer id : BasicSQLUtils.queryForInts(sql))
+        {
+           if (sbIds.length() > 0) sbIds.append(',');
+           sbIds.append(id);
+        }
+        
+        sql = "SELECT DISTINCT u.SpecifyUserID FROM specifyuser u INNER JOIN specifyuser_spprincipal upr ON u.SpecifyUserID = upr.SpecifyUserID " +
                      "INNER JOIN spprincipal p ON upr.SpPrincipalID = p.SpPrincipalID WHERE p.SpPrincipalID " + 
-                     (inGroup ? "= " : "<> ") + groupId;
+                     (inGroup ? "= " : "<> ") + groupId + " AND NOT (u.SpecifyUserID IN ("+sbIds.toString() + "))";
         
         log.debug(sql);
         
@@ -175,7 +188,7 @@ public class AddExistingUserDlg extends CustomDialog
         DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();
         try
         {
-            for (SpecifyUser user : getUsers(group.getUserGroupId(), false))
+            for (SpecifyUser user : getUsers(group.getUserGroupId(), false, discipline))
             {
                 listModel.addElement(user);
             }

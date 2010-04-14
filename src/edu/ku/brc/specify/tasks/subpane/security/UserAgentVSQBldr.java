@@ -58,7 +58,7 @@ public class UserAgentVSQBldr implements ViewBasedSearchQueryBuilderIFace
     
     protected ExpressResultsTableInfo esTblInfo = null;
     protected ValComboBoxFromQuery    cbx;
-    protected Integer                 divId = null;
+    protected Integer                 disciplineID = null;
     
     /**
      * @param cbx
@@ -76,17 +76,25 @@ public class UserAgentVSQBldr implements ViewBasedSearchQueryBuilderIFace
     @Override
     public String buildSQL(final Map<String, Object> dataMap, final List<String> fieldNames)
     {
-        Vector<Object> divisionIds   = BasicSQLUtils.querySingleCol("SELECT DisciplineID, Name FROM discipline");
-        Vector<Object> divisionNames = BasicSQLUtils.querySingleCol("SELECT Name FROM discipline");
-        ToggleButtonChooserDlg<Object> divDlg = new ToggleButtonChooserDlg<Object>(null, UIRegistry.getResourceString("SEC_PK_SRCH"), 
-                divisionNames, ToggleButtonChooserPanel.Type.RadioButton);
-        divDlg.setUseScrollPane(true);
-        divDlg.createUI();
-        divDlg.getCancelBtn().setVisible(false);
-        
-        divDlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        UIHelper.centerAndShow(divDlg);
-        divId = (Integer)divisionIds.get(divisionNames.indexOf(divDlg.getSelectedObject()));
+        Vector<Object> disciplineIds   = BasicSQLUtils.querySingleCol("SELECT DisciplineID FROM discipline ORDER BY Name");
+        if (disciplineIds.size() > 1)
+        {
+            Vector<Object> divisionNames = BasicSQLUtils.querySingleCol("SELECT Name FROM discipline ORDER BY Name");
+            ToggleButtonChooserDlg<Object> divDlg = new ToggleButtonChooserDlg<Object>(null, UIRegistry.getResourceString("SEC_PK_SRCH"), 
+                                                                                       divisionNames, ToggleButtonChooserPanel.Type.RadioButton);
+            divDlg.setUseScrollPane(true);
+            divDlg.createUI();
+            divDlg.getCancelBtn().setVisible(false);
+            
+            divDlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            UIHelper.centerAndShow(divDlg);
+            int inx = divisionNames.indexOf(divDlg.getSelectedObject());
+            disciplineID = (Integer)disciplineIds.get(inx);
+            
+        } else
+        {
+            disciplineID = (Integer)disciplineIds.get(0);
+        }
         
         String searchName = cbx.getSearchName();
         if (searchName != null)
@@ -95,7 +103,7 @@ public class UserAgentVSQBldr implements ViewBasedSearchQueryBuilderIFace
             if (esTblInfo != null)
             {
                String sqlStr = esTblInfo.getViewSql();
-               return buildSearchString(dataMap, fieldNames, StringUtils.replace(sqlStr, "DSPLNID", divId.toString()));
+               return buildSearchString(dataMap, fieldNames, StringUtils.replace(sqlStr, "DSPLNID", disciplineID.toString()));
             }
         }
         return null;
@@ -109,12 +117,13 @@ public class UserAgentVSQBldr implements ViewBasedSearchQueryBuilderIFace
     @Override
     public String buildSQL(String searchText, boolean isForCount)
     {
-        String newEntryStr = searchText + '%';
+        /*String newEntryStr = searchText + '%';
         String sql = String.format("SELECT %s FROM Agent a LEFT JOIN a.specifyUser s INNER JOIN a.division d WHERE d.id = " + divId +
                                    " AND s = null AND LOWER(a.lastName) LIKE '%s2' ORDER BY a.lastName",
                                            isForCount ? "count(*)" : "a.lastName, a.firstName, a.agentId", newEntryStr);
         log.debug(sql);
-        return sql;
+        return sql;*/
+        return null;
     }
     
     /**
