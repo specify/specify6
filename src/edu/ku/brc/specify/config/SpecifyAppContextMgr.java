@@ -527,7 +527,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     collName += " - " + dispName;
                     if (collectionHash.get(collName) != null)
                     {
-                        String divName = BasicSQLUtils.querySingleObj("SELECT d.DivisionID FROM collection c INNER JOIN discipline d ON c.DisciplineID = d.UserGroupScopeId WHERE DisciplineID = " + row[2]);
+                        String sql = "SELECT d.DivisionID FROM collection c INNER JOIN discipline d ON c.DisciplineID = d.UserGroupScopeId WHERE d.DisciplineID = " + row[2];
+                        String divName = BasicSQLUtils.querySingleObj(sql);
                         collName += " - " + divName;
                     }
                 }
@@ -538,7 +539,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             String         recentIds = askForColl || promptForCollection ? null : remotePrefs.get(prefName, null);
             if (StringUtils.isNotEmpty(recentIds))
             {
-                Vector<Object[]> rows = BasicSQLUtils.query("SELECT cln.CollectionName, cln.UserGroupScopeId FROM collection AS cln WHERE UserGroupScopeId = " + recentIds); //$NON-NLS-1$
+                Vector<Object[]> rows = BasicSQLUtils.query("SELECT CollectionName, UserGroupScopeId FROM collection WHERE UserGroupScopeId = " + recentIds); //$NON-NLS-1$
                 if (rows.size() == 1)
                 {
                     String  collName = rows.get(0)[0].toString();
