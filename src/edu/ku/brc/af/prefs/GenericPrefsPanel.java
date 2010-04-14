@@ -59,7 +59,7 @@ public class GenericPrefsPanel extends JPanel implements PrefsSavable, PrefsPane
 {
     private static final Logger log  = Logger.getLogger(GenericPrefsPanel.class);
     
-    private static final String  securityPrefix    = "Prefs."; //$NON-NLS-1$
+    private static final String  prefsPrefix    = "Prefs."; //$NON-NLS-1$
 
     protected String    name;
     protected String    title;
@@ -249,7 +249,7 @@ public class GenericPrefsPanel extends JPanel implements PrefsSavable, PrefsPane
     {
         if (permissions == null)
         {
-            permissions = SecurityMgr.getInstance().getPermission(securityPrefix + getPermissionName());
+            permissions = SecurityMgr.getInstance().getPermission(prefsPrefix + getPermissionName());
         }
         return permissions;
     }

@@ -32,6 +32,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -44,6 +45,7 @@ import java.util.Properties;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -63,10 +65,12 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.prefs.PrefsPanel;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.plugins.UIPluginBase;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MacBtnBorder;
 import edu.ku.brc.ui.UIHelper;
@@ -92,6 +96,9 @@ import edu.ku.brc.util.LatLonConverter.LATLON;
 public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListener
 {
     private static final Logger log = Logger.getLogger(UIPluginBase.class);
+    
+    protected final static String LAT_PREF = "latlon.plugin.def_lat";
+    protected final static String LON_PREF = "latlon.plugin.def_lon";
     
     protected final static String[] formatClass             = new String[] {"DDDDPanel", "DDMMMMPanel", "DDMMSSPanel"};
     protected final static String[] formats                 = new String[] {"DDD.DDD", "DD_MM.MM", "DD_MM_SS"};
@@ -130,7 +137,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
     protected Border                panelBorder = BorderFactory.createEtchedBorder();
     protected JLabel                typeLabel   = null;
     protected int                   currentInx  = -1;
-    protected JToggleButton[]        botBtns  = null;
+    protected JToggleButton[]       botBtns     = null;
     
     protected Locality             locality;
     protected DDDDPanel[]          panels;
@@ -141,6 +148,8 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
     protected Pair<String, String> srcLatLon2 = new Pair<String, String>();
     protected FORMAT               srcFormat;
     protected FORMAT               choosenFormat;
+    
+    protected PrefsPanel           prefsPanel = null;
     
     // UIValidatable && UIPluginable
     protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
@@ -371,14 +380,47 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
             typeLabel = createLabel(" ");
         }
 
-        PanelBuilder topPane = new PanelBuilder(new FormLayout("l:p, c:p:g", "p"));
+        ActionListener infoAL = new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                doPrefs();
+            }
+        };
+        
+        JButton infoBtn = UIHelper.createIconBtn("InfoIcon", IconManager.IconSize.Std16, getResourceString("PREFERENCES"), true, infoAL);
+        infoBtn.setEnabled(true);
+        
+        PanelBuilder topPane = new PanelBuilder(new FormLayout("l:p, c:p:g" + (isViewMode ? "" : ",4px,p,8px"), "p"));
         topPane.add(formatSelector,       cc.xy(1, 1));
         topPane.add(isViewMode ? typeLabel : botBtnBar.getPanel(), cc.xy(2, 1));
+        if (!isViewMode) topPane.add(infoBtn, cc.xy(4, 1));
+        
         
         builder.add(topPane.getPanel(), cc.xy(1, 1));
         builder.add(cardPanel,          cc.xy(1, 3));
         
+        prefsPanel = new PrefsPanel(false);
+        prefsPanel.add(getResourceString("LatLonUI.LL_DIR"));
+        prefsPanel.add(getResourceString("LatLonUI.LATDEF_DIR"), LAT_PREF, Boolean.class, true);
+        prefsPanel.add(getResourceString("LatLonUI.LONDEF_DIR"), LON_PREF, Boolean.class, true);
+        prefsPanel.createForm(null, null);
+        
         popResourceBundle();
+    }
+    
+    /**
+     * 
+     */
+    private void doPrefs()
+    {
+        CustomDialog dlg = new CustomDialog((Dialog)null, "Preferences", true, CustomDialog.OKCANCEL, prefsPanel);
+        dlg.setVisible(true);
+        if (!dlg.isCancelled())
+        {
+            prefsPanel.savePrefs();
+        }
     }
     
     /* (non-Javadoc)

@@ -51,6 +51,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.af.ui.forms.formatters.NumberMinMaxFormatter;
 import edu.ku.brc.af.ui.forms.validation.DataChangeListener;
@@ -300,6 +301,8 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             
         } else
         {
+            boolean isDefNorth = AppPreferences.getRemote().getBoolean(LatLonUI.LAT_PREF, true);
+            latitudeDir.setSelectedIndex(isDefNorth ? 0 : 1);
             latitudeDD.setText("");
             if (latitudeDirTxt != null)
             {
@@ -322,6 +325,8 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             
         } else
         {
+            boolean isDefWest = AppPreferences.getRemote().getBoolean(LatLonUI.LON_PREF, true);
+            longitudeDir.setSelectedIndex(isDefWest ? 1 : 0);
             longitudeDD.setText("");
             if (latitudeDirTxt != null)
             {
