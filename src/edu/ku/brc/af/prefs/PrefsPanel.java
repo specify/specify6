@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -45,6 +46,8 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class PrefsPanel extends GenericPrefsPanel
 {
+    public enum CompType {eSep, eCheckbox, eComboBox};
+    
     protected AppPreferences              appPrefs;
     protected boolean                     doLocalPrefs;
     protected HashMap<String, JComponent> fieldHash = new HashMap<String, JComponent>();
@@ -75,20 +78,32 @@ public class PrefsPanel extends GenericPrefsPanel
         int y = 1;
         for (ItemInfo item : items)
         {
-            if (item.isSep())
+            if (item.getCompType() == CompType.eSep)
             {
                 pb.addSeparator(item.getTitle(), cc.xyw(1, y, 3));
                 y += 2;
                 
-            } else if (item.getClazz() == Boolean.class)
+            } else if (item.getCompType() == CompType.eCheckbox)
             {
                 JCheckBox cb = UIHelper.createCheckBox(item.getTitle());
                 item.setComp(cb);
                 pb.add(UIHelper.createLabel(" "), cc.xy(1, y));
-                pb.add(cb, cc.xy(1, y));
+                pb.add(cb, cc.xy(3, y));
                 y += 2;
                 
                 cb.setSelected(appPrefs.getBoolean(item.getPrefName(), (Boolean)item.getDefaultVal()));
+                
+                formValidator.createValidator(cb, UIValidator.Type.Changed);
+                
+            } else if (item.getCompType() == CompType.eComboBox)
+            {
+                JComboBox cb = UIHelper.createComboBox((Object[])item.getItemsTitles());
+                item.setComp(cb);
+                pb.add(UIHelper.createFormLabel(item.getTitle()), cc.xy(1, y));
+                pb.add(cb, cc.xy(3, y));
+                y += 2;
+                
+                cb.setSelectedIndex(appPrefs.getInt(item.getPrefName(), (Integer)item.getDefaultVal()));
                 
                 formValidator.createValidator(cb, UIValidator.Type.Changed);
             }
@@ -102,9 +117,19 @@ public class PrefsPanel extends GenericPrefsPanel
      * @param prefName
      * @param cls
      */
-    public void add(final String title, final String prefName, final Class<?> cls, final Object defVal)
+    public void add(final CompType compType, final String title, final String prefName, final Class<?> cls, final Object defVal)
     {
-        items.add(new ItemInfo(title, prefName, cls, defVal));
+        items.add(new ItemInfo(compType, title, prefName, cls, defVal));
+    }
+    
+    /**
+     * @param title
+     * @param prefName
+     * @param cls
+     */
+    public void add(final CompType compType, final String title, final String prefName, final Class<?> cls, final String[] titles, final Object defVal)
+    {
+        items.add(new ItemInfo(compType, title, prefName, cls, titles, defVal));
     }
     
     /**
@@ -114,7 +139,7 @@ public class PrefsPanel extends GenericPrefsPanel
      */
     public void add(final String title)
     {
-        items.add(new ItemInfo(title));
+        items.add(new ItemInfo(CompType.eSep, title));
     }
 
     /* (non-Javadoc)
@@ -152,10 +177,15 @@ public class PrefsPanel extends GenericPrefsPanel
     {
         for (ItemInfo item : items)
         {
-            if (item.getClazz() == Boolean.class)
+            if (item.getCompType() == CompType.eCheckbox)
             {
                 JCheckBox cb = (JCheckBox)item.getComp();
                 appPrefs.putBoolean(item.getPrefName(), cb.isSelected());
+                
+            } else if (item.getCompType() == CompType.eComboBox)
+            {
+                JComboBox cb = (JComboBox)item.getComp();
+                appPrefs.putInt(item.getPrefName(), cb.getSelectedIndex());
             }
         }
         
@@ -173,11 +203,14 @@ public class PrefsPanel extends GenericPrefsPanel
     //-------------------------------------------------------------------
     class ItemInfo 
     {
+        CompType compType;
         String   title;
         String   prefName;
         Class<?> clazz;
         boolean  isSep = false;
         Object   defaultVal;
+        
+        String[] itemTitles = null;
         
         JComponent comp = null;
         
@@ -186,28 +219,55 @@ public class PrefsPanel extends GenericPrefsPanel
          * @param prefName
          * @param clazz
          */
-        public ItemInfo(String title, 
+        public ItemInfo(CompType compType,
+                        String title, 
                         String prefName, 
                         Class<?> clazz,
                         Object defaultVal)
         {
             super();
+            this.compType = compType;
             this.title = title;
             this.prefName = prefName;
             this.clazz = clazz;
             this.defaultVal = defaultVal;
         }
+        
+        /**
+         * @param title
+         * @param prefName
+         * @param clazz
+         */
+        public ItemInfo(CompType compType,
+                        String title, 
+                        String prefName, 
+                        Class<?> clazz,
+                        String[] itemTitles,
+                        Object defaultVal)
+        {
+            super();
+            this.compType   = compType;
+            this.title      = title;
+            this.prefName   = prefName;
+            this.clazz      = clazz;
+            this.itemTitles = itemTitles;
+            this.defaultVal = defaultVal;
+        }
+        
         /**
          * @param title
          */
-        public ItemInfo(String title)
+        public ItemInfo(CompType compType,
+                        String title)
         {
             super();
+            this.compType = compType;
             this.title    = title;
             this.prefName = null;
             this.clazz    = null;
             this.isSep    = true;
         }
+        
         /**
          * @return the title
          */
@@ -215,6 +275,7 @@ public class PrefsPanel extends GenericPrefsPanel
         {
             return title;
         }
+        
         /**
          * @return the prefName
          */
@@ -222,6 +283,7 @@ public class PrefsPanel extends GenericPrefsPanel
         {
             return prefName;
         }
+        
         /**
          * @return the clazz
          */
@@ -250,6 +312,23 @@ public class PrefsPanel extends GenericPrefsPanel
         {
             return isSep;
         }
+        
+        /**
+         * @return the compType
+         */
+        public CompType getCompType()
+        {
+            return compType;
+        }
+
+        /**
+         * @return the itemTitles
+         */
+        public String[] getItemsTitles()
+        {
+            return itemTitles;
+        }
+
         /**
          * @return the defaultVal
          */

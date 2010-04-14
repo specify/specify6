@@ -65,7 +65,9 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PrefsPanel;
+import edu.ku.brc.af.prefs.PrefsPanel.CompType;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.specify.datamodel.Locality;
@@ -99,6 +101,8 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
     
     protected final static String LAT_PREF = "latlon.plugin.def_lat";
     protected final static String LON_PREF = "latlon.plugin.def_lon";
+    protected final static String TYP_PREF = "latlon.plugin.def_typ";
+    protected final static String FMT_PREF = "latlon.plugin.def_fmt";
     
     protected final static String[] formatClass             = new String[] {"DDDDPanel", "DDMMMMPanel", "DDMMSSPanel"};
     protected final static String[] formats                 = new String[] {"DDD.DDD", "DD_MM.MM", "DD_MM_SS"};
@@ -402,9 +406,11 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
         builder.add(cardPanel,          cc.xy(1, 3));
         
         prefsPanel = new PrefsPanel(false);
-        prefsPanel.add(getResourceString("LatLonUI.LL_DIR"));
-        prefsPanel.add(getResourceString("LatLonUI.LATDEF_DIR"), LAT_PREF, Boolean.class, true);
-        prefsPanel.add(getResourceString("LatLonUI.LONDEF_DIR"), LON_PREF, Boolean.class, true);
+        prefsPanel.add(getResourceString("LatLonUI.LL_SEP"));
+        prefsPanel.add(CompType.eCheckbox, getResourceString("LatLonUI.LATDEF_DIR"), LAT_PREF, Boolean.class, true);
+        prefsPanel.add(CompType.eCheckbox, getResourceString("LatLonUI.LONDEF_DIR"), LON_PREF, Boolean.class, true);
+        prefsPanel.add(CompType.eComboBox, getResourceString("LatLonUI.DEF_TYP"), TYP_PREF, Integer.class, typeNamesLabels, 0);
+        prefsPanel.add(CompType.eComboBox, getResourceString("LatLonUI.DEF_FMT"), FMT_PREF, Integer.class, formatLabels, 0);
         prefsPanel.createForm(null, null);
         
         popResourceBundle();
@@ -415,7 +421,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
      */
     private void doPrefs()
     {
-        CustomDialog dlg = new CustomDialog((Dialog)null, "Preferences", true, CustomDialog.OKCANCEL, prefsPanel);
+        CustomDialog dlg = new CustomDialog((Dialog)null, getResourceString("PREFERENCES"), true, CustomDialog.OKCANCEL, prefsPanel);
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
@@ -714,8 +720,16 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
         {
             // This figures out if there is a BD value and/or a text value
             // and formats the String if there isn't one
-            FORMAT defaultFormat = convertIntToFORMAT(locality.getOriginalLatLongUnit());
-            choosenFormat        = defaultFormat;
+            
+            FORMAT defaultFormat = null;
+            if (locality.isOriginalLatLongUnitEmpty())
+            {
+                defaultFormat = convertIntToFORMAT(AppPreferences.getRemote().getInt(LatLonUI.FMT_PREF, 0));
+            } else
+            {
+                defaultFormat = convertIntToFORMAT(locality.getOriginalLatLongUnit());
+            }
+            choosenFormat = defaultFormat;
             
             srcFormat         = convertIntToFORMAT(locality.getSrcLatLongUnit());
             srcLatLon1.first  = ensureFormattedString(locality.getLatitude1(),  locality.getLat1text(),  defaultFormat, LATLON.Latitude);
@@ -725,7 +739,8 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
             srcLatLon2.second = ensureFormattedString(locality.getLongitude2(), locality.getLong2text(), defaultFormat, LATLON.Longitude);
         
             currentInx  = defaultFormat.ordinal();
-            currentType = convertLatLongType(locality.getLatLongType()); // Point, Line or Rect
+            currentType = locality.getLatLongType() == null ? types[AppPreferences.getRemote().getInt(LatLonUI.TYP_PREF, 0)] : 
+                             convertLatLongType(locality.getLatLongType()); // Point, Line or Rect
             
             setLatLon(srcLatLon1.first, 
                       srcLatLon1.second, 

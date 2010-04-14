@@ -371,6 +371,15 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     {
         return this.originalLatLongUnit == null ? 0 : this.originalLatLongUnit;
     }
+    
+    /**
+     * @return
+     */
+    @Transient
+    public boolean isOriginalLatLongUnitEmpty()
+    {
+        return this.originalLatLongUnit == null;
+    }
 
     public void setOriginalLatLongUnit(Integer originalLatLongUnit)
     {

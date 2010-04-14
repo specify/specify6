@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.validation.ValFormattedTextFieldSingle;
 import edu.ku.brc.util.LatLonConverter;
 import edu.ku.brc.util.LatLonConverter.FORMAT;
@@ -124,6 +125,11 @@ public class DDMMMMPanel extends DDDDPanel
             
         } else
         {
+            latitudeDir.removeItemListener(this);
+            boolean isDefNorth = AppPreferences.getRemote().getBoolean(LatLonUI.LAT_PREF, true);
+            latitudeDir.setSelectedIndex(isDefNorth ? 0 : 1);
+            latitudeDir.addItemListener(this);
+            
             latitudeDD.setText("");
             latitudeMM.setText("");
             if (latitudeDirTxt != null)
@@ -149,6 +155,11 @@ public class DDMMMMPanel extends DDDDPanel
             
         } else
         {
+            longitudeDir.removeItemListener(this);
+            boolean isDefWest = AppPreferences.getRemote().getBoolean(LatLonUI.LON_PREF, true);
+            longitudeDir.setSelectedIndex(isDefWest ? 1 : 0);
+            longitudeDir.addItemListener(this);
+
             longitudeDD.setText("");
             longitudeMM.setText("");
             if (latitudeDirTxt != null)

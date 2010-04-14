@@ -356,10 +356,14 @@ public class LatLonConverter
                     break;
             }
             
-            String outStr = format(bd, latOrLon, toFmt, DEGREES_FORMAT.Symbol, DECIMAL_SIZES[toFmt.ordinal()]);
-            if (StringUtils.isNotEmpty(latLonVal.getDirStr()))
+            String outStr = "";
+            if (bd != null)
             {
-                outStr += " " + latLonVal.getDirStr();
+                outStr = format(bd, latOrLon, toFmt, DEGREES_FORMAT.Symbol, DECIMAL_SIZES[toFmt.ordinal()]);
+                if (StringUtils.isNotEmpty(latLonVal.getDirStr()))
+                {
+                    outStr += " " + latLonVal.getDirStr();
+                }
             }
             return outStr;
         }
@@ -771,7 +775,9 @@ public class LatLonConverter
         withoutDegSign = StringUtils.chomp(withoutDegSign, "�");
         //apparently need to do this on mac
         withoutDegSign =  StringUtils.remove(withoutDegSign, UNICODE_DEGREE);
-        return new BigDecimal(withoutDegSign);
+        
+        String val = StringUtils.replace(StringUtils.replace(withoutDegSign, ".", ""), "-", "");
+        return StringUtils.isNumeric(val) ? new BigDecimal(withoutDegSign) : null;
     }
     
     /**
@@ -782,6 +788,12 @@ public class LatLonConverter
      */
     public static BigDecimal convertDDDDStrToDDDDBD(final String str, final String direction)
     {
+        String val = StringUtils.replace(StringUtils.replace(str, ".", ""), "-", "");
+        if (!StringUtils.isNumeric(val))
+        {
+            return null;
+        }
+        
         BigDecimal bd = new BigDecimal(str);
         if (isNegative(direction))
         {
@@ -808,6 +820,11 @@ public class LatLonConverter
     public static BigDecimal convertDDMMSSStrToDDDDBD(final String str)
     {
         String[] parts = StringUtils.split(str," d°'\"" + DEGREES_SYMBOL);
+        if (parts.length != 3)
+        {
+            return null;
+        }
+        
         double p0 =  Double.parseDouble(parts[0]);
         boolean neg = false;
         if (p0 < 0)
