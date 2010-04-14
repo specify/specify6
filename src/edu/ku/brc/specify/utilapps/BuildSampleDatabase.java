@@ -97,6 +97,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -254,6 +255,7 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.FileStoreAttachmentManager;
@@ -8254,18 +8256,22 @@ public class BuildSampleDatabase
         
         for (SpLocaleContainerItem item : memoryContainer.getItems())
         {
+            String itemSQL     = null;
             boolean okToCreate = true;
             if (isDoingUpdate)
             {
                 String sql = String.format(" FROM splocalecontainer c INNER JOIN splocalecontaineritem ci ON c.SpLocaleContainerID = ci.SpLocaleContainerID WHERE ci.Name = '%s' AND c.DisciplineID = %d", item.getName(), disciplineId);
                 String fullSQL = "SELECT COUNT(*)" + sql;
-                //log.debug(fullSQL);
+                log.debug(fullSQL);
                 int cnt = BasicSQLUtils.getCountAsInt(fullSQL);
                 if (cnt > 0)
                 {
                     okToCreate = false;
-                    fullSQL = "SELECT ci.SpLocaleContainerItemID" + sql;
-                    //log.debug(fullSQL);
+                    if (cnt == 1)
+                    {
+                        itemSQL = "SELECT ci.SpLocaleContainerItemID" + sql;
+                        log.debug(itemSQL);
+                    }
                 }
             }
             
@@ -8303,6 +8309,76 @@ public class BuildSampleDatabase
                         ex.printStackTrace();
                     }
                 }
+            } else if (itemSQL != null)
+            {
+                Integer id = BasicSQLUtils.getCount(itemSQL);
+                if (id != null)
+                {
+                    SpLocaleContainerItem dbItem = session.get(SpLocaleContainerItem.class, id);
+                    
+                    //dbItem.setType(item.getType());
+                    dbItem.setFormat(item.getFormat());
+                    dbItem.setIsUIFormatter(item.getIsUIFormatter());
+                    dbItem.setPickListName(item.getPickListName());
+                    dbItem.setWebLinkName(item.getWebLinkName());
+                    dbItem.setIsHidden(item.getIsHidden());
+                    dbItem.setIsRequired(item.getIsRequired());
+                    
+                    try
+                    {
+                        session.beginTransaction();
+                        setItemStrs(dbItem.getNames(), item.getNames(), session);
+                        setItemStrs(dbItem.getDescs(), item.getDescs(), session);
+                        session.saveOrUpdate(dbItem);
+                        session.commit();
+                        
+                    } catch (Exception e)
+                    {
+                        session.rollback();
+                        
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * @param item
+     * @return
+     */
+    private static String mkKey(final SpLocaleItemStr item)
+    {
+        return String.format("%s %s %s", item.getLanguage(), item.getCountry() != null ? item.getCountry() : "", item.getVariant() != null ? item.getVariant() : "");
+    }
+    
+    /**
+     * @param dbSet
+     * @param memSet
+     * @param session
+     * @throws Exception
+     */
+    private static void setItemStrs(final Set<SpLocaleItemStr> dbSet, 
+                                    final Set<SpLocaleItemStr> memSet,
+                                    final DataProviderSessionIFace session) throws Exception
+    {
+        HashMap<String, SpLocaleItemStr> hash = new HashMap<String, SpLocaleItemStr>();
+        for (SpLocaleItemStr memItem : memSet)
+        {
+            hash.put(mkKey(memItem), memItem);
+        }
+        for (SpLocaleItemStr dbItem : dbSet)
+        {
+            SpLocaleItemStr memItem = hash.get(mkKey(dbItem));
+            if (memItem != null)
+            {
+                if (StringUtils.isNotEmpty(dbItem.getText()) && 
+                    StringUtils.isNotEmpty(memItem.getText()) &&
+                    !dbItem.getText().equals(memItem.getText()))
+                {
+                    dbItem.setText(memItem.getText());
+                    session.saveOrUpdate(dbItem);
+                }
             }
         }
     }
@@ -8320,7 +8396,7 @@ public class BuildSampleDatabase
                                        final String       catFmtName,
                                        final String       accFmtName)
     {
-        loadSchemaLocalization(discipline, schemaType, tableMgr, catFmtName, accFmtName, false, null);
+        loadSchemaLocalization(discipline, schemaType, tableMgr, catFmtName, accFmtName, false, null, null, null);
     }
     
     /**
@@ -8329,6 +8405,9 @@ public class BuildSampleDatabase
      * @param tableMgr
      * @param catFmtName
      * @param accFmtName
+     * @param isDoingUpdate
+     * @param externalFile
+     * @param sessionArg
      */
     public void loadSchemaLocalization(final Discipline   discipline, 
                                        final Byte         schemaType, 
@@ -8338,10 +8417,33 @@ public class BuildSampleDatabase
                                        final boolean      isDoingUpdate,
                                        final DataProviderSessionIFace sessionArg)
     {
+        loadSchemaLocalization(discipline, schemaType, tableMgr, catFmtName, accFmtName, isDoingUpdate, null, null, sessionArg);
+    }
+    
+    /**
+     * @param discipline
+     * @param schemaType
+     * @param tableMgr
+     * @param catFmtName
+     * @param accFmtName
+     * @param isDoingUpdate
+     * @param externalFile
+     * @param sessionArg
+     */
+    public void loadSchemaLocalization(final Discipline   discipline, 
+                                       final Byte         schemaType, 
+                                       final DBTableIdMgr tableMgr,
+                                       final String       catFmtName,
+                                       final String       accFmtName,
+                                       final boolean      isDoingUpdate,
+                                       final File         externalFile,
+                                       final SimpleGlassPane glassPane,
+                                       final DataProviderSessionIFace sessionArg)
+    {
         HiddenTableMgr hiddenTableMgr = new HiddenTableMgr();
 
         SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(schemaType, tableMgr);
-        schemaLocalizer.load();
+        schemaLocalizer.loadWithExternalFile(externalFile);
         
         boolean hideGenericFields = true;
         
@@ -8349,8 +8451,16 @@ public class BuildSampleDatabase
         
         String dispName = discipline.getType().toString();
         
+        float progressCnt = 0.0f;
+        float len = (float)schemaLocalizer.getSpLocaleContainers().size();
         for (SpLocaleContainer table : schemaLocalizer.getSpLocaleContainers())
         {
+            progressCnt++;
+            if (glassPane != null)
+            {
+                glassPane.setProgress((int)(progressCnt / len * 100.0));
+            }
+            
             Integer spcId      = null;
             boolean okToCreate = true;
             if (isDoingUpdate)

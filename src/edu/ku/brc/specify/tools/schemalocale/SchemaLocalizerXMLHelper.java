@@ -137,18 +137,26 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#load()
      */
-    @SuppressWarnings("unchecked")
     @Override
     public boolean load()
     {
-        tables = load(null);
+        return loadWithExternalFile(null);
+    }
+    
+    /**
+     * @param externalFile
+     * @return
+     */
+    public boolean loadWithExternalFile(final File externalFile)
+    {
+        tables = load(null, externalFile);
+        
         boolean loadedOk = tables != null;
-        if (loadedOk)
+        if (loadedOk && externalFile == null)
         {
-            
             for (DisciplineType disciplineType : DisciplineType.getDisciplineList())
             {
-                Vector<DisciplineBasedContainer> dispContainers = load(disciplineType.getName());
+                Vector<DisciplineBasedContainer> dispContainers = load(disciplineType.getName(), null);
                 addDisplineBasedContainers(disciplineType.getName(), dispContainers);
             }
         }
@@ -187,7 +195,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
      * @return
      */
     @SuppressWarnings("unchecked")
-    protected Vector<DisciplineBasedContainer> load(final String discipline)
+    protected Vector<DisciplineBasedContainer> load(final String discipline, final File extFile)
     {
         Vector<DisciplineBasedContainer> containers = null;
         
@@ -197,7 +205,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         try
         {
             String fullPath = (discipline != null ? (discipline + File.separator) : "") + fileName[schemaType];
-            File file = XMLHelper.getConfigDir(fullPath);
+            File   file     = extFile != null ? extFile : XMLHelper.getConfigDir(fullPath);
             if (file.exists())
             {
                 containers = (Vector<DisciplineBasedContainer>)xstream.fromXML(new FileReader(file));
@@ -209,7 +217,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             }
             
              // remove non-english locales
-            if (false)
+            /*if (false)
             {
                 if (discipline == null)
                 {
@@ -297,7 +305,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                         }
                     }
                 }
-            }
+            }*/
 
             if (containers != null)
             {
@@ -546,7 +554,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             }
             
             // Force the hidden of special fields
-            if (false)
+            /*if (false)
             {
                 String[] fieldsToHide = {"timestampCreated","timestampModified",
                                         "createdByAgent","modifiedByAgent","version",
@@ -570,7 +578,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                         }
                     }
                 }
-            }
+            }*/
             
         } catch (IOException ex)
         {

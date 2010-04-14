@@ -24,6 +24,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dialog;
 import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.HeadlessException;
@@ -41,7 +42,6 @@ import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -50,6 +50,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.betwixt.XMLIntrospector;
 import org.apache.commons.betwixt.io.BeanWriter;
+import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -63,6 +64,9 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
+import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -186,7 +190,7 @@ public class SchemaToolsDlg extends CustomDialog
 
             public void actionPerformed(ActionEvent arg0)
             {
-                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), getResourceString("SL_NOT_IMPLEMENTED"));
+                importSchema();
             }
         });
         
@@ -257,6 +261,87 @@ public class SchemaToolsDlg extends CustomDialog
                 }
             }
         });
+    }
+    
+    private void importSchema()
+    {
+        FileDialog fileDlg = new FileDialog((Dialog)null);
+        fileDlg.setVisible(true);
+        
+        String fileName = fileDlg.getFile();
+        if (StringUtils.isNotEmpty(fileName))
+        {
+            final File            file      = new File(fileDlg.getDirectory() + File.separator + fileName);
+            final SimpleGlassPane glassPane = new SimpleGlassPane("Importing Schema...", 18);
+            glassPane.setBarHeight(12);
+            glassPane.setFillColor(new Color(0, 0, 0, 85));
+            
+            setGlassPane(glassPane);
+            glassPane.setVisible(true);
+            
+            SwingWorker<Integer, Integer> importWorker = new SwingWorker<Integer, Integer>()
+            {
+                private boolean isOK = false;
+                @Override
+                protected Integer doInBackground() throws Exception
+                {
+                    DataProviderSessionIFace localSession = null;
+                    try
+                    {
+                        localSession = DataProviderFactory.getInstance().createSession();
+                        
+                        BuildSampleDatabase bsd = new BuildSampleDatabase();
+                        bsd.loadSchemaLocalization(AppContextMgr.getInstance().getClassObject(Discipline.class), 
+                                                    SpLocaleContainer.CORE_SCHEMA, 
+                                                    DBTableIdMgr.getInstance(),
+                                                    null, //catFmtName,
+                                                    null, //accFmtName,
+                                                    true,
+                                                    file, // external file
+                                                    glassPane,
+                                                    localSession);
+                        isOK = true;
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
+                        
+                    } finally 
+                    {
+                        if (localSession != null)
+                        {
+                            localSession.close();
+                        }
+                    }
+
+                    return null;
+                }
+
+                @Override
+                protected void done()
+                {
+                    super.done();
+                    
+                    glassPane.setVisible(false);
+                    
+                    if (isOK)
+                    {
+                        UIRegistry.showLocalizedMsg("Specify.ABT_EXIT");
+                        CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit"));
+                    }
+                }
+            };
+            importWorker.addPropertyChangeListener(
+                    new PropertyChangeListener() {
+                        public  void propertyChange(final PropertyChangeEvent evt) {
+                            if (evt.getPropertyName().equals("progress")) 
+                            {
+                                glassPane.setProgress((Integer)evt.getNewValue());
+                            }
+                        }
+                    });
+            importWorker.execute();
+        }
     }
     
     /**
