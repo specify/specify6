@@ -3083,12 +3083,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                       log.error("Can't change L&F: ", e); //$NON-NLS-1$
                   }
                   
-                  if (System.getProperty("java.version").equals("1.6.0_18"))
-                  {
-                      UIRegistry.showLocalizedError("BAD_UPDATE18");
-                      System.exit(0);
-                  }
-                  
                   // Load Local Prefs
                   AppPreferences localPrefs = AppPreferences.getLocalPrefs();
                   localPrefs.setDirPath(UIRegistry.getAppDataDir());
