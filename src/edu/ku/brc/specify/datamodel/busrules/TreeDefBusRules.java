@@ -65,7 +65,7 @@ public class TreeDefBusRules extends BaseBusRules
     {
         super.initialize(viewableArg);
         
-        ValComboBox fnDirCBX = (ValComboBox)formViewObj.getControlByName("fnDirCBX");
+        final ValComboBox fnDirCBX = (ValComboBox)formViewObj.getControlByName("fullNameDirection");
         if (fnDirCBX != null)
         {
             DefaultComboBoxModel model = (DefaultComboBoxModel)fnDirCBX.getModel();
@@ -75,18 +75,16 @@ public class TreeDefBusRules extends BaseBusRules
             fnDirCBX.getComboBox().addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent arg0)
                 {
+                    int newDir = fnDirCBX.getComboBox().getSelectedIndex() == 0 ? TreeDefIface.FORWARD : TreeDefIface.REVERSE;
+                    if (cachedTreeDef != null)
+                    {
+                    	cachedTreeDef.setFullNameDirection(newDir);
+                    	//System.out.println("FullNameDirection=" + cachedTreeDef.getFullNameDirection());
+                    }
                     formViewObj.getValidator().setHasChanged(true);
                     formViewObj.getValidator().validateForm();
                     
-                    checkForNumOfChanges();
-                    
-                    /*
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run()
-                        {
-                            checkForNumOfChanges();
-                        }
-                    });*/
+                    //checkForNumOfChanges();
                 }
             });
         }
@@ -95,65 +93,64 @@ public class TreeDefBusRules extends BaseBusRules
     /**
      * 
      */
-    protected void checkForNumOfChanges()
-    {
-        ValComboBox fnDirCBX = (ValComboBox)formViewObj.getControlByName("fnDirCBX");
-        if (fnDirCBX != null)
-        {
-            int newDir = fnDirCBX.getComboBox().getSelectedIndex() == 0 ? TreeDefIface.FORWARD : TreeDefIface.REVERSE;
-            if (newDir == origDirection)
-            {
-                return;
-            }
-        }
-        
-        SwingWorker workerThread = new SwingWorker()
-        {
-            @Override
-            public Object construct()
-            {
-                DataProviderSessionIFace session = null;
-                try
-                {
-                    Class<?> dataClass = cachedTreeDef.getNodeClass();
-                    System.out.println(dataClass.getName());
-                    String      sqlStr = "SELECT COUNT(id) FROM " + dataClass.getName();
-                    DBTableInfo ti     = DBTableIdMgr.getInstance().getByClassName(dataClass.getName());
-                    sqlStr = sqlStr + " WHERE " + QueryAdjusterForDomain.getInstance().getSpecialColumns(ti, true);
-                    session = DataProviderFactory.getInstance().createSession();
-                    Integer count = (Integer)session.getData(sqlStr);
-                    
-                    return count;
-                    
-                } catch (Exception ex)
-                {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeDefBusRules.class, ex);
-                    ex.printStackTrace();
-                    
-                } finally
-                {
-                    if (session != null)
-                    {
-                        session.close();
-                    }
-                }
-                return null;
-            }
-            
-            @SuppressWarnings("unchecked")
-            @Override
-            public void finished()
-            {
-                //Object retVal = getValue();
-                ///TreeHelper.f
-                //System.out.println(retVal);
-            }
-        };
-        
-        // start the background task
-        workerThread.start();
-    }
+//    protected void checkForNumOfChanges()
+//    {
+//        ValComboBox fnDirCBX = (ValComboBox)formViewObj.getControlByName("fullNameDirection");
+//        if (fnDirCBX != null)
+//        {
+//            int newDir = fnDirCBX.getComboBox().getSelectedIndex() == 0 ? TreeDefIface.FORWARD : TreeDefIface.REVERSE;
+//            if (newDir == origDirection)
+//            {
+//                return;
+//            }
+//        }
+//        
+//        SwingWorker workerThread = new SwingWorker()
+//        {
+//            @Override
+//            public Object construct()
+//            {
+//                DataProviderSessionIFace session = null;
+//                try
+//                {
+//                    Class<?> dataClass = cachedTreeDef.getNodeClass();
+//                    System.out.println(dataClass.getName());
+//                    String      sqlStr = "SELECT COUNT(id) FROM " + dataClass.getName();
+//                    DBTableInfo ti     = DBTableIdMgr.getInstance().getByClassName(dataClass.getName());
+//                    sqlStr = sqlStr + " WHERE " + QueryAdjusterForDomain.getInstance().getSpecialColumns(ti, true);
+//                    session = DataProviderFactory.getInstance().createSession();
+//                    Integer count = (Integer)session.getData(sqlStr);
+//                    
+//                    return count;
+//                    
+//                } catch (Exception ex)
+//                {
+//                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+//                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeDefBusRules.class, ex);
+//                    ex.printStackTrace();
+//                    
+//                } finally
+//                {
+//                    if (session != null)
+//                    {
+//                        session.close();
+//                    }
+//                }
+//                return null;
+//            }
+//            
+//            @Override
+//            public void finished()
+//            {
+//                //Object retVal = getValue();
+//                ///TreeHelper.f
+//                //System.out.println(retVal);
+//            }
+//        };
+//        
+//        // start the background task
+//        workerThread.start();
+//    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
@@ -165,7 +162,7 @@ public class TreeDefBusRules extends BaseBusRules
         
         if (dataObj != null)
         {
-            ValComboBox fnDirCBX = (ValComboBox)formViewObj.getControlByName("fnDirCBX");
+            ValComboBox fnDirCBX = (ValComboBox)formViewObj.getControlByName("fullNameDirection");
             if (fnDirCBX != null)
             {
                 TreeDefIface<?, ?, ?> treeDef = (TreeDefIface<?, ?, ?>)dataObj;
@@ -176,23 +173,5 @@ public class TreeDefBusRules extends BaseBusRules
         }
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#afterSaveCommit(java.lang.Object)
-     */
-    @Override
-    public boolean afterSaveCommit(final Object dataObj, final DataProviderSessionIFace session)
-    {
-        ValComboBox fnDirCBX = (ValComboBox)formViewObj.getControlByName("fnDirCBX");
-        if (fnDirCBX != null)
-        {
-            int newDir = fnDirCBX.getComboBox().getSelectedIndex() == 0 ? TreeDefIface.FORWARD : TreeDefIface.REVERSE;
-            if (newDir != origDirection)
-            {
-                TreeDefIface<?, ?, ?> treeDef = (TreeDefIface<?, ?, ?>)dataObj;
-                treeDef.setFullNameDirection(newDir);
-            }
-        }
-        return super.afterSaveCommit(dataObj, session);
-    }
     
 }

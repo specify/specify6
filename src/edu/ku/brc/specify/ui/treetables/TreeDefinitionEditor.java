@@ -579,30 +579,11 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                 public Object construct()
                 {
                     // determine if the change can be made without requiring tree node changes
-                    List<String> nodesToChange = getNodesThatMustBeFixedBeforeEdit(beforeItem, defItem);
-                    if (nodesToChange != null && nodesToChange.size() > 0)
+                	if (needToRebuildFullNames(beforeItem, defItem))
+                	//May not be too hard to just pass the nodesToChange for full name updates...
+                    //List<String> nodesToChange = getNodesThatMustBeFixedBeforeEdit(beforeItem, defItem);
+                    //if (nodesToChange != null && nodesToChange.size() > 0)
                     {
-//                        StringBuilder message = new StringBuilder("<html><h3><center>"); //$NON-NLS-1$
-//                        message.append(getResourceString("TDE_CantMakeChange")); //$NON-NLS-1$
-//                        message.append("</center></h3><ul>"); //$NON-NLS-1$
-//                        for (String node: nodesToChange)
-//                        {
-//                            message.append("<li>" + node); //$NON-NLS-1$
-//                        }
-//                        message.append("</ul></html>"); //$NON-NLS-1$
-//                        JLabel label = createLabel(""); //$NON-NLS-1$
-//                        label.setText(message.toString());
-//                        Window w = UIRegistry.getMostRecentWindow();
-//                        JFrame parent = null;
-//                        if (w instanceof JFrame)
-//                        {
-//                            parent = (JFrame)w;
-//                        }
-//
-//                        CustomDialog errorDialog = new CustomDialog(parent,getResourceString("Error"),true,CustomDialog.OK_BTN, new JScrollPane(label)); //$NON-NLS-1$
-//                        errorDialog.createUI();
-//                        errorDialog.setSize(650, 200);
-//                        errorDialog.setVisible(true);
                     	if (!UIRegistry.displayConfirmLocalized(UIRegistry.getResourceString("Confirm"), 
                                 "TDE_ChangesRequireFullNameUpdate",
                                 "OK",
@@ -689,7 +670,6 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     // now refresh the tree viewer
                     if (success)
                     {
-                    	//XXX fullname rebuild after commit in this worker's session, in a different session!?!?
                     	if (needToRebuildFullNames(beforeItem, defItem))
                         {
                         	try
@@ -1408,6 +1388,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         String  idFieldName  = nodeTableInfo.getIdFieldName();
         int     options      = MultiView.HIDE_SAVE_BTN;
         
+        int fullNameDir = def.getFullNameDirection();
+        
         // create the form dialog
         String title = getResourceString("TreeDefEditDialogTitle"); //$NON-NLS-1$
         ViewBasedDisplayDialog dialog = new ViewBasedDisplayDialog(parentFrame, null, viewName, displayName, title, 
@@ -1420,7 +1402,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         // the dialog has been dismissed by the user
         if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
         {
-            UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Saving"), 24); //$NON-NLS-1$
+        	final boolean treeRebuildRequired = fullNameDir != def.getFullNameDirection();
+        	UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Saving"), 24); //$NON-NLS-1$
             
             SwingWorker bgThread = new SwingWorker()
             {
@@ -1431,7 +1414,19 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                 @Override
                 public Object construct()
                 {
-                    // save the node and update the tree viewer appropriately
+                	
+                	if (treeRebuildRequired)
+					{
+						if (!UIRegistry.displayConfirmLocalized(UIRegistry
+								.getResourceString("Confirm"),
+								"TDE_ChangesRequireFullNameUpdate", "OK",
+								"Cancel", JOptionPane.INFORMATION_MESSAGE))
+						{
+							return false;
+						}
+					}
+
+                	// save the node and update the tree viewer appropriately
                     DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                     try
                     {
@@ -1509,7 +1504,29 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                 @Override
                 public void finished()
                 {
-                    // now refresh the tree viewer
+                	if (treeRebuildRequired)
+                    {
+                    	try
+                    	{
+                    		int minRank = -1;
+                    		for (I item : def.getTreeDefItems())
+                    		{
+                    			if (item.getIsInFullName() != null && item.getIsInFullName() && (minRank == -1 || minRank > item.getRankId()))
+                    			{
+                    				minRank = item.getRankId();
+                    			}
+                    		}
+                    		displayedDef.updateAllFullNames(null, true, true, minRank);
+                    	}
+                    	catch (Exception ex)
+                    	{
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeDefinitionEditor.class, ex);
+                            UIRegistry.showLocalizedError("UNRECOVERABLE_DB_ERROR"); //$NON-NLS-1$
+                            log.error("Error while updating full names.  Full names may not correspond to tree definition.", ex); //$NON-NLS-1$
+                    	}
+                    }
+                   // now refresh the tree viewer
                     if (success)
                     {
                         defNameLabel.setText(def.getName());
