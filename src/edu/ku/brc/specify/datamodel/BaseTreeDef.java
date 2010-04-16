@@ -487,9 +487,10 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
         
         //final NodeNumberer<N,D,I> nodeNumberer = new NodeNumberer<N,D,I>((D )this);
         final TreeRebuilder<N,D,I> treeRebuilder = new TreeRebuilder<N,D,I>((D )this, minRank, rebuildMode);
-        final JStatusBar nStatusBar = useProgDlg ? null : getStatusBar();        
+        final JStatusBar nStatusBar = useProgDlg ? null : getStatusBar();      
+        String progDlgMsg = getResourceString("BaseTreeDef.UPDATING_TREE_DLG");
         final ProgressDialog progDlg =  nStatusBar != null || !isOnUIThread ? null :
-                    new ProgressDialog(getResourceString("BaseTreeDef.UPDATING_TREE_DLG"), false, false);
+                    new ProgressDialog(progDlgMsg, false, false);
         if (nStatusBar != null)
         {
             nStatusBar.setProgressRange(treeRebuilder.getProgressName(), 0, 100);
@@ -501,7 +502,13 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
             progDlg.setModal(true);
             progDlg.setProcess(0,100);
             progDlg.setProcessPercent(true);
-            progDlg.setDesc(String.format(getResourceString("BaseTreeDef.UPDATING_TREE"), getName()));
+            if (rebuildMode.equals(TreeRebuilder.RebuildMode.FullNames)) 
+            {
+               	progDlg.setDesc(String.format(getResourceString("BaseTreeDef.UPDATING_FULLNAMES"), getName()));
+            } else
+            {
+            	progDlg.setDesc(String.format(getResourceString("BaseTreeDef.UPDATING_TREE"), getName()));
+            }
             progDlg.setAlwaysOnTop(true);
             treeRebuilder.setProgWin(progDlg);
         }

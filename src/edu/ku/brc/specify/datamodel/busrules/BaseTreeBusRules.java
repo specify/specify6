@@ -575,30 +575,30 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         	//NOTE: Can remove the edit restriction. Tree rebuilds now update fullname fields. Need to add tree rebuild after fullname def edits.
             if (nodeInForm != null && nodeInForm.getTreeDef() != null)
             {
-            	boolean canNOTEditFullNameFlds = nodeInForm.hasTreeEntries();
-            	if (canNOTEditFullNameFlds)
-            	{
-            		ValTextField ftCtrl = (ValTextField )formViewObj.getControlByName("textAfter");
-            		if (ftCtrl != null)
-            		{
-            			ftCtrl.setEnabled(false);
-            		}
-            		ftCtrl = (ValTextField )formViewObj.getControlByName("textBefore");
-            		if (ftCtrl != null)
-            		{
-            			ftCtrl.setEnabled(false);
-            		}
-            		ftCtrl = (ValTextField )formViewObj.getControlByName("fullNameSeparator");
-            		if (ftCtrl != null)
-            		{
-            			ftCtrl.setEnabled(false);
-            		}
-            		ValCheckBox ftBox = (ValCheckBox )formViewObj.getControlByName("isInFullName");
-            		if (ftBox != null)
-            		{
-            			ftBox.setEnabled(false);
-            		}
-            	}
+//            	boolean canNOTEditFullNameFlds = nodeInForm.hasTreeEntries();
+//            	if (canNOTEditFullNameFlds)
+//            	{
+//            		ValTextField ftCtrl = (ValTextField )formViewObj.getControlByName("textAfter");
+//            		if (ftCtrl != null)
+//            		{
+//            			ftCtrl.setEnabled(false);
+//            		}
+//            		ftCtrl = (ValTextField )formViewObj.getControlByName("textBefore");
+//            		if (ftCtrl != null)
+//            		{
+//            			ftCtrl.setEnabled(false);
+//            		}
+//            		ftCtrl = (ValTextField )formViewObj.getControlByName("fullNameSeparator");
+//            		if (ftCtrl != null)
+//            		{
+//            			ftCtrl.setEnabled(false);
+//            		}
+//            		ValCheckBox ftBox = (ValCheckBox )formViewObj.getControlByName("isInFullName");
+//            		if (ftBox != null)
+//            		{
+//            			ftBox.setEnabled(false);
+//            		}
+//            	}
             
             	if (!viewName.endsWith("TreeDefItem"))
             	{

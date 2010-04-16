@@ -26,7 +26,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -39,10 +38,9 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
@@ -84,7 +82,6 @@ import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
@@ -585,31 +582,35 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     List<String> nodesToChange = getNodesThatMustBeFixedBeforeEdit(beforeItem, defItem);
                     if (nodesToChange != null && nodesToChange.size() > 0)
                     {
-                        StringBuilder message = new StringBuilder("<html><h3><center>"); //$NON-NLS-1$
-                        message.append(getResourceString("TDE_CantMakeChange")); //$NON-NLS-1$
-                        message.append("</center></h3><ul>"); //$NON-NLS-1$
-                        for (String node: nodesToChange)
-                        {
-                            message.append("<li>" + node); //$NON-NLS-1$
-                        }
-                        message.append("</ul></html>"); //$NON-NLS-1$
-                        JLabel label = createLabel(""); //$NON-NLS-1$
-                        label.setText(message.toString());
-                        Window w = UIRegistry.getMostRecentWindow();
-                        JFrame parent = null;
-                        if (w instanceof JFrame)
-                        {
-                            parent = (JFrame)w;
-                        }
-
-                        CustomDialog errorDialog = new CustomDialog(parent,getResourceString("Error"),true,CustomDialog.OK_BTN, new JScrollPane(label)); //$NON-NLS-1$
-                        errorDialog.createUI();
-                        errorDialog.setSize(650, 200);
-                        errorDialog.setVisible(true);
-                        
-                        success = false;
-                        return success;
-                    	
+//                        StringBuilder message = new StringBuilder("<html><h3><center>"); //$NON-NLS-1$
+//                        message.append(getResourceString("TDE_CantMakeChange")); //$NON-NLS-1$
+//                        message.append("</center></h3><ul>"); //$NON-NLS-1$
+//                        for (String node: nodesToChange)
+//                        {
+//                            message.append("<li>" + node); //$NON-NLS-1$
+//                        }
+//                        message.append("</ul></html>"); //$NON-NLS-1$
+//                        JLabel label = createLabel(""); //$NON-NLS-1$
+//                        label.setText(message.toString());
+//                        Window w = UIRegistry.getMostRecentWindow();
+//                        JFrame parent = null;
+//                        if (w instanceof JFrame)
+//                        {
+//                            parent = (JFrame)w;
+//                        }
+//
+//                        CustomDialog errorDialog = new CustomDialog(parent,getResourceString("Error"),true,CustomDialog.OK_BTN, new JScrollPane(label)); //$NON-NLS-1$
+//                        errorDialog.createUI();
+//                        errorDialog.setSize(650, 200);
+//                        errorDialog.setVisible(true);
+                    	if (!UIRegistry.displayConfirmLocalized(UIRegistry.getResourceString("Confirm"), 
+                                "TDE_ChangesRequireFullNameUpdate",
+                                "OK",
+                                "Cancel",
+                                JOptionPane.INFORMATION_MESSAGE))
+                    	{
+                    		return false;
+                    	}
                     }
                         
                     // save the node and update the tree viewer appropriately
@@ -651,20 +652,6 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                                 throw new Exception("Business rules processing failed"); //$NON-NLS-1$
                             }
                         }
-//                    	if (needToRebuildFullNames(beforeItem, defItem))
-//                    	{
-//                    		try
-//                    		{
-//                    			displayedDef.updateAllFullNames(null, session, defItem.getRankId());
-//                    		}
-//                    		catch (Exception ex)
-//                    		{
-//                              edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-//                              edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeDefinitionEditor.class, ex);
-//                              UIRegistry.showLocalizedError("UNRECOVERABLE_DB_ERROR"); //$NON-NLS-1$
-//                              log.error("Error while updating full names.  Full may not correspond to tree definition.", ex); //$NON-NLS-1$
-//                    		}
-//                    	}
                         
                         session.commit();
                         
@@ -703,20 +690,20 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     if (success)
                     {
                     	//XXX fullname rebuild after commit in this worker's session, in a different session!?!?
-//                    	if (needToRebuildFullNames(beforeItem, defItem))
-//                        {
-//                        	try
-//                        	{
-//                        		displayedDef.updateAllFullNames(null);
-//                        	}
-//                        	catch (Exception ex)
-//                        	{
-//                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-//                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeDefinitionEditor.class, ex);
-//                                UIRegistry.showLocalizedError("UNRECOVERABLE_DB_ERROR"); //$NON-NLS-1$
-//                                log.error("Error while updating full names.  Full may not correspond to tree definition.", ex); //$NON-NLS-1$
-//                        	}
-//                        }
+                    	if (needToRebuildFullNames(beforeItem, defItem))
+                        {
+                        	try
+                        	{
+                        		displayedDef.updateAllFullNames(null, true, true, defItem.getRankId());
+                        	}
+                        	catch (Exception ex)
+                        	{
+                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeDefinitionEditor.class, ex);
+                                UIRegistry.showLocalizedError("UNRECOVERABLE_DB_ERROR"); //$NON-NLS-1$
+                                log.error("Error while updating full names.  Full names may not correspond to tree definition.", ex); //$NON-NLS-1$
+                        	}
+                        }
                         tableModel.set(index, mergedItem);
                     }
                     
