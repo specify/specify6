@@ -20,13 +20,21 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+
+import java.awt.Component;
+
+import javax.swing.JCheckBox;
+
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.DraggableRecordIdentifier;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Gift;
+import edu.ku.brc.specify.datamodel.Loan;
+import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.ui.CommandAction;
@@ -51,6 +59,27 @@ public class GiftBusRules extends BaseBusRules
     public GiftBusRules()
     {
         super(GiftBusRules.class);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
+     */
+    @Override
+    public void afterFillForm(final Object dataObj)
+    {
+        if (formViewObj != null && formViewObj.getDataObj() instanceof Gift)
+        {
+            formViewObj.setSkippingAttach(true);
+
+            MultiView mvParent = formViewObj.getMVParent();
+            boolean   isEdit   = mvParent.isEditable();
+
+            Component comp     = formViewObj.getControlByName("generateInvoice");
+            if (comp instanceof JCheckBox)
+            {
+                ((JCheckBox)comp).setVisible(isEdit);
+            }
+        }
     }
 
     /* (non-Javadoc)

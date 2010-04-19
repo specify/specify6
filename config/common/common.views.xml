@@ -2425,6 +2425,15 @@
                 <row>
                     <cell type="subview" viewname="GiftItems" id="10" name="giftPreparations" defaulttype="table" colspan="15" rows="4"/>
                 </row>
+                <row>
+                    <cell type="panel" id="16" name="outerPanel" coldef="p,f:p:g" rowdef="p,4px,p" colspan="15">
+                        <rows>
+                            <row>
+                                <cell type="field" id="13" uitype="checkbox" name="generateInvoice" label="Generate Invoice on Save" ignore="true" default="true" initialize="vis=false"/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
             </rows>
         </viewdef>
         

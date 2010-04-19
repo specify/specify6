@@ -1207,53 +1207,62 @@ public class InteractionsTask extends BaseTask
      */
     protected void checkToPrintLoan(final CommandAction cmdAction)
     {
-        if (cmdAction.getData() instanceof Loan)
+        boolean isGift = cmdAction.getData() instanceof Gift;
+        if (cmdAction.getData() instanceof Loan || isGift)
         {
-            Loan loan = (Loan)cmdAction.getData();
+            Loan loan = isGift ? null : (Loan)cmdAction.getData();
+            Gift gift = isGift ? (Gift)cmdAction.getData() : null;
             
-            Boolean     printLoan   = null;
-            FormViewObj formViewObj = getCurrentFormViewObj();
+            Boolean     doPrintInvoice = null;
+            FormViewObj formViewObj    = getCurrentFormViewObj();
             if (formViewObj != null)
             {
                 Component comp = formViewObj.getControlByName("generateInvoice");
                 if (comp instanceof JCheckBox)
                 {
-                    printLoan = ((JCheckBox)comp).isSelected();
+                    doPrintInvoice = ((JCheckBox)comp).isSelected();
                 }
             }
             
-            if (printLoan == null)
+            if (doPrintInvoice == null)
             {
-                Object[] options = {getResourceString("CreateLoanInvoice"), getResourceString("CANCEL")};
+                String    number  = isGift ? gift.getGiftNumber() :  loan.getLoanNumber();
+                String    btnLbl  = getResourceString(isGift ? "GIFT" : "LOAN");
+                String    msg     = getLocalizedMessage("CreateInvoiceForNum", getResourceString(isGift ? "GIFT" : "LOAN"), number);
+                Object[]  options = {btnLbl, getResourceString("CANCEL")};
                 int n = JOptionPane.showOptionDialog(UIRegistry.get(UIRegistry.FRAME),
-                                                    String.format(getResourceString("CreateLoanInvoiceForNum"), new Object[] {(loan.getLoanNumber())}),
-                                                    getResourceString("CreateLoanInvoice"),
+                                                    msg,
+                                                    btnLbl,
                                                     JOptionPane.YES_NO_OPTION,
                                                     JOptionPane.QUESTION_MESSAGE,
                                                     null,     //don't use a custom Icon
                                                     options,  //the titles of buttons
                                                     options[0]); //default button title
-                printLoan = n == 0;
+                doPrintInvoice = n == 0;
             }
             
             // XXX DEBUG
             //printLoan = false;
-            if (printLoan)
+            if (doPrintInvoice)
             {
-                InvoiceInfo invoice = getLoanReport();
+                InvoiceInfo invoice = getReport(isGift);
                 
                 if (invoice == null)
                 {
                     return;
                 }
                 
-                
                 DataProviderSessionIFace session = null;
                 try
                 {
                     session = DataProviderFactory.getInstance().createSession();
                     //session.attach(loan);
-                    loan = (Loan)session.getData("From Loan where loanId = "+loan.getLoanId());
+                    
+                    String hql = isGift ? "FROM Gift WHERE giftId = "+gift.getGiftId() :
+                                          "FROM Loan WHERE loanId = "+loan.getLoanId();
+                    
+                    loan = isGift ? null : (Loan)session.getData(hql);
+                    gift = isGift ? (Gift)session.getData(hql) : null;
                     
 //                    if (loan.getShipments().size() == 0)
 //                    {
@@ -1287,12 +1296,27 @@ public class InteractionsTask extends BaseTask
 //                        {
                             //session.close();
                             //session = null;
+                    
+                            String  identTitle;
+                            int     tableId;
+                            Integer id;
+                            if (isGift)
+                            {
+                                identTitle = gift.getIdentityTitle();
+                                tableId    = gift.getTableId();
+                                id         = gift.getId();
+                            } else
+                            {
+                                identTitle = loan.getIdentityTitle();
+                                tableId    = loan.getTableId();
+                                id         = loan.getId();
+                            }
                             
                             RecordSet rs = new RecordSet();
                             rs.initialize();
-                            rs.setName(loan.getIdentityTitle());
-                            rs.setDbTableId(loan.getTableId());
-                            rs.addItem(loan.getId());
+                            rs.setName(identTitle);
+                            rs.setDbTableId(tableId);
+                            rs.addItem(id);
                             
                             launchInvoice(invoice, rs);
                 } finally
@@ -1317,8 +1341,7 @@ public class InteractionsTask extends BaseTask
         if (invoice.getSpReport() != null)
         {
             SpReport spRep = invoice.getSpReport();
-            QueryBldrPane.runReport(spRep, UIRegistry.getResourceString("LoanInvoice"),
-                    rs);
+            QueryBldrPane.runReport(spRep, UIRegistry.getResourceString("LoanInvoice"), rs);
         }
         else
         {
@@ -1333,9 +1356,9 @@ public class InteractionsTask extends BaseTask
         }
     }
     
-    public InvoiceInfo getLoanReport()
+    public InvoiceInfo getReport(final boolean isGift)
     {
-    	return getInvoiceInfo(DBTableIdMgr.getInstance().getIdByShortName("Loan"));
+    	return getInvoiceInfo(DBTableIdMgr.getInstance().getIdByShortName(isGift ? "Gift" : "Loan"));
     }
     
     /**
@@ -1427,7 +1450,7 @@ public class InteractionsTask extends BaseTask
             }
             
             dlg = new ChooseFromListDlg<InvoiceInfo>((Frame) UIRegistry
-                    .getTopWindow(), UIRegistry.getResourceString("REP_CHOOSE_INVOICE"),
+                    .getTopWindow(), getResourceString("REP_CHOOSE_INVOICE"),
                     repInfo);
             dlg.setVisible(true);
             if (dlg.isCancelled()) 
@@ -1512,7 +1535,7 @@ public class InteractionsTask extends BaseTask
 //            }
             
 //            dlg = new ChooseFromListDlg<SpAppResource>((Frame) UIRegistry
-//                    .getTopWindow(), UIRegistry.getResourceString("REP_CHOOSE_SP_REPORT"),
+//                    .getTopWindow(), getResourceString("REP_CHOOSE_SP_REPORT"),
 //                    aprs);
 //            dlg.setVisible(true);
 //            if (dlg.isCancelled()) 
@@ -2076,8 +2099,8 @@ public class InteractionsTask extends BaseTask
     {
         NavBoxButton nb = (NavBoxButton)cmdActionDB.getSrcObj();
         int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
-                String.format(UIRegistry.getResourceString("InteractionsTask.CONFIRM_DELETE_IR"), nb.getName()),
-                UIRegistry.getResourceString("InteractionsTask.CONFIRM_DELETE_TITLE_IR"), 
+                String.format(getResourceString("InteractionsTask.CONFIRM_DELETE_IR"), nb.getName()),
+                getResourceString("InteractionsTask.CONFIRM_DELETE_TITLE_IR"), 
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.NO_OPTION); // I18N
         
         if (option == JOptionPane.YES_OPTION)
