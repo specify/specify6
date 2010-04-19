@@ -606,7 +606,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                 {
                     UIHelper.centerAndShow(progDlg);
                 }
-                setNodeNumbersAreUpToDate(treeRebuilder.get());
+                setNodeNumbersAreUpToDate(!treeRebuilder.get());
                 return true;
             }
             catch (Exception ex)
@@ -664,7 +664,8 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                 treeRebuilder.run();
                 
                 if (progFrame != null) progFrame.setProcess(100);
-                
+
+                setRenumberingNodes(false);
                 setNodeNumbersAreUpToDate(treeRebuilder.hasCompletedOK());
                 
             } catch (Exception ex)
