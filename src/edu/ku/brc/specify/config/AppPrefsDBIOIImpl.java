@@ -259,6 +259,17 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                 {
                     session = DataProviderFactory.getInstance().createSession();
                     session.beginTransaction();
+                    
+                    if (spAppResource.getSpecifyUser() == null)
+                    {
+                        SpecifyUser globalPrefUser = new SpecifyUser();
+                        globalPrefUser.initialize();
+                        globalPrefUser.setName("__GLOBAL_PREFS_USER");
+                        globalPrefUser.setPassword(Long.toString(System.currentTimeMillis()));
+                        session.saveOrUpdate(globalPrefUser);
+                        spAppResource.setSpecifyUser(globalPrefUser);
+                    }
+                    
                     if (spAppResourceDir.getId() != null)
                     {
                         spAppResourceDir = session.merge(spAppResourceDir);

@@ -71,17 +71,20 @@ public class CollectingEventsAndAttrsMaint
      */
     public void shutdown()
     {
-        AppPreferences.getGlobalPrefs().putBoolean("CollectingEventsAndAttrsMaint1", true);
-        try
+        if (!AppPreferences.getGlobalPrefs().getBoolean("CollectingEventsAndAttrsMaint1", false))
         {
-            AppPreferences.getGlobalPrefs().flush();
-            
-            connection.close();
-            session.close();
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
+            AppPreferences.getGlobalPrefs().putBoolean("CollectingEventsAndAttrsMaint1", true);
+            try
+            {
+                AppPreferences.getGlobalPrefs().flush();
+                
+                if (connection != null) connection.close();
+                if (session != null) session.close();
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
         }
     }
     

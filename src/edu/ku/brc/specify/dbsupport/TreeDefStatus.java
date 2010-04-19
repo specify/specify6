@@ -56,8 +56,7 @@ public class TreeDefStatus
 	 * 
 	 * return true if the set was accomplished.
 	 */
-	public synchronized boolean setNodeNumbersAreUpToDate(
-			boolean nodeNumbersAreUpToDate) 
+	public synchronized boolean setNodeNumbersAreUpToDate(boolean nodeNumbersAreUpToDate) 
 	{
 		boolean current = isNodeNumbersAreUpToDate();
 		if (current != nodeNumbersAreUpToDate)

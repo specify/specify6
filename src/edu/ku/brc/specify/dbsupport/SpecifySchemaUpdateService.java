@@ -23,6 +23,8 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Frame;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -39,8 +41,10 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -50,6 +54,7 @@ import org.hibernate.Transaction;
 
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -1647,4 +1652,156 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         return false;
     }
 
+    /**
+     * Changes all the contents of the Geography 'Name' field from the geonames 'name' to 'acsiiname' to 
+     * get rid of the unprintable ascii characters.
+     */
+    public void updateGeographyNames()
+    {
+        final String FIXED_GEO = "FIXED.GEOGRAPHY";
+        
+        if (AppPreferences.getGlobalPrefs().getBoolean(FIXED_GEO, false))
+        {
+            //return;
+        }
+        
+        String sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'geoname'", 
+                                    DBConnection.getInstance().getDatabaseName());
+        if (BasicSQLUtils.getCount(sql) == 0)
+        {
+            AppPreferences.getGlobalPrefs().putBoolean(FIXED_GEO, true);
+            return;
+        }
+        
+        final int numRecs = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM geoname ge INNER JOIN geography g ON ge.name = g.Name WHERE ge.Name <> ge.asciiname");
+        if (BasicSQLUtils.getCount(sql) == 0)
+        {
+            AppPreferences.getGlobalPrefs().putBoolean(FIXED_GEO, true);
+            return;
+        }
+        
+        final ProgressFrame prefProgFrame = new ProgressFrame(getResourceString("UPDATE_SCHEMA_TITLE"));
+        prefProgFrame.adjustProgressFrame();
+        prefProgFrame.getCloseBtn().setVisible(false);
+        prefProgFrame.getProcessProgress().setIndeterminate(true);
+        prefProgFrame.setDesc(UIRegistry.getLocalizedMessage("UPDATE_GEO"));
+        UIHelper.centerAndShow(prefProgFrame);
+        
+        if (prefProgFrame!= null)
+        {
+            prefProgFrame.setProcess(0, 100);
+        }
+        
+        SwingWorker<Boolean, Boolean> worker = new SwingWorker<Boolean, Boolean>()
+        {
+            @Override
+            protected Boolean doInBackground() throws Exception
+            {
+                Statement         stmt  = null;
+                PreparedStatement pStmt = null;
+                try
+                {
+                    Connection currDBConn = DBConnection.getInstance().getConnection();
+                    
+                    pStmt = currDBConn.prepareStatement("UPDATE geography SET Name=? WHERE GeographyID=?");
+                    stmt  = currDBConn.createStatement();
+                        
+                    int    cnt = 0;
+                    String sql = "SELECT ge.asciiname, g.GeographyID FROM geoname ge INNER JOIN geography g ON ge.name = g.Name WHERE ge.Name <> ge.asciiname";
+                    ResultSet rs  = stmt.executeQuery(sql);
+                    while (rs.next())
+                    {
+                        pStmt.setString(1, rs.getString(1));
+                        pStmt.setInt(2, rs.getInt(2));
+                        if (pStmt.executeUpdate() != 1)
+                        {
+                            
+                        }
+                        
+                        cnt++;
+                        if (prefProgFrame != null && cnt % 100 == 0)
+                        {
+                            setProgress((int)(cnt / numRecs * 100.0));
+                        }
+                    }
+                    rs.close();
+                    
+                    if (prefProgFrame != null)
+                    {
+                        prefProgFrame.setProcess(numRecs);
+                    }
+                    
+                    AppPreferences.getGlobalPrefs().putBoolean(FIXED_GEO, true);
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildFromGeonames.class, ex);
+
+                } finally
+                {
+                    try
+                    {
+                        if (stmt != null)
+                        {
+                            stmt.close();
+                        }
+                        if (pStmt != null)
+                        {
+                            pStmt.close();
+                        }
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
+                return true;
+            }
+
+            /* (non-Javadoc)
+             * @see javax.swing.SwingWorker#done()
+             */
+            @Override
+            protected void done()
+            {
+                super.done();
+                
+                prefProgFrame.setVisible(false);
+                prefProgFrame.dispose();
+            }
+            
+        };
+        
+        if (prefProgFrame != null)
+        {
+            worker.addPropertyChangeListener(
+                    new PropertyChangeListener() {
+                        public void propertyChange(final PropertyChangeEvent evt) {
+                            if ("progress".equals(evt.getPropertyName())) 
+                            {
+                                prefProgFrame.setProcess((Integer)evt.getNewValue());
+                            }
+                        }
+                    });
+        }
+        
+        worker.execute();
+        
+        /*try
+        {
+            //worker.get();// Blocks GUI Thread
+            
+            frame.setVisible(false);
+            frame.dispose();
+            frame = null;
+            
+        } catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        } catch (ExecutionException e)
+        {
+            e.printStackTrace();
+        } */
+    }
 }

@@ -112,6 +112,7 @@ import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.dbsupport.SpecifySchemaUpdateService;
 import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
 import edu.ku.brc.specify.tasks.BaseTreeTask;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
@@ -1161,7 +1162,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             showLocalizedError("SpecifyAppContextMgr.SCHEMA_OUTOF_SYNC"); //$NON-NLS-1$
             System.exit(0);
         }
-
+        
         try
         {
             List<?> list = session.getDataList(SpecifyUser.class, "name", userName); //$NON-NLS-1$

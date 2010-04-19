@@ -3790,7 +3790,7 @@ public class BuildSampleDatabase
         Geography earth = null;
         try
         {
-            BuildFromGeonames bldGeoNames = new BuildFromGeonames(discipline.getGeographyTreeDef(), dateFormatter.format(now), agent, itUsername, itPassword, frame);
+            BuildFromGeonames bldGeoNames = new BuildFromGeonames(discipline.getGeographyTreeDef(), now, agent, itUsername, itPassword, frame);
             
             try
             {

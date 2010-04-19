@@ -391,8 +391,11 @@ public class XMLHelper
        try
        {
            output = new BufferedWriter(new FileWriter(outFile));
-           output.write(contents);
-           output.flush();
+           if (contents != null)
+           {
+               output.write(contents);
+               output.flush();
+           }
            
        } finally
        {

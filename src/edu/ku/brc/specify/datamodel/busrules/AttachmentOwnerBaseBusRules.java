@@ -46,7 +46,8 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
     protected Logger log = Logger.getLogger(AttachmentOwnerBaseBusRules.class);
     
     
-    private HashMap<Class<?>, HashSet<String>> attachHashSet = new HashMap<Class<?>, HashSet<String>>();
+    private HashMap<Class<?>, HashSet<String>> attachHashMap = new HashMap<Class<?>, HashSet<String>>();
+    private Set<Object>                        hashSet       = new HashSet<Object>();
     
     /**
      * @param classes
@@ -62,7 +63,7 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
     @Override
     public void startProcessingBeforeAfterRules()
     {
-        attachHashSet.clear();
+        attachHashMap.clear();
         attachOwners.clear();
     }
     
@@ -86,11 +87,11 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
     private HashSet<String> getHashSetForClass(final Object dObj)
     {
         Class<?>        cls  = dObj.getClass();
-        HashSet<String> hSet = attachHashSet.get(cls);
+        HashSet<String> hSet = attachHashMap.get(cls);
         if (hSet == null)
         {
             hSet = new HashSet<String>();
-            attachHashSet.put(cls, hSet);
+            attachHashMap.put(cls, hSet);
         }
         return hSet;
     }
@@ -197,6 +198,32 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeDelete(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeDelete(dataObj, session);
+        
+        if (dataObj instanceof AttachmentOwnerIFace<?>)
+        {
+            AttachmentOwnerIFace<?> owner = (AttachmentOwnerIFace<?>)dataObj;
+            
+            try
+            {
+                
+                owner = session.merge(owner);
+                hashSet.clear();
+                hashSet.addAll(owner.getAttachmentReferences());
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BaseBusRules#beforeDeleteCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     @Override
@@ -212,12 +239,9 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
         {
             AttachmentOwnerIFace<?> owner = (AttachmentOwnerIFace<?>)dataObj;
             
-            owner = session.merge(owner);
-            
             // now check to see if the attachments referenced by this owner have no other
             // references in the DB
             
-            Set<?>             hashSet        = new HashSet<Object>(owner.getAttachmentReferences());
             AttachmentBusRules attachBusRules = new AttachmentBusRules();
             for (Object attachRefObj : hashSet)
             {
@@ -232,10 +256,10 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
                     owner.getAttachmentReferences().remove(attach);
                 }
             }
+            
+            hashSet.clear();
         }
         
         return retVal;
     }
-    
-
 }
