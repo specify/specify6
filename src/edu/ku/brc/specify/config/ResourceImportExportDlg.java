@@ -52,6 +52,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -153,7 +154,7 @@ public class ResourceImportExportDlg extends CustomDialog
      */
     public ResourceImportExportDlg() throws HeadlessException
     {
-        super((Frame)UIRegistry.getTopWindow(), 
+        super((Frame)getTopWindow(), 
                 getResourceString("RIE_TITLE"), 
                 true, 
                 OKHELP,
@@ -593,7 +594,7 @@ public class ResourceImportExportDlg extends CustomDialog
             
             if (exportedName != null)
             {
-                UIRegistry.getStatusBar().setText(UIRegistry.getLocalizedMessage("RIE_RES_REVERTED", exportedName));
+                getStatusBar().setText(getLocalizedMessage("RIE_RES_REVERTED", exportedName));
             }
             
             enableUI();
@@ -655,7 +656,7 @@ public class ResourceImportExportDlg extends CustomDialog
             {
                 FileDialog fileDlg = new FileDialog(this, "RIE_ExportResource", FileDialog.SAVE); 
                 fileDlg.setFile(fileName);
-                fileDlg.setDirectory(UIRegistry.getUserHomeDir());
+                fileDlg.setDirectory(getUserHomeDir());
                 
                 UIHelper.centerAndShow(fileDlg);
                 
@@ -678,7 +679,7 @@ public class ResourceImportExportDlg extends CustomDialog
                         
                     } catch (FileNotFoundException ex)
                     {
-                        UIRegistry.showLocalizedMsg("RIE_NOFILEPERM");
+                        showLocalizedMsg("RIE_NOFILEPERM");
                         
                     } catch (Exception ex)
                     {
@@ -691,7 +692,7 @@ public class ResourceImportExportDlg extends CustomDialog
             
             if (exportedName != null)
             {
-                UIRegistry.getStatusBar().setText(UIRegistry.getLocalizedMessage("RIE_RES_EXPORTED", exportedName));
+                getStatusBar().setText(getLocalizedMessage("RIE_RES_EXPORTED", exportedName));
             }
         }
     }
@@ -1085,7 +1086,7 @@ public class ResourceImportExportDlg extends CustomDialog
                 }
                 
                 String title = getResourceString("RIE_ConfirmResourceOverwriteTitle");
-                final PromptDlg dlg = new PromptDlg((Dialog)UIRegistry.getMostRecentWindow(), title, msg, true, CustomDialog.OKCANCELAPPLY);
+                final PromptDlg dlg = new PromptDlg((Dialog)getMostRecentWindow(), title, msg, true, CustomDialog.OKCANCELAPPLY);
                 dlg.setOkLabel(getResourceString("RIE_ConfirmResourceOverwrite"));
                 dlg.setApplyLabel(getResourceString("Rename"));
                 dlg.createUI();
@@ -1124,7 +1125,7 @@ public class ResourceImportExportDlg extends CustomDialog
                     return new Pair<SpAppResource, String>(fndAppRes, currAppResName);
                 }
                 
-                if (option == CustomDialog.APPLY_BTN)
+                if (option == CustomDialog.APPLY_BTN) // Override
                 {
                     SpAppResource appRes = checkForOverrideAppRes(dlg.getTextField().getText(), null);
                     if (appRes == null)
@@ -1315,10 +1316,10 @@ public class ResourceImportExportDlg extends CustomDialog
                                                 ((SpecifyAppContextMgr) AppContextMgr.getInstance()).removeAppResourceSp(fndAppRes.getSpAppResourceDir(), fndAppRes);
                                             }
                                         }
-                                    } else if (newResName == null)
+                                    } /*else if (newResName == null)
                                     {
                                         return;
-                                    }
+                                    }*/
                                     
                                     if (isSpRepRes)
                                     {
@@ -1378,17 +1379,25 @@ public class ResourceImportExportDlg extends CustomDialog
                         } else
                         {
                             resIndex++;
-                            AppResourceIFace appRes = resources.get(resIndex);
+                            AppResourceIFace appRes = resources.get(resIndex-1);
                             importedName = appRes.getName();
 
                             String fName      = FilenameUtils.getName(importedName);
                             String dbBaseName = FilenameUtils.getBaseName(fileName);
-                            if (dbBaseName.equals(fName))
+                            log.debug("["+fName+"]["+dbBaseName+"]");
+                            
+                            boolean doOverwrite = true;
+                            if (!dbBaseName.equals(fName))
+                            {
+                                String msg = getLocalizedMessage("RIE_OVRDE_MSG", dbBaseName, fName);
+                                doOverwrite = displayConfirm(getResourceString("RIE_OVRDE_TITLE"), msg, "RIE_OVRDE", "CANCEL", JOptionPane.QUESTION_MESSAGE);
+                            }
+                            
+                            if (doOverwrite)
                             {
                                 appRes.setDataAsString(data);
                                 ((SpecifyAppContextMgr) AppContextMgr.getInstance()).saveResource(appRes);
                             }
-
                         }
                     }
                 }
@@ -1396,7 +1405,7 @@ public class ResourceImportExportDlg extends CustomDialog
 
             if (importedName != null)
             {
-                UIRegistry.getStatusBar().setText(UIRegistry.getLocalizedMessage("RIE_RES_IMPORTED", importedName));
+                getStatusBar().setText(getLocalizedMessage("RIE_RES_IMPORTED", importedName));
             }
 
             if (hasChanged())
@@ -1486,8 +1495,8 @@ public class ResourceImportExportDlg extends CustomDialog
                 }
             }
             
-            resModel.addElement(UIRegistry.getResourceString("RIE_ADD_NEW_RESOURCE"));
-            repModel.addElement(UIRegistry.getResourceString("RIE_ADD_NEW_RESOURCE"));
+            resModel.addElement(getResourceString("RIE_ADD_NEW_RESOURCE"));
+            repModel.addElement(getResourceString("RIE_ADD_NEW_RESOURCE"));
             for (SpAppResource appRes : resources)
             {
                 if (isReportResource(appRes))
@@ -1509,7 +1518,7 @@ public class ResourceImportExportDlg extends CustomDialog
             
             if (viewSetsModel.size() == 0)
             {
-                viewSetsModel.addElement(UIRegistry.getResourceString("RIE_ADD_NEW_VIEWSETOBJ"));
+                viewSetsModel.addElement(getResourceString("RIE_ADD_NEW_VIEWSETOBJ"));
             }
             viewSetsList.setSelectedIndex(0);
             
