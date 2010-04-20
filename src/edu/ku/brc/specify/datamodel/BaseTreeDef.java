@@ -606,7 +606,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                 {
                     UIHelper.centerAndShow(progDlg);
                 }
-                setNodeNumbersAreUpToDate(!treeRebuilder.get());
+                setNodeNumbersAreUpToDate(treeRebuilder.get());
                 return true;
             }
             catch (Exception ex)
