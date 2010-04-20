@@ -103,7 +103,7 @@ public class CollectionAutoNumber extends AutoNumberGeneric
         }
         
 
-        StringBuilder sb = new StringBuilder("SELECT CatalogNumber FROM collectionobject INNER JOIN collection ON collectionobject.CollectionMemberID = collection.userGroupScopeId WHERE collection.userGroupScopeId IN (");
+        StringBuilder sb = new StringBuilder("SELECT CatalogNumber FROM collectionobject WHERE CollectionMemberID IN (");
         Connection    conn = null;
         Statement     stmt = null;
         
