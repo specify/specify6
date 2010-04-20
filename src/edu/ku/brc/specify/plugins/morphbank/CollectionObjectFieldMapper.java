@@ -155,13 +155,15 @@ public class CollectionObjectFieldMapper
 			}
 			try
 			{
+				Object val = spec.get(mi.getName());
 				if (mi.getName().equals("CatalogNumberNumeric") && dataType.equals(Integer.class))
 				{
 					dataType = Double.class;
+					val = Double.valueOf((String )val);
 				}
 				Method m = factory.getMethod("create" + mi.getName(), dataType);
-				System.out.println("invoking " + m.getName() + "(" + spec.get(mi.getName()) + ")");
-				xmlSpec.addDarwinTag((JAXBElement<?> )m.invoke(objFac, dataType.cast(spec.get(mi.getName()))));
+				System.out.println("invoking " + m.getName() + "(" + val + ")");
+				xmlSpec.addDarwinTag((JAXBElement<?> )m.invoke(objFac, dataType.cast(val)));
 			} catch(NoSuchMethodException ex)
 			{
 				System.out.println("CollectionObjectMapper:setDwcSpecimenFields: skipping " + mi.getName() + ": no create method in Object Factory");

@@ -8,10 +8,12 @@ import java.io.PrintWriter;
 import java.sql.DriverManager;
 import java.util.Vector;
 
+import net.morphbank.mbsvc3.fsuherb.MapFsuHerbSpreadsheetToXml;
 import net.morphbank.mbsvc3.xml.Credentials;
 import net.morphbank.mbsvc3.xml.Insert;
 import net.morphbank.mbsvc3.xml.Request;
 import net.morphbank.mbsvc3.xml.XmlBaseObject;
+import net.morphbank.mbsvc3.xml.XmlId;
 import net.morphbank.mbsvc3.xml.XmlUtils;
 
 /**
@@ -47,6 +49,7 @@ public class MorphBankTest
 		Vector<XmlBaseObject> xmlImages = fieldMapper.getXmlImages();
 		for (XmlBaseObject xmlImage : xmlImages)
 		{
+			xmlImage.getView().add(new XmlId(77407));			
 			insert.getXmlObjectList().add(xmlImage);
 		}
 		return request;

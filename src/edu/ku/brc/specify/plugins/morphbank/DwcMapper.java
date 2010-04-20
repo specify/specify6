@@ -321,16 +321,17 @@ public class DwcMapper
 			{
 				return ((Determination )obj).getIsCurrent();
 			}
-			//
+			//just 
 		}
 		throw new Exception("Unsupported parent class " + parent.getClass().getName());
 	}
 	
 	protected Object getValueFromObject(DataModelObjBase object, String mapping, boolean isFormatted)
 	{
-		
+		System.out.println("Getting a value: " + object + ", " + mapping);
 		return null;
 	}
+	
 	/**
 	 * @return number of concepts
 	 */
