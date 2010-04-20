@@ -19,16 +19,20 @@
 */
 package edu.ku.brc.specify.dbsupport;
 
-import java.util.List;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
+import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.AutoNumberGeneric;
-import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -81,8 +85,8 @@ public class CollectionAutoNumber extends AutoNumberGeneric
     {
         boolean doDebug = false;
         
-        Collection          currCollection = AppContextMgr.getInstance().getClassObject(Collection.class);
-        AutoNumberingScheme catNumScheme   = currCollection.getNumberingSchemesByType(CollectionObject.getClassTableId());
+        Collection          currCol      = AppContextMgr.getInstance().getClassObject(Collection.class);
+        AutoNumberingScheme catNumScheme = currCol.getNumberingSchemesByType(CollectionObject.getClassTableId());
         if (catNumScheme == null)
         {
             throw new RuntimeException("The Catalog Numbering Scheme cannot be null! Collection Table ID: "+CollectionObject.getClassTableId());
@@ -91,25 +95,63 @@ public class CollectionAutoNumber extends AutoNumberGeneric
         
         if (doDebug) System.out.println("CatNumScheme: "+catNumScheme.getSchemeName());
         
-        StringBuilder sb = new StringBuilder("SELECT c.catalogNumber From CollectionObject c Join c.collection col Join col.numberingSchemes cns WHERE cns.autoNumberingSchemeId = ");
-        sb.append(catNumScheme.getAutoNumberingSchemeId());
+        Vector<Integer> ids = new Vector<Integer>();
+        for (Collection collection : catNumScheme.getCollections())
+        {
+            if (doDebug) System.out.println("adding ID: "+collection.getCollectionId()+"  "+collection.getCollectionName());
+            ids.add(collection.getCollectionId());
+        }
         
-        sb.append(" AND c.collectionMemberId = COLMEMID ORDER BY CatalogNumber DESC");
+
+        StringBuilder sb = new StringBuilder("SELECT CatalogNumber FROM collectionobject INNER JOIN collection ON collectionobject.CollectionMemberID = collection.userGroupScopeId WHERE collection.userGroupScopeId IN (");
+        Connection    conn = null;
+        Statement     stmt = null;
+        
+        for (int i=0;i<ids.size();i++)
+        {
+            if (i > 0) sb.append(',');
+            sb.append(ids.get(i));
+        }
+        sb.append(") ORDER BY CatalogNumber DESC");
+        log.debug(sb.toString());
+        
         try
         {
-            String sql = QueryAdjusterForDomain.getInstance().adjustSQL(sb.toString());
-            //System.out.println(sql);
-            List<?> list = session.createQuery(sql).setMaxResults(1).list();
-            if (list.size() == 1)
+            conn = DBConnection.getInstance().getConnection();
+            stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = stmt.executeQuery(sb.toString());
+            
+            String catNum = null;
+            if (rs.next())
             {
-                return list.get(0).toString();
+                catNum = rs.getString(1);
             }
-        } catch (Exception ex)
+            rs.close();
+            
+            return catNum;
+            
+        } catch (SQLException e)
         {
-            ex.printStackTrace();
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionAutoNumberAlphaNum.class, ex);
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionAutoNumber.class, e);
+            log.error("Exception caught: " + e); //$NON-NLS-1$
+            e.printStackTrace();
+            
+        } finally
+        {
+            try
+            {
+                if (stmt != null)  stmt.close(); 
+                
+            } catch (SQLException e)
+            {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionAutoNumber.class, e);
+                log.error("Exception caught: " + e.toString()); //$NON-NLS-1$
+                e.printStackTrace();
+            }
         }
+        
         return null;
     }
     
