@@ -297,13 +297,13 @@ public class InteractionsTask extends BaseTask
 
     
     /* (non-Javadoc)
-	 * @see edu.ku.brc.af.tasks.BaseTask#doProcessAppCommands(edu.ku.brc.ui.CommandAction)
-	 */
-	@Override
-	protected void doProcessAppCommands(CommandAction cmdAction)
-	{
-		// TODO Auto-generated method stub
-		super.doProcessAppCommands(cmdAction);
+     * @see edu.ku.brc.af.tasks.BaseTask#doProcessAppCommands(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    protected void doProcessAppCommands(CommandAction cmdAction)
+    {
+        // TODO Auto-generated method stub
+        super.doProcessAppCommands(cmdAction);
         
         if (cmdAction.isAction(APP_RESTART_ACT) ||
             cmdAction.isAction(APP_START_ACT))
@@ -311,9 +311,9 @@ public class InteractionsTask extends BaseTask
             this.isInitialized = false;
             initialize();
         }
-	}
+    }
 
-	/**
+    /**
      * Returns whether a table id if considered to be an Interaction.
      * @param tableId the table ID in question
      * @return true if it is a table that is handled by Interactions
@@ -617,8 +617,8 @@ public class InteractionsTask extends BaseTask
         {
             if (cmdAction.getAction().equals(PRINT_INVOICE))
             {
-            	//this.printableInvoiceTblIds.add(ef.getDataFlavorClass().
-            	System.out.println(ef);
+                //this.printableInvoiceTblIds.add(ef.getDataFlavorClass().
+                System.out.println(ef);
             }
             DataFlavorTableExt dfx = new DataFlavorTableExt(ef.getDataFlavorClass(), ef.getHumanReadable(), ef.getTableIdsAsArray());
             roc.addDragDataFlavor(dfx);
@@ -628,12 +628,12 @@ public class InteractionsTask extends BaseTask
         {
             if (cmdAction.getAction().equals(PRINT_INVOICE))
             {
-            	if (ef.getClassName().equals(RecordSetTask.class.getName()))
-            	{
-            		this.printableInvoiceTblIds.addAll(ef.getTableIds());
-            	}
+                if (ef.getClassName().equals(RecordSetTask.class.getName()))
+                {
+                    this.printableInvoiceTblIds.addAll(ef.getTableIds());
+                }
             }
-        	DataFlavorTableExt dfx = new DataFlavorTableExt(ef.getDataFlavorClass(), ef.getHumanReadable(), ef.getTableIdsAsArray());
+            DataFlavorTableExt dfx = new DataFlavorTableExt(ef.getDataFlavorClass(), ef.getHumanReadable(), ef.getTableIdsAsArray());
             roc.addDropDataFlavor(dfx);
         }
         return roc;
@@ -824,7 +824,7 @@ public class InteractionsTask extends BaseTask
             InvoiceInfo invoiceInfo = getInvoiceInfo(rs.getDbTableId());
             if (invoiceInfo != null)
             {
-            	launchInvoice(invoiceInfo, rs);
+                launchInvoice(invoiceInfo, rs);
             }
         }
     }
@@ -1264,39 +1264,37 @@ public class InteractionsTask extends BaseTask
                     loan = isGift ? null : (Loan)session.getData(hql);
                     gift = isGift ? (Gift)session.getData(hql) : null;
                     
-//                    if (loan.getShipments().size() == 0)
-//                    {
-//                        UIRegistry.displayErrorDlg(getResourceString("NO_SHIPMENTS_ERROR"));
-//                        
-//                    } else if (loan.getShipments().size() > 1)
-//                    {
-//                        // XXX Do we allow them to pick a shipment or print all?
-//                        UIRegistry.displayErrorDlg(getResourceString("MULTI_SHIPMENTS_NOT_SUPPORTED"));
-//                        
-//                    } else
-//                    {
-//                        // XXX At the moment this is just checking to see if there is at least one "good/valid" shipment
-//                        // but the hard part will be sending the correct info so the report can be printed
-//                        // using bouth a Loan Id and a Shipment ID, and at some point distinguishing between using
-//                        // the shipped by versus the shipper.
-//                        Shipment shipment = loan.getShipments().iterator().next();
-//                        if (shipment.getShippedBy() == null)
-//                        {
-//                            UIRegistry.displayErrorDlg(getResourceString("SHIPMENT_MISSING_SHIPPEDBY"));
-//                        } else if (shipment.getShippedBy().getAddresses().size() == 0)
-//                        {
-//                            UIRegistry.displayErrorDlg(getResourceString("SHIPPEDBY_MISSING_ADDR"));
-//                        } else if (shipment.getShippedTo() == null)
-//                        {
-//                            UIRegistry.displayErrorDlg(getResourceString("SHIPMENT_MISSING_SHIPPEDTO"));
-//                        } else if (shipment.getShippedTo().getAddresses().size() == 0)
-//                        {
-//                            UIRegistry.displayErrorDlg(getResourceString("SHIPPEDTO_MISSING_ADDR"));
-//                        } else
-//                        {
-                            //session.close();
-                            //session = null;
-                    
+                    if (loan.getShipments().size() == 0)
+                    {
+                        UIRegistry.displayErrorDlg(getResourceString("NO_SHIPMENTS_ERROR"));
+                        
+                    } else if (loan.getShipments().size() > 1)
+                    {
+                        // XXX Do we allow them to pick a shipment or print all?
+                        UIRegistry.displayErrorDlg(getResourceString("MULTI_SHIPMENTS_NOT_SUPPORTED"));
+                        
+                    } else
+                    {
+                        // XXX At the moment this is just checking to see if there is at least one "good/valid" shipment
+                        // but the hard part will be sending the correct info so the report can be printed
+                        // using both a Loan Id and a Shipment ID, and at some point distinguishing between using
+                        // the shipped by versus the shipper.
+                        Shipment shipment = isGift ? gift.getShipments().iterator().next() : loan.getShipments().iterator().next();
+                        if (shipment.getShippedBy() == null)
+                        {
+                            UIRegistry.displayErrorDlg(getResourceString("SHIPMENT_MISSING_SHIPPEDBY"));
+                            
+                        } else if (shipment.getShippedBy().getAddresses().size() == 0)
+                        {
+                            UIRegistry.displayErrorDlg(getResourceString("SHIPPEDBY_MISSING_ADDR"));
+                        } else if (shipment.getShippedTo() == null)
+                        {
+                            UIRegistry.displayErrorDlg(getResourceString("SHIPMENT_MISSING_SHIPPEDTO"));
+                        } else if (shipment.getShippedTo().getAddresses().size() == 0)
+                        {
+                            UIRegistry.displayErrorDlg(getResourceString("SHIPPEDTO_MISSING_ADDR"));
+                        } else
+                        {
                             String  identTitle;
                             int     tableId;
                             Integer id;
@@ -1319,6 +1317,8 @@ public class InteractionsTask extends BaseTask
                             rs.addItem(id);
                             
                             launchInvoice(invoice, rs);
+                        }
+                    }
                 } finally
                 {
                     if (session != null)
@@ -1358,7 +1358,7 @@ public class InteractionsTask extends BaseTask
     
     public InvoiceInfo getReport(final boolean isGift)
     {
-    	return getInvoiceInfo(DBTableIdMgr.getInstance().getIdByShortName(isGift ? "Gift" : "Loan"));
+        return getInvoiceInfo(DBTableIdMgr.getInstance().getIdByShortName(isGift ? "Gift" : "Loan"));
     }
     
     /**
@@ -1388,17 +1388,17 @@ public class InteractionsTask extends BaseTask
                 try
                 {
                     Integer tblId = null;
-                	try
+                    try
                     {
-                    	tblId = Integer.valueOf(tableid);
+                        tblId = Integer.valueOf(tableid);
                     }
                     catch (NumberFormatException ex)
                     {
-                    	//continue;
+                        //continue;
                     }
                     if (tblId == null)
                     {
-                    	continue;
+                        continue;
                     }
                     
                     if (tblId.equals(invoiceTblId))
@@ -1439,8 +1439,8 @@ public class InteractionsTask extends BaseTask
             
             if (repInfo.size() == 0)
             {
-            	UIRegistry.displayInfoMsgDlgLocalized("InteractionsTask.NoInvoiceFound", 
-                			DBTableIdMgr.getInstance().getTitleForId(invoiceTblId));
+                UIRegistry.displayInfoMsgDlgLocalized("InteractionsTask.NoInvoiceFound", 
+                            DBTableIdMgr.getInstance().getTitleForId(invoiceTblId));
                 return null;
             }
             
@@ -2150,10 +2150,10 @@ public class InteractionsTask extends BaseTask
                 
             } if (cmdAction.getData() instanceof CommandAction)
             {
-            	RecordSetIFace recordSet = RecordSetTask.askForRecordSet(this.printableInvoiceTblIds, null, true);
+                RecordSetIFace recordSet = RecordSetTask.askForRecordSet(this.printableInvoiceTblIds, null, true);
                 if (recordSet != null)
                 {
-                	printInvoice(cmdAction.getPropertyAsString("file"), recordSet);
+                    printInvoice(cmdAction.getPropertyAsString("file"), recordSet);
                 }
             }
             
@@ -2445,9 +2445,5 @@ public class InteractionsTask extends BaseTask
             // TODO Auto-generated method stub
             return getSpAppResource().getName().compareTo(o.getSpAppResource().getName());
         }
-        
-        
     }
-    
-
 }
