@@ -3,8 +3,12 @@
  */
 package edu.ku.brc.specify.plugins.morphbank;
 
+import java.util.Calendar;
 import java.util.Date;
 
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tools.export.MappedFieldInfo;
 
 /**
@@ -63,6 +67,10 @@ public class MappingInfo implements Comparable<MappingInfo>
 			if (name.startsWith("DecimalLatitude") || name.equals("DecimalLongitude"))
 			{
 				return Double.class;
+			}
+			if (name.equalsIgnoreCase("DayCollected"))
+			{
+				return Calendar.class;
 			}
 			if (name.endsWith("Collected") || name.endsWith("Identified"))
 			{
@@ -135,6 +143,34 @@ public class MappingInfo implements Comparable<MappingInfo>
 		return isFormatted;
 	}
 
+	/**
+	 * @return tableid for the table containing this field
+	 */
+	protected int getMyContextTblId()
+	{
+		String[] tbls = mapping.split(",");
+		String tblSeg = tbls[tbls.length-1];
+		String[] tblSegs = tblSeg.split("\\.");
+		String tbl = tblSegs[0];
+		return Integer.parseInt(tbl.split("-")[0]);
+	}
+	/**
+	 * @return true if the field represents a field associated with a specified rank in a treeable table
+	 */
+	public boolean isTreeRank()
+	{
+		//This is a little iffy, but will probably work.
+		DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoById(getMyContextTblId());
+		if (Treeable.class.isAssignableFrom(tbl.getClassObj()))
+		{
+			if (tbl.getFieldByName(name) == null)
+			{
+				return true;
+			}
+		}
+		return false;				
+	}
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */

@@ -9,6 +9,7 @@ import java.lang.reflect.Modifier;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.GregorianCalendar;
 import java.util.Vector;
 
 import javax.xml.bind.JAXBElement;
@@ -56,11 +57,38 @@ public class CollectionObjectFieldMapper
 		spec.setCollectionObjectId(collectionObjectId);	
 	}
 	
+	/**
+	 * @param obj
+	 * @throws Exception
+	 */
+	public CollectionObjectFieldMapper(final CollectionObject obj) throws Exception
+	{
+		this.collectionObject = obj;
+		dwcMapper = getDwcMapper();
+		spec = new DarwinCoreSpecimen(dwcMapper);
+		spec.setCollectionObject(obj);
+	}
+	
+	/**
+	 * @param collectionObjectId
+	 * @throws Exception
+	 */
 	public void setCollectionObjectId(Integer collectionObjectId) throws Exception
 	{
 		this.collectionObjectId = collectionObjectId;
 		spec.setCollectionObjectId(collectionObjectId);
 	}
+	
+	/**
+	 * @param obj
+	 * @throws Exception
+	 */
+	public void setCollectionObject(final CollectionObject obj) throws Exception
+	{
+		this.collectionObject = obj;
+		spec.setCollectionObject(obj);
+	}
+	
 	/**
 	 * @return the DarwinCore appropriate mappings for the current context.
 	 * 
@@ -156,10 +184,14 @@ public class CollectionObjectFieldMapper
 			try
 			{
 				Object val = spec.get(mi.getName());
+				System.out.println("setting " + mi.getName() + ": " + val + " (" + dataType.getSimpleName());
 				if (mi.getName().equals("CatalogNumberNumeric") && dataType.equals(Integer.class))
 				{
 					dataType = Double.class;
 					val = Double.valueOf((String )val);
+				} else if (val != null && Number.class.isAssignableFrom(dataType) && !dataType.equals(GregorianCalendar.class))
+				{
+					val = ((Number )val).doubleValue();
 				}
 				Method m = factory.getMethod("create" + mi.getName(), dataType);
 				System.out.println("invoking " + m.getName() + "(" + val + ")");

@@ -15,6 +15,8 @@ import java.util.Set;
 import java.util.Vector;
 
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
@@ -246,16 +248,40 @@ public class DwcMapper
 	{
 		String[] mapSegments = mi.getMapping().split(",");
 		DataModelObjBase currentObject = obj;
-		for (int s = 0; s < mapSegments.length; s++)
+		DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+		try
 		{
-			if (s < mapSegments.length - 1 || !mi.isFormatted())
+			session.attach(currentObject);
+			for (int s = 1; s < mapSegments.length; s++)
 			{
-				currentObject = getRelatedObject(currentObject, mapSegments[s]);
+				System.out.println(mapSegments[s]);
+
+				if (currentObject != null
+						&& (s < mapSegments.length - 1 || (!mi.isFormatted() && !mi
+								.isTreeRank())))
+				{
+					currentObject = getRelatedObject(currentObject,
+							mapSegments[s]);
+				}
+				if (currentObject == null)
+				{
+					return null;
+				}
+				
+				session.attach(currentObject); //shouldn't to do this explicitly???
+				
+				System.out.println("   "
+						+ currentObject.getClass().getSimpleName());
+
+				if (s == mapSegments.length - 1)
+				{
+					return getValueFromObject(currentObject, mapSegments[s], mi
+							.isFormatted(), mi.isTreeRank());
+				}
 			}
-			if (s == mapSegments.length - 1)
-			{
-				return getValueFromObject(currentObject, mapSegments[s], mi.isFormatted());
-			}
+		} finally
+		{
+			session.close();
 		}
 		return null;
 	}
@@ -269,17 +295,18 @@ public class DwcMapper
 	protected DataModelObjBase getRelatedObject(DataModelObjBase object, String mapping) throws Exception
 	{
 		String[] mapInfo = mapping.split("-");
-		int tableId = Integer.parseInt(mapInfo[0]);
-		String relationshipName = mapInfo.length > 1 ? mapInfo[1] : null;
+		int tableId = Integer.parseInt(mapInfo[0].split("\\.")[0]);
+		String relationshipName = mapInfo.length > 1 ? mapInfo[1].split("\\.")[0] : null;
 		Class<? extends DataModelObjBase> relatedClass = (Class<? extends DataModelObjBase> )DBTableIdMgr.getInstance().getInfoById(tableId).getClassObj();
-		if (relationshipName != null)
+		if (relationshipName != null) //this means we have a 1-many (?)
 		{
-			//this means we have a 1-many (?)
-			String methName = "get" + relationshipName.substring(0, 1).toUpperCase().concat(relationshipName.substring(1));
+			String methName =  "get" + relationshipName.substring(0, 1).toUpperCase().concat(relationshipName.substring(1)); 
 			Method meth = object.getClass().getMethod(methName);
 			return selectRelatedObject(object, meth, relatedClass);
 		}
-		return null;
+		String methName = "get" + relatedClass.getSimpleName();
+		Method meth = object.getClass().getMethod(methName);
+		return (DataModelObjBase )meth.invoke(object);
 	}
 	
 	/**
@@ -326,9 +353,16 @@ public class DwcMapper
 		throw new Exception("Unsupported parent class " + parent.getClass().getName());
 	}
 	
-	protected Object getValueFromObject(DataModelObjBase object, String mapping, boolean isFormatted)
+	protected Object getValueFromObject(DataModelObjBase object, String mapping, boolean isFormatted, boolean isTreeRank) throws Exception
 	{
-		System.out.println("Getting a value: " + object + ", " + mapping);
+		if (!isFormatted && !isTreeRank)
+		{
+			String fieldName = mapping.split("\\.")[2];
+			String methodName = "get" + fieldName.substring(0, 1).toUpperCase().concat(fieldName.substring(1));
+			Method method = object.getClass().getMethod(methodName);
+			System.out.println("Getting a value: " + object + ", " + mapping + " = " + method.invoke(object));
+			return method.invoke(object);
+		}
 		return null;
 	}
 	

@@ -8,13 +8,13 @@ import java.io.PrintWriter;
 import java.sql.DriverManager;
 import java.util.Vector;
 
-import net.morphbank.mbsvc3.fsuherb.MapFsuHerbSpreadsheetToXml;
 import net.morphbank.mbsvc3.xml.Credentials;
 import net.morphbank.mbsvc3.xml.Insert;
 import net.morphbank.mbsvc3.xml.Request;
 import net.morphbank.mbsvc3.xml.XmlBaseObject;
 import net.morphbank.mbsvc3.xml.XmlId;
 import net.morphbank.mbsvc3.xml.XmlUtils;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 
 /**
  * @author timo
@@ -36,9 +36,29 @@ public class MorphBankTest
 	}
 		
 	public static Request createRequestFromCollectionObjectId(Integer Id,
-			Credentials submitter, Credentials owner, PrintWriter report) throws Exception
+			Credentials submitter, Credentials owner) throws Exception
 	{
 		CollectionObjectFieldMapper fieldMapper = new CollectionObjectFieldMapper(Id);
+		Request request = new Request();
+		request.setSubmitter(submitter);
+		Insert insert = new Insert();
+		insert.setContributor(owner);
+		request.getInsert().add(insert);
+		XmlBaseObject xmlSpecimen = createXmlSpecimen(fieldMapper);
+		insert.getXmlObjectList().add(xmlSpecimen);
+		Vector<XmlBaseObject> xmlImages = fieldMapper.getXmlImages();
+		for (XmlBaseObject xmlImage : xmlImages)
+		{
+			xmlImage.getView().add(new XmlId(77407));			
+			insert.getXmlObjectList().add(xmlImage);
+		}
+		return request;
+	}
+	
+	public static Request createRequestFromCollectionObject(final CollectionObject obj, 
+			Credentials submitter, Credentials owner) throws Exception
+	{
+		CollectionObjectFieldMapper fieldMapper = new CollectionObjectFieldMapper(obj);
 		Request request = new Request();
 		request.setSubmitter(submitter);
 		Insert insert = new Insert();
@@ -68,7 +88,7 @@ public class MorphBankTest
 			FileWriter reportFile = new FileWriter("/home/timo/mbreport.xml");
 			PrintWriter report = new PrintWriter(reportFile);
 
-			Request request =  createRequestFromCollectionObjectId(1, new Credentials(), new Credentials(), report);
+			Request request =  createRequestFromCollectionObjectId(1, new Credentials(), new Credentials());
 
 			// Request request = mapper.createRequestFromFile(INPUT_FILE,
 			FileWriter outFile = new FileWriter("/home/timo/mb.xml");
