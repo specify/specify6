@@ -324,7 +324,7 @@ public class Scriptlet extends JRDefaultScriptlet
      * @param isGift
      * @return "LOAN" if isGift is null else "GIFT"
      */
-    public String loanCategory(Boolean isGift)
+    public String loanCategory(final Boolean isGift)
     {
         if (isGift)
         {
@@ -339,12 +339,16 @@ public class Scriptlet extends JRDefaultScriptlet
      * @param lastName
      * @param middleInitial
      */
-    public String buildNameString(String firstName, String lastName, String middleInitial)
+    public String buildNameString(final String firstName, final String lastName, final String middleInitial)
     {
-        String name = lastName + ", " + firstName;
-        if (middleInitial != null)
+        String name = StringUtils.isNotEmpty(lastName) ? lastName : "";
+        if (StringUtils.isNotEmpty(firstName))
         {
-            name += " " + middleInitial;
+            name += (name.length() > 0 ? ", " : "") + firstName;
+        }
+        if (StringUtils.isNotEmpty(middleInitial))
+        {
+            name += (name.length() > 0 ? " " : "") + middleInitial;
         }
         return name;
     }
@@ -356,10 +360,10 @@ public class Scriptlet extends JRDefaultScriptlet
      * @param latitude - latitude
      * @param longitude - longitude
      */
-    public String buildLocalityString(String geoName,
-                                      String localityName,
-                                      String latitude,
-                                      String longitude)
+    public String buildLocalityString(final String geoName,
+                                      final String localityName,
+                                      final String latitude,
+                                      final String longitude)
     {
         String locality = "";
 
