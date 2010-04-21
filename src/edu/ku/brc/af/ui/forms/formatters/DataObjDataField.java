@@ -80,6 +80,11 @@ public class DataObjDataField implements Cloneable
 		this.tableInfo = tableInfo;
 		this.fieldInfo = fieldInfo;
 		this.relInfo   = relInfo;
+		
+		if (fieldInfo == null && relInfo == null)
+		{
+		    setTableAndFieldInfo(tableInfo);
+		}
 	}
 
 	public DataObjSwitchFormatter getObjFormatter()
