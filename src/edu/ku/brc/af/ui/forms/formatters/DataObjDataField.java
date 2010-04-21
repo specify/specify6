@@ -75,17 +75,22 @@ public class DataObjDataField implements Cloneable
 		// table info is set during parent (DataObjDataFieldFormat) construction
 	}
 
-	public void setDbInfo(DBTableInfo tableInfo, DBFieldInfo fieldInfo, DBRelationshipInfo relInfo)
-	{
-		this.tableInfo = tableInfo;
-		this.fieldInfo = fieldInfo;
-		this.relInfo   = relInfo;
-		
-		if (fieldInfo == null && relInfo == null)
-		{
-		    setTableAndFieldInfo(tableInfo);
-		}
-	}
+    public void setDbInfo(DBTableInfo tableInfo, DBFieldInfo fieldInfo, DBRelationshipInfo relInfo, boolean isInitial)
+    {
+        this.tableInfo = tableInfo;
+        this.fieldInfo = fieldInfo;
+        this.relInfo   = relInfo;
+        
+        if (!isInitial && fieldInfo == null && relInfo == null)
+        {
+            setTableAndFieldInfo(tableInfo);
+        }
+    }
+
+    public void setDbInfo(DBTableInfo tableInfo, DBFieldInfo fieldInfo, DBRelationshipInfo relInfo)
+    {
+        setDbInfo(tableInfo, fieldInfo, relInfo, false);
+    }
 
 	public DataObjSwitchFormatter getObjFormatter()
 	{

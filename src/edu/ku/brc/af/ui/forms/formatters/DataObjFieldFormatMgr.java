@@ -377,7 +377,7 @@ public class DataObjFieldFormatMgr
                                         log.error("Couldn't map standard type["+dataTypeStr+"]");
                                     }
                                     fields[inx] = new DataObjDataField(fieldName, classObj, formatStr, sepStr, formatterName, uifieldformatter);
-                                    fields[inx].setDbInfo(tableInfo, fieldInfo, relInfo);
+                                    fields[inx].setDbInfo(tableInfo, fieldInfo, relInfo, true);
                                     
                                     inx++;
                                 }
