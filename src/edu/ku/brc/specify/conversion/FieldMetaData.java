@@ -33,18 +33,21 @@ public class FieldMetaData
     protected String  type;
     protected boolean isDate;
     protected boolean isPrecision;
+    protected boolean isString;
     
     protected int sqlType;
 
     public FieldMetaData(String name, 
                          String type,
                          boolean isDate,
-                         boolean isPrecision)
+                         boolean isPrecision,
+                         boolean isString)
     {
-        this.name = name;
-        this.type = type;
-        this.isDate = isDate;
+        this.name        = name;
+        this.type        = type;
+        this.isDate      = isDate;
         this.isPrecision = isPrecision;
+        this.isString    = isString;
     }
 
     public String getName()
@@ -71,6 +74,14 @@ public class FieldMetaData
     public boolean isPrecision()
     {
         return isPrecision;
+    }
+
+    /**
+     * @return the isString
+     */
+    public boolean isString()
+    {
+        return isString;
     }
 
     /**

@@ -42,6 +42,7 @@ import java.util.Vector;
 
 import net.sourceforge.jtds.jdbc.ClobImpl;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.mysql.jdbc.CommunicationsException;
@@ -1514,18 +1515,19 @@ public class BasicSQLUtils
             ResultSet        rs  = mdm.getColumns(connection.getCatalog(), connection.getCatalog(), tableName, null);
             while (rs.next())
             {
-                /*System.out.println("-------- " + rs.getString("COLUMN_NAME")+" ----------");
+                System.out.println("-------- " + rs.getString("COLUMN_NAME")+" ----------");
                 for (int i=1;i<=rs.getMetaData().getColumnCount();i++)
                 {
                     System.out.println(rs.getMetaData().getColumnName(i)+"="+rs.getObject(i));
 
-                }*/
+                }
                 
                 String typeStr = rs.getString("TYPE_NAME");
                 FieldMetaData fmd = new FieldMetaData(rs.getString("COLUMN_NAME"), 
                                                       typeStr, 
                                                       typeStr.startsWith("DATE"), 
-                                                      false);
+                                                      false,
+                                                      StringUtils.contains(typeStr.toLowerCase(), "varchar"));
                 fmd.setSqlType(rs.getInt("DATA_TYPE"));
                 fields.add(fmd);
             }
@@ -2163,6 +2165,19 @@ public class BasicSQLUtils
                             
                         } else 
                         {
+                            
+                            if (dataObj instanceof String && newFldMetaData.isString())
+                            {
+                                DBFieldInfo fi   = tblInfo.getFieldByColumnName(newColName);
+                                String s = (String)dataObj;
+                                if (s.length() > fi.getLength())
+                                {
+                                    String msg = String.format("Truncating Table '%s' Field '%s' with Length %d, db len %d Value[%s]", toTableName, newColName, s.length(), fi.getLength(), s);
+                                    tblWriter.logError(msg);
+                                    log.error(msg);
+                                    dataObj = s.substring(0, fi.getLength());
+                                }
+                            }
                             str.append(getStrValue(dataObj, newFldMetaData.getType()));
                         }
 

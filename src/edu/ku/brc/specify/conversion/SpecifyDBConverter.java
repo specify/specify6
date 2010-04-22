@@ -59,6 +59,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -1430,10 +1431,17 @@ public class SpecifyDBConverter extends AppBase
                 waitTime = System.currentTimeMillis() - stTime;
                 */
                 
+                File ceFile = new File(dbNameDest+".ce_all");
                 if (doingOneToOneForColObjToCE)
                 {
                     DuplicateCollectingEvents dce = new DuplicateCollectingEvents(newDBConn, frame, conversion.getCurAgentCreatorID(), dscp.getId());
                     dce.performMaint();
+                    
+                    FileUtils.writeStringToFile(ceFile, dbNameDest);
+                    
+                } else if (ceFile.exists())
+                {
+                    ceFile.delete();
                 }
                 
                 //endTime = System.currentTimeMillis();

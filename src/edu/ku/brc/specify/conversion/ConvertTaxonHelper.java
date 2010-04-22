@@ -303,6 +303,8 @@ public class ConvertTaxonHelper
      */
     public void convertAllTaxonTreeDefs()
     {
+        IdMapperMgr.getInstance().get("TaxonomicUnitType", "TaxonomicUnitTypeID").reset();
+        
         for (CollectionInfo colInfo : collectionInfoList)
         {
             convertTaxonTreeDefinition(colInfo);
@@ -365,7 +367,7 @@ public class ConvertTaxonHelper
     
             Vector<TaxonTreeDefItem> items = new Vector<TaxonTreeDefItem>();
             Vector<Integer> enforcedRanks = new Vector<Integer>();
-    
+            
             while (rs.next())
             {
                 rank         = rs.getInt(1);
@@ -397,6 +399,8 @@ public class ConvertTaxonHelper
                 ttdi.setRankId(rank);
                 ttdi.setTreeDef(taxonTreeDef);
                 taxonTreeDef.getTreeDefItems().add(ttdi);
+                
+                ttdi.setIsInFullName(rank >= TaxonTreeDef.GENUS);
     
                 // setup the parent/child relationship
                 if (items.isEmpty())
@@ -434,7 +438,7 @@ public class ConvertTaxonHelper
             IdMapperIFace tutMapper          = idMapperMgr.get("TaxonomicUnitType", "TaxonomicUnitTypeID");
             IdMapperIFace taxonomyTypeMapper = idMapperMgr.get("TaxonomyType",      "TaxonomyTypeID");
             
-            tutMapper.reset();
+            //tutMapper.reset();
             
             taxonomyTypeMapper.put(taxonomyTypeId, taxonTreeDef.getId());
             
@@ -760,6 +764,7 @@ public class ConvertTaxonHelper
                     {
                         if (newID != null)
                         {
+                            //System.out.println("newInx["+newInx+"]  newID["+newID+"] oldID["+oldID+"]");
                             pStmtTx.setInt(newInx, newID);
                             
                     } else if (!skipError && !isRoot)
@@ -789,6 +794,8 @@ public class ConvertTaxonHelper
                 {
                     int val = rs.getInt(colInx);
                     if (!rs.wasNull()) pStmtTx.setInt(newInx, val);
+                    
+                    //System.out.println("newInx["+colInx+"]  newID["+val+"]");
                     break;
                 }
                 case java.sql.Types.SMALLINT:
@@ -833,7 +840,15 @@ public class ConvertTaxonHelper
             }
             
             pStmtTx.setInt(fieldToColHash.get("Version"), 0);
-            pStmtTx.execute();
+            try
+            {
+                //System.out.println("----------------------------------------");
+                pStmtTx.execute();
+                
+            } catch (Exception ex)
+            {
+                UIRegistry.showError(ex.toString());
+            }
         }
 
         return true;
@@ -987,7 +1002,6 @@ public class ConvertTaxonHelper
     {
         Pair<TaxonTreeDef, Discipline> dataForColInfo = null;
         
-        IdMapperIFace txMapper       = IdMapperMgr.getInstance().get("taxonname", "TaxonNameID");
         int           newTaxonRootID = txMapper.get(taxonRootId);
         int taxonTreeDefId = BasicSQLUtils.getCountAsInt(newDBConn, "SELECT TaxonTreeDefID FROM taxon WHERE TaxonID = " + newTaxonRootID);
         

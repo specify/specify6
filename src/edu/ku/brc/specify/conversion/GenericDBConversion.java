@@ -5925,6 +5925,14 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         }
                         
                         colObjId = getStrValue(newColObjId);
+                        if (StringUtils.contains(colObjId, '.'))
+                        {
+                            String msgStr = String.format("CatalogNumber '%d' contains a decimal point.", colObjId);
+                            log.debug(msgStr);
+                            tblWriter.logError(msgStr);
+                            skipRecord = true;
+                            break;
+                        }
                         str.append(colObjId);
 
                         if (useNumericCatNumbers)

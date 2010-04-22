@@ -25,10 +25,14 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
 import javax.swing.table.DefaultTableModel;
+
+import mondrian.olap.MondrianDef.Row;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -365,7 +369,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
             {
                 log.debug(sql);
                 
-                HashMap<Integer, Boolean> taxonTypeIdHash = new HashMap<Integer, Boolean>();
+                HashSet<Integer> taxonTypeIdHash = new HashSet<Integer>();
                 
                 stmt         = oldDBConn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql);
@@ -413,15 +417,17 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                                         "Inner Join collectiontaxonomytypes AS ct ON tn.TaxonomyTypeID = ct.TaxonomyTypeID " +
                                         "WHERE tu.RankID =  0 AND tn.RankID =  0 AND ct.BiologicalObjectTypeID = %d " +
                                         "ORDER BY ct.BiologicalObjectTypeID ASC", info.getColObjTypeId());
+                    log.debug(sql);
                     
                     String detSQLStr = "SELECT ct.TaxonomyTypeID, (select distinct relatedsubtypevalues FROM usysmetacontrol c " +
                     	               "LEFT JOIN usysmetafieldsetsubtype fst ON fst.fieldsetsubtypeid = c.fieldsetsubtypeid " +
                     	               "WHERE objectid = 10290 AND ct.taxonomytypeid = c.relatedsubtypevalues) AS DeterminationTaxonType " +
                     	               "FROM collectiontaxonomytypes ct WHERE ct.biologicalobjecttypeid = " + info.getColObjTypeId();
+                    log.debug(detSQLStr);
                     
                     String txNameSQL = "SELECT TaxonomyTypeName FROM taxonomytype WHERE TaxonomyTypeID = ";
                     
-                    log.debug(detSQLStr);
+                    
                     Vector<Object[]> detRows = BasicSQLUtils.query(oldDBConn, detSQLStr);
                     
                     
@@ -429,6 +435,10 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                     {
                         Integer txnTypeId    = (Integer)row[0];
                         String  detTxnTypes  = (String)row[1];
+                        if (detTxnTypes == null)
+                        {
+                            detTxnTypes = Integer.toString(txnTypeId);
+                        }
                         
                         if (StringUtils.isNotEmpty(detTxnTypes))
                         {
@@ -454,7 +464,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                                 
                                 System.exit(0);
                                 
-                            } else if (StringUtils.isNumeric(detTxnTypes))
+                            } else if (StringUtils.isNumeric(detTxnTypes.trim()))
                             {
                                 Integer txnType = Integer.parseInt(detTxnTypes);
                                 if (!txnType.equals(txnTypeId))
@@ -506,7 +516,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                             info.setSrcHostTaxonCnt(0);
                         }
                         
-                        taxonTypeIdHash.put(taxonomyTypeID, true);
+                        taxonTypeIdHash.add(taxonomyTypeID);
                         
                     } else
                     {
@@ -514,9 +524,89 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                     }
                     
                     collectionInfoList.add(info);
-                    System.out.println(info.toString());
+                    //System.out.println(info.toString());
                 }
                 rs.close();
+                
+                
+                // Here we figure out whether a Taxon Tree that is used by HostTaxonID is associated with a Collection.
+                sql = "SELECT DISTINCT tt.TaxonomyTypeID, tt.TaxonomyTypeName FROM habitat AS h " +
+                      "Inner Join taxonname AS tn ON h.HostTaxonID = tn.TaxonNameID " +
+                      "Inner Join taxonomytype AS tt ON tn.TaxonomyTypeID = tt.TaxonomyTypeID";
+                Vector<Integer> txTypeIds = BasicSQLUtils.queryForInts(oldDBConn, sql);
+                
+                HashSet<Integer> txnTypeIdHashSet = new HashSet<Integer>();
+                for (Integer txTypId : txTypeIds)
+                {
+                    Boolean hasColInfo = false;
+                    for (CollectionInfo colInfo : collectionInfoList)
+                    {
+                        if (colInfo.getTaxonomyTypeId().equals(txTypId))
+                        {
+                            hasColInfo = true;
+                        }
+                    }
+                    
+                    if (!hasColInfo)
+                    {
+                        txnTypeIdHashSet.add(txTypId);
+                    }
+                }
+                
+                // These TaxonTypeIds do not have CollectionInfo
+                for (Iterator<Integer> iter = txnTypeIdHashSet.iterator(); iter.hasNext();)
+                {
+                    Integer taxonomyTypeID = iter.next();
+                    System.out.println(taxonomyTypeID);
+                    
+                    sql = "SELECT tt.TaxonomyTypeName, tn.TaxonName, tt.KingdomID, tn.TaxonNameID, tn.TaxonomicUnitTypeID FROM taxonomytype AS tt " +
+                          "Inner Join taxonomicunittype AS tut ON tt.TaxonomyTypeID = tut.TaxonomyTypeID " +
+                          "Inner Join taxonname AS tn ON tt.TaxonomyTypeID = tn.TaxonomyTypeID AND tut.TaxonomicUnitTypeID = tn.TaxonomicUnitTypeID " +    
+                          "WHERE tt.TaxonomyTypeID =  "+taxonomyTypeID+" AND tn.RankID =  0";
+                    Vector<Object[]> rows = BasicSQLUtils.query(oldDBConn, sql);
+                    if (rows.size() != 1)
+                    {
+                        String msg = "There should only be '1' TaxonTypeName for  TaxonomyTypeID:"+taxonomyTypeID;
+                        log.error(msg);
+                        UIRegistry.showError(msg);
+                        continue;
+                    }
+                    
+                    CollectionInfo colInfo = new CollectionInfo(oldDBConn);
+                    
+                    String taxonTypeName = (String)rows.get(0)[0];
+                    String taxonRootName = (String)rows.get(0)[1];
+                    if (StringUtils.isEmpty(taxonRootName))
+                    {
+                        taxonRootName = taxonTypeName;
+                    }
+                    
+                    //colInfo.setColObjTypeId();
+                    colInfo.setColObjTypeName(taxonRootName);
+                    //colInfo.setCatSeriesDefId(rs.getInt(3));
+                    //colInfo.setCatSeriesId(rs.getInt(4));
+                    
+                    colInfo.setCatSeriesName(taxonRootName);
+                    colInfo.setCatSeriesPrefix("");
+                    colInfo.setCatSeriesRemarks("");
+                    colInfo.setCatSeriesLastEditedBy("");
+                    
+                    colInfo.setColObjCnt(1);
+                    colInfo.setColObjDetTaxCnt(1);
+                    
+                    colInfo.setTaxonomyTypeId(taxonomyTypeID);
+                    colInfo.setTaxonomyTypeName(taxonTypeName);
+                    colInfo.setKingdomId((Integer)rows.get(0)[2]);
+                    colInfo.setTaxonNameId((Integer)rows.get(0)[3]);
+                    colInfo.setTaxonName(taxonRootName);
+                    colInfo.setTaxonomicUnitTypeID((Integer)rows.get(0)[4]);
+                    
+                    colInfo.setTaxonNameCnt(BasicSQLUtils.getCountAsInt(oldDBConn, cntTaxonName + taxonomyTypeID));
+                    
+                    colInfo.setSrcHostTaxonCnt(0);
+                    
+                    collectionInfoList.add(colInfo);
+                }
                 
                 // Do All
                 /*String sqlAllTx = "SELECT cot.CollectionObjectTypeID, cot.CollectionObjectTypeName, tt.TaxonomyTypeID, tt.TaxonomyTypeName, tt.KingdomID, tn.TaxonNameID, tn.TaxonName, tn.TaxonomicUnitTypeID " + 

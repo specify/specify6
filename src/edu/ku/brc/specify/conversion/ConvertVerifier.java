@@ -98,7 +98,7 @@ public class ConvertVerifier extends AppBase
     private Pair<String, String> namePairToConvert = null;
     
     private boolean              dbgStatus         = false;
-    private boolean              compareTo6DBs      = false;
+    private boolean              compareTo6DBs     = false;
     
     
     // These are the configuration Options for a View
@@ -356,6 +356,16 @@ public class ConvertVerifier extends AppBase
             System.out.println(id + " - " + labels[i]);
         }
         
+        boolean nullCEOk = false;
+        File ceFile = new File(databaseNameDest+".ce_all");
+        if (ceFile.exists())
+        {
+            nullCEOk = true;
+            //ceFile.delete();
+        }
+        
+        nullCEOk = true;
+        
         // For Debug
         coOptions = DO_CO_ALL;
         
@@ -402,7 +412,7 @@ public class ConvertVerifier extends AppBase
                 if (isCOOn(DO_CO_CE))
                 {
                     tblWriter = tblWriterHash.get(DO_CO_CE);
-                    if (!verifyCollectingEvent(oldCatNum, newCatNum))
+                    if (!verifyCollectingEvent(oldCatNum, newCatNum, nullCEOk))
                     {
                         catNumsInErrHash.put(newCatNum, oldCatNum);
                     }
@@ -707,6 +717,11 @@ public class ConvertVerifier extends AppBase
     {
         if (dbgStatus)
         {
+            //log.debug(oldSQL);
+            //log.debug(newSQL);
+            //System.err.println(oldSQL);
+            //System.err.println(newSQL);
+            
             switch (status)
             {
                 case OLD_VAL_NULL:
@@ -1112,7 +1127,7 @@ public class ConvertVerifier extends AppBase
      * @return
      * @throws SQLException
      */
-    private boolean verifyCollectingEvent(final int oldCatNum, final String newCatNum) throws SQLException
+    private boolean verifyCollectingEvent(final int oldCatNum, final String newCatNum, final boolean nullsAreOK) throws SQLException
     {
          newSQL = "SELECT ce.CollectingEventID, ce.StartDate, ce.StartDatePrecision, ce.StationFieldNumber " +
                         "FROM collectionobject co INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID " +
@@ -1123,7 +1138,7 @@ public class ConvertVerifier extends AppBase
                         "INNER JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID " +
                         "WHERE cc.SubNumber > -1 AND CatalogNumber = " + oldCatNum;
         
-         StatusType status = compareRecords("CE To Locality", oldCatNum, newCatNum, oldSQL, newSQL);
+         StatusType status = compareRecords("CE To  Locality", oldCatNum, newCatNum, oldSQL, newSQL);
          dumpStatus(status);
          return status == StatusType.COMPARE_OK;
     }
@@ -1170,7 +1185,7 @@ public class ConvertVerifier extends AppBase
          oldSQL = "SELECT AccessionID, Number, Status, Type, VerbatimDate, DateAccessioned, DateReceived, Number1, Number2, YesNo1, YesNo2 FROM accession " +
                   "WHERE Number = \"" + oldAccNum + "\"";
         
-         StatusType status = compareRecords("Accession", oldAccNum, newAccNum, oldSQL, newSQL);
+         StatusType status = compareRecords("Accession", oldAccNum, newAccNum, oldSQL, newSQL, false);
          dumpStatus(status);
          return status == StatusType.COMPARE_OK;
     }
@@ -1194,7 +1209,7 @@ public class ConvertVerifier extends AppBase
         "INNER JOIN agent a ON agentaddress.AgentID = a.AgentID " +
         "WHERE ac.Number = '" + oldAccNum + "' ORDER BY aa.Role, aa.TimestampCreated, a.Name, a.LastName";
 
-        StatusType status = compareRecords("Accession", oldAccNum, newAccNum, oldSQL, newSQL);
+        StatusType status = compareRecords("Accession", oldAccNum, newAccNum, oldSQL, newSQL, false);
         dumpStatus(status);
         return status == StatusType.COMPARE_OK;
     }
@@ -1252,7 +1267,7 @@ public class ConvertVerifier extends AppBase
                                         final String oldSQLArg, 
                                         final String newSQLArg) throws SQLException
     {
-        return compareRecords(desc, Integer.toString(oldCatNum), newCatNum, oldSQLArg, newSQLArg);
+        return compareRecords(desc, Integer.toString(oldCatNum), newCatNum, oldSQLArg, newSQLArg, false);
     }
     
     /**
@@ -1285,7 +1300,8 @@ public class ConvertVerifier extends AppBase
                                       final String oldCatNumArg, 
                                       final String newCatNumArg, 
                                       final String oldSQLArg, 
-                                      final String newSQLArg) throws SQLException
+                                      final String newSQLArg,
+                                      final boolean nullsAreOK) throws SQLException
     {
         boolean dbg = false;
         if (dbg)
@@ -1321,9 +1337,13 @@ public class ConvertVerifier extends AppBase
             
             if (!hasOldRec)
             {
-                log.error(desc+ " - No Old Record for ["+oldCatNum+"]");
-                tblWriter.logErrors(oldCatNum, "No Old Record");
-                return StatusType.NO_OLD_REC;
+                if (nullsAreOK)
+                {
+                    log.error(desc+ " - No Old Record for ["+oldCatNum+"]");
+                    tblWriter.logErrors(oldCatNum, "No Old Record");
+                    return StatusType.NO_OLD_REC;
+                }
+                return StatusType.COMPARE_OK;
             }
             if (!hasNewRec)
             {
