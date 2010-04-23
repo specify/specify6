@@ -893,12 +893,15 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     try
                     {
                         T nodeRecord = dataService.getNodeById(treeDef.getNodeClass(), nodeId);
-                        showPathToNode(nodeRecord);
-                        TreeNode node = listModel.getNodeById(nodeRecord.getTreeId());
-                        lists[0].setSelectedValue(node, true);
-                        lists[0].setSelectedValue(node, true);
-                        scrollToShowNode(node, 0);
-                        //log.info("Showing and selecting previously selected node: " + nodeRecord.getFullName());
+                        if (nodeRecord != null)
+                        {
+                        	showPathToNode(nodeRecord);
+                        	TreeNode node = listModel.getNodeById(nodeRecord.getTreeId());
+                        	lists[0].setSelectedValue(node, true);
+                        	lists[0].setSelectedValue(node, true);
+                        	scrollToShowNode(node, 0);
+                        	//log.info("Showing and selecting previously selected node: " + nodeRecord.getFullName());
+                        }
                     }
                     catch (Exception e)
                     {
