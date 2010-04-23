@@ -139,18 +139,20 @@ public class ConvScopeFixer
             }
         }
         
-        log.debug("Collection Object Type Counts");
+        tblWriter.log("Collection Object Type Counts");
         for (Integer key : colObjTypeCount.keySet())
         {
-            log.debug(key+" -> " + colObjTypeCount.get(key));   
+            tblWriter.log(key+" -> " + colObjTypeCount.get(key));   
         }
-        log.debug("");
+        tblWriter.log("");
         
+        tblWriter.log("CatSeries to Collection Id");
         for (CollectionInfo ci : CollectionInfo.getFilteredCollectionInfoList())
         {
             if (ci.getCatSeriesId() != null)
             {
                 catSerTypeToCollMemId.put(ci.getCatSeriesId(), ci.getCollectionId());
+                tblWriter.log(String.format("Cat Series: %d  -> CollectionId %d", ci.getCatSeriesId(), ci.getCollectionId()));
             }
         }
     }
@@ -185,6 +187,15 @@ public class ConvScopeFixer
         }
 
         IdMapperIFace habitatMapper = IdMapperMgr.getInstance().get("Habitat", "HabitatID");
+        if (habitatMapper == null)
+        {
+            habitatMapper = IdMapperMgr.getInstance().addTableMapper("Habitat", "HabitatID", false);
+            if (habitatMapper == null || habitatMapper.size() == 0)
+            {
+                log.error("habitatMapper is null");
+                return false;
+            }
+        }
 
         Statement         stmt  = null;
         PreparedStatement pStmt = null;
@@ -202,8 +213,12 @@ public class ConvScopeFixer
             int count = 0;
             while (rs.next())
             {
-                String msg = null;
-                Integer newId = habitatMapper.get(rs.getInt(1));
+                String  msg   = null;
+                Integer oldId = rs.getInt(1);
+                
+                if (rs.wasNull()) continue;
+                
+                Integer newId = habitatMapper.get(oldId);
                 if (newId != null)
                 {
                     Integer colMemId = catSerTypeToCollMemId.get(rs.getInt(2));
@@ -527,16 +542,16 @@ public class ConvScopeFixer
     {
         int cnt = 0;
         
-        //if (fixCollectingEventAttributes()) cnt++;
+        if (fixCollectingEventAttributes()) cnt++;
         if (fixCollectionObjectAttributes()) cnt++;
         if (fixCollectionObjectCitations()) cnt++;
-        //if (fixCollectionObjects()) cnt++;
+        if (fixCollectionObjects()) cnt++;
         
         if (fixDeterminationCitations()) cnt++;
-        //if (fixDeterminations()) cnt++;
+        if (fixDeterminations()) cnt++;
         if (fixOtherIdentifiers()) cnt++;
         if (fixPrepartionAttributes()) cnt++;
-        //if (fixPrepartions()) cnt++;
+        if (fixPrepartions()) cnt++;
         if (fixPaleoContext()) cnt++;
         
         if (fixProjects()) cnt++;
@@ -596,7 +611,11 @@ public class ConvScopeFixer
         IdMapperIFace idMapper = mapperName == null ? IdMapperMgr.getInstance().get(className, idFieldName) : IdMapperMgr.getInstance().get(mapperName);
         if (idMapper == null)
         {
-            log.error("**** No Mapper for["+className+"]");
+            idMapper = IdMapperMgr.getInstance().addTableMapper(className, idFieldName, false);
+            if (idMapper == null || idMapper.size() == 0)
+            {
+                log.error("**** No Mapper for["+className+"]");
+            }
             return false;
         }
 

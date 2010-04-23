@@ -610,7 +610,7 @@ public class SpecifyDBConverter extends AppBase
             return;
         }
 
-        if (!System.getProperty("user.name").equals("rodsX"))
+        if (!System.getProperty("user.name").equals("rods"))
         {
             OldDBStatsDlg dlg = new OldDBStatsDlg(oldDBConn);
             frame.setVisible(false);
@@ -635,7 +635,7 @@ public class SpecifyDBConverter extends AppBase
         frame.setDesc("Fixing NULL Timestamps for conversion.");
         UIHelper.centerAndShow(frame);
         
-        fixOldTablesTimestamps(oldDBConn);
+        //fixOldTablesTimestamps(oldDBConn);
         
         frame.turnOnOverAll();
         
@@ -660,12 +660,25 @@ public class SpecifyDBConverter extends AppBase
         "WHERE ce.BiologicalObjectTypeCollectedID <  21 " +
         "GROUP BY ce.CollectingEventID) T1 WHERE cnt > 1";
 
+        /*if (true)
+        {
+            IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
+            
+            //convLogger.initialize(dbNameDest);
+            //convLogger.setIndexTitle(dbNameDest + " Conversion "+(new SimpleDateFormat("yyy-MM-dd hh:mm:ss")).format(Calendar.getInstance().getTime()));
+            
+            TableWriter tblWriter = convLogger.getWriter("ScopeUpdater.html", "Updating Scope Summary");
+            ConvScopeFixer convScopeFixer = new ConvScopeFixer(oldDBConn, newDBConn, dbNameDest, tblWriter);
+            convScopeFixer.doFixTables();
+            convScopeFixer.checkTables();
+            return;
+        }*/
+        
         int numCESharing = BasicSQLUtils.getCountAsInt(oldDBConn, sql);
 
         String msg = String.format("Will this Collection share Collecting Events?\nThere are %d Collecting Events that are sharing now.\n(Sp5 was %ssharing them.)", numCESharing, isUsingEmbeddedCEsInSp5() ? "NOT " : "");
         boolean doingOneToOneForColObjToCE = !UIHelper.promptForAction("Share", "Adjust CEs", "Duplicate Collecting Events", msg);
 
-        
         /*if (false) 
         {
             createTableSummaryPage();
@@ -1483,7 +1496,7 @@ public class SpecifyDBConverter extends AppBase
                 int ceCnt = BasicSQLUtils.getCountAsInt(sql);
                 if (ceCnt > 0)
                 {
-                    UIRegistry.showError(String.format("There are %d CollectingEvents and CE Attributes where their DisciplineID do not match.", ceCnt));
+                    UIRegistry.showErrorNonModal(String.format("There are %d CollectingEvents and CE Attributes where their DisciplineID do not match.", ceCnt));
                 }
                 
                 // Check for ColObjs that have bad DisciplineIDs compared to the Collection's Discipline
@@ -1494,7 +1507,7 @@ public class SpecifyDBConverter extends AppBase
                 int dspCnt = BasicSQLUtils.getCountAsInt(sql);
                 if (dspCnt > 0)
                 {
-                    UIRegistry.showError(String.format("There are %d mismatches between the Collection Object Discipline and the Discipline of the Colleciton it is in", dspCnt));
+                    UIRegistry.showErrorNonModal(String.format("There are %d mismatches between the Collection Object Discipline and the Discipline of the Colleciton it is in", dspCnt));
                 }
                 
                 // Check for One-To-One for ColObj -> CE
@@ -1513,7 +1526,7 @@ public class SpecifyDBConverter extends AppBase
                         {
                             log.debug(String.format("CE[%s] has %s Collection Objects.", row[0].toString(), row[1].toString()));
                         }
-                        UIRegistry.showError(String.format("There are %d CollectingEvents that have more than one Collection Object and they are suppose to be a One-To-One", ceCnt));
+                        UIRegistry.showErrorNonModal(String.format("There are %d CollectingEvents that have more than one Collection Object and they are suppose to be a One-To-One", ceCnt));
                     }
                 }
                 

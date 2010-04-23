@@ -131,6 +131,7 @@ public class IdMapperMgr
      * Creates a mapper with name and id.
      * @param tableName the name of the table
      * @param idName the id (primary key)
+     * @param doDelete
      * @return the same Mapper that was passed in
      * @throws SQLException
      */
@@ -143,6 +144,7 @@ public class IdMapperMgr
      * Creates a Hash mapper with pre-installed SQL.
      * @param tableName the name of the mapper
      * @param sql the sql used to create the map
+     * @param doDelete
      * @return the new mapper
      * @throws SQLException
      */
@@ -163,6 +165,7 @@ public class IdMapperMgr
     /**
      * Creates a Hash mapper.
      * @param tableName the tableName of the mapper
+     * @param doDelete
      * @return the IdHashMapper object
      */
     public IdHashMapper addHashMapper(final String tableName, final boolean doDelete)
