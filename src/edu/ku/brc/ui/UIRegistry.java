@@ -79,6 +79,10 @@ import javax.swing.undo.UndoManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 import edu.ku.brc.af.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.exceptions.UIException;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
@@ -992,6 +996,28 @@ public class UIRegistry
         JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
                 msg, 
                 getResourceString("UIRegistry.UNRECOVERABLE_ERROR_TITLE"), JOptionPane.ERROR_MESSAGE);
+    }
+
+    /**
+     * Displays an error dialog with a non-localized error message in a non-modal dialog.
+     * @param msg the message
+     */
+    public static void showErrorNonModal(final String msg)
+    {
+        log.error(msg);
+        
+        CellConstraints cc = new CellConstraints();
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"));
+        pb.add(UIHelper.createLabel(msg), cc.xy(1,1));
+        pb.setDefaultDialogBorder();
+        
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
+                                   getResourceString("UIRegistry.UNRECOVERABLE_ERROR_TITLE"),
+                                   false,
+                                   CustomDialog.OK_BTN,
+                                   pb.getPanel());
+        
+        dlg.setVisible(true);
     }
 
     /**
