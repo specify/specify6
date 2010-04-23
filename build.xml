@@ -923,6 +923,7 @@
 				<include name="*.jar" />
 				<exclude name="**/json-lib.jar" />
 				<exclude name="**/ezmorph.jar" />
+				<exclude name="**/lucene-core.jar" />
 			</fileset>
 			<fileset dir="${hibernatelib.dir}">
 				<include name="*.jar" />
