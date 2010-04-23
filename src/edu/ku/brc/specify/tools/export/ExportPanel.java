@@ -297,11 +297,11 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						ta.setColumns(60);
 						ta.setRows(10);
 						ta.selectAll();
-						JScrollPane sp = new JScrollPane(ta);
+						JScrollPane scrp = new JScrollPane(ta);
 						CustomDialog cd = new CustomDialog((Frame) UIRegistry
 								.getTopWindow(), UIRegistry
 								.getResourceString("ExportPanel.SQLTitle"),
-								true, sp);
+								true, scrp);
 						UIHelper.centerAndShow(cd);
 					}
 				}
@@ -343,15 +343,15 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	}
 	
 	/**
-	 * @param mapUpdating
+	 * @param mapUpdatingArg
 	 * 
 	 * Unlocks tasksemaphore for map
 	 */
-	protected void unlock(int mapUpdating)
+	protected void unlock(int mapUpdatingArg)
 	{
 		if (mapUpdating != -1)
 		{
-			ExportMappingTask.unlockMapping(maps.get(mapUpdating));
+			ExportMappingTask.unlockMapping(maps.get(mapUpdatingArg));
 		}
 	}
 	
@@ -620,7 +620,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         Pair<String, String> it = null;
 		if (rebuildExistingTbl)
 		{
-				it = SchemaUpdateService.getITUsernamePwd();
+				it = DatabaseLoginPanel.getITUsernamePwd();
 				if (it == null)
 				{
 					return null;
@@ -928,18 +928,18 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#rowCount(int)
 	 */
 	@Override
-	public void rowCount(final long rowCount)
+	public void rowCount(final long rowCountArg)
 	{
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run()
 			{
-				if (rowCount > 0)
+				if (rowCountArg > 0)
 				{
 					prog.setIndeterminate(false);
 					prog.setMinimum(0);
-					prog.setMaximum((int )rowCount - 1);
+					prog.setMaximum((int )rowCountArg - 1);
 				}
-				ExportPanel.this.rowCount = rowCount;
+				ExportPanel.this.rowCount = rowCountArg;
 			}
 		});
 	}

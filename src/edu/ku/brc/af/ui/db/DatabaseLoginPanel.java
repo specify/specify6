@@ -29,6 +29,7 @@ import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
+import java.awt.Frame;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,6 +38,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Vector;
 
@@ -70,6 +72,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.auth.JaasContext;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
@@ -82,6 +85,7 @@ import edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
@@ -959,6 +963,8 @@ public class DatabaseLoginPanel extends JTiledPanel
             boolean isLoggedIn       = false;
             boolean timeOK           = false;
             boolean isLoginCancelled = false;
+            
+            Pair<String, String> usrPwd = null;
 
             @SuppressWarnings("synthetic-access") //$NON-NLS-1$
             @Override
@@ -997,7 +1003,7 @@ public class DatabaseLoginPanel extends JTiledPanel
                 
                 eTime = System.currentTimeMillis();
                 
-                Pair<String, String> usrPwd = getMasterUsrPwd();
+                usrPwd = getMasterUsrPwd();
                 if (usrPwd != null)
                 {
                     isLoggedIn = UIHelper.tryLogin(getDriverClassName(), 
@@ -1124,6 +1130,10 @@ public class DatabaseLoginPanel extends JTiledPanel
                             DBConnection.shutdown();
                             DBConnection.shutdownFinalConnection(false, true);
                             DBConnection.startOver();
+                            
+                        } else if (usrPwd != null)
+                        {
+                            doCheckPermissions(usrPwd);
                         }
                     }
                     
@@ -1139,6 +1149,106 @@ public class DatabaseLoginPanel extends JTiledPanel
             }
         };
         worker.start();
+    }
+    
+    /**
+     * @return a username/password pair if valid or null if canceled
+     * @throws SQLException
+     */
+    public static Pair<String, String> getITUsernamePwd()
+    {
+        JTextField     userNameTF = UIHelper.createTextField(15);
+        JPasswordField passwordTF = UIHelper.createPasswordField();
+        JLabel         statusLbl  = UIHelper.createLabel("");
+        
+        CellConstraints cc = new CellConstraints();
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,4px,p,10px,p"));
+        
+        pb.add(UIHelper.createI18NFormLabel("IT_Username"), cc.xy(1, 1));
+        pb.add(userNameTF, cc.xy(3, 1));
+        
+        pb.add(UIHelper.createI18NFormLabel("IT_Password"), cc.xy(1, 3));
+        pb.add(passwordTF, cc.xy(3, 3));
+        
+        pb.add(statusLbl, cc.xyw(1, 5, 3));
+        
+        pb.setDefaultDialogBorder();
+        
+        while (true)
+        {
+            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), UIRegistry.getResourceString("IT_LOGIN"), true, pb.getPanel());
+            dlg.setVisible(true);
+            if (!dlg.isCancelled())
+            {
+                String uName = userNameTF.getText();
+                String pwd   = new String(passwordTF.getPassword());
+    
+                DBConnection dbc    = DBConnection.getInstance();
+                DBConnection dbConn = DBConnection.createInstance(dbc.getDriver(), 
+                                                                  dbc.getDialect(), 
+                                                                  dbc.getDatabaseName(), 
+                                                                  dbc.getConnectionStr(), 
+                                                                  uName, 
+                                                                  pwd);
+                if (dbConn != null)
+                {
+                    DBMSUserMgr dbMgr = DBMSUserMgr.getInstance();
+                    dbMgr.close();
+                    
+                    if (dbMgr.connect(uName, pwd, dbc.getServerName(), dbc.getDatabaseName()))
+                    {
+                        dbMgr.close();
+                        return new Pair<String, String>(uName, pwd);
+                    }
+                    dbMgr.close();
+                    statusLbl.setText("<HTML><font color=\"red\">"+UIRegistry.getResourceString("IT_LOGIN_ERROR")+"</font></HTML>");
+                }
+            } else
+            {
+                return null;
+            }
+        }
+    }
+    
+    /**
+     * @param usrPwd
+     */
+    private void doCheckPermissions(Pair<String, String> usrPwd)
+    {
+        String       dbDriver   = DBConnection.getInstance().getDriver();
+        String       serverName = getServerName();
+        String       dbName     = getDatabaseName();
+        SQLException loginEx    = DBConnection.getLoginException();
+        
+        if (StringUtils.isNotEmpty(dbDriver) && 
+                dbDriver.equals("com.mysql.jdbc.Driver") &&
+                StringUtils.isNotEmpty(loginEx.getSQLState()) && 
+                loginEx.getSQLState().equals("08001"))
+        {
+            boolean doFixIt = UIRegistry.displayConfirmLocalized("MISSING_PRIV_TITLE", "MISSING_PRIV", "MISSING_PRIV_FIX", "Cancel", JOptionPane.WARNING_MESSAGE);
+            if (doFixIt)
+            {
+                DBConnection.getInstance().setServerName(serverName); // Needed for SchemaUpdateService
+                
+                Pair<String, String> itUP = getITUsernamePwd();
+                DBMSUserMgr mgr = DBMSUserMgr.getInstance();
+                try
+                {
+                    if (mgr.connectToDBMS(itUP.first, itUP.second, serverName))
+                    {
+                        boolean isOK = mgr.setPermissions(usrPwd.first, dbName, DBMSUserMgr.PERM_ALL_BASIC);
+                        UIRegistry.showLocalizedMsg(isOK ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE, getResourceString("MISSING_PRIV_TITLE"), (isOK ? "MISSING_PRIV_OK" : "MISSING_PRIV_ERR"));
+                        mgr.close();
+                    } else
+                    {
+                        UIRegistry.showError("MISSING_PRIV_NO_LOGIN");
+                    }
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
+        }
     }
 
     /**

@@ -92,65 +92,6 @@ public abstract class SchemaUpdateService
     }
     
     /**
-     * @return a username/password pair if valid or null if canceled
-     * @throws SQLException
-     */
-    public static Pair<String, String> getITUsernamePwd()
-    {
-        JTextField     userNameTF = UIHelper.createTextField(15);
-        JPasswordField passwordTF = UIHelper.createPasswordField();
-        JLabel         statusLbl  = UIHelper.createLabel("");
-        
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,4px,p,10px,p"));
-        
-        pb.add(UIHelper.createI18NFormLabel("IT_Username"), cc.xy(1, 1));
-        pb.add(userNameTF, cc.xy(3, 1));
-        
-        pb.add(UIHelper.createI18NFormLabel("IT_Password"), cc.xy(1, 3));
-        pb.add(passwordTF, cc.xy(3, 3));
-        
-        pb.add(statusLbl, cc.xyw(1, 5, 3));
-        
-        pb.setDefaultDialogBorder();
-        
-        while (true)
-        {
-            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), UIRegistry.getResourceString("IT_LOGIN"), true, pb.getPanel());
-            dlg.setVisible(true);
-            if (!dlg.isCancelled())
-            {
-                String uName = userNameTF.getText();
-                String pwd   = new String(passwordTF.getPassword());
-    
-                DBConnection dbc    = DBConnection.getInstance();
-                DBConnection dbConn = DBConnection.createInstance(dbc.getDriver(), 
-                                                                  dbc.getDialect(), 
-                                                                  dbc.getDatabaseName(), 
-                                                                  dbc.getConnectionStr(), 
-                                                                  uName, 
-                                                                  pwd);
-                if (dbConn != null)
-                {
-                    DBMSUserMgr dbMgr = DBMSUserMgr.getInstance();
-                    dbMgr.close();
-                    
-                    if (dbMgr.connect(uName, pwd, dbc.getServerName(), dbc.getDatabaseName()))
-                    {
-                        dbMgr.close();
-                        return new Pair<String, String>(uName, pwd);
-                    }
-                    dbMgr.close();
-                    statusLbl.setText("<HTML><font color=\"red\">"+UIRegistry.getResourceString("IT_LOGIN_ERROR")+"</font></HTML>");
-                }
-            } else
-            {
-                return null;
-            }
-        }
-    }
-    
-    /**
      * Returns a View by name, meaning a ViewSet name and a View name inside the ViewSet.
      * @param viewName the name of the view (cannot be null)
      * @param versionNumber the current version number of the application

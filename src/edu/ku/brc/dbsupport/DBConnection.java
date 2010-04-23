@@ -57,8 +57,9 @@ public class DBConnection
 {
     private static final Logger log = Logger.getLogger(DBConnection.class);
     
-    private static int     dbCnt    = 0;
-    private static boolean debugCnt = false;
+    private static int          dbCnt          = 0;
+    private static boolean      debugCnt       = false;
+    private static SQLException loginException = null;
     
     protected String dbUsername;
     protected String dbPassword;
@@ -373,6 +374,14 @@ public class DBConnection
     }
 
     /**
+     * @return the loginException
+     */
+    public static SQLException getLoginException()
+    {
+        return loginException;
+    }
+
+    /**
      * Returns a new connection to the database from an instance of DBConnection.
      * It uses the database name, driver, username and password to connect.
      * @return the JDBC connection to the database
@@ -453,17 +462,19 @@ public class DBConnection
             //System.err.println("["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"] ");
             con = DriverManager.getConnection(dbConnectionStr, dbUsername, dbPassword);
             
-        } catch (SQLException sqlEX)
+        } catch (SQLException sqlEx)
         {
-            sqlEX.printStackTrace();
+            loginException = sqlEx;
             
-            log.error("Error in getConnection", sqlEX);
-            if (sqlEX.getNextException() != null)
+            sqlEx.printStackTrace();
+            
+            log.error("Error in getConnection", sqlEx);
+            if (sqlEx.getNextException() != null)
             {
-                errMsg = sqlEX.getNextException().getMessage();
+                errMsg = sqlEx.getNextException().getMessage();
             } else
             {
-                errMsg = sqlEX.getMessage();
+                errMsg = sqlEx.getMessage();
             }
                 
         } catch (Exception ex)

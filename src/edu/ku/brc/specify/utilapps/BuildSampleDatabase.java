@@ -146,6 +146,7 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.dbsupport.AttributeIFace;
@@ -990,7 +991,7 @@ public class BuildSampleDatabase
         {
             frame.setVisible(false);
             
-            Pair<String, String> usrPwd = SchemaUpdateService.getITUsernamePwd();
+            Pair<String, String> usrPwd = DatabaseLoginPanel.getITUsernamePwd();
             frame.setVisible(true);
             if (usrPwd != null)
             {

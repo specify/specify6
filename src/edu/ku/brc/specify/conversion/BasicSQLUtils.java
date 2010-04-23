@@ -587,6 +587,11 @@ public class BasicSQLUtils
                         doCloseConn = true;
                     }
                 }
+                
+                if (connection == null)
+                {
+                    return list;
+                }
     
                 tries++;
                 stmt = connection.createStatement();

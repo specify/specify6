@@ -650,7 +650,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
 	 */
 	protected void appendPerms(final StringBuilder sb, final int permissions)
 	{
-	    if ((permissions & PERM_ALL_BASIC) == PERM_ALL_BASIC)
+	    if ((permissions & PERM_ALL) == PERM_ALL)
         {
             sb.append("ALL ");
             

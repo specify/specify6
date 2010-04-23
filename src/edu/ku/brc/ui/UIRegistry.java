@@ -108,6 +108,9 @@ public class UIRegistry
     protected static final String MOBILE_EMBEDDED_DB_PATH = "mobile.embedded.dbpath";
     protected static final String EMBEDDED_DB_DIR         = "SPECIFY_DATA";
     
+    protected static final boolean debugPaths  = true;
+
+    
     public static final String FRAME        = "frame";
     public static final String MENUBAR      = "menubar";
     public static final String TOOLBAR      = "toolbar";
@@ -205,7 +208,7 @@ public class UIRegistry
         
         instance.baseFont = new JLabel("").getFont();
         instance.baseFont = instance.baseFont.deriveFont(Font.PLAIN);
-    	
+        
         final KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager(); 
         focusManager.addPropertyChangeListener( 
             new PropertyChangeListener() { 
@@ -566,7 +569,7 @@ public class UIRegistry
         instance.defaultWorkingPath = defaultWorkingPath;
     }
     
-	/**
+    /**
      * Returns the "working" directory which is platform specific. It will create one if one is not created
      * <b>NOTE: The application name must be set first.</b><br>
      * One Windows it is ...\<i>&lt;user name&gt;</i>\Application Data\&lt;application name&gt;<br>
@@ -576,18 +579,20 @@ public class UIRegistry
      */
     public static String getDefaultWorkingPath()
     {
-    	if (instance.defaultWorkingPath == null)
-    	{
-    		File file = new File(".");
-    		instance.defaultWorkingPath = UIHelper.stripSubDirs(file.getAbsolutePath(), 1);
-    		log.debug("Working Path not set, setting it to["+instance.defaultWorkingPath+"]");
-    	}
-    	//log.debug("Def Working Path["+instance.defaultWorkingPath+"]");
-    	
-        try {
-            log.debug("************************ getDefaultWorkingPath: ["+(new File(instance.defaultWorkingPath).getCanonicalPath())+"]");
-        } catch (Exception ex) {}
+        if (instance.defaultWorkingPath == null)
+        {
+            File file = new File(".");
+            instance.defaultWorkingPath = UIHelper.stripSubDirs(file.getAbsolutePath(), 1);
+            log.debug("Working Path not set, setting it to["+instance.defaultWorkingPath+"]");
+        }
+        //log.debug("Def Working Path["+instance.defaultWorkingPath+"]");
         
+        if (debugPaths)
+        {
+            try {
+                log.debug("************************ getDefaultWorkingPath: ["+(new File(instance.defaultWorkingPath).getCanonicalPath())+"]");
+            } catch (Exception ex) {}
+        }
         return instance.defaultWorkingPath;
     }
 
@@ -611,19 +616,19 @@ public class UIRegistry
         return newDir;
     }
 
-	/**
-	 * @param appDataDir
-	 */
-	public static void setBaseAppDataDir(final String appDataDir) 
-	{
+    /**
+     * @param appDataDir
+     */
+    public static void setBaseAppDataDir(final String appDataDir) 
+    {
         dumpCanonicalPath("setBaseAppDataDir", appDataDir);
-		instance.appDataDir = appDataDir;
-	}
+        instance.appDataDir = appDataDir;
+    }
 
-	/**
-	 * This method will create the "working" directory for the application.
-	 * @return the the working directory where local preferences and other files are saved.
-	 */
+    /**
+     * This method will create the "working" directory for the application.
+     * @return the the working directory where local preferences and other files are saved.
+     */
     public static String getAppDataDir()
     {
         File dir;
@@ -653,28 +658,31 @@ public class UIRegistry
                 throw new RuntimeException("Couldn't create data directory for "+instance.appName+" ["+dir.getAbsolutePath()+"]");
             }
         }
-        
-        try {
-            log.debug("************************ setDefaultWorkingPath: ["+dir.getCanonicalPath()+"]");
-        } catch (Exception ex) {}
-        
+        if (debugPaths)
+        {
+            try {
+                log.debug("************************ setDefaultWorkingPath: ["+dir.getCanonicalPath()+"]");
+            } catch (Exception ex) {}
+        }
         try
         {
-        	return dir.getCanonicalPath();
+            return dir.getCanonicalPath();
         } catch (IOException ex)
         {
-        	ex.printStackTrace();
+            ex.printStackTrace();
         }
         return dir.getAbsolutePath();
     }
 
     /**
-     * Get the "user" based working directory that is platform specific and requires the "application name" be set first. 
+     * Gets the location of Application directory by calling {@link getUserHomeDir()} that is platform specific and requires the "application name" be set first. 
      * @return the string to a platform specify user data directory for the application name.
      */
     public static String getUserHomeAppDir()
     {
-    	return getUserHomeDir() + File.separator +  instance.appName;
+        assert(instance.appName == null);
+        
+        return getUserHomeDir() + File.separator + instance.appName;
     }
 
     /**
@@ -734,16 +742,15 @@ public class UIRegistry
                 mobile = (new File(getMobileEmbeddedDBPath())).getCanonicalPath();
             }
         } catch (IOException ex) {}
-        
-        log.debug("AppDataDir:                  "+getAppDataDir());
-        log.debug("UserHomeAppDir:              "+getUserHomeAppDir());
-        log.debug("UserHomeDir:                 "+getUserHomeDir());
-        
-        log.debug("DefaultEmbeddedDBPath:       "+getDefaultEmbeddedDBPath());
-        log.debug("DefaultMobileEmbeddedDBPath: "+getEmbeddedDBPath());
-        log.debug("MobileEmbeddedDBPath:        "+mobile);
-        log.debug("DefaultWorkingPath:          "+getDefaultWorkingPath());
-        //System.err.println("MobileMachineDir:            "+DBConnection.getMobileMachineDir("<database name>"));
+            System.err.println("AppDataDir:                  "+getAppDataDir());
+            System.err.println("UserHomeAppDir:              "+getUserHomeAppDir());
+            System.err.println("UserHomeDir:                 "+getUserHomeDir());
+            
+            System.err.println("DefaultEmbeddedDBPath:       "+getDefaultEmbeddedDBPath());
+            System.err.println("DefaultMobileEmbeddedDBPath: "+getEmbeddedDBPath());
+            System.err.println("MobileEmbeddedDBPath:        "+mobile);
+            System.err.println("DefaultWorkingPath:          "+getDefaultWorkingPath());
+            //System.err.println("MobileMachineDir:            "+DBConnection.getMobileMachineDir("<database name>"));
     }
 
     /**
@@ -1271,75 +1278,75 @@ public class UIRegistry
 
     /**
      * Returns the longTermCache.
-	 * @return the longTermCache.
-	 */
-	public static FileCache getLongTermFileCache()
-	{
-	    synchronized(instance)
-	    {
-	        if (instance.longTermCache == null)
-	        {
-	            try
-	            {
-	                instance.longTermCache = new FileCache("longTerm.Cache");
-	                
-	                // set the cache size to 20 MB
-	                instance.longTermCache.setMaxCacheSize(20000);
-	                
-	            } catch (Exception ex)
-	            {
-	                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-	                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIRegistry.class, ex);
+     * @return the longTermCache.
+     */
+    public static FileCache getLongTermFileCache()
+    {
+        synchronized(instance)
+        {
+            if (instance.longTermCache == null)
+            {
+                try
+                {
+                    instance.longTermCache = new FileCache("longTerm.Cache");
+                    
+                    // set the cache size to 20 MB
+                    instance.longTermCache.setMaxCacheSize(20000);
+                    
+                } catch (Exception ex)
+                {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIRegistry.class, ex);
                     ex.printStackTrace();
-	                log.error(ex);
-	            }
-	        }
-	    }
-	    return instance.longTermCache;
-	}
+                    log.error(ex);
+                }
+            }
+        }
+        return instance.longTermCache;
+    }
 
-	/**
+    /**
      * Sets the longTermCache.
-	 * @param longTermCache The longTermCache to set.
-	 */
-	public static void setLongTermFileCache(FileCache longTermCache)
-	{
-		instance.longTermCache = longTermCache;
-	}
+     * @param longTermCache The longTermCache to set.
+     */
+    public static void setLongTermFileCache(FileCache longTermCache)
+    {
+        instance.longTermCache = longTermCache;
+    }
 
-	/**
+    /**
      * Gets the shortTermCache.
-	 * @return the shortTermCache.
-	 */
-	public static FileCache getShortTermFileCache()
-	{
-	    synchronized(instance)
-	    {
-	        if (instance.shortTermCache == null)
-	        {
-	            try
-	            {
-	                instance.shortTermCache = new FileCache();
-	            } catch (Exception ex)
-	            {
-	                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-	                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIRegistry.class, ex);
-	                ex.printStackTrace();
-	                log.error(ex);
-	            }
-	        }
-	    }
-	    return instance.shortTermCache;
-	}
+     * @return the shortTermCache.
+     */
+    public static FileCache getShortTermFileCache()
+    {
+        synchronized(instance)
+        {
+            if (instance.shortTermCache == null)
+            {
+                try
+                {
+                    instance.shortTermCache = new FileCache();
+                } catch (Exception ex)
+                {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIRegistry.class, ex);
+                    ex.printStackTrace();
+                    log.error(ex);
+                }
+            }
+        }
+        return instance.shortTermCache;
+    }
 
-	/**
+    /**
      * Sets the shortTermCache.
-	 * @param shortTermCache The shortTermCache to set.
-	 */
-	public static void setShortTermFileCache(FileCache shortTermCache)
-	{
-		instance.shortTermCache = shortTermCache;
-	}
+     * @param shortTermCache The shortTermCache to set.
+     */
+    public static void setShortTermFileCache(FileCache shortTermCache)
+    {
+        instance.shortTermCache = shortTermCache;
+    }
 
     /**
      * Returns the forms cache.
@@ -1384,25 +1391,25 @@ public class UIRegistry
      */
     protected static void adjustAllFonts(final Font oldBaseFont, final Font baseFontArg)
     {
-    	if (oldBaseFont != null && baseFontArg != null)
-    	{
-	        int    fontSize    = baseFontArg.getSize();
-	        int    oldFontSize = oldBaseFont.getSize();
-	        String family      = baseFontArg.getFamily();
-	        
-	        UIDefaults uiDefaults = UIManager.getDefaults();
-	        Enumeration<Object> e = uiDefaults.keys();
-	        while (e.hasMoreElements())
-	        {
-	            Object key = e.nextElement();
-	            if (key.toString().endsWith(".font"))
-	            {
-	                FontUIResource fontUIRes = (FontUIResource)uiDefaults.get(key);
-	                if (fontSize != fontUIRes.getSize() || !family.equals(fontUIRes.getFamily()))
-	                {
-	                    UIManager.put(key, new FontUIResource(new Font(family, fontUIRes.getStyle(), fontSize + (fontUIRes.getSize() - oldFontSize))));
-	                }
-	            }
+        if (oldBaseFont != null && baseFontArg != null)
+        {
+            int    fontSize    = baseFontArg.getSize();
+            int    oldFontSize = oldBaseFont.getSize();
+            String family      = baseFontArg.getFamily();
+            
+            UIDefaults uiDefaults = UIManager.getDefaults();
+            Enumeration<Object> e = uiDefaults.keys();
+            while (e.hasMoreElements())
+            {
+                Object key = e.nextElement();
+                if (key.toString().endsWith(".font"))
+                {
+                    FontUIResource fontUIRes = (FontUIResource)uiDefaults.get(key);
+                    if (fontSize != fontUIRes.getSize() || !family.equals(fontUIRes.getFamily()))
+                    {
+                        UIManager.put(key, new FontUIResource(new Font(family, fontUIRes.getStyle(), fontSize + (fontUIRes.getSize() - oldFontSize))));
+                    }
+                }
             }
         }
     }
@@ -1445,18 +1452,18 @@ public class UIRegistry
      */
     public static void setDefaultFont(Font defaultFont) 
     {
-    	instance.defaultFont = defaultFont;
-	}
+        instance.defaultFont = defaultFont;
+    }
 
-	/**
+    /**
      * @return the default font
      */
     public static Font getDefaultFont() 
     {
-		return instance.defaultFont;
-	}
+        return instance.defaultFont;
+    }
 
-	//---------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //-- Glass Pane Buffered Image
     //---------------------------------------------------------------------------------
     protected static SoftReference<BufferedImage> glassPaneBufferedImageSR;
@@ -1804,9 +1811,12 @@ public class UIRegistry
      */
     private static void dumpCanonicalPath(final String desc, final File path)
     {
-        try {
-            log.debug("***** dumpCanonicalPath: "+desc+": ["+path.getCanonicalPath()+"]");
-        } catch (Exception ex) {}
+        if (debugPaths)
+        {
+            try {
+                log.debug("***** dumpCanonicalPath: "+desc+": ["+path.getCanonicalPath()+"]");
+            } catch (Exception ex) {}
+        }
     }
     
     /**
@@ -2473,6 +2483,8 @@ public class UIRegistry
         }
     }
 
+
+    
     //-----------------------------------------------------------------
     //-- Inner Classes
     //-----------------------------------------------------------------

@@ -55,6 +55,7 @@ import org.hibernate.Transaction;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -268,7 +269,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 return SchemaUpdateType.Error;
                             }
                             
-                            itUserNamePassword = getITUsernamePwd();
+                            itUserNamePassword = DatabaseLoginPanel.getITUsernamePwd();
                             if (itUserNamePassword != null)
                             {
                                 DBConnection dbc = DBConnection.getInstance();

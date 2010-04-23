@@ -226,7 +226,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         UIRegistry.getStatusBar().setText(getResourceString("SL_SAVING_SCHEMA_LOC"));
         UIRegistry.getStatusBar().setIndeterminate(SCHEMALOCDLG, true);
         
-        final SimpleGlassPane glassPane = new SimpleGlassPane("Saving...", 18);
+        final SimpleGlassPane glassPane = new SimpleGlassPane(getResourceString("SchemaLocalizerFrame.SAVING"), 18);
         setGlassPane(glassPane);
         glassPane.setVisible(true);
         
