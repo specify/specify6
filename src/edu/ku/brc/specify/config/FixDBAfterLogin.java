@@ -129,4 +129,14 @@ public class FixDBAfterLogin
              edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FixDBAfterLogin.class, str, new Exception(str));
          }
     }
+    
+    /**
+     * fixes bad version and timestamps for recordsets created by Uploader. 
+     */
+    public void fixUploaderRecordsets()
+    {
+    	BasicSQLUtils.update( "update recordset set TimestampCreated = now(), Version = 0 where Type = 1 and Version is null");
+        AppPreferences.getGlobalPrefs().putBoolean("FixUploaderRecordsets", true);
+    }
+    
 }

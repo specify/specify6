@@ -2541,7 +2541,21 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     }
                 });
             }
-            
+
+            if (!AppPreferences.getGlobalPrefs().getBoolean("FixUploaderRecordsets", false))
+            {
+                // Temp Code to Fix issues with Release 6.0.9 and below
+                SwingUtilities.invokeLater(new Runnable() 
+                {
+                    @Override
+                    public void run()
+                    {
+                        FixDBAfterLogin fixer = new FixDBAfterLogin();
+                        fixer.fixUploaderRecordsets();
+                    }
+                });
+            }
+
             // Check for Duplicate LocalityDetail and GeoCoordDetail
             SwingUtilities.invokeLater(new Runnable() 
             {
