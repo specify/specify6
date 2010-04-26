@@ -4205,21 +4205,40 @@ public class Uploader implements ActionListener, KeyListener
         try
         {
             for (RecordSet rs : recordSets)
-            {
-                session.beginTransaction();
-                try
-                {
-                    session.save(rs);
-                    session.commit();
-                }
-                catch (Exception ex)
-                {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
-                    session.rollback();
-                    throw new RuntimeException(ex);
-                }
-            }
+			{
+				BusinessRulesIFace busRule = DBTableIdMgr.getInstance()
+						.getBusinessRule(RecordSet.class);
+				if (busRule != null)
+				{
+					busRule.beforeSave(rs, session);
+				}
+				session.beginTransaction();
+				try
+				{
+					session.save(rs);
+					if (busRule != null)
+					{
+						if (!busRule.beforeSaveCommit(rs, session))
+						{
+							session.rollback();
+							throw new Exception(
+									"Business rules processing failed");
+						}
+					}
+					session.commit();
+					if (busRule != null)
+					{
+						busRule.afterSaveCommit(rs, session);
+					}
+				} catch (Exception ex)
+				{
+					edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+					edu.ku.brc.exceptions.ExceptionTracker.getInstance()
+							.capture(Uploader.class, ex);
+					session.rollback();
+					throw new RuntimeException(ex);
+				}
+			}
         }
         catch (Exception ex)
         {
