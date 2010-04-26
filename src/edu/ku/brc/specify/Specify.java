@@ -2087,6 +2087,20 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         "This is free software licensed under GNU General Public License 2 (GPL2).</P></font></html>"; //$NON-NLS-1$
 
     }
+    
+    /**
+     * 
+     */
+    private void shutdownAllPrefs()
+    {
+        try
+        {
+            AppPreferences.getLocalPrefs().flush();
+        } catch (BackingStoreException ex) {}
+        
+        AppPreferences.shutdownRemotePrefs();
+        AppPreferences.shutdownPrefs();
+    }
 
     /**
      * Checks to see if cache has changed before exiting.
@@ -2225,8 +2239,14 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                         UIRegistry.getTopWindow().setVisible(false);
                         statsTrackerTask.setSendSecondaryStatsAllowed(canSendISAStats);
                         statsTrackerTask.sendStats(!UIRegistry.isMobile(), false, UIRegistry.isMobile()); // false means don't do it silently
+                        
+                        shutdownAllPrefs();
+                        DataProviderFactory.getInstance().shutdown();
+                        DBConnection.shutdown();
+                        
                         return false;
                     }
+                    shutdownAllPrefs();
                     DataProviderFactory.getInstance().shutdown();
                     DBConnection.shutdown();
                     
@@ -2237,6 +2257,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     
                 } else
                 {
+                    shutdownAllPrefs();
+                    
                     DataProviderFactory.getInstance().shutdown();
                     DBConnection.shutdown();
                     System.exit(0);

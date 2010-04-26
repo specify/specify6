@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.config;
 
 import java.util.HashSet;
+import java.util.prefs.BackingStoreException;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
@@ -103,7 +104,16 @@ public class FixDBAfterLogin
                 }
             }
         }
-        AppPreferences.getGlobalPrefs().putBoolean("FixAgentToDisciplines2", true);
+        AppPreferences.getGlobalPrefs().putBoolean("FixAgentToDisciplinesV2", true);
+        
+        try
+        {
+            AppPreferences.getGlobalPrefs().flush();
+        } catch (BackingStoreException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
     
     
