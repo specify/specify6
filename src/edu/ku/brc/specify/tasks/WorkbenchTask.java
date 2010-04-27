@@ -356,7 +356,7 @@ public class WorkbenchTask extends BaseTask
             
             updateNavBoxUI(dataSetCount);
         }
-        
+        //AppPreferences.getRemote().putInt("MAX_ROWS", MAX_ROWS);
         MAX_ROWS = AppPreferences.getRemote().getInt("MAX_ROWS", MAX_ROWS);
         isShowDefault = true;
     }
@@ -2285,6 +2285,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 {
                 	cmd.setProperty("title", "Labels");
                 	cmd.setProperty("file", "basic_label.jrxml");
+                	cmd.setProperty("skip-parameter-prompt", "true");
                 	// params hard-coded for harvard demo:
                 	cmd.setProperty("params", "title="
                         + AppPreferences.getLocalPrefs().get("reportProperties.title", "")
