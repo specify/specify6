@@ -2251,7 +2251,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         session.close();
         
         String actionStr = cmdAction.getPropertyAsString("action");
-        if (StringUtils.isNotEmpty(actionStr)) 
+        if (StringUtils.isNotEmpty(actionStr) && !actionStr.equals("PrintWBItems")) 
         {
             boolean isBasicLabel = actionStr.equals("PrintBasicLabel");
         	boolean go = false;
