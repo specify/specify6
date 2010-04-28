@@ -9,7 +9,6 @@ import java.lang.reflect.Modifier;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.GregorianCalendar;
 import java.util.Vector;
 
 import javax.xml.bind.JAXBElement;
@@ -22,6 +21,7 @@ import net.morphbank.mbsvc3.xml.XmlId;
 import net.morphbank.mbsvc3.xml.XmlTaxonNameUtilities;
 import net.morphbank.mbsvc3.xml.XmlUtils;
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Institution;
@@ -44,6 +44,15 @@ public class CollectionObjectFieldMapper
 
 	public static Connection connection; //for testing
 
+	protected Connection getConnection()
+	{
+		if (connection ==  null)
+		{
+			return DBConnection.getInstance().createConnection();
+		}
+		else return connection;
+	}
+	
 	/**
 	 * @param collectionObjectId
 	 * @throws Exception
@@ -166,6 +175,23 @@ public class CollectionObjectFieldMapper
 	
 	
 	/**
+	 * @param mi
+	 * @return concept name that works for net.morphbank.mbsvc3.xml.ObjectFactory
+	 */
+	protected String getMiName(MappingInfo mi)
+	{
+		if (mi.getName().equals("ContinentOcean"))
+		{
+			return "Continent";
+		}
+		if (mi.getName().equals("ScientificNameAuthor"))
+		{
+			return "AuthorYearOfScientificName";
+		}
+		return mi.getName();
+	}
+	
+	/**
 	 * @param xmlSpec
 	 */
 	protected void setDwcSpecimenFields(XmlBaseObject xmlSpec) throws Exception
@@ -184,16 +210,21 @@ public class CollectionObjectFieldMapper
 			try
 			{
 				Object val = spec.get(mi.getName());
-				System.out.println("setting " + mi.getName() + ": " + val + " (" + dataType.getSimpleName());
-				if (mi.getName().equals("CatalogNumberNumeric") && dataType.equals(Integer.class))
+				System.out.println("setting " + mi.getName() + ": " + val + " (" + dataType.getSimpleName() + ")");
+				String miName = getMiName(mi);
+				if (miName.equals("CatalogNumberNumeric") || miName.equals("DecimalLatitude") || miName.equals("DecimalLongitude"))
 				{
 					dataType = Double.class;
-					val = Double.valueOf((String )val);
-				} else if (val != null && Number.class.isAssignableFrom(dataType) && !dataType.equals(GregorianCalendar.class))
-				{
-					val = ((Number )val).doubleValue();
-				}
-				Method m = factory.getMethod("create" + mi.getName(), dataType);
+					if (val != null)
+					{
+						val = Double.valueOf(val.toString());
+					}
+				} 
+//				else if (val != null && Number.class.isAssignableFrom(dataType) && !dataType.equals(GregorianCalendar.class))
+//				{
+//					val = ((Number )val).doubleValue();
+//				}
+				Method m = factory.getMethod("create" + miName, dataType);
 				System.out.println("invoking " + m.getName() + "(" + val + ")");
 				xmlSpec.addDarwinTag((JAXBElement<?> )m.invoke(objFac, dataType.cast(val)));
 			} catch(NoSuchMethodException ex)
@@ -255,7 +286,7 @@ public class CollectionObjectFieldMapper
 			String sql = "select at.AttachmentLocation, at.CopyrightHolder, at.CopyrightDate, at.MimeType, at.Credit, at.OrigFilename, at.Title, coat.remarks, coat.ordinal "
 				+ "from collectionobjectattachment coat inner join attachment at on at.AttachmentID = coat.AttachmentID where "
 				+ "at.MimeType like 'image/%' and coat.CollectionObjectID = " + collectionObjectId;
-			stmt = connection.createStatement();
+			stmt = getConnection().createStatement();
 			rs = stmt.executeQuery(sql);
 			Vector<AttachmentRecord> result = new Vector<AttachmentRecord>();
 			while (rs.next())

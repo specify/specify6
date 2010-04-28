@@ -252,6 +252,13 @@ public class DwcMapper
 		try
 		{
 			session.attach(currentObject);
+			
+			if (mapSegments.length == 1)
+			{
+				return getValueFromObject(currentObject, mapSegments[0], mi
+						.isFormatted(), mi.isTreeRank());
+			}
+			
 			for (int s = 1; s < mapSegments.length; s++)
 			{
 				System.out.println(mapSegments[s]);
@@ -268,7 +275,7 @@ public class DwcMapper
 					return null;
 				}
 				
-				session.attach(currentObject); //shouldn't to do this explicitly???
+				session.attach(currentObject); //shouldn't have to do this explicitly???
 				
 				System.out.println("   "
 						+ currentObject.getClass().getSimpleName());
