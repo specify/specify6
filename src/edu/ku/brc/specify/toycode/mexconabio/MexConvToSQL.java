@@ -32,6 +32,7 @@ import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
@@ -45,6 +46,7 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.ConversionLogger;
 import edu.ku.brc.specify.conversion.TableWriter;
 import edu.ku.brc.specify.toycode.mexconabio.FieldDef.DataType;
+import edu.ku.brc.util.AttachmentUtils;
 
 /**
  * @author rods
@@ -221,11 +223,36 @@ public class MexConvToSQL
         BasicSQLUtils.update(conn, sql);
     }
     
+    
+    int      fndCnt  = 0;
+    int      numRecs = 0;
+    Calendar cal     = Calendar.getInstance();
+    
+    String[] cCls = new String[] {null, null, null, null, null, null, null, };
+    String[] mCls = new String[] {null, null, null, null, null, null, null, };
+    
+    int[]      histo      = new int[101];
+    Connection conn       = null;
+    int        totalScore = 0;
+
+    
     /**
      * 
      */
     public void process(final String databaseName)
     {
+        boolean doingMapTable = false;
+        
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        
+        for (int i=0;i<histo.length;i++)
+        {
+            histo[i] = 0;
+        }
+        
         convLogger.initialize("mich_conabio", databaseName);
         
         StringBuilder extraStyle = new StringBuilder();
@@ -235,25 +262,20 @@ public class MexConvToSQL
         extraStyle.append("TD.byw { color: yellow; }\n");
         extraStyle.append("TD.df  { color: rgb(100,255,200); }\n");
         
-        TableWriter tblWriter = convLogger.getWriter("MichConabio.html", "Mich/Conabio", extraStyle.toString());
-
         String mapTableName = "maptable";
         
-        Connection conn = null;
         Statement  stmt = null;
         try
         {
             conn = DriverManager.getConnection("jdbc:mysql://localhost/"+databaseName+"?characterEncoding=UTF-8&autoReconnect=true", "root", "root");
-            //mapTable(conn, databaseName, mapTableName);
-            
             BasicSQLUtils.setDBConnection(conn);
             
             int matches = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM maptable");
-            tblWriter.log(String.format("Number of records that match - Genus, Species, CollectorNumber, CatalogNumber: "+matches));
+            //tblWriter.log(String.format("Number of records that match - Genus, Species, CollectorNumber, CatalogNumber: "+matches));
             
             mpStmt   = conn.prepareStatement("INSERT INTO "+mapTableName+" VALUES (?,?)");
 
-            String sql = "SELECT E.IdEjemplar, E.NumeroDeCatalogo, NumeroDeColecta, Grupo.DescripcionGpo AS Colector, " +
+            String sqlMain = "SELECT E.IdEjemplar, E.NumeroDeCatalogo, NumeroDeColecta, Grupo.DescripcionGpo AS Colector, " +
                             "NombreLocalidad.NombreOriginal, CategoriaTaxonomica.NombreCategoriaTaxonomica, IF (CategoriaTaxonomica.IdNivel1<7,Nombre.Nombre, " +
                             "IF (CategoriaTaxonomica.IdNivel3 = 0, CONCAT(Nombre_1.Nombre,\" \", Nombre.Nombre),CONCAT(Nombre_2.Nombre, \" \",Nombre_1.Nombre,\" \", " +
                             "Nombre.Nombre))) AS Nombre, Nombre_2.Nombre AS N2, Nombre_1.Nombre AS N1, Nombre.Nombre AS N0, " +
@@ -263,301 +285,115 @@ public class MexConvToSQL
                             "INNER JOIN Nombre AS Nombre_2 ON Nombre_1.IdAscendObligatorio = Nombre_2.IdNombre) " +
                             "INNER JOIN Ejemplar E ON Nombre.IdNombre = E.IdNombre) ON NombreLocalidad.IdNombreLocalidad = E.IdNombreLocalidad) " +
                             "ON CategoriaTaxonomica.IdCategoriaTaxonomica = Nombre.IdCategoriaTaxonomica) ON Grupo.IdGrupo = E.IdColector " +
-                            "ORDER BY E.IdEjemplar ";
+                            "ORDER BY E.NumeroDeCatalogo ";
             
-            sql = "SELECT * FROM (" + sql + ") T1 LEFT JOIN maptable ON IdEjemplar = OldID WHERE NewID IS NULL";
+            String sql = sqlMain;
+            //if (!doingMapTable)
+            //{
+            //    sql = "SELECT * FROM (" + sqlMain + ") T1 LEFT JOIN maptable ON IdEjemplar = OldID WHERE NewID IS NULL";
+            //}
             
-            Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.HOUR, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-            
-            String[] cCls = new String[] {null, null, null, null, null, };
-            String[] mCls = new String[] {null, null, null, null, null, };
-            
-            int[] histo = new int[101];
-            for (int i=0;i<histo.length;i++)
-            {
-                histo[i] = 0;
-            }
-            int totalScore = 0;
-            
+            TableWriter tblWriter = convLogger.getWriter("MichConabio1.html", "Matches Cat No. / Collector No. / Genus / Species", extraStyle.toString());
+
             tblWriter.startTable();
-            tblWriter.log("<TR><TH COLSPAN=\"5\">Conabio</TH><TH COLSPAN=\"5\">Michigan</TH><TD>&nbsp;</TH></TR>");
-            tblWriter.logHdr("Genus", "Species", "Collector", "Locality", "Date Collected", "Genus", "Species", "Collector", "Locality", "Date Collected", "Score");
-            int fndCnt  = 0;
-            int numRecs = 0;
+            tblWriter.log("<TR><TH COLSPAN=\"7\">Conabio</TH><TH COLSPAN=\"7\">Michigan</TH><TD>&nbsp;</TH></TR>");
+            tblWriter.logHdr("Col Num", "Cat Num", "Genus", "Species", "Collector", "Locality", "Date Collected", 
+                             "Col Num", "Cat Num", "Genus", "Species", "Collector", "Locality", "Date Collected", 
+                             "Score");
+            fndCnt  = 0;
+            numRecs = 0;
             System.out.println(sql);
             stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next())
             {
-                Integer idEjemplar   = rs.getInt(1);
-                String  catNum       = rs.getString(2);
-                String  collectorNum = rs.getString(3);
-                String  collector    = rs.getString(4);
-                String  genus        = rs.getString(9);
-                String  species      = rs.getString(10);
-                String  locality     = rs.getString(5);
-                
-                int     year         = rs.getInt(11);
-                int     mon          = rs.getInt(12);
-                int     day          = rs.getInt(13);
-                boolean hasDate      = year > 0 && mon > 0 && day > 0;
-                String  dateStr      = hasDate ? String.format("%04d-%02d-%02d", year, mon, day) : "&nbsp;";
-                
-                //String    where = String.format(" FROM conabio WHERE GenusName = '%s' AND SpeciesName = '%s' AND CollNr = '%s' AND BarCD = '%s'", genus, species, collectorNum, catNum);
-                String    where = String.format(" FROM conabio WHERE CollNr = '%s' AND BarCD <> '%s'", collectorNum, catNum);
-                String    sql2 = "SELECT COUNT(*)" + where;
-                int cnt = BasicSQLUtils.getCountAsInt(conn, sql2);
-                
-                if (cnt == 1)
-                {
-                    for (int i=0;i<cCls.length;i++)
-                    {
-                        cCls[i] = null;
-                        mCls[i] = null;
-                    }
-//                    sql2 = "SELECT ID" + where;
-//                    int id = BasicSQLUtils.getCountAsInt(conn, sql2);
-//                    
-//                    mpStmt.setInt(1, idEjemplar);
-//                    mpStmt.setInt(2, id);
-//                    mpStmt.executeUpdate();
-                    
-                    sql2 = "SELECT GenusName, SpeciesName, Collectoragent1, LocalityName, Datecollstandrd" + where;
-                    Vector<Object[]> rows = BasicSQLUtils.query(conn, sql2);
-                    Object[] cols = rows.get(0);
-                    Date date = (Date)cols[4];
-                    
-                    boolean michHasDate = date != null;
-                    String  michDate = michHasDate ? sdf.format(date) : "&nbsp;";
-                    
-                    String michGenus     = (String)cols[0];
-                    String michSpecies   = (String)cols[1];
-                    String michCollector = (String)cols[2];
-                    String michLocality  = (String)cols[3];
-                    
-                    int michYear         = 0;
-                    int michMon          = 0;
-                    int michDay          = 0;
-                    if (date != null) 
-                    {
-                        cal.setTime(date);
-                        michYear = michHasDate ? cal.get(Calendar.YEAR)  : 0;
-                        michMon  = michHasDate ? cal.get(Calendar.MONTH)+1 : 0;
-                        michDay  = michHasDate ? cal.get(Calendar.DATE)  : 0;
-                    }
-                    
-                    int maxScore = 115;
-                    int score    = 0;
-                    
-                    if (hasDate && michHasDate)
-                    {
-                        score += year == michYear ? 10 : 0;
-                        score += mon  == michMon  ? 20 : 0;
-                        score += day  == michDay  ? 30 : 0;
-                        
-                        if (year == michYear && mon == michMon && day == michDay && year != 0 && mon != 0 && day != 0)
-                        {
-                            cCls[4] = BGR;
-                            mCls[4] = BGR;
-                            
-                        } else if (year == michYear && mon == michMon && year != 0 && mon != 0)
-                        {
-                            cCls[4] = GR;
-                            mCls[4] = GR;
-                            
-                        } else if (year == michYear)
-                        {
-                            cCls[4] = YW;
-                            mCls[4] = YW;
-                        }
-                    }
-                    
-                    double ratingLoc   = check(locality, michLocality, false);
-                    double ratingColtr = check(collector, michCollector, false);
-                    
-                    if (ratingLoc > 50.0)
-                    {
-                        cCls[3] = BGR;
-                        mCls[3] = BGR;
-                        score += 10;
-                        
-                    } else if (ratingLoc > 30.0)
-                    {
-                        cCls[3] = GR;
-                        mCls[3] = GR;
-                        score += 6;
-                        
-                    } else if (ratingLoc > 0.0)
-                    {
-                        cCls[3] = YW;
-                        mCls[3] = YW;
-                        score += 3;
-                    }
-                    
-                    if (ratingColtr > 50.0)
-                    {
-                        cCls[2] = BGR;
-                        mCls[2] = BGR;
-                        score += 10;
-                        
-                    } else if (ratingColtr > 30.0)
-                    {
-                        cCls[2] = GR;
-                        mCls[2] = GR;
-                        score += 6;
-                        
-                    } else if (ratingColtr > 0.0)
-                    {
-                        cCls[2] = YW;
-                        mCls[2] = YW;
-                        score += 3;
-                    }
-                    
-                    boolean genusMatches = false;
-                    if (michGenus != null && genus != null && michGenus.equals(genus))
-                    {
-                        score += 15;
-                        cCls[0] = GR;
-                        mCls[0] = GR;
-                        genusMatches = true;
-                    }
-                    
-                    if (michSpecies != null && species != null && michSpecies.equals(species)) 
-                    {
-                        score += 20;
-                        if (genusMatches)
-                        {
-                            cCls[0] = BGR;
-                            mCls[0] = BGR;
-                            cCls[1] = BGR;
-                            mCls[1] = BGR;
-                        } else
-                        {
-                            cCls[1] = GR;
-                            mCls[1] = GR;
-                        }
-                    }
-                    
-                    if (michGenus != null && species != null && michGenus.equals(species))     
-                    {
-                        cCls[1] = DF;
-                        mCls[0] = DF;                        
-                        score += 10;
-                    }
-                    
-                    if (michSpecies != null && genus != null && michSpecies.equals(genus))
-                    {
-                        cCls[0] = DF;
-                        mCls[1] = DF;
-                        score += 15;
-                    }
-                    
-                    int finalScore = (int)((((double)score / maxScore) * 100.0)+0.5);
-                    histo[finalScore]++;
-                    totalScore += finalScore;
-                    
-                    String scoreStr = String.format("%d", finalScore);
-                    tblWriter.println("<TR>");
-                    tblWriter.logTDCls(cCls[0], genus);
-                    tblWriter.logTDCls(cCls[1], species);
-                    tblWriter.logTDCls(cCls[2], collector);
-                    tblWriter.logTDCls(cCls[3], locality);
-                    tblWriter.logTDCls(cCls[4], dateStr);
-                    
-                    tblWriter.logTDCls(mCls[0], michGenus);
-                    tblWriter.logTDCls(mCls[1], michSpecies);
-                    tblWriter.logTDCls(mCls[2], michCollector);
-                    tblWriter.logTDCls(mCls[3], michLocality);
-                    tblWriter.logTDCls(mCls[4], michDate);
-                    
-                    tblWriter.logTDCls(null, scoreStr);
-                    tblWriter.println("</TR>");
-                    
-                    fndCnt++;
-                    System.out.println("Fnd: "+fndCnt+"  Num Recs: "+numRecs+"  Dif: "+(numRecs-fndCnt));
-                }
-                numRecs++;
+                process(0, rs, tblWriter, doingMapTable);
             }
             rs.close();
-            
-            tblWriter.log(String.format("Number of records that match - CollectorNumber, CatalogNumber: "+fndCnt));
             tblWriter.endTable();
-            tblWriter.flush();
+            tblWriter.log("<BR>");
+            tblWriter.log(String.format("Number of records that match: %d  of %d records.", fndCnt, numRecs));
+            tblWriter.log(String.format("Average Score: %5.2f", ((double)totalScore / (double)fndCnt)));
+            tblWriter.log(String.format("Mode Score: %d", getModeScore()));
+            totalScore = 0;
             
-            boolean doSecond = false;
-            if (doSecond)
+            sql = "SELECT * FROM (" + sqlMain + ") T1 LEFT JOIN maptable ON IdEjemplar = OldID WHERE NewID IS NULL";
+            
+            
+            
+            fndCnt  = 0;
+            numRecs = 0;
+            tblWriter = convLogger.getWriter("MichConabio2.html", "Matches Cat No. / Collector No. ", extraStyle.toString());
+            tblWriter.startTable();
+            tblWriter.log("<TR><TH COLSPAN=\"7\">Conabio</TH><TH COLSPAN=\"7\">Michigan</TH><TD>&nbsp;</TH></TR>");
+            tblWriter.logHdr("Col Num", "Cat Num", "Genus", "Species", "Collector", "Locality", "Date Collected", 
+                             "Col Num", "Cat Num", "Genus", "Species", "Collector", "Locality", "Date Collected", 
+                             "Score");
+            rs = stmt.executeQuery(sql);
+            while (rs.next())
             {
-                tblWriter.startTable();
-                tblWriter.log("<TR><TH COLSPAN=\"4\">Conabio</TH><TH COLSPAN=\"4\">Michigan</TH><TD>&nbsp;</TH></TR>");
-                tblWriter.logHdr("Genus", "Species", "Collector", "Locality", "Genus", "Species", "Collector", "Locality", "Score");
-                fndCnt  = 0;
-                numRecs = 0;
-                System.out.println(sql);
-                stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-                rs = stmt.executeQuery(sql);
-                while (rs.next())
-                {
-                    Integer idEjemplar   = rs.getInt(1);
-                    String  catNum       = rs.getString(2);
-                    String  collectorNum = rs.getString(3);
-                    String  collector    = rs.getString(4);
-                    String  genus        = rs.getString(9);
-                    String  species      = rs.getString(10);
-                    String  locality     = rs.getString(5);
-                    
-                    //String    where = String.format(" FROM conabio WHERE GenusName = '%s' AND SpeciesName = '%s' AND CollNr = '%s' AND BarCD = '%s'", genus, species, collectorNum, catNum);
-                    String where = String.format(" FROM conabio WHERE CollNr = '%s' AND BarCD <> '%s'", collectorNum, catNum);
-                    String sql2  = "SELECT COUNT(*)" + where;
-                    int    cnt   = BasicSQLUtils.getCountAsInt(conn, sql2);
-                    
-                    if (cnt == 1)
-                    {
-    //                    sql2 = "SELECT ID" + where;
-    //                    int id = BasicSQLUtils.getCountAsInt(conn, sql2);
-    //                    
-    //                    mpStmt.setInt(1, idEjemplar);
-    //                    mpStmt.setInt(2, id);
-    //                    mpStmt.executeUpdate();
-                        
-                        sql2 = "SELECT GenusName, SpeciesName, Collectoragent1, LocalityName" + where;
-                        Vector<Object[]> rows = BasicSQLUtils.query(conn, sql2);
-                        Object[] cols = rows.get(0);
-                        tblWriter.logWithSpaces(genus, species, collector, locality, (String)cols[0], (String)cols[1], (String)cols[2], (String)cols[3]);
-                        
-                        int score = 0;
-                        
-                        fndCnt++;
-                        System.out.println("Fnd: "+fndCnt+"  Num Recs: "+numRecs);
-                    }
-                    numRecs++;
-                }
-                rs.close();
-                
-                tblWriter.endTable();
-                tblWriter.log(String.format("Number of records that match - CollectorNumber, CatalogNumber: "+fndCnt));
-                tblWriter.flush();
-                
-                System.out.println("Fnd: "+fndCnt+"  Num Recs: "+numRecs+"  Dif: "+(numRecs-fndCnt));
+                process(1, rs, tblWriter, doingMapTable);
             }
+            rs.close();
+            tblWriter.endTable();
+            tblWriter.log("<BR>");
+            tblWriter.log(String.format("Number of records that match: %d  of %d records.", fndCnt, numRecs));
+            tblWriter.log(String.format("Average Score: %5.2f", ((double)totalScore / (double)fndCnt)));
+            tblWriter.log(String.format("Mode Score: %d", getModeScore()));
+            totalScore = 0;
+
             
-//            tblWriter.println("<BR>");
-//            for (int i=0;i<histo.length;i++)
-//            {
-//                if (histo[i] > 0)
-//                {
-//                    tblWriter.print(String.format("%3d - ", i));
-//                    for (int x=0;x<histo[i]/2;x++)
-//                    {
-//                        tblWriter.print('*');
-//                    }
-//                    tblWriter.println("<BR>");
-//                }
-//            }
-//            tblWriter.flush();
+            
+            
+            fndCnt  = 0;
+            numRecs = 0;
+            tblWriter = convLogger.getWriter("MichConabio3.html", "Matches Collector No. ", extraStyle.toString());
+            tblWriter.startTable();
+            tblWriter.log("<TR><TH COLSPAN=\"7\">Conabio</TH><TH COLSPAN=\"7\">Michigan</TH><TD>&nbsp;</TH></TR>");
+            tblWriter.logHdr("Col Num", "Cat Num", "Genus", "Species", "Collector", "Locality", "Date Collected", 
+                             "Col Num", "Cat Num", "Genus", "Species", "Collector", "Locality", "Date Collected", 
+                             "Score");
+            
+            rs = stmt.executeQuery(sql);
+            while (rs.next())
+            {
+                process(2, rs, tblWriter, doingMapTable);
+            }
+            rs.close();
+            tblWriter.endTable();
+            tblWriter.log("<BR>");
+            tblWriter.log(String.format("Number of records that match: %d  of %d records.", fndCnt, numRecs));
+            tblWriter.log(String.format("Average Score: %5.2f", ((double)totalScore / (double)fndCnt)));
+            tblWriter.log(String.format("Mode Score: %d", getModeScore()));
+            totalScore = 0;
+
+            
+            
+            fndCnt  = 0;
+            numRecs = 0;
+            tblWriter = convLogger.getWriter("MichConabio4.html", "Matches Cat No. ", extraStyle.toString());
+            tblWriter.startTable();
+            tblWriter.log("<TR><TH COLSPAN=\"7\">Conabio</TH><TH COLSPAN=\"7\">Michigan</TH><TD>&nbsp;</TH></TR>");
+            tblWriter.logHdr("Col Num", "Cat Num", "Genus", "Species", "Collector", "Locality", "Date Collected", 
+                             "Col Num", "Cat Num", "Genus", "Species", "Collector", "Locality", "Date Collected", 
+                             "Score");
+            
+            rs = stmt.executeQuery(sql);
+            while (rs.next())
+            {
+                process(3, rs, tblWriter, doingMapTable);
+            }
+            rs.close();
+            tblWriter.endTable();
+            tblWriter.log("<BR>");
+            tblWriter.log(String.format("Number of records that match: %d  of %d records.", fndCnt, numRecs));
+            tblWriter.log(String.format("Average Score: %5.2f", ((double)totalScore / (double)fndCnt)));
+            tblWriter.log(String.format("Mode Score: %d", getModeScore()));
+            totalScore = 0;
+
+            
+            tblWriter.flush();
             
         } catch (Exception ex)
         {
@@ -577,8 +413,321 @@ public class MexConvToSQL
             }
         } 
         
+        File indexFile = convLogger.closeAll(); 
+        
+        try
+        {
+            AttachmentUtils.openURI(indexFile.toURI());
+        } catch (Exception e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        //int n = StringUtils.getLevenshteinDistance("guatemaliense", "guatemalense");
+        //System.out.println(n);
+        
+//      tblWriter.println("<BR>");
+//      for (int i=0;i<histo.length;i++)
+//      {
+//          if (histo[i] > 0)
+//          {
+//              tblWriter.print(String.format("%3d - ", i));
+//              for (int x=0;x<histo[i]/2;x++)
+//              {
+//                  tblWriter.print('*');
+//              }
+//              tblWriter.println("<BR>");
+//          }
+//      }
+//      tblWriter.flush();
     }
     
+    /**
+     * @return the mean and zeros the histogram
+     */
+    private int getModeScore()
+    {
+        int max = 0;
+        int mean = 0;
+        for (int i=0;i<histo.length;i++)
+        {
+            if (histo[i] > max)
+            {
+                max = histo[i];
+                mean = i;
+            }
+            histo[i] = 0;
+        }
+        return mean;
+    }
+    
+    /**
+     * @param type
+     * @param rs
+     * @param tblWriter
+     * @param doingMapTable
+     * @throws SQLException
+     */
+    public void process(final int         type,
+                        final ResultSet   rs,
+                        final TableWriter tblWriter,
+                        final boolean     doingMapTable) throws SQLException
+    {
+        Integer idEjemplar   = rs.getInt(1);
+        String  catNum       = rs.getString(2).trim();
+        String  collectorNum = rs.getString(3).trim();
+        String  collector    = rs.getString(4);
+        String  genus        = rs.getString(9);
+        String  species      = rs.getString(10);
+        String  locality     = rs.getString(5);
+        
+        int     year         = rs.getInt(11);
+        int     mon          = rs.getInt(12);
+        int     day          = rs.getInt(13);
+        boolean hasDate      = year > 0 && mon > 0 && day > 0;
+        String  dateStr      = hasDate ? String.format("%04d-%02d-%02d", year, mon, day) : "&nbsp;";
+        
+        String where = null;
+        switch (type)
+        {
+            case 0: 
+                where = String.format("FROM conabio WHERE GenusName = '%s' AND SpeciesName = '%s' AND CollNr = '%s' AND BarCD = '%s'", genus, species, collectorNum, catNum);
+                break;
+                
+            case 1: 
+                where = String.format("FROM conabio WHERE CollNr = '%s' AND BarCD = '%s'", collectorNum, catNum);
+                break;
+                
+            case 2: 
+                where = String.format("FROM conabio WHERE CollNr = '%s' AND BarCD <> '%s'", collectorNum, catNum);
+                break;
+                
+            case 3: 
+                where = String.format("FROM conabio WHERE CollNr <> '%s' AND BarCD = '%s'", collectorNum, catNum);
+                break;
+        }
+        
+        String sql2 = "SELECT COUNT(*) " + where;
+        int    cnt  = BasicSQLUtils.getCountAsInt(conn, sql2);
+        
+        if (cnt == 1)
+        {
+            for (int i=0;i<cCls.length;i++)
+            {
+                cCls[i] = null;
+                mCls[i] = null;
+            }
+            
+            if (doingMapTable)
+            {
+                sql2 = "SELECT ID " + where;
+                int id = BasicSQLUtils.getCountAsInt(conn, sql2);
+                
+                mpStmt.setInt(1, idEjemplar);
+                mpStmt.setInt(2, id);
+                mpStmt.executeUpdate();
+            }
+            
+            sql2 = "SELECT BarCD, CollNr, GenusName, SpeciesName, Collectoragent1, LocalityName, Datecollstandrd " + where;
+            Vector<Object[]> rows = BasicSQLUtils.query(conn, sql2);
+            Object[]         cols = rows.get(0);
+            Date             date = (Date)cols[6];
+            
+            boolean michHasDate = date != null;
+            String  michDate = michHasDate ? sdf.format(date) : "&nbsp;";
+            
+            Integer michCatNumInt    = (Integer)cols[0];
+            String michCatNum    = michCatNumInt.toString();
+            String michColNum    = ((String)cols[1]).trim();
+            String michGenus     = ((String)cols[2]).trim();
+            String michSpecies   = (String)cols[3];
+            String michCollector = (String)cols[4];
+            String michLocality  = (String)cols[5];
+            
+            int michYear         = 0;
+            int michMon          = 0;
+            int michDay          = 0;
+            if (date != null) 
+            {
+                cal.setTime(date);
+                michYear = michHasDate ? cal.get(Calendar.YEAR)  : 0;
+                michMon  = michHasDate ? cal.get(Calendar.MONTH)+1 : 0;
+                michDay  = michHasDate ? cal.get(Calendar.DATE)  : 0;
+            }
+            
+            int maxScore = 115;
+            int score    = 0;
+            
+            if (hasDate && michHasDate)
+            {
+                score += year == michYear ? 10 : 0;
+                score += mon  == michMon  ? 20 : 0;
+                score += day  == michDay  ? 30 : 0;
+                
+                if (year == michYear && mon == michMon && day == michDay && year != 0 && mon != 0 && day != 0)
+                {
+                    cCls[6] = BGR;
+                    mCls[6] = BGR;
+                    
+                } else if (year == michYear && mon == michMon && year != 0 && mon != 0)
+                {
+                    cCls[6] = GR;
+                    mCls[6] = GR;
+                    
+                } else if (year == michYear)
+                {
+                    cCls[6] = YW;
+                    mCls[6] = YW;
+                }
+            }
+            
+            double ratingLoc   = check(locality, michLocality, false);
+            double ratingColtr = check(collector, michCollector, false);
+            
+            if (ratingLoc > 50.0)
+            {
+                cCls[5] = BGR;
+                mCls[5] = BGR;
+                score += 10;
+                
+            } else if (ratingLoc > 30.0)
+            {
+                cCls[5] = GR;
+                mCls[5] = GR;
+                score += 6;
+                
+            } else if (ratingLoc > 0.0)
+            {
+                cCls[5] = YW;
+                mCls[5] = YW;
+                score += 3;
+            }
+            
+            if (ratingColtr > 50.0)
+            {
+                cCls[4] = BGR;
+                mCls[4] = BGR;
+                score += 10;
+                
+            } else if (ratingColtr > 30.0)
+            {
+                cCls[4] = GR;
+                mCls[4] = GR;
+                score += 6;
+                
+            } else if (ratingColtr > 0.0)
+            {
+                cCls[4] = YW;
+                mCls[4] = YW;
+                score += 3;
+            }
+            
+            boolean genusMatches = false;
+            if (michGenus != null && genus != null)
+            {
+                if (michGenus.equals(genus))
+                {
+                    score += 15;
+                    cCls[2] = GR;
+                    mCls[2] = GR;
+                    genusMatches = true;
+                    
+                } else if (StringUtils.getLevenshteinDistance(genus, michGenus) < 3)
+                {
+                    score += 7;
+                    cCls[2] = YW;
+                    mCls[2] = YW;
+                }
+            }
+            
+            if (michSpecies != null && species != null) 
+            {
+                if (michSpecies.equals(species))
+                {
+                    score += 20;
+                    if (genusMatches)
+                    {
+                        cCls[2] = BGR;
+                        mCls[2] = BGR;
+                        cCls[3] = BGR;
+                        mCls[3] = BGR;
+                    } else
+                    {
+                        cCls[3] = GR;
+                        mCls[3] = GR;
+                    }
+                } else if (StringUtils.getLevenshteinDistance(species, michSpecies) < 3)
+                {
+                    score += 10;
+                    cCls[3] = YW;
+                    mCls[3] = YW;
+                }
+            }
+            
+            if (michGenus != null && species != null && michGenus.equals(species))     
+            {
+                cCls[3] = DF;
+                mCls[2] = DF;                        
+                score += 10;
+            }
+            
+            if (michSpecies != null && genus != null && michSpecies.equals(genus))
+            {
+                cCls[2] = DF;
+                mCls[3] = DF;
+                score += 15;
+            }
+            
+            if (catNum.equals(michCatNum))
+            {
+                cCls[1] = BGR;
+                mCls[1] = BGR;
+            }
+            
+            if (collectorNum.equals(michColNum))
+            {
+                cCls[0] = BGR;
+                mCls[0] = BGR;
+            }
+            
+            int finalScore = (int)((((double)score / maxScore) * 100.0)+0.5);
+            histo[finalScore]++;
+            totalScore += finalScore;
+            
+            String scoreStr = String.format("%d", finalScore);
+            tblWriter.println("<TR>");
+            
+            tblWriter.logTDCls(cCls[0], collectorNum);
+            tblWriter.logTDCls(cCls[1], catNum);
+            tblWriter.logTDCls(cCls[2], genus);
+            tblWriter.logTDCls(cCls[3], species);
+            tblWriter.logTDCls(cCls[4], collector);
+            tblWriter.logTDCls(cCls[5], locality);
+            tblWriter.logTDCls(cCls[6], dateStr);
+            
+            tblWriter.logTDCls(cCls[0], michColNum);
+            tblWriter.logTDCls(cCls[1], michCatNum != null ? michCatNum.toString() : "&nbsp;");
+            tblWriter.logTDCls(mCls[2], michGenus);
+            tblWriter.logTDCls(mCls[3], michSpecies);
+            tblWriter.logTDCls(mCls[4], michCollector);
+            tblWriter.logTDCls(mCls[5], michLocality);
+            tblWriter.logTDCls(mCls[6], michDate);
+            
+            tblWriter.logTDCls(null, scoreStr);
+            tblWriter.println("</TR>");
+            
+            fndCnt++;
+            System.out.println("Fnd: "+fndCnt+"  Num Recs: "+numRecs+"  Dif: "+(numRecs-fndCnt));
+        }
+        numRecs++;
+    }
+    
+    /**
+     * @param str
+     * @param usePeriods
+     * @return
+     */
     private String clean(final String str, final boolean usePeriods)
     {
         String s = StringUtils.remove(str, ':');
@@ -590,6 +739,12 @@ public class MexConvToSQL
         return s;
     }
     
+    /**
+     * @param str1
+     * @param str2
+     * @param usePeriods
+     * @return
+     */
     private double check(final String str1, final String str2, final boolean usePeriods)
     {
         if (str1 == null || str2 == null) return 0.0;
@@ -617,7 +772,7 @@ public class MexConvToSQL
         {
             for (String lStr : longToks)
             {
-                if (lStr.equals(sStr) || (sStr.length() > 2 && StringUtils.getLevenshteinDistance(lStr, sStr) < 2)) score += 1;
+                if (lStr.equals(sStr) || (sStr.length() > 2 && StringUtils.getLevenshteinDistance(lStr, sStr) < 3)) score += 1;
             }
         }
         
