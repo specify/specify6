@@ -101,7 +101,27 @@ public class ConversionLogger
      * @return
      * @throws IOException
      */
+    public TableWriter getWriter(final String fileName, final String title, final String extraStyle)
+    {
+        return getWriter(fileName, title, extraStyle, false);
+    }
+
+    /**
+     * @param tableName
+     * @return
+     * @throws IOException
+     */
     public TableWriter getWriter(final String fileName, final String title, final boolean doCenterTitle)
+    {
+        return getWriter(fileName, title, null, doCenterTitle);
+    }
+
+    /**
+     * @param tableName
+     * @return
+     * @throws IOException
+     */
+    public TableWriter getWriter(final String fileName, final String title, final String extraStyle, final boolean doCenterTitle)
     {
         TableWriter tblWriter = null;
         try
@@ -109,7 +129,7 @@ public class ConversionLogger
             if (printWritersNameHash.get(fileName) == null)
             {
                 String path = dir.getAbsolutePath() + File.separator + StringUtils.replace(fileName, " ", "_");
-                tblWriter = new TableWriter(path, title, doCenterTitle);
+                tblWriter = new TableWriter(path, title, extraStyle, doCenterTitle);
                 printWritersNameHash.put(fileName, path);
                 printWritersHash.put(fileName, tblWriter);
             } else

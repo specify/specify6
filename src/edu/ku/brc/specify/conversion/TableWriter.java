@@ -40,9 +40,11 @@ public class TableWriter extends PrintWriter
     
     private String fName;
     private String title;
+    private String extraStyle = null;
     
     private int errCount = 0;
     private int lineCnt  = 0;
+
     
     /**
      * @param fileName
@@ -51,9 +53,20 @@ public class TableWriter extends PrintWriter
      */
     public TableWriter(final String fileName, final String title, final boolean doCenterTitle) throws FileNotFoundException
     {
+        this(fileName, title, null, doCenterTitle);
+    }
+    
+    /**
+     * @param fileName
+     * @param title
+     * @throws FileNotFoundException
+     */
+    public TableWriter(final String fileName, final String title, final String extraStyle, final boolean doCenterTitle) throws FileNotFoundException
+    {
         super(fileName);
         this.fName = fileName;
         this.title = title;
+        this.extraStyle = extraStyle;
         
         println("<HTML>\n<HEAD>\n<TITLE>"+title+"</TITLE>\n");
         writeStyle(this);
@@ -93,6 +106,7 @@ public class TableWriter extends PrintWriter
         pwOut.println(" TABLE.i { border-top: solid 1px rgb(192, 192, 192); border-left: solid 1px rgb(192, 192, 192); }");
         pwOut.println(" TABLE.i td { border-bottom: solid 1px rgb(192, 192, 192); border-right: solid 1px rgb(192, 192, 192); }");
         pwOut.println(" TABLE.i th { border-bottom: solid 1px rgb(192, 192, 192); border-right: solid 1px rgb(192, 192, 192); }");
+        if (extraStyle != null) pwOut.println(extraStyle);
         pwOut.println("</STYLE>");
     }
     
@@ -200,6 +214,38 @@ public class TableWriter extends PrintWriter
         flush();
     }
     
+    public void logTDCls(final String cls, final String c)
+    {
+        lineCnt++;
+        
+        if (cls != null)
+        {
+            print("<TD class=\"");
+            print(cls);
+            print("\">");
+        } else
+        {
+            print(TD);
+        }
+        print(c == null ? "&nbsp;" : c);
+        print(TD_);
+    }
+    
+    public void logWithSpaces(final String...cols)
+    {
+        lineCnt++;
+        
+        print(TR);
+        for (String c : cols)
+        {
+            print(TD);
+            print(c == null ? "&nbsp;" : c);
+            print(TD_);
+        }
+        println(TR_);
+        flush();
+    }
+    
     public void logObjRow(final Object[] row)
     {
         lineCnt++;
@@ -208,7 +254,7 @@ public class TableWriter extends PrintWriter
         for (Object o : row)
         {
             print(TD);
-            print(o != null ? o.toString() : "&nbsp&");
+            print(o != null ? o.toString() : "&nbsp;");
             print(TD_);
         }
         println(TR_);

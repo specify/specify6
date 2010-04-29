@@ -13,6 +13,8 @@
     <icon name="SpecifyLargeIcon" file="specify128.png" sizes="NonStd"/>
     <icon name="SpecifyLargeIconE" file="specify128E.png" sizes="NonStd"/>
     <icon name="SpecifyLargeIconM" file="specify128M.png" sizes="NonStd"/>
+    <icon name="SpecifyConv"       file="specify128Conv.png" sizes="NonStd"/>
+    
     
     <icon name="Specify16"        file="specify16.png" sizes="16"/>   <!-- Not Needed anymore -->
     <icon name="SpecifySplash"    file="SpecifyBigSplash.png" sizes="NonStd"/>

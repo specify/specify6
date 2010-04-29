@@ -628,7 +628,17 @@ public class SpecifyDBConverter extends AppBase
         startTime = System.currentTimeMillis();
         
         convLogger.initialize(dbNameDest);
-        convLogger.setIndexTitle(dbNameDest + " Conversion "+(new SimpleDateFormat("yyy-MM-dd hh:mm:ss")).format(Calendar.getInstance().getTime()));
+        convLogger.setIndexTitle(dbNameDest + " Conversion "+(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).format(Calendar.getInstance().getTime()));
+
+        
+        /*if (true)
+        {
+            TableWriter tDSTblWriter = convLogger.getWriter("TableDataSummary.html", "Table Data Summary", true);
+            TableDataChecker tblDataChecker = new TableDataChecker(oldDBConn);
+            tblDataChecker.createHTMLReport(tDSTblWriter);
+            tDSTblWriter.close();
+            return;
+        }*/
         
         frame.setSize(500, frame.getPreferredSize().height);
         
@@ -2119,7 +2129,7 @@ public class SpecifyDBConverter extends AppBase
         }
         
         PanelBuilder panel = new PanelBuilder(new FormLayout("f:p:g,10px,f:p:g", "f:p:g"));
-        panel.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(1, 1));
+        panel.add(new JLabel(IconManager.getIcon("SpecifyConv")), cc.xy(1, 1));
         panel.add(pb.getPanel(), cc.xy(3, 1));
 
         CustomDialog dlg = new CustomDialog(null, "Specify Converter", true, panel.getPanel());

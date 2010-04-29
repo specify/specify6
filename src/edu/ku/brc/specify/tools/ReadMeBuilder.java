@@ -182,10 +182,10 @@ public class ReadMeBuilder
         @Override
         public int compareTo(BugInfo o)
         {
-            int rv = date.compareTo(o.date);
+            int rv = num.compareTo(o.num);
             if (rv == 0)
             {
-                rv = num.compareTo(o.num);
+                rv = date.compareTo(o.date);
             }
             return rv;
         }

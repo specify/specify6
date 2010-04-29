@@ -385,7 +385,8 @@ public class ConvScopeFixer
                         "Inner Join biologicalobjectattributes AS b ON cc.CollectionObjectCatalogID = b.BiologicalObjectTypeID " + 
                         "WHERE cc.CollectionObjectTypeID > 8 AND cc.CollectionObjectTypeID < 20";
         
-        return fixTableWithColMemId(cntSQL, qrySQL, "BiologicalObjectAttributes", "BiologicalObjectTypeID", "CollectionObjectAttribute");
+        return fixTableWithColMemId(cntSQL, qrySQL, "BiologicalObjectAttributes", "BiologicalObjectTypeID", "CollectionObjectAttribute", null, 
+                                    "SELECT BiologicalObjectTypeID FROM biologicalobjectattributes ORDER BY BiologicalObjectTypeID ASC");
     }
     
     /**
@@ -578,6 +579,14 @@ public class ConvScopeFixer
     /**
      * @return
      */
+    protected boolean fixTableWithColMemId(final String cntSQL, final String qrySQL, final String className, final String idFieldName, final String newIdName, final String mapperName, final String mapperSQL)
+    {
+        return fixTable(cntSQL, qrySQL, className, idFieldName, newIdName, "CollectionMemberID", mapperName, mapperSQL);
+    }
+
+    /**
+     * @return
+     */
     protected boolean fixTableWithDisciplineId(final String cntSQL, final String qrySQL, final String className, final String idFieldName, final String newIdName)
     {
         return fixTable(cntSQL, qrySQL, className, idFieldName, newIdName, "DisciplineID", null);
@@ -600,6 +609,27 @@ public class ConvScopeFixer
                                final String colToFix,
                                final String mapperName)
     {
+        return fixTable(cntSQL, qrySQL, className, idFieldName, newIdName, colToFix, mapperName, null);
+    }
+
+    /**
+     * @param cntSQL
+     * @param qrySQL
+     * @param className
+     * @param idFieldName
+     * @param newIdName
+     * @param colToFix
+     * @return
+     */
+    protected boolean fixTable(final String cntSQL, 
+                               final String qrySQL, 
+                               final String className, 
+                               final String idFieldName, 
+                               final String newIdName,
+                               final String colToFix,
+                               final String mapperName,
+                               final String mapperSQL)
+    {
         int cnt = BasicSQLUtils.getCountAsInt(oldDBConn, cntSQL);
         if (cnt == 0)
         {
@@ -611,7 +641,7 @@ public class ConvScopeFixer
         IdMapperIFace idMapper = mapperName == null ? IdMapperMgr.getInstance().get(className, idFieldName) : IdMapperMgr.getInstance().get(mapperName);
         if (idMapper == null)
         {
-            idMapper = IdMapperMgr.getInstance().addTableMapper(className, idFieldName, false);
+            idMapper = IdMapperMgr.getInstance().addTableMapper(className, idFieldName, mapperSQL, false);
             if (idMapper == null || idMapper.size() == 0)
             {
                 log.error("**** No Mapper for["+className+"]");

@@ -8084,7 +8084,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     ceToNewStratIdHash.put(ceId, newStrat.getLithoStratId());
                 } else
                 {
-                    String msg = String.format("No CE mapping for OldStratId %d, when they are a one-to-one.", oldStratId);
+                    String msg = String.format("No CE mapping for Old StratId %d, when they are a one-to-one.", oldStratId);
                     tblWriter.logError(msg);
                     log.error(msg);
                 }

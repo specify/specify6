@@ -97,7 +97,7 @@ public class IdMapperMgr
         List<String> fieldNames = BasicSQLUtils.getFieldNamesFromSchema(oldConn, name);
         if (!fieldNames.get(0).equals(idName))
         {
-            throw new RuntimeException("Table["+name+"] doesn't have first column id["+idName+"]");
+            log.error("Table["+name+"] doesn't have first column id["+idName+"]");
         }
 
         IdTableMapper idMapper = new IdTableMapper(name.toLowerCase(), idName, sql, doDelete);
