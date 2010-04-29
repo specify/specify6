@@ -22,6 +22,7 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.tools.export.ConceptMapUtils;
+import edu.ku.brc.specify.tools.export.ExportToMySQLDB;
 import edu.ku.brc.specify.tools.export.MappedFieldInfo;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -157,7 +158,7 @@ public class DwcMapper
 	 */
 	protected String getValuesQuery(Integer collectionObjectId)
 	{
-		return "select * from " + mappingName.toLowerCase() + " where " + mappingName + "id = " + collectionObjectId; 
+		return "select * from " + ExportToMySQLDB.fixTblNameForMySQL(mappingName) + " where " + ExportToMySQLDB.fixTblNameForMySQL(mappingName) + "id = " + collectionObjectId; 
 	}
 	
 	
