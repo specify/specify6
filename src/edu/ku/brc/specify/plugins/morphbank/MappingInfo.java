@@ -80,23 +80,23 @@ public class MappingInfo implements Comparable<MappingInfo>
 			return String.class;
 		}
 		
-		if (dwcType.equals("xsd:string"))
+		if (dwcType.endsWith(":string"))
 		{
 			return String.class;
 		}
-		if (dwcType.equals("xsd:dateTime"))
+		if (dwcType.endsWith(":dateTime"))
 		{
 			return Date.class;
 		}
-		if (dwcType.equals("xsd:decimal"))
+		if (dwcType.endsWith(":decimal") || dwcType.endsWith(":double"))
 		{
 			return Double.class;
 		}
-		if (dwcType.equals("xsd:nonNegativeInteger"))
+		if (dwcType.endsWith(":nonNegativeInteger"))
 		{
 			return Integer.class;
 		}
-		if (dwcType.equals("xsd:gYear"))
+		if (dwcType.endsWith(":gYear"))
 		{
 			return Integer.class;
 		}
