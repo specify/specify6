@@ -19,10 +19,17 @@ package edu.ku.brc.specify.conversion;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
+
+import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.datamodel.PickList;
+import edu.ku.brc.specify.datamodel.PickListItem;
 
 /**
  * @author rods
@@ -98,5 +105,90 @@ public class ConvertMiscData
         }
         
         return false;
+    }
+    
+    /**
+     * @param oldDBConn
+     * @param newDBConn
+     * @param disciplineID
+     */
+    public static void convertMethodFromStratGTP(final Connection oldDBConn, final Connection newDBConn)
+    {
+        String  sql          = null;
+        Session localSession = null;
+        try
+        {
+            localSession = HibernateUtil.getCurrentSession();
+            HibernateUtil.beginTransaction();
+            
+            // Query to Create PickList
+            sql = "SELECT gtp.Name, CONCAT(gtp.Name,' - ', gtp.Standard) as Method FROM collectingevent AS ce " +
+                    "Inner Join stratigraphy AS s ON ce.CollectingEventID = s.StratigraphyID " +
+                    "Inner Join geologictimeperiod AS gtp ON s.GeologicTimePeriodID = gtp.GeologicTimePeriodID " +
+                    "GROUP BY gtp.Name";
+            
+            PickList pl = (PickList)localSession.createQuery("FROM PickList WHERE Name = 'CollectingMethod'").list().get(0);
+            if (pl == null)
+            {
+                log.error("Couldn't find CollectingMethod.");
+            }
+            
+            for (PickListItem pli : new Vector<PickListItem>(pl.getPickListItems()))
+            {
+                log.debug("Removing["+pli.getTitle()+"]");
+                localSession.delete(pli);
+                pl.getPickListItems().remove(pli);
+            }
+            localSession.saveOrUpdate(pl);
+            
+            HibernateUtil.commitTransaction();
+            
+            HibernateUtil.beginTransaction();
+            Vector<Object[]> list = BasicSQLUtils.query(oldDBConn, sql);
+            for (Object[] cols : list)
+            {
+                PickListItem pli = new PickListItem();
+                pli.initialize();
+                
+                pli.setTitle(cols[1].toString());
+                pli.setValue(cols[0].toString());
+                
+                pl.getPickListItems().add(pli);
+                pli.setPickList(pl);
+                localSession.saveOrUpdate(pli);
+            }
+            
+            localSession.saveOrUpdate(pl);
+            
+            HibernateUtil.commitTransaction();
+            
+            
+            // Query for processing data
+            sql = "SELECT ce.CollectingEventID, gtp.Name FROM collectingevent AS ce " +
+                    "Inner Join stratigraphy AS s ON ce.CollectingEventID = s.StratigraphyID " +
+                    "Inner Join geologictimeperiod AS gtp ON s.GeologicTimePeriodID = gtp.GeologicTimePeriodID " +
+                    "ORDER BY ce.CollectingEventID ASC";
+            
+            IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
+            IdMapperIFace mapper = IdMapperMgr.getInstance().addTableMapper("collectingevent", "CollectingEventID", false);
+
+            PreparedStatement pStmt = newDBConn.prepareStatement("UPDATE collectingevent SET Method=? WHERE CollectingEventID=?");
+            Statement         stmt  = oldDBConn.createStatement();
+            ResultSet         rs    = stmt.executeQuery(sql);
+            while (rs.next())
+            {
+                Integer newId = mapper.get(rs.getInt(1));
+                pStmt.setString(1, rs.getString(2));
+                pStmt.setInt(2, newId);
+                pStmt.executeUpdate();
+            }
+            rs.close();
+            stmt.close();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            HibernateUtil.rollbackTransaction();
+        }
     }
 }

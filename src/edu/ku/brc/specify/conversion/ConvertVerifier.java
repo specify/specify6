@@ -116,7 +116,8 @@ public class ConvertVerifier extends AppBase
     public static final long DO_TAXON_CIT           = 1024; 
     public static final long DO_SHIPMENTS           = 2048; 
     public static final long DO_OTHER_IDENT         = 4096; 
-    public static final long DO_CO_ALL              = 8191; 
+    public static final long DO_CO_COLLECTORS       = 8192; 
+    public static final long DO_CO_ALL              = (8192 * 2) - 1; 
     
     private String[] labels = {"None", "Preparations", "CO Collecting Events", "Localities", "Preparers", 
                                "Catalogers", "Determiners", "Taxon", "Geographies", "Collectors", 
@@ -395,6 +396,15 @@ public class ConvertVerifier extends AppBase
                 {
                     tblWriter = tblWriterHash.get(DO_CO_CATLOGER);
                     if (!verifyCataloger(oldCatNum, newCatNum))
+                    {
+                        catNumsInErrHash.put(newCatNum, oldCatNum);
+                    }
+                }
+                
+                if (isCOOn(DO_CO_COLLECTORS))
+                {
+                    tblWriter = tblWriterHash.get(DO_CO_CATLOGER);
+                    if (!verifyCollector(oldCatNum, newCatNum))
                     {
                         catNumsInErrHash.put(newCatNum, oldCatNum);
                     }
@@ -952,6 +962,41 @@ public class ConvertVerifier extends AppBase
          dumpStatus(status);
          return status == StatusType.COMPARE_OK;
     }
+    
+    
+    /**
+     * @param oldCatNum
+     * @param newCatNum
+     * @return
+     * @throws SQLException
+     */
+    private boolean verifyCollector(final int oldCatNum, final String newCatNum) throws SQLException
+    {
+        //log.debug("New SQL: "+newSQL);
+        //log.debug("Old SQL: "+oldSQL);
+        
+         newSQL = "SELECT a.AgentID, a.FirstName, a.MiddleInitial, a.LastName " +
+         		"FROM collectionobject AS co " +
+         		"INNER Join collectingevent AS ce ON co.CollectingEventID = ce.CollectingEventID " +
+         		"INNER Join collector AS c ON ce.CollectingEventID = c.CollectingEventID " +
+         		"INNER Join agent AS a ON c.AgentID = a.AgentID WHERE co.CatalogNumber =  '"+ newCatNum + "' ORDER BY OrderNumber";
+
+         oldSQL = "SELECT a.AgentID, a.FirstName, a.MiddleInitial, a.LastName, a.Name " +
+         		"FROM collectionobjectcatalog AS cc " +
+         		"INNER Join collectionobject AS co ON cc.CollectionObjectCatalogID = co.CollectionObjectID " +
+         		"INNER Join collectingevent AS ce ON co.CollectingEventID = ce.CollectingEventID " +
+         		"INNER Join collectors AS c ON ce.CollectingEventID = c.CollectingEventID " +
+         		"INNER Join agent AS a ON c.AgentID = a.AgentID WHERE cc.CatalogNumber = " + oldCatNum+ " ORDER BY `Order`";
+         if (debug)
+         {
+             log.debug("New SQL: "+newSQL);
+             log.debug("Old SQL: "+oldSQL);
+         }
+         StatusType status = compareRecords("Collector", oldCatNum, newCatNum, oldSQL, newSQL);
+         dumpStatus(status);
+         return status == StatusType.COMPARE_OK;
+    }
+
     
     /**
      * @param oldCatNum
@@ -2329,8 +2374,8 @@ public class ConvertVerifier extends AppBase
                  "Inner Join agent AS aby ON s.ShippedByID = aby.AgentID " +
                  "ORDER BY s.ShipmentNumber ASC";
     
-        //log.info(newSQL);
-        //log.info(oldSQL);
+        log.info(newSQL);
+        log.info(oldSQL);
         
         int prevOldId = Integer.MAX_VALUE;
         int prevNewId = Integer.MAX_VALUE;
@@ -2353,6 +2398,7 @@ public class ConvertVerifier extends AppBase
                 }
                 
                 int    newId        = newDBRS.getInt(1);
+                System.out.println(newId);
                 int    oldId        = oldDBRS.getInt(1);
                 
                 String oldNewIdStr = oldId + " / "+newId;

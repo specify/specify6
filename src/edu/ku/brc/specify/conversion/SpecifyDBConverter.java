@@ -640,6 +640,12 @@ public class SpecifyDBConverter extends AppBase
             return;
         }*/
         
+        //if (true)
+        //{
+        //    ConvertMiscData.convertMethodFromStratGTP(oldDBConn, newDBConn);
+        //    return;
+        //}
+        
         frame.setSize(500, frame.getPreferredSize().height);
         
         frame.setDesc("Fixing NULL Timestamps for conversion.");

@@ -224,11 +224,17 @@ public class ConvScopeFixer
                     Integer colMemId = catSerTypeToCollMemId.get(rs.getInt(2));
                     if (colMemId != null)
                     {
-                        pStmt.setInt(1, colMemId);
-                        pStmt.setInt(2, newId);
-                        if (pStmt.executeUpdate() != 1)
+                        try
                         {
-                            msg = String.format("Error updating CollectingEventAttributeID %d for HabitatID %d", newId, rs.getInt(1));
+                            pStmt.setInt(1, colMemId);
+                            pStmt.setInt(2, newId);
+                            if (pStmt.executeUpdate() != 1)
+                            {
+                                msg = String.format("Error updating CollectingEventAttributeID %d for HabitatID %d", newId, rs.getInt(1));
+                            }
+                        } catch (Exception ex)
+                        {
+                            ex.printStackTrace();
                         }
                     } else
                     {
@@ -394,13 +400,13 @@ public class ConvScopeFixer
      */
     protected boolean fixPrepartions()
     {
-        String cntSQL = "SELECT COUNT(cc.CollectionObjectCatalogID) FROM collectionobjectcatalog AS cc " + 
-                        "WHERE cc.CollectionObjectTypeID < 9 OR cc.CollectionObjectTypeID > 19";
+        String cntSQL = "SELECT COUNT(co.CollectionObjectID) FROM collectionobject AS co Inner Join collectionobjectcatalog AS cc ON co.CollectionObjectID = cc.CollectionObjectCatalogID " + 
+                        "WHERE co.CollectionObjectTypeID < 9 OR co.CollectionObjectTypeID > 19";
         
-        String qrySQL = "SELECT cc.CollectionObjectCatalogID, cc.CatalogSeriesID FROM collectionobjectcatalog AS cc " + 
-                        "WHERE cc.CollectionObjectTypeID < 9 OR cc.CollectionObjectTypeID > 19";
+        String qrySQL = "SELECT co.CollectionObjectID, cc.CatalogSeriesID FROM collectionobject AS co Inner Join collectionobjectcatalog AS cc ON co.CollectionObjectID = cc.CollectionObjectCatalogID " + 
+                        "WHERE co.CollectionObjectTypeID < 9 OR co.CollectionObjectTypeID > 19";
         
-        return fixTableWithColMemId(cntSQL, qrySQL, "CollectionObjectCatalog", "CollectionObjectCatalogID", "PreparationID");
+        return fixTableWithColMemId(cntSQL, qrySQL, "Preparation", "CollectionObjectID", "PreparationID", "collectionobject_CollectionObjectID");
     }
     
     /**
@@ -543,7 +549,7 @@ public class ConvScopeFixer
     {
         int cnt = 0;
         
-        if (fixCollectingEventAttributes()) cnt++;
+        //if (fixCollectingEventAttributes()) cnt++;
         if (fixCollectionObjectAttributes()) cnt++;
         if (fixCollectionObjectCitations()) cnt++;
         if (fixCollectionObjects()) cnt++;
@@ -655,7 +661,10 @@ public class ConvScopeFixer
         {
             stmt  = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             
-            pStmt = newDBConn.prepareStatement(String.format("UPDATE %s SET %s=? WHERE %s=?", className.toLowerCase(), colToFix, newIdFieldName));
+            String pStr = String.format("UPDATE %s SET %s=? WHERE %s=?", className.toLowerCase(), colToFix, newIdFieldName);
+            log.debug(pStr);
+            
+            pStmt = newDBConn.prepareStatement(pStr);
             
             log.debug(qrySQL);
             
@@ -673,13 +682,20 @@ public class ConvScopeFixer
                         Integer colMemId = catSerTypeToCollMemId.get(rs.getInt(2));
                         if (colMemId != null)
                         {
-                            pStmt.setInt(1, colMemId);
-                            pStmt.setInt(2, newId);
-                            int upCnt = pStmt.executeUpdate();
-                            if (upCnt != 1)
+                            try
                             {
-                                msg = String.format("Error updating %s for Old %s with new ID %d", colToFix, idFieldName, newId);
+                                pStmt.setInt(1, colMemId);
+                                pStmt.setInt(2, newId);
+                                int upCnt = pStmt.executeUpdate();
+                                if (upCnt != 1)
+                                {
+                                    msg = String.format("Error updating %s for Old %s with new ID %d", colToFix, idFieldName, newId);
+                                }
+                            } catch (Exception ex)
+                            {
+                                ex.printStackTrace();
                             }
+                            
                         } else
                         {
                             msg = String.format("The CatalogSeriesID %d wasn't mapped to %s for Old %s %d", rs.getInt(2), colToFix, idFieldName, rs.getInt(1));

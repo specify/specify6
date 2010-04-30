@@ -29,6 +29,7 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo.RelationshipType;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttribute;
+import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
@@ -103,6 +104,10 @@ public class DuplicateCollectingEvents
         PreparedStatement prepCEStmt = null;
         Statement         stmtCE     = null;
         
+        // CollectingEvent Collector
+        PreparedStatement prepCECStmt = null;
+        Statement         stmtCEC     = null;
+
         // CollectingEvent Attributes
         PreparedStatement prepCEAStmt = null;
         Statement         stmtCEA     = null;
@@ -117,8 +122,13 @@ public class DuplicateCollectingEvents
             prepCEAStmt         = createPreparedStmt(CollectingEventAttribute.getClassTableId());
             stmtCEA             = connection.createStatement();
             
+            String selectCECSQL = createSelectStmt(Collector.getClassTableId(), "CollectingEventID = %d");
+            prepCECStmt         = createPreparedStmt(Collector.getClassTableId());
+            stmtCEC             = connection.createStatement();
+            
             log.debug(selectCESQL);
             log.debug(selectCEASQL);
+            log.debug(selectCECSQL);
             
             int totalCnt = getCollectingEventsWithManyCollectionObjectsCount();
             log.debug(String.format("%d CEs with more than one CO for all Collections", totalCnt));
@@ -131,7 +141,8 @@ public class DuplicateCollectingEvents
             for (Object ceID : list)
             {
                 cnt += duplicateCollectingEvent((Integer)ceID, String.format(selectCESQL, ceID), stmtCE, prepCEStmt, 
-                                                               selectCEASQL, stmtCEA, prepCEAStmt);
+                                                selectCEASQL, stmtCEA, prepCEAStmt, 
+                                                selectCECSQL, stmtCEC, prepCECStmt);
                 int p = (int)(cnt * 100.0 / (double)totalCnt);
                 if (p != percent)
                 {
@@ -193,8 +204,14 @@ public class DuplicateCollectingEvents
                                            final PreparedStatement prepCEStmt,
                                            final String    selectCEAStr, 
                                            final Statement stmtCEA,
-                                           final PreparedStatement prepCEAStmt) throws SQLException
+                                           final PreparedStatement prepCEAStmt,
+                                           final String    selectCECStr, 
+                                           final Statement stmtCEC,
+                                           final PreparedStatement prepCECStmt) throws SQLException
     {
+        int dispId = BasicSQLUtils.getCountAsInt("SELECT DisciplineID FROM collectingevent WHERE CollectingEventID = " + ceID);
+        int divId  = BasicSQLUtils.getCountAsInt("SELECT DivisionID FROM discipline WHERE DisciplineID = " + dispId);
+
         Statement stmt2 = null;
         try
         {
@@ -208,6 +225,8 @@ public class DuplicateCollectingEvents
             int dispInx = getColumnIndex(rsmd, "DisciplineID");
             int ceaInx  = getColumnIndex(rsmd, "CollectingEventAttributeID");
             
+            Integer newCEID = null;
+            
             while (rs.next())
             {
                 Integer ceaId = rs.getObject(ceaInx) != null ? rs.getInt(ceaInx) : null; // get the CollectingEventAttribute
@@ -216,7 +235,6 @@ public class DuplicateCollectingEvents
                 ResultSet coRS = stmt2.executeQuery(sql);
                 if (coRS.next()) // skip the first one, that one is already hooked up.
                 {
-                     int dispId = BasicSQLUtils.getCountAsInt("SELECT DisciplineID FROM collectingevent WHERE CollectingEventID = " + ceID);
                     
                     while (coRS.next())
                     {
@@ -233,7 +251,7 @@ public class DuplicateCollectingEvents
                             throw new RuntimeException("Couldn't insert CE row.");
                         }
                         
-                        int newCEID = BasicSQLUtils.getInsertedId(prepCEStmt);
+                        newCEID = BasicSQLUtils.getInsertedId(prepCEStmt);
                         cnt++;
                         
                         sql = String.format("UPDATE collectionobject SET CollectingEventID=%d WHERE CollectionObjectID = %d", newCEID, coId);
@@ -273,6 +291,24 @@ public class DuplicateCollectingEvents
                             ceaRS.close();
                         }
                         
+                        // Duplicate Collectors for (CE)
+                        sql = String.format(selectCECStr, ceID);
+                        ResultSet rsCEC = stmtCEC.executeQuery(sql);
+                        while (rsCEC.next()) 
+                        {
+                            int divCECInx = getColumnIndex(rsCEC.getMetaData(), "DivisionID");
+                            
+                            for (int i=1;i<=rsCEC.getMetaData().getColumnCount();i++)
+                            {
+                                prepCECStmt.setObject(i, rsCEC.getObject(i));
+                            }
+                            prepCECStmt.setInt(divCECInx, divId);
+                            
+                            if (prepCECStmt.executeUpdate() != 1)
+                            {
+                                throw new RuntimeException("Couldn't insert CECollector row.");
+                            }
+                        }
                     } 
                 }
                 coRS.close();

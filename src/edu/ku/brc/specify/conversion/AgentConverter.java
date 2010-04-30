@@ -24,6 +24,7 @@ import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldNamesFromSchem
 import static edu.ku.brc.ui.UIRegistry.showError;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -31,6 +32,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Stack;
@@ -39,6 +41,7 @@ import java.util.Vector;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -111,7 +114,7 @@ public class AgentConverter
         this.oldDBConn   = conv.getOldDBConn();
         this.newDBConn   = conv.getNewDBConn();
         
-        this.gStmt       = newDBConn.createStatement();
+        this.gStmt           = oldDBConn.createStatement();
         this.updateStmtNewDB = newDBConn.createStatement();
         
         tblWriter = conv.getConvLogger().getWriter("AgentConv.html", "Agents");
@@ -1742,7 +1745,46 @@ public class AgentConverter
         {
             session.close();
         }
-
+    }
+    
+    protected void parseAndFixAddresses()
+    {
+        String whereStr = " FROM address a WHERE Address like '%\r\n%'";
+        String sql = "SELECT count(*)" + whereStr;
+        if (BasicSQLUtils.getCountAsInt(sql) < 1)
+        {
+            return;
+        }
+        
+        sql = "SELECT AddressID, Address" + whereStr;
+        
+        Statement         stmt  = null;
+        PreparedStatement pStmt = null; 
+        try
+        {
+            pStmt = newDBConn.prepareStatement("UPDATE address SET Address=?, Address2=?, City=?, State=?, PostalCode=? WHERE AddressID = ?");
+            stmt = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = stmt.executeQuery(sql);
+            
+            HashSet<Integer> hashSet = new HashSet<Integer>();
+            while (rs.next())
+            {
+                String[] toks = StringUtils.split(rs.getString(2), "\r\n");
+                hashSet.add(toks.length);
+            }
+            rs.close();
+            
+            for (Integer i : (Integer[])hashSet.toArray())
+            {
+                System.out.println(i);
+            }
+            System.out.println();
+            
+        } catch (Exception ex)
+        {
+            
+        }
+        
     }
     
     //-------------------------------------------------------------------------

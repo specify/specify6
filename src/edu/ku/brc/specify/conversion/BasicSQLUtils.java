@@ -1519,12 +1519,12 @@ public class BasicSQLUtils
             ResultSet        rs  = mdm.getColumns(connection.getCatalog(), connection.getCatalog(), tableName, null);
             while (rs.next())
             {
-                System.out.println("-------- " + rs.getString("COLUMN_NAME")+" ----------");
+                /*System.out.println("-------- " + rs.getString("COLUMN_NAME")+" ----------");
                 for (int i=1;i<=rs.getMetaData().getColumnCount();i++)
                 {
                     System.out.println(rs.getMetaData().getColumnName(i)+"="+rs.getObject(i));
 
-                }
+                }*/
                 
                 String typeStr = rs.getString("TYPE_NAME");
                 FieldMetaData fmd = new FieldMetaData(rs.getString("COLUMN_NAME"), 
