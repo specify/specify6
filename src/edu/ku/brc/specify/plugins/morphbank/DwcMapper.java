@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
@@ -21,6 +22,9 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
+import edu.ku.brc.specify.datamodel.TreeDefItemIface;
+import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tools.export.ConceptMapUtils;
 import edu.ku.brc.specify.tools.export.ExportToMySQLDB;
 import edu.ku.brc.specify.tools.export.MappedFieldInfo;
@@ -257,7 +261,7 @@ public class DwcMapper
 			if (mapSegments.length == 1)
 			{
 				return getValueFromObject(currentObject, mapSegments[0], mi
-						.isFormatted(), mi.isTreeRank());
+						.isFormatted(), mi.isTreeRank(), session);
 			}
 			
 			for (int s = 1; s < mapSegments.length; s++)
@@ -265,8 +269,7 @@ public class DwcMapper
 				System.out.println(mapSegments[s]);
 
 				if (currentObject != null
-						&& (s < mapSegments.length - 1 || (!mi.isFormatted() && !mi
-								.isTreeRank())))
+						&& (s < mapSegments.length - 1 || !mi.isFormatted()))
 				{
 					currentObject = getRelatedObject(currentObject,
 							mapSegments[s]);
@@ -284,7 +287,7 @@ public class DwcMapper
 				if (s == mapSegments.length - 1)
 				{
 					return getValueFromObject(currentObject, mapSegments[s], mi
-							.isFormatted(), mi.isTreeRank());
+							.isFormatted(), mi.isTreeRank(), session);
 				}
 			}
 		} finally
@@ -306,15 +309,17 @@ public class DwcMapper
 		int tableId = Integer.parseInt(mapInfo[0].split("\\.")[0]);
 		String relationshipName = mapInfo.length > 1 ? mapInfo[1].split("\\.")[0] : null;
 		Class<? extends DataModelObjBase> relatedClass = (Class<? extends DataModelObjBase> )DBTableIdMgr.getInstance().getInfoById(tableId).getClassObj();
-		if (relationshipName != null) //this means we have a 1-many (?)
+		String methName = relationshipName == null ?  "get" + relatedClass.getSimpleName() 
+				: "get" + relationshipName.substring(0, 1).toUpperCase().concat(relationshipName.substring(1));
+		Method meth = object.getClass().getMethod(methName);
+		if (Collection.class.isAssignableFrom(meth.getReturnType()))
 		{
-			String methName =  "get" + relationshipName.substring(0, 1).toUpperCase().concat(relationshipName.substring(1)); 
-			Method meth = object.getClass().getMethod(methName);
 			return selectRelatedObject(object, meth, relatedClass);
 		}
-		String methName = "get" + relatedClass.getSimpleName();
-		Method meth = object.getClass().getMethod(methName);
-		return (DataModelObjBase )meth.invoke(object);
+		else
+		{
+			return (DataModelObjBase )meth.invoke(object);				
+		}
 	}
 	
 	/**
@@ -361,7 +366,8 @@ public class DwcMapper
 		throw new Exception("Unsupported parent class " + parent.getClass().getName());
 	}
 	
-	protected Object getValueFromObject(DataModelObjBase object, String mapping, boolean isFormatted, boolean isTreeRank) throws Exception
+	protected Object getValueFromObject(DataModelObjBase object, String mapping, boolean isFormatted, 
+			boolean isTreeRank, DataProviderSessionIFace session) throws Exception
 	{
 		if (!isFormatted && !isTreeRank)
 		{
@@ -371,9 +377,38 @@ public class DwcMapper
 			System.out.println("Getting a value: " + object + ", " + mapping + " = " + method.invoke(object));
 			return method.invoke(object);
 		}
+		else
+		{
+			if (isTreeRank)
+			{
+				return getTreeRank((Treeable<?,?,?> )object, mapping, session);
+			}
+			else
+			{
+				System.out.println("Getting a formatted/aggregated value: " + object + ", " + mapping);
+			}
+		}
 		return null;
 	}
 	
+	protected String getTreeRank(Treeable<?, ?, ?> object, String mapping, DataProviderSessionIFace session) throws Exception
+	{
+		System.out.println("Getting a tree rank: " + object + ", " + mapping);
+		String tblName = object.getClass().getSimpleName().toLowerCase();
+		String treeDefFld = object.getClass().getSimpleName().toLowerCase() + "ID";
+		TreeDefIface<?,?,?> treeDef = (TreeDefIface<?,?,?> )session.get(object.getDefinition().getClass(), object.getDefinition().getTreeDefId());
+		for (TreeDefItemIface<?,?,?> di : treeDef.getTreeDefItems())
+		{
+			if (mapping.endsWith(di.getName()))
+			{
+				String sql = "select name from " + tblName + " where " + treeDefFld + " = " + object.getDefinition().getTreeDefId()
+					+ " and rankid = " + di.getRankId() + " and " + object.getNodeNumber() + " between NodeNumber and HighestChildNodeNumber";
+				return BasicSQLUtils.querySingleObj(sql);
+			}
+					
+		}
+		return null;
+	}
 	/**
 	 * @return number of concepts
 	 */
