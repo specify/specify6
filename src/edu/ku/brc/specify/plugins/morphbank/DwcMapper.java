@@ -12,10 +12,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
@@ -305,6 +305,31 @@ public class DwcMapper
 	@SuppressWarnings("unchecked")
 	protected DataModelObjBase getRelatedObject(DataModelObjBase object, String mapping) throws Exception
 	{
+		Object objs = getRelatedObjects(object, mapping);
+		if (!Collection.class.isAssignableFrom(objs.getClass()))
+		{
+			return (DataModelObjBase )objs;
+		}
+		if (((Collection )objs).size() == 0)
+		{
+			return null;
+		}
+		if (((Collection )objs).size() == 1)
+		{
+			return (DataModelObjBase )((Collection )objs).iterator().next();
+		}
+		return selectRelatedObject(object, (Collection<DataModelObjBase> )objs);
+	}
+	
+	/**
+	 * @param object
+	 * @param mapping
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	protected Object getRelatedObjects(DataModelObjBase object, String mapping) throws Exception
+	{
 		String[] mapInfo = mapping.split("-");
 		int tableId = Integer.parseInt(mapInfo[0].split("\\.")[0]);
 		String relationshipName = mapInfo.length > 1 ? mapInfo[1].split("\\.")[0] : null;
@@ -312,16 +337,9 @@ public class DwcMapper
 		String methName = relationshipName == null ?  "get" + relatedClass.getSimpleName() 
 				: "get" + relationshipName.substring(0, 1).toUpperCase().concat(relationshipName.substring(1));
 		Method meth = object.getClass().getMethod(methName);
-		if (Collection.class.isAssignableFrom(meth.getReturnType()))
-		{
-			return selectRelatedObject(object, meth, relatedClass);
-		}
-		else
-		{
-			return (DataModelObjBase )meth.invoke(object);				
-		}
+		return meth.invoke(object);
 	}
-	
+
 	/**
 	 * @param parent
 	 * @param getter
@@ -334,10 +352,8 @@ public class DwcMapper
 	 * 
 	 * Hopefully, in the vast majority of cases, one-to-many's will be handled by aggregations or formatters and this method will not be needed.
 	 */
-	@SuppressWarnings("unchecked")
-	protected DataModelObjBase selectRelatedObject(DataModelObjBase parent, Method getter, Class<? extends DataModelObjBase> relatedClass) throws Exception
+	protected DataModelObjBase selectRelatedObject(DataModelObjBase parent, Collection<DataModelObjBase> objects) throws Exception
 	{
-		Set<? extends DataModelObjBase> objects = (Set<? extends DataModelObjBase> )getter.invoke(parent);
 		if (objects.size() > 0)
 		{
 			Iterator<? extends DataModelObjBase> iter = objects.iterator();
@@ -353,6 +369,12 @@ public class DwcMapper
 		return null;
 	}
 	
+	/**
+	 * @param parent
+	 * @param obj
+	 * @return
+	 * @throws Exception
+	 */
 	protected boolean isObjectToSelect(DataModelObjBase parent, DataModelObjBase obj) throws Exception
 	{
 		if (parent.getClass().equals(CollectionObject.class))
@@ -385,12 +407,44 @@ public class DwcMapper
 			}
 			else
 			{
-				System.out.println("Getting a formatted/aggregated value: " + object + ", " + mapping);
+				return getFormatted(object, mapping, session);
 			}
 		}
-		return null;
 	}
 	
+	/**
+	 * @param object
+	 * @param mapping
+	 * @param session
+	 * @return
+	 * @throws Exception
+	 */
+	protected String getFormatted(DataModelObjBase object, String mapping, DataProviderSessionIFace session) throws Exception
+	{
+		System.out.println("Getting a formatted/aggregated value: " + object + ", " + mapping);
+		Object objects = getRelatedObjects(object, mapping);
+		if (objects == null)
+		{
+			return null;
+		}
+		if (!Collection.class.isAssignableFrom(objects.getClass()))
+		{
+			return DataObjFieldFormatMgr.getInstance().format(object, object.getClass());	
+		}
+		Collection<?> objs = (Collection<?> )objects;
+		if (objs.size() == 0)
+		{
+			return null; 
+		}
+		return DataObjFieldFormatMgr.getInstance().aggregate(objs, objs.iterator().next().getClass());
+	}
+	/**
+	 * @param object
+	 * @param mapping
+	 * @param session
+	 * @return
+	 * @throws Exception
+	 */
 	protected String getTreeRank(Treeable<?, ?, ?> object, String mapping, DataProviderSessionIFace session) throws Exception
 	{
 		System.out.println("Getting a tree rank: " + object + ", " + mapping);
