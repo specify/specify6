@@ -14,6 +14,8 @@ import java.util.Vector;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import net.morphbank.mbsvc3.fsuherb.MapFsuHerbSpreadsheetToXml;
 import net.morphbank.mbsvc3.xml.ObjectFactory;
 import net.morphbank.mbsvc3.xml.XmlBaseObject;
@@ -22,9 +24,11 @@ import net.morphbank.mbsvc3.xml.XmlTaxonNameUtilities;
 import net.morphbank.mbsvc3.xml.XmlUtils;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Institution;
+import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
 
 /**
  * @author timo
@@ -283,7 +287,8 @@ public class CollectionObjectFieldMapper
 		ResultSet rs = null;
 		try
 		{
-			String sql = "select at.AttachmentLocation, at.CopyrightHolder, at.CopyrightDate, at.MimeType, at.Credit, at.OrigFilename, at.Title, coat.remarks, coat.ordinal "
+			String sql = "select at.AttachmentLocation, at.CopyrightHolder, at.CopyrightDate, at.MimeType, at.Credit, at.OrigFilename, " +
+					"at.Title, at.height, at.width, at.resolution, at.magnification, at.creativeCommons, coat.remarks, coat.ordinal "
 				+ "from collectionobjectattachment coat inner join attachment at on at.AttachmentID = coat.AttachmentID where "
 				+ "at.MimeType like 'image/%' and coat.CollectionObjectID = " + collectionObjectId;
 			stmt = getConnection().createStatement();
@@ -292,7 +297,8 @@ public class CollectionObjectFieldMapper
 			while (rs.next())
 			{
 				result.add(new AttachmentRecord(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), 
-						rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getInt(9)));
+						rs.getString(5), rs.getString(6), rs.getString(7), rs.getInt(8), rs.getInt(9), 
+						rs.getDouble(10), rs.getDouble(11), rs.getString(12), rs.getString(13), rs.getInt(14)));
 			}
 			return result;
 		} finally
@@ -300,6 +306,29 @@ public class CollectionObjectFieldMapper
 			if (rs != null) rs.close();
 			if (stmt != null) stmt.close();
 		}
+	}
+	
+	/**
+	 * @param imageObj
+	 * @return
+	 */
+	protected AttachmentRecord getImage(ObjectAttachmentIFace<?> imageObj)
+	{
+		Attachment at = imageObj.getAttachment();
+		return new AttachmentRecord(at.getAttachmentLocation(),
+				at.getCopyrightHolder(),
+				at.getCopyrightDate(),
+				at.getMimeType(),
+				at.getCredit(),
+				at.getOrigFilename(),
+				at.getTitle(),
+				at.getHeight(),
+				at.getWidth(),
+				at.getResolution(),
+				at.getMagnification(),
+				at.getCreativeCommons(),
+				imageObj.getRemarks(),
+				imageObj.getOrdinal());
 	}
 	
 	/**
@@ -368,6 +397,10 @@ public class CollectionObjectFieldMapper
 		*/
 	}
 	
+	/**
+	 * @return
+	 * @throws Exception
+	 */
 	public Vector<XmlBaseObject> getXmlImages() throws Exception
 	{
 		Vector<XmlBaseObject> result = new Vector<XmlBaseObject>();
@@ -382,6 +415,22 @@ public class CollectionObjectFieldMapper
 		return result;
 	}
 	
+	/**
+	 * @param image
+	 * @return
+	 */
+	public XmlBaseObject getXmlImage(ObjectAttachmentIFace<?> image)
+	{
+		if (!(image.getObject() instanceof CollectionObject))
+		{
+			throw new NotImplementedException("CollectionObjectFieldMapper: attachment type not supported: " + image.getClass().getName());
+		}
+		AttachmentRecord imageRec = getImage(image);
+		XmlBaseObject xmlImage = new XmlBaseObject("Image");
+		xmlImage.addDescription("From specimen " + getCollectionObjectId());
+		setXmlImageFields(xmlImage, imageRec);
+		return xmlImage;
+	}
 	/**
 	 * @return the collectionObjectId
 	 */
@@ -408,6 +457,11 @@ public class CollectionObjectFieldMapper
 		private String credit;
 		private String origFileName;
 		private String title;
+		private Integer height;
+		private Integer width;
+		private Double resolution;
+		private Double magnification;
+		private String creativeCommons;
 		private String remarks;
 		private Integer ordinal;
 		/**
@@ -419,7 +473,9 @@ public class CollectionObjectFieldMapper
 		 * @param ordinal
 		 */
 		public AttachmentRecord(String attachmentLocation,
-				String copyrightHolder, String copyrightDate, String mimeType, String credit, String origFileName, String title,
+				String copyrightHolder, String copyrightDate, String mimeType, String credit, 
+				String origFileName, String title, Integer height, Integer width, Double resolution,
+				Double magnification, String creativeCommons,
 				String remarks, int ordinal)
 		{
 			super();
@@ -430,6 +486,11 @@ public class CollectionObjectFieldMapper
 			this.credit = credit;
 			this.origFileName = origFileName;
 			this.title = title;
+			this.height = height;
+			this.width = width;
+			this.resolution = resolution;
+			this.magnification = magnification;
+			this.creativeCommons = creativeCommons;
 			this.remarks = remarks;
 			this.ordinal = ordinal;
 		}
@@ -558,6 +619,76 @@ public class CollectionObjectFieldMapper
 		public void setCredit(String credit)
 		{
 			this.credit = credit;
+		}
+		/**
+		 * @return the height
+		 */
+		public Integer getHeight()
+		{
+			return height;
+		}
+		/**
+		 * @param height the height to set
+		 */
+		public void setHeight(Integer height)
+		{
+			this.height = height;
+		}
+		/**
+		 * @return the width
+		 */
+		public Integer getWidth()
+		{
+			return width;
+		}
+		/**
+		 * @param width the width to set
+		 */
+		public void setWidth(Integer width)
+		{
+			this.width = width;
+		}
+		/**
+		 * @return the resolution
+		 */
+		public Double getResolution()
+		{
+			return resolution;
+		}
+		/**
+		 * @param resolution the resolution to set
+		 */
+		public void setResolution(Double resolution)
+		{
+			this.resolution = resolution;
+		}
+		/**
+		 * @return the magnification
+		 */
+		public Double getMagnification()
+		{
+			return magnification;
+		}
+		/**
+		 * @param magnification the magnification to set
+		 */
+		public void setMagnification(Double magnification)
+		{
+			this.magnification = magnification;
+		}
+		/**
+		 * @return the creativeCommons
+		 */
+		public String getCreativeCommons()
+		{
+			return creativeCommons;
+		}
+		/**
+		 * @param creativeCommons the creativeCommons to set
+		 */
+		public void setCreativeCommons(String creativeCommons)
+		{
+			this.creativeCommons = creativeCommons;
 		}
 		
 		

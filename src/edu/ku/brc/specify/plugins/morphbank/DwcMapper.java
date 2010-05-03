@@ -486,8 +486,14 @@ public class DwcMapper
 	 */
 	public static void main(String[] args) 
 	{
-		// TODO Auto-generated method stub
-
+		try
+		{
+			java.awt.Desktop.getDesktop().browse(java.net.URI.create("http://test.morphbank.net/?id=1000346"));
+		} catch (Exception ex)
+		{
+			ex.printStackTrace();
+			System.exit(-1);
+		}
 	}
 
 }

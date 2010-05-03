@@ -22,8 +22,10 @@ import org.apache.commons.lang.NotImplementedException;
 
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.UIPluginable;
+import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
+import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
 import edu.ku.brc.ui.GetSetValueIFace;
 
 /**
@@ -35,7 +37,9 @@ public class MorphBankUploadButtonPlugin extends JButton implements
 		UIPluginable, GetSetValueIFace
 {
 	protected CollectionObject colObj = null;
-	protected boolean hasImages = false;
+	protected Attachment attachment = null;
+	protected ObjectAttachmentIFace<?> attacher = null;
+	protected boolean isImage = false;
 	
 	public MorphBankUploadButtonPlugin()
 	{
@@ -73,7 +77,9 @@ public class MorphBankUploadButtonPlugin extends JButton implements
 			FileWriter reportFile = new FileWriter("/home/timo/mbreport" + colObj.getCatalogNumber() + ".xml");
 			PrintWriter report = new PrintWriter(reportFile);
 			
-    		Request request = MorphBankTest.createRequestFromCollectionObject(colObj, getSubmitterCredentials(),
+    		//Request request = MorphBankTest.createRequestFromCollectionObject(colObj, getSubmitterCredentials(),
+    				//getOwnerCredentials());
+			Request request = MorphBankTest.createRequestFromImage(attacher, getSubmitterCredentials(),
     				getOwnerCredentials());
 
 			FileWriter outFile = new FileWriter("/home/timo/mb" + colObj.getCatalogNumber() + ".xml");
@@ -204,26 +210,49 @@ public class MorphBankUploadButtonPlugin extends JButton implements
 	@Override
 	public void setValue(Object value, String defaultValue)
 	{
-        colObj = null;
-        hasImages = false;
-        if (value != null)
-        {
-            if (value instanceof CollectionObject)
-            {
-                colObj = (CollectionObject)value;
-                //this may not work...
-                for (CollectionObjectAttachment at : colObj.getCollectionObjectAttachments())
-                {
-                	if (isImageMimeType(at.getAttachment().getMimeType()))
-                	{
-                		hasImages = true;
-                		break;
-                	}
-                }
-            }
-        }         
-        setEnabled(hasImages);
+//        colObj = null;
+//        hasImages = false;
+//        if (value != null)
+//        {
+//            if (value instanceof CollectionObject)
+//            {
+//                colObj = (CollectionObject)value;
+//                //this may not work...
+//                for (CollectionObjectAttachment at : colObj.getCollectionObjectAttachments())
+//                {
+//                	if (isImageMimeType(at.getAttachment().getMimeType()))
+//                	{
+//                		hasImages = true;
+//                		break;
+//                	}
+//                }
+//            }
+//        }         
+//        setEnabled(hasImages);
 
+		
+		colObj = null;
+		isImage = false;
+		attachment = null;
+		attacher = null;
+		if (value != null)
+		{
+			if (value instanceof CollectionObjectAttachment)
+			{
+				attacher = (CollectionObjectAttachment )value;
+				attachment = attacher.getAttachment();
+				if (attachment != null)
+				{
+					isImage = isImageMimeType(attachment.getMimeType());
+				}
+				colObj = ((CollectionObjectAttachment )attacher).getCollectionObject();
+			}
+			else
+			{
+				throw new NotImplementedException("MorphBankUploadButton does not support " + value.getClass().getName());
+			}
+		}
+		setEnabled(isImage);
 	}
 
 	/**

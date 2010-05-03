@@ -14,7 +14,11 @@ import net.morphbank.mbsvc3.xml.Request;
 import net.morphbank.mbsvc3.xml.XmlBaseObject;
 import net.morphbank.mbsvc3.xml.XmlId;
 import net.morphbank.mbsvc3.xml.XmlUtils;
+
+import org.apache.commons.lang.NotImplementedException;
+
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
 
 /**
  * @author timo
@@ -74,6 +78,35 @@ public class MorphBankTest
 		}
 		return request;
 	}
+	
+	/**
+	 * @param image
+	 * @param submitter
+	 * @param owner
+	 * @return
+	 * @throws Exception
+	 */
+	public static Request createRequestFromImage(final ObjectAttachmentIFace<?> image, 
+			Credentials submitter, Credentials owner) throws Exception
+	{
+		if (!(image.getObject() instanceof CollectionObject))
+		{
+			throw new NotImplementedException("MorphBankTest attachment type not supported: " + image.getClass().getName());
+		}
+		CollectionObjectFieldMapper fieldMapper = new CollectionObjectFieldMapper((CollectionObject )image.getObject());
+		Request request = new Request();
+		request.setSubmitter(submitter);
+		Insert insert = new Insert();
+		insert.setContributor(owner);
+		request.getInsert().add(insert);
+		XmlBaseObject xmlSpecimen = createXmlSpecimen(fieldMapper);
+		insert.getXmlObjectList().add(xmlSpecimen);
+		XmlBaseObject xmlImage = fieldMapper.getXmlImage(image);
+		xmlImage.getView().add(new XmlId(77407));			
+		insert.getXmlObjectList().add(xmlImage);
+		return request;
+	}
+
 	/**
 	 * @param args
 	 */
