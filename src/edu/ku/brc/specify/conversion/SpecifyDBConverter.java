@@ -610,7 +610,7 @@ public class SpecifyDBConverter extends AppBase
             return;
         }
         
-        if (true)
+        if (false)
         {
             IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
             DuplicateCollectingEvents dce = new DuplicateCollectingEvents(oldDBConn, newDBConn);

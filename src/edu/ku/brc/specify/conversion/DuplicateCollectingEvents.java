@@ -222,7 +222,7 @@ public class DuplicateCollectingEvents
     /**
      * @param rsmd
      * @param columnName
-     * @return the index of the colun by name, zero means not found
+     * @return the index of the column by name, zero means not found
      * @throws SQLException
      */
     private int getColumnIndex(final ResultSetMetaData rsmd, final String columnName) throws SQLException
@@ -252,6 +252,8 @@ public class DuplicateCollectingEvents
                                            final Statement stmtCEC,
                                            final PreparedStatement prepCECStmt) throws SQLException
     {
+        boolean doCollectors = true; // temp
+
         int dispId = BasicSQLUtils.getCountAsInt("SELECT DisciplineID FROM collectingevent WHERE CollectingEventID = " + ceID);
         int divId  = BasicSQLUtils.getCountAsInt("SELECT DivisionID FROM discipline WHERE DisciplineID = " + dispId);
 
@@ -336,25 +338,28 @@ public class DuplicateCollectingEvents
                             ceaRS.close();
                         }
                         
-                        // Duplicate Collectors for (CE)
-                        sql = String.format(selectCECStr, ceID);
-                        ResultSet rsCEC = stmtCEC.executeQuery(sql);
-                        while (rsCEC.next()) 
+                        if (doCollectors)
                         {
-                            int divCECInx  = getColumnIndex(rsCEC.getMetaData(), "DivisionID");
-                            int newCEIDInx = getColumnIndex(rsCEC.getMetaData(), "CollectingEventID");
-
-                            for (int i=1;i<=rsCEC.getMetaData().getColumnCount();i++)
+                            // Duplicate Collectors for (CE)
+                            sql = String.format(selectCECStr, ceID);
+                            ResultSet rsCEC = stmtCEC.executeQuery(sql);
+                            while (rsCEC.next()) 
                             {
-                                //System.out.println(i+"  "+rsCEC.getMetaData().getColumnName(i)+"  "+rsCEC.getObject(i));
-                                prepCECStmt.setObject(i, rsCEC.getObject(i));
-                            }
-                            prepCECStmt.setInt(divCECInx, divId);
-                            prepCECStmt.setInt(newCEIDInx, newCEID);
-                            
-                            if (prepCECStmt.executeUpdate() != 1)
-                            {
-                                throw new RuntimeException("Couldn't insert CECollector row.");
+                                int divCECInx  = getColumnIndex(rsCEC.getMetaData(), "DivisionID");
+                                int newCEIDInx = getColumnIndex(rsCEC.getMetaData(), "CollectingEventID");
+    
+                                for (int i=1;i<=rsCEC.getMetaData().getColumnCount();i++)
+                                {
+                                    //System.out.println(i+"  "+rsCEC.getMetaData().getColumnName(i)+"  "+rsCEC.getObject(i));
+                                    prepCECStmt.setObject(i, rsCEC.getObject(i));
+                                }
+                                prepCECStmt.setInt(divCECInx, divId);
+                                prepCECStmt.setInt(newCEIDInx, newCEID);
+                                
+                                if (prepCECStmt.executeUpdate() != 1)
+                                {
+                                    throw new RuntimeException("Couldn't insert CECollector row.");
+                                }
                             }
                         }
                     } 
@@ -469,8 +474,8 @@ public class DuplicateCollectingEvents
             {
                 int     oldCOId = rs.getInt(1);
                 int     oldCEId = rs.getInt(2);
-                Integer newCEId = ceMapper.get(oldCEId);
                 Integer newCOId = coMapper.get(oldCOId);
+                Integer newCEId = ceMapper.get(oldCEId);
                 
                 if (newCOId != null)
                 {
@@ -482,10 +487,17 @@ public class DuplicateCollectingEvents
                         pStmt.setObject(1, null);
                     }
                     
-                    pStmt.setInt(2, newCOId);
-                    if (pStmt.executeUpdate() != 1)
+                    try
                     {
-                        throw new RuntimeException("Couldn't update CO with correct CEId.");
+                        pStmt.setInt(2, newCOId);
+                        if (pStmt.executeUpdate() != 1)
+                        {
+                            throw new RuntimeException(String.format("Couldn't update CO with correct CEId; oldCOId: %d   newCOId: %d   oldCEId: %d  newCEId: %d", oldCOId, newCOId, oldCEId, newCEId != null ? newCEId : -1));
+                        }
+                    } catch (SQLException ex)
+                    {
+                        log.error(ex.toString());
+                        log.error(String.format("oldCOId: %d   newCOId: %d   oldCEId: %d  newCEId: %d", oldCOId, newCOId, oldCEId, newCEId != null ? newCEId : -1));
                     }
                     lastCEId = newCEId;
                     coCnt++;
@@ -527,6 +539,13 @@ public class DuplicateCollectingEvents
             int fixCOCnt = BasicSQLUtils.update(sql);
             log.debug(String.format("Set %d CO->CEID to NULL.", fixCOCnt));
             
+            int lastCollectorID = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT NewID FROM collectors_CollectorsID ORDER BY NewID DESC LIMIT 0,1");
+            sql = "DELETE FROM collector WHERE CollectorID > "+lastCollectorID;
+            log.debug(sql);
+            int updateColCnt = BasicSQLUtils.update(sql);
+            log.debug(String.format("Deleted %d extra Collectors", updateColCnt));
+
+            
             sql = "DELETE FROM collectingevent WHERE CollectingEventID > "+lastCEId;
             log.debug(sql);
             int updateCECnt = BasicSQLUtils.update(sql);
@@ -537,11 +556,11 @@ public class DuplicateCollectingEvents
             int updateCEACnt = BasicSQLUtils.update(sql);
             log.debug(String.format("Deleted %d extra CollectingEventAttributes", updateCEACnt));
 
-            String selectCECSQL = createSelectStmt(Collector.getClassTableId(), "CollectingEventID = %d");
+            //String selectCECSQL = createSelectStmt(Collector.getClassTableId(), "CollectingEventID = %d");
             //prepCECStmt         = createPreparedStmt(Collector.getClassTableId());
             //stmtCEC             = newDBConn.createStatement();
             
-            log.debug(selectCECSQL);
+            //log.debug(selectCECSQL);
             
             int totalCnt = getCollectingEventsWithManyCollectionObjectsCount();
             log.debug(String.format("%d CEs with more than one CO for all Collections", totalCnt));
