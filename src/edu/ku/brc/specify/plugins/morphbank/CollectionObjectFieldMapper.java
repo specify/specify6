@@ -315,20 +315,21 @@ public class CollectionObjectFieldMapper
 	protected AttachmentRecord getImage(ObjectAttachmentIFace<?> imageObj)
 	{
 		Attachment at = imageObj.getAttachment();
-		return new AttachmentRecord(at.getAttachmentLocation(),
-				at.getCopyrightHolder(),
-				at.getCopyrightDate(),
-				at.getMimeType(),
-				at.getCredit(),
-				at.getOrigFilename(),
-				at.getTitle(),
-				at.getHeight(),
-				at.getWidth(),
-				at.getResolution(),
-				at.getMagnification(),
-				at.getCreativeCommons(),
-				imageObj.getRemarks(),
-				imageObj.getOrdinal());
+		return null;
+//		return new AttachmentRecord(at.getAttachmentLocation(),
+//				at.getCopyrightHolder(),
+//				at.getCopyrightDate(),
+//				at.getMimeType(),
+//				at.getCredit(),
+//				at.getOrigFilename(),
+//				at.getTitle(),
+//				at.getHeight(),
+//				at.getWidth(),
+//				at.getResolution(),
+//				at.getMagnification(),
+//				at.getCreativeCommons(),
+//				imageObj.getRemarks(),
+//				imageObj.getOrdinal());
 	}
 	
 	/**
