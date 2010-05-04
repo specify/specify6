@@ -325,7 +325,7 @@ public class ConvertVerifier extends AppBase
         progressFrame.adjustProgressFrame();
         
         String cntSQL = compareTo6DBs ? "SELECT COUNT(*) FROM collectionobject" :
-                                        "SELECT COUNT(*) FROM collectionobjectcatalog WHERE CollectionObjectTypeID < 20";
+                                        "SELECT COUNT(*) FROM collectionobjectcatalog WHERE CollectionObjectTypeID > 8 && CollectionObjectTypeID < 20";
         Integer numColObjs = BasicSQLUtils.getCount(oldDBConn, cntSQL);
         
         progressFrame.setProcess(0, numColObjs);
@@ -375,7 +375,7 @@ public class ConvertVerifier extends AppBase
             int i = 0;
             Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             String    sql  = compareTo6DBs ? "SELECT CatalogNumber FROM collectionobject ORDER BY CatalogNumber ASC" :
-                                             "SELECT CatalogNumber FROM collectionobjectcatalog WHERE CollectionObjectTypeID < 20 AND SubNumber >= 0 ORDER BY CatalogNumber ASC";
+                                             "SELECT CatalogNumber FROM collectionobjectcatalog WHERE CollectionObjectTypeID > 8 && CollectionObjectTypeID < 20 AND SubNumber >= 0 ORDER BY CatalogNumber ASC";
             ResultSet rs   = stmt.executeQuery(sql);
             while (rs.next())
             {
@@ -1292,7 +1292,7 @@ public class ConvertVerifier extends AppBase
      * @param oldCatNum
      * @return
      */
-    private String convertCatNum(final int oldCatNum)
+    public static String convertCatNum(final int oldCatNum)
     {
         int size = 9;
         

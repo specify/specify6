@@ -609,6 +609,16 @@ public class SpecifyDBConverter extends AppBase
         {
             return;
         }
+        
+        if (true)
+        {
+            IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
+            DuplicateCollectingEvents dce = new DuplicateCollectingEvents(oldDBConn, newDBConn);
+            //dce.performMaint(true);
+            dce.fixCollectorsForCollectingEvents();
+            //dce.removeUnneededCEs();
+            return;
+        }
 
         if (!System.getProperty("user.name").equals("rods"))
         {
@@ -1463,8 +1473,8 @@ public class SpecifyDBConverter extends AppBase
                 File ceFile = new File(dbNameDest+".ce_all");
                 if (doingOneToOneForColObjToCE)
                 {
-                    DuplicateCollectingEvents dce = new DuplicateCollectingEvents(newDBConn, frame, conversion.getCurAgentCreatorID(), dscp.getId());
-                    dce.performMaint();
+                    DuplicateCollectingEvents dce = new DuplicateCollectingEvents(oldDBConn, newDBConn, frame, conversion.getCurAgentCreatorID(), dscp.getId());
+                    dce.performMaint(true);
                     
                     FileUtils.writeStringToFile(ceFile, dbNameDest);
                     
