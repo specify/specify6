@@ -27,6 +27,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,6 +41,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -101,6 +103,8 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
 
     protected String srcLangCode = "en";
 
+    protected String currentPath = null;
+    
     protected LanguageEntry destLanguage = null;
     
     protected StrLocaleFile srcFile;
@@ -151,7 +155,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         {
         	destLanguage = new LanguageEntry("Spanish", "es");
         }
-        setupDestFiles(destLanguage.getCode());
+        setupDestFiles(destLanguage.getCode(), null);
         
         createUI();
         
@@ -164,7 +168,8 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
      */
     protected StrLocaleFile getResourcesFile()
     {
-        StrLocaleFile file = getLocaleFileByPath(srcFiles, "src/resources_en.properties");
+        StrLocaleFile file = getLocaleFileByPath(srcFiles, getPath() + File.separator + "resources_" + 
+        		 (destLanguage == null ? "en" : destLanguage.getCode()) + ".properties");
         if (file == null)
         {
         	file = srcFiles.get(0);
@@ -177,9 +182,17 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
      */
     protected String getPath()
     {
-    	return "src/";
+    	if (currentPath == null)
+    	{
+    		return getDefaultPath();
+    	}
+    	return currentPath + File.separator;
     }
     
+    protected String getDefaultPath()
+    {
+    	return "src" + File.separator;
+    }
     /**
      * @param dirName
      */
@@ -193,7 +206,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
     	for (Object fobj : files)
     	{
     		File f = (File )fobj;
-    		if (f.getName().endsWith("_en.properties"))
+    		if (f.getName().endsWith("_" + (destLanguage == null ? "en" : destLanguage.getCode()) + ".properties"))
     		{
     			srcFiles.add(new StrLocaleFile(dirName + f.getName(), null, false));
     		}
@@ -217,12 +230,22 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
      *	
      * Assumes srcLocaleFiles has already been setup.
      */
-    protected void setupDestFiles(final String langCode)
+    protected void setupDestFiles(final String langCode, final String destPath)
     {
     	destFiles.clear();
     	for (StrLocaleFile f : srcFiles)
     	{
-    		String newPath = f.getPath().replace("_" + srcLangCode + ".", "_" + langCode + ".");
+    		String newPath;
+    		if (destPath != null)
+    		{
+    			File duh = new File(f.getPath());
+    			String newName = duh.getName().replace("_" + srcLangCode + ".", "_" + langCode + ".");
+    			newPath = destPath + File.separator + newName;
+    		}
+    		else
+    		{
+    			newPath = f.getPath().replace("_" + srcLangCode + ".", "_" + langCode + ".");
+    		}
     		destFiles.add(new StrLocaleFile(newPath, f.getPath(), true));
     	}
     }
@@ -646,7 +669,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         
         JMenu fileMenu = new JMenu(UIRegistry.getResourceString("FILE"));
         
-        JMenuItem newLocaleItem = new JMenuItem(UIRegistry.getResourceString("StrLocalizerApp.ChooseLanguageMenu"));
+        JMenuItem newLocaleItem = new JMenuItem(UIRegistry.getResourceString("StrLocalizerApp.NewLocaleMenu"));
         fileMenu.add(newLocaleItem);
         
         newLocaleItem.addActionListener(new ActionListener() {
@@ -661,6 +684,20 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
             }
         });        
 
+        JMenuItem chooseLocaleItem = new JMenuItem(UIRegistry.getResourceString("StrLocalizerApp.ChooseLocaleMenu"));
+        fileMenu.add(chooseLocaleItem);
+        
+        chooseLocaleItem.addActionListener(new ActionListener() {
+
+            /* (non-Javadoc)
+             * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+             */
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                doChooseLocale();
+            }
+        });        
 
         JMenuItem chooseFileItem = new JMenuItem(UIRegistry.getResourceString("StrLocalizerApp.ChooseFileMenu"));
         fileMenu.add(chooseFileItem);
@@ -780,7 +817,84 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
 
     
     /**
-     * Switch languages
+     * Open existing language 'project'
+     */
+    protected void doChooseLocale()
+    {        
+    	JFileChooser fdlg = new JFileChooser();
+    	fdlg.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    	int fdlgResult = fdlg.showOpenDialog(null);
+    	if (fdlgResult != JFileChooser.APPROVE_OPTION)
+    	{
+    		return;
+    	}
+    
+    	File destDir = fdlg.getSelectedFile();
+
+    	//figure out the language
+    	String[] propFiles = destDir.list(new FilenameFilter() {
+
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.endsWith(".properties");
+			}
+    		
+    	}); 
+    	
+    	String langCode = null;
+    	LanguageEntry lang = null;
+    	for (String fileName : propFiles)
+    	{
+    		int extPos = fileName.indexOf(".properties");
+    		if (extPos != -1)
+    		{
+    			if (langCode == null)
+    			{
+    				langCode = fileName.substring(extPos - 2, extPos);
+    				lang = getLanguageByCode(langCode);
+    				if (lang == null)
+    				{
+    					UIRegistry.showLocalizedError("StrLocalizerApp.InvalidLangCode", langCode);
+    					return;
+    				}
+    			}
+    			else if (!langCode.equals(fileName.substring(extPos - 2, extPos)))
+    			{
+					UIRegistry.showLocalizedError("StrLocalizerApp.InvalidLocaleDir", langCode);
+					return;
+    			}
+    			
+    		}
+    	}
+    	if (lang == null)
+		{
+			UIRegistry.showLocalizedError("StrLocalizerApp.InvalidLocaleDir", langCode);
+			return;
+		}
+        destLanguage = lang;
+        final String newLang = destLanguage.getEnglishName();
+        SwingUtilities.invokeLater(new Runnable() {
+
+			/* (non-Javadoc)
+			 * @see java.lang.Runnable#run()
+			 */
+			@Override
+			public void run()
+			{
+				destLbl.setText(newLang);
+			}
+        	
+        });
+        
+        currentPath = destDir.getPath();
+        setupSrcFiles(getPath());
+        setupDestFiles(destLanguage.getCode(), destDir.getPath());
+        
+        newSrcFile(getResourcesFile());       
+    		
+    }
+    /**
+     * New language 'project'
      */
     protected void doNewLocale()
     {
@@ -797,6 +911,16 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         	return;
         }
 
+        JFileChooser fdlg = new JFileChooser();
+        fdlg.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int fdlgResult = fdlg.showOpenDialog(null);
+        if (fdlgResult != JFileChooser.APPROVE_OPTION)
+        {
+        	return;
+        }
+        
+        File destDir = fdlg.getSelectedFile();
+        
         destLanguage = ldlg.getSelectedObject();
         final String newLang = destLanguage.getEnglishName();
         SwingUtilities.invokeLater(new Runnable() {
@@ -812,8 +936,14 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         	
         });
         
-        setupSrcFiles(getPath());
-        setupDestFiles(ldlg.getSelectedObject().getCode());
+        setupSrcFiles(getDefaultPath());
+        setupDestFiles(ldlg.getSelectedObject().getCode(), destDir.getPath());
+        
+    	for (StrLocaleFile file : destFiles)
+    	{
+    		file.save();
+    	}
+        currentPath = destDir.getPath();
         
         newSrcFile(getResourcesFile());       
     }
