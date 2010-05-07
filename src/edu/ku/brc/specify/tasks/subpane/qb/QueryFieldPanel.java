@@ -736,7 +736,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         if (field.getFieldInfo() != null && field.getFieldInfo().getName().equalsIgnoreCase("catalognumber") 
                 && field.getTableInfo().getClassObj().equals(CollectionObject.class))
         {
-            if (field.getFieldInfo().getFormatter().isNumeric())
+            if (field.getFieldInfo().getFormatter() != null && field.getFieldInfo().getFormatter().isNumeric())
             {
             	return getComparatorListForClass(Number.class);
             }
