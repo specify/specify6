@@ -602,20 +602,20 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 session.beginTransaction();
                 for (SpLocaleContainer container : changedTables)
                 {
-                    SpLocaleContainer c = session.merge(container);
-                    session.saveOrUpdate(c);
-                    for (SpLocaleItemStr str : c.getNames())
+                    SpLocaleContainer dbContainer = session.merge(container);
+                    session.saveOrUpdate(dbContainer);
+                    for (SpLocaleItemStr str : dbContainer.getNames())
                     {
                         session.saveOrUpdate(session.merge(str));
                         //System.out.println(c.getName()+" - "+str.getText());
                     }
-                    for (SpLocaleItemStr str : c.getDescs())
+                    for (SpLocaleItemStr str : dbContainer.getDescs())
                     {
                         session.saveOrUpdate(session.merge(str));
                         //System.out.println(c.getName()+" - "+str.getText());
                     }
                     
-                    for (SpLocaleContainerItem item : c.getItems())
+                    for (SpLocaleContainerItem item : dbContainer.getItems())
                     {
                         SpLocaleContainerItem i = session.merge(item);
                         session.saveOrUpdate(i);

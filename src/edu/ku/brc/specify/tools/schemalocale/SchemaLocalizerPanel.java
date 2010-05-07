@@ -443,8 +443,13 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     		return;
     	}
     	
+    	String contatinerFmtName = currContainer.getFormat();
+    	
         // add formatters to the combo box
-        int selectedInx = -1;
+        int     selectedInx = -1;
+        Integer curFmtInx   = null;
+        
+        int inx = 0;
         for (DataObjSwitchFormatter format : fList)
         {
         	model.addElement(format);
@@ -455,10 +460,16 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         	    // of the combo box model, because we are adding the formatters one by one.
         		selectedInx = model.getSize() - 1;
         	}
+        	
+        	if (contatinerFmtName != null && format.getName().equals(contatinerFmtName))
+        	{
+        	    curFmtInx = inx;
+        	}
+        	inx++;
         }
         
         // select format from list that is currently assigned to table
-        dataObjFmtCbo.setSelectedIndex(selectedInx);
+        dataObjFmtCbo.setSelectedIndex(curFmtInx != null ? curFmtInx : selectedInx);
     }
     
     /**
@@ -483,8 +494,13 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
 
         if (currContainer == null) return;
         
+        String contatinerAggName = currContainer.getAggregator();
+        
         // add formatters to the combo box
-        int selectedInx = -1;
+        int     selectedInx = -1;
+        Integer curAggInx   = null;
+        
+        int inx = 0;
         for (DataObjAggregator aggregator : fList)
         {
             model.addElement(aggregator);
@@ -495,10 +511,16 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
                 // of the combo box model, because we are adding the formatters one by one.
                 selectedInx = model.getSize() - 1;
             }
+            
+            if (contatinerAggName != null && aggregator.getName().equals(contatinerAggName))
+            {
+                curAggInx = inx;
+            }
+            inx++;
         }
         
         // select format from list that is currently assigned to table
-        aggregatorCbo.setSelectedIndex(selectedInx);
+        aggregatorCbo.setSelectedIndex(curAggInx != null ? curAggInx : selectedInx);
     }
 
     /**
@@ -835,15 +857,36 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         {
             prevTable.setIsHidden(tblHideChk.isSelected());
             
+            boolean formatterChanged = false;
             DataObjSwitchFormatter dataObjFmt = (DataObjSwitchFormatter)dataObjFmtCbo.getSelectedItem();
-            prevTable.setFormat(dataObjFmt != null ? dataObjFmt.getName() : null);
+            if (dataObjFmt != null)
+            {
+                String fName = prevTable.getFormat();
+                formatterChanged = fName == null || !fName.equals(dataObjFmt.getName());
+                prevTable.setFormat(dataObjFmt.getName());
+                formatterChanged = true;
+            } else
+            {
+                prevTable.setFormat(null);
+            }
             
+            boolean aggChanged = false;
             DataObjAggregator dataObjAgg = (DataObjAggregator)aggregatorCbo.getSelectedItem();
-            ((SpLocaleContainer)prevTable).setAggregator(dataObjAgg != null ? dataObjAgg.getName() : null);
+            if (dataObjAgg != null)
+            {
+                SpLocaleContainer container = (SpLocaleContainer)prevTable;
+                String            aggName   = container.getAggregator();
+                aggChanged = aggName == null || !aggName.equals(dataObjAgg.getName());
+                container.setAggregator(dataObjAgg.getName());
+                aggChanged = true;
+            } else
+            {
+                ((SpLocaleContainer)prevTable).setAggregator(null);
+            }            
             
             boolean nameChanged = setNameDescStrForCurrLocale(prevTable, tblNameText.getText());
             boolean descChanged = setDescStrForCurrLocale(prevTable,     tblDescText.getText());
-            if (nameChanged || descChanged)
+            if (nameChanged || descChanged || formatterChanged || aggChanged)
             {
                 setHasChanged(true);
             }

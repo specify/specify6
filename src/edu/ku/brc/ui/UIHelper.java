@@ -81,7 +81,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Formatter;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
@@ -200,7 +199,8 @@ public final class UIHelper
     protected static Hashtable<CommandType, KeyStroke> cmdTypeKSHash = new Hashtable<CommandType, KeyStroke>();
 
 
-    protected static Object[]       values           = new Object[2];
+    //protected static Object[]       values           = new Object[2];
+    protected static Object[][]     valuesArray      = null;
     protected static DateWrapper    scrDateFormat    = null;
 
     protected static Border          emptyBorder     = BorderFactory.createEmptyBorder(1, 1, 1, 1);
@@ -219,6 +219,13 @@ public final class UIHelper
     
 
     static {
+        
+        valuesArray = new Object[5][0];
+        for (int i=0;i<5;i++)
+        {
+            valuesArray[i] = new Object[i+1];
+        }
+        
         try
         {
             calendar = GregorianCalendar.getInstance();
@@ -1340,11 +1347,15 @@ public final class UIHelper
             scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
         }
 
-        if (fieldNames.length > values.length)
+        Object[] values = null;
+        
+        if (fieldNames.length > 5)
         {
             values = new Object[fieldNames.length];
         } else
         {
+            values = valuesArray[fieldNames.length-1];
+            
             for (int i=fieldNames.length;i<values.length;i++)
             {
                 values[i] = null;
@@ -1448,11 +1459,12 @@ public final class UIHelper
 
         try
         {
-            Formatter formatter = new Formatter();
-            formatter.format(format, valuesArg);
-            return formatter.toString();
+            return String.format(format, valuesArg);
+            //Formatter formatter = new Formatter();
+            //formatter.format(format, valuesArg);
+            //return formatter.toString();
 
-        } catch (java.util.IllegalFormatConversionException ex)
+        } catch (Exception ex)
         {
             return valuesArg[0] != null ? valuesArg[0].toString() : "";
         }
