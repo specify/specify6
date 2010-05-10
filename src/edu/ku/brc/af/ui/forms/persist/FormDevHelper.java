@@ -19,8 +19,6 @@ package edu.ku.brc.af.ui.forms.persist;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -61,10 +59,6 @@ public class FormDevHelper
             
             JPanel p = new JPanel(new BorderLayout());
             p.add(UIHelper.createScrollPane(msgArea, true), BorderLayout.CENTER);
-            
-            /*CellConstraints cc = new CellConstraints();
-            PanelBuilder    pb = new PanelBuilder(new FormLayout("p,f:p:g", "p"));
-            JButton*/
             
             frame = new CustomDialog((Frame)UIRegistry.getTopWindow(), "Form Development Errors", false, CustomDialog.OKCANCEL, p)
             {
@@ -146,44 +140,51 @@ public class FormDevHelper
     {
         if (isFormDevMode)
         {
-            boolean showFirstTime = frame == null;
-            
-            getLogFrame();
-            
-            buffer.append(msg);
-            buffer.append("\n");
-            if (buffer.length() > 4096)
+            if (msgArea != null)
             {
-                int overage = buffer.length() - 4096;
-                int inx     = buffer.indexOf("\n", overage);
-                buffer.replace(0, inx, "");
-            }
-            msgArea.setText(buffer.toString());
-            msgArea.setCaretPosition(msgArea.getDocument().getLength());
-            
-            if (showFirstTime)
-            {
-                frame.setSize(800, 600);
-                UIHelper.centerAndShow(frame);
+                boolean showFirstTime = frame == null;
                 
+                getLogFrame();
+                
+                buffer.append(msg);
+                buffer.append("\n");
+                if (buffer.length() > 4096)
+                {
+                    int overage = buffer.length() - 4096;
+                    int inx     = buffer.indexOf("\n", overage);
+                    buffer.replace(0, inx, "");
+                }
+                msgArea.setText(buffer.toString());
+                msgArea.setCaretPosition(msgArea.getDocument().getLength());
+                
+                if (showFirstTime)
+                {
+                    frame.setSize(800, 600);
+                    UIHelper.centerAndShow(frame);
+                    
+                } else
+                {
+                    frame.setVisible(false);
+                    
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run()
+                        {
+                            /*frame.setFocusable(true);
+                            frame.setFocusableWindowState(true);
+                            frame.requestFocus();
+                            frame.requestFocusInWindow();
+                            frame.setAlwaysOnTop(true);
+                            frame.toFront();
+                            frame.setAlwaysOnTop(false);*/
+                            frame.setVisible(true);
+                        }
+                    });
+                }
             } else
             {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run()
-                    {
-                        frame.setFocusable(true);
-                        frame.setFocusableWindowState(true);
-                        frame.requestFocus();
-                        frame.requestFocusInWindow();
-                        frame.setAlwaysOnTop(true);
-                        frame.toFront();
-                        frame.setAlwaysOnTop(false);
-                        frame.setVisible(true);
-                    }
-                });
+                System.err.println(msg);
             }
-            
         } else
         {
             UIRegistry.showError(msg);
