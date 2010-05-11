@@ -27,9 +27,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Frame;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -78,6 +75,7 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.TableFieldPair;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
@@ -823,27 +821,46 @@ public class TemplateEditor extends CustomDialog
      */
     protected boolean taxonOnlyInUse(final FieldMappingPanel currentMap)
     {
+    	return tableInUse(currentMap, 4000);
+    }
+
+    /**
+     * @param currentMap
+     * @param tableId
+     * @return true if fields are currently mapped to tableId.
+     */
+    protected boolean tableInUse(final FieldMappingPanel currentMap, final int tableId)
+    {
     	for (int m = 0; m < mapModel.size(); m++)
     	{
     		FieldMappingPanel fmp = (FieldMappingPanel )mapModel.get(m);
-    		if (fmp != currentMap && fmp.getFieldInfo() != null && fmp.getFieldInfo().getTableinfo().getTableId() == 4000)
+    		if (fmp != currentMap && fmp.getFieldInfo() != null && fmp.getFieldInfo().getTableinfo().getTableId() == tableId)
     		{
     			return true;
     		}
     	}
     	return false;
     }
-
+    
     /**
      * @param currentMap
      * @return true if all mappings are to the 'Taxon Import Only' table.
      */
     protected boolean onlyTaxonOnlyInUse(final FieldMappingPanel currentMap)
     {
+    	return onlyTableInUse(currentMap, 4000);
+    }
+    
+    /**
+     * @param currentMap
+     * @return true if all mappings are to the table with tableId
+     */
+    protected boolean onlyTableInUse(final FieldMappingPanel currentMap, final int tableId)
+    {
     	for (int m = 0; m < mapModel.size(); m++)
     	{
     		FieldMappingPanel fmp = (FieldMappingPanel )mapModel.get(m);
-    		if (fmp != currentMap && fmp.getFieldInfo() != null && fmp.getFieldInfo().getTableinfo().getTableId() != 4000)
+    		if (fmp != currentMap && fmp.getFieldInfo() != null && fmp.getFieldInfo().getTableinfo().getTableId() != tableId)
     		{
     			return false;
     		}
@@ -928,6 +945,8 @@ public class TemplateEditor extends CustomDialog
      * @return true if fi is mappable
      * 
      * Checks for conflicts caused by availability of Taxon ranks in multiple tables.
+     * Ensures that Agent uploads are standalone - Agent can't be mapped when fields from other tables are mapped and fields
+     * from other tables can't be mapped when agent fields are mapped. 
      */
     protected String isMappable(final FieldInfo fi, final FieldMappingPanel currentMap)
     {
@@ -962,6 +981,14 @@ public class TemplateEditor extends CustomDialog
     				return UIRegistry.getResourceString("TemplateEditor.TaxonOnlyOnly"); //XXX i18n
     			}
     		}
+    	}
+    	if (tableInUse(currentMap, Agent.getClassTableId()) && fi.getTableinfo().getTableId() != Agent.getClassTableId())
+    	{
+    		return UIRegistry.getResourceString("TemplateEditor.AgentOnly");
+    	}
+    	if (fi.getTableinfo().getTableId() == Agent.getClassTableId() && !onlyTableInUse(currentMap, Agent.getClassTableId()))
+    	{
+    		return UIRegistry.getResourceString("TemplateEditor.AgentOnlyOnly");
     	}
     	return null;
     }
