@@ -39,12 +39,18 @@
   
   <table classname="edu.ku.brc.specify.datamodel.Agent" table="agent" tableid="5" lazy="true" >
     <field column="Agent Type" name="agentType" type="java.lang.Integer" />
+    <field column="Abbreviation" name="abbreviation" type="java.lang.String" length="50"/>
+    <field column="DateOfBirth" name="dateOfBirth" type="calendar_date" />
+    <field column="DateOfDeath" name="dateOfDeath" type="calendar_date" />
+    <field column="Email" name="email" type="java.lang.String" length="50" />
     <field column="First Name" name="firstName" type="java.lang.String" length="50"/>
+    <field column="Initials" name="initials" type="java.lang.String" length="8" />
+    <field column="Interests" name="interests" type="java.lang.String" length="255" />
+    <field column="JobTitle" name="jobTitle" type="java.lang.String" length="50" />
     <field column="Last Name"  name="lastName" type="java.lang.String" length="120"/>
     <field column="Middle Initials" name="middleInitial" type="java.lang.String" length="50"/>
-    <field column="Title"  name="title" type="java.lang.String" length="50"/>
-    <field column="Abbreviation" name="abbreviation" type="java.lang.String" length="50"/>
     <field column="Remarks" name="remarks" type="java.lang.String" length="500" />
+    <field column="Title"  name="title" type="java.lang.String" length="50"/>
   </table>
   
   <table classname="edu.ku.brc.specify.datamodel.CollectingEvent" table="collectingevent" tableid="10" lazy="true" >
