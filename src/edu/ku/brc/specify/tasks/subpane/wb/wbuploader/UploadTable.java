@@ -2937,7 +2937,7 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected boolean needToWrite(int recNum) throws UploaderException
     {
-        if (dataToWrite(recNum))
+    	if (dataToWrite(recNum))
         {
         	return true;
         }
@@ -3688,6 +3688,14 @@ public class UploadTable implements Comparable<UploadTable>
     public void finishUpload(boolean cancelled) throws UploaderException
     {
         //nothing to do here.
+    }
+    
+    /**
+     * @throws UploaderException
+     */
+    public void finishUndoUpload() throws UploaderException
+    {
+    	//don't do nothin
     }
     
     /**

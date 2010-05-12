@@ -445,17 +445,6 @@ public class UploadTableTree extends UploadTable
             keys.add(new UploadedRecordInfo(((DataModelObjBase)defParent).getId(), -1, 0, null));
         }
         deleteObjects(keys.iterator(), showProgress);
-        if (parent == null && !this.incrementalNodeNumberUpdates)
-        {
-            try
-            {
-                getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot(), false, false);
-            }
-            catch (Exception ex)
-            {
-                throw new UploaderException(ex);
-            }
-        }
     }
 
     /**
@@ -681,7 +670,7 @@ public class UploadTableTree extends UploadTable
         {
             try
             {
-                getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot(), false, false);
+                getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot(), true, false);
             }
             catch (Exception ex)
             {
@@ -694,7 +683,18 @@ public class UploadTableTree extends UploadTable
         }
     }
 
+    
     /* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#finishUndoUpload()
+	 */
+	@Override
+	public void finishUndoUpload() throws UploaderException
+	{
+		super.finishUndoUpload();
+		finishUpload(false);
+	}
+
+	/* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#shutdown()
      */
     @Override

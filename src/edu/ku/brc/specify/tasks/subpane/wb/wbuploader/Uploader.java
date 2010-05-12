@@ -3439,13 +3439,6 @@ public class Uploader implements ActionListener, KeyListener
                             rowUploading++;
                             showUploadProgress(rowUploading);
                         }
-                        // But where is the best place to do this?
-                        // Potentially the longest step.
-                        // Need extra progress info...
-                        for (UploadTable t : uploadTables)
-                        {
-                        	t.finishUpload(cancelled && !paused);
-                        }
                     }
                     catch (Exception ex)
                     {
@@ -3459,6 +3452,17 @@ public class Uploader implements ActionListener, KeyListener
                 @Override
                 public void finished()
                 {
+                    try
+                    {
+                    	for (UploadTable t : uploadTables)
+                    	{
+                    		t.finishUpload(cancelled && !paused);
+                    	}
+                    } catch (Exception ex)
+                    {
+                    	success = false;
+                    	setOpKiller(ex);
+                    }
                     super.finished();
                     statusBar.setText("");
                     if (success)
@@ -3587,6 +3591,7 @@ public class Uploader implements ActionListener, KeyListener
         {
             boolean success = false;
             boolean removeObjects = completeUndo;
+            Vector<UploadTable> undone = new Vector<UploadTable>();
             
             @Override
             public Object construct()
@@ -3633,6 +3638,7 @@ public class Uploader implements ActionListener, KeyListener
                                 // setCurrentOpProgress(fixedUp.size() - ut, false);
                                 logDebug("undoing " + fixedUp.get(ut).getTable().getName());
                                 fixedUp.get(ut).undoUpload(true);
+                                undone.add(fixedUp.get(ut));
                             }
                             success = true;
                             return success;
@@ -3657,7 +3663,22 @@ public class Uploader implements ActionListener, KeyListener
             @Override
             public void finished()
             {
-                super.finished();
+                if (removeObjects)
+                {
+                	try
+                	{
+                		for (UploadTable ut : undone)
+                		{
+                			ut.finishUndoUpload();
+                		}
+                	} catch (Exception ex)
+                	{
+                		setOpKiller(ex);
+                		success = false;
+                	}
+                }
+                
+            	super.finished();
                 
                 if (removeObjects)
                 {
