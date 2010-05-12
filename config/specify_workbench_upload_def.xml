@@ -21,7 +21,10 @@
     <field table="Accession" name="authAgentMiddle4" onetomanysequence="3" actualtable="accessionagent" relationshipname="agent" relatedfieldname="middleInitial"/>
     <field table="Accession" name="authAgentTitle4" onetomanysequence="3" actualtable="accessionagent" relationshipname="agent" relatedfieldname="title"/>
     <field table="Accession" name="authRole4" onetomanysequence="3" actualtable="accessionagent" actualname="Role" relationshipname="accession"/>
-    <field table="Accession" name="Permit" onetomanysequence="0" actualtable="accessionauthorization" relationshipname="permit" relatedfieldname="permitNumber"/>
+    <field table="Accession" name="Permit1" onetomanysequence="0" actualtable="accessionauthorization" relationshipname="permit" relatedfieldname="permitNumber"/>
+    <field table="Accession" name="Permit2" onetomanysequence="1" actualtable="accessionauthorization" relationshipname="permit" relatedfieldname="permitNumber"/>
+    <field table="Accession" name="Permit3" onetomanysequence="2" actualtable="accessionauthorization" relationshipname="permit" relatedfieldname="permitNumber"/>
+    <field table="Accession" name="Permit4" onetomanysequence="3" actualtable="accessionauthorization" relationshipname="permit" relatedfieldname="permitNumber"/>
     <field table="Accession" name="number" actualname="accessionNumber"/>
     <field table="Accession" name="accessionText1" actualname="Text1"/>
     <field table="Accession" name="accessionText2" actualname="Text2"/>

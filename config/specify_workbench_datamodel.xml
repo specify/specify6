@@ -34,7 +34,10 @@
     <field column="Auth. Role 4" name="authRole4" type="java.lang.String" length="50" />
     <field column="Auth. Agent Middle Initials 4" name="authAgentMiddle4" type="java.lang.String" length="50"/>
     <field column="Auth. Agent Title 4" name="authAgentTitle4" type="java.lang.String" length="50"/>
-    <field column="Permit" name="Permit" type="java.lang.String" length="64"/>
+    <field column="Permit 1" name="Permit1" type="java.lang.String" length="64"/>
+    <field column="Permit 2" name="Permit2" type="java.lang.String" length="64"/>
+    <field column="Permit 3" name="Permit3" type="java.lang.String" length="64"/>
+    <field column="Permit 4" name="Permit4" type="java.lang.String" length="64"/>
   </table>
   
   <table classname="edu.ku.brc.specify.datamodel.Agent" table="agent" tableid="5" lazy="true" >
