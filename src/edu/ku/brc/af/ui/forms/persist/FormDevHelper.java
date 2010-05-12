@@ -187,7 +187,8 @@ public class FormDevHelper
             }
         } else
         {
-            UIRegistry.showError(msg);
+            //UIRegistry.showError(msg);
+            System.err.println(msg);
         }
     }
     
