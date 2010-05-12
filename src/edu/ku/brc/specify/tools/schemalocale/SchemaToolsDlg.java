@@ -410,6 +410,14 @@ public class SchemaToolsDlg extends CustomDialog
                                 // force Load of lazy collections
                                 container.getDescs().size();
                                 container.getNames().size();
+                                
+                                // Leaving this Code as an example of specifying the bewtixt file.
+                                /*InputStream inputStream = Specify.class.getResourceAsStream("datamodel/SpLocaleContainer.betwixt");
+                                //InputStream inputStream = Specify.class.getResourceAsStream("/edu/ku/brc/specify/tools/schemalocale/SpLocaleContainer.betwixt");
+                                InputSource inputSrc    = new InputSource(inputStream); 
+                                beanWriter.write(container, inputSrc);
+                                inputStream.close(); */
+                                
                                 beanWriter.write(container);
                                 
                                 total += step;
