@@ -478,7 +478,6 @@
     <field column="Country" name="country" type="java.lang.String" length="64"/>
     <field column="State" name="state" type="java.lang.String" length="64"/>
     <field column="County" name="county" type="java.lang.String" length="64"/>
-    <field column="City" name="city" type="java.lang.String" length="64"/>
   </table>
 
   
@@ -506,8 +505,6 @@
     <field column="Formation" name="formation" type="java.lang.String" length="64"/>
     <field column="Member" name="member" type="java.lang.String" length="64"/>
     <field column="Bed" name="bed" type="java.lang.String" length="64"/>
-    <field column="Horizon" name="horizon" type="java.lang.String" length="64"/>
-    <field column="Stage" name="stage" type="java.lang.String" length="64"/>
   </table>
   
 	<table classname="edu.ku.brc.specify.datamodel.Loan" table="loan" tableid="52" lazy="true" >
@@ -574,10 +571,10 @@
     <field column="YesNo 2 (Locality)" name="localityYesNo2" type="boolean"/>
      
     
-    <field column="Citation (Locality) 1" name="localityCitation1" type="java.lang.String" length="255"/>
-    <field column="Citation (Locality) 2" name="localityCitation2" type="java.lang.String" length="255"/>
-    <field column="Citation (Locality) 3" name="localityCitation3" type="java.lang.String" length="255"/>
-    <field column="Citation (Locality) 4" name="localityCitation4" type="java.lang.String" length="255"/>
+    <field column="Citation Title (Locality) 1" name="localityCitation1" type="java.lang.String" length="255"/>
+    <field column="Citation Title (Locality) 2" name="localityCitation2" type="java.lang.String" length="255"/>
+    <field column="Citation Title (Locality) 3" name="localityCitation3" type="java.lang.String" length="255"/>
+    <field column="Citation Title (Locality) 4" name="localityCitation4" type="java.lang.String" length="255"/>
   </table>
 
   <table classname="edu.ku.brc.specify.datamodel.OtherIdentifier" table="otheridentifier" tableid="61" searchable="true" abbrv="oi">

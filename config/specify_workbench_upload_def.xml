@@ -434,8 +434,6 @@
    <field table="LithoStrat" name="formation" treename="lithostrat" maptofield="name" rankid="300"/>
    <field table="LithoStrat" name="member" treename="lithostrat" maptofield="name" rankid="400"/>
    <field table="LithoStrat" name="bed" treename="lithostrat" maptofield="name" rankid="500"/>
-   <field table="LithoStrat" name="horizon" treename="lithostrat" maptofield="name" rankid="1500"/>
-   <field table="LithoStrat" name="stage" treename="lithostrat" maptofield="name" rankid="2500"/>
 
    
    	<!-- locality -->
