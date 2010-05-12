@@ -34,22 +34,22 @@
     <field column="Auth. Role 4" name="authRole4" type="java.lang.String" length="50" />
     <field column="Auth. Agent Middle Initials 4" name="authAgentMiddle4" type="java.lang.String" length="50"/>
     <field column="Auth. Agent Title 4" name="authAgentTitle4" type="java.lang.String" length="50"/>
-    <field column="Permit 1" name="Permit1" type="java.lang.String" length="64"/>
-    <field column="Permit 2" name="Permit2" type="java.lang.String" length="64"/>
-    <field column="Permit 3" name="Permit3" type="java.lang.String" length="64"/>
-    <field column="Permit 4" name="Permit4" type="java.lang.String" length="64"/>
+    <field column="Permit Number 1" name="Permit1" type="java.lang.String" length="64"/>
+    <field column="Permit Number 2" name="Permit2" type="java.lang.String" length="64"/>
+    <field column="Permit Number 3" name="Permit3" type="java.lang.String" length="64"/>
+    <field column="Permit Number 4" name="Permit4" type="java.lang.String" length="64"/>
   </table>
   
   <table classname="edu.ku.brc.specify.datamodel.Agent" table="agent" tableid="5" lazy="true" >
     <field column="Agent Type" name="agentType" type="java.lang.Integer" />
     <field column="Abbreviation" name="abbreviation" type="java.lang.String" length="50"/>
-    <field column="DateOfBirth" name="dateOfBirth" type="calendar_date" />
-    <field column="DateOfDeath" name="dateOfDeath" type="calendar_date" />
+    <field column="Date Of Birth" name="dateOfBirth" type="calendar_date" />
+    <field column="Date Of Death" name="dateOfDeath" type="calendar_date" />
     <field column="Email" name="email" type="java.lang.String" length="50" />
     <field column="First Name" name="firstName" type="java.lang.String" length="50"/>
     <field column="Initials" name="initials" type="java.lang.String" length="8" />
     <field column="Interests" name="interests" type="java.lang.String" length="255" />
-    <field column="JobTitle" name="jobTitle" type="java.lang.String" length="50" />
+    <field column="Job Title" name="jobTitle" type="java.lang.String" length="50" />
     <field column="Last Name"  name="lastName" type="java.lang.String" length="120"/>
     <field column="Middle Initials" name="middleInitial" type="java.lang.String" length="50"/>
     <field column="Remarks" name="remarks" type="java.lang.String" length="500" />
