@@ -394,8 +394,6 @@
     <field table="Geography" name="city" treename="geography" maptofield="name" rankid="500"/>
     
     <!-- geologictimeperied -->
-    <field table="GeologicTimePeriod" name="geologicTimePeriodRemarks" actualname="Remarks" />
-   	<field table="GeologicTimePeriod" name="eon" treename="geologictimeperiod" maptofield="name" rankid="50"/>
    	<field table="GeologicTimePeriod" name="era" treename="geologictimeperiod" maptofield="name" rankid="100"/>
    	<field table="GeologicTimePeriod" name="period" treename="geologictimeperiod" maptofield="name" rankid="200"/>
    	<field table="GeologicTimePeriod" name="epoch" treename="geologictimeperiod" maptofield="name" rankid="300"/>

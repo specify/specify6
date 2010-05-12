@@ -20,6 +20,8 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
@@ -409,6 +411,21 @@ public class GeologicTimePeriodTreeDef extends BaseTreeDef<GeologicTimePeriod, G
     public String toString()
     {
         return getIdentityTitle();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.BaseTreeDef#getStandardLevels()
+     */
+    @Override
+    @Transient
+    public List<TreeDefItemStandardEntry> getStandardLevels()
+    {
+        List<TreeDefItemStandardEntry> result = new LinkedList<TreeDefItemStandardEntry>();    
+        result.add(new TreeDefItemStandardEntry("GeologicTimePeriodTreeDef.Era", 100)); //$NON-NLS-1$
+        result.add(new TreeDefItemStandardEntry("GeologicTimePeriodTreeDef.Period", 200)); //$NON-NLS-1$
+        result.add(new TreeDefItemStandardEntry("GeologicTimePeriodTreeDef.Epoch", 300)); //$NON-NLS-1$
+        result.add(new TreeDefItemStandardEntry("GeologicTimePeriodTreeDef.Age", 400)); //$NON-NLS-1$
+        return result;
     }
 
 }

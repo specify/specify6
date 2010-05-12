@@ -493,6 +493,13 @@
     <field column="Remarks (Geologic Time Period)" name="geologicTimePeriodRemarks" type="java.lang.String" length="4096"/>
   </table-->
 
+  <table classname="edu.ku.brc.specify.datamodel.GeologicTimePeriod" table="geologictimeperiod" tableid="46" lazy="true">
+    <display objtitle="Geologic Time Period"/>
+    <field column="Era" name="era" type="java.lang.String" length="64"/>
+    <field column="Period" name="period" type="java.lang.String" length="64"/>
+    <field column="Epoch" name="epoch" type="java.lang.String" length="64"/>
+    <field column="Age" name="age" type="java.lang.String" length="64"/>
+  </table>
 
 
   <table classname="edu.ku.brc.specify.datamodel.Journal" table="journal" tableid="51" lazy="true">
