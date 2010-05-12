@@ -20,6 +20,8 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
@@ -45,6 +47,8 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 @Table(name = "lithostrattreedef")
 public class LithoStratTreeDef extends BaseTreeDef<LithoStrat, LithoStratTreeDef, LithoStratTreeDefItem> implements java.io.Serializable
 {
+
+
 	protected Integer                    lithoStratTreeDefId;
     protected String                     name;
     protected String                     remarks;
@@ -423,4 +427,21 @@ public class LithoStratTreeDef extends BaseTreeDef<LithoStrat, LithoStratTreeDef
     {
         return getIdentityTitle();
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.BaseTreeDef#getStandardLevels()
+     */
+    @Override
+    @Transient
+    public List<TreeDefItemStandardEntry> getStandardLevels()
+    {
+        List<TreeDefItemStandardEntry> result = new LinkedList<TreeDefItemStandardEntry>();    
+        result.add(new TreeDefItemStandardEntry("LithoStratTreeDef.SuperGroup", 100)); //$NON-NLS-1$
+        result.add(new TreeDefItemStandardEntry("LithoStratTreeDef.Group", 200)); //$NON-NLS-1$
+        result.add(new TreeDefItemStandardEntry("LithoStratTreeDef.Formation", 300)); //$NON-NLS-1$
+        result.add(new TreeDefItemStandardEntry("LithoStratTreeDef.Member", 400)); //$NON-NLS-1$
+        result.add(new TreeDefItemStandardEntry("LithoStratTreeDef.Bed", 500)); //$NON-NLS-1$
+        return result;
+    }
+
 }
