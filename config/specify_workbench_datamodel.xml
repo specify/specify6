@@ -507,7 +507,7 @@
     <field column="Bed" name="bed" type="java.lang.String" length="64"/>
   </table>
   
-	<table classname="edu.ku.brc.specify.datamodel.Loan" table="loan" tableid="52" lazy="true" >
+	<!--<table classname="edu.ku.brc.specify.datamodel.Loan" table="loan" tableid="52" lazy="true" >
       	<field column="LoanDate" name="loanDate" type="java.util.Calendar" />
       	<field column="LoanNumber" name="loanNumber" type="java.lang.String" length="50" />
   	</table>
@@ -515,7 +515,7 @@
 	<table classname="edu.ku.brc.specify.datamodel.LoanPreparation" table="loanpreparation" tableid="54" lazy="true" >
       	<field column="Quantity" name="quantity" type="java.lang.Integer" length="10" />
       	<field column="IsResolved" name="isResolved" type="java.lang.Boolean" />
-  	</table>
+  	</table>-->
   
   <table classname="edu.ku.brc.specify.datamodel.Locality" table="locality" tableid="2" lazy="true" >
     <display objtitle="Locality" view="Locality" dataobjformatter="Locality" searchdlg="LocalitySearch" newobjdlg="LocalityDisplay"/>
