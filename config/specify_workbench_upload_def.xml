@@ -118,7 +118,12 @@
 	<field table="CollectionObject" name="collectionObjectText2" actualname="Text2" />
 	<field table="CollectionObject" name="collectionObjectYesNo1" actualname="YesNo1" />
 	<field table="CollectionObject" name="collectionObjectYesNo2" actualname="YesNo2" />
+	<field table="CollectionObject" name="collectionObjectYesNo3" actualname="YesNo3" />
+	<field table="CollectionObject" name="collectionObjectYesNo4" actualname="YesNo4" />
+	<field table="CollectionObject" name="collectionObjectYesNo5" actualname="YesNo5" />
+	<field table="CollectionObject" name="collectionObjectYesNo6" actualname="YesNo6" />
 	<field table="CollectionObject" name="collectionObjectNumber1" actualname="Number1" />
+	<field table="CollectionObject" name="collectionObjectNumber2" actualname="Number2" />
 	<field table="CollectionObject" name="collectionObjectNumber2" actualname="Number2" />
 	<field table="CollectionObject" name="collectionObjectRemarks" actualname="Remarks"/>
     <field table="CollectionObject" name="catalogerFirstName" relationshipname="cataloger" relatedfieldname="firstName"/>
@@ -208,6 +213,8 @@
     <field table="Determination" name="isCurrent1" actualname="isCurrent" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Determination" name="remarks1" actualname="remarks" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Determination" name="qualifier1" actualname="qualifier" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="Determination" name="subspQualifier1" actualname="subspQualifier" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="Determination" name="varQualifier1" actualname="varQualifier" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Determination" name="featureOrBasis1" actualname="featureOrBasis" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Determination" name="phylum1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="30"/>
     <field table="Determination" name="subphylum1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="40"/>
@@ -261,6 +268,8 @@
     <field table="Determination" name="isCurrent2" actualname="isCurrent" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Determination" name="remarks2" actualname="remarks" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Determination" name="qualifier2" actualname="qualifier" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="Determination" name="subspQualifier2" actualname="subspQualifier" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="Determination" name="varQualifier2" actualname="varQualifier" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Determination" name="featureOrBasis2" actualname="featureOrBasis" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Determination" name="phylum2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="30"/>
     <field table="Determination" name="subphylum2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="40"/>
@@ -312,6 +321,8 @@
     <field table="Determination" name="isCurrent3" actualname="isCurrent" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Determination" name="remarks3" actualname="remarks" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Determination" name="qualifier3" actualname="qualifier" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="Determination" name="subspQualifier3" actualname="subspQualifier" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="Determination" name="varQualifier3" actualname="varQualifier" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Determination" name="featureOrBasis3" actualname="featureOrBasis" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Determination" name="phylum3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="30"/>
     <field table="Determination" name="subphylum3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="40"/>
