@@ -128,6 +128,15 @@
             </altviews>
         </view>
         
+        <view name="CollectionRelType"
+            class="edu.ku.brc.specify.datamodel.CollectionRelType"
+            resourcelabels="false">
+            <desc><![CDATA[]]></desc>
+            <altviews>
+                <altview name="CollectionRelType Edit" viewdef="CollectionRelType" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
     </views>
   
 	<!--  *************************************************************************************************************************** -->
@@ -517,6 +526,42 @@
                     <cell type="label" labelfor="4" label="Password Strength"/>
                     <!-- <cell type="field" id="4" name="strength" uitype="progress" isrequired="true" readonly="true"/> -->
                     <cell type="field" id="4" uitype="plugin" name="this" initialize="name=PasswordStrengthUI"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="CollectionRelType"
+            class="edu.ku.brc.specify.datamodel.CollectionRelType"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[CollectionRelType Form]]></desc>
+            <columnDef>p,3dlu,f:p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" label=" "/>
+                    <cell type="panel" id="desc" name="desc" coldef="p,2px,p,2px,p,1px,f:p:g" rowdef="p" ignore="true">
+                        <rows>
+                            <row>
+                                <cell type="label" id="left"  label="  "/>
+                                <cell type="label" id="mid"   label=" -> "/>
+                                <cell type="label" id="right" label="  "/>
+                                <cell type="label" id="stretch" label="  "/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
+                <row>
+                    <cell type="label" labelfor="name"/>
+                    <cell type="field" id="name" name="name" uitype="text" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="remarks"/>
+                    <cell type="field" id="remarks" name="remarks" uitype="textarea" isrequired="false" cols="50" rows="5"/>
                 </row>
             </rows>
         </viewdef>

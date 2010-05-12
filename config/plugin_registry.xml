@@ -32,7 +32,9 @@
 		<!-- 
 		<plugin class="edu.ku.brc.af.tasks.EditorTask" addui="true"/>
 		 -->
-		 
+
+        <plugin class="edu.ku.brc.specify.tasks.CollectionRelTask" addui="true"/>
+        		 
 		<plugin class="edu.ku.brc.specify.tasks.PluginsTask" addui="true"/>
 		
 		<plugin class="edu.ku.brc.specify.tasks.ExpressSearchTask" addui="true"/>
@@ -42,6 +44,7 @@
         <plugin class="edu.ku.brc.specify.tasks.BackupTask" addui="true"/>
         
         <plugin class="edu.ku.brc.specify.tasks.FormEditTask" addui="true"/>
+
 		
 	</core>
 	
@@ -55,7 +58,6 @@
 	</mobilecore>
 	
 	<uiplugins>
-		<plugin name="WebLinkButton"        class="edu.ku.brc.af.ui.weblink.WebLinkButton"/>
 		<plugin name="PartialDateUI"        class="edu.ku.brc.specify.plugins.PartialDateUI"/>
         <plugin name="LocalityGoogleEarth"  class="edu.ku.brc.specify.plugins.LocalityGoogleEarthPlugin"/>
         <plugin name="LocalityWorldWind"    class="edu.ku.brc.specify.plugins.LocalityWorldWindPlugin"/>
@@ -64,9 +66,11 @@
 		<plugin name="LatLonUI"             class="edu.ku.brc.specify.plugins.latlon.LatLonUI"/>
 		<plugin name="TaxonLabelFormatting" class="edu.ku.brc.specify.plugins.TaxonLabelFormatting"/>
 		<plugin name="ColRelTypePlugin"     class="edu.ku.brc.specify.plugins.CollectionRelPlugin"/>
+        <plugin name="HostTaxonPlugin"       class="edu.ku.brc.specify.plugins.HostTaxonPlugin"/>
+        
+        <plugin name="WebLinkButton"        class="edu.ku.brc.af.ui.weblink.WebLinkButton"/>
         <plugin name="PasswordStrengthUI"   class="edu.ku.brc.af.ui.PasswordStrengthUI"/>
         <plugin name="IllustrativeBarCodeUI" class="edu.ku.brc.af.ui.IllustrativeBarCodeUI"/>
-		
 	</uiplugins>
 	
 	<external>

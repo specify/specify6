@@ -71,6 +71,8 @@ import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.ViewSetMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.af.ui.forms.persist.FormDevHelper;
+import edu.ku.brc.af.ui.forms.persist.View;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewLoader;
 import edu.ku.brc.af.ui.forms.persist.ViewSet;
@@ -1683,7 +1685,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     } catch (Exception ex)
                     {
                         String msg = "Error error parsing XML: `"+vso.getName() + "`\n" + StringUtils.replace(ex.getMessage(), "Nested", "\nNested");
-                        UIRegistry.showError(msg);
+                        FormDevHelper.appendFormDevError(msg);
                         return viewSetList;
                     }
                     

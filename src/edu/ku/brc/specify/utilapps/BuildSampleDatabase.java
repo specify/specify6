@@ -879,8 +879,11 @@ public class BuildSampleDatabase
             LithoStratTreeDefItem lithoGrp  = createLithoStratTreeDefItem(superGrp,  "Litho Group", 200, false);
             LithoStratTreeDefItem formation = createLithoStratTreeDefItem(lithoGrp,  "Formation",   300, false);
             LithoStratTreeDefItem member    = createLithoStratTreeDefItem(formation, "Member",      400, false);
-            @SuppressWarnings("unused")
             LithoStratTreeDefItem bed       = createLithoStratTreeDefItem(member,    "Bed",         500, true);
+            
+            member.setIsInFullName(true);
+            bed.setIsInFullName(true);
+            
             persist(earth);
             
             // setup the root Geography record (planet Earth)
@@ -2603,10 +2606,10 @@ public class BuildSampleDatabase
 
 
         loadSchemaLocalization(discipline, 
-                SpLocaleContainer.CORE_SCHEMA, 
-                DBTableIdMgr.getInstance(),
-                choice.getCatalogNumberingFmtName(),
-                choice.getAccessionNumberingFmtName());
+                               SpLocaleContainer.CORE_SCHEMA, 
+                               DBTableIdMgr.getInstance(),
+                               choice.getCatalogNumberingFmtName(),
+                               choice.getAccessionNumberingFmtName());
 
         ////////////////////////////////
         // Create the really high-level stuff
@@ -6855,18 +6858,19 @@ public class BuildSampleDatabase
         List<Object> newObjs = new Vector<Object>();
 
         // Create a geologic time period tree definition
-        GeologicTimePeriodTreeDefItem defItemLevel0 = createGeologicTimePeriodTreeDefItem(
-                null, treeDef, "Level 0", 0);
-        GeologicTimePeriodTreeDefItem defItemLevel1 = createGeologicTimePeriodTreeDefItem(
-                defItemLevel0, treeDef, "Level 1", 100);
-        GeologicTimePeriodTreeDefItem defItemLevel2 = createGeologicTimePeriodTreeDefItem(
-                defItemLevel1, treeDef, "Level 2", 200);
-        GeologicTimePeriodTreeDefItem defItemLevel3 = createGeologicTimePeriodTreeDefItem(
-                defItemLevel2, treeDef, "Level 3", 300);
+        GeologicTimePeriodTreeDefItem defItemLevel0 = createGeologicTimePeriodTreeDefItem(null, treeDef, "Level 0", 0);
+        GeologicTimePeriodTreeDefItem defItemLevel1 = createGeologicTimePeriodTreeDefItem(defItemLevel0, treeDef, "Level 1", 100);
+        GeologicTimePeriodTreeDefItem defItemLevel2 = createGeologicTimePeriodTreeDefItem(defItemLevel1, treeDef, "Level 2", 200);
+        GeologicTimePeriodTreeDefItem defItemLevel3 = createGeologicTimePeriodTreeDefItem(defItemLevel2, treeDef, "Level 3", 300);
         newObjs.add(defItemLevel0);
         newObjs.add(defItemLevel1);
         newObjs.add(defItemLevel2);
         newObjs.add(defItemLevel3);
+
+        defItemLevel0.setIsInFullName(false);
+        defItemLevel1.setIsInFullName(false);
+        defItemLevel2.setIsInFullName(true);
+        defItemLevel3.setIsInFullName(true);
 
         // Create the defItemLevel0
         GeologicTimePeriod level0 = createGeologicTimePeriod(treeDef, null,
@@ -8994,6 +8998,8 @@ public class BuildSampleDatabase
                             {
                                 log.debug("Header: "+hdr+" -> "+inx);
                                 taxonIndexes.put(hdr, inx);
+                                item.setIsInFullName(item.getRankId() >= TaxonTreeDef.GENUS);
+                                
                             } else
                             {
                                 log.debug("Header: "+hdr+" -> skipped.");
@@ -9341,6 +9347,8 @@ public class BuildSampleDatabase
         GeologicTimePeriodTreeDefItem member = createGeologicTimePeriodTreeDefItem(series, treeDef, "Stage/Age",      400);
         persist(root);
         commitTx();
+        
+        series.setIsInFullName(true);
 
         frame.setDesc("Building ChronoStratigraphy Tree...");
         

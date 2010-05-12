@@ -30,6 +30,7 @@ import java.util.Vector;
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -40,9 +41,12 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.core.NavBox;
-import edu.ku.brc.af.core.NavBoxAction;
-import edu.ku.brc.af.core.NavBoxItemIFace;
+import edu.ku.brc.af.auth.BasicPermisionPanel;
+import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.auth.SecurityOption;
+import edu.ku.brc.af.auth.SecurityOptionIFace;
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.subpane.FormPane;
@@ -58,8 +62,6 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.EditDeleteAddPanel;
-import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -76,8 +78,14 @@ public class CollectionRelTask extends BaseTask
     private static final Logger log = Logger.getLogger(CollectionRelTask.class);
     
     private static final String  COLRELTSK        = "COLRELTSK";
-    private static final String  CR_MANAGECR      = "CR_MANAGECR";
+    //private static final String  CR_MANAGECR      = "CR_MANAGECR";
     private static final String  CR_RELTYPES      = "CR_RELTYPES";
+    private static final String  COLREL_MENU      = "COLREL_MENU";
+    private static final String  COLREL_MNU       = "COLREL_MNU";
+    private static final String  COLREL_TITLE     = "COLREL_TITLE";
+    private static final String  COLREL_SECURITY   = "COLRELEDIT";
+    
+    
     
     private JList leftList;
     private JList relList;
@@ -106,7 +114,7 @@ public class CollectionRelTask extends BaseTask
             super.initialize(); // sets isInitialized to false
             
             // No Series Processing
-            NavBox navBox = new NavBox(getResourceString("Actions"));
+            /*NavBox navBox = new NavBox(getResourceString("Actions"));
             
             CommandAction cmdAction = new CommandAction(COLRELTSK, CR_MANAGECR);
             NavBoxAction nba = new NavBoxAction(cmdAction);
@@ -119,7 +127,7 @@ public class CollectionRelTask extends BaseTask
             
             navBox.add(nbi);//NavBox.createBtn(getResourceString("CR_MGR"), name, IconManager.STD_ICON_SIZE));
             
-            navBoxes.add(navBox);
+            navBoxes.add(navBox);*/
         }
         isShowDefault = true;
     }
@@ -209,9 +217,9 @@ public class CollectionRelTask extends BaseTask
         edaPanel = new EditDeleteAddPanel(editAL, delAL, addAL);
         
         
-        pb.add(UIHelper.createI18NLabel("LEFT_SIDE", SwingConstants.CENTER),  cc.xy(1, 1));
-        pb.add(UIHelper.createI18NLabel("REL", SwingConstants.CENTER),        cc.xy(3, 1));
-        pb.add(UIHelper.createI18NLabel("RIGHT_SIDE", SwingConstants.CENTER), cc.xy(5, 1));
+        pb.add(UIHelper.createI18NLabel("CR_LEFT_SIDE", SwingConstants.CENTER),  cc.xy(1, 1));
+        pb.add(UIHelper.createI18NLabel("CR_REL", SwingConstants.CENTER),        cc.xy(3, 1));
+        pb.add(UIHelper.createI18NLabel("CR_RIGHT_SIDE", SwingConstants.CENTER), cc.xy(5, 1));
 
         pb.add(UIHelper.createScrollPane(leftList), cc.xy(1, 3));
         pb.add(UIHelper.createScrollPane(relList), cc.xy(3, 3));
@@ -250,7 +258,7 @@ public class CollectionRelTask extends BaseTask
         relList.addListSelectionListener(relLSL);
         rightList.addListSelectionListener(lsl);
         
-        CustomDialog dlg = new CustomDialog(null, "Editor", true, pb.getPanel());
+        CustomDialog dlg = new CustomDialog(null, getResourceString(COLREL_TITLE), true, pb.getPanel());
         dlg.setVisible(true);
     }
     
@@ -330,8 +338,8 @@ public class CollectionRelTask extends BaseTask
                 "SystemSetup",
                 "CollectionRelType",
                 null,
-                getResourceString("CHG_PWD_TITLE"),
-                "OK",
+                getResourceString(COLREL_TITLE),
+                getResourceString("OK"),
                 null,
                 null,
                 true,
@@ -466,15 +474,76 @@ public class CollectionRelTask extends BaseTask
     public List<ToolBarItemDesc> getToolBarItems()
     {
         toolbarItems = new Vector<ToolBarItemDesc>();
-        String label = getResourceString(name);
+        /*String label = getResourceString(name);
         String localIconName = name;
         String hint = getResourceString("labels_hint");
         ToolBarDropDownBtn btn = createToolbarButton(label, localIconName, hint);
 
         toolbarItems.add(new ToolBarItemDesc(btn));
+        */
         return toolbarItems;
     }
     
+  //-------------------------------------------------------
+    // SecurityOption Interface
+    //-------------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getAdditionalSecurityOptions()
+     */
+    @Override
+    public List<SecurityOptionIFace> getAdditionalSecurityOptions()
+    {
+        List<SecurityOptionIFace> list = new ArrayList<SecurityOptionIFace>();
+        
+        list.add(new SecurityOption(COLREL_SECURITY, 
+                getResourceString("COLREL_TITLE"), 
+                securityPrefix,
+                new BasicPermisionPanel(COLREL_TITLE, 
+                                        "COLREL_VIEW", 
+                                        "COLREL_EDIT")));
+
+        return list;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getMenuItems()
+     */
+    @Override
+    public List<MenuItemDesc> getMenuItems()
+    {
+        final String COLSETUP_MENU    = "Specify.COLSETUP_MENU";
+        final String TREES_MENU       = "Specify.TREES_MENU";
+        final String SYSTEM_MENU      = "Specify.SYSTEM_MENU";
+        
+        SecurityMgr secMgr = SecurityMgr.getInstance();
+        
+        menuItems = new Vector<MenuItemDesc>();
+        
+        MenuItemDesc mid;
+        JMenuItem mi;
+        String    menuDesc = getResourceString(COLREL_MENU);
+
+        if (!AppContextMgr.isSecurityOn() || 
+            (secMgr.getPermission(COLREL_SECURITY) != null && 
+             !secMgr.getPermission(COLREL_SECURITY).hasNoPerm()))
+        {
+            mi       = UIHelper.createLocalizedMenuItem(COLREL_MENU, COLREL_MNU, COLREL_TITLE, true, null); 
+            mi.addActionListener(new ActionListener()
+                    {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            createRelMgrUI();
+                        }
+                    });
+            mid = new MenuItemDesc(mi, SYSTEM_MENU);
+            mid.setPosition(MenuItemDesc.Position.After, menuDesc);
+            menuItems.add(mid);
+        }
+        
+        return menuItems;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.BaseTask#getStarterPane()
      */

@@ -947,7 +947,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
      * @return the collectingEventAttributes
      */
     @OneToMany(mappedBy = "hostTaxon")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<CollectingEventAttribute> getCollectingEventAttributes()
     {
         return collectingEventAttributes;

@@ -434,6 +434,17 @@ public class DataBuilder
         return attrDef;
     }
 
+    /**
+     * @param division
+     * @param type
+     * @param name
+     * @param dataType
+     * @param taxonTreeDef
+     * @param geographyTreeDef
+     * @param geologicTimePeriodTreeDef
+     * @param lithoStratTreeDef
+     * @return
+     */
     public static Discipline createDiscipline(final Division         division,
                                               final String           type,
                                               final String           name,
@@ -812,6 +823,8 @@ public class DataBuilder
         gtdi.setName(name);
         gtdi.setParent(parent);
         gtdi.setRankId(rankId);
+        gtdi.setIsInFullName(false);
+        gtdi.setIsEnforced(false);
         gtdi.setTreeDef(gtd);
         gtdi.setFullNameSeparator(", ");
         if (gtd != null)
@@ -918,6 +931,8 @@ public class DataBuilder
         ltdi.setParent(parent);
         ltdi.setRankId(rankId);
         ltdi.setTreeDef(ltd);
+        ltdi.setIsInFullName(false);
+        ltdi.setIsEnforced(false);
         ltdi.setFullNameSeparator(", ");
         if (ltd != null)
         {
@@ -1053,7 +1068,9 @@ public class DataBuilder
         gtdi.setParent(parent);
         gtdi.setRankId(rankId);
         gtdi.setTreeDef(gtptd);
-        gtdi.setFullNameSeparator(", ");
+        gtdi.setIsInFullName(false);
+        gtdi.setIsEnforced(false);
+         gtdi.setFullNameSeparator(", ");
         if (gtptd != null)
         {
             gtptd.getTreeDefItems().add(gtdi);
@@ -1144,6 +1161,8 @@ public class DataBuilder
         ttdi.setName(name);
         ttdi.setParent(parent);
         ttdi.setRankId(rankId);
+        ttdi.setIsInFullName(false);
+        ttdi.setIsEnforced(false);
         ttdi.setTreeDef(ttd);
         ttdi.setFullNameSeparator(" ");
         if (ttd != null)
@@ -1186,7 +1205,8 @@ public class DataBuilder
                 lstdi.setName(name);
                 lstdi.setRankId(rankId);
                 lstdi.setIsInFullName(inFullName);
-                
+                lstdi.setIsEnforced(false);
+
                 lstdi.setTreeDef(treeDef);
                 treeDef.getTreeDefItems().add(lstdi);
                 
@@ -1212,6 +1232,7 @@ public class DataBuilder
             lstdi.setName(name);
             lstdi.setRankId(rankId);
             lstdi.setIsInFullName(inFullName);
+            lstdi.setIsEnforced(false);
             lstdi.setTreeDef(treeDef);
             treeDef.getTreeDefItems().add(lstdi);
             return lstdi;

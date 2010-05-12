@@ -112,7 +112,7 @@ public class UIRegistry
     protected static final String MOBILE_EMBEDDED_DB_PATH = "mobile.embedded.dbpath";
     protected static final String EMBEDDED_DB_DIR         = "SPECIFY_DATA";
     
-    protected static final boolean debugPaths  = true;
+    protected static final boolean debugPaths  = false;
 
     
     public static final String FRAME        = "frame";
@@ -746,15 +746,19 @@ public class UIRegistry
                 mobile = (new File(getMobileEmbeddedDBPath())).getCanonicalPath();
             }
         } catch (IOException ex) {}
-            System.err.println("AppDataDir:                  "+getAppDataDir());
-            System.err.println("UserHomeAppDir:              "+getUserHomeAppDir());
-            System.err.println("UserHomeDir:                 "+getUserHomeDir());
+        
+        if (debugPaths)
+        {
+            log.debug("AppDataDir:                  "+getAppDataDir());
+            log.debug("UserHomeAppDir:              "+getUserHomeAppDir());
+            log.debug("UserHomeDir:                 "+getUserHomeDir());
             
-            System.err.println("DefaultEmbeddedDBPath:       "+getDefaultEmbeddedDBPath());
-            System.err.println("DefaultMobileEmbeddedDBPath: "+getEmbeddedDBPath());
-            System.err.println("MobileEmbeddedDBPath:        "+mobile);
-            System.err.println("DefaultWorkingPath:          "+getDefaultWorkingPath());
-            //System.err.println("MobileMachineDir:            "+DBConnection.getMobileMachineDir("<database name>"));
+            log.debug("DefaultEmbeddedDBPath:       "+getDefaultEmbeddedDBPath());
+            log.debug("DefaultMobileEmbeddedDBPath: "+getEmbeddedDBPath());
+            log.debug("MobileEmbeddedDBPath:        "+mobile);
+            log.debug("DefaultWorkingPath:          "+getDefaultWorkingPath());
+            //log.debug("MobileMachineDir:            "+DBConnection.getMobileMachineDir("<database name>"));
+        }
     }
 
     /**
