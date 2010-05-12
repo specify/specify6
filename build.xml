@@ -443,7 +443,6 @@
 		<mkdir dir="${appdir}/libs" />
 		<mkdir dir="${dist-win}/examples" />
 		
-		<!-- <antcall target="build-empty-derby-db"/> -->
 		<antcall target="basic-non-mac-dist"/>
 
 		<antcall target="build-help-index"/>
@@ -481,61 +480,6 @@
 		<antcall target="dist-jar"/>
 		
 		<copy file="${jar.name}.jar" todir="${appdir}/libs" />
-		
-	</target>
-
-	<!-- *************************************************************
-	     Linux Distribution
-	     ************************************************************* -->
-	<target name="dist-linux">
-		
-		<property name="appdir" value="${dist-linux}/Specify" />
-		<property name="derby.data.path" value="${dist-linux}/DerbyDatabases" />
-		
-		<antcall target="clean-jar"/>
-		
-		<antcall target="dist-linux-clean"/>
-		
-	    <antcall target="dist-jar"/>
-		
-		
-		<mkdir dir="${dist-linux}" />
-		<mkdir dir="${appdir}/libs" />
-
-		
-		<antcall target="build-empty-derby-db"/>
-		
-		<antcall target="basic-non-mac-dist"/>
-		
-		<antcall target="build-help-index"/>
-		<antcall target="build-help-fulltext-linux"/>
-
-		<!-- Copy Alt Help Image Files -->
-		<property name="alt.help.img.dir" value="AltHelpImages/Windows"/>
-	    <antcall target="copy-alt-help-images"/>
-				
-		
-		<!-- Copy info list -->
-		<copy file="${packaging}/linux/specify.sh" todir="${dist-linux}/." />
-		<chmod file="${dist-linux}/specify.sh" perm="u+rx"/>
-		
-		<copy file="${packaging}/linux/specifybuilder.sh" todir="${dist-linux}/." />
-		<chmod file="${dist-linux}/specifybuilder.sh" perm="u+rx"/>
-		
-		<copy file="${packaging}/linux/specifydbinit.sh" todir="${dist-linux}/." />
-		<chmod file="${dist-linux}/specifydbinit.sh" perm="u+rx"/>
-		
-		<copy file="${packaging}/linux/specifyschema.sh" todir="${dist-linux}/." />
-		<chmod file="${dist-linux}/specifyschema.sh" perm="u+rx"/>
-
-		<copy file="${packaging}/linux/ireportlaunch.sh" todir="${dist-linux}/." />
-		<chmod file="${dist-linux}/ireportlaunch" perm="u+rx"/>
-
-		<!-- Demo Files -->
-		<copy file="demo_files/workbench/FishCollectingTrip.csv" todir="${dist-linux}/examples" />
-		<copy file="demo_files/workbench/JohsonCountyTrip.csv" todir="${dist-linux}/examples" />
-	    <copy file="demo_files/workbench/SaipanTrip.xls" todir="${dist-linux}/examples" />
-		<copy file="demo_files/Reports/ImportExample.jrxml" todir="${dist-linux}/examples" />
 		
 	</target>
 	
