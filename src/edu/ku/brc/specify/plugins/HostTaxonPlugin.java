@@ -22,8 +22,8 @@ package edu.ku.brc.specify.plugins;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -39,6 +39,8 @@ import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.CollectingEventAttribute;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionRelType;
@@ -70,6 +72,7 @@ public class HostTaxonPlugin extends UIPluginBase
     protected Integer                hostCollId    = null;
     protected Discipline             discipline    = null;
     protected TaxonTreeDef           taxonTreeDef  = null;
+    protected Taxon                  taxon         = null;
     
     /**
      * 
@@ -77,20 +80,6 @@ public class HostTaxonPlugin extends UIPluginBase
     public HostTaxonPlugin()
     {
         super();
-        
-
-        /*
-        // Temp
-        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
-        colRelType   = tmpSession.load(CollectionRelType.class, 1);
-        leftSideCol  = colRelType.getLeftSideCollection();
-        rightSideCol = colRelType.getRightSideCollection();
-        colRelType.getRelationships().size();
-        tmpSession.close();
-        
-        isLeftSide = AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId().equals(leftSideCol.getCollectionId());
-*/
-        
     }
     
     /**
@@ -131,57 +120,12 @@ public class HostTaxonPlugin extends UIPluginBase
     /**
      * 
      */
-    protected void itemSelected()
-    {
-        CollectionObject newColObj = (CollectionObject)cbx.getValue();
-        CollectionObject curColObj = (CollectionObject)dataObj;
-        
-        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
-        tmpSession.attach(newColObj);
-        
-        boolean isNew = false;
-        if (collectionRel == null)
-        {
-            collectionRel = new CollectionRelationship();
-            collectionRel.initialize();
-            collectionRel.setCollectionRelType(colRelType);
-            colRelType.getRelationships().add(collectionRel);
-            isNew = true;
-        }
-        
-        if (isLeftSide)
-        {
-            collectionRel.setLeftSide(curColObj);
-            collectionRel.setRightSide(newColObj);
-            if (isNew)
-            {
-                curColObj.getLeftSideRels().add(collectionRel);
-                newColObj.getRightSideRels().add(collectionRel);
-            }
-        } else
-        {
-            collectionRel.setLeftSide(newColObj);
-            collectionRel.setRightSide(curColObj);
-            if (isNew)
-            {
-                newColObj.getLeftSideRels().add(collectionRel);
-                curColObj.getRightSideRels().add(collectionRel);
-            }
-        }
-        
-        tmpSession.close();
-    }
-    
-    /**
-     * 
-     */
     protected void adjustSQLTemplate()
     {
-        StringBuilder sql = new StringBuilder("SELECT fullName FROM Taxon tx ");
-        sql.append("tx.taxonTreeDef = ");
+        StringBuilder sql = new StringBuilder("SELECT %s1 FROM Taxon tx inner join tx.definition ttd WHERE ttd.id = ");
         sql.append(taxonTreeDef.getId());
         sql.append(" AND %s2");
-        //System.out.println(sql.toString());
+        System.out.println(sql.toString());
         cbx.setSqlTemplate(sql.toString());
         
     }
@@ -256,6 +200,14 @@ public class HostTaxonPlugin extends UIPluginBase
             });
         }
     }
+    
+    /**
+     * 
+     */
+    protected void itemSelected()
+    {
+        notifyChangeListeners(new ChangeEvent(this));
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.UIPluginBase#setValue(java.lang.Object, java.lang.String)
@@ -265,26 +217,64 @@ public class HostTaxonPlugin extends UIPluginBase
     {
         super.setValue(value, defaultValue);
         
-        if (value instanceof CollectionObject)
+        if (value instanceof CollectingEventAttribute)
         {
-            otherSide = null;
-            
-            CollectionObject colObj = (CollectionObject)value;
-            
-            Set<CollectionRelationship> rels = isLeftSide ? colObj.getLeftSideRels() : colObj.getRightSideRels();
-
-            for (CollectionRelationship colRel : rels)
+            CollectingEventAttribute cea = (CollectingEventAttribute)value;
+            System.err.println(cea.getHostTaxon());
+            if (cea.getHostTaxon() != null)
             {
-                if (colRel.getCollectionRelType().equals(colRelType))
+                cbx.setValue(cea.getHostTaxon(), null);
+                cbx.getTextWithQuery().setSelectedId(cea.getHostTaxon().getId());
+            }
+            //cbx.setValue(cea.getHostTaxon(), null);
+        }
+        
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            CollectingEvent ce = session.get(CollectingEvent.class, 9);
+            if (ce != null)
+            {
+                if (ce.getCollectingEventAttribute() != null)
                 {
-                    collectionRel = colRel;
-                    otherSide = isLeftSide ? colRel.getRightSide() : colRel.getLeftSide();
-                    break;
+                    System.err.print("["+ce.getCollectingEventAttribute().getId()+"]  ");
+                    System.err.println("["+ce.getCollectingEventAttribute().getHostTaxon()+"]");
                 }
             }
             
-            cbx.setValue(otherSide, null);
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ValComboBoxFromQuery.class, ex);
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
         }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.UIPluginBase#getValue()
+     */
+    @Override
+    public Object getValue()
+    {
+        if (fvo != null)
+        {
+            Object data = fvo.getCurrentDataObj();
+            if (data instanceof CollectingEventAttribute)
+            {
+                CollectingEventAttribute cea = (CollectingEventAttribute)data;
+                //System.err.println(cea.getHostTaxon());
+                cea.setHostTaxon((Taxon)cbx.getValue());
+            }
+        }
+        return null;
     }
     
 }

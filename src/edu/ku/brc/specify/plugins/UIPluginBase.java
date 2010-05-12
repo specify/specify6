@@ -64,6 +64,7 @@ public abstract class UIPluginBase extends JPanel implements GetSetValueIFace, U
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.GetSetValueIFace#getValue()
      */
+    @Override
     public Object getValue()
     {
         return dataObj;
@@ -72,6 +73,7 @@ public abstract class UIPluginBase extends JPanel implements GetSetValueIFace, U
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
      */
+    @Override
     public void setValue(Object value, String defaultValue)
     {
         dataObj = value == null ? defaultValue : value;
@@ -92,6 +94,7 @@ public abstract class UIPluginBase extends JPanel implements GetSetValueIFace, U
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.UIPluginable#initialize(java.util.Properties, boolean)
      */
+    @Override
     public void initialize(final Properties propertiesArg, final boolean isViewModeArg)
     {
         this.properties = propertiesArg;
@@ -101,6 +104,7 @@ public abstract class UIPluginBase extends JPanel implements GetSetValueIFace, U
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.UIPluginable#setCellName(java.lang.String)
      */
+    @Override
     public void setCellName(String cellName)
     {
         this.cellName = cellName;
@@ -109,6 +113,7 @@ public abstract class UIPluginBase extends JPanel implements GetSetValueIFace, U
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.UIPluginable#setChangeListener(javax.swing.event.ChangeListener)
      */
+    @Override
     public void addChangeListener(final ChangeListener listener)
     {
         if (this.listeners == null)
@@ -137,6 +142,7 @@ public abstract class UIPluginBase extends JPanel implements GetSetValueIFace, U
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.UIPluginable#shutdown()
      */
+    @Override
     public void shutdown()
     {
         if (listeners != null)
