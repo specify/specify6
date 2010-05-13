@@ -19,12 +19,41 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import java.awt.Dialog;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Vector;
+
+import javax.swing.JButton;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.af.ui.forms.validation.ValTextField;
+import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
+import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.specify.datamodel.Loan;
+import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rod
@@ -39,6 +68,104 @@ public class PreparationBusRules extends AttachmentOwnerBaseBusRules
     public PreparationBusRules()
     {
         super(Preparation.class);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
+     */
+    @Override
+    public void initialize(final Viewable viewableArg)
+    {
+        super.initialize(viewableArg);
+        
+        if (formViewObj != null)
+        {
+            JButton btn = formViewObj.getCompById("ShowLoansBtn");
+            if (btn != null)
+            {
+                btn.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        showLoans();
+                    }
+                });
+            }
+        }
+    }
+    
+    /**
+     * 
+     */
+    private void showLoans()
+    {
+        if (formViewObj != null)
+        {
+            Preparation prep = (Preparation)formViewObj.getDataObj();
+            if (prep != null)
+            {
+                /*
+                 * final Dialog  parentDialog,
+                                  final String  viewSetName,
+                                  final String  viewName,
+                                  final String  displayName,
+                                  final String  title,
+                                  final String  closeBtnTitle,
+                                  final String  className,
+                                  final String  idFieldName,
+                                  final boolean isEdit,
+                                  final int     options)
+                 */
+                ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Dialog)null,
+                        null,
+                        "Loan",
+                        null,
+                        "Loans", // I18N ?
+                        null,
+                        Loan.class.getName(),
+                        "loanId",
+                        false,
+                        MultiView.HIDE_SAVE_BTN);
+                
+                Vector<Loan> loans = new Vector<Loan>();
+                
+                DataProviderSessionIFace session = null;
+                try
+                {
+                    session = DataProviderFactory.getInstance().createSession();
+                    
+                    
+                    String sql = " SELECT DISTINCT loan.LoanID FROM loan Inner Join loanpreparation AS lp ON loan.LoanID = lp.LoanID WHERE loan.IsClosed <> 1 AND lp.PreparationID ="+prep.getId();
+                    for (Integer id : BasicSQLUtils.queryForInts(sql))
+                    {
+                        Loan loan = session.get(Loan.class, id);
+                        if (loan != null)
+                        {
+                            loans.add(loan);
+                            loan.getLoanAgents().size();
+                            loan.getLoanPreparations().size();
+                            loan.getLoanAttachments().size();
+                        }
+                    }
+                    
+                } catch (Exception ex)
+                {
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AccessionBusRules.class, ex);
+                    ex.printStackTrace();
+                    UsageTracker.incrNetworkUsageCount();
+                    
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                }
+                
+                dlg.setData(loans);
+                UIHelper.centerAndShow(dlg);
+            }
+        }
     }
 
     /* (non-Javadoc)
