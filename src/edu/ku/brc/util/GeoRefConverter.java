@@ -202,13 +202,14 @@ public class GeoRefConverter implements StringConverter
             {
             	decimalFmtLen += 2;
             }
+            
         	if (destFormat.equals(GeoRefFormat.DM_PLUS_MINUS.name()))
         	{
-        		return LatLonConverter.convertToSignedDDMMMM(degreesPlusMinus, decimalFmtLen, degFmt);
+        		return LatLonConverter.convertToSignedDDMMMM(degreesPlusMinus, Math.max(decimalFmtLen,2), degFmt);
         	}
             else if (destFormat.equals(GeoRefFormat.DM_NSEW.name()))
             {
-            	return LatLonConverter.convertToDDMMMM(degreesPlusMinus, degFmt, getDir(llType), decimalFmtLen, true);
+            	return LatLonConverter.convertToDDMMMM(degreesPlusMinus, degFmt, getDir(llType), Math.max(decimalFmtLen,2), true);
             }
         }
         else if (destFormat.equals(GeoRefFormat.D_PLUS_MINUS.name()) || destFormat.equals(GeoRefFormat.D_NSEW.name()))
@@ -221,13 +222,14 @@ public class GeoRefConverter implements StringConverter
             {
             	decimalFmtLen += 5;
             }
+            
             if (destFormat.equals(GeoRefFormat.D_PLUS_MINUS.name()))
             {
-            	return LatLonConverter.convertToSignedDDDDDD(degreesPlusMinus, decimalFmtLen, degFmt);
+            	return LatLonConverter.convertToSignedDDDDDD(degreesPlusMinus, Math.max(decimalFmtLen,2), degFmt);
             }
             else if (destFormat.equals(GeoRefFormat.D_NSEW.name()))
             {
-            	return LatLonConverter.convertToDDDDDD(degreesPlusMinus, degFmt, getDir(llType), decimalFmtLen, true);
+            	return LatLonConverter.convertToDDDDDD(degreesPlusMinus, degFmt, getDir(llType), Math.max(decimalFmtLen,2), true);
             }
         }
 
