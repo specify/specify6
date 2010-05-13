@@ -243,11 +243,13 @@ public class HostTaxonPlugin extends UIPluginBase
     {
         super.setValue(value, defaultValue);
         
+        boolean clear = true;
         if (value instanceof CollectingEventAttribute)
         {
             CollectingEventAttribute cea = (CollectingEventAttribute)value;
             if (cea.getHostTaxon() != null)
             {
+                clear = false;
                 if (text != null)
                 {
                     text.setText(cea.getHostTaxon().getFullName() != null ? cea.getHostTaxon().getFullName() : cea.getHostTaxon().getName());
@@ -257,7 +259,17 @@ public class HostTaxonPlugin extends UIPluginBase
                     cbx.getTextWithQuery().setSelectedId(cea.getHostTaxon().getId());
                 }
             }
-            //cbx.setValue(cea.getHostTaxon(), null);
+        }
+        
+        if (clear)
+        {
+            if (text != null)
+            {
+                text.setText("");
+            } else
+            {
+                cbx.setValue(null, null);
+            }
         }
         
         DataProviderSessionIFace session = null;
