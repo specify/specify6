@@ -531,6 +531,102 @@ public class BasicSQLUtils
 
         return count;
     }
+    
+    /**
+     * @param sql
+     * @return
+     */
+    public static String getString(final String sql)
+    {
+        return getString(dbConn != null ? dbConn : DBConnection.getInstance().getConnection(), sql);
+    }
+    
+    /**
+     * @param sql
+     * @return
+     */
+    public static String getString(final Connection connection, final String sql)
+    {
+        String    str = null;
+        Statement stmt  = null;
+        try
+        {
+            stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            if (rs.next())
+            {
+                str = rs.getString(1);
+            }
+            rs.close();
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            if (stmt != null)
+            {
+                try
+                {
+                    stmt.close();
+                    
+                } catch (Exception ex) {}
+            }
+        }
+
+        return str;
+    }
+
+    /**
+     * @param sql
+     * @return
+     */
+    public static Object[] getRow(final String sql)
+    {
+        return getRow(dbConn != null ? dbConn : DBConnection.getInstance().getConnection(), sql);
+    }
+    
+    /**
+     * @param sql
+     * @return
+     */
+    public static Object[] getRow(final Connection connection, final String sql)
+    {
+        Object[]  row  = null;
+        Statement stmt = null;
+        try
+        {
+            stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            if (rs.next())
+            {
+                row = new Object[rs.getMetaData().getColumnCount()];
+                
+                for (int i=1;i<=rs.getMetaData().getColumnCount();i++)
+                {
+                    row[i-1] = rs.getObject(i);
+                }
+            }
+            rs.close();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            if (stmt != null)
+            {
+                try
+                {
+                    stmt.close();
+                    
+                } catch (Exception ex) {}
+            }
+        }
+
+        return row;
+    }
 
     /**
      * @param sql
