@@ -916,27 +916,30 @@ public class BaseBusRules implements BusinessRulesIFace
      */
     protected void setLSID(final FormDataObjIFace data)
     {
-        boolean doLSID = ((SpecifyLSIDGeneratorFactory)SpecifyLSIDGeneratorFactory.getInstance()).isPrefOn(data.getTableId());
-        if (doLSID)
+        if (data != null)
         {
-            //----------------------------------------------------------------
-            // We want Version to always be on
-            //AppPreferences remote = AppPreferences.getRemote();
-            //String                prefix       = "Prefs.LSID.";
-            boolean               doVersioning = true;//remote.getBoolean(prefix + "UseVersioning", false);
-            //----------------------------------------------------------------
-            UIFieldFormatterIFace formatter    = null;
-            
-            if (data.getTableId() == 1)
+            boolean doLSID = ((SpecifyLSIDGeneratorFactory)SpecifyLSIDGeneratorFactory.getInstance()).isPrefOn(data.getTableId());
+            if (doLSID)
             {
-                DBFieldInfo fi = DBTableIdMgr.getInstance().getInfoById(1).getFieldByColumnName("CatalogNumber");
-                formatter = fi.getFormatter();
-            }
-            
-            String lsid = GenericLSIDGeneratorFactory.getInstance().setLSIDOnId(data, doVersioning, formatter);
-            if (lsid != null)
-            {
-                FormHelper.setValue(data, "guid", lsid);
+                //----------------------------------------------------------------
+                // We want Version to always be on
+                //AppPreferences remote = AppPreferences.getRemote();
+                //String                prefix       = "Prefs.LSID.";
+                boolean               doVersioning = true;//remote.getBoolean(prefix + "UseVersioning", false);
+                //----------------------------------------------------------------
+                UIFieldFormatterIFace formatter    = null;
+                
+                if (data.getTableId() == 1)
+                {
+                    DBFieldInfo fi = DBTableIdMgr.getInstance().getInfoById(1).getFieldByColumnName("CatalogNumber");
+                    formatter = fi.getFormatter();
+                }
+                
+                String lsid = GenericLSIDGeneratorFactory.getInstance().setLSIDOnId(data, doVersioning, formatter);
+                if (lsid != null)
+                {
+                    FormHelper.setValue(data, "guid", lsid);
+                }
             }
         }
     }
