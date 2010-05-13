@@ -507,7 +507,13 @@ public class MainFrameSpecify extends MainFrame
         	AppResourceIFace freshAppRes = AppContextMgr.getInstance().getResource(appRes.getName());
         	if (freshAppRes != null)
         	{
-        		appRes = freshAppRes;
+                freshAppRes.setName(appRes.getName());
+                freshAppRes.setDescription(appRes.getDescription());
+                freshAppRes.setLevel(appRes.getLevel());
+                freshAppRes.setMimeType(appRes.getMimeType());
+                freshAppRes.setMetaData(appRes.getMetaData());
+                ((SpAppResource )freshAppRes).setSpAppResourceDir(((SpAppResource )appRes).getSpAppResourceDir());
+                appRes = freshAppRes;
         	}
         	else
         	{
