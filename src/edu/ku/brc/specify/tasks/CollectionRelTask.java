@@ -35,8 +35,6 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.log4j.Logger;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -75,7 +73,7 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class CollectionRelTask extends BaseTask
 {
-    private static final Logger log = Logger.getLogger(CollectionRelTask.class);
+    //private static final Logger log = Logger.getLogger(CollectionRelTask.class);
     
     private static final String  COLRELTSK        = "COLRELTSK";
     //private static final String  CR_MANAGECR      = "CR_MANAGECR";
@@ -512,9 +510,7 @@ public class CollectionRelTask extends BaseTask
     @Override
     public List<MenuItemDesc> getMenuItems()
     {
-        final String COLSETUP_MENU    = "Specify.COLSETUP_MENU";
-        final String TREES_MENU       = "Specify.TREES_MENU";
-        final String SYSTEM_MENU      = "Specify.SYSTEM_MENU";
+        final String SYSTEM_MENU = "Specify.SYSTEM_MENU";
         
         SecurityMgr secMgr = SecurityMgr.getInstance();
         
