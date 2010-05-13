@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -35,6 +36,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -48,6 +50,7 @@ import edu.ku.brc.specify.datamodel.CollectionRelationship;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author rod
@@ -67,7 +70,8 @@ public class HostTaxonPlugin extends UIPluginBase
     protected CollectionRelationship collectionRel = null;
     protected CollectionObject       otherSide     = null;
     
-    protected ValComboBoxFromQuery   cbx;
+    protected ValComboBoxFromQuery   cbx           = null;
+    protected JTextField             text         = null;
     protected String                 relName       = null;
     protected Integer                hostCollId    = null;
     protected Discipline             discipline    = null;
@@ -127,9 +131,20 @@ public class HostTaxonPlugin extends UIPluginBase
         sql.append(" AND %s2");
         System.out.println(sql.toString());
         cbx.setSqlTemplate(sql.toString());
-        
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#setEnabled(boolean)
+     */
+    public void setEnabled(final boolean enabled)
+    {
+        super.setEnabled(enabled);
+        if (cbx != null)
+        {
+            cbx.setEnabled(enabled);
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.UIPluginBase#initialize(java.util.Properties, boolean)
      */
@@ -175,29 +190,40 @@ public class HostTaxonPlugin extends UIPluginBase
         if (discipline != null)
         {
             CellConstraints cc = new CellConstraints();
-            PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g",  "f:p:g"), this);
             
-            int btnOpts = ValComboBoxFromQuery.CREATE_EDIT_BTN | ValComboBoxFromQuery.CREATE_NEW_BTN | ValComboBoxFromQuery.CREATE_SEARCH_BTN;
-            cbx = new ValComboBoxFromQuery(DBTableIdMgr.getInstance().getInfoById(Taxon.getClassTableId()),
-                                    "fullName",
-                                    "fullName",
-                                    "fullName",
-                                    "%s",
-                                    null,
-                                    null,
-                                    "",
-                                    null, // helpContext
-                                    btnOpts);
-            pb.add(cbx, cc.xy(1, 1));
-            
-            adjustSQLTemplate();
-            
-            cbx.addListSelectionListener(new ListSelectionListener() {
-                public void valueChanged(ListSelectionEvent e)
-                {
-                    itemSelected();
-                }
-            });
+            if (isViewMode)
+            {
+                PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g",  "p"), this);
+                text = UIHelper.createTextField("");
+                ViewFactory.changeTextFieldUIForDisplay(text, false);
+                pb.add(text, cc.xy(1, 1));
+                
+            } else
+            {
+                PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g",  "f:p:g"), this);
+                
+                int btnOpts = ValComboBoxFromQuery.CREATE_EDIT_BTN | ValComboBoxFromQuery.CREATE_NEW_BTN | ValComboBoxFromQuery.CREATE_SEARCH_BTN;
+                cbx = new ValComboBoxFromQuery(DBTableIdMgr.getInstance().getInfoById(Taxon.getClassTableId()),
+                                        "fullName",
+                                        "fullName",
+                                        "fullName",
+                                        "%s",
+                                        null,
+                                        null,
+                                        "",
+                                        null, // helpContext
+                                        btnOpts);
+                pb.add(cbx, cc.xy(1, 1));
+                
+                adjustSQLTemplate();
+                
+                cbx.addListSelectionListener(new ListSelectionListener() {
+                    public void valueChanged(ListSelectionEvent e)
+                    {
+                        itemSelected();
+                    }
+                });
+            }
         }
     }
     
@@ -220,11 +246,16 @@ public class HostTaxonPlugin extends UIPluginBase
         if (value instanceof CollectingEventAttribute)
         {
             CollectingEventAttribute cea = (CollectingEventAttribute)value;
-            System.err.println(cea.getHostTaxon());
             if (cea.getHostTaxon() != null)
             {
-                cbx.setValue(cea.getHostTaxon(), null);
-                cbx.getTextWithQuery().setSelectedId(cea.getHostTaxon().getId());
+                if (text != null)
+                {
+                    text.setText(cea.getHostTaxon().getFullName() != null ? cea.getHostTaxon().getFullName() : cea.getHostTaxon().getName());
+                } else
+                {
+                    cbx.setValue(cea.getHostTaxon(), null);
+                    cbx.getTextWithQuery().setSelectedId(cea.getHostTaxon().getId());
+                }
             }
             //cbx.setValue(cea.getHostTaxon(), null);
         }
