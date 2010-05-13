@@ -32,6 +32,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.JCheckBox;
@@ -1264,11 +1265,12 @@ public class InteractionsTask extends BaseTask
                     loan = isGift ? null : (Loan)session.getData(hql);
                     gift = isGift ? (Gift)session.getData(hql) : null;
                     
-                    if (loan.getShipments().size() == 0)
+                    Set<Shipment> shipments = isGift ? gift.getShipments() : loan.getShipments();
+                    if (shipments != null && shipments.size() == 0)
                     {
                         UIRegistry.displayErrorDlg(getResourceString("NO_SHIPMENTS_ERROR"));
                         
-                    } else if (loan.getShipments().size() > 1)
+                    } else if (shipments.size() > 1)
                     {
                         // XXX Do we allow them to pick a shipment or print all?
                         UIRegistry.displayErrorDlg(getResourceString("MULTI_SHIPMENTS_NOT_SUPPORTED"));
