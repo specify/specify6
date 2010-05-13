@@ -832,6 +832,10 @@ public class ResourceImportExportDlg extends CustomDialog
     	sb.append(appRes.getMetaData());
     	sb.append("]]>");
     	sb.append("</metadata>\r\n");
+    	sb.append("<mimetype><![CDATA[");
+    	sb.append(appRes.getMimeType());
+    	sb.append("]]>");
+    	sb.append("</mimetype>\r\n");
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
@@ -875,6 +879,10 @@ public class ResourceImportExportDlg extends CustomDialog
     	sb.append(appRes.getMetaData());
     	sb.append("]]>");
     	sb.append("</metadata>\r\n");
+    	sb.append("<mimetype > <![CDATA[");
+    	sb.append(appRes.getMimeType());
+    	sb.append("]]>");
+    	sb.append("</mimetype>\r\n");
     	sb.append("\r\n</reportresource>\r\n");
     	
     	zout.putNextEntry(new ZipEntry("app.xml"));
@@ -955,7 +963,13 @@ public class ResourceImportExportDlg extends CustomDialog
     		
     		Element appRoot     = XMLHelper.readStrToDOM4J(app);
             Node    metadata    = appRoot.selectSingleNode("metadata");
-            String  metadataStr = metadata.getStringValue() + ";";
+            String  metadataStr = metadata.getStringValue();
+            if (!metadataStr.endsWith(";"))
+            {
+            	metadataStr += ";";
+            }
+            Node	mimeTypeNode  = appRoot.selectSingleNode("mimetype");
+            String mimeTypeStr = mimeTypeNode != null ? mimeTypeNode.getStringValue().trim() : null;
             
             entry = zin.getNextEntry();
             if (entry != null)
@@ -964,7 +978,8 @@ public class ResourceImportExportDlg extends CustomDialog
                 appRes.setMetaData(metadataStr.trim());
                 
                 String repType  = appRes.getMetaDataMap().getProperty("reporttype");
-                String mimeType = repType != null && repType.equalsIgnoreCase("label") ? "jrxml/label" : "jrxml/report";
+                String mimeType = mimeTypeStr != null ? mimeTypeStr
+                		: repType != null && repType.equalsIgnoreCase("label") ? "jrxml/label" : "jrxml/report";
                 
                 appRes.setMimeType(mimeType); 
                 appRes.setLevel((short )3);//XXX level?????????????????
