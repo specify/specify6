@@ -8267,7 +8267,7 @@ public class BuildSampleDatabase
             {
                 String sql = String.format(" FROM splocalecontainer c INNER JOIN splocalecontaineritem ci ON c.SpLocaleContainerID = ci.SpLocaleContainerID WHERE ci.Name = '%s' AND c.DisciplineID = %d AND c.SpLocaleContainerID = %d", item.getName(), disciplineId, newContainer.getId());
                 String fullSQL = "SELECT COUNT(*)" + sql;
-                log.debug(fullSQL);
+                //log.debug(fullSQL);
                 int cnt = BasicSQLUtils.getCountAsInt(fullSQL);
                 if (cnt > 0)
                 {
@@ -8275,7 +8275,7 @@ public class BuildSampleDatabase
                     if (cnt == 1)
                     {
                         itemSQL = "SELECT ci.SpLocaleContainerItemID" + sql;
-                        log.debug(itemSQL);
+                        //log.debug(itemSQL);
                     }
                 }
             }
@@ -8472,7 +8472,7 @@ public class BuildSampleDatabase
             {
                 String sql     = String.format(" FROM splocalecontainer WHERE Name = '%s' AND DisciplineID = %d", table.getName(), discipline.getId());
                 String fullSQL = "SELECT COUNT(*)"+sql;
-                log.debug(fullSQL);
+                //log.debug(fullSQL);
                 int cnt = BasicSQLUtils.getCountAsInt(fullSQL);
                 if (cnt > 0)
                 {

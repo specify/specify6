@@ -756,6 +756,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         xstream.useAttributeFor(SpLocaleBase.class, "format");
         xstream.useAttributeFor(SpLocaleBase.class, "isUIFormatter");
         xstream.useAttributeFor(SpLocaleBase.class, "pickListName");
+        xstream.useAttributeFor(SpLocaleBase.class, "isHidden");
         
         xstream.useAttributeFor(SpLocaleItemStr.class, "country");
         xstream.useAttributeFor(SpLocaleItemStr.class, "language");
