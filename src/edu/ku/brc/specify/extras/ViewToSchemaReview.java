@@ -58,7 +58,6 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.SearchBox;
 import edu.ku.brc.af.ui.db.JAutoCompTextField;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
-import edu.ku.brc.af.ui.forms.persist.FormCellFieldIFace;
 import edu.ku.brc.af.ui.forms.persist.FormCellIFace;
 import edu.ku.brc.af.ui.forms.persist.FormCellPanelIFace;
 import edu.ku.brc.af.ui.forms.persist.FormRow;
@@ -126,14 +125,11 @@ public class ViewToSchemaReview
                         {
                             for (FormCellIFace cell : row.getCells())
                             {
-                                if (cell.getType() == FormCellIFace.CellType.panel)
+                                if (cell.getType() == FormCellIFace.CellType.field ||
+                                    cell.getType() == FormCellIFace.CellType.subview)
                                 {
-                                    
-                                } else if (cell.getType() == FormCellIFace.CellType.field)
-                                {
-                                    FormCellFieldIFace fcf       = (FormCellFieldIFace)cell;
-                                    String             fieldName = fcf.getName();
-                                    if (!fcf.isIgnoreSetGet() && !fieldName.equals("this"))
+                                    String fieldName = cell.getName();
+                                    if (!cell.isIgnoreSetGet() && !fieldName.equals("this"))
                                     {
                                         DBFieldInfo fi = ti.getFieldByName(fieldName);
                                         if (fi != null)
@@ -224,11 +220,12 @@ public class ViewToSchemaReview
                                     {
                                         tiHash.put(fieldName, true);
                                     }
-                                } else if (cell.getType() == FormCellIFace.CellType.field)
+                                    
+                                } else if (cell.getType() == FormCellIFace.CellType.field ||
+                                           cell.getType() == FormCellIFace.CellType.subview)
                                 {
-                                    FormCellFieldIFace fcf       = (FormCellFieldIFace)cell;
-                                    String             fieldName = fcf.getName();
-                                    if (!fcf.isIgnoreSetGet() && !fieldName.equals("this"))
+                                    String             fieldName = cell.getName();
+                                    if (!cell.isIgnoreSetGet() && !fieldName.equals("this"))
                                     {
                                         DBFieldInfo fi = ti.getFieldByName(fieldName);
                                         if (fi != null)
@@ -288,14 +285,15 @@ public class ViewToSchemaReview
         table.setRowSorter(sorter);
         
         CellConstraints cc        = new CellConstraints();
-        PanelBuilder    pb        = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,4px,f:p:g"));
+        PanelBuilder    pb        = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,4px,f:p:g,2px,p:g"));
         SearchBox       searchBox = new SearchBox(searchTF, null);
         
+        JLabel          legend = UIHelper.createLabel("<HTML><li>Red - Not on form and not hidden</li><li>Magenta - On the form , but is hidden</li><li>Black - Correct</li>");
         pb.add(UIHelper.createI18NFormLabel("SEARCH"), cc.xy(1, 1));
         pb.add(searchBox,                              cc.xy(3, 1));
         pb.add(UIHelper.createScrollPane(table),       cc.xyw(1, 3, 4));
+        pb.add(legend,                                 cc.xyw(1, 5, 4));
         pb.setDefaultDialogBorder();
-        
         
         sorter.setRowFilter(null);
         
@@ -460,8 +458,21 @@ public class ViewToSchemaReview
                                {
                                    if (StringUtils.isNotEmpty(cell.getName()))
                                    {
-                                       if (cell.getType() == FormCellIFace.CellType.field ||
-                                           cell.getType() == FormCellIFace.CellType.subview)
+                                       if (cell.getType() == FormCellIFace.CellType.panel)
+                                       {
+                                           FormCellPanelIFace panelCell = (FormCellPanelIFace)cell;
+                                           for (String fieldName : panelCell.getFieldNames())
+                                           {
+                                               pw.print("<tr><td ");
+                                               pw.print("class=\"");
+                                               pw.print(r % 2 == 0 ? "brdrodd" : "brdreven");
+                                               pw.print("\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + fieldName);
+                                               pw.println("</td></tr>");
+                                               fieldCnt++;
+                                           }
+                                           
+                                       } else if (cell.getType() == FormCellIFace.CellType.field ||
+                                                  cell.getType() == FormCellIFace.CellType.subview)
                                        {
                                            pw.print("<tr><td ");
                                            pw.print("class=\"");
@@ -520,11 +531,12 @@ public class ViewToSchemaReview
                 Boolean isChanged = !row[4].equals(row[5]);
                 if (isChanged)
                 {
-                    String fieldName = row[1].toString();
-                    Boolean isHidden = (Boolean)row[4];
+                    String  fieldName = row[1].toString();
+                    Boolean isHidden  = (Boolean)row[4];
                     
-                    DBTableInfo ti = DBTableIdMgr.getInstance().getInfoByTableName(tblTitle2Name.get(row[0]));
-                    DBFieldInfo fi = ti.getFieldByName(fieldName);
+                    String      title = row[0].toString();
+                    DBTableInfo ti    = DBTableIdMgr.getInstance().getInfoByTableName(tblTitle2Name.get(title));
+                    DBFieldInfo fi    = ti.getFieldByName(fieldName);
                     if (fi != null)
                     {
                         fi.setHidden(isHidden);
