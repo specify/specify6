@@ -513,5 +513,21 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
         
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.SpLocaleBase#getNamesSet()
+     */
+    @Transient
+    public Set<SpLocaleItemStr> getNamesSet()
+    {
+        return names;
+    }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.SpLocaleBase#getDescsSet()
+     */
+    @Transient
+    public Set<SpLocaleItemStr> getDescsSet()
+    {
+        return descs;
+    }
 }

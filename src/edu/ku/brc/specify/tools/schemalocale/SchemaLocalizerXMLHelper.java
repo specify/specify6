@@ -151,6 +151,18 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     {
         tables = load(null, externalFile);
         
+        for (DisciplineBasedContainer c : tables)
+        {
+            if (c.getName().equals("accession"))
+            {
+                for (SpLocaleItemStr str : c.getNames())
+                {
+                    System.out.println(str.getText());
+                }
+            }
+                
+        }
+        
         boolean loadedOk = tables != null;
         if (loadedOk && externalFile == null)
         {
@@ -749,6 +761,8 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     {
         xstream.alias("container", DisciplineBasedContainer.class);
         xstream.alias("item",      SpLocaleContainerItem.class);
+        xstream.alias("names",      SpLocaleContainerItem.class);
+        xstream.alias("desc",      SpLocaleContainerItem.class);
         xstream.alias("str",       SpLocaleItemStr.class);
         
         xstream.useAttributeFor(SpLocaleBase.class, "name");

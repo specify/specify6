@@ -20,6 +20,8 @@
 package edu.ku.brc.specify.datamodel;
 
 
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
@@ -217,5 +219,10 @@ public abstract class SpLocaleBase extends DataModelObjBase
         this.pickListName = pickListName;
     }
     
+    @Transient
+    public abstract Set<SpLocaleItemStr> getNamesSet();
+    
+    @Transient
+    public abstract Set<SpLocaleItemStr> getDescsSet();
     
 }

@@ -353,4 +353,21 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
         return name != null && obj != null && obj.getName() != null ? name.compareTo(obj.getName()) : 0;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.SpLocaleBase#getNamesSet()
+     */
+    @Transient
+    public Set<SpLocaleItemStr> getNamesSet()
+    {
+        return names;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.SpLocaleBase#getDescsSet()
+     */
+    @Transient
+    public Set<SpLocaleItemStr> getDescsSet()
+    {
+        return descs;
+    }
 }

@@ -156,7 +156,6 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
@@ -220,6 +219,7 @@ import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.ReferenceWork;
 import edu.ku.brc.specify.datamodel.RepositoryAgreement;
 import edu.ku.brc.specify.datamodel.Shipment;
+import edu.ku.brc.specify.datamodel.SpLocaleBase;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
@@ -8132,11 +8132,101 @@ public class BuildSampleDatabase
         newItem.setWebLinkName(memoryItem.getWebLinkName());
         newItem.setIsHidden(memoryItem.getIsHidden());
         newItem.setIsRequired(memoryItem.getIsRequired());
-
-        for (SpLocaleItemStr nm : memoryItem.getNames())
+        
+        mergeOrCreateStr(memoryItem, newItem, isFish);
+        setParentForItemStrs(newItem.getNames(), newItem, true);
+        setParentForItemStrs(newItem.getDescs(), newItem, false);
+    }
+    
+    /**
+     * @param hash
+     * @param baseName
+     * @param strItems
+     */
+    protected static void setParentForItemStrs(final Set<SpLocaleItemStr>  strItems,
+                                               final SpLocaleContainerItem item,
+                                               final boolean isForNames)
+    {
+        for (SpLocaleItemStr str : strItems)
         {
-            SpLocaleItemStr str = new SpLocaleItemStr();
-            str.initialize();
+            if (isForNames)
+            {
+                str.setItemName(item);
+            } else
+            {
+                str.setItemDesc(item);
+            }
+        }
+    }
+    
+    /**
+     * @param hash
+     * @param baseName
+     * @param strItems
+     */
+    protected static void setParentForContainerStrs(final Set<SpLocaleItemStr>  strItems,
+                                               final SpLocaleContainer container,
+                                               final boolean isForNames)
+    {
+        for (SpLocaleItemStr str : strItems)
+        {
+            if (isForNames)
+            {
+                str.setContainerName(container);
+            } else
+            {
+                str.setContainerDesc(container);
+            }
+        }
+    }
+    
+    /**
+     * @param hash
+     * @param baseName
+     * @param strItems
+     */
+    protected static HashMap<String, SpLocaleItemStr> makeHash(final Set<SpLocaleItemStr> strItems)
+    {
+        HashMap<String, SpLocaleItemStr> strHash = new HashMap<String, SpLocaleItemStr>();
+        for (SpLocaleItemStr nm : strItems)
+        {
+            strHash.put(nm.getLanguage(), nm);
+        }
+        return strHash;
+    }
+    
+    /**
+     * @param memBase
+     * @param dbBase
+     * @param session
+     */
+    protected static void mergeOrCreateStr(final SpLocaleBase memBase, 
+                                           final SpLocaleBase dbBase,
+                                           final boolean isFish)
+    {
+        HashMap<String, SpLocaleItemStr> namesHash = null;
+        HashMap<String, SpLocaleItemStr> descsHash = null;
+        if (dbBase != null && dbBase.getId() != null)
+        {
+            namesHash = makeHash(dbBase.getNamesSet());
+            descsHash = makeHash(dbBase.getDescsSet());
+        }
+        
+        for (SpLocaleItemStr nm : memBase.getNamesSet())
+        {
+            String lang = nm.getLanguage();
+            
+            SpLocaleItemStr str = null;
+            if (namesHash != null)
+            {
+                str = namesHash.get(lang);
+            } 
+            
+            if (str == null)
+            {
+                str = new SpLocaleItemStr();
+                str.initialize();
+            }
             
             String title = nm.getText();
             if (!isFish && title.equals("Collecting Event"))
@@ -8150,25 +8240,38 @@ public class BuildSampleDatabase
             str.setCountry(nm.getCountry());
             str.setVariant(nm.getVariant());
             
-            newItem.getNames().add(str);
-            str.setItemName(newItem);
+            if (dbBase != null && dbBase.getId() != null)
+            {   
+                dbBase.getNamesSet().add(str);
+            }
         }
         
-        for (SpLocaleItemStr desc : memoryItem.getDescs())
+        for (SpLocaleItemStr desc : memBase.getDescsSet())
         {
-            SpLocaleItemStr str = new SpLocaleItemStr();
-            str.initialize();
+            String lang = desc.getLanguage();
+            
+            SpLocaleItemStr str = null;
+            if (descsHash != null)
+            {
+                str = descsHash.get(lang);
+            } 
+            
+            if (str == null)
+            {
+                str = new SpLocaleItemStr();
+                str.initialize();
+            }
             
             str.setText(desc.getText());
-            if (debugOn) System.out.println(desc.getText());
             str.setLanguage(desc.getLanguage());
             str.setCountry(desc.getCountry());
             str.setVariant(desc.getVariant());
             
-            newItem.getDescs().add(str);
-            str.setItemDesc(newItem);
+            if (dbBase != null && dbBase.getId() != null)
+            {
+                dbBase.getDescsSet().add(str);
+            }
         }
-
     }
     
     /**
@@ -8188,7 +8291,7 @@ public class BuildSampleDatabase
         
         boolean isColObj          = memoryContainer.getName().equals("collectionobject");
         boolean isAccession       = memoryContainer.getName().equals("accession");
-        boolean isCollectingEvent = memoryContainer.getName().equals("collectingevent");
+        //boolean isCollectingEvent = memoryContainer.getName().equals("collectingevent");
         boolean isFish            = disciplineName.equals("fish");
 
         if (newContainer.getId() == null)
@@ -8202,6 +8305,10 @@ public class BuildSampleDatabase
             newContainer.setIsHidden(newContainer.getIsHidden());
             //debugOn = false;
             
+            mergeOrCreateStr(memoryContainer, newContainer, isFish);
+            setParentForContainerStrs(newContainer.getNames(), newContainer, true);
+            setParentForContainerStrs(newContainer.getDescs(), newContainer, false);
+            
             if (session != null)
             {
                 try
@@ -8211,39 +8318,6 @@ public class BuildSampleDatabase
                 {
                     ex.printStackTrace();
                 }
-            }
-           
-            for (SpLocaleItemStr nm : memoryContainer.getNames())
-            {
-                SpLocaleItemStr str = new SpLocaleItemStr();
-                str.initialize();
-                
-                String title = nm.getText();
-                if (isCollectingEvent && !isFish)
-                {
-                    title = "Collecting Information"; // I18N
-                }
-                str.setText(title);
-                str.setLanguage(nm.getLanguage());
-                str.setCountry(nm.getCountry());
-                str.setVariant(nm.getVariant());
-                
-                newContainer.getNames().add(str);
-                str.setContainerName(newContainer);
-            }
-            
-            for (SpLocaleItemStr desc : memoryContainer.getDescs())
-            {
-                SpLocaleItemStr str = new SpLocaleItemStr();
-                str.initialize();
-                
-                str.setText(desc.getText());
-                str.setLanguage(desc.getLanguage());
-                str.setCountry(desc.getCountry());
-                str.setVariant(desc.getVariant());
-                
-                newContainer.getDescs().add(str);
-                str.setContainerDesc(newContainer);
             }
         }
         
