@@ -8134,8 +8134,11 @@ public class BuildSampleDatabase
         newItem.setIsRequired(memoryItem.getIsRequired());
         
         mergeOrCreateStr(memoryItem, newItem, isFish);
-        setParentForItemStrs(newItem.getNames(), newItem, true);
-        setParentForItemStrs(newItem.getDescs(), newItem, false);
+        if (newItem.getId() == null)
+        {
+            setParentForItemStrs(newItem.getNames(), newItem, true);
+            setParentForItemStrs(newItem.getDescs(), newItem, false);
+        }
     }
     
     /**
@@ -8240,7 +8243,7 @@ public class BuildSampleDatabase
             str.setCountry(nm.getCountry());
             str.setVariant(nm.getVariant());
             
-            if (dbBase != null && dbBase.getId() != null)
+            if (dbBase != null && dbBase.getId() == null)
             {   
                 dbBase.getNamesSet().add(str);
             }
@@ -8267,7 +8270,7 @@ public class BuildSampleDatabase
             str.setCountry(desc.getCountry());
             str.setVariant(desc.getVariant());
             
-            if (dbBase != null && dbBase.getId() != null)
+            if (dbBase != null && dbBase.getId() == null)
             {
                 dbBase.getDescsSet().add(str);
             }
@@ -8305,10 +8308,6 @@ public class BuildSampleDatabase
             newContainer.setIsHidden(newContainer.getIsHidden());
             //debugOn = false;
             
-            mergeOrCreateStr(memoryContainer, newContainer, isFish);
-            setParentForContainerStrs(newContainer.getNames(), newContainer, true);
-            setParentForContainerStrs(newContainer.getDescs(), newContainer, false);
-            
             if (session != null)
             {
                 try
@@ -8320,6 +8319,24 @@ public class BuildSampleDatabase
                 }
             }
         }
+        
+        mergeOrCreateStr(memoryContainer, newContainer, isFish);
+        if (newContainer.getId() == null)
+        {
+            setParentForContainerStrs(newContainer.getNames(), newContainer, true);
+            setParentForContainerStrs(newContainer.getDescs(), newContainer, false);
+        }
+        if (session != null)
+        {
+            try
+            {
+                session.saveOrUpdate(newContainer);
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+
         
         Hashtable<String, SpLocaleContainerItem> dispItemHash = new Hashtable<String, SpLocaleContainerItem>();
         if (memoryContainer instanceof DisciplineBasedContainer)
