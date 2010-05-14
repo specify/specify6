@@ -390,6 +390,10 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                         {
                         	progressLabel.setText(getResourceString("JasperReportFilling"));
                         }
+                        
+                        //This needs to be done for newer jasperreports.jar. see bugzilla #7940 for details.
+                        jasperReport.setProperty("net.sf.jasperreports.awt.ignore.missing.font", "true");
+                        
                         if (recordSet != null || (recordSet == null && dataSource == null))
                         {
                             asyncFillHandler = AsynchronousFillHandle.createHandle(jasperReport,
