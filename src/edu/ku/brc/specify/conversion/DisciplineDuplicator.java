@@ -159,11 +159,11 @@ public class DisciplineDuplicator
      * @return
      * @throws SQLException
      */
-    private String getFieldNameList(final String tblName) throws SQLException
+    public static String getFieldNameList(final Connection conn, final String tblName) throws SQLException
     {
         StringBuilder fieldNames = new StringBuilder();
         int cnt = 0;
-        for (String colName : getColumnNames(newDBConn, newDBConn.getCatalog(), tblName, true))
+        for (String colName : getColumnNames(conn, conn.getCatalog(), tblName, true))
         {
             if (cnt > 0) fieldNames.append(',');
             fieldNames.append(colName);
@@ -201,8 +201,8 @@ public class DisciplineDuplicator
             
             String sql;
             
-            String ceFldNames  = getFieldNameList("collectingevent");
-            String ceaFldNames = getFieldNameList("collectingeventattribute");
+            String ceFldNames  = getFieldNameList(newDBConn, "collectingevent");
+            String ceaFldNames = getFieldNameList(newDBConn, "collectingeventattribute");
             
             sql = " FROM collectionobject " +
                     "Inner Join collection ON collectionobject.CollectionID = collection.UserGroupScopeId " +
@@ -396,9 +396,9 @@ public class DisciplineDuplicator
             String sql;
             int cnt = 0;
             
-            String locFldNames = getFieldNameList("locality");
-            String gcdFldNames = getFieldNameList("geocoorddetail");
-            String ldFldNames  = getFieldNameList("localitydetail");
+            String locFldNames = getFieldNameList(newDBConn, "locality");
+            String gcdFldNames = getFieldNameList(newDBConn, "geocoorddetail");
+            String ldFldNames  = getFieldNameList(newDBConn, "localitydetail");
             
             String fromSQL = " FROM locality l INNER JOIN collectingevent ce ON l.LocalityID = ce.LocalityID WHERE l.DisciplineID != ce.DisciplineID";
             int total = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) " + fromSQL);

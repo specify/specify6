@@ -213,7 +213,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     protected static boolean                                shouldCreateMapTables  = true;
     protected static boolean                                shouldDeleteMapTables  = true;
     
-    protected static boolean                                doDeleteAllMappings    = true;
+    protected static boolean                                doDeleteAllMappings    = false;
 
     protected SpecifyAppContextMgr                          appContextMgr          = new SpecifyAppContextMgr();
 

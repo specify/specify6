@@ -143,15 +143,15 @@ public class DuplicateCollectingEvents
         try
         {
             String selectCESQL  = createSelectStmt(CollectingEvent.getClassTableId(), "CollectingEventID = %d");
-            prepCEStmt          = createPreparedStmt(CollectingEvent.getClassTableId());
+            prepCEStmt          = createPreparedStmt(newDBConn, CollectingEvent.getClassTableId());
             stmtCE              = newDBConn.createStatement();
             
             String selectCEASQL = createSelectStmt(CollectingEventAttribute.getClassTableId(), "CollectingEventAttributeID = %d");
-            prepCEAStmt         = createPreparedStmt(CollectingEventAttribute.getClassTableId());
+            prepCEAStmt         = createPreparedStmt(newDBConn, CollectingEventAttribute.getClassTableId());
             stmtCEA             = newDBConn.createStatement();
             
             String selectCECSQL = createSelectStmt(Collector.getClassTableId(), "CollectingEventID = %d");
-            prepCECStmt         = createPreparedStmt(Collector.getClassTableId());
+            prepCECStmt         = createPreparedStmt(newDBConn, Collector.getClassTableId());
             stmtCEC             = newDBConn.createStatement();
             
             log.debug(selectCESQL);
@@ -892,7 +892,7 @@ public class DuplicateCollectingEvents
      * @return
      * @throws SQLException
      */
-    private PreparedStatement createPreparedStmt(final int tableID) throws SQLException
+    public static  PreparedStatement createPreparedStmt(final Connection conn, final int tableID) throws SQLException
     {
         DBTableInfo   tblInfo = DBTableIdMgr.getInstance().getInfoById(tableID);
         StringBuilder sb      = new StringBuilder("INSERT INTO " + tblInfo.getName() + " (");
@@ -929,7 +929,7 @@ public class DuplicateCollectingEvents
         sb.append(")");
         log.debug(sb.toString());
         
-        return newDBConn.prepareStatement(sb.toString());
+        return conn.prepareStatement(sb.toString());
     }
     
     /**
@@ -937,7 +937,7 @@ public class DuplicateCollectingEvents
      * @param whereClauseStr
      * @return
      */
-    private String createSelectStmt(final int tableID, final String whereClauseStr)
+    public static String createSelectStmt(final int tableID, final String whereClauseStr)
     {
         DBTableInfo   tblInfo = DBTableIdMgr.getInstance().getInfoById(tableID);
         StringBuilder sb = new StringBuilder("SELECT ");
