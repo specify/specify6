@@ -1441,6 +1441,8 @@ public class TemplateEditor extends CustomDialog
     {
         boolean doTaxOnlyRemap = true;
         boolean unMapTaxOnlys = false;
+        boolean contaminateAgent = false;
+        boolean agentMapped = false;
         for (Integer tblId : getTblsMapped())
         {
         	if (!(tblId.equals(DBTableIdMgr.getInstance().getByClassName(Taxon.class.getName()).getTableId())
@@ -1452,6 +1454,43 @@ public class TemplateEditor extends CustomDialog
         	if (tblId.equals(4000))
         	{
         		unMapTaxOnlys = true;
+        	}
+        	if (tblId.equals(Agent.getClassTableId()))
+        	{
+        		agentMapped = true;
+        	} else if (agentMapped)
+        	{
+        		contaminateAgent = true;
+        	}
+        		
+        }
+        if (contaminateAgent)
+        {
+            int agentFlds = 0;
+            Vector<Integer> others = new Vector<Integer>();
+        	for (int m=0; m<mapModel.getSize(); m++)
+            {
+                FieldMappingPanel fmp = mapModel.getElementAt(m);
+                if (fmp.getFieldInfo() != null) 
+                {
+                	if (fmp.getFieldInfo().getTableinfo().getTableId() == Agent.getClassTableId())
+                	{
+                		agentFlds++;
+                	} else
+                	{
+                		others.add(fmp.getFieldInfo().getTableinfo().getTableId());
+                	}
+                }
+            }
+        	if (agentFlds < others.size())
+        	{
+        		unmapTable(Agent.getClassTableId());
+        	} else
+        	{
+        		for (Integer tblId : others)
+        		{
+        			unmapTable(tblId);
+        		}
         	}
         }
         if (doTaxOnlyRemap)
@@ -1506,16 +1545,26 @@ public class TemplateEditor extends CustomDialog
         }
         else if (unMapTaxOnlys)
         {
-            for (int m=0; m<mapModel.getSize(); m++)
+            unmapTable(4000);
+        }
+    }
+    
+    /**
+     * @param tableId
+     * 
+     * Unmaps all mappings to table with tableId
+     */
+    protected void unmapTable(final int tableId)
+    {
+        for (int m=0; m<mapModel.getSize(); m++)
+        {
+            FieldMappingPanel fmp = mapModel.getElementAt(m);
+            if (fmp.getFieldInfo() != null && fmp.getFieldInfo().getTableinfo().getTableId() == tableId)
             {
-                FieldMappingPanel fmp = mapModel.getElementAt(m);
-                if (fmp.getFieldInfo() != null && fmp.getFieldInfo().getTableinfo().getTableId() == 4000)
-                {
-                	log.info("unmapping " + fmp.getFieldName());
-                    fmp.getFieldInfo().setInUse(false);
-                    fmp.setFieldInfo(null);
-                    fmp.setIcon(blankIcon);
-                }
+            	log.info("unmapping " + fmp.getFieldName());
+                fmp.getFieldInfo().setInUse(false);
+                fmp.setFieldInfo(null);
+                fmp.setIcon(blankIcon);
             }
         }
     }
