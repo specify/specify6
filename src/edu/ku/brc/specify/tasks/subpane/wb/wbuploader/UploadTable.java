@@ -3542,8 +3542,11 @@ public class UploadTable implements Comparable<UploadTable>
                 .getTitle();
         if (tblClass.equals(Agent.class))
         {
-            result += " (" + relationship.getRelatedField().getTable().getTableInfo().getTitle()
+            if (relationship != null)
+            {
+            	result += " (" + relationship.getRelatedField().getTable().getTableInfo().getTitle()
                     + ")";
+            }
         }
         return result;
     }
