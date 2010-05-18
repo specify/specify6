@@ -2666,6 +2666,54 @@ public class UploadTable implements Comparable<UploadTable>
                 }
             }
         }
+        
+        if (tblClass.equals(Agent.class))
+        {
+            // check that isCurrent is ok. 1 and only one true.
+            boolean nonPersonNonEmpty = false;
+            boolean isNonPerson = false;
+            Vector<UploadField> personOnlyFlds = new Vector<UploadField>();
+            for (Vector<UploadField> flds : uploadFields)
+            {
+            	for (UploadField fld : flds)
+                {
+                    try
+                    {
+            		if (fld.getField().getName().equalsIgnoreCase("firstName")
+                        	|| fld.getField().getName().equalsIgnoreCase("middleInitial")
+                        	|| fld.getField().getName().equalsIgnoreCase("title"))
+            		{
+            			Object[] val = getArgForSetter(fld);
+            			nonPersonNonEmpty = StringUtils.isNotEmpty((String )val[0]);
+            			personOnlyFlds.add(fld);
+            		}
+            		if (fld.getField().getName().equalsIgnoreCase("agenttype"))
+            		{
+                        	Object[] val = getArgForSetter(fld);
+                        	isNonPerson = val[0] != null && !((Byte )val[0]).equals(Agent.PERSON);
+                        	if (!isNonPerson)
+                        	{
+                        		break;
+                        	}
+            		}
+                    }
+                    catch (Exception e)
+                    {
+                        // ignore. assuming problem was already caught above.
+                    }
+                }
+                if (isNonPerson && nonPersonNonEmpty)
+                {
+                	for (UploadField poFld: personOnlyFlds)
+                	{
+                    	invalidValues.add(new UploadTableInvalidValue(null, this, poFld, row,
+                                new Exception(
+                                        getResourceString("UploadTable.FieldNotApplicableForAgentType"))));
+                	}
+                }
+            }
+        }
+
     }
     
     /**
