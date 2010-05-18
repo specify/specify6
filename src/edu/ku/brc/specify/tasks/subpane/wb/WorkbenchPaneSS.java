@@ -160,9 +160,11 @@ import edu.ku.brc.specify.rstools.ExportToFile;
 import edu.ku.brc.specify.rstools.GoogleEarthExporter;
 import edu.ku.brc.specify.rstools.WorkbenchRowPlacemarkWrapper;
 import edu.ku.brc.specify.tasks.DataEntryTask;
+import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.InteractionsTask;
 import edu.ku.brc.specify.tasks.PluginsTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
+import edu.ku.brc.specify.tasks.subpane.ESResultsSubPane;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DB;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadData;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDef;
@@ -269,7 +271,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected static Uploader       datasetUploader            = null; 
     protected WorkbenchValidator    workbenchValidator         = null;
-    protected boolean 		        doIncrementalValidation    = true;
+    protected boolean 		        doIncrementalValidation    = false;
     
     // XXX PREF
     protected int                   mapSize                    = 500;
@@ -3316,7 +3318,23 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         return result;
     }
-    
+
+    /**
+     * @return  a list of open panes that need to be closed when uploader is closed.
+     */
+    protected List<SubPaneIFace> checkOpenTasksForUploadClose()
+    {
+        List<SubPaneIFace> result = new LinkedList<SubPaneIFace>();
+        for (SubPaneIFace pane : SubPaneMgr.getInstance().getSubPanes())
+        {
+            if (pane instanceof ESResultsSubPane)
+            {
+                result.add(pane);
+            }
+        }
+        return result;
+    }
+
     /**
      * @param pane
      * @return true if uploads are prohibited while pane is open.
@@ -3331,7 +3349,10 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             return true;
         }
-        //others....
+        if (pane instanceof ESResultsSubPane)
+        {
+        	return true;
+        }
         return false;
     }
     
@@ -3362,7 +3383,14 @@ public class WorkbenchPaneSS extends BaseSubPane
                     result += " or ";
                 }
             }
-            result += badTask.getTitle();
+            if (badTask instanceof ExpressSearchTask)
+            {
+            	result += UIRegistry.getResourceString("WorkbenchPaneSS.SearchResult");
+            }
+            else
+            {
+            	result += badTask.getTitle();
+            }
         }
         return result;
     }
@@ -3567,6 +3595,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
     }
     
+    /**
+     * Removes uploader ui and redisplays standard wb ui
+     */
     public void uploadDone()
     {
         datasetUploader = null;
@@ -3578,7 +3609,19 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         if (uploadPane != null)
         {
-            mainPanel.remove(uploadPane);
+            List<SubPaneIFace> badPanes = checkOpenTasksForUploadClose();
+            if (badPanes.size() > 0)
+            {
+                for (SubPaneIFace badPane : badPanes)
+                {
+                    if (!SubPaneMgr.getInstance().removePane(badPane, true))
+                    {
+                        log.error("unable to close " + badPane.getClass().getName() + " after uploader close.");
+                    }
+                }
+            }
+        	
+        	mainPanel.remove(uploadPane);
             mainPanel.add(spreadSheet.getScrollPane(), PanelType.Spreadsheet.toString());
             showPanel(PanelType.Spreadsheet);
             mainPanel.validate();
