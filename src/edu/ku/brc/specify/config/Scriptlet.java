@@ -24,8 +24,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -62,6 +64,9 @@ public class Scriptlet extends JRDefaultScriptlet
     private static final Logger log = Logger.getLogger(Scriptlet.class);
     
     protected UIFieldFormatterIFace catalogFormatter = AppContextMgr.getInstance().getFormatter("CollectionObject", "CatalogNumber");
+    
+    protected final static String stdFormat = "yyyy-MM-dd";
+    protected HashMap<String, SimpleDateFormat> dateFormatHash = new HashMap<String, SimpleDateFormat>();
 
     /**
      * beforeReportInit.
@@ -418,6 +423,23 @@ public class Scriptlet extends JRDefaultScriptlet
             loanLength = monthCount + " months"; // I18N
         }
         return loanLength;
+    }
+    
+    /**
+     * @param date
+     * @param format
+     * @return
+     */
+    public String formatDate(final java.sql.Date date, final String format)
+    {
+        String           fmtStr = StringUtils.isNotEmpty(format) ? format : stdFormat;
+        SimpleDateFormat sdf    = dateFormatHash.get(fmtStr);
+        if (sdf == null)
+        {
+            sdf = new SimpleDateFormat(fmtStr);
+            dateFormatHash.put(format, sdf);
+        }
+        return sdf.format(date);
     }
 
     /**
