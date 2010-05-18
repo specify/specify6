@@ -44,7 +44,7 @@ public class DataEntryView implements TaskConfigItemIFace, Comparable<TaskConfig
     protected DBTableInfo tableInfo = null;
     
     /**
-     * @param name
+     * @param kingdomTaxonName
      * @param viewSet
      * @param view
      * @param iconName

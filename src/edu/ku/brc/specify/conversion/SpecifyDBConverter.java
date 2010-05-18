@@ -610,7 +610,8 @@ public class SpecifyDBConverter extends AppBase
             return;
         }
         
-        if (false)
+        boolean doFix = false;
+        if (doFix)
         {
             IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
             DuplicateCollectingEvents dce = new DuplicateCollectingEvents(oldDBConn, newDBConn);
@@ -650,11 +651,12 @@ public class SpecifyDBConverter extends AppBase
             return;
         }*/
         
-        //if (true)
-        //{
-        //    ConvertMiscData.convertMethodFromStratGTP(oldDBConn, newDBConn);
-        //    return;
-        //}
+        boolean doFix2 = false;
+        if (doFix2)
+        {
+            ConvertMiscData.convertMethodFromStratGTP(oldDBConn, newDBConn);
+            return;
+        }
         
         frame.setSize(500, frame.getPreferredSize().height);
         
@@ -678,6 +680,17 @@ public class SpecifyDBConverter extends AppBase
             oldDBConn.close();
             newDBConn.close();
             System.exit(0);
+        }
+        
+        boolean doFix3 = false;
+        if (doFix3)        
+        {
+            IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
+            AgentConverter agentConverter = new AgentConverter(conversion, IdMapperMgr.getInstance(), false);
+            agentConverter.fixMissingAddrsFromConv();
+            oldDBConn.close();
+            newDBConn.close();
+            return;
         }
         
         String sql = "SELECT count(*) FROM (SELECT ce.CollectingEventID, Count(ce.CollectingEventID) as cnt FROM collectingevent AS ce " +
@@ -821,6 +834,13 @@ public class SpecifyDBConverter extends AppBase
                     addStorageTreeFomrXML(true);
                     return;
                 }*/
+                
+                if (true)
+                {
+                    AgentConverter agentConverter = new AgentConverter(conversion, idMapperMgr, startfromScratch);
+                    agentConverter.fixMissingAddrsFromConv();
+                    return;
+                }
                 
                 //---------------------------------------------------------------------------------------
                 //-- Create basic set of information.

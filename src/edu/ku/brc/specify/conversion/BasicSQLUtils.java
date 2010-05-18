@@ -508,6 +508,7 @@ public class BasicSQLUtils
             if (rs.next())
             {
                 count = rs.getInt(1);
+                return rs.wasNull() ? null : count;
             }
             rs.close();
             

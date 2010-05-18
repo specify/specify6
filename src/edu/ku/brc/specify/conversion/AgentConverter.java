@@ -26,7 +26,6 @@ import static edu.ku.brc.ui.UIRegistry.showError;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
@@ -48,7 +47,6 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.AddressOfRecord;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
@@ -119,6 +117,10 @@ public class AgentConverter
         tblWriter = conv.getConvLogger().getWriter("AgentConv.html", "Agents");
     }
 
+    public AgentConverter()
+    {
+        
+    }
 
     /**
      * Specify 5.x points at AgentAdress instead of an Agent. The idea was that to point at an Agent
@@ -197,14 +199,6 @@ public class AgentConverter
                                   "agentaddress.Email", "agentaddress.URL", "agent.Remarks",
                                   "agent.TimestampCreated",// User/Security changes
                                   "agent.ParentOrganizationID" };
-
-        // See comments for agent Columns
-        String[] addressColumns = { "address.AddressID", "address.TimestampModified",
-                                    "address.Address", "address.Address2", "address.City", "address.State",
-                                    "address.Country", "address.Postalcode", "address.Remarks",
-                                    "address.TimestampCreated", "agentaddress.IsCurrent", "agentaddress.Phone1",
-                                    "agentaddress.Phone2", "agentaddress.Fax", "agentaddress.RoomOrBuilding",
-                                    "address.AgentID" };
 
         Hashtable<Integer, AddressInfo> addressHash = new Hashtable<Integer, AddressInfo>();
 
@@ -1757,7 +1751,49 @@ public class AgentConverter
         }
     }
     
-    protected void parseAndFixAddresses()
+    
+    protected void fixMissingAddrsFromConv()
+    {
+        IdTableMapper agentIDMapper     = idMapperMgr.addTableMapper("agent",        "AgentID", false);
+        IdTableMapper addrIDMapper      = idMapperMgr.addTableMapper("address",      "AddressID", false);
+        IdTableMapper agentAddrIDMapper = idMapperMgr.addTableMapper("agentaddress", "AgentAddressID", false);
+
+        String sql = "SELECT ag.AgentID, aa.AgentAddressID, ad.AddressID FROM agent ag INNER JOIN agentaddress aa ON ag.AgentID = aa.AgentID " +
+                     "INNER JOIN address ad ON aa.AddressID = ad.AddressID ";
+        
+        sql = "SELECT AddressID FROM (SELECT aa.AddressID, COUNT(aa.AddressID) as cnt FROM agentaddress aa INNER JOIN address ON aa.AddressID = address.AddressID " +
+              "GROUP BY aa.AddressID) T1 WHERE cnt > 1 ";
+        
+        for (Integer oldAddrId : BasicSQLUtils.queryForInts(oldDBConn, sql))
+        {
+            
+            sql = "SELECT a.AgentID FROM address ad INNER JOIN agentaddress aa ON ad.AddressID = aa.AddressID " +
+                   "INNER JOIN agent a ON aa.AgentID = a.AgentID WHERE ad.AddressID = " + oldAddrId;
+            
+            Integer newAddrID  = addrIDMapper.get(oldAddrId);
+            
+            for (Integer oldAgentId : BasicSQLUtils.queryForInts(oldDBConn, sql))
+            {
+                Integer newAgentID = agentIDMapper.get(oldAgentId);
+                
+                sql = "SELECT ad.AddressID FROM agent a LEFT JOIN address ad ON a.AgentID = ad.AgentID WHERE a.AgentID = " + newAgentID;
+                Integer addrID = BasicSQLUtils.getCount(newDBConn, sql);
+                if (addrID == null)
+                {
+                    System.out.println("newAgentID: "+newAgentID+"  addrID: "+addrID + "  newAddrID: "+newAddrID);  
+                    try
+                    {
+                        duplicateAddress(newDBConn, newAddrID, newAgentID);
+                    } catch (SQLException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+    
+    protected void parseAndFixMultiLineAddresses()
     {
         String whereStr = " FROM address a WHERE Address like '%\r\n%'";
         String sql = "SELECT count(*)" + whereStr;

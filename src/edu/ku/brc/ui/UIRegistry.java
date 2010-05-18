@@ -306,7 +306,13 @@ public class UIRegistry
                 resBundle = ResourceBundle.getBundle(name);
             } else
             {
-                resBundle = ResourceBundle.getBundle(name, instance.resourceLocale);
+                try
+                {
+                    resBundle = ResourceBundle.getBundle(name, instance.resourceLocale);
+                } catch (MissingResourceException ex) 
+                {
+                    resBundle = ResourceBundle.getBundle(name, Locale.ENGLISH);
+                }
             }
 
         } catch (MissingResourceException ex) 
