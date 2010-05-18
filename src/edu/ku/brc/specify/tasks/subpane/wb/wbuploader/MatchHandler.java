@@ -314,7 +314,7 @@ public class MatchHandler
      */
     protected void showSettings()
     {
-        UploadMatchSettingsBasicPanel umsbp = new UploadMatchSettingsBasicPanel();
+        final UploadMatchSettingsBasicPanel umsbp = new UploadMatchSettingsBasicPanel();
         umsbp.showSetting(uploadTable);
         
         try
@@ -327,7 +327,7 @@ public class MatchHandler
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    applyToAll();
+                    applyToAll(umsbp);
                 }
             });
 
@@ -355,12 +355,13 @@ public class MatchHandler
     /**
      * Apply settings for current table to all tables.
      */
-    protected void applyToAll()
+    protected void applyToAll(UploadMatchSettingsBasicPanel umsbp)
     {
         //XXX Implement This!
         if (settingDlg != null)
         {
-            settingDlg.setVisible(false);
+            //settingDlg.setVisible(false);
+        	umsbp.applySettingToAll(Uploader.getCurrentUpload().getUploadTables());
         }        
     }
 

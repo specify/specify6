@@ -25,7 +25,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Vector;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -39,6 +39,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
 
+@SuppressWarnings("serial")
 public class UploadMatchSettingsBasicPanel extends JPanel implements ActionListener
 {   
     protected static final Logger log = Logger.getLogger(UploadMatchSettingsBasicPanel.class);
@@ -93,7 +94,7 @@ public class UploadMatchSettingsBasicPanel extends JPanel implements ActionListe
         uploadTable.getMatchSetting().setMatchEmptyValues(matchBlanksCheck.isSelected());       
     }
     
-    public void applySettingToAll(final Vector<UploadTable> uploadTables)
+    public void applySettingToAll(final List<UploadTable> uploadTables)
     {
         for (UploadTable ut : uploadTables)
         {

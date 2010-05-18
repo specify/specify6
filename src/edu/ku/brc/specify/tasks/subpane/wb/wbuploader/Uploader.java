@@ -4639,4 +4639,15 @@ public class Uploader implements ActionListener, KeyListener
     		unlockTrees(trees);
     	}
     }
+    
+    /**
+     * @return list of upload tables.
+     */
+    public List<UploadTable> getUploadTables()
+    {
+    	Vector<UploadTable> result = new Vector<UploadTable>(uploadTables.size());
+    	//slightly safer to return a copy?
+    	Collections.copy(uploadTables, result);
+    	return result;
+    }
  }

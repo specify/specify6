@@ -175,6 +175,7 @@ public class UploadMatchSetting
         {
             result.append(val.getFieldName());
             result.append("\t");
+            result.append(val.getRestriction());
         }
         return result.toString();
     }
