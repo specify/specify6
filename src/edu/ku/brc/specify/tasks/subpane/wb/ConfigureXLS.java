@@ -332,7 +332,8 @@ public class ConfigureXLS extends ConfigureExternalDataBase
             }
             
             // Iterate over each row in the sheet
-            @SuppressWarnings("unchecked") Iterator<HSSFRow> rows =  sheet.rowIterator();
+            @SuppressWarnings("unchecked")
+            Iterator<HSSFRow> rows =  sheet.rowIterator();
             while (rows.hasNext())
             {
                 HSSFRow row = rows.next();

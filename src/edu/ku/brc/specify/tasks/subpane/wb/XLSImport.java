@@ -206,13 +206,14 @@ public class XLSImport extends DataImport implements DataImportIFace
     
                             case HSSFCell.CELL_TYPE_STRING:
                                 HSSFHyperlink hl = checkHyperlinks(cell, activeHyperlinks);
-                                if (hl == null)
+                                if (hl == null /*|| (hl != null && hl.getType() == HSSFHyperlink.LINK_EMAIL)*/)
                                 {
                                     value = cell.getRichStringCellValue().getString();
                                 }
                                 else
                                 {
-                                    value = hl.getAddress();
+                                    //value = hl.getAddress();
+                                	value = hl.getLabel();
                                 }
                                 break;
     
