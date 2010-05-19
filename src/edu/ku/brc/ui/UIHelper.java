@@ -96,7 +96,6 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JButton;
@@ -1034,8 +1033,8 @@ public final class UIHelper
 
         if (includeCutCopyPaste)
         {
-        	title = "EditMenu";
-        	mneu = "EditMneu";
+            title = "EditMenu";
+            mneu = "EditMneu";
             JMenu editMenu = createLocalizedMenu(menuBar, title, mneu);
             editMenu.add(createMenu(getResourceString("CutMenu"), getResourceString("CutAccl").charAt(0), getResourceString("CutMneu")));
             editMenu.add(createMenu(getResourceString("CopyMenu"), VK_C, getResourceString("CopyMneu")));
@@ -1062,12 +1061,12 @@ public final class UIHelper
         JMenuItem mi = new JMenuItem(getResourceString(key));
         if (isNotEmpty(mnemonic))
         {
-        	String mnu = getResourceString(mnemonic);
+            String mnu = getResourceString(mnemonic);
             mi.setMnemonic(mnu.charAt(0));
         }
         if (isNotEmpty(accessibleDescription))
         {
-        	String desc = getResourceString(accessibleDescription);
+            String desc = getResourceString(accessibleDescription);
             mi.getAccessibleContext().setAccessibleDescription(desc);
         }
         mi.addActionListener(al);
@@ -1103,7 +1102,7 @@ public final class UIHelper
     /**
      * Creates a JMenuItem.
      * @param menu parent menu
-     * @param label the label of the menu item
+     * @param text the label of the menu item
      * @param mnemonic the mnemonic
      * @param accessibleDescription the accessible Description
      * @param enabled enabled
@@ -1687,15 +1686,15 @@ public final class UIHelper
                                              final String  appIconName,
                                              final String  helpContext) //frame's icon name
     {  
-    	
+        
         ImageIcon icon = IconManager.getIcon("AppIcon", IconManager.IconSize.Std16);
         if (StringUtils.isNotEmpty(appIconName))
         {
-        	ImageIcon imgIcon = IconManager.getIcon(appIconName);
-        	if (imgIcon != null)
-        	{
-        		icon = imgIcon;
-        	}
+            ImageIcon imgIcon = IconManager.getIcon(appIconName);
+            if (imgIcon != null)
+            {
+                icon = imgIcon;
+            }
         }
 
         if (useDialog)
@@ -2207,66 +2206,6 @@ public final class UIHelper
                 super.setEnabled(enabled);
                 setBorder(emptyBorder);
             }
-
-            /* (non-Javadoc)
-             * @see java.awt.Component#setBounds(int, int, int, int)
-             */
-            @Override
-            public void setBounds(int x, int y, int width, int height)
-            {
-                Icon icon = getIcon();
-                super.setBounds(x, y, icon.getIconWidth(), icon.getIconHeight());
-            }
-
-            /* (non-Javadoc)
-             * @see java.awt.Component#setBounds(java.awt.Rectangle)
-             */
-            @Override
-            public void setBounds(Rectangle r)
-            {
-                super.setBounds(r);
-            }
-
-            /* (non-Javadoc)
-             * @see java.awt.Component#setLocation(int, int)
-             */
-            @Override
-            public void setLocation(int x, int y)
-            {
-                super.setLocation(x, y);
-            }
-
-            /* (non-Javadoc)
-             * @see java.awt.Component#setSize(java.awt.Dimension)
-             */
-            @Override
-            public void setSize(Dimension d)
-            {
-                super.setSize(d);
-            }
-
-            /* (non-Javadoc)
-             * @see java.awt.Component#setSize(int, int)
-             */
-            @Override
-            public void setSize(int width, int height)
-            {
-                Icon icon = getIcon();
-                super.setSize(icon.getIconWidth(), icon.getIconHeight());
-            }
-
-            /* (non-Javadoc)
-             * @see javax.swing.JComponent#getPreferredSize()
-             */
-            @Override
-            public Dimension getPreferredSize()
-            {
-                Dimension d = super.getPreferredSize();
-                d.width = getIcon().getIconWidth();
-                d.height = getIcon().getIconHeight();
-                return d;
-            }
-            
         };
         
         btn.setOpaque(false);
@@ -2589,18 +2528,18 @@ public final class UIHelper
             int endInx = databasePath.lastIndexOf("/");
             if (endInx > -1)
             {
-            	databasePath = databasePath.substring(0, endInx);
+                databasePath = databasePath.substring(0, endInx);
             } else 
             {
-            	endInx = databasePath.lastIndexOf("\\");
+                endInx = databasePath.lastIndexOf("\\");
                 if (endInx > -1)
                 {
-                	databasePath = databasePath.substring(0, endInx);
+                    databasePath = databasePath.substring(0, endInx);
 
-	            } else
-	            {
-	            	log.error("Couldn'f find / in ["+databasePath+"]");
-	            }
+                } else
+                {
+                    log.error("Couldn'f find / in ["+databasePath+"]");
+                }
             }
         }
         return databasePath;
@@ -2975,11 +2914,11 @@ public final class UIHelper
      */
     public static JButton[] adjustButtonArray(JButton[] buttonArray)
     {
-    	for (JButton btn : buttonArray)
-    	{
+        for (JButton btn : buttonArray)
+        {
             setControlSize(btn);
-    	}
-    	return buttonArray;
+        }
+        return buttonArray;
     }
     
     /**
@@ -3200,12 +3139,12 @@ public final class UIHelper
     
     public static JTextArea createTextArea()
     {
-    	final JTextArea text = new JTextArea();
-    	setControlSize(text);
-    	
-    	// Enable being able to TAB out of TextArea
-    	text.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "none");
-    	text.addKeyListener(new KeyAdapter() {
+        final JTextArea text = new JTextArea();
+        setControlSize(text);
+        
+        // Enable being able to TAB out of TextArea
+        text.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "none");
+        text.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent event) {
                 if (event.getKeyCode() == VK_TAB )
@@ -3223,19 +3162,19 @@ public final class UIHelper
         return text;
     }
 
-	public static JTextArea createTextArea(int rows, int columns)
+    public static JTextArea createTextArea(int rows, int columns)
     {
-    	JTextArea text = new JTextArea(rows, columns);
-    	setControlSize(text);
+        JTextArea text = new JTextArea(rows, columns);
+        setControlSize(text);
         return text;
     }
 
     public static JList createList(final ListModel model)
     {
-    	JList lst = new JList(model);
+        JList lst = new JList(model);
         if (isMacOS_10_5_X)
         {
-        	lst.putClientProperty("JComboBox.isPopDown", Boolean.TRUE);
+            lst.putClientProperty("JComboBox.isPopDown", Boolean.TRUE);
         }
         return lst;
     }
@@ -3634,38 +3573,38 @@ public final class UIHelper
             localPrefs.putBoolean(USE_WORLDWIND, true);
             return true;
         }
-    	
-    	try 
-    	{
-			SwingUtilities.invokeLater(new Runnable() 
-			{
-				@Override
-				public void run() 
-				{
-			        Boolean hasOpenGL = localPrefs.getBoolean(HAS_OPENGL_PREF, null);
-			        if (hasOpenGL == null)
-			        {
-			            final JDialog frame = new JDialog();
-			            try
-			            {
-			                GLCanvas canvas = new GLCanvas();
-			                
-			                frame.getContentPane().add(canvas);
-			                
-			                JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
-			                if (topFrame != null)
-			                {
-			                    Rectangle screenRect = topFrame.getGraphicsConfiguration().getBounds();
-			                    frame.setBounds(screenRect.width, screenRect.height+50, 50, 50);
-			                    
-			                } else
-			                {
-			                    frame.setBounds(-100, -100, 50, 50);
-			                }
-			                frame.setVisible(true);
-			                
-			                hasOpenGL = true;
-			                
+        
+        try 
+        {
+            SwingUtilities.invokeLater(new Runnable() 
+            {
+                @Override
+                public void run() 
+                {
+                    Boolean hasOpenGL = localPrefs.getBoolean(HAS_OPENGL_PREF, null);
+                    if (hasOpenGL == null)
+                    {
+                        final JDialog frame = new JDialog();
+                        try
+                        {
+                            GLCanvas canvas = new GLCanvas();
+                            
+                            frame.getContentPane().add(canvas);
+                            
+                            JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
+                            if (topFrame != null)
+                            {
+                                Rectangle screenRect = topFrame.getGraphicsConfiguration().getBounds();
+                                frame.setBounds(screenRect.width, screenRect.height+50, 50, 50);
+                                
+                            } else
+                            {
+                                frame.setBounds(-100, -100, 50, 50);
+                            }
+                            frame.setVisible(true);
+                            
+                            hasOpenGL = true;
+                            
                         } catch (javax.media.opengl.GLException ex)
                         {
                             hasOpenGL = false;
@@ -3674,44 +3613,44 @@ public final class UIHelper
                         {
                             hasOpenGL = false;
                             
-			            } finally
-			            {
-			                if (hasOpenGL == null)
-			                {
-			                    hasOpenGL = UIHelper.isMacOS();
-			                }
-			                localPrefs.putBoolean(HAS_OPENGL_PREF, hasOpenGL);
-			                if (initialUseWordWind == null || (initialHasOpenGL != null && hasOpenGL != initialHasOpenGL))
+                        } finally
+                        {
+                            if (hasOpenGL == null)
                             {
-			                    localPrefs.putBoolean(USE_WORLDWIND, hasOpenGL);    
+                                hasOpenGL = UIHelper.isMacOS();
                             }
-			                
-			                SwingUtilities.invokeLater(new Runnable() 
-			                {
-			                    @Override
-			                    public void run() 
-			                    {
-        			                if (frame != null)
-        			                {
-        			                    frame.setVisible(false);
-        			                }
-			                    }
-			                });
-			            }
-			        }
-				}
-				
-			});
-		} catch (java.lang.Error e) 
-		{
-		    e.printStackTrace();
-		    
-			localPrefs.putBoolean(HAS_OPENGL_PREF, false);
-			if (initialUseWordWind == null || (initialHasOpenGL != null && initialHasOpenGL))
+                            localPrefs.putBoolean(HAS_OPENGL_PREF, hasOpenGL);
+                            if (initialUseWordWind == null || (initialHasOpenGL != null && hasOpenGL != initialHasOpenGL))
+                            {
+                                localPrefs.putBoolean(USE_WORLDWIND, hasOpenGL);    
+                            }
+                            
+                            SwingUtilities.invokeLater(new Runnable() 
+                            {
+                                @Override
+                                public void run() 
+                                {
+                                    if (frame != null)
+                                    {
+                                        frame.setVisible(false);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+                
+            });
+        } catch (java.lang.Error e) 
+        {
+            e.printStackTrace();
+            
+            localPrefs.putBoolean(HAS_OPENGL_PREF, false);
+            if (initialUseWordWind == null || (initialHasOpenGL != null && initialHasOpenGL))
             {
                 localPrefs.putBoolean(USE_WORLDWIND, false);    
             }
-		}
+        }
 
         return localPrefs.getBoolean(HAS_OPENGL_PREF, false);  
     }
