@@ -4641,13 +4641,12 @@ public class Uploader implements ActionListener, KeyListener
     }
     
     /**
-     * @return list of upload tables.
+     * @param umsbp
+     * 
+     * Apply settings in umsbp to all tables.
      */
-    public List<UploadTable> getUploadTables()
+    public void applyMatchSettingsToAllTables(final UploadMatchSettingsBasicPanel umsbp)
     {
-    	Vector<UploadTable> result = new Vector<UploadTable>(uploadTables.size());
-    	//slightly safer to return a copy?
-    	Collections.copy(uploadTables, result);
-    	return result;
+    	umsbp.applySettingToAll(uploadTables);
     }
- }
+}
