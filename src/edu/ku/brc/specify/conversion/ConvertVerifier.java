@@ -102,26 +102,29 @@ public class ConvertVerifier extends AppBase
     
     
     // These are the configuration Options for a View
-    public static final long NO_OPTIONS             =    0; // Indicates there are no options
-    public static final long DO_CO_PREPARATION      =    1; 
-    public static final long DO_CO_CE               =    2; 
-    public static final long DO_CO_LOCALITY         =    4; 
-    public static final long DO_CO_PREPARER         =    8; 
-    public static final long DO_CO_CATLOGER         =   16; 
-    public static final long DO_CO_DETERMINER       =   32; 
-    public static final long DO_CO_TAXON            =   64; 
-    public static final long DO_CO_GEO              =  128; 
-    public static final long DO_COLLECTORS          =  256; 
-    public static final long DO_COLLEVENTS          =  512; 
-    public static final long DO_TAXON_CIT           = 1024; 
-    public static final long DO_SHIPMENTS           = 2048; 
-    public static final long DO_OTHER_IDENT         = 4096; 
-    public static final long DO_CO_COLLECTORS       = 8192; 
-    public static final long DO_CO_ALL              = (8192 * 2) - 1; 
+    public static final long NO_OPTIONS             =     0; // Indicates there are no options
+    public static final long DO_CO_PREPARATION      =     1; 
+    public static final long DO_CO_CE               =     2; 
+    public static final long DO_CO_LOCALITY         =     4; 
+    public static final long DO_CO_PREPARER         =     8; 
+    public static final long DO_CO_CATLOGER         =    16; 
+    public static final long DO_CO_DETERMINER       =    32; 
+    public static final long DO_CO_TAXON            =    64; 
+    public static final long DO_CO_GEO              =   128; 
+    public static final long DO_COLLECTORS          =   256; 
+    public static final long DO_COLLEVENTS          =   512; 
+    public static final long DO_TAXON_CIT           =  1024; 
+    public static final long DO_SHIPMENTS           =  2048; 
+    public static final long DO_OTHER_IDENT         =  4096; 
+    public static final long DO_CO_COLLECTORS       =  8192; 
+    public static final long DO_AGENTS              = 16384; 
+    public static final long DO_CO_ALL              = 32767;
     
     private String[] labels = {"None", "Preparations", "CO Collecting Events", "Localities", "Preparers", 
                                "Catalogers", "Determiners", "Taxon", "Geographies", "Collectors", 
-                               "Collecting Events", "Taxon Citations", "Shipments", "All"};
+                               "Collecting Events", "Taxon Citations", "Shipments", "Other Ident", "ColObj Collectors", 
+                               "Agents", "All"};
+    
     private ToggleButtonChooserPanel<String> chkPanel;
     
     //public static final long DONT_ADD_ALL_ALTVIEWS  = 256; 
@@ -509,6 +512,12 @@ public class ConvertVerifier extends AppBase
         {
             tblWriter = tblWriterHash.get(DO_COLLECTORS);
             verifyCollectors();
+        }
+        
+        if (isCOOn(DO_AGENTS))
+        {
+            tblWriter = tblWriterHash.get(DO_AGENTS);
+            verifyAgents();
         }
         
         progressFrame.setOverall(numColObjs*2);
@@ -979,14 +988,14 @@ public class ConvertVerifier extends AppBase
          		"FROM collectionobject AS co " +
          		"INNER Join collectingevent AS ce ON co.CollectingEventID = ce.CollectingEventID " +
          		"INNER Join collector AS c ON ce.CollectingEventID = c.CollectingEventID " +
-         		"INNER Join agent AS a ON c.AgentID = a.AgentID WHERE co.CatalogNumber =  '"+ newCatNum + "' ORDER BY OrderNumber";
+         		"INNER Join agent AS a ON c.AgentID = a.AgentID WHERE co.CatalogNumber =  '"+ newCatNum + "' ORDER BY OrderNumber, a.LastName";
 
          oldSQL = "SELECT a.AgentID, a.FirstName, a.MiddleInitial, a.LastName, a.Name " +
          		"FROM collectionobjectcatalog AS cc " +
          		"INNER Join collectionobject AS co ON cc.CollectionObjectCatalogID = co.CollectionObjectID " +
          		"INNER Join collectingevent AS ce ON co.CollectingEventID = ce.CollectingEventID " +
          		"INNER Join collectors AS c ON ce.CollectingEventID = c.CollectingEventID " +
-         		"INNER Join agent AS a ON c.AgentID = a.AgentID WHERE cc.CatalogNumber = " + oldCatNum+ " ORDER BY `Order`";
+         		"INNER Join agent AS a ON c.AgentID = a.AgentID WHERE cc.CatalogNumber = " + oldCatNum+ " ORDER BY `Order`, a.LastName, a.Name";
          if (debug)
          {
              log.debug("New SQL: "+newSQL);
@@ -1502,6 +1511,7 @@ public class ConvertVerifier extends AppBase
                                 String msg = "New Value was null and shouldn't have been for Key Value New CatNo["+newCatNum+"] Field ["+colName+"] ["+oldObj+"]";
                                 log.error(desc+ " - "+msg);
                                 tblWriter.logErrors(newCatNum, msg);
+                                dbg = true;
                                 return StatusType.NEW_VAL_NULL;
                             }
                         }
@@ -1648,6 +1658,7 @@ public class ConvertVerifier extends AppBase
                                 String msg = idMsgStr + "Columns don't compare["+newObj+"]["+oldObj+"]  ["+newColName+"]["+oldColName+"]";
                                 log.error(desc+ " - "+msg);
                                 tblWriter.logErrors(oldNewIdStr, msg);
+                                log.error(oldSQLArg+"\n"+newSQLArg);
                                 return StatusType.NO_COMPARE;
                             }
                             
@@ -2005,7 +2016,7 @@ public class ConvertVerifier extends AppBase
 	            boolean hasOldRec = oldDBRS.next();
 	            boolean hasNewRec = newDBRS.next();
 	            
-	            if (!hasOldRec && !hasNewRec)
+	            if (!hasOldRec || !hasNewRec)
 	            {
 	                break;
 	            }
@@ -2251,101 +2262,75 @@ public class ConvertVerifier extends AppBase
         }
     }
     
+    private boolean compareStr(final String oldStr, final String newStr)
+    {
+        if (oldStr == null && newStr == null)
+        {
+            return true;
+        }
+        
+        if (oldStr == null || newStr == null)
+        {
+            return false;
+        }
+        
+        return oldStr.equals(newStr);
+    }
+    
     /**
      * 
      */
     private void verifyAgents()
     {
     
-        newSQL = "SELECT a.AgentID,a.AgentType, a.LastName, a.MiddleInitial,a.FirstName, a.JobTitle,adr.Phone1,adr.Phone2,adr.Address,adr.City,adr.Country,adr.State,adr.PostalCode " +
-                "FROM agent AS a Left Join address AS adr ON a.AgentID = adr.AgentID";
-    
-        oldSQL = "SELECT a.AgentType,a.LastName,a.MiddleInitial,a.FirstName,aa.JobTitle,aa.Phone1,aa.Phone2,adr.Address,adr.City,adr.State,adr.Country,adr.State,adr.Postalcode FROM agent AS a " +
-                 "Left Join agentaddress AS aa ON a.AgentID = aa.AgentID " +
-                 "Left Join address AS adr ON aa.AddressID = adr.AddressID";
-    
-        log.info(newSQL);
-        log.info(oldSQL);
-    
         try
         {
-            getResultSets(oldSQL, newSQL);
-            while (true)
+            Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs   = stmt.executeQuery("SELECT OldID, NewID FROM agent_AgentID");
+            while (rs.next())
             {
-    
-                boolean hasOldRec = oldDBRS.next();
-                boolean hasNewRec = newDBRS.next();
-    
-                if (!hasOldRec || !hasNewRec)
+                int oldId = rs.getInt(1);
+                int newId = rs.getInt(2);
+                
+                newSQL = "SELECT a.AgentType, a.LastName, a.MiddleInitial,a.FirstName, a.JobTitle, adr.Phone1,adr.Phone2,adr.Address,adr.City,adr.Country,adr.State,adr.PostalCode " +
+                         "FROM agent AS a Left Join address AS adr ON a.AgentID = adr.AgentID WHERE a.AgentID = " + newId;
+            
+                oldSQL = "SELECT a.AgentType, IF (a.LastName IS null OR LENGTH(a.LastName) = 0, a.Name, a.LastName), a.MiddleInitial,a.FirstName,aa.JobTitle,aa.Phone1,aa.Phone2,adr.Address,adr.City,adr.State,adr.Country,adr.State,adr.Postalcode FROM agent AS a " +
+                         "Left Join agentaddress AS aa ON a.AgentID = aa.AgentID " +
+                         "Left Join address AS adr ON aa.AddressID = adr.AddressID WHERE a.AgentID = " + oldId;
+            
+                //log.info(newSQL);
+                //log.info(oldSQL);
+                getResultSets(oldSQL, newSQL);
+                
+                while (true)
                 {
-                    break;
-                }
-    
-                int col = 1;
-                int     newId           = newDBRS.getInt(col++);
-                Integer newStartTime    = newDBRS.getInt(col++);
-                String  newLocalityName = newDBRS.getString(col++);
-                Double  newLatitude     = newDBRS.getDouble(col++);
-                Double  newLongitude    = newDBRS.getDouble(col++);
-                String  newGeoName      = newDBRS.getString(col++);
-
-                col = 1;
-                int          oldId           = oldDBRS.getInt(col++);
-                Integer      oldStartTime    = oldDBRS.getInt(col++);
-                String       oldLocalityName = oldDBRS.getString(col++);
-                Double       oldLatitude     = oldDBRS.getDouble(col++);
-                Double       oldLongitude    = oldDBRS.getDouble(col++);
-
-                String oldNewIdStr = oldId + " / "+newId;
-
-                if (newGeoName != null && !newGeoName.equals("Undefined"))
-                {
-                    boolean fnd       = false;
-                    for (int i=6;i<14;i++)
+                    boolean hasOldRec = oldDBRS.next();
+                    boolean hasNewRec = newDBRS.next();
+        
+                    if (!hasOldRec || !hasNewRec)
                     {
-                        //if (i == 7) System.out.println();
-                        String name = oldDBRS.getString(i);
-                        if (name != null)
+                        break;
+                    }
+                    
+                    for (int i=1;i<=newDBRS.getMetaData().getColumnCount();i++)
+                    {
+                        String newStr = newDBRS.getString(i);
+                        String oldStr = oldDBRS.getString(i);
+                        if (!compareStr(oldStr, newStr))
                         {
-                            //System.out.println("["+name+"]");
-                            if (name.equalsIgnoreCase(newGeoName))
-                            {
-                                fnd = true;
-                                break;
-                            }
+                            String fldName = newDBRS.getMetaData().getColumnName(i);
+                            String oldNewIdStr = oldId + " / "+newId;
+                            String msg  = " Fields "+fldName+" don't match. ["+oldStr+"]["+newStr+"]";
+                            tblWriter.logErrors(oldNewIdStr, msg);
+                            log.error(oldNewIdStr+msg);
                         }
                     }
-
-                    if (!fnd)
-                    {
-                        String msg = "No match found for new Geo ["+newGeoName+"] ["+oldId + " / "  + newId+"]";
-                        log.error(msg);
-                        tblWriter.logErrors(oldNewIdStr, msg);
-                    }
                 }
-
-                // StartTime
-                if (oldStartTime == null && newStartTime != null)
-                {
-                    String msg = "LocName["+oldId + " / "  + newId+"]  Old StartTime["+oldStartTime+"] is NULL   New StartTime["+newStartTime+"] is not";
-                    log.error(msg);
-                    tblWriter.logErrors(oldNewIdStr, msg);
-
-                } else if (oldStartTime != null && newStartTime == null)
-                {
-                    String msg = "LocName["+oldId + " / "  + newId+"]  Old StartTime["+oldStartTime+"] is not null   New StartTime["+newStartTime+"] is NULL";
-                    log.error(msg);
-                    tblWriter.logErrors(oldNewIdStr, msg);
-
-                } else if (oldStartTime != null && newStartTime != null && !oldStartTime.equals(newStartTime))
-                {
-                    String msg = "LocName["+oldId + " / "  + newId+"]  Old StartTime["+oldStartTime+"] is NOT equals   New StartTime["+newStartTime+"]";
-                    log.error(msg);
-                    tblWriter.logErrors(oldNewIdStr, msg);
-                }
-
             }
-
+            rs.close();
+            stmt.close();
+            
             oldDBRS.close();
             newDBRS.close();
 
