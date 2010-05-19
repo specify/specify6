@@ -38,15 +38,21 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
+import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
 
 import edu.ku.brc.af.core.expresssearch.SearchConfigService;
 import edu.ku.brc.af.ui.db.JAutoCompTextField;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.SearchBorder;
 import edu.ku.brc.ui.SearchBorderMac;
@@ -70,6 +76,7 @@ public class SearchBox extends JPanel implements ActionListener, PropertyChangeL
     protected List<JComponent>   menus        = new ArrayList<JComponent>();
     
     protected int                iconWidth;
+    protected JButton            clearIconBtn = null;
     
     protected int                heightAdjust;
     protected int                widthAdjust;
@@ -82,7 +89,19 @@ public class SearchBox extends JPanel implements ActionListener, PropertyChangeL
      * @param textField
      * @param menuCreator
      */
-    public SearchBox(final JAutoCompTextField textField, final MenuCreator menuCreator) 
+    public SearchBox(final JAutoCompTextField textField, 
+                     final MenuCreator menuCreator) 
+    {
+        this(textField, menuCreator, false);
+    }
+    
+    /**
+     * @param textField
+     * @param menuCreator
+     */
+    public SearchBox(final JAutoCompTextField textField, 
+                     final MenuCreator menuCreator,
+                     final boolean includeClearIcon) 
     {
         super(null);
         
@@ -99,12 +118,53 @@ public class SearchBox extends JPanel implements ActionListener, PropertyChangeL
         int triWidth = triangleIcon != null ? triangleIcon.getIconWidth() : 0;
         
         iconWidth = Math.max(16, iconWidth);
+        
+        
+        if (includeClearIcon)
+        {
+            Action action = new AbstractAction()
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            searchText.setText("");
+                        }
+                    });
+                }
+            };
+            clearIconBtn = UIHelper.createIconBtn("MacSearchClose", null, true, action);
+            clearIconBtn.setEnabled(true);
+            clearIconBtn.setFocusable(false);
+            clearIconBtn.setVisible(false);
+        }
+        
+        if (clearIconBtn != null)
+        {
+            textField.getDocument().addDocumentListener(new DocumentAdaptor() {
+                @Override
+                protected void changed(DocumentEvent e)
+                {
+                    clearIconBtn.setVisible(!textField.getText().isEmpty());
+                }
+            });
+        }
 
         setBorder(UIHelper.isMacOS() ? new SearchBorderMac(iconWidth+triWidth) : new SearchBorder(iconWidth+triWidth));
         
         this.searchText = textField;
         this.searchText.setBorder(null);
         add(this.searchText);
+        if (clearIconBtn != null)
+        {
+            add(clearIconBtn);
+        }
+        
+        //System.out.println(clearIconBtn.getBounds());
         
         popupHitWidth = 7+iconWidth+triWidth + 2;
         this.searchText.setLocation(popupHitWidth, 4);
@@ -154,6 +214,17 @@ public class SearchBox extends JPanel implements ActionListener, PropertyChangeL
         });
     }
     
+    /**
+     * @param l
+     */
+    public void addClearListener(final ActionListener l)
+    {
+        if (clearIconBtn != null)
+        {
+            clearIconBtn.addActionListener(l);
+        }
+    }
+    
     
     /**
      * @return the searchText
@@ -170,6 +241,10 @@ public class SearchBox extends JPanel implements ActionListener, PropertyChangeL
     public void setEnabled(final boolean enabled)
     {
         searchText.setEnabled(enabled);
+        if (clearIconBtn != null)
+        {
+            clearIconBtn.setEnabled(enabled);
+        }
     }
     
     /**
@@ -265,7 +340,7 @@ public class SearchBox extends JPanel implements ActionListener, PropertyChangeL
         {
             g.drawImage(triangleIcon.getImage(), 6+iconWidth, ((height-triangleIcon.getIconWidth())/2)+2, null);
         }
-       
+        
         // Now call the superclass behavior to paint the foreground.
         super.paintComponent(g);
     }
@@ -288,9 +363,20 @@ public class SearchBox extends JPanel implements ActionListener, PropertyChangeL
     protected void resizeSearchText(final int width, final int height)
     {
         Dimension d = searchText.getSize();
-        d.width     = width - widthAdjust-5;
+        d.width     = width - widthAdjust - 5 - (clearIconBtn != null ? clearIconBtn.getWidth() : 0);
         d.height    = height - heightAdjust;
         searchText.setSize(d);
+        
+        if (clearIconBtn != null)
+        {
+            Rectangle r = clearIconBtn.getBounds();
+            r.x = searchText.getX() + d.width;
+            r.y = (getSize().height - r.height) / 2;
+            r.width  = clearIconBtn.getWidth();
+            r.height = clearIconBtn.getHeight();
+            clearIconBtn.setBounds(r);
+        }
+        
     }
 
     /* (non-Javadoc)

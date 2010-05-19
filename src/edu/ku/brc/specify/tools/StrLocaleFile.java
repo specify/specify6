@@ -27,6 +27,7 @@ import java.util.Vector;
 
 import org.apache.axis.utils.StringUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.tools.StrLocaleEntry.STATUS;
@@ -331,7 +332,7 @@ public class StrLocaleFile
 	@Override
 	public String toString()
 	{
-		return getPath();
+		return FilenameUtils.getName(getPath());
 	}
 
 //	public static void main(String[] args)

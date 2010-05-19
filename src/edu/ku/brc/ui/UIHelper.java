@@ -96,6 +96,7 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JButton;
@@ -2206,6 +2207,66 @@ public final class UIHelper
                 super.setEnabled(enabled);
                 setBorder(emptyBorder);
             }
+
+            /* (non-Javadoc)
+             * @see java.awt.Component#setBounds(int, int, int, int)
+             */
+            @Override
+            public void setBounds(int x, int y, int width, int height)
+            {
+                Icon icon = getIcon();
+                super.setBounds(x, y, icon.getIconWidth(), icon.getIconHeight());
+            }
+
+            /* (non-Javadoc)
+             * @see java.awt.Component#setBounds(java.awt.Rectangle)
+             */
+            @Override
+            public void setBounds(Rectangle r)
+            {
+                super.setBounds(r);
+            }
+
+            /* (non-Javadoc)
+             * @see java.awt.Component#setLocation(int, int)
+             */
+            @Override
+            public void setLocation(int x, int y)
+            {
+                super.setLocation(x, y);
+            }
+
+            /* (non-Javadoc)
+             * @see java.awt.Component#setSize(java.awt.Dimension)
+             */
+            @Override
+            public void setSize(Dimension d)
+            {
+                super.setSize(d);
+            }
+
+            /* (non-Javadoc)
+             * @see java.awt.Component#setSize(int, int)
+             */
+            @Override
+            public void setSize(int width, int height)
+            {
+                Icon icon = getIcon();
+                super.setSize(icon.getIconWidth(), icon.getIconHeight());
+            }
+
+            /* (non-Javadoc)
+             * @see javax.swing.JComponent#getPreferredSize()
+             */
+            @Override
+            public Dimension getPreferredSize()
+            {
+                Dimension d = super.getPreferredSize();
+                d.width = getIcon().getIconWidth();
+                d.height = getIcon().getIconHeight();
+                return d;
+            }
+            
         };
         
         btn.setOpaque(false);

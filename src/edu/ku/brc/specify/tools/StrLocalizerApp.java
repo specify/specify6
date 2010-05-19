@@ -19,24 +19,46 @@
 */
 package edu.ku.brc.specify.tools;
 
-import java.awt.Dimension;
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIRegistry.FRAME;
+import static edu.ku.brc.ui.UIRegistry.GLASSPANE;
+import static edu.ku.brc.ui.UIRegistry.MAINPANE;
+import static edu.ku.brc.ui.UIRegistry.clearGlassPaneMsg;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getTopWindow;
+import static edu.ku.brc.ui.UIRegistry.register;
+import static edu.ku.brc.ui.UIRegistry.setAppName;
+import static edu.ku.brc.ui.UIRegistry.setTopWindow;
+import static edu.ku.brc.ui.UIRegistry.writeGlassPaneMsg;
+
 import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FilenameFilter;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Random;
+import java.util.Locale;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.prefs.BackingStoreException;
 
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListModel;
@@ -51,6 +73,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -59,15 +82,16 @@ import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
 
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import com.google.api.translate.Language;
+import com.google.api.translate.Translate;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -76,12 +100,18 @@ import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
 import edu.ku.brc.af.core.FrameworkAppIFace;
 import edu.ku.brc.af.core.MacOSAppHandler;
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.SearchBox;
+import edu.ku.brc.af.ui.db.JAutoCompTextField;
+import edu.ku.brc.af.ui.db.PickListDBAdapterFactory;
 import edu.ku.brc.af.ui.forms.ResultSetController;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.tools.StrLocaleEntry.STATUS;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.ToggleButtonChooserDlg;
+import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
@@ -97,14 +127,15 @@ import edu.ku.brc.ui.dnd.GhostGlassPane;
 @SuppressWarnings("serial")
 public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, WindowListener
 {
-    private static final Logger  log                = Logger.getLogger(StrLocalizerApp.class);
+    private static final Logger  log = Logger.getLogger(StrLocalizerApp.class);
     
+    protected JFrame         frame = null;
     protected GhostGlassPane glassPane;
 
-    protected String srcLangCode = "en";
-
-    protected String currentPath = null;
-    
+    protected File          rootDir      = null;
+    protected File          baseDir      = null;
+    protected String        srcLangCode  = "en";
+    protected String        currentPath  = null;
     protected LanguageEntry destLanguage = null;
     
     protected StrLocaleFile srcFile;
@@ -127,6 +158,18 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
     protected JLabel	 fileLbl;
     protected JPanel     mainPane;
     
+    // SearchBox
+    protected SearchBox                     searchBox;
+    protected JAutoCompTextField            searchText;
+    protected JButton                       searchBtn;
+    
+    protected JTable                        searchResultsTbl;
+    protected SearchResultsModel            model;
+    protected Vector<StrLocaleEntry>        results    = new Vector<StrLocaleEntry>();
+    protected LocalizerSearchHelper         searchable = null;
+    protected HashSet<String>               fndKeyHash = new HashSet<String>();
+    
+    
     protected JMenuItem  startTransMenuItem;
     protected JMenuItem  stopTransMenuItem;
     
@@ -146,16 +189,152 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         
         new MacOSAppHandler(this);
         
-        // "src/resources_en.properties"
-        
         loadLanguages();
+        
+    }
+    
+    /**
+     * @param dir
+     * @param locale
+     * @return
+     */
+    private boolean copyPropFiles(final File dir, final Locale locale)
+    {
+        // These need to be moved to an XML file
+        String[] fileNames = {"backuprestore_en", 
+                                "common_en", 
+                                "expresssearch_en", 
+                                "global_views_en", 
+                                "masterusrpwd_en", 
+                                "preferences_en", 
+                                "resources_en",  
+                                "specify", 
+                                "specify_plugins_en", 
+                                "specifydbsetupwiz_en", 
+                                "stats_en", 
+                                "system_setup_en", 
+                                "views_en",};
+        
+        String ext = ".properties";
+        for (String nm : fileNames)
+        {
+            try
+            {
+                String              name        = StringUtils.replace(nm, "_es", "_"+locale.getLanguage());
+                String              outName     = dir.getAbsolutePath() + File.separator + name + ext;
+                PrintWriter         pw          = new PrintWriter(outName);
+                System.out.println(name+"->"+outName);
+                InputStream         inputStream = Specify.class.getResourceAsStream(nm + ext);
+                try
+                {
+                    inputStream.available();
+                } catch (Exception ex)
+                {
+                    inputStream = new FileInputStream(new File("src/"+nm + ext));
+                }
+                BufferedInputStream bis         = new BufferedInputStream(inputStream);
+                byte[]              buf         = new byte[4096];
+                int len = bis.read(buf);
+                while (len > 0)
+                {
+                    pw.write(new String(buf));
+                    len = bis.read(buf);
+                }
+                pw.close();
+                bis.close();
+                inputStream.close();
+                
+            } catch (IOException ex)
+            {
+                ex.printStackTrace();
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * @param doFromStartup
+     */
+    private void doCreateNewLocale(final boolean doFromStartup)
+    {
+        Locale locale = doChooseLangLocale(true);
+        if (locale != null)
+        {
+            String path = rootDir.getAbsolutePath()+ File.separator + getFullLang(locale);
+            baseDir = new File(path);
+            if (baseDir.mkdir())
+            {
+                if (!copyPropFiles(baseDir, locale))
+                {
+                    UIRegistry.showError("There was an error creating the locale["+locale.getDisplayCountry()+"]");
+                    System.exit(0);
+                }
+            }
+            
+        } else if (doFromStartup)
+        {
+            UIRegistry.showError("StrLocalizer will exit now.");
+            System.exit(0);
+        }
+    }
+    
+    /**
+     * 
+     */
+    public void startUp()
+    {
+        rootDir = new File(UIRegistry.getUserHomeDir() + File.separator + "I18N");
+        if (!rootDir.exists())
+        {
+            if (rootDir.mkdir())
+            {
+                doCreateNewLocale(true);
+                
+            } else
+            {
+                UIRegistry.showError("Error creating directory["+rootDir.getAbsolutePath()+"]");
+                System.exit(0);
+            }
+        }
+        
+        String fullLanguage = doChooseExistingLocalization();
+        
+        if (fullLanguage != null)
+        { 
+            init(fullLanguage);
+            
+            register(MAINPANE, mainPane);
+            frame.setGlassPane(glassPane = GhostGlassPane.getInstance());
+            frame.setLocationRelativeTo(null);
+            Toolkit.getDefaultToolkit().setDynamicLayout(true);
+            register(GLASSPANE, glassPane);
+            
+            
+        } else
+        {
+            UIRegistry.showError("StrLocalizer will exit.");
+            System.exit(0);
+        }
+    }
+    
+    /**
+     * 
+     */
+    protected void init(final String langStr)
+    {
         setupSrcFiles(getPath());
-        destLanguage = getLanguageByCode("es");
+        
+        destLanguage = getLanguageByCode(langStr);
         if (destLanguage == null)
         {
-        	destLanguage = new LanguageEntry("Spanish", "es");
+            UIRegistry.showError("StrLocalizer will exit.");
+            System.exit(0);
         }
+        
         setupDestFiles(destLanguage.getCode(), null);
+        
+        srcFile = getResourcesFile();
         
         createUI();
         
@@ -168,8 +347,8 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
      */
     protected StrLocaleFile getResourcesFile()
     {
-        StrLocaleFile file = getLocaleFileByPath(srcFiles, getPath() + File.separator + "resources_" + 
-        		 (destLanguage == null ? "en" : destLanguage.getCode()) + ".properties");
+        String path = getPath() + File.separator + "resources_" + (destLanguage == null ? "en" : destLanguage.getCode()) + ".properties";
+        StrLocaleFile file = getLocaleFileByPath(srcFiles, path);
         if (file == null)
         {
         	file = srcFiles.get(0);
@@ -189,15 +368,78 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
     	return currentPath + File.separator;
     }
     
+    /**
+     * @return
+     */
     protected String getDefaultPath()
     {
-    	return "src" + File.separator;
+        String prefName = "StrLoc.BASEDIR";
+
+        if (baseDir == null)
+        {
+            String lang = AppPreferences.getLocalPrefs().get(prefName, null);
+            if (StringUtils.isEmpty(lang))
+            {
+                lang = doChooseExistingLocalization();
+                baseDir = new File(rootDir.getAbsolutePath() + File.separator + lang);
+                try
+                {
+                    AppPreferences.getLocalPrefs().flush();
+
+                } catch (BackingStoreException e)
+                {
+                    e.printStackTrace();
+                }
+                return baseDir.getAbsolutePath();
+            } else
+            {
+                baseDir = new File(rootDir.getAbsolutePath() + File.separator + lang);
+            }
+        }
+        return baseDir.getAbsolutePath();
     }
+        
+    /**
+     * @return
+     */
+    private String doChooseExistingLocalization()
+    {
+        ArrayList<String> dirNames = new ArrayList<String>();
+        for (String nm : rootDir.list())
+        {
+            if (!nm.startsWith("."))
+            {
+                dirNames.add(nm);
+            }
+        }
+
+        String fullLanguage = null;
+        if (dirNames.size() > 1)
+        {
+            Collections.sort(dirNames);
+            ToggleButtonChooserDlg<String> chooser = new ToggleButtonChooserDlg<String>(
+                    (Frame) null, "CHOOSE_LOCALE", dirNames, ToggleButtonChooserPanel.Type.Checkbox);
+            chooser.setUseScrollPane(true);
+            chooser.setVisible(true);
+            if (!chooser.isCancelled())
+            {
+                fullLanguage = chooser.getSelectedObject();
+            }
+
+        } else if (dirNames.size() == 1)
+        {
+            fullLanguage = dirNames.get(0);
+        }
+        return fullLanguage;
+    }
+    
     /**
      * @param dirName
      */
     protected void setupSrcFiles(final String dirName)
     {
+        String postFix = "_" + (destLanguage == null ? "en" : destLanguage.getCode()) + ".properties";
+        
     	srcFiles.clear();
     	destFiles.clear();
     	File dir = new File(dirName);
@@ -206,22 +448,18 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
     	for (Object fobj : files)
     	{
     		File f = (File )fobj;
-    		if (f.getName().endsWith("_" + (destLanguage == null ? "en" : destLanguage.getCode()) + ".properties"))
+    		if (f.getName().endsWith(postFix))
     		{
-    			srcFiles.add(new StrLocaleFile(dirName + f.getName(), null, false));
+    			srcFiles.add(new StrLocaleFile(dirName + File.separator + f.getName(), null, false));
     		}
-    	}
+    	} 
+    	
     	Collections.sort(srcFiles, new Comparator<StrLocaleFile>() {
-
-			/* (non-Javadoc)
-			 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-			 */
 			@Override
 			public int compare(StrLocaleFile arg0, StrLocaleFile arg1)
 			{
 				return arg0.getPath().compareTo(arg1.getPath());
 			}
-    		
     	});
     }
     
@@ -256,11 +494,23 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
     protected void loadLanguages()
     {
     	languages.clear();
-    	Element root = XMLHelper.readDOMFromConfigDir("languagecodes.xml");
-    	for (Object langObj : root.selectNodes("languagecode"))
+    	
+    	boolean doXML = false;
+    	if (doXML)
     	{
-    		Element lang = (Element )langObj;
-    		languages.add(new LanguageEntry(lang.attributeValue("englishname"), lang.attributeValue("code")));
+        	Element root = XMLHelper.readDOMFromConfigDir("languagecodes.xml");
+        	for (Object langObj : root.selectNodes("languagecode"))
+        	{
+        		Element lang = (Element )langObj;
+        		languages.add(new LanguageEntry(lang.attributeValue("englishname"), lang.attributeValue("code")));
+        	}
+    	} else
+    	{
+            languages.add(new LanguageEntry("Albania",   "sq"));
+            languages.add(new LanguageEntry("English",   "en"));
+            languages.add(new LanguageEntry("Swedish",   "se"));
+            languages.add(new LanguageEntry("Portugese", "pt"));
+            languages.add(new LanguageEntry("Spanish",   "es"));
     	}
     	Collections.sort(languages);
     }
@@ -270,9 +520,20 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
      */
     private void createUI()
     {
-        PanelBuilder pb = new PanelBuilder(new FormLayout("p,10px,f:p:g", "f:p:g"), this);
+        IconManager.setApplicationClass(Specify.class);
+        IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml")); //$NON-NLS-1$
+        IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml")); //$NON-NLS-1$
+        IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml")); //$NON-NLS-1$
         
-        termList   = new JList(new ItemModel(srcFile));
+        System.setProperty("edu.ku.brc.ui.db.PickListDBAdapterFactory", "edu.ku.brc.specify.tools.StrLocPickListFactory");   // Needed By the Auto Cosmplete UI //$NON-NLS-1$ //$NON-NLS-2$
+
+        CellConstraints cc = new CellConstraints();
+
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,10px,f:p:g", "p,4px,f:p:g"), this);
+        
+        pb.addSeparator("Localize", cc.xyw(1,1,3));
+        
+        termList    = new JList(new ItemModel(srcFile));
         newTermList = new JList(newKeyList);
         
         srcLbl = UIHelper.createTextArea(3, 40);
@@ -283,13 +544,12 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         
         rsController = new ResultSetController(null, false, false, false, "", 1, true);
         
-        transBtn = UIHelper.createButton(UIRegistry.getResourceString("StrLocalizerApp.Translate"));
+        transBtn = UIHelper.createButton(getResourceString("StrLocalizerApp.Translate"));
         
-        CellConstraints cc = new CellConstraints();
         
-        PanelBuilder pbr = new PanelBuilder(new FormLayout("r:p,2px,f:p:g", "p, 4px, c:p,4px,p,4px,p,4px,p,4px,p"));
+        PanelBuilder pbr = new PanelBuilder(new FormLayout("r:p,2px,f:p:g", "p, 4px, c:p,4px,p,4px,p,4px,p,4px,p,10px,p,2px,f:p:g"));
 
-        pbr.add(UIHelper.createLabel(UIRegistry.getResourceString("StrLocalizerApp.FileLbl")), cc.xy(1, 1));
+        pbr.add(UIHelper.createLabel(getResourceString("StrLocalizerApp.FileLbl")), cc.xy(1, 1));
         fileLbl = UIHelper.createLabel("   ");
         pbr.add(fileLbl, cc.xy(3, 1));
 
@@ -297,12 +557,60 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         pbr.add(srcLbl, cc.xy(3, 3));
         
         
-        destLbl = UIHelper.createLabel(destLanguage.getEnglishName() + ":");
+        destLbl = UIHelper.createFormLabel(destLanguage.getEnglishName());
         pbr.add(destLbl, cc.xy(1, 5));
         pbr.add(textField,                        cc.xy(3, 5));
         
         pbr.add(rsController.getPanel(),          cc.xyw(1, 7, 3));
-        pbr.add(transBtn,                         cc.xy(1, 9));
+        pbr.add(transBtn,                         cc.xy(1,  9));
+        pbr.addSeparator("Searching",             cc.xyw(1, 11, 3));
+        
+        searchBtn = createButton(getResourceString("SEARCH"));
+        searchBtn.setToolTipText(getResourceString("ExpressSearchTT"));
+        searchText = new JAutoCompTextField(15, PickListDBAdapterFactory.getInstance().create("ExpressSearch", true));
+        searchText.setAskBeforeSave(false);
+        searchBox = new SearchBox(searchText, null, true);
+        
+        searchText.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e)
+            {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER)
+                {
+                    fndKeyHash.clear();
+                    results.clear();
+                    String txt = searchText.getText();
+                    if (!txt.isEmpty())
+                    {
+                        doSearch(txt, "key");
+                        doSearch(txt, "src");
+                        doSearch(txt, "dst");
+                    }
+                    model.fireChanges();
+                }
+            }
+        });
+        pbr.add(searchBox, cc.xyw(1, 13, 3));
+        
+        model = new SearchResultsModel();
+        searchResultsTbl = new JTable(model);
+        pbr.add(UIHelper.createScrollPane(searchResultsTbl), cc.xyw(1, 15, 3));
+        
+        searchResultsTbl.getSelectionModel().addListSelectionListener(new ListSelectionListener()
+        {
+            @Override
+            public void valueChanged(ListSelectionEvent e)
+            {
+                //tableRowSelected();
+                StrLocaleEntry entry = (StrLocaleEntry)results.get(searchResultsTbl.getSelectedRow());
+                if (entry != null)
+                {
+                    int listIndex = srcFile.getInxForKey(entry.getKey());
+                    termList.setSelectedIndex(listIndex);
+                    termList.ensureIndexIsVisible(listIndex);
+                }
+            }
+        });
         
         PanelBuilder pbl = new PanelBuilder(new FormLayout("f:p:g", "f:p:g,10px,p,4px,f:p:g"));
 
@@ -313,19 +621,15 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         pbl.add(nsp,                  cc.xy(1,5));
         
         
-        pb.add(pbl.getPanel(),  cc.xy(1,1));
-        pb.add(pbr.getPanel(),  cc.xy(3,1));
+        pb.add(pbl.getPanel(),  cc.xy(1,3));
+        pb.add(pbr.getPanel(),  cc.xy(3,3));
         
         
         ResultSetController.setBackStopRS(rsController);
         
         pb.setDefaultDialogBorder();
         
-        
         mainPane = pb.getPanel();
-        
-        
-        //mainPane = pb.getPanel();
         
         termList.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -360,8 +664,30 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
                 }
             }
         });
+        
+        frame.pack();
     }
     
+    /**
+     * @param searchText
+     * @param fileName
+     */
+    private void doSearch(final String searchText, final String fileName)
+    {
+        int[] indexes = searchable.doPropsSearch(searchText, fileName);
+        if (indexes != null)
+        {
+            for (int i=0;i<indexes.length;i++)
+            {
+                StrLocaleEntry entry = srcFile.getItems().get(indexes[i]);
+                if (!fndKeyHash.contains(entry.getKey()))
+                {
+                    results.add(entry);
+                    fndKeyHash.add(entry.getKey());
+                }
+            }
+        }
+    }
     
     /**
      * 
@@ -432,7 +758,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
                     
                     if (dst.isSrcSameAsDest(srcEntry.getKey(), srcEntry.getSrcStr()))
                     {
-                        if (StringUtils.isEmpty(dstEntry.getSrcStr()))
+                        //if (StringUtils.isEmpty(dstEntry.getSrcStr()))
                         {
                             newKeyList.add(srcEntry.getKey());
                         }
@@ -488,15 +814,76 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         }        
     }
     
+    private Language getLangFromCode(final String code)
+    {
+        if (code.equals("se")) return Language.SWEDISH;
+        if (code.equals("es")) return Language.SPANISH;
+        if (code.equals("pt")) return Language.PORTUGUESE;
+        
+        return Language.ENGLISH;
+    }
+    
+    
+    /**
+     * @param inputText
+     */
+    protected String translate(final String inputText)
+    {
+        if (inputText.isEmpty()) return "";
+        
+        Translate.setHttpReferrer("http://www.specifysoftware.org");
+
+        try
+        {
+            String text = inputText;
+            
+            boolean hasSpecialChars = false;
+            while (StringUtils.contains(text, "%d") || 
+                    StringUtils.contains(text, "%s") || 
+                    StringUtils.contains(text, "\n"))
+            {
+                text = StringUtils.replace(text, "%d", "99");
+                text = StringUtils.replace(text, "%s", "88");
+                text = StringUtils.replace(text, "\n", " 77 ");
+                hasSpecialChars = true;
+            }
+            
+            Language lang = getLangFromCode(destLanguage.getCode());
+            String newText = Translate.execute(text, Language.ENGLISH, lang);
+            
+            if (hasSpecialChars)
+            {
+                while (StringUtils.contains(newText, "77") ||
+                       StringUtils.contains(newText, "88") ||
+                       StringUtils.contains(newText, "99"))
+                {
+                    newText = StringUtils.replace(newText, "99", "%d");
+                    newText = StringUtils.replace(newText, "88", "%s");
+                    newText = StringUtils.replace(newText, " 77 ", " \n ");
+                    newText = StringUtils.replace(newText, "77 ", "\n ");
+                    newText = StringUtils.replace(newText, " 77", " \n");
+                }
+            }
+            
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    /**
+     * 
+     */
     private void translateNewItems()
     {
-        UIRegistry.writeGlassPaneMsg(UIRegistry.getResourceString("StrLocalizerApp.TranslatingNew"), 24);
+        
+        writeGlassPaneMsg(getResourceString("StrLocalizerApp.TranslatingNew"), 24);
         
         startTransMenuItem.setEnabled(false);
         stopTransMenuItem.setEnabled(true);
         
         final double total = newKeyList.size();
-        final Random rand = new Random();
         
         SwingWorker<Integer, Integer> translator = new SwingWorker<Integer, Integer>()
         {
@@ -507,21 +894,24 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
                 for (String key : newKeyList)
                 {
                     StrLocaleEntry entry = srcFile.getItemHash().get(key);
-                    if (StringUtils.isEmpty(entry.getDstStr()))
+                    if (StringUtils.contains(entry.getSrcStr(), "%") || StringUtils.contains(entry.getSrcStr(), "\n"))
                     {
-                        entry.setDstStr(translate(entry.getSrcStr()));
+                        String transText = translate(entry.getSrcStr());
+                        if (transText != null)
+                        {
+                            entry.setDstStr(transText);
+                            writeGlassPaneMsg(entry.getSrcStr()+" = "+transText, 18);
+                        }
                     }
+                    
+                    try
+                    {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ex) {}
                     
                     glassPane.setProgress((int)( (100.0 * count) / total));
                     count++;
                     
-                    if (count % 3 == 0)
-                    {
-                        try
-                        {
-                            Thread.sleep((int)(rand.nextDouble()*15000.0));
-                        } catch (Exception ex) {}
-                    }
                     if (!contTrans.get())
                     {
                         return null;
@@ -537,7 +927,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
             protected void done()
             {
                 glassPane.setProgress(100);
-                UIRegistry.clearGlassPaneMsg();
+                clearGlassPaneMsg();
                 
                 startTransMenuItem.setEnabled(true);
                 stopTransMenuItem.setEnabled(false);
@@ -589,7 +979,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
      */
 //    private void doOpen()
 //    {
-//        FileDialog dlg = new FileDialog((JFrame)UIRegistry.getTopWindow(), "Open a properties I18N File", FileDialog.LOAD);
+//        FileDialog dlg = new FileDialog((JFrame)getTopWindow(), "Open a properties I18N File", FileDialog.LOAD);
 //        dlg.setFilenameFilter(new FilenameFilter(){
 //            public boolean accept(File dir, String name){
 //              return (name.endsWith(".properties"));
@@ -599,8 +989,8 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
 //        String fileName = dlg.getFile();
 //        if (fileName != null)
 //        {
-//            ChooseFromListDlg<LanguageEntry> ldlg = new ChooseFromListDlg<LanguageEntry>((Frame )UIRegistry.getTopWindow(), 
-//            		UIRegistry.getResourceString("StrLocalizerApp.ChooseLanguageDlgTitle"), languages);
+//            ChooseFromListDlg<LanguageEntry> ldlg = new ChooseFromListDlg<LanguageEntry>((Frame )getTopWindow(), 
+//            		getResourceString("StrLocalizerApp.ChooseLanguageDlgTitle"), languages);
 //            UIHelper.centerAndShow(ldlg);
 //            if (ldlg.isCancelled() || ldlg.getSelectedObject() == null)
 //            {
@@ -665,48 +1055,45 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
      */
     public void addMenuBar(final JFrame frame)
     {
+        this.frame = frame;
+        
         JMenuBar menuBar = new JMenuBar();
         
-        JMenu fileMenu = new JMenu(UIRegistry.getResourceString("FILE"));
+        JMenu fileMenu = new JMenu(getResourceString("FILE"));
         
-        JMenuItem newLocaleItem = new JMenuItem(UIRegistry.getResourceString("StrLocalizerApp.NewLocaleMenu"));
+        JMenuItem chooseDirMenu = new JMenuItem(getResourceString("StrLocalizerApp.CreateNewLocaleMenu"));
+        fileMenu.add(chooseDirMenu);
+        
+        fileMenu.addSeparator();
+        
+        chooseDirMenu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                doCreateNewLocale(false);
+            }
+        });        
+
+
+        JMenuItem newLocaleItem = new JMenuItem(getResourceString("StrLocalizerApp.ChooseLocaleMenu"));
         fileMenu.add(newLocaleItem);
         
         newLocaleItem.addActionListener(new ActionListener() {
-
-            /* (non-Javadoc)
-             * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-             */
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                doNewLocale();
+                String fullLanguage = doChooseExistingLocalization();
+                if (fullLanguage != null)
+                { 
+                    init(fullLanguage);
+                }
             }
         });        
 
-        JMenuItem chooseLocaleItem = new JMenuItem(UIRegistry.getResourceString("StrLocalizerApp.ChooseLocaleMenu"));
-        fileMenu.add(chooseLocaleItem);
-        
-        chooseLocaleItem.addActionListener(new ActionListener() {
-
-            /* (non-Javadoc)
-             * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-             */
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                doChooseLocale();
-            }
-        });        
-
-        JMenuItem chooseFileItem = new JMenuItem(UIRegistry.getResourceString("StrLocalizerApp.ChooseFileMenu"));
+        JMenuItem chooseFileItem = new JMenuItem(getResourceString("StrLocalizerApp.ChooseFileMenu"));
         fileMenu.add(chooseFileItem);
         
         chooseFileItem.addActionListener(new ActionListener() {
-
-            /* (non-Javadoc)
-             * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-             */
             @Override
             public void actionPerformed(ActionEvent e)
             {
@@ -714,6 +1101,27 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
             }
         });        
 
+        JMenuItem mneuItem = new JMenuItem(getResourceString("Check For old Localizations"));
+        fileMenu.add(chooseFileItem);
+        
+        mneuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if (baseDir == null)
+                {
+                    getDefaultPath();
+                }
+                
+                if (baseDir != null)
+                {
+                    LocalizerSearchHelper helper = new LocalizerSearchHelper(baseDir, "file-index");
+                    helper.findOldL10NKeys();
+                }
+            }
+        });        
+
+        
 //        JMenuItem openItem = new JMenuItem("Open");
 //        fileMenu.add(openItem);
 //        
@@ -729,7 +1137,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
 //            }
 //        });       
         
-        JMenuItem saveItem = new JMenuItem(UIRegistry.getResourceString("SAVE"));
+        JMenuItem saveItem = new JMenuItem(getResourceString("SAVE"));
         fileMenu.add(saveItem);
         
         saveItem.addActionListener(new ActionListener() {
@@ -743,7 +1151,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         if (!UIHelper.isMacOS())
         {
             fileMenu.addSeparator();
-            JMenuItem exitMenu = new JMenuItem(UIRegistry.getResourceString("EXIT"));
+            JMenuItem exitMenu = new JMenuItem(getResourceString("EXIT"));
             exitMenu.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e)
@@ -757,10 +1165,10 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         menuBar.add(fileMenu);
         
         
-        JMenu transMenu = new JMenu(UIRegistry.getResourceString("StrLocalizerApp.Translate"));
+        JMenu transMenu = new JMenu(getResourceString("StrLocalizerApp.Translate"));
         menuBar.add(transMenu);
         
-        startTransMenuItem = new JMenuItem(UIRegistry.getResourceString("StrLocalizerApp.Start"));
+        startTransMenuItem = new JMenuItem(getResourceString("StrLocalizerApp.Start"));
         transMenu.add(startTransMenuItem);
         
         startTransMenuItem.addActionListener(new ActionListener() {
@@ -771,7 +1179,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
             }
         });
         
-        stopTransMenuItem = new JMenuItem(UIRegistry.getResourceString("Stop"));
+        stopTransMenuItem = new JMenuItem(getResourceString("Stop"));
         transMenu.add(stopTransMenuItem);
         
         stopTransMenuItem.addActionListener(new ActionListener() {
@@ -786,40 +1194,16 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         
         frame.setJMenuBar(menuBar);
         
-        UIRegistry.setTopWindow(frame);
+        setTopWindow(frame);
         
-        UIRegistry.register(UIRegistry.MAINPANE, mainPane);
-        UIRegistry.register(UIRegistry.FRAME, frame);
-        
-        
-        frame.setGlassPane(glassPane = GhostGlassPane.getInstance());
-        frame.setLocationRelativeTo(null);
-        Toolkit.getDefaultToolkit().setDynamicLayout(true);
-        UIRegistry.register(UIRegistry.GLASSPANE, glassPane);
-        
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run()
-            {
-                try
-                {
-                    Thread.sleep(500);
-                    //translateNewItems();
-                    
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                }
-            }
-            
-        });
+        register(FRAME, frame);
     }
 
     
     /**
      * Open existing language 'project'
      */
-    protected void doChooseLocale()
+    /*protected void doChooseLocale()
     {        
     	JFileChooser fdlg = new JFileChooser();
     	fdlg.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -854,13 +1238,13 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
     				lang = getLanguageByCode(langCode);
     				if (lang == null)
     				{
-    					UIRegistry.showLocalizedError("StrLocalizerApp.InvalidLangCode", langCode);
+    					showLocalizedError("StrLocalizerApp.InvalidLangCode", langCode);
     					return;
     				}
     			}
     			else if (!langCode.equals(fileName.substring(extPos - 2, extPos)))
     			{
-					UIRegistry.showLocalizedError("StrLocalizerApp.InvalidLocaleDir", langCode);
+					showLocalizedError("StrLocalizerApp.InvalidLocaleDir", langCode);
 					return;
     			}
     			
@@ -868,16 +1252,12 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
     	}
     	if (lang == null)
 		{
-			UIRegistry.showLocalizedError("StrLocalizerApp.InvalidLocaleDir", langCode);
+			showLocalizedError("StrLocalizerApp.InvalidLocaleDir", langCode);
 			return;
 		}
         destLanguage = lang;
         final String newLang = destLanguage.getEnglishName();
         SwingUtilities.invokeLater(new Runnable() {
-
-			/* (non-Javadoc)
-			 * @see java.lang.Runnable#run()
-			 */
 			@Override
 			public void run()
 			{
@@ -892,7 +1272,8 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         
         newSrcFile(getResourcesFile());       
     		
-    }
+    }*/
+    
     /**
      * New language 'project'
      */
@@ -903,8 +1284,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         	return;
         }
     	
-    	ChooseFromListDlg<LanguageEntry> ldlg = new ChooseFromListDlg<LanguageEntry>((Frame )UIRegistry.getTopWindow(), 
-        		UIRegistry.getResourceString("StrLocalizerApp.ChooseLanguageDlgTitle"), languages);
+    	ChooseFromListDlg<LanguageEntry> ldlg = new ChooseFromListDlg<LanguageEntry>((Frame )getTopWindow(), getResourceString("StrLocalizerApp.ChooseLanguageDlgTitle"), languages);
         UIHelper.centerAndShow(ldlg);
         if (ldlg.isCancelled() || ldlg.getSelectedObject() == null)
         {
@@ -924,16 +1304,11 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         destLanguage = ldlg.getSelectedObject();
         final String newLang = destLanguage.getEnglishName();
         SwingUtilities.invokeLater(new Runnable() {
-
-			/* (non-Javadoc)
-			 * @see java.lang.Runnable#run()
-			 */
 			@Override
 			public void run()
 			{
-				destLbl.setText(newLang);
+				destLbl.setText(newLang + ":");
 			}
-        	
         });
         
         setupSrcFiles(getDefaultPath());
@@ -944,7 +1319,6 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
     		file.save();
     	}
         currentPath = destDir.getPath();
-        
         newSrcFile(getResourcesFile());       
     }
     
@@ -998,9 +1372,9 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         }
         if (srcFile.isEdited())
         {
-        	int response = JOptionPane.showOptionDialog((Frame )UIRegistry.getTopWindow(), 
-        			String.format(UIRegistry.getResourceString("StrLocalizerApp.SaveChangesMsg"), destFile.getPath()), 
-        			UIRegistry.getResourceString("StrLocalizerApp.SaveChangesTitle"), 
+        	int response = JOptionPane.showOptionDialog((Frame )getTopWindow(), 
+        			String.format(getResourceString("StrLocalizerApp.SaveChangesMsg"), destFile.getPath()), 
+        			getResourceString("StrLocalizerApp.SaveChangesTitle"), 
         			JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.YES_OPTION);
         	if (response == JOptionPane.CANCEL_OPTION)
         	{
@@ -1025,8 +1399,8 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
     		return;
     	}
     	
-    	ChooseFromListDlg<StrLocaleFile> ldlg = new ChooseFromListDlg<StrLocaleFile>((Frame )UIRegistry.getTopWindow(), 
-        		UIRegistry.getResourceString("StrLocalizerApp.ChooseFileDlgTitle"), srcFiles);
+    	ChooseFromListDlg<StrLocaleFile> ldlg = new ChooseFromListDlg<StrLocaleFile>((Frame )getTopWindow(), 
+        		                                   getResourceString("StrLocalizerApp.ChooseFileDlgTitle"), srcFiles);
         UIHelper.centerAndShow(ldlg);
         if (ldlg.isCancelled() || ldlg.getSelectedObject() == null)
         {
@@ -1039,15 +1413,15 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
     /**
      * @param newSrc
      */
-    protected void newSrcFile(StrLocaleFile newSrc)
+    protected void newSrcFile(final StrLocaleFile newSrc)
     {
         termList.clearSelection();
         newTermList.clearSelection();
         
         srcFile = newSrc;
         
-        //re-create and reload the dest file to clear unsaved changes and/or states
-        int destInx = getLocaleFileInxBySrcPath(destFiles, srcFile.getPath());
+        // re-create and reload the dest file to clear unsaved changes and/or states
+        int           destInx = getLocaleFileInxBySrcPath(destFiles, srcFile.getPath());
         StrLocaleFile oldDest = destFiles.get(destInx);
         destFile = new StrLocaleFile(oldDest.getPath(), oldDest.getSrcPath(), true);
         destFiles.set(destInx, destFile);
@@ -1056,7 +1430,8 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         
         mergeToSrc(srcFile, destFile);
         
-        termList.setModel(new ItemModel(srcFile));
+        ItemModel termsModel = new ItemModel(srcFile);
+        termList.setModel(termsModel);
         DefaultListModel model = new DefaultListModel();
         model.clear();
         for (String str : newKeyList)
@@ -1067,86 +1442,74 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         rsController.setLength(srcFile.getNumberOfKeys());
         
         SwingUtilities.invokeLater(new Runnable() {
-
-			/* (non-Javadoc)
-			 * @see java.lang.Runnable#run()
-			 */
 			@Override
 			public void run()
 			{
 				fileLbl.setText(srcFile.getPath());				
 			}
-        	
         });
-   }
+        
+        searchable = new LocalizerSearchHelper(baseDir, "props-index");
+        searchable.indexProps(srcFile.getItems());
+    }
     
     /**
-     * @param inputText
+     * @param locale
+     * @return
      */
-    protected String translate(final String inputText)
+    private String getFullLang(final Locale locale)
     {
-        // check the website for the info about the latest version
-        HttpClient httpClient = new HttpClient();
-        httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
-        
-        // get the URL of the website to check, with usage info appended, if allowed
-        String versionCheckURL = "http://babelfish.yahoo.com/translate_txt";
-        
-        PostMethod postMethod = new PostMethod(versionCheckURL);
-        
-        // get the POST parameters (which includes usage stats, if we're allowed to send them)
-        NameValuePair[] postParams = createPostParameters(inputText, "en_" + destLanguage.getCode());
-        postMethod.setRequestBody(postParams);
-        
-        // connect to the server
-        try
-        {
-            int status = httpClient.executeMethod(postMethod);
-            //System.out.println(status);
-            if (status == 200)
-            {
-                // get the server response
-                //String responseString = postMethod.getResponseBodyAsString();
-                
-                InputStream iStream = postMethod.getResponseBodyAsStream();
-                
-                StringBuilder sb       = new StringBuilder();
-                byte[]        bytes    = new byte[8196];
-                int           numBytes = 0;
-                do 
-                {
-                    numBytes = iStream.read(bytes);
-                    if (numBytes > 0)
-                    {
-                       sb.append(new String(bytes, 0, numBytes));
-                    }
-                    
-                } while (numBytes > 0);
-                
-                String responseString = sb.toString();
-                
-                
-                if (StringUtils.isNotEmpty(responseString))
-                {
-                    //System.err.println(responseString);
-                    
-                    int inx = responseString.indexOf("<div id=\"result\">");
-                    if (inx > -1)
-                    {
-                        int eInx = responseString.indexOf("</div></div>", inx);
-                        int sInx = responseString.lastIndexOf(">", eInx-1);
-                        
-                        //System.out.println(responseString.substring(sInx+1, eInx));
-                        
-                        return responseString.substring(sInx+1, eInx);
-                    }
-                }
-            }   
+        return locale.getLanguage() + (StringUtils.isNotEmpty(locale.getVariant()) ? ("_"+locale.getVariant()): "");
+    }
 
-        }
-        catch (Exception e)
+    /**
+     * @param hideExisting
+     * @return
+     */
+    private Locale doChooseLangLocale(final boolean hideExisting)
+    {
+
+        HashSet<String> existingLocs = new HashSet<String>();
+        if (hideExisting)
         {
-            e.printStackTrace();
+            for (String nm : rootDir.list())
+            {
+                if (!nm.startsWith("."))
+                {
+                    existingLocs.add(nm);
+                }
+            }
+        }
+        
+        Vector<Locale> locales = new Vector<Locale>();
+        for (Locale l : Locale.getAvailableLocales())
+        {
+            if (!hideExisting || !existingLocs.contains(getFullLang(l)))
+            {
+                locales.add(l);
+            }
+        }
+        Collections.sort(locales, new Comparator<Locale>()
+        {
+            public int compare(Locale o1, Locale o2)
+            {
+                return o1.getDisplayName().compareTo(o2.getDisplayName());
+            }
+        });
+
+        Vector<String> localeNames = new Vector<String>();
+        for (Locale l : locales)
+        {
+            localeNames.add(l.getDisplayName());
+        }
+
+        ToggleButtonChooserDlg<String> chooser = new ToggleButtonChooserDlg<String>((Frame) null,
+                "CHOOSE_LOCALE", localeNames, ToggleButtonChooserPanel.Type.Checkbox);
+        chooser.setUseScrollPane(true);
+        chooser.setVisible(true);
+        if (!chooser.isCancelled()) 
+        { 
+            return locales.get(chooser.getSelectedIndex()); 
         }
         return null;
     }
@@ -1164,13 +1527,13 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         {
             // get the install ID
             // get the OS name and version
-            postParams.add(new NameValuePair("doit",      "done")); //$NON-NLS-1$
-            postParams.add(new NameValuePair("ei",   "UTF-8")); //$NON-NLS-1$
-            postParams.add(new NameValuePair("lp",   src)); //$NON-NLS-1$
-            postParams.add(new NameValuePair("fr",   "bf-home")); //$NON-NLS-1$
+            postParams.add(new NameValuePair("doit",    "done")); //$NON-NLS-1$
+            postParams.add(new NameValuePair("ei",      "UTF-8")); //$NON-NLS-1$
+            postParams.add(new NameValuePair("lp",      src)); //$NON-NLS-1$
+            postParams.add(new NameValuePair("fr",      "bf-home")); //$NON-NLS-1$
             
-            postParams.add(new NameValuePair("intl",      "1")); //$NON-NLS-1$
-            postParams.add(new NameValuePair("tt",        "urltext")); //$NON-NLS-1$
+            postParams.add(new NameValuePair("intl",     "1")); //$NON-NLS-1$
+            postParams.add(new NameValuePair("tt",       "urltext")); //$NON-NLS-1$
             postParams.add(new NameValuePair("trtext",   inputStr)); //$NON-NLS-1$
             //postParams.add(new NameValuePair("wl_trglang",   dst)); //$NON-NLS-1$
 
@@ -1268,6 +1631,29 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
      */
     public static void main(String[] args)
     {
+        setAppName("Specify");  //$NON-NLS-1$
+        System.setProperty(AppPreferences.factoryName, "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");         // Needed by AppReferences //$NON-NLS-1$
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        localPrefs.setDirPath(UIRegistry.getAppDataDir());
+        
+        boolean doIt = false;
+        if (doIt)
+        {
+            Charset utf8charset = Charset.forName("UTF-8");
+            Charset iso88591charset = Charset.forName("ISO-8859-1");
+
+            ByteBuffer inputBuffer = ByteBuffer.wrap(new byte[]{(byte)0xC3, (byte)0xA2});
+
+            // decode UTF-8
+            CharBuffer data = utf8charset.decode(inputBuffer);
+
+            // encode ISO-8559-1
+            ByteBuffer outputBuffer = iso88591charset.encode(data);
+            byte[] outputData = outputBuffer.array();
+            System.out.println(new String(outputData));
+            return;
+        }
+        
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run()
@@ -1290,20 +1676,29 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
                     log.error("Can't change L&F: ", e); //$NON-NLS-1$
                 }
                 
-                JFrame frame = new JFrame(UIRegistry.getResourceString("StrLocalizerApp.AppTitle"));
+                JFrame frame = new JFrame(getResourceString("StrLocalizerApp.AppTitle"));
                 frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-                StrLocalizerApp sl = new StrLocalizerApp();
+                final StrLocalizerApp sl = new StrLocalizerApp();
                 sl.addMenuBar(frame);
                 frame.setContentPane(sl);
-                frame.pack();
-                Dimension size = frame.getPreferredSize();
-                size.height = 500;
-                frame.setSize(size);
+                frame.setSize(768,1024);
+                
+                //Dimension size = frame.getPreferredSize();
+                //size.height = 500;
+                //frame.setSize(size);
                 frame.addWindowListener(sl);
-                UIRegistry.setAppName("Specify");  //$NON-NLS-1$
                 IconManager.setApplicationClass(Specify.class);
             	frame.setIconImage(IconManager.getImage(IconManager.makeIconName("SpecifyWhite32")).getImage());
                 UIHelper.centerAndShow(frame);
+                
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        sl.startUp();
+                    }
+                });
             }
         });
     }
@@ -1312,16 +1707,81 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
      * @param code
      * @return
      */
-    protected LanguageEntry getLanguageByCode(String code)
+    protected LanguageEntry getLanguageByCode(final String code)
     {
     	for (LanguageEntry l : languages)
     	{
+    	    System.out.println(l.getCode()+"="+code);
     		if (l.getCode().equals(code))
     		{
     			return l;
     		}
     	}
     	return null;
+    }
+    
+    //-------------------------------------------------------------
+    class SearchResultsModel extends AbstractTableModel
+    {
+        protected String[] headers = {"Key", "Text"};
+        
+        public void fireChanges()
+        {
+            fireTableDataChanged();
+        }
+        
+        /* (non-Javadoc)
+         * @see javax.swing.table.AbstractTableModel#getColumnClass(int)
+         */
+        @Override
+        public Class<?> getColumnClass(int columnIndex)
+        {
+            return String.class;
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.table.AbstractTableModel#getColumnName(int)
+         */
+        @Override
+        public String getColumnName(int column)
+        {
+            return headers != null ? headers[column] : "";
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.table.AbstractTableModel#isCellEditable(int, int)
+         */
+        @Override
+        public boolean isCellEditable(int rowIndex, int columnIndex)
+        {
+            return false;
+        }
+
+        @Override
+        public int getColumnCount()
+        {
+            return headers != null ? headers.length : 0;
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.table.TableModel#getRowCount()
+         */
+        @Override
+        public int getRowCount()
+        {
+            return results.size();
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.table.TableModel#getValueAt(int, int)
+         */
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex)
+        {
+            StrLocaleEntry entry = results.get(rowIndex);
+            return columnIndex == 0 ? entry.getKey() : entry.getSrcStr();
+        }
+        
     }
     
     //-------------------------------------------------------------------------------
@@ -1399,8 +1859,6 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
 		{
 			return englishName.compareTo(arg0.englishName);
 		}
-    	
-		
     	
     }
 }

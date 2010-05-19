@@ -2344,17 +2344,18 @@ public class SpecifyAppContextMgr extends AppContextMgr
             DataProviderSessionIFace session = null;
             try
             {
+                session = DataProviderFactory.getInstance().createSession();
+                session.beginTransaction();
+                
+                appResDir = session.merge(appResDir);
+                
                 if (!appResDir.removeResource(appRes))
                 {
                     //session.rollback();
                     log.error("Unable to remove AppResource '" + appResource + "' from directory '" + appResDirName + "'"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     return false;
                 }
-                session = DataProviderFactory.getInstance().createSession();
-                session.beginTransaction();
-                /* actually, the appRes will be deleted when the appResDir is saved
-                session.delete(appRes); 
-                */
+                
                 session.saveOrUpdate(appResDir);
                 session.commit();
                 session.flush();
@@ -2362,10 +2363,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
             } catch (Exception ex)
             {
+                ex.printStackTrace();
+                log.error(ex);
+                
+                session.rollback();
+                
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
-                session.rollback();
-                log.error(ex);
+                
+               
                 return false;
                 
             } finally 

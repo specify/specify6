@@ -751,9 +751,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 //--------------------------------------------------------------
                 // Get the Disciplines for SpecifyUser from the Permissions
                 //--------------------------------------------------------------
-                Vector<Pair<Integer, Integer>> divDspList = new Vector<Pair<Integer,Integer>>();
-                HashSet<Integer> disciplinesHash = new HashSet<Integer>();
-                HashSet<Integer> divisionHash    = new HashSet<Integer>();
+                HashMap<String, Pair<Integer, Integer>> divDspHashSet      = new HashMap<String, Pair<Integer,Integer>>();
+                HashSet<Integer>                        disciplinesHashSet = new HashSet<Integer>();
+                HashSet<Integer>                        divisionHashSet    = new HashSet<Integer>();
                 sql = "SELECT dv.UserGroupScopeId, ds.UserGroupScopeId FROM collection cln " +
                       "INNER JOIN spprincipal p ON cln.UserGroupScopeId = p.userGroupScopeID " +
                       "INNER JOIN discipline ds ON cln.DisciplineID = ds.UserGroupScopeId " +
@@ -763,9 +763,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 
                 for (Object[] row : BasicSQLUtils.query(conn, sql))
                 {
-                    divisionHash.add((Integer)row[0]);
-                    disciplinesHash.add((Integer)row[1]);
-                    divDspList.add(new Pair<Integer, Integer>((Integer)row[0], (Integer)row[1]));
+                    divisionHashSet.add((Integer)row[0]);
+                    disciplinesHashSet.add((Integer)row[1]);
+                    String key = String.format("%d,%d", (Integer)row[0], (Integer)row[1]);
+                    divDspHashSet.put(key, new Pair<Integer, Integer>((Integer)row[0], (Integer)row[1]));
                 }
                 
                 //--------------------------------------------------------------
@@ -774,17 +775,18 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 // Easier Just to delete all the agent_disicpline records
                 // and re-add them.
                 //--------------------------------------------------------------
-                HashMap<Integer, Integer> divToAgentHash = new HashMap<Integer, Integer>();
-                HashSet<Integer> agentHash = new HashSet<Integer>();
-                Vector<Integer>  agents    = new Vector<Integer>();
+                HashMap<Integer, Integer>      divToAgentHash = new HashMap<Integer, Integer>();
+                Vector<Pair<Integer, Integer>> agentDispList  = new Vector<Pair<Integer, Integer>>();
+                
+                Vector<Pair<Integer, Integer>> divDspList = new Vector<Pair<Integer,Integer>>(divDspHashSet.values());
                 int inx = 0;
                 sql = "SELECT a.AgentID FROM specifyuser su INNER JOIN agent a ON su.SpecifyUserID = a.SpecifyUserID WHERE su.SpecifyUserID = " + spId;
                 for (Object agtObj : BasicSQLUtils.querySingleCol(conn, sql))
                 {
                     Integer agentId = (Integer)agtObj;
-                    agentHash.add(agentId);
-                    
                     Pair<Integer, Integer> divDsp = divDspList.get(inx);
+                    
+                    agentDispList.add(new Pair<Integer, Integer>(agentId, divDsp.second));
                     
                     pStmt.setInt(1, divDsp.first);
                     pStmt.setInt(2, agentId);
@@ -795,24 +797,23 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     pStmtDel.setInt(1, agentId);
                     if (doUpdate) pStmtDel.execute();
                     
-                    agents.add(agentId);
-                    
-                    System.err.println(spId +" -> "+ agentId +" -> "+ divDsp.first);
+                    System.err.println(inx+" - " +spId +" -> "+ agentId +" -> "+ divDsp.first +" -> "+ divDsp.second);
                     inx++;
                 }
                 
-                System.err.println("Number Agents: "+ agents.size() +" Number of Discipline: "+ divDspList.size());
+                System.err.println("Number Agents: "+ agentDispList.size() +" Number of Discipline: "+ divDspList.size());
                 
                 //--------------------------------------------------------------
                 // Now re-add the agent_discipline records.
                 //--------------------------------------------------------------
-                inx = 0;
-                for (Pair<Integer, Integer> divDsp : divDspList)
+                int i = 0;
+                for (Pair<Integer, Integer> agentDisp : agentDispList)
                 {
-                    pStmtAdd.setInt(1, agents.get(inx));
-                    pStmtAdd.setInt(2, divDsp.second);
+                    System.err.println("Agent: "+ agentDisp.first +" Disp: "+ agentDisp.second);
+                    pStmtAdd.setInt(1, agentDisp.first);
+                    pStmtAdd.setInt(2, agentDisp.second);
                     if (doUpdate) pStmtAdd.execute();
-                    inx++;
+                    i++;
                 }
                 
                 //--------------------------------------------------------------------------------
@@ -857,26 +858,26 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 //----------------------------------------------------------------
                 
                 //---------- accessionagent
-                sql = "SELECT accessionagent.AccessionAgentID, accessionagent.AgentID, accession.DivisionID " +
-                "FROM accessionagent INNER JOIN accession ON accessionagent.AccessionID = accession.AccessionID ";
+                sql = "SELECT aa.AccessionAgentID, aa.AgentID, a.DivisionID " +
+                      "FROM accessionagent aa INNER JOIN accession a ON aa.AccessionID = a.AccessionID ORDER BY aa.AgentID";
                 fixAgents(conn, sql, "accessionagent", "AgentID", divToAgentHash);
                 
                 //---------- addressofrecord (Accession, Borrow, ExchangeIn, EchangeOut, Gift, Loan, RepositoryAgreement)
                 
                 sql = "SELECT addressofrecord.AddressOfRecordID, addressofrecord.AgentID, accession.DivisionID " +
-                "FROM addressofrecord INNER JOIN accession ON addressofrecord.AddressOfRecordID = accession.AddressOfRecordID ";
+                "FROM addressofrecord INNER JOIN accession ON addressofrecord.AddressOfRecordID = accession.AddressOfRecordID ORDER BY aa.AgentID";
                 fixAgents(conn, sql, "addressofrecord", "AgentID", divToAgentHash);
                 
                 sql = "SELECT addressofrecord.AddressOfRecordID, addressofrecord.AgentID, exchangein.DivisionID " +
-                "FROM addressofrecord INNER JOIN exchangein ON addressofrecord.AddressOfRecordID = exchangein.AddressOfRecordID ";
+                "FROM addressofrecord INNER JOIN exchangein ON addressofrecord.AddressOfRecordID = exchangein.AddressOfRecordID ORDER BY aa.AgentID";
                 fixAgents(conn, sql, "addressofrecord", "AgentID", divToAgentHash);
                 
                 sql = "SELECT addressofrecord.AddressOfRecordID, addressofrecord.AgentID, exchangeout.DivisionID " +
-                "FROM addressofrecord INNER JOIN exchangeout ON addressofrecord.AddressOfRecordID = exchangeout.AddressOfRecordID ";
+                "FROM addressofrecord INNER JOIN exchangeout ON addressofrecord.AddressOfRecordID = exchangeout.AddressOfRecordID ORDER BY aa.AgentID";
                 fixAgents(conn, sql, "addressofrecord", "AgentID", divToAgentHash);
                 
                 sql = "SELECT addressofrecord.AddressOfRecordID, addressofrecord.AgentID, gift.DivisionID " +
-                "FROM addressofrecord INNER JOIN gift ON addressofrecord.AddressOfRecordID = gift.AddressOfRecordID ";
+                "FROM addressofrecord INNER JOIN gift ON addressofrecord.AddressOfRecordID = gift.AddressOfRecordID ORDER BY aa.AgentID";
                 fixAgents(conn, sql, "addressofrecord", "AgentID", divToAgentHash);
                 
                 sql = "SELECT addressofrecord.AddressOfRecordID, addressofrecord.AgentID, loan.DivisionID " +
@@ -934,9 +935,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 fixAgents(conn, sql, "collectionobject", "CatalogerID", divToAgentHash);
 
                 //---------- collector
-                sql = "SELECT CollectorID, collector.AgentID, discipline.DivisionID " +
-                "FROM collector INNER JOIN collection ON collector.CollectionMemberID = collection.UserGroupScopeId " +
-                "INNER JOIN discipline ON collection.DisciplineID = discipline.UserGroupScopeId";
+                sql = "SELECT CollectorID, AgentID, DivisionID FROM collector";
                 fixAgents(conn, sql, "collector", "AgentID", divToAgentHash);
 
                 //---------- conservevent
@@ -1075,7 +1074,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             ResultSetMetaData rsmd = rs.getMetaData();
             
             String recIdColName = rs.getMetaData().getColumnName(1);
-            pStmt = conn.prepareStatement(String.format("UPDATE %s SET %s=? WHERE %s = ?", tableName, fldName, recIdColName));
+            String sqlStr       = String.format("UPDATE %s SET %s=? WHERE %s = ?", tableName, fldName, recIdColName);
+            System.out.println(sqlStr);
+            pStmt = conn.prepareStatement(sqlStr);
             
             int itemsFixed = 0;
             while (rs.next())
@@ -1184,6 +1185,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             }
         }
         frame.incOverall();
+        
+        DBConnection dbc = DBConnection.getInstance();
 
         /////////////////////////////
         // FieldNotebookPage
@@ -1207,7 +1210,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         /////////////////////////////
         
         boolean statusOK = true;
-        int     count    = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM localitydetail WHERE UtmScale IS NOT NULL");
+        String sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'localitydetail' AND COLUMN_NAME = 'UtmScale' AND DATA_TYPE = 'varchar'", dbc.getDatabaseName());
+        int count = BasicSQLUtils.getCountAsInt(sql);
         if (count > 0)
         {
             Vector<Object[]> values = BasicSQLUtils.query("SELECT ld.LocalityDetailID, ld.UtmScale, l.LocalityName FROM localitydetail ld INNER JOIN locality l ON ld.LocalityID = l.LocalityID");
@@ -1301,7 +1305,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         //////////////////////////////////////////////
         // collectingeventattribute Schema 1.3
         //////////////////////////////////////////////
-        DBConnection dbc     = DBConnection.getInstance();
         DBMSUserMgr  dbmsMgr = DBMSUserMgr.getInstance();
         if (dbmsMgr.connectToDBMS(itUserNamePassword.first, itUserNamePassword.second, dbc.getServerName()))
         {       
@@ -1309,14 +1312,20 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             try
             {
                 // Add New Fields to Determination
-                String sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'determination' AND COLUMN_NAME = 'VarQualifer'", dbc.getDatabaseName());
+                sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'determination' AND COLUMN_NAME = 'VarQualifer'", dbc.getDatabaseName());
+                count = BasicSQLUtils.getCountAsInt(sql);
+                if (count == 0)
+                {
+                    frame.setDesc("Updating VarQualifer...");
+                    BasicSQLUtils.update(conn, "ALTER TABLE determination ADD COLUMN VarQualifer VARCHAR(16) AFTER Qualifier");
+                }
+                
+                sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'determination' AND COLUMN_NAME = 'SubSpQualifier'", dbc.getDatabaseName());
                 count = BasicSQLUtils.getCountAsInt(sql);
                 if (count == 0)
                 {
                     frame.setDesc("Updating SubSpQualifier...");
-                    BasicSQLUtils.update(conn, "ALTER TABLE determination ADD COLUMN SubSpQualifier VARCHAR(16) AFTER Qualifier");
-                    frame.setDesc("Updating VarQualifier...");
-                    BasicSQLUtils.update(conn, "ALTER TABLE determination ADD COLUMN VarQualifier VARCHAR(16) AFTER SubSpQualifier");
+                    BasicSQLUtils.update(conn, "ALTER TABLE determination ADD COLUMN SubSpQualifier VARCHAR(16) AFTER VarQualifer");
                 }
                 frame.incOverall();
 

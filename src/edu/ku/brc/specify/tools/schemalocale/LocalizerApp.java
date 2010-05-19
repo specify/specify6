@@ -25,7 +25,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.lang.ref.WeakReference;
 import java.util.Date;
 import java.util.Hashtable;
@@ -79,7 +78,7 @@ import edu.ku.brc.util.Pair;
  */
 public class LocalizerApp extends LocalizableBaseApp
 {
-    private static final Logger log = Logger.getLogger(LocalizerApp.class);
+    //private static final Logger log = Logger.getLogger(LocalizerApp.class);
     
     protected FileDocument fileDoc   = new FileDocument();
     protected File         INDEX_DIR = new File("index");
