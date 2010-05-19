@@ -137,6 +137,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
     protected String        srcLangCode  = "en";
     protected String        currentPath  = null;
     protected LanguageEntry destLanguage = null;
+    protected Locale        englishLocale = Locale.US;
     
     protected StrLocaleFile srcFile;
     protected StrLocaleFile destFile;
@@ -194,11 +195,9 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
     }
     
     /**
-     * @param dir
-     * @param locale
      * @return
      */
-    private boolean copyPropFiles(final File dir, final Locale locale)
+    public String[] getFileNames()
     {
         // These need to be moved to an XML file
         String[] fileNames = {"backuprestore_en", 
@@ -214,14 +213,29 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
                                 "stats_en", 
                                 "system_setup_en", 
                                 "views_en",};
+        return fileNames;
+    }
+    
+    /**
+     * @param dir
+     * @param locale
+     * @return
+     */
+    private boolean copyPropFiles(final File dir, final Locale locale)
+    {
+        // These need to be moved to an XML file
+        String[] fileNames = getFileNames();
         
         String ext = ".properties";
         for (String nm : fileNames)
         {
             try
             {
-                String              name        = StringUtils.replace(nm, "_es", "_"+locale.getLanguage());
+                String              name        = StringUtils.replace(nm, "_en", "_"+getFullLang(locale));
                 String              outName     = dir.getAbsolutePath() + File.separator + name + ext;
+                
+                //FileUtils.copyFile(new File(nm), new File(outName));
+                
                 PrintWriter         pw          = new PrintWriter(outName);
                 System.out.println(name+"->"+outName);
                 InputStream         inputStream = Specify.class.getResourceAsStream(nm + ext);
@@ -237,7 +251,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
                 int len = bis.read(buf);
                 while (len > 0)
                 {
-                    pw.write(new String(buf));
+                    pw.write(new String(buf, 0, len));
                     len = bis.read(buf);
                 }
                 pw.close();
@@ -256,21 +270,36 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
     /**
      * @param doFromStartup
      */
-    private void doCreateNewLocale(final boolean doFromStartup)
+    private File doCopyLocale(final Locale locale)
     {
-        Locale locale = doChooseLangLocale(true);
+        File tmpBaseDir = null;
         if (locale != null)
         {
             String path = rootDir.getAbsolutePath()+ File.separator + getFullLang(locale);
-            baseDir = new File(path);
-            if (baseDir.mkdir())
+            tmpBaseDir = new File(path);
+            if (!tmpBaseDir.exists() && tmpBaseDir.mkdir())
             {
-                if (!copyPropFiles(baseDir, locale))
+                if (!copyPropFiles(tmpBaseDir, locale))
                 {
                     UIRegistry.showError("There was an error creating the locale["+locale.getDisplayCountry()+"]");
                     System.exit(0);
                 }
             }
+        }
+        return tmpBaseDir;
+    }
+    
+
+    /**
+     * @param doFromStartup
+     */
+    private void doCreateNewLocale(final boolean doFromStartup)
+    {
+        Locale locale = doChooseLangLocale(true);
+        if (locale != null)
+        {
+            doCopyLocale(englishLocale);
+            baseDir = doCopyLocale(locale);
             
         } else if (doFromStartup)
         {
@@ -323,7 +352,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
      */
     protected void init(final String langStr)
     {
-        setupSrcFiles(getPath());
+        setupSrcFiles(rootDir.getAbsolutePath()+ File.separator + "en");
         
         destLanguage = getLanguageByCode(langStr);
         if (destLanguage == null)
@@ -407,7 +436,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         ArrayList<String> dirNames = new ArrayList<String>();
         for (String nm : rootDir.list())
         {
-            if (!nm.startsWith("."))
+            if (!nm.startsWith(".") && !nm.equals("en"))
             {
                 dirNames.add(nm);
             }
@@ -1064,7 +1093,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         JMenuItem chooseDirMenu = new JMenuItem(getResourceString("StrLocalizerApp.CreateNewLocaleMenu"));
         fileMenu.add(chooseDirMenu);
         
-        fileMenu.addSeparator();
+        //fileMenu.addSeparator();
         
         chooseDirMenu.addActionListener(new ActionListener() {
             @Override
@@ -1102,7 +1131,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         });        
 
         JMenuItem mneuItem = new JMenuItem(getResourceString("Check For old Localizations"));
-        fileMenu.add(chooseFileItem);
+        fileMenu.add(mneuItem);
         
         mneuItem.addActionListener(new ActionListener() {
             @Override
@@ -1115,8 +1144,9 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
                 
                 if (baseDir != null)
                 {
-                    LocalizerSearchHelper helper = new LocalizerSearchHelper(baseDir, "file-index");
-                    helper.findOldL10NKeys();
+                    File englishDir = new File(rootDir.getAbsolutePath() + File.separator + "en");
+                    LocalizerSearchHelper helper = new LocalizerSearchHelper(englishDir, "file-index");
+                    helper.findOldL10NKeys(getFileNames());
                 }
             }
         });        
@@ -1432,20 +1462,20 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         
         ItemModel termsModel = new ItemModel(srcFile);
         termList.setModel(termsModel);
-        DefaultListModel model = new DefaultListModel();
-        model.clear();
+        DefaultListModel itemModel = new DefaultListModel();
+        itemModel.clear();
         for (String str : newKeyList)
         {
-            model.addElement(str);
+            itemModel.addElement(str);
         }
-        newTermList.setModel(model);
+        newTermList.setModel(itemModel);
         rsController.setLength(srcFile.getNumberOfKeys());
         
         SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run()
 			{
-				fileLbl.setText(srcFile.getPath());				
+				fileLbl.setText(destFile.getPath());				
 			}
         });
         

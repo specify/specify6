@@ -25,7 +25,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Vector;
 
 import javax.swing.JFileChooser;
@@ -113,10 +112,15 @@ public class LocalizerSearchHelper
     {
         try
         {
-            if (doDeleteIndex)
+            /*if (doDeleteIndex && FILE_INDEX_DIR.exists())
             {
                 FileUtils.deleteDirectory(FILE_INDEX_DIR);
             }
+            
+            if (!FILE_INDEX_DIR.mkdirs())
+            {
+                // error
+            }*/
             
             reader = IndexReader.open(FSDirectory.open(FILE_INDEX_DIR), true);
             
@@ -136,7 +140,7 @@ public class LocalizerSearchHelper
      * @param baseDir
      * @return
      */
-    public Vector<Pair<String, String>> findOldL10NKeys()
+    public Vector<Pair<String, String>> findOldL10NKeys(final String[] fileNames)
     {
         initLucene(true);
         
@@ -152,7 +156,7 @@ public class LocalizerSearchHelper
             
             if (chooser.showOpenDialog(UIRegistry.getMostRecentWindow()) == JFileChooser.APPROVE_OPTION)
             {
-                srcCodeFilesDir = new File(chooser.getCurrentDirectory().getAbsoluteFile() + File.separator + chooser.getSelectedFile().getAbsolutePath());
+                srcCodeFilesDir = new File(chooser.getSelectedFile().getAbsolutePath());
             } else
             {
                 return null;
@@ -161,93 +165,106 @@ public class LocalizerSearchHelper
         
         indexSourceFiles();
         
-        Vector<Pair<String, String>> notFoundList = new Vector<Pair<String, String>>();
+        Vector<Pair<String, String>> fullNotFoundList = new Vector<Pair<String, String>>();
+
         
         try
         {
-            Locale currLocale = Locale.getDefault();
+            ConversionLogger convLogger = new ConversionLogger();
+            convLogger.initialize("resources", "Resources");
             
-            Vector<String> terms = new Vector<String>();
-            
-            String propFileName = baseDir.getAbsolutePath() + "/resources_"+currLocale.getLanguage();
-            
-            File    resFile = new File(propFileName + ".properties");
-            List<?> lines   = FileUtils.readLines(resFile);
-            for (String line : (List<String>)lines)
+            for (String fileName : fileNames)
             {
-                if (!line.startsWith("#"))
+                Vector<Pair<String, String>> notFoundList = new Vector<Pair<String, String>>();
+                
+                Vector<String> terms = new Vector<String>();
+                
+                String propFileName = baseDir.getAbsolutePath() + "/" + fileName;
+                
+                File resFile = new File(propFileName + ".properties");
+                if (resFile.exists())
                 {
-                    int inx = line.indexOf("=");
-                    if (inx > -1)
+                    List<?> lines   = FileUtils.readLines(resFile);
+                    for (String line : (List<String>)lines)
                     {
-                        String[] toks = StringUtils.split(line, "=");
-                        if (toks.length > 1)
+                        if (!line.startsWith("#"))
                         {
-                            terms.add(toks[0]);
-                        }
-                    }
-                }
-            }
-            
-            String field = "contents";
-            QueryParser parser = new QueryParser(Version.LUCENE_30, field, analyzer);
-               
-            for (String term : terms)
-            {
-                Query query;
-                try
-                {
-                    if (term.equals("AND") || term.equals("OR")) continue;
-                    
-                    query = parser.parse(term);
-                    
-                    String subTerm = null;
-                    int    hits    = getTotalHits(query, 10);
-                    if (hits == 0)
-                    {
-                        int inx = term.indexOf('.');
-                        if (inx > -1)
-                        {
-                            subTerm = term.substring(inx+1);
-                            hits    = getTotalHits(parser.parse(subTerm), 10);
-                            
-                            if (hits == 0)
+                            int inx = line.indexOf("=");
+                            if (inx > -1)
                             {
-                                int lastInx = term.lastIndexOf('.');
-                                if (lastInx > -1 && lastInx != inx)
+                                String[] toks = StringUtils.split(line, "=");
+                                if (toks.length > 1)
                                 {
-                                    subTerm = term.substring(lastInx+1);
-                                    hits    = getTotalHits(parser.parse(subTerm), 10);
+                                    terms.add(toks[0]);
                                 }
                             }
                         }
                     }
-                    
-                    if (hits == 0)
-                    {
-                        notFoundList.add(new Pair<String, String>(term, subTerm));
-                        
-                        log.debug("'" + term + "' was not found " + (subTerm != null ? ("SubTerm["+subTerm+"]") : ""));
-                    }
-                    
-                } catch (ParseException e)
+                } else
                 {
-                    e.printStackTrace();
+                    System.err.println("Doesn't exist: "+resFile.getAbsolutePath());
                 }
+                
+                String field = "contents";
+                QueryParser parser = new QueryParser(Version.LUCENE_30, field, analyzer);
+                   
+                for (String term : terms)
+                {
+                    Query query;
+                    try
+                    {
+                        if (term.equals("AND") || term.equals("OR")) continue;
+                        
+                        query = parser.parse(term);
+                        
+                        String subTerm = null;
+                        int    hits    = getTotalHits(query, 10);
+                        if (hits == 0)
+                        {
+                            int inx = term.indexOf('.');
+                            if (inx > -1)
+                            {
+                                subTerm = term.substring(inx+1);
+                                hits    = getTotalHits(parser.parse(subTerm), 10);
+                                
+                                if (hits == 0)
+                                {
+                                    int lastInx = term.lastIndexOf('.');
+                                    if (lastInx > -1 && lastInx != inx)
+                                    {
+                                        subTerm = term.substring(lastInx+1);
+                                        hits    = getTotalHits(parser.parse(subTerm), 10);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        if (hits == 0 && !term.endsWith("_desc"))
+                        {
+                            notFoundList.add(new Pair<String, String>(term, subTerm));
+                            
+                            log.debug("'" + term + "' was not found " + (subTerm != null ? ("SubTerm["+subTerm+"]") : ""));
+                        }
+                        
+                    } catch (ParseException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                
+                String fullName = propFileName+".html";
+                TableWriter tblWriter = convLogger.getWriter(FilenameUtils.getName(fullName), propFileName);
+                tblWriter.startTable();
+                tblWriter.logHdr("Id", "Full Key", "Sub Key");
+                int cnt = 1;
+                for (Pair<String, String> pair : notFoundList)
+                {
+                    tblWriter.log(Integer.toString(cnt++), pair.first, pair.second != null ? pair.second : "&nbsp;");
+                }
+                tblWriter.endTable();
+                
+                fullNotFoundList.addAll(notFoundList);
             }
-            
-            ConversionLogger convLogger = new ConversionLogger();
-            convLogger.initialize("resources", "Resources");
-            
-            TableWriter tblWriter = convLogger.getWriter(propFileName+".html", propFileName);
-            tblWriter.startTable();
-            tblWriter.logHdr("Id", "Full Key", "Sub Key");
-            int cnt = 1;
-            for (Pair<String, String> pair : notFoundList)
-            {
-                tblWriter.log(Integer.toString(cnt++), pair.first, pair.second != null ? pair.second : "&nbsp;");
-            }
-            tblWriter.endTable();
             convLogger.closeAll();
             
             
@@ -258,7 +275,7 @@ public class LocalizerSearchHelper
             ex.printStackTrace();
         } 
         
-        return notFoundList;
+        return fullNotFoundList;
     }
     
     /**
@@ -268,8 +285,21 @@ public class LocalizerSearchHelper
     {
         if (FILE_INDEX_DIR.exists())
         {
-            UIRegistry.displayErrorDlg("Cannot save index to '" + FILE_INDEX_DIR + "' directory, please delete it first");
-            System.exit(1);
+            try
+            {
+                FileUtils.deleteDirectory(FILE_INDEX_DIR);
+                
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+                UIRegistry.displayErrorDlg("Cannot save index to '" + FILE_INDEX_DIR + "' directory, please delete it first");
+                System.exit(1);
+            }
+        }
+        
+        if (!FILE_INDEX_DIR.mkdirs())
+        {
+            // error
         }
         
         if (srcCodeFilesDir == null || !srcCodeFilesDir.exists())

@@ -86,16 +86,19 @@ public class StrLocaleFile
     }
     
     /**
-     * @param path
+     * @param pathArg
      */
     @SuppressWarnings("unchecked")
-    private void load(final String path)
+    private void load(final String pathArg)
     {
         try
         {
-            File file = new File(path);
+            itemHash.clear();
+            
+            File file = new File(pathArg);
             if (file.exists())
             {
+                int duplicateCnt = 0;
                 int index = 0;
                 int count = 0;
                 List<String> lines = (List<String>)FileUtils.readLines(file);
@@ -115,6 +118,7 @@ public class StrLocaleFile
                         if (itemHash.get(key) != null)
                         {
                             log.error("Key '"+key+"' on Line "+count+" is a duplicate.");
+                            duplicateCnt++;
                             
                         } else
                         {
@@ -133,9 +137,10 @@ public class StrLocaleFile
                     }
                     count++;
                 }
+                log.error(duplicateCnt+" duplicate keys: "+pathArg);
             }
             
-            loadCheckFile(path);
+            loadCheckFile(pathArg);
             
             clearEditFlags();
             
