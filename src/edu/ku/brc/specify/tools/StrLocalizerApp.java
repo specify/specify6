@@ -37,6 +37,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -110,6 +112,7 @@ import edu.ku.brc.specify.tools.StrLocaleEntry.STATUS;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIHelper;
@@ -158,6 +161,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
     protected JButton    transBtn;
     protected JLabel	 fileLbl;
     protected JPanel     mainPane;
+    protected JStatusBar statusBar;
     
     // SearchBox
     protected SearchBox                     searchBox;
@@ -563,7 +567,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
 
         CellConstraints cc = new CellConstraints();
 
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,10px,f:p:g", "p,4px,f:p:g"), this);
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,10px,f:p:g", "p,4px,f:p:g,4px,p"), this);
         
         pb.addSeparator("Localize", cc.xyw(1,1,3));
         
@@ -582,6 +586,10 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
             }
         });
         
+        statusBar = new JStatusBar();
+        statusBar.setSectionText(1, "     "); //$NON-NLS-1$ //$NON-NLS-2$
+        UIRegistry.setStatusBar(statusBar);
+
         srcLbl.setEditable(false);
         
         rsController = new ResultSetController(null, false, false, false, "", 1, true);
@@ -665,7 +673,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         
         pb.add(pbl.getPanel(),  cc.xy(1,3));
         pb.add(pbr.getPanel(),  cc.xy(3,3));
-        
+        pb.add(statusBar, cc.xyw(1,5,3));
         
         ResultSetController.setBackStopRS(rsController);
         
@@ -745,7 +753,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         int inx = termList.getSelectedIndex();
         if (inx > -1)
         {
-
+            transBtn.setEnabled(true);
             StrLocaleEntry srcEntry = srcFile.getKey(inx);
             System.out.println(srcEntry.hashCode());
             
@@ -758,6 +766,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         {
             srcLbl.setText("");
             textField.setText("");
+            transBtn.setEnabled(false);
         }
         oldInx     = inx;
         hasChanged = false;
@@ -941,6 +950,9 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
     {
         
         //writeGlassPaneMsg(getResourceString("StrLocalizerApp.TranslatingNew"), 24);
+        final String    STATUSBAR_NAME = "STATUS";
+        final JStatusBar statusBar     = UIRegistry.getStatusBar();
+        statusBar.setProgressRange(STATUSBAR_NAME, 0, 100);
         
         startTransMenuItem.setEnabled(false);
         stopTransMenuItem.setEnabled(true);
@@ -963,15 +975,17 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
                         {
                             entry.setDstStr(transText);
                             //writeGlassPaneMsg(String.format("%d / %d", count, newKeyList.size()), 18);
-                            System.out.println(String.format("%s - %d / %d", key, count, newKeyList.size()));
+                            //System.out.println(String.format("%s - %d / %d", key, count, newKeyList.size()));
                         }
                     }
                     
                     try
                     {
-                        Thread.sleep(100);
+                        Thread.sleep(100 + (int)(Math.random() * 100.0));
                     } catch (InterruptedException ex) {}
                     
+                    setProgress((int)(((double)count/total)*100.0));
+                    System.out.println(entry.getSrcStr()+"  "+count);
                     //glassPane.setProgress((int)( (100.0 * count) / total));
                     count++;
                     
@@ -992,13 +1006,32 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
                 //glassPane.setProgress(100);
                 //clearGlassPaneMsg();
                 
+                //statusBar.setIndeterminate(STATUSBAR_NAME, false);
+                statusBar.setText("");
+                statusBar.setProgressDone(STATUSBAR_NAME);
+                
                 UIRegistry.showLocalizedMsg("Done Localizing");
                 
                 startTransMenuItem.setEnabled(true);
                 stopTransMenuItem.setEnabled(false);
+                
 
             }
         };
+        
+        statusBar.setIndeterminate(STATUSBAR_NAME, true);
+        
+        translator.addPropertyChangeListener(
+                new PropertyChangeListener() {
+                    public  void propertyChange(final PropertyChangeEvent evt) {
+                        //System.out.println(evt.getPropertyName());
+                        
+                        if ("progress".equals(evt.getPropertyName())) 
+                        {
+                            statusBar.setText(String.format("%d / 100 ", (Integer)evt.getNewValue()) + "%");
+                        }
+                    }
+                });
         translator.execute();
     }
  
