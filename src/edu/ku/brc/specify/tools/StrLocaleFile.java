@@ -44,7 +44,7 @@ public class StrLocaleFile
 {
     private static final Logger  log                = Logger.getLogger(StrLocaleFile.class);
             
-    protected String                            path;
+    protected String                            dstPath;
     protected String                            srcPath;
     protected Vector<StrLocaleEntry>            items      = new Vector<StrLocaleEntry>();
     protected Hashtable<String, StrLocaleEntry> itemHash   = new Hashtable<String, StrLocaleEntry>();
@@ -54,18 +54,18 @@ public class StrLocaleFile
     protected Vector<StrLocaleEntry>			keys = new Vector<StrLocaleEntry>();
     
     /**
-     * @param path
+     * @param dstPath
      */
-    public StrLocaleFile(final String  path, 
+    public StrLocaleFile(final String  dstPath, 
                          final String  srcPath,
                          final boolean isDestination)
     {
         super();
-        this.path          = path;
+        this.dstPath       = dstPath;
         this.srcPath       = srcPath;
         this.isDestination = isDestination;
         
-        load(path);
+        load();
     }
     
     /**
@@ -86,16 +86,16 @@ public class StrLocaleFile
     }
     
     /**
-     * @param pathArg
+     * 
      */
     @SuppressWarnings("unchecked")
-    private void load(final String pathArg)
+    private void load()
     {
         try
         {
             itemHash.clear();
             
-            File file = new File(pathArg);
+            File file = new File(dstPath);
             if (file.exists())
             {
                 int duplicateCnt = 0;
@@ -137,10 +137,13 @@ public class StrLocaleFile
                     }
                     count++;
                 }
-                log.error(duplicateCnt+" duplicate keys: "+pathArg);
+                log.error(duplicateCnt+" duplicate keys: "+dstPath);
             }
             
-            loadCheckFile(pathArg);
+            if (isDestination)
+            {
+                loadCheckFile();
+            }
             
             clearEditFlags();
             
@@ -154,13 +157,13 @@ public class StrLocaleFile
      * @param path
      */
     @SuppressWarnings("unchecked")
-    private void loadCheckFile(final String path)
+    private void loadCheckFile()
     {
         try
         {
             chkHash.clear();
             
-            File file = new File(path+".orig");
+            File file = new File(dstPath+".orig");
             if (file.exists())
             {
                 List<String> lines = (List<String>)FileUtils.readLines(file);
@@ -187,12 +190,12 @@ public class StrLocaleFile
      * @param value
      * @return
      */
-    public boolean isSrcSameAsDest(final String key, final String value)
+    public boolean isSrcSameAsDest(final String key, final String srcValue)
     {
-        String oldValue = chkHash.get(key);
-        if (oldValue != null)
+        String origValue = chkHash.get(key);
+        if (origValue != null)
         {
-            return oldValue.equals(value);
+            return origValue.equals(srcValue);
         }
         return false;
     }
@@ -220,14 +223,7 @@ public class StrLocaleFile
         
         try
         {
-            FileUtils.writeLines(new File(path), lines);
-            
-            if (srcPath != null)
-            {
-                File origFile = new File(srcPath);
-                File outFile  = new File(path+".orig");
-                FileUtils.copyFile(origFile, outFile);
-            }
+            FileUtils.writeLines(new File(dstPath), lines);
             
             //clear edited flag for all items
             clearEditFlags();
@@ -319,7 +315,7 @@ public class StrLocaleFile
 	 */
 	public String getPath()
 	{
-		return path;
+		return dstPath;
 	}
 
 	/**

@@ -264,6 +264,42 @@ public class LocalizerSearchHelper
                 tblWriter.endTable();
                 
                 fullNotFoundList.addAll(notFoundList);
+                
+                if (notFoundList.size() > 0 && resFile.exists())
+                {
+                    List<String>   lines      = (List<String>)FileUtils.readLines(resFile);
+                    Vector<String> linesCache = new Vector<String>();
+                    
+                    for (Pair<String, String> p : notFoundList)
+                    {
+                        linesCache.clear();
+                        linesCache.addAll(lines);
+                        
+                        int lineInx = 0;
+                        for (String line : linesCache)
+                        {
+                            if (!line.startsWith("#"))
+                            {
+                                int inx = line.indexOf("=");
+                                if (inx > -1)
+                                {
+                                    String[] toks = StringUtils.split(line, "=");
+                                    if (toks.length > 1)
+                                    {
+                                        if (toks[0].equals(p.first))
+                                        {
+                                            lines.remove(lineInx);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            lineInx++;
+                        }
+                    }
+                    FileUtils.writeLines(resFile, linesCache);
+                }
+                
             }
             convLogger.closeAll();
             
