@@ -657,8 +657,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     
                     AppContextMgr am = AppContextMgr.getInstance();
                     discipline.getTaxonTreeDef().forceLoad();
-                	am.setClassObject(TaxonTreeDef.class,              discipline.getTaxonTreeDef());
-                	discipline.getGeologicTimePeriodTreeDef().forceLoad();
+                    am.setClassObject(TaxonTreeDef.class,              discipline.getTaxonTreeDef());
+                    discipline.getGeologicTimePeriodTreeDef().forceLoad();
                     am.setClassObject(GeologicTimePeriodTreeDef.class, discipline.getGeologicTimePeriodTreeDef());
                     institution.getStorageTreeDef().forceLoad();
                     am.setClassObject(StorageTreeDef.class,            institution.getStorageTreeDef());
@@ -792,8 +792,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
         } else if (isPersonal)
         {
-        	sb.append(" AND specifyUserId = ");
-        	sb.append(specifyUser.getSpecifyUserId());
+            sb.append(" AND specifyUserId = ");
+            sb.append(specifyUser.getSpecifyUserId());
         }
         
         if (discipline != null)
@@ -878,7 +878,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         SpAppResource    fndAppRes = null;
         for (int i=virtualNameIndex;i<levels.length && fndAppRes == null;i++)
         {
-        	SpAppResourceDir fndAppDir = spAppResourceList.get(i);
+            SpAppResourceDir fndAppDir = spAppResourceList.get(i);
             for (SpAppResource appRes : (new ArrayList<SpAppResource>(fndAppDir.getSpAppResources())))
             {
                 if (appRes.getName() != null && appRes.getName().equals(appResource.getName()))
@@ -1282,88 +1282,88 @@ public class SpecifyAppContextMgr extends AppContextMgr
             boolean noLocks = uploadLockCheckResult != Uploader.LOCKED;
             boolean goodTrees = true;
             if (uploadLockCheckResult != Uploader.LOCK_IGNORED)
-			{
-				if (noLocks)
-				{
-					if (!discipline.getTaxonTreeDef()
-							.checkNodeRenumberingLock())
-					{
-						noLocks = false;
-						UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
-								discipline.getTaxonTreeDef().getName());
-					}
-				}
-				if (noLocks)
-				{
-					if (!discipline.getGeographyTreeDef()
-							.checkNodeRenumberingLock())
-					{
-						noLocks = false;
-						UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
-								discipline.getGeographyTreeDef().getName());
-					}
-				}
-				if (noLocks)
-				{
-					if (!division.getInstitution().getStorageTreeDef()
-							.checkNodeRenumberingLock())
-					{
-						noLocks = false;
-						UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
-								division.getInstitution().getStorageTreeDef().getName());
-					}
-				}
-				if (noLocks
-						&& discipline.getGeologicTimePeriodTreeDef() != null)
-				{
-					if (!discipline.getGeologicTimePeriodTreeDef()
-							.checkNodeRenumberingLock())
-					{
-						noLocks = false;
-						UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
-								discipline.getGeologicTimePeriodTreeDef().getName());
-					}
-				}
-				if (noLocks && discipline.getLithoStratTreeDef() != null)
-				{
-					if (!discipline.getLithoStratTreeDef()
-							.checkNodeRenumberingLock())
-					{
-						noLocks = false;
-						UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
-								discipline.getLithoStratTreeDef().getName());
-					}
-				}
+            {
+                if (noLocks)
+                {
+                    if (!discipline.getTaxonTreeDef()
+                            .checkNodeRenumberingLock())
+                    {
+                        noLocks = false;
+                        UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
+                                discipline.getTaxonTreeDef().getName());
+                    }
+                }
+                if (noLocks)
+                {
+                    if (!discipline.getGeographyTreeDef()
+                            .checkNodeRenumberingLock())
+                    {
+                        noLocks = false;
+                        UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
+                                discipline.getGeographyTreeDef().getName());
+                    }
+                }
+                if (noLocks)
+                {
+                    if (!division.getInstitution().getStorageTreeDef()
+                            .checkNodeRenumberingLock())
+                    {
+                        noLocks = false;
+                        UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
+                                division.getInstitution().getStorageTreeDef().getName());
+                    }
+                }
+                if (noLocks
+                        && discipline.getGeologicTimePeriodTreeDef() != null)
+                {
+                    if (!discipline.getGeologicTimePeriodTreeDef()
+                            .checkNodeRenumberingLock())
+                    {
+                        noLocks = false;
+                        UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
+                                discipline.getGeologicTimePeriodTreeDef().getName());
+                    }
+                }
+                if (noLocks && discipline.getLithoStratTreeDef() != null)
+                {
+                    if (!discipline.getLithoStratTreeDef()
+                            .checkNodeRenumberingLock())
+                    {
+                        noLocks = false;
+                        UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
+                                discipline.getLithoStratTreeDef().getName());
+                    }
+                }
 
-				if (noLocks)
-				{
-					// Now force node number updates for trees that are
-					// out-of-date
-					goodTrees = discipline.getTaxonTreeDef()
-							.checkNodeNumbersUpToDate(true);
-					if (goodTrees)
-					{
-						goodTrees = discipline.getGeographyTreeDef()
-								.checkNodeNumbersUpToDate(true);
-					}
-					if (goodTrees)
-					{
-						goodTrees = division.getInstitution()
-								.getStorageTreeDef().checkNodeNumbersUpToDate(true);
-					}
-					if (goodTrees
-							&& discipline.getGeologicTimePeriodTreeDef() != null)
-					{
-						goodTrees = discipline.getGeologicTimePeriodTreeDef()
-								.checkNodeNumbersUpToDate(true);
-					}
-					if (goodTrees && discipline.getLithoStratTreeDef() != null)
-					{
-						goodTrees = discipline.getLithoStratTreeDef()
-								.checkNodeNumbersUpToDate(true);
-					}
-				}
-			}
+                if (noLocks)
+                {
+                    // Now force node number updates for trees that are
+                    // out-of-date
+                    goodTrees = discipline.getTaxonTreeDef()
+                            .checkNodeNumbersUpToDate(true);
+                    if (goodTrees)
+                    {
+                        goodTrees = discipline.getGeographyTreeDef()
+                                .checkNodeNumbersUpToDate(true);
+                    }
+                    if (goodTrees)
+                    {
+                        goodTrees = division.getInstitution()
+                                .getStorageTreeDef().checkNodeNumbersUpToDate(true);
+                    }
+                    if (goodTrees
+                            && discipline.getGeologicTimePeriodTreeDef() != null)
+                    {
+                        goodTrees = discipline.getGeologicTimePeriodTreeDef()
+                                .checkNodeNumbersUpToDate(true);
+                    }
+                    if (goodTrees && discipline.getLithoStratTreeDef() != null)
+                    {
+                        goodTrees = discipline.getLithoStratTreeDef()
+                                .checkNodeNumbersUpToDate(true);
+                    }
+                }
+            }
             
             if (!noLocks || !goodTrees)
             {
@@ -1861,14 +1861,14 @@ public class SpecifyAppContextMgr extends AppContextMgr
             boolean dirContainsResource = false;
             if (spAppResource.getId() != null)
             {
-            	for (SpAppResource persisted : appResDir.getSpPersistedAppResources())
-            	{
-            		if (spAppResource.getId().equals(persisted.getId()))
-            		{
-            			dirContainsResource = true;
-            			break;
-            		}
-            	}
+                for (SpAppResource persisted : appResDir.getSpPersistedAppResources())
+                {
+                    if (spAppResource.getId().equals(persisted.getId()))
+                    {
+                        dirContainsResource = true;
+                        break;
+                    }
+                }
             }
             
             if (!dirContainsResource)
@@ -1887,20 +1887,20 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 session.beginTransaction();
                 if (!dirContainsResource)
                 {
-                	session.saveOrUpdate(appResDir);
+                    session.saveOrUpdate(appResDir);
                 }
                 else
                 {
                     //saveOrUpdate(spAppResource) shouldn't be necessary if resource is new, 
-                	//it also shouldn't cause problems, but it is only called if resource 
-                	//already existed in the directory, because it often generates 
+                    //it also shouldn't cause problems, but it is only called if resource 
+                    //already existed in the directory, because it often generates 
                     //hibernate exceptions for newly created resources.
                     session.saveOrUpdate(spAppResource);
                 }
-            	session.commit();
-            	session.flush();
-            	return true;
-            	
+                session.commit();
+                session.flush();
+                return true;
+                
             } catch (Exception ex)
             {
                 ex.printStackTrace();
@@ -2051,7 +2051,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public SpAppResourceDir getSpAppResourceDirByName(final String appResDirName)
     {
-    	return spAppResourceHash.get(appResDirName);
+        return spAppResourceHash.get(appResDirName);
     }
     
     /**
@@ -2060,14 +2060,14 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public String getDirName(final SpAppResourceDir appResDir)
     {
-    	for (Map.Entry<String, SpAppResourceDir> dir : spAppResourceHash.entrySet())
-    	{
-    		if (appResDir.getSpAppResourceDirId().equals(dir.getValue().getSpAppResourceDirId()))
-    		{
-    			return dir.getKey();
-    		}
-    	}
-    	return null;
+        for (Map.Entry<String, SpAppResourceDir> dir : spAppResourceHash.entrySet())
+        {
+            if (appResDir.getSpAppResourceDirId().equals(dir.getValue().getSpAppResourceDirId()))
+            {
+                return dir.getKey();
+            }
+        }
+        return null;
     }
     
     /* (non-Javadoc)
@@ -2300,7 +2300,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         SpAppResourceDir appResDir = spAppResourceHash.get(appResDirName);
         if (appResDir != null)
         {
-        	return createAppResourceForDir(appResDir);
+            return createAppResourceForDir(appResDir);
         }
         log.error("Couldn't find AppResDir with name["+appResDirName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         return null;
@@ -2344,18 +2344,17 @@ public class SpecifyAppContextMgr extends AppContextMgr
             DataProviderSessionIFace session = null;
             try
             {
-                session = DataProviderFactory.getInstance().createSession();
-                session.beginTransaction();
-                
-                appResDir = session.merge(appResDir);
-                
                 if (!appResDir.removeResource(appRes))
                 {
                     //session.rollback();
                     log.error("Unable to remove AppResource '" + appResource + "' from directory '" + appResDirName + "'"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     return false;
                 }
-                
+                session = DataProviderFactory.getInstance().createSession();
+                session.beginTransaction();
+                /* actually, the appRes will be deleted when the appResDir is saved
+                session.delete(appRes); 
+                */
                 session.saveOrUpdate(appResDir);
                 session.commit();
                 session.flush();
@@ -2363,15 +2362,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
             } catch (Exception ex)
             {
-                ex.printStackTrace();
-                log.error(ex);
-                
-                session.rollback();
-                
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
-                
-               
+                session.rollback();
+                log.error(ex);
                 return false;
                 
             } finally 
