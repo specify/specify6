@@ -78,6 +78,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
+import javax.swing.event.DocumentEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -107,6 +108,7 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.tools.StrLocaleEntry.STATUS;
 import edu.ku.brc.ui.ChooseFromListDlg;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
@@ -174,6 +176,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
     
     protected ResultSetController rsController;
     protected int        oldInx = -1;
+    protected boolean    hasChanged = false;
     
     protected Vector<String> newKeyList = new Vector<String>();
     protected AtomicBoolean  contTrans  = new AtomicBoolean(true);
@@ -571,6 +574,14 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         srcLbl.setBorder(new LineBorder(srcLbl.getForeground()));
         textField  = UIHelper.createTextField(40);
         
+        textField.getDocument().addDocumentListener(new DocumentAdaptor() {
+            @Override
+            protected void changed(DocumentEvent e)
+            {
+                hasChanged = true;
+            }
+        });
+        
         srcLbl.setEditable(false);
         
         rsController = new ResultSetController(null, false, false, false, "", 1, true);
@@ -725,7 +736,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
      */
     private void listSelected()
     {
-        if (oldInx > -1)
+        if (oldInx > -1 && hasChanged)
         {
             StrLocaleEntry entry = srcFile.getKey(oldInx);
             entry.setDstStr(textField.getText());
@@ -736,6 +747,8 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         {
 
             StrLocaleEntry srcEntry = srcFile.getKey(inx);
+            System.out.println(srcEntry.hashCode());
+            
             srcLbl.setText(srcEntry.getSrcStr());
             String str = srcEntry.getDstStr();
             textField.setText(str != null ? str : srcEntry.getSrcStr());
@@ -746,7 +759,8 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
             srcLbl.setText("");
             textField.setText("");
         }
-        oldInx = inx;
+        oldInx     = inx;
+        hasChanged = false;
     }
     
     
@@ -758,12 +772,18 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         String key = (String)newTermList.getSelectedValue();
         if (key != null)
         {
-            Integer inx = srcFile.getInxForKey(key);
+            final Integer inx = srcFile.getInxForKey(key);
             //System.out.println("newListSelected: index = " + inx);
             if (inx != null)
             {
-                termList.setSelectedIndex(inx);
-                termList.ensureIndexIsVisible(inx);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        termList.setSelectedIndex(inx);
+                        termList.ensureIndexIsVisible(inx);                        
+                    }
+                });
             }
         }
     }
