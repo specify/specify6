@@ -56,6 +56,8 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.prefs.BackingStoreException;
@@ -96,7 +98,9 @@ import com.google.api.translate.Translate;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
+import com.jgoodies.looks.plastic.theme.DesertBlue;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
 import edu.ku.brc.af.core.FrameworkAppIFace;
@@ -238,12 +242,8 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
             {
                 String              name        = StringUtils.replace(nm, "_en", "_"+getFullLang(locale));
                 String              outName     = dir.getAbsolutePath() + File.separator + name + ext + (doAddOrigExt ? ".orig" : "");
-                
-                //FileUtils.copyFile(new File(nm), new File(outName));
-                
                 PrintWriter         pw          = new PrintWriter(outName);
-                System.out.println(name+"->"+outName);
-                InputStream         inputStream = Specify.class.getResourceAsStream(nm + ext);
+                InputStream         inputStream = Specify.class.getResourceAsStream("/" + nm + ext);
                 try
                 {
                     inputStream.available();
@@ -1735,11 +1735,72 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
     {
         setAppName("Specify");  //$NON-NLS-1$
         System.setProperty(AppPreferences.factoryName, "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");         // Needed by AppReferences //$NON-NLS-1$
+        
+        for (String s : args)
+        {
+            String[] pairs = s.split("="); //$NON-NLS-1$
+            if (pairs.length == 2)
+            {
+                if (pairs[0].startsWith("-D")) //$NON-NLS-1$
+                {
+                    //System.err.println("["+pairs[0].substring(2, pairs[0].length())+"]["+pairs[1]+"]");
+                    System.setProperty(pairs[0].substring(2, pairs[0].length()), pairs[1]);
+                } 
+            } else
+            {
+                String symbol = pairs[0].substring(2, pairs[0].length());
+                //System.err.println("["+symbol+"]");
+                System.setProperty(symbol, symbol);
+            }
+        }
+        
+        // Now check the System Properties
+        String appDir = System.getProperty("appdir");
+        if (StringUtils.isNotEmpty(appDir))
+        {
+            UIRegistry.setDefaultWorkingPath(appDir);
+        }
+        
+        String appdatadir = System.getProperty("appdatadir");
+        if (StringUtils.isNotEmpty(appdatadir))
+        {
+            UIRegistry.setBaseAppDataDir(appdatadir);
+        }
+        
+        
+        // Then set this
+        IconManager.setApplicationClass(Specify.class);
+        IconManager.loadIcons(XMLHelper.getConfigDir("icons.xml")); //$NON-NLS-1$
+        //ImageIcon icon = IconManager.getIcon("AppIcon", IconManager.IconSize.Std16);
+        
+        try
+        {
+            ResourceBundle.getBundle("resources", Locale.getDefault()); //$NON-NLS-1$
+            
+        } catch (MissingResourceException ex)
+        {
+            Locale.setDefault(Locale.ENGLISH);
+            UIRegistry.setResourceLocale(Locale.ENGLISH);
+        }
+        
+        try
+        {
+            if (!System.getProperty("os.name").equals("Mac OS X"))
+            {
+                UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
+                PlasticLookAndFeel.setPlasticTheme(new DesertBlue());
+            }
+        }
+        catch (Exception e)
+        {
+            //whatever
+        }
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         localPrefs.setDirPath(UIRegistry.getAppDataDir());
         
         boolean doIt = false;
         if (doIt)
+
         {
             Charset utf8charset = Charset.forName("UTF-8");
             Charset iso88591charset = Charset.forName("ISO-8859-1");
