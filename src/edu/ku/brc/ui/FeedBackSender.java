@@ -123,8 +123,6 @@ public abstract class FeedBackSender
     {
         if (item != null)
         {
-            String s = "";
-            
             // check the website for the info about the latest version
             HttpClient httpClient = new HttpClient();
             httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$

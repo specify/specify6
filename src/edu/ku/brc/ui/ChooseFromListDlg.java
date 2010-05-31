@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -282,7 +281,8 @@ public class ChooseFromListDlg<T> extends JDialog
         boolean hasDesc = StringUtils.isNotEmpty(desc);
         PanelBuilder    builder = new PanelBuilder(new FormLayout("f:max(300px;p):g", "p," + (hasDesc ? "2px,p," : "") + "5px,p"));
         CellConstraints cc      = new CellConstraints();
-        builder.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
+        //builder.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
+        builder.setDefaultDialogBorder();
 
         int y = 1;
         if (hasDesc)
