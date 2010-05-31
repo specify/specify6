@@ -12,7 +12,7 @@
 	      <tables>
 	        <id>4</id>
 	      </tables>
-          <![CDATA[select tn,count(tx) as namecnt from (select DT.TaxonId, taxon.TaxonID as tx, taxon.FullName as tn from taxon,determination as DT WHERE DT.CollectionMemberID = COLMEMID AND DT.TaxonId = taxon.TaxonID) as newTable group by tx order by namecnt DESC]]>
+          <![CDATA[SELECT tn,count(tx) AS namecnt FROM (SELECT DT.TaxonId, taxon.TaxonID AS tx, taxon.FullName AS tn FROM taxon,determination AS DT WHERE DT.CollectionMemberID = COLMEMID AND DT.TaxonId = taxon.TaxonID) AS newTable GROUP BY tx ORDER BY namecnt DESC]]>
       </sql>
       <slice>
         <desc row="1" col="1"/>
@@ -45,7 +45,7 @@
 	      <tables>
 	        <id>4</id>
 	      </tables>
-          <![CDATA[select tn,count(tx) as namecnt from (select DT.TaxonId, taxon.TaxonID as tx, taxon.Name as tn from taxon,determination as DT WHERE DT.CollectionMemeberID = COLMEMID AND DT.TaxonId = taxon.TaxonID) as newTable group by tx order by namecnt DESC]]>
+          <![CDATA[SELECT tn,count(tx) AS namecnt FROM (SELECT DT.TaxonId, taxon.TaxonID AS tx, taxon.Name AS tn FROM taxon,determination AS DT WHERE DT.CollectionMemeberID = COLMEMID AND DT.TaxonId = taxon.TaxonID) AS newTable GROUP BY tx ORDER BY namecnt DESC]]>
       </sql>
       <bar>
         <desc row="1" col="1"/>
@@ -110,7 +110,7 @@
 	        <id>3</id>
 	        <id>10</id>
 	      </tables>
-          <![CDATA[select g.Name as Country, count(g.Name) AS SpecimenCount from (select CollectionObjectID, CO.CollectionMemberID, CE.LocalityID, LOC.GeographyID, GEO.NodeNumber  from collectionobject as CO inner join collectingevent as CE on CE.CollectingEventID = CO.CollectingEventID inner join locality LOC on CE.LocalityID = LOC.LocalityID inner join geography as GEO on GEO.GeographyID = LOC.GeographyID) as COLGEO, geography as g where COLGEO.CollectionMemberID = COLMEMID AND g.rankid = 200 and COLGEO.nodenumber between g.nodenumber and g.HighestChildNodeNumber group by g.Name order by SpecimenCount DESC]]>
+          <![CDATA[SELECT g.Name AS Country, count(g.Name) AS SpecimenCount FROM (SELECT CollectionObjectID, CO.CollectionMemberID, CE.LocalityID, LOC.GeographyID, GEO.NodeNumber FROM collectionobject AS CO INNER JOIN collectingevent AS CE on CE.CollectingEventID = CO.CollectingEventID INNER JOIN locality LOC on CE.LocalityID = LOC.LocalityID INNER JOIN geography AS GEO on GEO.GeographyID = LOC.GeographyID WHERE CO.CollectionMemberID = COLMEMID) AS COLGEO INNER JOIN geography AS g ON g.GeographyID = COLGEO.GeographyID WHERE g.RankID = 200 and COLGEO.NodeNumber between g.NodeNumber and g.HighestChildNodeNumber GROUP BY g.Name ORDER BY SpecimenCount DESC]]>
       </sql>
       <bar>
         <desc row="1" col="1"/>
@@ -153,7 +153,7 @@
 	        <id>3</id>
 	        <id>10</id>
 	      </tables>
-          <![CDATA[select g.Name as Country, count(g.Name) AS SpecimenCount from (select CollectionObjectID, CE.LocalityID, LOC.GeographyID, GEO.NodeNumber  from collectionobject as CO inner join collectingevent as CE on CE.CollectingEventID = CO.CollectingEventID inner join locality LOC on CE.LocalityID = LOC.LocalityID inner join geography as GEO on GEO.GeographyID = LOC.GeographyID) as COLGEO, geography as g where g.rankid = 100 and COLGEO.nodenumber between g.nodenumber and g.HighestChildNodeNumber group by g.Name order by SpecimenCount DESC]]>
+          <![CDATA[SELECT g.Name AS Country, count(g.Name) AS SpecimenCount FROM (SELECT CollectionObjectID, CE.LocalityID, LOC.GeographyID, GEO.NodeNumber  FROM collectionobject AS CO INNER JOIN collectingevent AS CE on CE.CollectingEventID = CO.CollectingEventID INNER JOIN locality LOC on CE.LocalityID = LOC.LocalityID INNER JOIN geography AS GEO on GEO.GeographyID = LOC.GeographyID) AS COLGEO, geography AS g WHERE g.rankid = 100 and COLGEO.nodenumber between g.nodenumber and g.HighestChildNodeNumber GROUP BY g.Name ORDER BY SpecimenCount DESC]]>
       </sql>
       <bar>
         <desc row="1" col="1"/>
@@ -205,7 +205,7 @@
       <title>ITMS_LOAN</title>
       <tooltip>ITMS_LOAN_TT</tooltip>
       <sql type="text">
-          <![CDATA[Select distinct loan.LoanNumber as LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName,loan.OriginalDueDate, loanpreparation.Quantity, loanpreparation.DescriptionOfMaterial, address.Address, address.City, address.State, address.Country From loan Inner Join loanpreparation ON loan.LoanID =  loanpreparation.LoanID Inner Join loanagent ON loan.LoanID = loanagent.LoanID Inner Join agent ON loanagent.AgentID = agent.AgentID Inner Join address ON agent.AgentID = address.AgentID where loan.loanid in (select loanid from loan where (IsClosed = false or IsClosed is null)) group by LoanNumber]]>
+          <![CDATA[SELECT DISTINCT loan.LoanNumber AS LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName,loan.OriginalDueDate, lp.Quantity, lp.DescriptionOfMaterial, address.Address, address.City, address.State, address.Country FROM loan INNER JOIN loanpreparation lp ON loan.LoanID =  lp.LoanID INNER JOIN loanagent ON loan.LoanID = loanagent.LoanID INNER JOIN agent ON loanagent.AgentID = agent.AgentID INNER JOIN address ON agent.AgentID = address.AgentID WHERE loan.loanid in (SELECT loanid FROM loan WHERE (IsClosed = false or IsClosed is NULL)) GROUP BY LoanNumber]]>
       </sql>
     </stat>
 
@@ -217,7 +217,7 @@
 	        <id>5</id>
 	        <id>52</id>
 	      </tables>      
-          <![CDATA[Select distinct loan.LoanNumber as LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName, loan.loanid, loan.OriginalDueDate, loanpreparation.Quantity, loanpreparation.DescriptionOfMaterial, address.Address, address.City, address.State, address.Country From loan Inner Join loanpreparation ON loan.LoanID =  loanpreparation.LoanID Inner Join loanagent ON loan.LoanID = loanagent.LoanID Inner Join agent ON loanagent.AgentID = agent.AgentID Inner Join address ON agent.AgentID = address.AgentID where loan.loanid in (select loanid from loan where (not  (currentduedate is null)) and (IsClosed = false or IsClosed is null) and datediff(CURDATE(), currentduedate) > 0)  group by LoanNumber]]>
+          <![CDATA[SELECT DISTINCT loan.LoanNumber AS LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName, loan.loanid, loan.OriginalDueDate, lp.Quantity, lp.DescriptionOfMaterial, address.Address, address.City, address.State, address.Country FROM loan INNER JOIN loanpreparation lp ON loan.LoanID =  lp.LoanID INNER JOIN loanagent ON loan.LoanID = loanagent.LoanID INNER JOIN agent ON loanagent.AgentID = agent.AgentID INNER JOIN address ON agent.AgentID = address.AgentID WHERE loan.loanid in (SELECT loanid FROM loan WHERE (NOT  (currentduedate is NULL)) and (IsClosed = false or IsClosed is NULL) and datediff(CURDATE(), currentduedate) > 0)  GROUP BY LoanNumber]]>
       </sql>
     </stat>
 
@@ -228,7 +228,7 @@
 	      <tables>
 	        <id>1</id>
 	      </tables>      
-          <![CDATA[Select collectionobject.CatalogNumber,taxon.Name,collectionobject.TimestampCreated From collectionobject Inner Join determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID Inner Join taxon ON determination.TaxonID = taxon.TaxonID where DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= collectionobject.TimestampCreated]]>
+          <![CDATA[SELECT co.CatalogNumber,taxon.Name,co.TimestampCreated FROM collectionobject co INNER JOIN determination d ON co.CollectionObjectID = d.CollectionObjectID INNER JOIN taxon ON d.TaxonID = taxon.TaxonID WHERE DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= co.TimestampCreated]]>
       </sql>
     </stat>
 
@@ -239,7 +239,7 @@
 	      <tables>
 	        <id>1</id>
 	      </tables>      
-          <![CDATA[SELECT collectionobject.CatalogNumber,taxon.Name,collectionobject.TimestampCreated From collectionobject Inner Join determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID Inner Join taxon ON determination.TaxonID = taxon.TaxonID where DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= collectionobject.TimestampCreated]]>
+          <![CDATA[SELECT co.CatalogNumber,taxon.Name,co.TimestampCreated FROM collectionobject co INNER JOIN determination d ON co.CollectionObjectID = d.CollectionObjectID INNER JOIN taxon ON d.TaxonID = taxon.TaxonID WHERE DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= co.TimestampCreated]]>
       </sql>
     </stat>
 
@@ -250,7 +250,7 @@
 	      <tables>
 	        <id>1</id>
 	      </tables>      
-          <![CDATA[SELECT collectionobject.CatalogNumber,taxon.Name,collectionobject.TimestampCreated From collectionobject Inner Join determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID Inner Join taxon ON determination.TaxonID = taxon.TaxonID where DATE_SUB(CURDATE(), INTERVAL 1 YEAR) <= collectionobject.TimestampCreated]]>
+          <![CDATA[SELECT co.CatalogNumber,taxon.Name,co.TimestampCreated FROM collectionobject co INNER JOIN determination d ON co.CollectionObjectID = d.CollectionObjectID INNER JOIN taxon ON d.TaxonID = taxon.TaxonID WHERE DATE_SUB(CURDATE(), INTERVAL 1 YEAR) <= co.TimestampCreated]]>
       </sql>
     </stat>
 
@@ -264,7 +264,7 @@
 	        <id>52</id>
 	        <id>53</id>
 	      </tables>      
-          <![CDATA[Select distinct loan.LoanNumber as LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName,loan.OriginalDueDate, loanpreparation.Quantity, loanpreparation.DescriptionOfMaterial, address.Address, address.City, address.State, address.Country From loan Inner Join loanpreparation ON loan.LoanID =  loanpreparation.LoanID Inner Join loanagent ON loan.LoanID = loanagent.LoanID Inner Join agent ON loanagent.AgentID = agent.AgentID Inner Join address ON agent.AgentID = address.AgentID where loan.loanid = %s]]>
+          <![CDATA[SELECT DISTINCT loan.LoanNumber AS LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName,loan.OriginalDueDate, lp.Quantity, lp.DescriptionOfMaterial, address.Address, address.City, address.State, address.Country FROM loan INNER JOIN loanpreparation lp ON loan.LoanID =  lp.LoanID INNER JOIN loanagent ON loan.LoanID = loanagent.LoanID INNER JOIN agent ON loanagent.AgentID = agent.AgentID INNER JOIN address ON agent.AgentID = address.AgentID WHERE loan.loanid = %s]]>
       </sql>
     </stat>
 
@@ -280,7 +280,7 @@
 		      <tables>
 		        <id>7</id>
 		      </tables>      
-              <![CDATA[select Text1, count(AccessionId) AS DivCount from accession where Text1 is not null group by Text1 order by DivCount desc]]>
+              <![CDATA[SELECT Text1, count(AccessionId) AS DivCount FROM accession WHERE Text1 is NOT NULL GROUP BY Text1 ORDER BY DivCount desc]]>
           </sql>
           <bar>
               <desc row="1" col="1"/>
@@ -312,7 +312,7 @@
 		      <tables>
 		        <id>7</id>
 		      </tables>
-              <![CDATA[select * From accession where accession.AccessionID = %s]]>
+              <![CDATA[SELECT * FROM accession WHERE accession.AccessionID = %s]]>
           </sql>
       </stat>
 
@@ -323,8 +323,8 @@
 		      <tables>
 		        <id>6</id>
 		      </tables>
-              <![CDATA[select permit.PermitID, permit.PermitNumber,permit.IssuedDate,permit.StartDate,
-permit.EndDate,permit.RenewalDate,permit.Type From permit where permit.PermitID = %s]]>
+              <![CDATA[SELECT permit.PermitID, permit.PermitNumber,permit.IssuedDate,permit.StartDate,
+permit.EndDate,permit.RenewalDate,permit.Type FROM permit WHERE permit.PermitID = %s]]>
           </sql>
       </stat>
 
@@ -336,8 +336,8 @@ permit.EndDate,permit.RenewalDate,permit.Type From permit where permit.PermitID 
 		      <tables>
 		        <id>6</id>
 		      </tables>
-              <![CDATA[select permit.PermitID, permit.PermitNumber,permit.IssuedDate,permit.StartDate,
-permit.EndDate,permit.RenewalDate,permit.Type From permit where permit.PermitID = %s]]>
+              <![CDATA[SELECT permit.PermitID, permit.PermitNumber,permit.IssuedDate,permit.StartDate,
+permit.EndDate,permit.RenewalDate,permit.Type FROM permit WHERE permit.PermitID = %s]]>
           </sql>
       </stat>
 
