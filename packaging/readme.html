@@ -7,43 +7,212 @@
 </head>
 <body>
 <h3>Release Notes<br />
-  Specify 6.1.06<br />
-  18 Fed 2010<br />
+  Specify 6.2<br />
+  20 May 2010<br />
   Specify Software Project</h3>
-  
-<p>Updates</p>
+<p>Bugs fixed:</p>
 <ol>
-<li>Updated Schema to 1.2:
-  <ol>
-    <li>Lengthened PaleoContext fields and added remarks.</li>
-    <li>FieldNotebookPage ScanDate is no longer required.</li>
-    <li>Project's Project Name has been lengthened to 128 chars.</li>
-    <li>UTM Scale is now a float.</li>
-    <li>MGRS (Military Grid Reference System) Zone has been added for Alpha Numeric Zones.</li>
-    </ol>
-</li>
+  <li>Preparation Type on Collection Object  forms can now switch from form to grid view&nbsp;&nbsp;2010-05-11 07:49:34 -0500&nbsp;&nbsp;(Bugzilla 6276).</li>
+<li>Yellow warning shield icon no longer displays next to grid mode in Agent form&nbsp;&nbsp;2010-05-10 15:08:49 -0500&nbsp;&nbsp;(6316).</li>
+<li>Information Request will no longer try to  'send email on save' to an agent without an email address&nbsp;&nbsp;2010-05-10 14:23:10 -0500&nbsp;&nbsp;(6370).</li>
+<li>System pick lists fields were not exported and imported for use in Schema Localizer, now they are&nbsp;&nbsp;2010-05-11 07:51:09 -0500&nbsp;&nbsp;(6410).</li>
+<li>Exception no longer appears when  ColletionObject (CO) RecordSet is dragged to a  Georeference plug-in&nbsp;&nbsp;2010-05-11 07:34:16 -0500&nbsp;&nbsp;(6617).</li>
+<li>Exception no longer occurs when CollectionObject is added or deleted in grid mode under Project subform&nbsp;&nbsp;2010-05-10 13:43:20 -0500&nbsp;&nbsp;(6808).</li>
+<li>Canceling the return of a Preparation now  re-enables the Return Loan button&nbsp;&nbsp;2010-05-11 07:52:29 -0500&nbsp;&nbsp;(7046).</li>
+<li>Can now save or delete a CO when auto number is turned on&nbsp;&nbsp;2010-05-10 10:35:37 -0500&nbsp;&nbsp;(7160).</li>
+<li>Information Request can now be dragged over RecordSet entries and work properly&nbsp;&nbsp;2010-05-10 15:10:49 -0500&nbsp;&nbsp;(7422).</li>
+<li>Naming a new collection the same as an existing collection now creates a new renamed collection&nbsp;&nbsp;2010-05-05 10:19:00 -0500&nbsp;&nbsp;(7466).</li>
+<li>BackupRestore application no longer remembers the wrong username on startup&nbsp;&nbsp;2010-05-10 10:23:40 -0500&nbsp;&nbsp;(7499).</li>
+<li>Canceling the IT credentials dialog for a downloaded database schema (version) update upon login no longer causes Specify to quit&nbsp;&nbsp;2010-05-10 13:29:17 -0500&nbsp;&nbsp;(7644).</li>
+<li> Resource Import/Export, with perms enabled, is inaccessible for some Full Access User&nbsp;&nbsp;2010-05-06 08:53:38 -0500&nbsp;&nbsp;(7679).</li>
+<li>Switching to a user that has performed a WorkBench DataSet upload  no longer causes Specify to freeze&nbsp;&nbsp;2010-04-26 02:44:51 -0500&nbsp;&nbsp;(7784, 7927).</li>
+<li>Can now  change the type of a report after initially saving it as a Report or Label&nbsp;&nbsp;2010-05-13 12:38:10 -0500&nbsp;&nbsp;(7850).</li>
+<li>WorkBench no longer spits an exception on clicking Google Earth button&nbsp;&nbsp;2010-05-13 12:20:30 -0500&nbsp;&nbsp;(7921).</li>
+<li>If the 'last selected node' preference setting points to a deleted node, the tree viewer no longer crashes on startup&nbsp;&nbsp;2010-04-23 00:31:31 -0500&nbsp;&nbsp;(7924).</li>
+<li>The taxon tree editor now checks HostTaxonID relationship to see if taxon nodes are deletable&nbsp;&nbsp;2010-04-25 23:10:45 -0500&nbsp;&nbsp;(7925).</li>
+<li>Can now open DataSet summary for Workbench&nbsp;&nbsp;2010-04-27 06:27:03 -0500&nbsp;&nbsp;(7930).</li>
+<li>If CatalogNumber doesn't have a formatter, an exception no longer occurs when it is selected in a query&nbsp;&nbsp;2010-05-07 12:08:39 -0500&nbsp;&nbsp;(7931).</li>
+<li>FixDBAfterLogin queries to check for duplicate GeoCoordinate and LocalityDetails no longer take a  long time&nbsp;&nbsp;2010-05-07 12:42:23 -0500&nbsp;&nbsp;(7932).</li>
+<li>Tree data display screens are now disabled during tree updates that take place during WorkBench uploads&nbsp;&nbsp;2010-05-12 09:58:21 -0500&nbsp;&nbsp;(7937).</li>
+<li>WorkBench Mapper prevents Agent table data fields from mixing with other tables, Agent Import uploads work now like &quot;Taxon Import Only&quot; uploads&nbsp;&nbsp;2010-05-11 14:40:40 -0500&nbsp;&nbsp;(7938).</li>
+<li>Generating an invoice for Gifts no longer causes an exception&nbsp;&nbsp;2010-05-13 12:14:46 -0500&nbsp;&nbsp;(7941).</li>
+<li>If a report resource is imported as a label, it will stay as a label and not turned into a report type&nbsp;&nbsp;2010-05-13 14:07:07 -0500&nbsp;&nbsp;(7943).</li>
 </ol>
-<p>Bug Fixes</p>
-<ol>
-<li>Delayed Saving in Trees on the Mac&nbsp;&nbsp;2010-01-29 06:44:17 -0600&nbsp;&nbsp;(5766).</li>
-<li>Open loans and overdue loans, but no items on loan.&nbsp;&nbsp;2010-02-01 05:49:34 -0600&nbsp;&nbsp;(7508).</li>
-<li>Uploader may create incorrect LocalityDetail and GeoCoordDetail data&nbsp;&nbsp;2010-02-05 02:50:13 -0600&nbsp;&nbsp;(7831).</li>
-<li>Wizard hangs if XP machine is using Java 18 update&nbsp;&nbsp;2010-02-05 05:05:38 -0600&nbsp;&nbsp;(7829).</li>
-<li>Uploader may match child records incorrectly.&nbsp;&nbsp;2010-02-08 09:20:54 -0600&nbsp;&nbsp;(7834).</li>
-<li>Uploader may create unnecessary and/or duplicate collectingeventattribute records&nbsp;&nbsp;2010-02-08 09:23:05 -0600&nbsp;&nbsp;(7833).</li>
-<li>Uploader sets collectingeventattribute.hosttaxonid incorreclty&nbsp;&nbsp;2010-02-08 09:23:42 -0600&nbsp;&nbsp;(7832).</li>
-<li>Loan return doesn't work.&nbsp;&nbsp;2010-02-10 06:52:38 -0600&nbsp;&nbsp;(7835).</li>
-<li>Reports pulled from datasets and saved cannot be reopened in iReport&nbsp;&nbsp;2010-02-10 06:53:10 -0600&nbsp;&nbsp;(7801).</li>
-<li>AutoNumbering of CatalogNumbers gets slow&nbsp;&nbsp;2010-02-11 04:49:45 -0600&nbsp;&nbsp;(7836).</li>
-<li>Can't login with IT U/P for embedded databases.&nbsp;&nbsp;2010-02-15 13:25:15 -0600&nbsp;&nbsp;(7840).</li>
-<li>Adding New Division creayes an incorrect Agent&nbsp;&nbsp;2010-02-16 12:50:52 -0600&nbsp;&nbsp;(7842).</li>
-<li>On Mac OSX 10.6.1 SpecifyEZDB.app does not make it to the login screen.&nbsp;&nbsp;2010-02-16 15:12:24 -0600&nbsp;&nbsp;(7764).</li>
-<li>Stacktrace when returning loan there is no Taxa&nbsp;&nbsp;2010-02-17 10:51:54 -0600&nbsp;&nbsp;(7843).</li>
-<li>Automapper produces invalid mappings&nbsp;&nbsp;2010-02-17 15:17:57 -0600&nbsp;&nbsp;(7844).</li>
-</ol>
-<BR>
-<BR>
-<BR>
-<BR>
+<p><BR>
+  These tables and fields have been added to the Specify WorkBench database schema, making data in them available for uploading into Specify. As requested by various users.<BR>
+</p>
+<p>New  Table: Agent<br>
+  New  fields:</p>
+<blockquote>
+  <p><br>
+    Agent Type<br>
+    Abbreviation<br>
+    Date of Birth<br>
+    Date of Death<br>
+    Email<br>
+    First Name<br>
+    Initials<br>
+    Interests<br>
+    Job Title<br>
+    Last Name<br>
+    Middle Initials<br>
+    Remarks<br>
+    Title</p>
+</blockquote>
+<p>New  Agent Feature:</p>
+<p>Agents  of any type are now supported in the WorkBench for uploading. The Uploader no  longer assumes agents are persons when checking for duplication against existing  agents in a Specify database.  Last Name  fields labeled  ' xxx Last Name' where  xxx=Collector, Author, Sender, etc. can be used for Group, Organization and  Other names.</p>
+<p>Table:  Accession<br>
+  New  fields: <br>
+</p>
+<blockquote>
+  <p>PermitNumber 2 -  4.</p>
+</blockquote>
+<p>Table:  CollectionObject<br>
+  New  fields:            <br>
+</p>
+<blockquote>
+  <p>ObjectCondition<br>
+    Citation Title 1<br>
+    Citation Remarks  1<br>
+    Citation is  Figured 1<br>
+    Citation Title 2<br>
+    Citation Remarks  2<br>
+    Citation is  Figured 2<br>
+    YesNo3<br>
+    YesNo4<br>
+    YesNo5<br>
+    YesNo6</p>
+</blockquote>
+<p>Table:  Determination<br>
+  New  fields:<br>
+</p>
+<blockquote>
+  <p>SubspQualifier  1,2 and 3<br>
+    VarQualifier 1,2  and 3<br>
+    <br>
+    3  determinations allowed instead of just 2.</p>
+</blockquote>
+<p>New  Table: Field Notebook <br>
+  New  fields:<br>
+</p>
+<blockquote>
+  <p>Description<br>
+    EndDate<br>
+    Storage<br>
+    Name<br>
+    StartDate<br>
+    Owner  First Name<br>
+    Owner  Last Name<br>
+    Owner  Middle Initials<br>
+    Owner  Title</p>
+</blockquote>
+<p>New  Table: FieldNotebookPage <br>
+  New  fields:<br>
+</p>
+<blockquote>
+  <p>Description<br>
+    PageNumber<br>
+    ScanDate</p>
+</blockquote>
+<p><br>
+  New  Table: FieldNotebookPageSet <br>
+  New  Fields:<br>
+  </p>
+<blockquote>
+  <p>Description<br>
+    EndDate<br>
+    Method<br>
+    OrderNumber<br>
+    StartDate</p>
+</blockquote>
+<p>Table:  GeoCoordDetail <br>
+  New  Fields:<br>
+</p>
+<blockquote>
+  <p>GeoRefAccuracyUnits<br>
+    GeoRefDetRef<br>
+    GeoRefVerificationStatus<br>
+    Max  Uncertainty<br>
+    Max  Uncertainty Unit<br>
+    NoGeoRefBecause<br>
+    Original  Coord System<br>
+    Protocol<br>
+    Source</p>
+</blockquote>
+<p>New  Table: GeologicTimePeriod<br>
+  New  Fields:<br>
+</p>
+<blockquote>
+  <p>Era<br>
+    Period<br>
+    Epoch<br>
+    Age</p>
+</blockquote>
+<p>  Note:  when uploading GeologicTimePeriod data with CollectionObject data, at least one  field from PaleoContext must be mapped, even though the PaleoContext columns  don't need to be filled.</p>
+<p>New  Table: Journal   <br>
+  New  Fields:<br>
+</p>
+<blockquote>
+  <p>Journal  Name</p>
+</blockquote>
+<p>New  Table: Lithostrat    <br>
+  New  fields:<br>
+</p>
+<blockquote>
+  <p>Super Group<br>
+    Litho  Group<br>
+    Formation<br>
+    Member<br>
+    Bed</p>
+</blockquote>
+<p>Note:  when uploading Lithostrat data with CollectionObject data, at least one field  from PaleoContext must be mapped, even though the PaleoContext columns don't  need to be filled.</p>
+<p>Table:  Locality<br>
+  New  Fields:<br>
+</p>
+<blockquote>
+  <p>Citation Title 2  - 4<br>
+    Short  Name<br>
+    Original  Elevation Unit<br>
+    UtmDatum<br>
+    UtmEasting<br>
+    UtmNorthing<br>
+    UtmFalseEasting<br>
+    UtmFalseNorthing<br>
+    UtmOrigLatitude<br>
+    UtmOrigLongitude<br>
+    UtmScale<br>
+    UtmZone</p>
+</blockquote>
+<p>New  Table: OtherIdentifier <br>
+  New  Fields:<br>
+</p>
+<blockquote>
+  <p>Other  Identifier 1<br>
+    Other  Identifier Institution 1<br>
+    Other  Identifier 2<br>
+    Other  Identifier Institution 2<br>
+    Other  Identifier 3<br>
+    Other Identifier  Institution 3<br>
+    Other  Identifier 4<br>
+    Other  Identifier Institution 4</p>
+</blockquote>
+<p>New  Table: PaleoContext <br>
+  New  Fields:<br>
+</p>
+<blockquote>
+  <p>BottomDistance<br>
+    Direction<br>
+    DistanceUnits<br>
+    PositionState<br>
+    Remarks<br>
+    Text1<br>
+    Text2<br>
+    TopDistance</p>
+</blockquote>
+<p>&nbsp;</p>
+<p>  </p>
+<p><BR>
+  <BR>
+</p>
 </body>
 </html>
