@@ -53,7 +53,6 @@ import org.apache.log4j.Logger;
 
 import ar.com.fdvs.dj.core.DynamicJasperHelper;
 import ar.com.fdvs.dj.core.layout.ClassicLayoutManager;
-import ar.com.fdvs.dj.domain.AutoText;
 import ar.com.fdvs.dj.domain.DynamicReport;
 import ar.com.fdvs.dj.domain.Style;
 import ar.com.fdvs.dj.domain.builders.ColumnBuilder;
@@ -1092,7 +1091,7 @@ public class ReportsBaseTask extends BaseTask
                 
                 if (excpt != null)
                 {
-                    UIRegistry.getStatusBar().setErrorMessage("REP_ERR_GRDRPT", excpt);
+                    UIRegistry.getStatusBar().setErrorMessage(getResourceString("REP_ERR_GRDRPT"), excpt);
                 }
             }
         };
@@ -1218,7 +1217,10 @@ public class ReportsBaseTask extends BaseTask
         drb.setColumnsPerPage(new Integer(1));
         drb.setUseFullPageWidth(true);
         drb.setColumnSpace(new Integer(5));
-        drb.addAutoText(AutoText.AUTOTEXT_PAGE_X_OF_Y, AutoText.POSITION_FOOTER, AutoText.ALIGMENT_CENTER);
+        
+        // This next line causes an exception
+        // Event with DynamicReport 3.0.12 and JasperReposrts 3.7.3
+        //drb.addAutoText(AutoText.AUTOTEXT_PAGE_X_OF_Y, AutoText.POSITION_FOOTER, AutoText.ALIGMENT_CENTER);
         
         Page[] pageSizes = new Page[] {Page.Page_Letter_Portrait(), Page.Page_Legal_Portrait(), Page.Page_A4_Portrait(),
                                        Page.Page_Letter_Landscape(), Page.Page_Legal_Landscape(), Page.Page_A4_Landscape()};
