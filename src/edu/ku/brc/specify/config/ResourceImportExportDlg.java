@@ -22,7 +22,14 @@ package edu.ku.brc.specify.config;
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.createLabel;
-import static edu.ku.brc.ui.UIRegistry.*;
+import static edu.ku.brc.ui.UIRegistry.displayConfirm;
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+import static edu.ku.brc.ui.UIRegistry.getMostRecentWindow;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getStatusBar;
+import static edu.ku.brc.ui.UIRegistry.getTopWindow;
+import static edu.ku.brc.ui.UIRegistry.getUserHomeDir;
+import static edu.ku.brc.ui.UIRegistry.showLocalizedMsg;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -105,7 +112,6 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.PromptDlg;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -654,9 +660,18 @@ public class ResourceImportExportDlg extends CustomDialog
             
             if (StringUtils.isNotEmpty(data))
             {
+                final String EXP_DIR_PREF = "RES_LAST_EXPORT_DIR";
+                String initalExportDir = AppPreferences.getLocalPrefs().get(EXP_DIR_PREF, getUserHomeDir());
+                
                 FileDialog fileDlg = new FileDialog(this, "RIE_ExportResource", FileDialog.SAVE); 
+                
+                File expDir = new File(initalExportDir);
+                if (StringUtils.isNotEmpty(initalExportDir) && expDir.exists())
+                {
+                    fileDlg.setDirectory(initalExportDir);
+                }
+                
                 fileDlg.setFile(fileName);
-                fileDlg.setDirectory(getUserHomeDir());
                 
                 UIHelper.centerAndShow(fileDlg);
                 
@@ -665,6 +680,8 @@ public class ResourceImportExportDlg extends CustomDialog
                 
                 if (StringUtils.isNotEmpty(dirStr) && StringUtils.isNotEmpty(fileName))
                 {
+                    AppPreferences.getLocalPrefs().put(EXP_DIR_PREF, dirStr);
+                    
                     File expFile  = new File(dirStr + File.separator + fileName);
                     try
                     {
@@ -1165,7 +1182,17 @@ public class ResourceImportExportDlg extends CustomDialog
         {
             String importedName = null;
 
+            final String IMP_DIR_PREF = "RES_LAST_IMPORT_DIR";
+            String initalImportDir = AppPreferences.getLocalPrefs().get(IMP_DIR_PREF, null);
+            
             FileDialog fileDlg = new FileDialog(this, getResourceString("RIE_IMPORT_RES"), FileDialog.LOAD);
+            
+            File impDir = new File(initalImportDir);
+            if (StringUtils.isNotEmpty(initalImportDir) && impDir.exists())
+            {
+                fileDlg.setDirectory(initalImportDir);
+            }
+            
             UIHelper.centerAndShow(fileDlg);
 
             String dirStr   = fileDlg.getDirectory();
@@ -1173,6 +1200,8 @@ public class ResourceImportExportDlg extends CustomDialog
 
             if (StringUtils.isNotEmpty(dirStr) && StringUtils.isNotEmpty(fileName))
             {
+                AppPreferences.getLocalPrefs().put(IMP_DIR_PREF, dirStr);
+                
                 String  data            = null;
                 File    importFile      = new File(dirStr + File.separator + fileName);
                 String  repResourceName = getSpReportResourceName(importFile); 
