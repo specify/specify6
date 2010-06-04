@@ -32,7 +32,6 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.jfree.util.Log;
 
 import edu.ku.brc.af.core.db.AutoNumberIFace;
 import edu.ku.brc.af.prefs.AppPrefsCache;
@@ -914,6 +913,14 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
                                         return false;
                                     }
                                     break;
+                                    
+                                case year:
+                                    if (!StringUtils.isNumeric(val))
+                                    {
+                                        return false;
+                                    }
+                                    int year = Integer.parseInt(val);
+                                    return year > 0 && year < 2100;
                                     
                                 case constant:
                                 case separator:

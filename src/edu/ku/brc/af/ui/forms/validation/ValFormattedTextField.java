@@ -447,6 +447,14 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                             isChanged = true;
                             if (!shouldIgnoreNotifyDoc)
                             {
+                                String fldStr = getText();
+                                int    len    = StringUtils.isNotEmpty(fldStr) ? fldStr.length() : 0;
+                                if (formatter != null && len > 0 && formatter.isLengthOK(len))
+                                {
+                                    setState(formatter.isValid(fldStr) ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error);
+                                    repaint();
+                                }
+                                
                                 //validateState();
                                 if (changeListener != null)
                                 {
