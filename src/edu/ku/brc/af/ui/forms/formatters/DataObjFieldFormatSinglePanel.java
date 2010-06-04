@@ -607,7 +607,7 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
             int cnt = 0;
             if (obj instanceof FieldDefinitionComp)
             {
-                System.out.println(cnt+"  "+obj);
+                //System.out.println(cnt+"  "+obj);
                 // found button at the current position
                 // create corresponding field
                 String sepStr = (lastFieldPos < i - 1) ? text.substring(lastFieldPos, i) : "";

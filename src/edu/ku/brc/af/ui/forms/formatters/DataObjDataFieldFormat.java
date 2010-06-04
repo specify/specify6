@@ -231,7 +231,7 @@ public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace, Clon
         }
         sb.append(space);
         sb.append("</fields>\n");
-        System.out.println(sb.toString());
+        //System.out.println(sb.toString());
 	}
 	
 	/* (non-Javadoc)
