@@ -342,10 +342,11 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     {
         boolean ok = super.beforeDeleteCommit(dataObj, session);
         
-        if (ok)
+        if (ok && dataObj instanceof CollectionObject)
         {
-            CollectionObject colObj = (CollectionObject)dataObj;
-            if (AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
+            CollectionObject colObj     = (CollectionObject)dataObj;
+            Collection       collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+            if (collection != null && collection.getIsEmbeddedCollectingEvent())
             {
                 CollectingEvent ce = colObj.getCollectingEvent();
                 if (ce != null)
