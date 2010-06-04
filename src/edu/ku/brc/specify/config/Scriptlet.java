@@ -50,6 +50,7 @@ import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.LatLonConverter;
 import edu.ku.brc.util.Triple;
 
@@ -228,10 +229,10 @@ public class Scriptlet extends JRDefaultScriptlet
      * @param isLat whether it is a lat or lon
      * @return Formats a String as a float with "N","S","E", "W"
      */
-    public String getDirChar(String floatVal, boolean isLat)
+    public String getDirChar(String strVal, boolean isLat)
     {
-        if (floatVal == null) { return ""; }
-        return getDirChar(new Float(Float.parseFloat(floatVal)), isLat);
+        if (strVal == null) { return ""; }
+        return getDirChar(new Float(Float.parseFloat(strVal)), isLat);
     }
 
     /**
@@ -404,7 +405,8 @@ public class Scriptlet extends JRDefaultScriptlet
      */
     public String dateDifference(java.sql.Date startDate, java.sql.Date endDate)
     {
-        String loanLength = "N/A";
+        String loanLength = UIRegistry.getResourceString("NA");
+        
         if (startDate != null && endDate != null)
         {
             Calendar startCal = Calendar.getInstance();
@@ -420,7 +422,7 @@ public class Scriptlet extends JRDefaultScriptlet
                 monthCount++;
             }
 
-            loanLength = monthCount + " months"; // I18N
+            loanLength = String.format(UIRegistry.getResourceString("SCRPLT_MON_LEN"), monthCount);
         }
         return loanLength;
     }
@@ -453,7 +455,7 @@ public class Scriptlet extends JRDefaultScriptlet
         //System.out.println(colEvId);
 
         //DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().lookupByClassName(CollectingEvent.class.getName());
-        String collectorsStr = "N/A"; // XXX I18N
+        String collectorsStr = UIRegistry.getResourceString("NA");
         List<?> list = session.getDataList(CollectingEvent.class, "collectingEventId", colEvId);
         if (list.size() > 0)
         {
@@ -464,7 +466,7 @@ public class Scriptlet extends JRDefaultScriptlet
                 collectorsStr = DataObjFieldFormatMgr.getInstance().aggregate(collectors, Collector.class);
             } else
             {
-                collectorsStr = "No Collectors"; // XXX I18N
+                collectorsStr = UIRegistry.getResourceString("SCRPLT_NO_COLTRS");
             }
 
         } else
