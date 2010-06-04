@@ -81,25 +81,16 @@ public class SpecifyUserBusRules extends BaseBusRules
         final PasswordStrengthUI pwdStrenthUI = formViewObj.getCompById("6");
         
         // This is in case the BusRules are used without the form.
-        if (pwdTxt == null || keyTxt == null || genBtn == null || showPwdBtn == null || pwdStrenthUI == null)
+        if (pwdTxt == null || showPwdBtn == null || pwdStrenthUI == null)
         {
             return;
         }
         
-        copyBtn.setEnabled(false);
-        
         final char echoChar = pwdTxt.getEchoChar();
         currEcho = echoChar;
         
-        pwdStrenthUI.setPasswordField(pwdTxt, genBtn);
-        
-        genBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                createEncryptKey(keyTxt, pwdTxt);
-            }
-        });
+        // For now
+        //showPwdBtn.setVisible(false);
         
         showPwdBtn.addActionListener(new ActionListener() {
             @Override
@@ -108,6 +99,27 @@ public class SpecifyUserBusRules extends BaseBusRules
                 currEcho = currEcho == echoChar ? 0 : echoChar;
                 pwdTxt.setEchoChar(currEcho);
                 showPwdBtn.setText(UIRegistry.getResourceString(currEcho == echoChar ? "SHOW_PASSWORD" : "HIDE_PASSWORD"));
+            }
+        });
+        
+        pwdStrenthUI.setPasswordField(pwdTxt, genBtn);
+        
+        // This is in case the BusRules are used without the form.
+        if (keyTxt == null || genBtn == null)
+        {
+            pwdStrenthUI.setPasswordField(pwdTxt, null);
+            return;
+        }
+        
+        copyBtn.setEnabled(false);
+        
+        pwdStrenthUI.setPasswordField(pwdTxt, genBtn);
+        
+        genBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                createEncryptKey(keyTxt, pwdTxt);
             }
         });
         
@@ -126,9 +138,7 @@ public class SpecifyUserBusRules extends BaseBusRules
                 copyBtn.setEnabled(!StringUtils.deleteWhitespace(keyTxt.getText()).isEmpty());
             }
         });
-        
-        // For now
-        showPwdBtn.setVisible(false);
+
     }
 
     /**
