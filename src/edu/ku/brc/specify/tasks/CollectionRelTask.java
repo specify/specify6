@@ -96,7 +96,9 @@ public class CollectionRelTask extends BaseTask
      */
     public CollectionRelTask()
     {
-        super(COLRELTSK, "COLRELTSK");
+        super(COLRELTSK, getResourceString(COLRELTSK));
+        
+        iconName = "SystemSetup";
         
         CommandDispatcher.register(COLRELTSK, this);
     }
@@ -133,7 +135,7 @@ public class CollectionRelTask extends BaseTask
     /**
      * @return will return a list or empty list, but not NULL
      */
-    @SuppressWarnings("unchecked")
+    //@SuppressWarnings("unchecked")
     public static List<?> getList(Class<?> clsObj)
     {
         DataProviderSessionIFace session = null;
