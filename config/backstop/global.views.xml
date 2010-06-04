@@ -469,6 +469,31 @@
                 <altview name="ObjectAttachment Form Edit"  viewdef="ObjectAttachment Form"     label="Form" mode="edit"/>
             </altviews>
         </view>
+
+		<view name="CollectionObjectAttachment"
+			class="edu.ku.brc.specify.datamodel.CollectionObjectAttachment"
+			busrules="edu.ku.brc.specify.datamodel.busrules.AttachmentBusRules"
+			resourcelabels="false">
+			<desc><![CDATA[The Collection Object-Attachment View.]]></desc>
+            <altviews>
+                <altview name="CollectionObjectAttachment Icon View"  viewdef="CollectionObjectAttachment IconView" mode="view"/>
+                <altview name="CollectionObjectAttachment Icon Edit"  viewdef="CollectionObjectAttachment IconView" mode="edit"/>
+                <altview name="CollectionObjectAttachment Table View" viewdef="CollectionObjectAttachment Table"    mode="view" />
+                <altview name="CollectionObjectAttachment Table Edit" viewdef="CollectionObjectAttachment Table"    mode="edit"/>
+                <altview name="CollectionObjectAttachment Form View"  viewdef="CollectionObjectAttachment Form"     label="Form" mode="view" default="true"/>
+                <altview name="CollectionObjectAttachment Form Edit"  viewdef="CollectionObjectAttachment Form" 	label="Form" mode="edit"/>
+            </altviews>
+        </view>
+
+		<view name="AttachmentImageAttribute"
+			class="edu.ku.brc.specify.datamodel.AttachmentImageAttribute"
+			resourcelabels="false">
+			<desc><![CDATA[The Attachment Image Attribute View.]]></desc>
+            <altviews>
+                <altview name="AttachmentImageAttribute Form View"  viewdef="AttachmentImageAttribute Form"     label="Form" mode="view" default="true"/>
+                <altview name="AttachmentImageAttribute Form Edit"  viewdef="AttachmentImageAttribute Form" 	label="Form" mode="edit"/>
+            </altviews>
+        </view>
 			
         <view name="AttachmentMetadata"
             class="edu.ku.brc.specify.datamodel.AttachmentMetadata"
@@ -488,6 +513,30 @@
             <altviews>
                 <altview name="SubPaleoContext View" viewdef="SubPaleoContext" mode="view"/>
                 <altview name="SubPaleoContext Edit" viewdef="SubPaleoContext" mode="edit" default="true"/>
+            </altviews>
+        </view>
+
+        <view name="MorphBankStatus"
+            class="edu.ku.brc.specify.datamodel.MorphBankStatus"
+            busrules="edu.ku.brc.specify.datamodel.busrules.MorphBankStatusBusRules"
+            isinternal="false"
+            resourcelabels="false">
+            <desc><![CDATA[MorphBankStatus form.]]></desc>
+            <altviews>
+                <altview name="MorphBankStatus View" viewdef="MorphBankStatus" mode="view"/>
+                <altview name="MorphBankStatus Edit" viewdef="MorphBankStatus" mode="edit" default="true"/>
+            </altviews>
+        </view>
+
+        <view name="MorphBankView"
+            class="edu.ku.brc.specify.datamodel.MorphBankView"
+            busrules="edu.ku.brc.specify.datamodel.busrules.MorphBankViewBusRules"
+            isinternal="false"
+            resourcelabels="false">
+            <desc><![CDATA[MorphBankView form.]]></desc>
+            <altviews>
+                <altview name="MorphBankView View" viewdef="MorphBankView" mode="view"/>
+                <altview name="MorphBankView Edit" viewdef="MorphBankView" mode="edit" default="true"/>
             </altviews>
         </view>
         
@@ -2057,6 +2106,17 @@
             <desc><![CDATA[ObjectAttachment grid view.]]></desc>
             <definition>ObjectAttachment Form</definition>
         </viewdef>
+
+        <viewdef
+            type="formtable"
+            name="CollectionObjectAttachment Table"
+            class="edu.ku.brc.specify.datamodel.CollectionObjectAttachment"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[ObjectAttachment grid view.]]></desc>
+            <definition>ObjectAttachment Form</definition>
+        </viewdef>
         
         <viewdef
             type="iconview"
@@ -2066,6 +2126,141 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The ObjectAttachment Icon Viewer]]></desc>
         </viewdef>
+
+        <viewdef
+            type="iconview"
+            name="CollectionObjectAttachment IconView"
+            class="edu.ku.brc.specify.datamodel.CollectionObjectAttachment"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The ObjectAttachment Icon Viewer]]></desc>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="CollectionObjectAttachment Form"
+            class="edu.ku.brc.specify.datamodel.CollectionObjectAttachment"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj"
+            useresourcelabels="true">
+            
+            <desc><![CDATA[The CollectionObjectAttachment form.]]></desc>
+            
+   <!--         <columnDef>110px,2dlu,p:g,5dlu,100px,2dlu,85px</columnDef> -->
+            <columnDef>p,5dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+    		<rows>
+                <row>
+                    <cell type="label" labelfor="origFilename" label="FILENAME"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse" isrequired="true"/>
+                </row>
+                <row>
+                	<cell type="label" labelfor="title"  label="TITLE"/>
+                	<cell type="field" id="title" name="attachment.title" cols="30" isrequired="true"/>
+                </row>
+    		 	<!--<row>
+    		        <cell type="subview" id="metadata" name="attachment.metadata" viewname="AttachmentMetadata" colspan="3"/>
+    		    </row> -->
+    		    <row>
+    		        <cell type="label" labelfor="dateImaged" label="Date Imaged"/>
+    		        <cell type="field" id="dateImaged" name="attachment.dateImaged" uitype="formattedtext" uifieldformatter="Date" default="today" />
+    		    </row>
+    		    <row>
+    		        <cell type="label" labelfor="fileCreatedDate" label="File Created Date"/>
+    		        <cell type="field" id="fileCreatedDate" name="attachment.fileCreatedDate" uitype= "formattedtext" uifieldformatter="Date" default="today"/>
+    		    </row>
+    		    <row>
+    		        <cell type="label" labelfor="copyrightHolder" label="Copyright Holder"/>
+    		        <cell type="field" id="copyrightHolder" name="attachment.copyrightHolder" uitype="text"/>
+    		    </row>
+    		    <row>
+    		        <cell type="label" labelfor="copyrightDate" label="Copyright Date"/>
+    		        <cell type="field" id="copyrightDate" name="attachment.copyrightDate" uitype="formattedtext" uifieldformatter="Date"/>
+    		    </row>
+    		    <row>
+    		        <cell type="label" labelfor="attachmentLocation" label="Attachment Location"/>
+    		        <cell type="field" id="attachmentLocation" name="attachment.attachmentLocation" uitype="text"/>
+    		    </row>
+    		    <row>
+    		        <cell type="label" labelfor="license" label="License"/>
+    		        <cell type="field" id="license" name="attachment.license" uitype="text"/>
+    		    </row>
+    		    <row>
+    		        <cell type="label" labelfor="credit" label="Credit"/>
+    		        <cell type="field" id="credit" name="attachment.credit" uitype="text"/>
+    		    </row>
+    		    <row>
+    		        <cell type="label" labelfor="mimeType" label="Mime Type"/>
+    		        <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
+    		    </row>
+    		    <row>
+    		       	<cell type="label" labelfor="remarks" label="Remarks"/>
+    		       	<cell type="field" id="remarks" name="attachment.remarks" uitype="textareabrief" rows="2"/>
+    		    </row>
+                <row>
+                   	<cell type="subview" id="imageatt" viewname="AttachmentImageAttribute" name="attachment.attachmentImageAttribute" colspan="3" />
+               	</row>
+    		</rows>
+		</viewdef>
+
+
+        <viewdef
+            type="form"
+            name="AttachmentImageAttribute Form"
+            class="edu.ku.brc.specify.datamodel.AttachmentImageAttribute"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj"
+            useresourcelabels="true">
+            
+            <desc><![CDATA[The Attachment Image Attribute form.]]></desc>
+            
+            <columnDef>p,5dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+    		<rows>
+    		    <row>
+    		        <cell type="label" labelfor="height" label="Height"/>
+    		        <cell type="field" id="height" name="height" uitype="text"/>
+    		    </row>
+    		    <row>
+    		        <cell type="label" labelfor="width" label="Width"/>
+    		        <cell type="field" id="width" name="width" uitype="text"/>
+    		    </row>
+    		    <row>
+    		        <cell type="label" labelfor="resolution" label="Resolution"/>
+    		        <cell type="field" id="resolution" name="resolution" uitype="text"/>
+    		    </row>
+    		    <row>
+    		        <cell type="label" labelfor="magnification" label="Magnification"/>
+    		        <cell type="field" id="magnification" name="magnification" uitype="text"/>
+    		    </row>
+    		    <row>
+    		      	<cell type="label" labelfor="creativeCommons" label="Creative Commons"/>
+    		       	<cell type="field" id="creativeCommons" name="creativeCommons" uitype="text"/>
+    		    </row>
+                <row>
+                    <cell type="label" labelfor="mbImageId"/>
+                    <cell type="field" id="mbImageId" name="mbImageId" uitype="text" />
+                </row>
+                <row>
+                    <cell type="label" labelfor="timeStampLastSend"/>
+                    <cell type="field" id="timeStampLastSend" name="timestampLastSend" uitype="text" readonly="true" uifieldformatter="Date"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="timeStampLastUpdateCheck"/>
+                    <cell type="field" id="timeStampLastUpdateCheck" name="timestampLastUpdateCheck" uitype="text" readonly="true" uifieldformatter="Date"/>
+                </row>
+    		    <!-- not ready for release
+    		    <row>
+    		       	<cell type="label" labelfor="morphBankView" label="MorphBank View"/>
+    		       	<cell type="field" id="morphBankView" name="morphBankView" uitype="querycbx" initialize="name=MorphBankView"/>
+    		    </row>
+                <row>
+                   	<cell type="field" id="morphbankpanel" name="this" uitype="plugin" initialize="name=MorphBankPanel" colspan="3" />
+               	</row>
+               	-->
+    		</rows>
+		</viewdef>
+
 
         <viewdef
             type="form"
@@ -2092,43 +2287,7 @@
     		 <!--   <row>
     		        <cell type="subview" id="metadata" name="attachment.metadata" viewname="AttachmentMetadata" colspan="3"/>
     		    </row> -->
-    		    <!--    <row>
-    		        <cell type="label" labelfor="dateImaged" label="Date Imaged"/>
-    		        <cell type="field" id="dateImaged" name="attachment.dateImaged" uitype="formattedtext" uifieldformatter="Date" default="today" />
-    		        </row>
-    		        <row>
-    		        <cell type="label" labelfor="fileCreatedDate" label="File Created Date"/>
-    		        <cell type="field" id="fileCreatedDate" name="attachment.fileCreatedDate" uitype= "formattedtext" uifieldformatter="Date" default="today"/>
-    		        </row>
-    		        <row>
-    		        <cell type="label" labelfor="copyrightHolder" label="Copyright Holder"/>
-    		        <cell type="field" id="copyrightHolder" name="attachment.copyrightHolder" uitype="text" cols="20"/>
-    		        </row>
-    		        <row>
-    		        <cell type="label" labelfor="copyrightDate" label="Copyright Date"/>
-    		        <cell type="field" id="copyrightDate" name="attachment.copyrightDate" uitype="formattedtext" uifieldformatter="Date"/>
-    		        </row>
-    		        <row>
-    		        <cell type="label" labelfor="attachmentLocation" label="Attachment Location"/>
-    		        <cell type="field" id="attachmentLocation" name="attachment.attachmentLocation" uitype="text" cols="30"/>
-    		        </row>
-    		        <row>
-    		        <cell type="label" labelfor="license" label="License"/>
-    		        <cell type="field" id="license" name="attachment.license" uitype="text" cols="30"/>
-    		        </row>
-    		        <row>
-    		        <cell type="label" labelfor="credit" label="Credit"/>
-    		        <cell type="field" id="credit" name="attachment.credit" uitype="text" cols="20"/>
-    		        </row>
-    		        <row>
-    		        <cell type="label" labelfor="mimeType" label="Mime Type"/>
-    		        <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text" cols="20"/>
-    		        </row>
-    		        <row>
-    		        <cell type="label" labelfor="remarks" label="Remarks"/>
-    		        <cell type="field" id="remarks" name="attachment.remarks" uitype="textareabrief" rows="2"/>
-    		        </row>
-    		    --> 
+   		   
     		</rows>
 		</viewdef>
 
@@ -2194,6 +2353,97 @@
             </rows>
         </viewdef>
         
+         <viewdef
+            type="form"
+            name="MorphBankStatus"
+            class="edu.ku.brc.specify.datamodel.MorphBankStatus"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[MorphBankStatus]]></desc>
+            
+            <columnDef>p,5dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <!--<enableRules>
+                <rule id="georef"><![CDATA[localityName.isNotEmpty() && geography.isNotEmpty()]]></rule>
+            </enableRules>-->
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="mbImageId"/>
+                    <cell type="field" id="mbImageId" name="mbImageId" uitype="text" />
+                </row>
+                <row>
+                    <cell type="label" labelfor="timeStampLastSend"/>
+                    <cell type="field" id="timeStampLastSend" name="timeStampLastSend" uitype="text" readonly="true" uifieldformatter="Date"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="timeStampLastUpdateCheck"/>
+                    <cell type="field" id="timeStampLastUpdateCheck" name="timeStampLastUpdateCheck" uitype="text" readonly="true" uifieldformatter="Date"/>
+                </row>
+                <!--<row>
+                    <cell type="label" labelfor="attachment"/>
+                    <cell type="field" id="attachment" name="attachment" uitype="querycbx" initialize="name=Attachment" readonly="true" colspan="14"/>
+                </row>-->
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="MorphBankView"
+            class="edu.ku.brc.specify.datamodel.MorphBankView"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[Locality]]></desc>
+            
+            <columnDef>p,5dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <!--<enableRules>
+                <rule id="georef"><![CDATA[localityName.isNotEmpty() && geography.isNotEmpty()]]></rule>
+            </enableRules>-->
+            
+            <rows>                
+		<row>
+                    <cell type="label" labelfor="viewName"/>
+                    <cell type="field" id="viewName" name="viewName" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="developmentState"/>
+                    <cell type="field" id="developmentState" name="developmentState" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="form"/>
+                    <cell type="field" id="form" name="form" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="imagingPreparationTechnique"/>
+                    <cell type="field" id="imagingPreparationTechnique" name="imagingPreparationTechnique" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="imagingTechnique"/>
+                    <cell type="field" id="imagingTechnique" name="imagingTechnique" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="imagingPreparationTechnique"/>
+                    <cell type="field" id="imagingPreparationTechnique" name="imagingPreparationTechnique" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="sex"/>
+                    <cell type="field" id="sex" name="sex" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="specimenPart"/>
+                    <cell type="field" id="specimenPart" name="specimenPart" uitype="text" />
+                </row>
+                <row>
+                    <cell type="label" labelfor="viewAngle"/>
+                    <cell type="field" id="viewAngle" name="viewAngle" uitype="text" />
+                </row>
+                <row>
+                    <cell type="label" labelfor="morphBankExternalViewID"/>
+                    <cell type="field" id="morphBankExternalViewID" name="morphBankExternalViewID" uitype="text" readonly="true" />
+                </row>
+            </rows>
+        </viewdef>
         
 
     </viewdefs>

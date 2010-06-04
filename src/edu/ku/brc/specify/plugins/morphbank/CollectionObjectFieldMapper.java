@@ -14,17 +14,19 @@ import java.util.Vector;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.apache.commons.lang.NotImplementedException;
-
 import net.morphbank.mbsvc3.fsuherb.MapFsuHerbSpreadsheetToXml;
 import net.morphbank.mbsvc3.xml.ObjectFactory;
 import net.morphbank.mbsvc3.xml.XmlBaseObject;
 import net.morphbank.mbsvc3.xml.XmlId;
-import net.morphbank.mbsvc3.xml.XmlTaxonNameUtilities;
 import net.morphbank.mbsvc3.xml.XmlUtils;
+
+import org.apache.commons.lang.NotImplementedException;
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.datamodel.Attachment;
+import edu.ku.brc.specify.datamodel.AttachmentImageAttribute;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Institution;
@@ -39,6 +41,8 @@ import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
  */
 public class CollectionObjectFieldMapper
 {
+	private static final Logger  log = Logger.getLogger(CollectionObjectFieldMapper.class);	
+	
 	//TO DO This class should work with hibernate objects as well as record ids (as for DarwinCoreSpecimen)
 	protected CollectionObject collectionObject;
 	protected Integer collectionObjectId;
@@ -61,11 +65,11 @@ public class CollectionObjectFieldMapper
 	 * @param collectionObjectId
 	 * @throws Exception
 	 */
-	public CollectionObjectFieldMapper(Integer collectionObjectId) throws Exception
+	public CollectionObjectFieldMapper(Integer collectionObjectId, final Integer dwcMappingId) throws Exception
 	{
 		this.collectionObjectId = collectionObjectId;
 		buildQNames();
-		dwcMapper = getDwcMapper();
+		dwcMapper = getDwcMapper(dwcMappingId);
 		spec = new DarwinCoreSpecimen(dwcMapper);
 		spec.setCollectionObjectId(collectionObjectId);	
 	}
@@ -74,14 +78,14 @@ public class CollectionObjectFieldMapper
 	 * @param obj
 	 * @throws Exception
 	 */
-	public CollectionObjectFieldMapper(final CollectionObject obj) throws Exception
+	public CollectionObjectFieldMapper(final CollectionObject obj, final Integer dwcMappingId) throws Exception
 	{
 		this.collectionObject = obj;
-		dwcMapper = getDwcMapper();
+		dwcMapper = getDwcMapper(dwcMappingId);
 		spec = new DarwinCoreSpecimen(dwcMapper);
 		spec.setCollectionObject(obj);
 	}
-	
+
 	/**
 	 * @param collectionObjectId
 	 * @throws Exception
@@ -107,9 +111,13 @@ public class CollectionObjectFieldMapper
 	 * 
 	 * Possibly lots and lots of work to do here.
 	 */
-	protected DwcMapper getDwcMapper()
+	protected DwcMapper getDwcMapper(final Integer mappingId)
 	{
-		return new DwcMapper(1);
+		if (mappingId != null)
+		{
+			return new DwcMapper(mappingId);
+		}
+		return new DwcMapper();
 	}
 	
 	
@@ -208,13 +216,13 @@ public class CollectionObjectFieldMapper
 			Class<?> dataType = mi.getDataType();
 			if (dataType == null)
 			{
-				System.out.println("CollectionObjectMapper:setDwcSpecimenFields: skipping " + mi.getName() + ": unrecognized data type.");
+				log.warn("CollectionObjectMapper:setDwcSpecimenFields: skipping " + mi.getName() + ": unrecognized data type.");
 				continue;
 			}
 			try
 			{
 				Object val = spec.get(mi.getName());
-				System.out.println("setting " + mi.getName() + ": " + val + " (" + dataType.getSimpleName() + ")");
+				//System.out.println("setting " + mi.getName() + ": " + val + " (" + dataType.getSimpleName() + ")");
 				String miName = getMiName(mi);
 				if (miName.equals("CatalogNumberNumeric") || miName.equals("DecimalLatitude") || miName.equals("DecimalLongitude"))
 				{
@@ -229,11 +237,11 @@ public class CollectionObjectFieldMapper
 //					val = ((Number )val).doubleValue();
 //				}
 				Method m = factory.getMethod("create" + miName, dataType);
-				System.out.println("invoking " + m.getName() + "(" + val + ")");
+				//System.out.println("invoking " + m.getName() + "(" + val + ")");
 				xmlSpec.addDarwinTag((JAXBElement<?> )m.invoke(objFac, dataType.cast(val)));
 			} catch(NoSuchMethodException ex)
 			{
-				System.out.println("CollectionObjectMapper:setDwcSpecimenFields: skipping " + mi.getName() + ": no create method in Object Factory");
+				log.warn("CollectionObjectMapper:setDwcSpecimenFields: skipping " + mi.getName() + ": no create method in Object Factory");
 				continue;
 			}
 		}
@@ -251,10 +259,12 @@ public class CollectionObjectFieldMapper
 		{
 			if (spec.isMapped("ScientificNameAuthor"))
 			{
+				//xmlSpec.setDetermination(
+				//		MapFsuHerbSpreadsheetToXml.getXmlExternalId(
+				//				XmlTaxonNameUtilities.getTaxonSciNameAuthorExtId((String )spec.get("ScientificName"), 
+				//						(String )spec.get("ScientificNameAuthor"))));				
 				xmlSpec.setDetermination(
-						MapFsuHerbSpreadsheetToXml.getXmlExternalId(
-								XmlTaxonNameUtilities.getTaxonSciNameAuthorExtId((String )spec.get("ScientificName"), 
-										(String )spec.get("ScientificNameAuthor"))));				
+						MapFsuHerbSpreadsheetToXml.getXmlExternalId(XmlUtils.SCI_NAME_PREFIX + spec.get("ScientificNameAuthor")));				
 			}
 			else
 			{
@@ -315,21 +325,22 @@ public class CollectionObjectFieldMapper
 	protected AttachmentRecord getImage(ObjectAttachmentIFace<?> imageObj)
 	{
 		Attachment at = imageObj.getAttachment();
-		return null;
-//		return new AttachmentRecord(at.getAttachmentLocation(),
-//				at.getCopyrightHolder(),
-//				at.getCopyrightDate(),
-//				at.getMimeType(),
-//				at.getCredit(),
-//				at.getOrigFilename(),
-//				at.getTitle(),
-//				at.getHeight(),
-//				at.getWidth(),
-//				at.getResolution(),
-//				at.getMagnification(),
-//				at.getCreativeCommons(),
-//				imageObj.getRemarks(),
-//				imageObj.getOrdinal());
+//		return null;
+		AttachmentImageAttribute atia = at.getAttachmentImageAttribute();
+		return new AttachmentRecord(at.getAttachmentLocation(),
+				at.getCopyrightHolder(),
+				at.getCopyrightDate(),
+				at.getMimeType(),
+				at.getCredit(),
+				at.getOrigFilename(),
+				at.getTitle(),
+				atia != null ? atia.getHeight() : null,
+				atia != null ? atia.getWidth() : null,
+				atia != null ? atia.getResolution() : null,
+				atia != null ? atia.getMagnification() : null,
+				atia != null ? atia.getCreativeCommons() : null,
+				imageObj.getRemarks(),
+				imageObj.getOrdinal());
 	}
 	
 	/**

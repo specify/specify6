@@ -2,7 +2,7 @@
 <!-- 
 
   Last Id for ExpressSearch 54
-  Last Id for Other Search  125
+  Last Id for Other Search  127
 
  -->
 <searches>
@@ -2003,6 +2003,23 @@ repositoryagreement.RepositoryAgreementNumber,
                     <caption tableid="84" col="fnps.EndDate"/>
                     <caption tableid="83" col="fn.Name"/>
                     <caption tableid="83" col="fn.StartDate"/>
+                </captions>
+            </detailView>
+        </table>
+
+        <table id="127" tableid="138" indexed="false" name="MorphBankViewSearch" priority="1" color="30, 144, 144">
+            <detailView icon="MorphBankView">
+                <sql>
+                    <![CDATA[SELECT MorphBankViewID, ViewName, SpecimenPart, ViewAngle, MorphBankExternalViewID FROM morphbankview 
+ WHERE fnbp.DisciplineID = DSPLNID AND (%s)]]>
+                </sql>
+                <captions>
+                    <caption tableid="138" col="MorphBankViewID" visible="false"/>
+                    <caption tableid="138" col="ViewName"/>
+                    <caption tableid="138" col="SpecimenPart"/>
+                    <caption tableid="138" col="ViewAngle"/>
+                    <caption tableid="138" col="fnps.EndDate"/>
+                    <caption tableid="138" col="MorphBankExternalViewID"/>
                 </captions>
             </detailView>
         </table>

@@ -3,6 +3,7 @@
  */
 package edu.ku.brc.specify.plugins.morphbank;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.sql.DriverManager;
@@ -15,6 +16,12 @@ import net.morphbank.mbsvc3.xml.XmlBaseObject;
 import net.morphbank.mbsvc3.xml.XmlId;
 import net.morphbank.mbsvc3.xml.XmlUtils;
 
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.RequestEntity;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.lang.NotImplementedException;
 
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -29,6 +36,13 @@ import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
  */
 public class MorphBankTest 
 {
+	//public static String MORPHBANK_URL = "http://test.morphbank.net";
+	
+	//The followint two fields are modified if preference settings for the urls are set in specify
+	public static String MORPHBANK_URL = "http://www.morphbank.net";
+	public static String MORPHBANK_IM_POST_URL = "http://itest.morphbank.net/Image/imageFileUpload.php";
+	
+	public static String MORPHBANK_IMAGE_Q = "?id=";
 	
 	protected static XmlBaseObject createXmlSpecimen(CollectionObjectFieldMapper mapper) throws Exception
 	{
@@ -42,7 +56,7 @@ public class MorphBankTest
 	public static Request createRequestFromCollectionObjectId(Integer Id,
 			Credentials submitter, Credentials owner) throws Exception
 	{
-		CollectionObjectFieldMapper fieldMapper = new CollectionObjectFieldMapper(Id);
+		CollectionObjectFieldMapper fieldMapper = new CollectionObjectFieldMapper(Id, null);
 		Request request = new Request();
 		request.setSubmitter(submitter);
 		Insert insert = new Insert();
@@ -60,9 +74,10 @@ public class MorphBankTest
 	}
 	
 	public static Request createRequestFromCollectionObject(final CollectionObject obj, 
-			Credentials submitter, Credentials owner) throws Exception
+			final Credentials submitter, final Credentials owner, 
+			final Integer mappingId) throws Exception
 	{
-		CollectionObjectFieldMapper fieldMapper = new CollectionObjectFieldMapper(obj);
+		CollectionObjectFieldMapper fieldMapper = new CollectionObjectFieldMapper(obj, mappingId);
 		Request request = new Request();
 		request.setSubmitter(submitter);
 		Insert insert = new Insert();
@@ -87,13 +102,13 @@ public class MorphBankTest
 	 * @throws Exception
 	 */
 	public static Request createRequestFromImage(final ObjectAttachmentIFace<?> image, 
-			Credentials submitter, Credentials owner) throws Exception
+			final Integer conceptMappingId, final Credentials submitter, final Credentials owner) throws Exception
 	{
 		if (!(image.getObject() instanceof CollectionObject))
 		{
 			throw new NotImplementedException("MorphBankTest attachment type not supported: " + image.getClass().getName());
 		}
-		CollectionObjectFieldMapper fieldMapper = new CollectionObjectFieldMapper((CollectionObject )image.getObject());
+		CollectionObjectFieldMapper fieldMapper = new CollectionObjectFieldMapper((CollectionObject )image.getObject(), conceptMappingId);
 		Request request = new Request();
 		request.setSubmitter(submitter);
 		Insert insert = new Insert();
@@ -102,11 +117,45 @@ public class MorphBankTest
 		XmlBaseObject xmlSpecimen = createXmlSpecimen(fieldMapper);
 		insert.getXmlObjectList().add(xmlSpecimen);
 		XmlBaseObject xmlImage = fieldMapper.getXmlImage(image);
-		xmlImage.getView().add(new XmlId(77407));			
+		xmlImage.getView().add(new XmlId(1000349));			
 		insert.getXmlObjectList().add(xmlImage);
 		return request;
 	}
 
+	/**
+	 * @param id
+	 * @param originalFileName
+	 * @param imageFileName
+	 * @return
+	 * @throws Exception
+	 */
+	public static PostMethod getImagePostRequest(String id, String imageFileName) throws Exception 
+	{
+		return getImagePostRequest(MORPHBANK_IM_POST_URL, id, "dummy", imageFileName);
+	}
+	
+	/**
+	 * @param strURL
+	 * @param id
+	 * @param originalFileName
+	 * @param imageFileName
+	 * @return
+	 * @throws Exception
+	 */
+	public static PostMethod getImagePostRequest(String strURL, String id, String originalFileName, String imageFileName) throws Exception 
+	{
+		File input = new File(imageFileName);
+		// Prepare HTTP post
+		PostMethod post = new PostMethod(strURL);
+
+		Part[] parts = {new StringPart("id",id), new StringPart("fileName",originalFileName),
+				new FilePart("image", originalFileName, input)
+		};
+		RequestEntity entity = new MultipartRequestEntity(parts, post.getParams());
+		post.setRequestEntity(entity);
+		return post;
+	}
+	
 	/**
 	 * @param args
 	 */

@@ -547,7 +547,6 @@
     <field column="Datum" name="datum" type="java.lang.String" length="50"/>
 
     <field column="Remarks (Locality)" name="localityRemarks" type="text" length="4096"/>
-    <field column="Additional Remarks" name="gml" type="text"  length="4096"/>
 
     <field column="Base Meridian" name="baseMeridian" type="java.lang.String" length="50"/>
    	<field column="Drainage" name="drainage" type="java.lang.String" length="64"/>

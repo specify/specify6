@@ -35,6 +35,7 @@ import org.apache.commons.io.FilenameUtils;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.EditViewCompSwitcherPanel;
 import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.af.ui.forms.persist.AltViewIFace.CreationMode;
 import edu.ku.brc.af.ui.forms.validation.ValBrowseBtnPanel;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -58,6 +59,7 @@ public class AttachmentBusRules extends BaseBusRules
                           "taxonattachment"};
     
     private ValBrowseBtnPanel browser = null;
+    private Component morphbankPanel = null;
     
     /**
      * 
@@ -77,7 +79,8 @@ public class AttachmentBusRules extends BaseBusRules
         
         if (formViewObj != null)
         {
-            
+            morphbankPanel = formViewObj.getCompById("morphbankpanel");
+        	
             final Component origComp  = formViewObj.getCompById("origFilename");
             final Component titleComp = formViewObj.getCompById("title");
             
@@ -243,4 +246,19 @@ public class AttachmentBusRules extends BaseBusRules
         
         // TODO: delete the attachment from the storage system
     }
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
+	 */
+	@Override
+	public void afterFillForm(Object dataObj)
+	{
+		super.afterFillForm(dataObj);
+        if (morphbankPanel != null)
+        {
+        	morphbankPanel.setEnabled(formViewObj.getAltView().getMode() != CreationMode.EDIT);
+        }
+	}
+    
+    
 }

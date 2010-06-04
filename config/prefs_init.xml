@@ -48,7 +48,18 @@
             <defperm name="Guest"         perm="false,false,false,false"/>
         </pref>
     </section>
-   
+
+    <!-- not ready for release
+    <section title="MORPHBANK">
+        <pref name="MORPHBANK" title="MORPHBANK" icon="Morphbank" panelClass="edu.ku.brc.specify.prefs.MorphbankPrefsPanel" viewsetname="Preferences" viewname="Morphbank" help="PrefsMorphbank">
+            <defperm name="Manager"       perm="true,true,true,true"/>
+            <defperm name="FullAccess"    perm="true,true,true,true"/>
+            <defperm name="LimitedAccess" perm="false,false,false,false"/>
+            <defperm name="Guest"         perm="false,false,false,false"/>
+        </pref>
+    </section>
+    -->
+    
     <section title="MySQL">
         <pref name="MYSQL" title="MYSQL" icon="MySQL" panelClass="edu.ku.brc.specify.prefs.MySQLPrefs" viewsetname="Preferences" viewname="MySQLBckRstrOptions" help="PrefsMySQLBkRs">
             <defperm name="Manager"       perm="true,true,true,true"/>

@@ -39,6 +39,15 @@
         </view>
 
         <view
+            name="Morphbank"
+            class="java.util.prefs.Preferences">
+            <desc><![CDATA[Morphbank Preference Form.]]></desc>
+            <altviews>
+                <altview name="Morphbank" viewdef="Morphbank" label="V_Morphbank" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+        <view
             name="GoogleEarth"
             class="java.util.prefs.Preferences">
             <desc><![CDATA[GoogleEarth Preference Form.]]></desc>
@@ -342,6 +351,7 @@
             
         </viewdef>
 
+
         <viewdef
             type="form"
             name="System"
@@ -471,6 +481,53 @@
                     </cell>
                 </row>
                 
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="Morphbank"
+            class="java.util.prefs.Preferences"
+            gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+            useresourcelabels="true">
+            
+            <desc><![CDATA[Morphbank Preference Form.]]></desc>
+            
+            <columnDef>p,4px,p,f:p:g</columnDef>
+            <rowDef>p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px</rowDef>
+               
+            <rows>
+                <row>
+                    <cell type="separator" label="MORPHBANK_BASE_URL" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="10" name="morphbank.baseurl" cols="100" uitype="text" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="separator" label="MORPHBANK_IMAGEPOST_URL" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="11" name="morphbank.imageposturl" cols="100" uitype="text" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="separator" label="MORPHBANK_DWC_MAPPING" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="7" name="morphbank.dwcmapping" cols="30" uitype="combobox" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="separator" label="MORPHBANK_USERID" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="8" name="morphbank.userid" cols="30" uitype="text" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="separator" label="MORPHBANK_GROUPID" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="9" name="morphbank.groupid" cols="30" uitype="text" colspan="4"/>
+                </row>
             </rows>
         </viewdef>
 

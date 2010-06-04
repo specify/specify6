@@ -5,9 +5,15 @@ package edu.ku.brc.specify.plugins.morphbank;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tools.export.MappedFieldInfo;
 
@@ -17,11 +23,12 @@ import edu.ku.brc.specify.tools.export.MappedFieldInfo;
  */
 public class MappingInfo implements Comparable<MappingInfo>
 {
-	final String name;
-	final Class<?> dataType;
-	final String mapping; //provides a path from the root context to the Specify field associated with the concept
-	final int contextTableId; // the root specify table
-	final boolean isFormatted;
+	protected final String name;
+	protected final Class<?> dataType;
+	protected final String mapping; //provides a path from the root context to the Specify field associated with the concept
+	protected final int contextTableId; // the root specify table
+	protected final boolean isFormatted;
+	protected static Map<Class<?>,Set<String>> treeRankNames = new HashMap<Class<?>, Set<String>>();
 
 	
 	/**
@@ -163,12 +170,54 @@ public class MappingInfo implements Comparable<MappingInfo>
 		DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoById(getMyContextTblId());
 		if (Treeable.class.isAssignableFrom(tbl.getClassObj()))
 		{
-			if (tbl.getFieldByName(name) == null)
-			{
-				return true;
-			}
+			return getTreeRanks(tbl.getClassObj()).contains(getMappedFieldName());
 		}
 		return false;				
+	}
+	
+	protected Set<String> getTreeRanks(Class<?> cls)
+	{
+		Set<String> ranks = treeRankNames.get(cls);
+		if (ranks == null)
+		{
+			ranks = buildTreeRankNames(cls);
+			treeRankNames.put(cls, ranks);
+		}
+		return ranks;
+	}
+	
+	/**
+	 * build list of ranks for all trees associated with the type
+	 * Assumes that cls is Treeable
+	 */
+	protected Set<String> buildTreeRankNames(Class<?> cls)
+	{
+		Set<String> result = new HashSet<String>();
+		Vector<Object> ranks = BasicSQLUtils.querySingleCol("select distinct name from " + getTreeDefItemTblName(cls));
+		for (Object rank : ranks)
+		{
+				result.add(rank.toString());
+		}
+		return result;
+	}
+
+	
+	/**
+	 * @param cls
+	 * @return name of treedefitem table for cls
+	 */
+	protected String getTreeDefItemTblName(Class<?> cls)
+	{
+		return cls.getSimpleName().toLowerCase() + "treedefitem";
+	}
+	
+	/**
+	 * @return name of mapped specify db field.
+	 */
+	protected String getMappedFieldName()
+	{
+		String[] chunks = mapping.split("\\.");
+		return chunks[chunks.length-1];
 	}
 	
 	/* (non-Javadoc)

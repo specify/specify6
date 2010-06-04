@@ -48,6 +48,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.AgentVariant"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Appraisal"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Attachment"/>
+		<mapping class="edu.ku.brc.specify.datamodel.AttachmentImageAttribute"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AttachmentMetadata"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AttachmentTag"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AttributeDef"/>
@@ -130,6 +131,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.LocalityDetail"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LocalityAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LocalityNameAlias"/>
+		<mapping class="edu.ku.brc.specify.datamodel.MorphBankView"/>
 		<mapping class="edu.ku.brc.specify.datamodel.OtherIdentifier"/>
 		<mapping class="edu.ku.brc.specify.datamodel.PaleoContext"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Permit"/>

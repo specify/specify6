@@ -1,12 +1,27 @@
 <vector>
-  <container name="collectingevent" type="">
+  <container name="collectingevent" type="" isHidden="false">
     <version>0</version>
-    <isHidden>false</isHidden>
     <isSystem>false</isSystem>
     <items>
-      <item name="remarks" type="text" isUIFormatter="false" isRequired="false">
+      <desc name="stationFieldNumber" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
-        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>Collector Number</text>
+          </str>
+        </names>
+        <descs>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>Collector Number</text>
+          </str>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="remarks" type="text" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en" country="" variant="">
@@ -21,37 +36,17 @@
           </str>
         </descs>
         <spExportSchemaItems/>
-      </item>
-      <item name="stationFieldNumber" type="java.lang.String" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isHidden>false</isHidden>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Collector Number</text>
-          </str>
-        </names>
-        <descs>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Collector Number</text>
-          </str>
-        </descs>
-        <spExportSchemaItems/>
-      </item>
+      </desc>
     </items>
     <names/>
     <descs/>
   </container>
-  <container name="collectionobject" type="">
+  <container name="collectionobject" type="" isHidden="false">
     <version>0</version>
-    <isHidden>false</isHidden>
     <isSystem>false</isSystem>
     <items>
-      <item name="description" type="java.lang.String" isUIFormatter="false" isRequired="false">
+      <desc name="description" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
-        <isHidden>false</isHidden>
         <isSystem>false</isSystem>
         <names>
           <str language="en" country="" variant="">
@@ -66,10 +61,9 @@
           </str>
         </descs>
         <spExportSchemaItems/>
-      </item>
-      <item name="text1" type="java.lang.String" isUIFormatter="false" pickListName="Phenology" isRequired="false">
+      </desc>
+      <desc name="text1" type="java.lang.String" isHidden="false" isUIFormatter="false" pickListName="Phenology" isRequired="false">
         <version>0</version>
-        <isHidden>false</isHidden>
         <isSystem>false</isSystem>
         <names>
           <str language="en" country="" variant="">
@@ -84,7 +78,7 @@
           </str>
         </descs>
         <spExportSchemaItems/>
-      </item>
+      </desc>
     </items>
     <names/>
     <descs/>

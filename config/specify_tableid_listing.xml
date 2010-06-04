@@ -2,9 +2,9 @@
 
 <!-- 
 
-    Last used ID is 137 or 532
+    Last used ID is 139 or 532
     
-    126 are available
+    [126] are available
     
     PLEASE Keep this file in alphabetical order! 
 
@@ -52,6 +52,7 @@
         	<display view="AttachmentsForm" newobjdlg="AttachmentsForm"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentBusRules</businessrule>
         </table>
+        <table name="edu.ku.brc.specify.datamodel.AttachmentImageAttribute" abbrev="ati" id="139" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.AttachmentMetadata" abbrev="atm" id="42" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.AttachmentTag" abbrev="attag" id="130" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.AttributeDef" abbrev="atd" id="16"/>
@@ -265,6 +266,9 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.LocalityCitation" abbrev="locc" id="57" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.LocalityNameAlias" abbrev="locna" id="120" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.MorphBankView" abbrev="mbvw" id="138" searchable="true"
+            <display view="MorphBankView" searchdlg="MorphBankViewSearch" newobjdlg="MorphBankViewDisplay"/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.Storage" abbrev="lcn" id="58" searchable="true">
             <display view="Storage" dataobjformatter="Storage" searchdlg="StorageSearch" newobjdlg="StorageDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.StorageBusRules</businessrule>            

@@ -62,10 +62,10 @@ public class DwcMapper
 		schemaURL = (String )rec.get(0)[3];
 		fillConcepts();
 		Collections.sort(concepts);
-		for (MappingInfo mi : concepts)
-		{
-			System.out.println(mi.getMapping() + "  " + mi.getName());
-		}
+//		for (MappingInfo mi : concepts)
+//		{
+//			System.out.println(mi.getMapping() + "  " + mi.getName());
+//		}
 	}
 	
 	/**
@@ -266,7 +266,7 @@ public class DwcMapper
 			
 			for (int s = 1; s < mapSegments.length; s++)
 			{
-				System.out.println(mapSegments[s]);
+				//System.out.println(mapSegments[s]);
 
 				if (currentObject != null
 						&& (s < mapSegments.length - 1 || !mi.isFormatted()))
@@ -281,8 +281,8 @@ public class DwcMapper
 				
 				session.attach(currentObject); //shouldn't have to do this explicitly???
 				
-				System.out.println("   "
-						+ currentObject.getClass().getSimpleName());
+				//System.out.println("   "
+				//		+ currentObject.getClass().getSimpleName());
 
 				if (s == mapSegments.length - 1)
 				{
@@ -306,6 +306,12 @@ public class DwcMapper
 	protected DataModelObjBase getRelatedObject(DataModelObjBase object, String mapping) throws Exception
 	{
 		Object objs = getRelatedObjects(object, mapping);
+		
+		if (objs == null)
+		{
+			return null;
+		}
+		
 		if (!Collection.class.isAssignableFrom(objs.getClass()))
 		{
 			return (DataModelObjBase )objs;
@@ -396,7 +402,7 @@ public class DwcMapper
 			String fieldName = mapping.split("\\.")[2];
 			String methodName = "get" + fieldName.substring(0, 1).toUpperCase().concat(fieldName.substring(1));
 			Method method = object.getClass().getMethod(methodName);
-			System.out.println("Getting a value: " + object + ", " + mapping + " = " + method.invoke(object));
+			//System.out.println("Getting a value: " + object + ", " + mapping + " = " + method.invoke(object));
 			return method.invoke(object);
 		}
 		else
@@ -421,7 +427,7 @@ public class DwcMapper
 	 */
 	protected String getFormatted(DataModelObjBase object, String mapping, DataProviderSessionIFace session) throws Exception
 	{
-		System.out.println("Getting a formatted/aggregated value: " + object + ", " + mapping);
+		//System.out.println("Getting a formatted/aggregated value: " + object + ", " + mapping);
 		Object objects = getRelatedObjects(object, mapping);
 		if (objects == null)
 		{
@@ -429,7 +435,8 @@ public class DwcMapper
 		}
 		if (!Collection.class.isAssignableFrom(objects.getClass()))
 		{
-			return DataObjFieldFormatMgr.getInstance().format(object, object.getClass());	
+			//return DataObjFieldFormatMgr.getInstance().format(object, object.getClass());	
+			return DataObjFieldFormatMgr.getInstance().format(objects, objects.getClass());	
 		}
 		Collection<?> objs = (Collection<?> )objects;
 		if (objs.size() == 0)
@@ -447,9 +454,9 @@ public class DwcMapper
 	 */
 	protected String getTreeRank(Treeable<?, ?, ?> object, String mapping, DataProviderSessionIFace session) throws Exception
 	{
-		System.out.println("Getting a tree rank: " + object + ", " + mapping);
+		//System.out.println("Getting a tree rank: " + object + ", " + mapping);
 		String tblName = object.getClass().getSimpleName().toLowerCase();
-		String treeDefFld = object.getClass().getSimpleName().toLowerCase() + "ID";
+		String treeDefFld = object.getClass().getSimpleName().toLowerCase() + "TreeDefID";
 		TreeDefIface<?,?,?> treeDef = (TreeDefIface<?,?,?> )session.get(object.getDefinition().getClass(), object.getDefinition().getTreeDefId());
 		for (TreeDefItemIface<?,?,?> di : treeDef.getTreeDefItems())
 		{

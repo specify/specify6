@@ -70,6 +70,7 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected String                  copyrightDate;
     protected String                  credit;
     protected String                  dateImaged;
+        
     protected Calendar                fileCreatedDate;
     protected String                  remarks;
     protected String                  attachmentLocation;
@@ -77,6 +78,7 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected SpecifyUser             visibilitySetBy;
     protected Set<AttachmentMetadata> metadata;
     protected Set<AttachmentTag>      tags;
+    protected AttachmentImageAttribute   attachmentImageAttribute;
     
     // transient field
     protected boolean                 storeFile;
@@ -124,6 +126,12 @@ public class Attachment extends DataModelObjBase implements Serializable
         fileCreatedDate    = null;
         remarks            = null;
         attachmentLocation = null;
+        title              = null;
+        license            = null;
+        copyrightHolder    = null;
+        credit             = null;
+        copyrightDate      = null;
+        dateImaged         = null;
         metadata           = new HashSet<AttachmentMetadata>();
         tags               = new HashSet<AttachmentTag>();
         
@@ -280,7 +288,9 @@ public class Attachment extends DataModelObjBase implements Serializable
         this.dateImaged = dateImaged;
     }
 
-    @Temporal(TemporalType.DATE)
+    
+
+	@Temporal(TemporalType.DATE)
     @Column(name = "FileCreatedDate")
     public Calendar getFileCreatedDate()
     {
@@ -360,7 +370,8 @@ public class Attachment extends DataModelObjBase implements Serializable
         this.tags = tags;
     }
 
-    @OneToMany(mappedBy = "attachment")
+
+	@OneToMany(mappedBy = "attachment")
     @Cascade( {CascadeType.ALL} )
     public Set<AccessionAttachment> getAccessionAttachments()
     {
@@ -552,6 +563,26 @@ public class Attachment extends DataModelObjBase implements Serializable
         this.taxonAttachments = taxonAttachments;
     }
 
+    /**
+     * @return
+     */
+    @ManyToOne(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY)
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @JoinColumn(name = "AttachmentImageAttributeID", unique = false, nullable = true, insertable = true, updatable = true)
+    public AttachmentImageAttribute getAttachmentImageAttribute() 
+    {
+        return this.attachmentImageAttribute;
+    }
+
+    /**
+     * @param attachmentImageAttribute
+     */
+    public void setAttachmentImageAttribute(AttachmentImageAttribute attachmentImageAttribute) 
+    {
+        this.attachmentImageAttribute = attachmentImageAttribute;
+    }
+
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
