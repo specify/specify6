@@ -711,7 +711,7 @@ public class DatabaseLoginPanel extends JTiledPanel
             }
 
             @Override
-            public void keyPressed(KeyEvent e)
+            public void keyReleased(KeyEvent e)
             {
                 updateUIControls();
                 if (checkForRetLocal && e.getKeyCode() == KeyEvent.VK_ENTER)
@@ -736,14 +736,14 @@ public class DatabaseLoginPanel extends JTiledPanel
             return;
         }
 
-        String dbName = databases.getTextField().getText();
+        String dbName = StringUtils.deleteWhitespace(databases.getTextField().getText());
         String uName  = username.getText();
         String pwd    = new String(password.getPassword());
         
         boolean shouldEnable = StringUtils.isNotEmpty(uName) &&
-                StringUtils.isNotEmpty(pwd) &&
-                (servers.getSelectedIndex() != -1 || StringUtils.isNotEmpty(servers.getTextField().getText())
-                        && (databases.getSelectedIndex() != -1 || StringUtils.isNotEmpty(dbName)));
+                               StringUtils.isNotEmpty(pwd) &&
+                               (servers.getSelectedIndex() != -1 || StringUtils.isNotEmpty(servers.getTextField().getText())) && 
+                               StringUtils.isNotEmpty(dbName);
         
         if (shouldEnable && (StringUtils.contains(uName, ' ') || StringUtils.contains(uName, ',')))
         {
