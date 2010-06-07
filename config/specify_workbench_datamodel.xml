@@ -618,12 +618,16 @@
     <field column="Prep Text1 1" name="prep1Text1" type="java.lang.String" length="500"/>
     <field column="Prep Description 1" name="prepDescription1" type="java.lang.String" length="255"/>
     <field column="Prep Remarks 1" name="prepRemarks1" type="text" length="4096"/>
-    <!--no storage tree or preparationattributes for now
-    <field column="Case or Cabinet 1" name="caseOrCabinet1" type="java.lang.String" length="64"/>
-    <field column="Shelf 1" name="shelf1" type="java.lang.String" length="64"/>
-    <field column="Tray 1" name="tray1" type="java.lang.String" length="64"/>
-    <field column="Tray Position 1" name="trayPosition1" type="java.lang.String" length="64"/>
     
+    <!--no storage tree or preparationattributes for now-->
+    <field column="Storage 1 1" name="storage11" type="java.lang.String" length="64"/>
+    <field column="Storage 2 1" name="storage21" type="java.lang.String" length="64"/>
+    <field column="Storage 3 1" name="storage31" type="java.lang.String" length="64"/>
+    <field column="Storage 4 1" name="storage41" type="java.lang.String" length="64"/>
+    <field column="Storage 5 1" name="storage51" type="java.lang.String" length="64"/>
+    <field column="Storage 6 1" name="storage61" type="java.lang.String" length="64"/>
+    
+    <!--
     <field column="Prep Attr 1 Text1" name="prepAttr1Text1" type="java.lang.String" length="300"/>
     <field column="Prep Attr 1 Text2" name="prepAttr1Text2" type="java.lang.String" length="300"/>
     -->
@@ -638,12 +642,15 @@
     <field column="Storage Location 2" name="storageLocation2" type="java.lang.String" length="50"/>
     <field column="Prep Remarks 2" name="prepRemarks2" type="text" length="4096"/>
     
-    <!-- no storage tree or preparationattributes for now
-    <field column="Case or Cabinet 2" name="caseOrCabinet2" type="java.lang.String" length="64"/>
-    <field column="Shelf 2" name="shelf2" type="java.lang.String" length="64"/>
-    <field column="Tray 2" name="tray2" type="java.lang.String" length="64"/>
-    <field column="Tray Position 2" name="trayPosition2" type="java.lang.String" length="64"/>
+    <!--no storage tree or preparationattributes for now-->
+    <field column="Storage 1 2" name="storage12" type="java.lang.String" length="64"/>
+    <field column="Storage 2 2" name="storage22" type="java.lang.String" length="64"/>
+    <field column="Storage 3 2" name="storage32" type="java.lang.String" length="64"/>
+    <field column="Storage 4 2" name="storage42" type="java.lang.String" length="64"/>
+    <field column="Storage 5 2" name="storage52" type="java.lang.String" length="64"/>
+    <field column="Storage 6 2" name="storage62" type="java.lang.String" length="64"/>
     
+    <!--
     <field column="Prep Attr 2 Text1" name="prepAttr2Text1" type="java.lang.String" length="300"/>
     <field column="Prep Attr 2 Text2" name="prepAttr2Text2" type="java.lang.String" length="300"/>
     -->

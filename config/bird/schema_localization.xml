@@ -3,23 +3,6 @@
     <version>0</version>
     <isSystem>false</isSystem>
     <items>
-      <desc name="method" type="java.lang.String" isHidden="false" isUIFormatter="false" pickListName="Method" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Method</text>
-          </str>
-        </names>
-        <descs>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>A method, such as net or trap, which is used to obtain the specimen.</text>
-          </str>
-        </descs>
-        <spExportSchemaItems/>
-      </desc>
       <desc name="stationFieldNumber" type="java.lang.String" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
@@ -33,6 +16,23 @@
           <str language="en" country="" variant="">
             <version>0</version>
             <text>Station number or field number of the site where collecting event took place, A number or code recorded in field notes and/or written on field tags that identifies ALL material collected in a Collecting Event.</text>
+          </str>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="method" type="java.lang.String" isHidden="false" isUIFormatter="false" pickListName="Method" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>Method</text>
+          </str>
+        </names>
+        <descs>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>A method, such as net or trap, which is used to obtain the specimen.</text>
           </str>
         </descs>
         <spExportSchemaItems/>
@@ -70,6 +70,18 @@
     <version>0</version>
     <isSystem>false</isSystem>
     <items>
+      <desc name="text6" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Gonads</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </desc>
       <desc name="text3" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
@@ -94,37 +106,13 @@
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text7" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="text2" isHidden="false" isUIFormatter="false" pickListName="BiologicalSex" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Molt</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text4" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Body</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text8" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Weight</text>
+            <text>Sex</text>
           </str>
         </names>
         <descs/>
@@ -142,25 +130,37 @@
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text2" isHidden="false" isUIFormatter="false" pickListName="BiologicalSex" isRequired="false">
+      <desc name="text4" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Sex</text>
+            <text>Body</text>
           </str>
         </names>
         <descs/>
         <spExportSchemaItems/>
       </desc>
-      <desc name="text6" isHidden="false" isUIFormatter="false" isRequired="false">
+      <desc name="text7" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Gonads</text>
+            <text>Molt</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text8" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Weight</text>
           </str>
         </names>
         <descs/>

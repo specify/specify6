@@ -52,6 +52,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 
 	protected Integer			    	geographyTreeDefItemId;
 	protected String				    name;
+	protected String					title;
 	protected String				    remarks;
 	protected Integer				    rankId;
 	protected Boolean				    isEnforced;
@@ -85,6 +86,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
         super.init();
 		geographyTreeDefItemId = null;
 		name = null;
+		title = null;
 		remarks = null;
 		rankId = null;
 		isEnforced = null;
@@ -143,6 +145,44 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		this.name = name;
 	}
 
+    /**
+     * @return the title
+     */
+    @Column(name = "Title", nullable=true, length = 64)
+	public String getTitle()
+	{
+		return this.title;
+	}
+
+    /**
+     * @param title the title to set
+     */
+    public void setTitle(String title)
+	{
+		this.title = title;
+	}
+
+    
+    /* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.TreeDefItemIface#getDisplayText()
+	 */
+	@Override
+	@Transient
+	public String getDisplayText()
+	{
+		return (title != null ? title : name);
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.TreeDefItemIface#setDisplayText(java.lang.String)
+	 */
+	@Override
+	public void setDisplayText(String text)
+	{
+		setTitle(text);
+	}
+
+	
     @Lob
     @Column(name = "Remarks", length = 4096)
 	public String getRemarks()

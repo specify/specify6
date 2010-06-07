@@ -67,7 +67,7 @@ public class TreeLevelQRI extends FieldQRI
         treeDefItem = treeDef.getDefItemByRank(rankId);
         if (treeDefItem != null)
         {
-            title = treeDefItem.getName();
+            title = treeDefItem.getDisplayText();
         }
         else
         {

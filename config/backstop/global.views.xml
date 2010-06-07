@@ -1728,12 +1728,16 @@
             
             <desc><![CDATA[Storage Tree Definition Item Form]]></desc>
             <columnDef>p,3dlu,p,6dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="8"/>
+                    <cell type="field" id="8" name="title" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
@@ -1771,12 +1775,16 @@
             
             <desc><![CDATA[Root Storage Tree Definition Item Form]]></desc>
             <columnDef>p,3dlu,p,6dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="8"/>
+                    <cell type="field" id="8" name="title" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
@@ -1798,12 +1806,16 @@
             
             <desc><![CDATA[LithoStrat Tree Definition Item Form]]></desc>
             <columnDef>p,3dlu,p,6dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="8"/>
+                    <cell type="field" id="8" name="title" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
@@ -1841,12 +1853,16 @@
             
             <desc><![CDATA[Root LithoStrat Tree Definition Item Form]]></desc>
             <columnDef>p,3dlu,p,6dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="8"/>
+                    <cell type="field" id="8" name="title" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
@@ -1868,12 +1884,16 @@
             
             <desc><![CDATA[GeographyTreeDefItem Form]]></desc>
             <columnDef>p,3dlu,p,6dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="8"/>
+                    <cell type="field" id="8" name="title" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
@@ -1911,12 +1931,16 @@
             
             <desc><![CDATA[Root GeographyTreeDefItem Form]]></desc>
             <columnDef>p,3dlu,p,6dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="8"/>
+                    <cell type="field" id="8" name="title" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
@@ -1938,12 +1962,16 @@
             
             <desc><![CDATA[GeologicTimePeriodTreeDefItem Form]]></desc>
             <columnDef>p,3dlu,p,6dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="8"/>
+                    <cell type="field" id="8" name="title" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
@@ -1981,12 +2009,16 @@
             
             <desc><![CDATA[Root GeologicTimePeriodTreeDefItem Form]]></desc>
             <columnDef>p,3dlu,p,6dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="8"/>
+                    <cell type="field" id="8" name="title" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
@@ -2008,7 +2040,7 @@
             
             <desc><![CDATA[TaxonTreeDefItem Form]]></desc>
             <columnDef>p,3dlu,p,6dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
             <rows>
                 <row>
@@ -2017,27 +2049,31 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="remarks" uitype="textareabrief" rows="2"/>
+                    <cell type="field" id="2" name="title" uitype="text" cols="16" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="remarks" uitype="textareabrief" rows="2"/>
                 </row>
                 <row>
                     <cell type="label" label=" "/>
-                    <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
+                    <cell type="field" id="4" uitype="checkbox" name="isInFullName"/>
                 </row>
                 <row>
                     <cell type="label" label=" "/>
-                    <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="textBefore"/>
+                    <cell type="field" id="5" uitype="checkbox" name="isEnforced"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="textAfter"/>
+                    <cell type="field" id="6" name="textBefore"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="fullNameSeparator"/>
+                    <cell type="field" id="7" name="textAfter"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="8"/>
+                    <cell type="field" id="8" uitype="text" name="fullNameSeparator"/>
                 </row>
             </rows>
         </viewdef>
@@ -2051,12 +2087,16 @@
             
             <desc><![CDATA[Root TaxonTreeDefItem Form]]></desc>
             <columnDef>p,3dlu,p,6dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="8"/>
+                    <cell type="field" id="8" name="title" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
@@ -2084,6 +2124,10 @@
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="8"/>
+                    <cell type="field" id="8" name="title" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Full Name Direction"/>

@@ -81,6 +81,9 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
+import edu.ku.brc.specify.datamodel.FieldNotebook;
+import edu.ku.brc.specify.datamodel.FieldNotebookPage;
+import edu.ku.brc.specify.datamodel.FieldNotebookPageSet;
 import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.LocalityAttachment;
@@ -1730,7 +1733,10 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected Vector<Class<?>> getAttachableTables()
     {
-    	Vector<Class<?>> result = new Vector<Class<?>>(5);
+    	Vector<Class<?>> result = new Vector<Class<?>>(8);
+    	result.add(FieldNotebook.class);
+    	result.add(FieldNotebookPageSet.class);
+    	result.add(FieldNotebookPage.class);
     	result.add(Taxon.class);
     	result.add(Accession.class);
     	result.add(Locality.class);

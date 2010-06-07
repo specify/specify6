@@ -67,4 +67,7 @@ public interface TreeDefItemIface<N extends Treeable<N,D,I>,
     public void setFullNameSeparator(String text);
     
 	public boolean canBeDeleted();
+	
+	public String getDisplayText();
+	public void setDisplayText(String text);
 }

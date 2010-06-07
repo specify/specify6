@@ -98,7 +98,8 @@ public class TreeDefEditorTableModel <T extends Treeable<T,D,I>,
 		{
 			case NAME_COL:
 			{
-				return row.getName().toString();
+				//return row.getName().toString();
+				return row.getDisplayText().toString();
 			}
 			case REMARKS_COL:
 			{

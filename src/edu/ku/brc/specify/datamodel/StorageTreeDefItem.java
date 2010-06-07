@@ -50,6 +50,7 @@ public class StorageTreeDefItem extends DataModelObjBase implements Serializable
 
 	protected Integer   				storageTreeDefItemId;
 	protected String				name;
+	protected String				title;
 	protected String				remarks;
 	protected Integer				rankId;
 	protected Boolean				isEnforced;
@@ -80,6 +81,7 @@ public class StorageTreeDefItem extends DataModelObjBase implements Serializable
         super.init();
 		storageTreeDefItemId = null;
 		name = null;
+		title = null;
 		remarks = null;
 		rankId = null;
 		isEnforced = null;
@@ -136,6 +138,43 @@ public class StorageTreeDefItem extends DataModelObjBase implements Serializable
 	public void setName(String name)
 	{
 		this.name = name;
+	}
+
+    /**
+     * @return the title
+     */
+    @Column(name = "Title", nullable=true, length = 64)
+	public String getTitle()
+	{
+		return this.title;
+	}
+
+    /**
+     * @param title the title to set
+     */
+    public void setTitle(String title)
+	{
+		this.title = title;
+	}
+
+    
+    /* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.TreeDefItemIface#getDisplayText()
+	 */
+	@Override
+	@Transient
+	public String getDisplayText()
+	{
+		return (title != null ? title : name);
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.TreeDefItemIface#setDisplayText(java.lang.String)
+	 */
+	@Override
+	public void setDisplayText(String text)
+	{
+		setTitle(text);
 	}
 
     @Lob

@@ -472,7 +472,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         Map<Integer,String> rankNamesMap = new HashMap<Integer, String>();
         for (I defItem: treeDef.getTreeDefItems())
         {
-            rankNamesMap.put(defItem.getRankId(), defItem.getName());
+            rankNamesMap.put(defItem.getRankId(), defItem.getDisplayText());
         }
         
 		listHeaders[0] = new TreeViewerListHeader(lists[0],listModel,listCellRenderer,rankNamesMap);
