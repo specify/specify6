@@ -1740,6 +1740,26 @@ public class Uploader implements ActionListener, KeyListener
     }
     
     /**
+     * @return a set of tables that can have attachments in the current upload.
+     * 
+     *  Not currently used, but will be when/if we allow users to choose which tables
+     *  attachments apply to.
+     */
+    @SuppressWarnings("unchecked")
+    protected Set<Class<AttachmentOwnerIFace<?>>> getAttachableTablesInUse()
+    {
+    	Set<Class<AttachmentOwnerIFace<?>>> result = new HashSet<Class<AttachmentOwnerIFace<?>>>();
+    	for (UploadTable ut : uploadTables)
+    	{
+    		if (AttachmentOwnerIFace.class.isAssignableFrom(ut.getTblClass()))
+    		{
+    			result.add((Class<AttachmentOwnerIFace<?>> )ut.getTblClass());
+    		}
+    	}
+    	return result;
+    }
+    
+    /**
      * @return list of attachable table names.
      */
     protected String getAttachableStr()
