@@ -37,6 +37,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.hibernate.annotations.Cascade;
@@ -849,17 +850,50 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         setValue(tblInfo, "columnAlias", getAttr(element, "columnAlias", null));
     }
 
-    protected boolean eq(final Object obj1, final Object obj2, final Object nullVal)
+    /**
+     * @param obj1
+     * @param obj2
+     * @return
+     */
+    protected boolean eq(final Object obj1, final Object obj2)
     {
     	if (obj1 == null && obj2 == null)
     	{
     		return true;
     	}
-    	Object o1 = obj1 == null ? nullVal : obj1;
-    	Object o2 = obj2 == null ? nullVal : obj2;
-    	return o1.equals(o2);
+    	if (obj1 == null || obj2 == null)
+    	{
+    		return false;
+    	}
+    	return obj1.equals(obj2);
     }
     
+    /**
+     * @param val
+     * @return
+     */
+    protected String nullIfBlank(String val)
+    {
+    	if (StringUtils.isEmpty(val))
+    	{
+    		return null;
+    	}
+    	return val;
+    }
+    
+    /**
+     * @param val
+     * @return
+     */
+    protected Number nullIfZero(Number val)
+    {
+    	if (val != null && val.equals(0))
+    	{
+    		return null;
+    	}
+    	return val;
+    }
+
 	/**
 	 * @param obj
 	 * @return true if this and obj represent the same database field with the same relationship to the
@@ -875,14 +909,14 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
 				&& isDisplay.equals(f.isDisplay)
 				&& isPrompt.equals(f.isPrompt)
 				&& alwaysFilter.equals(f.alwaysFilter)
-				&& eq(operStart, f.operStart, 0)
-				&& eq(operEnd, f.operEnd, 0)
-				&& eq(startValue, f.startValue, "")
-				&& eq(endValue, f.endValue, "")
-				&& eq(sortType, f.sortType, 0)
-				&& eq(tableList, f.tableList, "")
-				&& eq(contextTableIdent, f.contextTableIdent, 0)
-				&& eq(columnAlias, f.columnAlias, "");
+				&& eq(nullIfZero(operStart), nullIfZero(f.operStart))
+				&& eq(nullIfZero(operEnd), nullIfZero(f.operEnd))
+				&& eq(nullIfBlank(startValue), nullIfBlank(f.startValue))
+				&& eq(nullIfBlank(endValue), nullIfBlank(f.endValue))
+				&& eq(nullIfZero(sortType), nullIfZero(f.sortType))
+				&& eq(nullIfBlank(tableList), nullIfBlank(f.tableList))
+				&& eq(nullIfZero(contextTableIdent), nullIfZero(f.contextTableIdent))
+				&& eq(nullIfBlank(columnAlias), nullIfBlank(f.columnAlias));
 		}
 		return false;
 	}
