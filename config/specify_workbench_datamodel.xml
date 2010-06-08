@@ -620,12 +620,15 @@
     <field column="Prep Remarks 1" name="prepRemarks1" type="text" length="4096"/>
     
     <!--no storage tree or preparationattributes for now-->
-    <field column="Storage 1 1" name="storage11" type="java.lang.String" length="64"/>
-    <field column="Storage 2 1" name="storage21" type="java.lang.String" length="64"/>
-    <field column="Storage 3 1" name="storage31" type="java.lang.String" length="64"/>
-    <field column="Storage 4 1" name="storage41" type="java.lang.String" length="64"/>
-    <field column="Storage 5 1" name="storage51" type="java.lang.String" length="64"/>
-    <field column="Storage 6 1" name="storage61" type="java.lang.String" length="64"/>
+    <field column="Building 1" name="building1" type="java.lang.String" length="64"/>
+    <field column="Collection 1" name="collection1" type="java.lang.String" length="64"/>
+    <field column="Room 1" name="room1" type="java.lang.String" length="64"/>
+    <field column="Aisle 1" name="aisle1" type="java.lang.String" length="64"/>
+    <field column="Cabinet 1" name="cabinet1" type="java.lang.String" length="64"/>
+    <field column="Shelf 1" name="shelf1" type="java.lang.String" length="64"/>
+    <field column="Box 1" name="box1" type="java.lang.String" length="64"/>
+    <field column="Rack 1" name="rack1" type="java.lang.String" length="64"/>
+    <field column="Vial 1" name="vial1" type="java.lang.String" length="64"/>
     
     <!--
     <field column="Prep Attr 1 Text1" name="prepAttr1Text1" type="java.lang.String" length="300"/>
@@ -643,12 +646,15 @@
     <field column="Prep Remarks 2" name="prepRemarks2" type="text" length="4096"/>
     
     <!--no storage tree or preparationattributes for now-->
-    <field column="Storage 1 2" name="storage12" type="java.lang.String" length="64"/>
-    <field column="Storage 2 2" name="storage22" type="java.lang.String" length="64"/>
-    <field column="Storage 3 2" name="storage32" type="java.lang.String" length="64"/>
-    <field column="Storage 4 2" name="storage42" type="java.lang.String" length="64"/>
-    <field column="Storage 5 2" name="storage52" type="java.lang.String" length="64"/>
-    <field column="Storage 6 2" name="storage62" type="java.lang.String" length="64"/>
+    <field column="Building 2" name="building2" type="java.lang.String" length="64"/>
+    <field column="Collection 2" name="collection2" type="java.lang.String" length="64"/>
+    <field column="Room 2" name="room2" type="java.lang.String" length="64"/>
+    <field column="Aisle 2" name="aisle2" type="java.lang.String" length="64"/>
+    <field column="Cabinet 2" name="cabinet2" type="java.lang.String" length="64"/>
+    <field column="Shelf 2" name="shelf2" type="java.lang.String" length="64"/>
+    <field column="Box 2" name="box2" type="java.lang.String" length="64"/>
+    <field column="Rack 2" name="rack2" type="java.lang.String" length="64"/>
+    <field column="Vial 2" name="vial2" type="java.lang.String" length="64"/>
     
     <!--
     <field column="Prep Attr 2 Text1" name="prepAttr2Text1" type="java.lang.String" length="300"/>
@@ -664,6 +670,15 @@
     <field column="Count 3" name="count3" type="java.lang.Integer" length="10"/>
     <field column="Storage Location 3" name="storageLocation3" type="java.lang.String" length="50"/>
     <field column="Prep Remarks 3" name="prepRemarks3" type="text" length="4096"/>
+    <field column="Building 3" name="building3" type="java.lang.String" length="64"/>
+    <field column="Collection 3" name="collection3" type="java.lang.String" length="64"/>
+    <field column="Room 3" name="room3" type="java.lang.String" length="64"/>
+    <field column="Aisle 3" name="aisle3" type="java.lang.String" length="64"/>
+    <field column="Cabinet 3" name="cabinet3" type="java.lang.String" length="64"/>
+    <field column="Shelf 3" name="shelf3" type="java.lang.String" length="64"/>
+    <field column="Box 3" name="box3" type="java.lang.String" length="64"/>
+    <field column="Rack 3" name="rack3" type="java.lang.String" length="64"/>
+    <field column="Vial 3" name="vial3" type="java.lang.String" length="64"/>
     
     <field column="Prepared Date 4" name="preparedDate4" type="calendar_date"/>
     <field column="Prepared First Name By 4" name="preparedFirstNameBy4" type="java.lang.String" length="50"/>
@@ -674,6 +689,15 @@
     <field column="Count 4" name="count4" type="java.lang.Integer" length="10"/>
     <field column="Storage Location 4" name="storageLocation4" type="java.lang.String" length="50"/>
     <field column="Prep Remarks 4" name="prepRemarks4" type="text" length="4096"/>
+    <field column="Building 4" name="building4" type="java.lang.String" length="64"/>
+    <field column="Collection 4" name="collection4" type="java.lang.String" length="64"/>
+    <field column="Room 4" name="room4" type="java.lang.String" length="64"/>
+    <field column="Aisle 4" name="aisle4" type="java.lang.String" length="64"/>
+    <field column="Cabinet 4" name="cabinet4" type="java.lang.String" length="64"/>
+    <field column="Shelf 4" name="shelf4" type="java.lang.String" length="64"/>
+    <field column="Box 4" name="box4" type="java.lang.String" length="64"/>
+    <field column="Rack 4" name="rack4" type="java.lang.String" length="64"/>
+    <field column="Vial 4" name="vial4" type="java.lang.String" length="64"/>
     
     <field column="Prepared Date 5" name="preparedDate5" type="calendar_date"/>
     <field column="Prepared First Name By 5" name="preparedFirstNameBy5" type="java.lang.String" length="50"/>
@@ -684,6 +708,15 @@
     <field column="Count 5" name="count5" type="java.lang.Integer" length="10"/>
     <field column="Storage Location 5" name="storageLocation5" type="java.lang.String" length="50"/>
     <field column="Prep Remarks 5" name="prepRemarks5" type="text" length="4096"/>
+    <field column="Building 5" name="building5" type="java.lang.String" length="64"/>
+    <field column="Collection 5" name="collection5" type="java.lang.String" length="64"/>
+    <field column="Room 5" name="room5" type="java.lang.String" length="64"/>
+    <field column="Aisle 5" name="aisle5" type="java.lang.String" length="64"/>
+    <field column="Cabinet 5" name="cabinet5" type="java.lang.String" length="64"/>
+    <field column="Shelf 5" name="shelf5" type="java.lang.String" length="64"/>
+    <field column="Box 5" name="box5" type="java.lang.String" length="64"/>
+    <field column="Rack 5" name="rack5" type="java.lang.String" length="64"/>
+    <field column="Vial 5" name="vial5" type="java.lang.String" length="64"/>
     
     <field column="Prepared Date 6" name="preparedDate6" type="calendar_date"/>
     <field column="Prepared First Name By 6" name="preparedFirstNameBy6" type="java.lang.String" length="50"/>
@@ -694,6 +727,15 @@
     <field column="Count 6" name="count6" type="java.lang.Integer" length="10"/>
     <field column="Storage Location 6" name="storageLocation6" type="java.lang.String" length="50"/>
     <field column="Prep Remarks 6" name="prepRemarks6" type="text" length="4096"/>
+    <field column="Building 6" name="building6" type="java.lang.String" length="64"/>
+    <field column="Collection 6" name="collection6" type="java.lang.String" length="64"/>
+    <field column="Room 6" name="room6" type="java.lang.String" length="64"/>
+    <field column="Aisle 6" name="aisle6" type="java.lang.String" length="64"/>
+    <field column="Cabinet 6" name="cabinet6" type="java.lang.String" length="64"/>
+    <field column="Shelf 6" name="shelf6" type="java.lang.String" length="64"/>
+    <field column="Box 6" name="box6" type="java.lang.String" length="64"/>
+    <field column="Rack 6" name="rack6" type="java.lang.String" length="64"/>
+    <field column="Vial 6" name="vial6" type="java.lang.String" length="64"/>
     
     <field column="Prepared Date 7" name="preparedDate7" type="calendar_date"/>
     <field column="Prepared First Name By 7" name="preparedFirstNameBy7" type="java.lang.String" length="50"/>
@@ -704,6 +746,15 @@
     <field column="Count 7" name="count7" type="java.lang.Integer" length="10"/>
     <field column="Storage Location 7" name="storageLocation7" type="java.lang.String" length="50"/>
     <field column="Prep Remarks 7" name="prepRemarks7" type="text" length="4096"/>
+    <field column="Building 7" name="building7" type="java.lang.String" length="64"/>
+    <field column="Collection 7" name="collection7" type="java.lang.String" length="64"/>
+    <field column="Room 7" name="room7" type="java.lang.String" length="64"/>
+    <field column="Aisle 7" name="aisle7" type="java.lang.String" length="64"/>
+    <field column="Cabinet 7" name="cabinet7" type="java.lang.String" length="64"/>
+    <field column="Shelf 7" name="shelf7" type="java.lang.String" length="64"/>
+    <field column="Box 7" name="box7" type="java.lang.String" length="64"/>
+    <field column="Rack 7" name="rack7" type="java.lang.String" length="64"/>
+    <field column="Vial 7" name="vial7" type="java.lang.String" length="64"/>
     
     <field column="Prepared Date 8" name="preparedDate8" type="calendar_date"/>
     <field column="Prepared First Name By 8" name="preparedFirstNameBy8" type="java.lang.String" length="50"/>
@@ -714,6 +765,15 @@
     <field column="Count 8" name="count8" type="java.lang.Integer" length="10"/>
     <field column="Storage Location 8" name="storageLocation8" type="java.lang.String" length="50"/>
     <field column="Prep Remarks 8" name="prepRemarks8" type="text" length="4096"/>
+    <field column="Building 8" name="building8" type="java.lang.String" length="64"/>
+    <field column="Collection 8" name="collection8" type="java.lang.String" length="64"/>
+    <field column="Room 8" name="room8" type="java.lang.String" length="64"/>
+    <field column="Aisle 8" name="aisle8" type="java.lang.String" length="64"/>
+    <field column="Cabinet 8" name="cabinet8" type="java.lang.String" length="64"/>
+    <field column="Shelf 8" name="shelf8" type="java.lang.String" length="64"/>
+    <field column="Box 8" name="box8" type="java.lang.String" length="64"/>
+    <field column="Rack 8" name="rack8" type="java.lang.String" length="64"/>
+    <field column="Vial 8" name="vial8" type="java.lang.String" length="64"/>
   </table>
   
   <!-- table classname="edu.ku.brc.specify.datamodel.PreparationAttribute" table="preparationattribute" tableid="91" lazy="true" query="false">

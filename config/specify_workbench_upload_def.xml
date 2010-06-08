@@ -502,12 +502,15 @@
     <field table="Preparation" name="count1" actualname="countAmt" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation1" actualname="storageLocation" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks1" actualname="Remarks" onetomanysequence="0" relationshipname="collectionObject"/>
-    <field table="Preparation" name="caseOrCabinet1" onetomanysequence="0" treename="storage" maptofield="name" rankid="1000"/>
-    <field table="Preparation" name="shelf1" onetomanysequence="0" treename="storage" maptofield="name" rankid="2000"/>
-    <field table="Preparation" name="tray1" onetomanysequence="0" treename="storage" maptofield="name" rankid="3000"/>
-    <field table="Preparation" name="trayPosition1" onetomanysequence="0" treename="storage" maptofield="name" rankid="4000"/>
-    <field table="Preparation" name="prepAttr1Text1" onetomanysequence="0" relationshipname="preparationAttribute" relatedfieldname="text1"/>
-    <field table="Preparation" name="prepAttr1Text2" onetomanysequence="0" relationshipname="preparationAttribute" relatedfieldname="text2"/>
+    <field table="Preparation" name="building1" onetomanysequence="0" treename="storage" maptofield="name" rankid="100"/>
+    <field table="Preparation" name="collection1" onetomanysequence="0" treename="storage" maptofield="name" rankid="150"/>
+    <field table="Preparation" name="room1" onetomanysequence="0" treename="storage" maptofield="name" rankid="200"/>
+    <field table="Preparation" name="aisle1" onetomanysequence="0" treename="storage" maptofield="name" rankid="250"/>
+    <field table="Preparation" name="cabinet1" onetomanysequence="0" treename="storage" maptofield="name" rankid="300"/>
+    <field table="Preparation" name="shelf1" onetomanysequence="0" treename="storage" maptofield="name" rankid="350"/>
+    <field table="Preparation" name="box1" onetomanysequence="0" treename="storage" maptofield="name" rankid="400"/>
+    <field table="Preparation" name="rack1" onetomanysequence="0" treename="storage" maptofield="name" rankid="450"/>
+    <field table="Preparation" name="vial1" onetomanysequence="0" treename="storage" maptofield="name" rankid="500"/>
     
     <field table="Preparation" name="preparedDate2" actualname="preparedDate" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy2" onetomanysequence="1" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
@@ -518,12 +521,15 @@
     <field table="Preparation" name="count2" actualname="countAmt" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation2" actualname="storageLocation" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks2" actualname="Remarks" onetomanysequence="1" relationshipname="collectionObject"/>
-    <field table="Preparation" name="caseOrCabinet2" onetomanysequence="1" treename="storage" maptofield="name" rankid="1000"/>
-    <field table="Preparation" name="shelf2" onetomanysequence="1" treename="storage" maptofield="name" rankid="2000"/>
-    <field table="Preparation" name="tray2" onetomanysequence="1" treename="storage" maptofield="name" rankid="3000"/>
-    <field table="Preparation" name="trayPosition2" onetomanysequence="1" treename="storage" maptofield="name" rankid="4000"/>
-    <field table="Preparation" name="prepAttr2Text1" onetomanysequence="1" relationshipname="preparationAttribute" relatedfieldname="text1"/>
-    <field table="Preparation" name="prepAttr2Text2" onetomanysequence="1" relationshipname="preparationAttribute" relatedfieldname="text2"/>
+    <field table="Preparation" name="building2" onetomanysequence="1" treename="storage" maptofield="name" rankid="100"/>
+    <field table="Preparation" name="collection2" onetomanysequence="1" treename="storage" maptofield="name" rankid="150"/>
+    <field table="Preparation" name="room2" onetomanysequence="1" treename="storage" maptofield="name" rankid="200"/>
+    <field table="Preparation" name="aisle2" onetomanysequence="1" treename="storage" maptofield="name" rankid="250"/>
+    <field table="Preparation" name="cabinet2" onetomanysequence="1" treename="storage" maptofield="name" rankid="300"/>
+    <field table="Preparation" name="shelf2" onetomanysequence="1" treename="storage" maptofield="name" rankid="350"/>
+    <field table="Preparation" name="box2" onetomanysequence="1" treename="storage" maptofield="name" rankid="400"/>
+    <field table="Preparation" name="rack2" onetomanysequence="1" treename="storage" maptofield="name" rankid="450"/>
+    <field table="Preparation" name="vial2" onetomanysequence="1" treename="storage" maptofield="name" rankid="500"/>
     
     <field table="Preparation" name="preparedDate3" actualname="preparedDate" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy3" onetomanysequence="2" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
@@ -534,6 +540,15 @@
     <field table="Preparation" name="count3" actualname="countAmt" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation3" actualname="storageLocation" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks3" actualname="Remarks" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="Preparation" name="building3" onetomanysequence="2" treename="storage" maptofield="name" rankid="100"/>
+    <field table="Preparation" name="collection3" onetomanysequence="2" treename="storage" maptofield="name" rankid="150"/>
+    <field table="Preparation" name="room3" onetomanysequence="2" treename="storage" maptofield="name" rankid="200"/>
+    <field table="Preparation" name="aisle3" onetomanysequence="2" treename="storage" maptofield="name" rankid="250"/>
+    <field table="Preparation" name="cabinet3" onetomanysequence="2" treename="storage" maptofield="name" rankid="300"/>
+    <field table="Preparation" name="shelf3" onetomanysequence="2" treename="storage" maptofield="name" rankid="350"/>
+    <field table="Preparation" name="box3" onetomanysequence="2" treename="storage" maptofield="name" rankid="400"/>
+    <field table="Preparation" name="rack3" onetomanysequence="2" treename="storage" maptofield="name" rankid="450"/>
+    <field table="Preparation" name="vial3" onetomanysequence="2" treename="storage" maptofield="name" rankid="500"/>
     
     <field table="Preparation" name="preparedDate4" actualname="preparedDate" onetomanysequence="3" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy4" onetomanysequence="3" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
@@ -544,6 +559,15 @@
     <field table="Preparation" name="count4" actualname="countAmt" onetomanysequence="3" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation4" actualname="storageLocation" onetomanysequence="3" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks4" actualname="Remarks" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="Preparation" name="building4" onetomanysequence="3" treename="storage" maptofield="name" rankid="100"/>
+    <field table="Preparation" name="collection4" onetomanysequence="3" treename="storage" maptofield="name" rankid="150"/>
+    <field table="Preparation" name="room4" onetomanysequence="3" treename="storage" maptofield="name" rankid="200"/>
+    <field table="Preparation" name="aisle4" onetomanysequence="3" treename="storage" maptofield="name" rankid="250"/>
+    <field table="Preparation" name="cabinet4" onetomanysequence="3" treename="storage" maptofield="name" rankid="300"/>
+    <field table="Preparation" name="shelf4" onetomanysequence="3" treename="storage" maptofield="name" rankid="350"/>
+    <field table="Preparation" name="box4" onetomanysequence="3" treename="storage" maptofield="name" rankid="400"/>
+    <field table="Preparation" name="rack4" onetomanysequence="3" treename="storage" maptofield="name" rankid="450"/>
+    <field table="Preparation" name="vial4" onetomanysequence="3" treename="storage" maptofield="name" rankid="500"/>
     
     <field table="Preparation" name="preparedDate5" actualname="preparedDate" onetomanysequence="4" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy5" onetomanysequence="4" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
@@ -554,6 +578,15 @@
     <field table="Preparation" name="count5" actualname="countAmt" onetomanysequence="4" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation5" actualname="storageLocation" onetomanysequence="4" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks5" actualname="Remarks" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="Preparation" name="building5" onetomanysequence="4" treename="storage" maptofield="name" rankid="100"/>
+    <field table="Preparation" name="collection5" onetomanysequence="4" treename="storage" maptofield="name" rankid="150"/>
+    <field table="Preparation" name="room5" onetomanysequence="4" treename="storage" maptofield="name" rankid="200"/>
+    <field table="Preparation" name="aisle5" onetomanysequence="4" treename="storage" maptofield="name" rankid="250"/>
+    <field table="Preparation" name="cabinet5" onetomanysequence="4" treename="storage" maptofield="name" rankid="300"/>
+    <field table="Preparation" name="shelf5" onetomanysequence="4" treename="storage" maptofield="name" rankid="350"/>
+    <field table="Preparation" name="box5" onetomanysequence="4" treename="storage" maptofield="name" rankid="400"/>
+    <field table="Preparation" name="rack5" onetomanysequence="4" treename="storage" maptofield="name" rankid="450"/>
+    <field table="Preparation" name="vial5" onetomanysequence="4" treename="storage" maptofield="name" rankid="500"/>
     
     <field table="Preparation" name="preparedDate6" actualname="preparedDate" onetomanysequence="5" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy6" onetomanysequence="5" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
@@ -564,6 +597,15 @@
     <field table="Preparation" name="count6" actualname="countAmt" onetomanysequence="5" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation6" actualname="storageLocation" onetomanysequence="5" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks6" actualname="Remarks" onetomanysequence="5" relationshipname="collectionObject"/>
+    <field table="Preparation" name="building6" onetomanysequence="5" treename="storage" maptofield="name" rankid="100"/>
+    <field table="Preparation" name="collection6" onetomanysequence="5" treename="storage" maptofield="name" rankid="150"/>
+    <field table="Preparation" name="room6" onetomanysequence="5" treename="storage" maptofield="name" rankid="200"/>
+    <field table="Preparation" name="aisle6" onetomanysequence="5" treename="storage" maptofield="name" rankid="250"/>
+    <field table="Preparation" name="cabinet6" onetomanysequence="5" treename="storage" maptofield="name" rankid="300"/>
+    <field table="Preparation" name="shelf6" onetomanysequence="5" treename="storage" maptofield="name" rankid="350"/>
+    <field table="Preparation" name="box6" onetomanysequence="5" treename="storage" maptofield="name" rankid="400"/>
+    <field table="Preparation" name="rack6" onetomanysequence="5" treename="storage" maptofield="name" rankid="450"/>
+    <field table="Preparation" name="vial6" onetomanysequence="5" treename="storage" maptofield="name" rankid="500"/>
     
     <field table="Preparation" name="preparedDate7" actualname="preparedDate" onetomanysequence="6" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy7" onetomanysequence="6" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
@@ -574,6 +616,15 @@
     <field table="Preparation" name="count7" actualname="countAmt" onetomanysequence="6" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation7" actualname="storageLocation" onetomanysequence="6" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks7" actualname="Remarks" onetomanysequence="6" relationshipname="collectionObject"/>
+    <field table="Preparation" name="building7" onetomanysequence="6" treename="storage" maptofield="name" rankid="100"/>
+    <field table="Preparation" name="collection7" onetomanysequence="6" treename="storage" maptofield="name" rankid="150"/>
+    <field table="Preparation" name="room7" onetomanysequence="6" treename="storage" maptofield="name" rankid="200"/>
+    <field table="Preparation" name="aisle7" onetomanysequence="6" treename="storage" maptofield="name" rankid="250"/>
+    <field table="Preparation" name="cabinet7" onetomanysequence="6" treename="storage" maptofield="name" rankid="300"/>
+    <field table="Preparation" name="shelf7" onetomanysequence="6" treename="storage" maptofield="name" rankid="350"/>
+    <field table="Preparation" name="box7" onetomanysequence="6" treename="storage" maptofield="name" rankid="400"/>
+    <field table="Preparation" name="rack7" onetomanysequence="6" treename="storage" maptofield="name" rankid="450"/>
+    <field table="Preparation" name="vial7" onetomanysequence="6" treename="storage" maptofield="name" rankid="500"/>
     
     <field table="Preparation" name="preparedDate8" actualname="preparedDate" onetomanysequence="7" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy8" onetomanysequence="7" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
@@ -584,6 +635,15 @@
     <field table="Preparation" name="count8" actualname="countAmt" onetomanysequence="7" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation8" actualname="storageLocation" onetomanysequence="7" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks8" actualname="Remarks" onetomanysequence="7" relationshipname="collectionObject"/>
+    <field table="Preparation" name="building8" onetomanysequence="7" treename="storage" maptofield="name" rankid="100"/>
+    <field table="Preparation" name="collection8" onetomanysequence="7" treename="storage" maptofield="name" rankid="150"/>
+    <field table="Preparation" name="room8" onetomanysequence="7" treename="storage" maptofield="name" rankid="200"/>
+    <field table="Preparation" name="aisle8" onetomanysequence="7" treename="storage" maptofield="name" rankid="250"/>
+    <field table="Preparation" name="cabinet8" onetomanysequence="7" treename="storage" maptofield="name" rankid="300"/>
+    <field table="Preparation" name="shelf8" onetomanysequence="7" treename="storage" maptofield="name" rankid="350"/>
+    <field table="Preparation" name="box8" onetomanysequence="7" treename="storage" maptofield="name" rankid="400"/>
+    <field table="Preparation" name="rack8" onetomanysequence="7" treename="storage" maptofield="name" rankid="450"/>
+    <field table="Preparation" name="vial8" onetomanysequence="7" treename="storage" maptofield="name" rankid="500"/>
 
 	<!-- preparationattributes -->
     <field table="PreparationAttribute" name="preparationAttributeRemarks" actualname="Remarks" />
