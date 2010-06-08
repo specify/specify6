@@ -138,57 +138,60 @@ public class FormDevHelper
      */
     public static void appendFormDevError(final String msg)
     {
-        if (isFormDevMode)
+        if (isFormDevMode != null)
         {
-            if (msgArea != null)
+            if (isFormDevMode)
             {
-                boolean showFirstTime = frame == null;
-                
-                getLogFrame();
-                
-                buffer.append(msg);
-                buffer.append("\n");
-                if (buffer.length() > 4096)
+                if (msgArea != null)
                 {
-                    int overage = buffer.length() - 4096;
-                    int inx     = buffer.indexOf("\n", overage);
-                    buffer.replace(0, inx, "");
-                }
-                msgArea.setText(buffer.toString());
-                msgArea.setCaretPosition(msgArea.getDocument().getLength());
-                
-                if (showFirstTime)
-                {
-                    frame.setSize(800, 600);
-                    UIHelper.centerAndShow(frame);
+                    boolean showFirstTime = frame == null;
                     
+                    getLogFrame();
+                    
+                    buffer.append(msg);
+                    buffer.append("\n");
+                    if (buffer.length() > 4096)
+                    {
+                        int overage = buffer.length() - 4096;
+                        int inx     = buffer.indexOf("\n", overage);
+                        buffer.replace(0, inx, "");
+                    }
+                    msgArea.setText(buffer.toString());
+                    msgArea.setCaretPosition(msgArea.getDocument().getLength());
+                    
+                    if (showFirstTime)
+                    {
+                        frame.setSize(800, 600);
+                        UIHelper.centerAndShow(frame);
+                        
+                    } else
+                    {
+                        frame.setVisible(false);
+                        
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run()
+                            {
+                                /*frame.setFocusable(true);
+                                frame.setFocusableWindowState(true);
+                                frame.requestFocus();
+                                frame.requestFocusInWindow();
+                                frame.setAlwaysOnTop(true);
+                                frame.toFront();
+                                frame.setAlwaysOnTop(false);*/
+                                frame.setVisible(true);
+                            }
+                        });
+                    }
                 } else
                 {
-                    frame.setVisible(false);
-                    
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run()
-                        {
-                            /*frame.setFocusable(true);
-                            frame.setFocusableWindowState(true);
-                            frame.requestFocus();
-                            frame.requestFocusInWindow();
-                            frame.setAlwaysOnTop(true);
-                            frame.toFront();
-                            frame.setAlwaysOnTop(false);*/
-                            frame.setVisible(true);
-                        }
-                    });
+                    System.err.println(msg);
                 }
             } else
             {
+                //UIRegistry.showError(msg);
                 System.err.println(msg);
             }
-        } else
-        {
-            //UIRegistry.showError(msg);
-            System.err.println(msg);
         }
     }
     
