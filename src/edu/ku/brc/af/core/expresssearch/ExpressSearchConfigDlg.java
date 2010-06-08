@@ -116,9 +116,9 @@ public class ExpressSearchConfigDlg extends CustomDialog
     
     static
     {
-        NONE       = getResourceString("ExpressSearchConfigDlg.ES_NONE"); //$NON-NLS-1$
-        ASCENDING  = getResourceString("ExpressSearchConfigDlg.ES_ASCENDING"); //$NON-NLS-1$
-        DESCENDING = getResourceString("ExpressSearchConfigDlg.ES_DESCENDING"); //$NON-NLS-1$
+        NONE       = getI18NStr("ES_NONE"); //$NON-NLS-1$
+        ASCENDING  = getI18NStr("ES_ASCENDING"); //$NON-NLS-1$
+        DESCENDING = getI18NStr("ES_DESCENDING"); //$NON-NLS-1$
     }
     
     /**
@@ -126,9 +126,9 @@ public class ExpressSearchConfigDlg extends CustomDialog
      */
     public ExpressSearchConfigDlg()
     {
-        super((Frame)UIRegistry.getTopWindow(), getResourceString("ExpressSearchConfigDlg.ES_DLG_TITLE"), true, OKHELP, null); //$NON-NLS-1$
+        super((Frame)UIRegistry.getTopWindow(), getI18NStr("ES_DLG_TITLE"), true, OKHELP, null); //$NON-NLS-1$
         
-        setOkLabel(getResourceString("ExpressSearchConfigDlg.CLOSE")); //$NON-NLS-1$
+        setOkLabel(getI18NStr("CLOSE")); //$NON-NLS-1$
         
         /*
         Locale german = new Locale("de", "", "");
@@ -180,12 +180,6 @@ public class ExpressSearchConfigDlg extends CustomDialog
                 SearchTableConfig stc = config.findTableOrCreate(ti.getClassObj().getSimpleName());
                 stc.setTableInfo(ti);
                 
-                List<ExpressResultsTableInfo> joinList = joinHash.get(Integer.toString(ti.getTableId()));
-                if (joinList != null)
-                {
-                    tableListInfoWithJoins.add(ti);
-                }
-                
                 int displayCnt = 0;
                 int searchCnt  = 0;
                 
@@ -227,6 +221,20 @@ public class ExpressSearchConfigDlg extends CustomDialog
                     
                     displayCnt++;
                 }
+                
+                // Remove hidden table after processing the fields so any shown/searched fields can be removed.
+                if (ti.isHidden())
+                {
+                    config.removeTable(stc);
+                }
+                
+                // Do this after the hideden table has been removed
+                List<ExpressResultsTableInfo> joinList = joinHash.get(Integer.toString(ti.getTableId()));
+                if (joinList != null)
+                {
+                    tableListInfoWithJoins.add(ti);
+                }
+                
                 maxDisplayCnt = Math.max(maxDisplayCnt, displayCnt);
                 maxSearchCnt  = Math.max(maxSearchCnt, searchCnt);
                 
@@ -402,9 +410,9 @@ public class ExpressSearchConfigDlg extends CustomDialog
         
         // Create TabbedPane and add tabs
         tabbedPane = new JTabbedPane();
-        tabbedPane.add(getResourceString("ExpressSearchConfigDlg.ES_SEARCH_FIELDS"), outer.getPanel()); //$NON-NLS-1$
-        tabbedPane.add(getResourceString("ExpressSearchConfigDlg.ES_RELATED_TABLES"), new RelatedTableInfoPanel(config)); //$NON-NLS-1$
-        tabbedPane.add(getResourceString("ExpressSearchConfigDlg.ES_RESULTS_ORDERING"), orderPanel); //$NON-NLS-1$
+        tabbedPane.add(getI18NStr("ES_SEARCH_FIELDS"), outer.getPanel()); //$NON-NLS-1$
+        tabbedPane.add(getI18NStr("ES_RELATED_TABLES"), new RelatedTableInfoPanel(config)); //$NON-NLS-1$
+        tabbedPane.add(getI18NStr("ES_RESULTS_ORDERING"), orderPanel); //$NON-NLS-1$
 
         tabbedPane.addChangeListener(new ChangeListener() {
             //@Override
@@ -423,6 +431,15 @@ public class ExpressSearchConfigDlg extends CustomDialog
         mainPanel.add(contentPanel, BorderLayout.CENTER);
 
         pack();
+    }
+    
+    /**
+     * @param subKey
+     * @return
+     */
+    private static String getI18NStr(final String subKey)
+    {
+        return getResourceString("ExpressSearchConfigDlg." + subKey);
     }
     
     /**
