@@ -8422,11 +8422,11 @@ public class BuildSampleDatabase
                     
                     try
                     {
-                        session.beginTransaction();
+                        if (!isDoingUpdate) session.beginTransaction();
                         setItemStrs(dbItem.getNames(), item.getNames(), session);
                         setItemStrs(dbItem.getDescs(), item.getDescs(), session);
                         session.saveOrUpdate(dbItem);
-                        session.commit();
+                        if (!isDoingUpdate) session.commit();
                         
                     } catch (Exception e)
                     {
