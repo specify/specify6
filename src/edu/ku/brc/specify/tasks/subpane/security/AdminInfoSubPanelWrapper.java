@@ -42,6 +42,7 @@ import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.busrules.SpecifyUserBusRules;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Wraps a JPanel with a permission editor (if panel for group or user) 
@@ -243,6 +244,11 @@ public class AdminInfoSubPanelWrapper
         }
         
         Agent uiAgent = (Agent)(agentCBX != null ? agentCBX.getValue() : null);
+        if (uiAgent == null)
+        {
+            UIRegistry.showError("There is no agent selected in the QueryCombobox!"); // I18N ???
+            return;
+        }
         
         // Couldn't call BuinessRules because of a double session
         // need to look into it later
