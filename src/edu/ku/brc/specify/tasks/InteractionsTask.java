@@ -594,7 +594,7 @@ public class InteractionsTask extends BaseTask
     /**
      * @param navBox
      * @param tableInfo
-     * @param label
+     * @param text
      * @param cmdType
      * @param action
      * @param viewName

@@ -1764,6 +1764,7 @@ public class AgentConverter
         sql = "SELECT AddressID FROM (SELECT aa.AddressID, COUNT(aa.AddressID) as cnt FROM agentaddress aa INNER JOIN address ON aa.AddressID = address.AddressID " +
               "GROUP BY aa.AddressID) T1 WHERE cnt > 1 ";
         
+        int numFixed = 0;
         for (Integer oldAddrId : BasicSQLUtils.queryForInts(oldDBConn, sql))
         {
             
@@ -1784,6 +1785,8 @@ public class AgentConverter
                     try
                     {
                         duplicateAddress(newDBConn, newAddrID, newAgentID);
+                        numFixed++;
+                        
                     } catch (SQLException e)
                     {
                         e.printStackTrace();
@@ -1791,6 +1794,10 @@ public class AgentConverter
                 }
             }
         }
+        
+        System.out.println("---------------------------------------------");
+        System.out.println("Number of Addresses Duplicated: "+numFixed);
+        System.out.println("---------------------------------------------");
     }
     
     protected void parseAndFixMultiLineAddresses()

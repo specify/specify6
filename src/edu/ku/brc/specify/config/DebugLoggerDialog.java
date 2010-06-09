@@ -189,7 +189,7 @@ public class DebugLoggerDialog extends CustomDialog
 
     /**
      * @param sb
-     * @param path
+     * @param dstPath
      * @param parent
      */
     protected void save(final StringBuilder sb, 

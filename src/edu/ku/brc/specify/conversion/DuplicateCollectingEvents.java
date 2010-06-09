@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -427,13 +428,29 @@ public class DuplicateCollectingEvents
         }
     }
 
+    private boolean compareStr(final String oldStr, final String newStr)
+    {
+        if (oldStr == null && newStr == null)
+        {
+            return true;
+        }
+        
+        if (oldStr == null || newStr == null)
+        {
+            return false;
+        }
+        
+        return oldStr.equals(newStr);
+    }
+    
     /**
      * @param oldDBConn
      * @param newDBConn
      */
-    public void fixCollectorsForCollectingEvents()
+    public void fixCollectorsForCollectingEvents2()
     {
-        //IdTableMapper agentMapper = IdMapperMgr.getInstance().addTableMapper("agent", "AgentID", false);
+        IdTableMapper agentMapper = IdMapperMgr.getInstance().addTableMapper("agent", "AgentID", false);
+        IdTableMapper colMapper   = IdMapperMgr.getInstance().addTableMapper("collectors", "CollectorsID", false);
         IdTableMapper ceMapper    = IdMapperMgr.getInstance().addTableMapper("collectingevent", "CollectingEventID", false);
         IdTableMapper coMapper    = IdMapperMgr.getInstance().addTableMapper("collectionobjectcatalog", "CollectionObjectCatalogID", false);
         
@@ -441,10 +458,218 @@ public class DuplicateCollectingEvents
         PreparedStatement prepCEStmt = null;
         Statement         stmtCE     = null;
         
-        // CollectingEvent Collector
-        //PreparedStatement prepCECStmt = null;
-        //Statement         stmtCEC     = null;
+        try
+        {
+            
+            String            selectCECSQL = createSelectStmt(Collector.getClassTableId(), "CollectingEventID = %d");
+            PreparedStatement prepCECStmt  = createPreparedStmt(newDBConn, Collector.getClassTableId());
+            Statement         stmtCEC      = newDBConn.createStatement();
+            
+            PreparedStatement pStmt  = newDBConn.prepareStatement("UPDATE agent SET LastName=?,FirstName=?,Initials=? WHERE AgentID=?");
 
+            
+            //log.debug(selectCECSQL);
+            
+            int totalCnt = getCollectingEventsWithManyCollectionObjectsCount();
+            log.debug(String.format("%d CEs with more than one CO for all Collections", totalCnt));
+            
+            
+            //String    oSQL     = "SELECT CatalogNumber FROM collectionobjectcatalog WHERE CollectionObjectTypeID > 8 && CollectionObjectTypeID < 20 AND SubNumber >= 0 ORDER BY CatalogNumber ASC";
+            String    oSQL     = "SELECT CollectingEventID FROM collectingevent ORDER BY CollectingEventID ASC";
+            Statement oStmt    = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            Statement stmtOld  = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            Statement stmtNew  = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            
+            HashMap<Integer, Integer> fixedAgentIdsHash = new HashMap<Integer, Integer>();
+            
+            int cnt    = 0;
+            int okCnt  = 0;
+            int fixCnt = 0;
+            ResultSet rs = oStmt.executeQuery(oSQL);
+            while (rs.next())
+            {
+                int oldCEID = rs.getInt(1);
+                int newCEID = ceMapper.get(oldCEID);
+                
+                String newSQL = "SELECT ce.CollectingEventID, c.CollectorID, a.AgentID, a.LastName, a.FirstName, a.Initials " +
+                                "FROM collectingevent AS ce " +
+                                "LEFT Join collector AS c ON ce.CollectingEventID = c.CollectingEventID " +
+                                "LEFT Join agent AS a ON c.AgentID = a.AgentID WHERE ce.CollectingEventID = " + newCEID + " ORDER BY OrderNumber";
+
+                String oldSQL = "SELECT ce.CollectingEventID, c.CollectorsID, a.AgentID, IF(a.Name IS NULL, LastName, Name), a.FirstName, a.MiddleInitial " +
+                                "FROM collectingevent AS ce " +
+                                "INNER Join collectors AS c ON ce.CollectingEventID = c.CollectingEventID " +
+                                "INNER Join agent AS a ON c.AgentID = a.AgentID WHERE ce.CollectingEventID = " + oldCEID+ " ORDER BY `Order`";
+                
+                if (oldCEID == -2132584997)
+                {
+                    System.out.println("\n"+oldSQL);
+                    System.out.println(newSQL);
+                }
+                
+                ResultSet rsOld = stmtOld.executeQuery(oldSQL);
+                ResultSet rsNew = stmtNew.executeQuery(newSQL);
+                boolean   oldOK = rsOld.next();
+                boolean   newOK = rsNew.next();
+                if (oldOK && newOK)
+                {
+                    Integer newCollectorID = rsNew.getObject(2) != null ? rsNew.getInt(2) : null;
+                    Integer oldCollectorID = rsOld.getObject(2) != null ? rsOld.getInt(2) : null;
+                    
+                    Integer newAgentId     = rsNew.getObject(3) != null ? rsNew.getInt(3) : null;
+                    Integer oldAgentId     = rsOld.getObject(3) != null ? rsOld.getInt(3) : null;
+                    
+                    String oldLast  = rsOld.getString(4);
+                    String oldFirst = rsOld.getString(5);
+                    String oldMid   = rsOld.getString(6);
+                    
+                    String newLast  = rsNew.getString(4);
+                    String newFirst = rsNew.getString(5);
+                    String newMid   = rsNew.getString(6);
+                    
+                    if (!compareStr(oldLast, newLast) || !compareStr(oldFirst, newFirst) || !compareStr(oldMid, newMid))
+                    {
+                        Integer hits = fixedAgentIdsHash.get(newAgentId);
+                        if (hits == null)
+                        {
+                            fixedAgentIdsHash.put(newAgentId, 1);
+                            
+                            pStmt.setString(1, oldLast);
+                            pStmt.setString(2, oldFirst);
+                            pStmt.setString(3, oldMid);
+                            pStmt.setInt(4, newAgentId);
+                            pStmt.executeUpdate();
+                            
+                        } else
+                        {
+                            //fixedAgentIdsHash.put(newAgentId, ++hits);
+                            log.error("Agent Id "+newAgentId+" has already been fixed.");
+                        }
+                        continue;
+                    }
+                    
+                    //System.out.println("OldCE: "+ceID+"  New CEID: "+rsNew.getObject(1)+"  New ColID: "+rsNew.getObject(2));
+                    if (newCollectorID == null || newAgentId == null)
+                    {
+                        Integer mappedAgentID  = agentMapper.get(oldAgentId);
+                        Integer mappedColID    = colMapper.get(oldCollectorID);
+                        
+                        if (mappedColID != null && !mappedColID.equals(newCollectorID))
+                        {
+                            log.error(String.format("Old Collector ID %d doesn't map to New Id %d - it was mapped to %d", oldCollectorID, newCollectorID, mappedColID));
+                            continue;
+                        }
+                        
+                        if (mappedAgentID != null && !mappedAgentID.equals(newAgentId))
+                        {
+                            log.error(String.format("Old Agent ID %d doesn't map to New Id %d - it was mapped to %d", oldAgentId, newAgentId, mappedColID));
+                            continue;
+                        }
+
+                        int dispId = BasicSQLUtils.getCountAsInt("SELECT DisciplineID FROM collectingevent WHERE CollectingEventID = " + rsNew.getObject(1));
+                        int divId  = BasicSQLUtils.getCountAsInt("SELECT DivisionID FROM discipline WHERE DisciplineID = " + dispId);
+                        
+                        // Duplicate Collector Record
+                        String    sql   = String.format(selectCECSQL, oldCEID);
+                        ResultSet rsCEC = stmtCEC.executeQuery(sql);
+                        while (rsCEC.next()) 
+                        {
+                            int divCECInx = getColumnIndex(rsCEC.getMetaData(), "DivisionID");
+                            int ceIDInx   = getColumnIndex(rsCEC.getMetaData(), "CollectingEventID");
+                            int agtInx    = getColumnIndex(rsCEC.getMetaData(), "AgentID");
+    
+                            for (int i=1;i<=rsCEC.getMetaData().getColumnCount();i++)
+                            {
+                                //System.out.println(i+"  "+rsCEC.getMetaData().getColumnName(i)+"  "+rsCEC.getObject(i));
+                                if (i == agtInx)
+                                {
+                                    Integer newAgtID = agentMapper.get(rsCEC.getInt(i));
+                                    if (newAgtID != null)
+                                    {
+                                        prepCECStmt.setObject(i, newAgtID);
+                                    } else
+                                    {
+                                        System.err.println(String.format("Error couldn't find old Agent Id["+rsCEC.getInt(i)+"] in the agent mapper. For %d / %d", oldCEID, rsOld.getInt(2)));
+                                        prepCECStmt.setObject(i, null);
+                                    }
+                                   
+                                } else
+                                {
+                                    prepCECStmt.setObject(i, rsCEC.getObject(i));
+                                }
+                            }
+                            prepCECStmt.setInt(divCECInx, divId);
+                            prepCECStmt.setInt(ceIDInx, newCEID);
+                            
+                            if (prepCECStmt.executeUpdate() != 1)
+                            {
+                                throw new RuntimeException("Couldn't insert CE Collector row.");
+                            }
+                            fixCnt++;
+                        }
+                    } else
+                    {
+                        okCnt++;
+                        //System.out.println("oldOK: "+oldOK+"  newOK: "+ newOK+"  newCEID: "+newCEID+"  oldCEID: "+oldCEID+"  collector: "+newCollectorID);
+                        //System.out.println(oldSQL);
+                        //System.out.println(newSQL);
+                        //int x = 0;
+                        //x++;
+                    }
+                }
+                rsOld.close();
+                
+                cnt++;
+                if (cnt % 1000 == 0)
+                {
+                    System.out.println(cnt+" - "+oldCEID +" "+newCEID);
+                }
+            }
+            rs.close();
+            
+            log.debug("okCnt: "+okCnt+"  fixCnt: "+fixCnt+"  cnt: "+cnt);
+            
+            oStmt.close();
+            stmtOld.close();
+            stmtNew.close();
+            
+            pStmt.close();
+            
+            for (Integer id : fixedAgentIdsHash.keySet())
+            {
+                System.out.println("Id: "+id+" - "+fixedAgentIdsHash.get(id));
+            }
+            
+            
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            try
+            {
+                if (prepCEStmt != null) prepCEStmt.close();
+                if (stmtCE != null) stmtCE.close();
+                
+            } catch (Exception ex) {}
+        }
+
+    }
+
+    /**
+     * @param oldDBConn
+     * @param newDBConn
+     */
+    public void fixCollectorsForCollectingEvents()
+    {
+        IdTableMapper ceMapper    = IdMapperMgr.getInstance().addTableMapper("collectingevent", "CollectingEventID", false);
+        IdTableMapper coMapper    = IdMapperMgr.getInstance().addTableMapper("collectionobjectcatalog", "CollectionObjectCatalogID", false);
+        
+        // CollectingEvent
+        PreparedStatement prepCEStmt = null;
+        Statement         stmtCE     = null;
+        
         try
         {
             
@@ -515,12 +740,13 @@ public class DuplicateCollectingEvents
             rs.close();
             pStmt.close();
             
+            log.debug(cnt + " / "+ totCnt);
             log.debug("The last new CE Changed was "+lastCEId);
             log.debug(String.format("%d COs were updated out of %d", coCnt, cnt));
             
             int lastCEAttrID = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT NewID FROM habitat_HabitatID ORDER BY NewID DESC LIMIT 0,1");
             
-            sql = "SELECT COUNT(*) FROM collectionobject WHERE CollectingEventID > "+lastCEId;
+            sql = "SELECT COUNT(*) FROM collectionobject WHERE TimestampCreated < '2010-01-01'";// AND CollectingEventID > "+lastCEId;
             log.debug(sql);
             int badCnt = BasicSQLUtils.getCountAsInt(sql);
             log.debug(String.format("COs with CE Id %d and there shouldn't be any.", badCnt));

@@ -885,7 +885,7 @@ public class LocalityCleanup
             for (Object[] cols : BasicSQLUtils.query(sql))
             {
                 String oldCatNum    = cols[0].toString();
-                String newCatNum = StringUtils.replace(oldCatNum, ".", "");
+                String newCatNum = "0" + StringUtils.replace(oldCatNum, ".", "");
                 
                 pTxStmt.setString(1, newCatNum);
                 pTxStmt.setString(2, oldCatNum);
