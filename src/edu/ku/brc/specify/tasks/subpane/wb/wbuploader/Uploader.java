@@ -268,6 +268,11 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected int rowUploading;
 
+    /**
+     * The workbenchrowimages for the current workbench row
+     */
+    protected List<WorkbenchRowImage> 				imagesForRow = new Vector<WorkbenchRowImage>();
+    
     protected boolean 	                            additionalLocksSet = false;
     protected static final Logger                   log                      = Logger.getLogger(Uploader.class);
    
@@ -1811,6 +1816,19 @@ public class Uploader implements ActionListener, KeyListener
     		}
     	}
     	return result;
+    }
+    
+    /**
+     * @param wri
+     * @return table to attach wri to
+     */
+    public UploadTable getAttachToTable(WorkbenchRowImage wri)
+    {
+    	if (wri.getAttachToTableName() == null)
+    	{
+    		return getAttachToTable();
+    	}
+    	return getUploadTableByName(wri.getAttachToTableName());
     }
     
     /**
@@ -3427,6 +3445,8 @@ public class Uploader implements ActionListener, KeyListener
 
                         	if (!uploadData.isEmptyRow(rowUploading))
                         	{
+                            	imagesForRow.clear();
+                            	imagesForRow.addAll(uploadData.getWbRow(rowUploading).getWorkbenchRowImages());
                         		for (UploadTable t : uploadTables)
                         		{
                         			if (cancelled)
@@ -4034,11 +4054,17 @@ public class Uploader implements ActionListener, KeyListener
     protected void writeRow(final UploadTable t, int row) throws UploaderException
     {
         t.writeRow(row);
-        Set<WorkbenchRowImage> images = uploadData.getWbRow(row).getWorkbenchRowImages();
-        if (t == getAttachToTable() && images != null && images.size() > 0)
+        Set<WorkbenchRowImage> imagesToAttach = new HashSet<WorkbenchRowImage>();
+        for (int i = imagesForRow.size() -1; i >= 0; i--)
         {
-        	attachImages(t, images);
+        	WorkbenchRowImage wri = imagesForRow.get(i);
+        	if (getAttachToTable(wri) == t)
+        	{
+        		imagesToAttach.add(wri);
+        		imagesForRow.remove(i);
+        	}
         }
+        attachImages(t, imagesToAttach);
     }
 
     /**
@@ -4086,7 +4112,12 @@ public class Uploader implements ActionListener, KeyListener
     protected void attachImages(final UploadTable t,
 			final Set<WorkbenchRowImage> images) throws UploaderException
 	{
-		AttachmentOwnerIFace<?> rec = (AttachmentOwnerIFace<?>) t
+		if (images.size() == 0)
+		{
+			return;
+		}
+		
+    	AttachmentOwnerIFace<?> rec = (AttachmentOwnerIFace<?>) t
 				.getCurrentRecord(0);
 		
 		if (rec == null && t instanceof UploadTableTree)
