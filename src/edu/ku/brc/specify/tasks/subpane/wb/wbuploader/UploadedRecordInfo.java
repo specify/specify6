@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -34,6 +35,9 @@ public class UploadedRecordInfo extends Pair<Integer, Integer> implements Compar
 {
     protected final int seq;
     protected final Object autoAssignedVal; //value of auto-assigned field for the record. (Assuming there will never be more than one)
+    protected final boolean isUpdate;
+    protected final DataModelObjBase originalData;
+    protected final String tblName;
     
     /**
      * @param key
@@ -42,11 +46,20 @@ public class UploadedRecordInfo extends Pair<Integer, Integer> implements Compar
      */
     public UploadedRecordInfo(final Integer key, final Integer wbRow, final int seq, final Object autoAssignedVal)
     {
+        this(key, wbRow, seq, autoAssignedVal, false, null, null);
+    }
+    
+    public UploadedRecordInfo(final Integer key, final Integer wbRow, final int seq, final Object autoAssignedVal, final boolean isUpdate, 
+    		final DataModelObjBase originalData, final String tblName)
+    {
         super(key, wbRow);
         this.seq = seq;
         this.autoAssignedVal = autoAssignedVal;
+        this.isUpdate = isUpdate;
+        this.originalData = originalData;
+        this.tblName = tblName;
     }
-    
+
     /**
      * @return the record key.
      */
@@ -112,5 +125,14 @@ public class UploadedRecordInfo extends Pair<Integer, Integer> implements Compar
     	}
     	return false;
     }
+
+	/**
+	 * @return the tblName
+	 */
+	public String getTblName()
+	{
+		return tblName;
+	}
+    
     
 }

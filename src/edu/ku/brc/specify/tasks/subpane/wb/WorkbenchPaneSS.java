@@ -146,6 +146,7 @@ import edu.ku.brc.services.mapping.SimpleMapLocation;
 import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
 import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.AttachmentOwnerIFace;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
@@ -994,9 +995,9 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         });
         //compareSchemas();
+    	buildValidator();
         if (doIncrementalValidation)
         {
-        	buildValidator();
         	validateRows(0, workbench.getWorkbenchRows().size()-1);
         }
     }
@@ -4433,5 +4434,16 @@ public class WorkbenchPaneSS extends BaseSubPane
         shutdownLock.decrementAndGet();
     }
     
+    /**
+     * @return list tables in the workbench that support attachments
+     */
+    public List<String> getAttachableTables()
+    {
+    	if (workbenchValidator != null)
+    	{
+    		return workbenchValidator.getUploader().getAttachableTablesInUse();
+    	}
+    	return null;
+    }
 }
 

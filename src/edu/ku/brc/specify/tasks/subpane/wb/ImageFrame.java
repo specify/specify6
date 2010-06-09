@@ -27,6 +27,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -87,6 +88,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.ui.HelpMgr;
+import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.DefaultModifiableListModel;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
@@ -103,6 +105,7 @@ import edu.ku.brc.util.thumbnails.ImageThumbnailGenerator;
  *
  * @code_status Beta
  */
+@SuppressWarnings("serial")
 public class ImageFrame extends JFrame implements PropertyChangeListener
 {
     private static final Logger log                        = Logger.getLogger(ImageFrame.class);
@@ -623,6 +626,43 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
         return false;
     }
 
+    
+    /**
+     * @return 
+     */
+    protected String getAttachToTableName()
+    {
+        String attachToTableName = null;
+//        List<String> attachableTbls = wbPane.getAttachableTables();
+//        if (attachableTbls == null)
+//        {
+//        	//message about default attachment table
+//        } else
+//        {
+//        	if (attachableTbls.size() == 1)
+//        	{
+//        		attachToTableName = attachableTbls.get(0);
+//        	} else
+//        	{
+//        		ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>((Frame )UIRegistry.getMostRecentWindow(),
+//        				UIRegistry.getResourceString("ImageFrame.ChooseAttachTableDlgTitle"),
+//        				attachableTbls);
+//        		UIHelper.centerAndShow(dlg);
+//        		if (!dlg.isCancelled())
+//        		{
+//        			attachToTableName = dlg.getSelectedObject();
+//        			
+//        		} else
+//        		{
+//        			attachToTableName = "";
+//        		}
+//        			
+//        		dlg.dispose();        		
+//        	}
+//        }
+        return attachToTableName;
+    }
+    
     /**
      * Adds a new image to the current {@link WorkbenchRow}.
      */
@@ -631,6 +671,11 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
         UsageTracker.incrUsageCount("WB.AddWBRowImage");
         
         final WorkbenchRow wbRow = this.row;
+        final String attachToTableName = getAttachToTableName();
+        if ("".equals(attachToTableName))
+        {
+        	return; //choose attachToTable dlg cancelled by user.
+        }
         
         final File[] imageFiles = askUserForImageFiles();
         if (imageFiles == null || imageFiles.length == 0)
@@ -682,6 +727,7 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
                             });
                             
                             WorkbenchRowImage rowImage = row.getRowImage(newIndex);
+                            rowImage.setAttachToTableName(attachToTableName);
                             rowImagesNeedingThumbnails.add(rowImage);
                             wbPane.setChanged(true);
                         }

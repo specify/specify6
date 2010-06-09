@@ -119,4 +119,9 @@ public class WorkbenchValidator
 			return structureErrors;
 		}
 	}
+	
+	public Uploader getUploader()
+	{
+		return uploader;
+	}
 }

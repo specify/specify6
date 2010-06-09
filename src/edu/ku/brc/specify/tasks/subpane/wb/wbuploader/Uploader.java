@@ -30,6 +30,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -70,6 +71,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.SpecifyUserTypes;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
@@ -272,6 +274,11 @@ public class Uploader implements ActionListener, KeyListener
      * The workbenchrowimages for the current workbench row
      */
     protected List<WorkbenchRowImage> 				imagesForRow = new Vector<WorkbenchRowImage>();
+    
+    /**
+     * Attachments created during the upload
+     */
+    protected List<UploadedRecordInfo>              newAttachments = new Vector<UploadedRecordInfo>();
     
     protected boolean 	                            additionalLocksSet = false;
     protected static final Logger                   log                      = Logger.getLogger(Uploader.class);
@@ -1751,20 +1758,19 @@ public class Uploader implements ActionListener, KeyListener
     }
     
     /**
-     * @return a set of tables that can have attachments in the current upload.
+     * @return a list of names tables that can have attachments in the current upload.
      * 
      *  Not currently used, but will be when/if we allow users to choose which tables
      *  attachments apply to.
      */
-    @SuppressWarnings("unchecked")
-    protected Set<Class<AttachmentOwnerIFace<?>>> getAttachableTablesInUse()
+    public List<String> getAttachableTablesInUse()
     {
-    	Set<Class<AttachmentOwnerIFace<?>>> result = new HashSet<Class<AttachmentOwnerIFace<?>>>();
+    	List<String> result = new Vector<String>();
     	for (UploadTable ut : uploadTables)
     	{
     		if (AttachmentOwnerIFace.class.isAssignableFrom(ut.getTblClass()))
     		{
-    			result.add((Class<AttachmentOwnerIFace<?>> )ut.getTblClass());
+    			result.add(ut.getTable().getName());
     		}
     	}
     	return result;
@@ -2248,6 +2254,7 @@ public class Uploader implements ActionListener, KeyListener
             {
                 t.prepareToUpload();
             }
+            newAttachments.clear();
             // But may want option to ONLY upload rows that were skipped...
             skippedRows.clear();
             messages.clear();
@@ -3675,6 +3682,7 @@ public class Uploader implements ActionListener, KeyListener
                         List<UploadTable> fixedUp = reorderUploadTablesForUndo();
                         boolean isEmbeddedCE = AppContextMgr.getInstance().getClassObject(
                                 Collection.class).getIsEmbeddedCollectingEvent();
+                        undoAttachments();
                         try
                         {
                             AppContextMgr.getInstance().getClassObject(Collection.class)
@@ -4147,16 +4155,19 @@ public class Uploader implements ActionListener, KeyListener
 			boolean tblTransactionOpen = false;
 			try
 			{
+				session.attach(rec);
 				session.beginTransaction();
 				tblTransactionOpen = true;
 				Set<ObjectAttachmentIFace<?>> attachees = (Set<ObjectAttachmentIFace<?>>) rec
 						.getAttachmentReferences();
 				int ordinal = 0;
+				Timestamp startTime = new Timestamp(System.currentTimeMillis());
 				for (WorkbenchRowImage image : images)
 				{
 					Attachment attachment = new Attachment();
 					attachment.initialize();
 					attachment.setOrigFilename(image.getCardImageFullPath());
+					attachment.setTitle(image.getCardImageFullPath());
 					ObjectAttachmentIFace<DataModelObjBase> oaif = (ObjectAttachmentIFace<DataModelObjBase>) getAttachmentObject(rec
 							.getClass());
 					oaif.setAttachment(attachment);
@@ -4179,12 +4190,34 @@ public class Uploader implements ActionListener, KeyListener
 						throw new Exception("Business rules processing failed");
 					}
 				}
+				BusinessRulesIFace attBusRule = DBTableIdMgr.getInstance().getBusinessRule(Attachment.class);
+				if (attBusRule != null )
+				{
+					for (ObjectAttachmentIFace att : rec.getAttachmentReferences())
+					{
+						if (((DataModelObjBase )att).getTimestampCreated().compareTo(startTime) > 0)
+						{
+							if (!attBusRule.beforeSaveCommit(att.getAttachment(), session))
+							{
+								session.rollback();
+								throw new Exception("Business rules processing failed");
+							}
+						}
+					}
+				}
 				session.commit();
 //				tries = 2;
 				tblTransactionOpen = false;
 				if (busRule != null)
 				{
 					busRule.afterSaveCommit(rec, session);
+				}
+				for (ObjectAttachmentIFace att : rec.getAttachmentReferences())
+				{
+					if (((DataModelObjBase )att).getTimestampCreated().compareTo(startTime) > 0)
+					{
+						newAttachments.add(new UploadedRecordInfo(att.getAttachment().getId(), -1, 0, null, false, null, t.getWriteTable().getName()));
+					}
 				}
 			} catch (HibernateException he)
 			{
@@ -4220,6 +4253,18 @@ public class Uploader implements ActionListener, KeyListener
 //			t.setCurrentRecord((DataModelObjBase )rec, 0);
 //		}
 	}
+    
+    /**
+     * remove uploaded attachments
+     */
+    protected void undoAttachments()
+    {
+    	for (UploadedRecordInfo uri : newAttachments)
+    	{
+    		BasicSQLUtils.update("delete from " + uri.getTblName().toLowerCase() + "attachment where attachmentid = " + uri.getKey());
+    		BasicSQLUtils.update("delete from attachment where attachmentid = " + uri.getKey()); //assuming attachments aren't being shared
+    	}
+    }
     
     /**
      * Creates a recordset for each UploadTable containing the keys of all objects
