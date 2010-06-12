@@ -122,6 +122,7 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -1763,19 +1764,38 @@ public class Uploader implements ActionListener, KeyListener
      *  Not currently used, but will be when/if we allow users to choose which tables
      *  attachments apply to.
      */
-    public List<String> getAttachableTablesInUse()
+//    public List<Pair<String,String>> getAttachableTablesInUse()
+//    {
+//    	List<Pair<String, String>> result = new Vector<Pair<String, String>>();
+//    	for (UploadTable ut : uploadTables)
+//    	{
+//    		if (AttachmentOwnerIFace.class.isAssignableFrom(ut.getTblClass()))
+//    		{
+//    			result.add(new Pair<String, String>(ut.getTable().getName(), ut.toString()));
+//    		}
+//    	}
+//    	return result;
+//    }
+ 
+    /**
+     * @return a list of uploadtables that can have attachments in the current upload.
+     * 
+     *  Not currently used, but will be when/if we allow users to choose which tables
+     *  attachments apply to.
+     */
+    public List<UploadTable> getAttachableTablesInUse()
     {
-    	List<String> result = new Vector<String>();
+    	List<UploadTable> result = new Vector<UploadTable>();
     	for (UploadTable ut : uploadTables)
     	{
     		if (AttachmentOwnerIFace.class.isAssignableFrom(ut.getTblClass()))
     		{
-    			result.add(ut.getTable().getName());
+    			result.add(ut);
     		}
     	}
     	return result;
     }
-    
+
     /**
      * @return list of attachable table names.
      */
@@ -4138,120 +4158,90 @@ public class Uploader implements ActionListener, KeyListener
 			return; //maybe the row was not uploaded for some reason
 		}
 		
-		//it doesn't seem necessary to include the re-try code, but leaving it here in case it becomes necessary in future.
 		
 		
-//		boolean newRec = false;
-//		int tries = 0;
-//		while (tries < 2)
-//		{
-			DataProviderSessionIFace session = DataProviderFactory
-					.getInstance().createSession();
-//			if (tries == 1)
-//			{
-//				rec = (AttachmentOwnerIFace<?>)session.get(t.getTblClass(), t.getCurrentRecord(0).getId());
-//				newRec = true;
-//			}
-			boolean tblTransactionOpen = false;
-			try
+			DataProviderSessionIFace session = DataProviderFactory.getInstance()
+				.createSession();
+		boolean tblTransactionOpen = false;
+		try
+		{
+			session.attach(rec);
+			session.beginTransaction();
+			tblTransactionOpen = true;
+			Set<ObjectAttachmentIFace<?>> attachees = (Set<ObjectAttachmentIFace<?>>) rec
+					.getAttachmentReferences();
+			Vector<ObjectAttachmentIFace<?>> currentAttachees = new Vector<ObjectAttachmentIFace<?>>();
+			int ordinal = 0;
+			for (WorkbenchRowImage image : images)
 			{
-				session.attach(rec);
-				session.beginTransaction();
-				tblTransactionOpen = true;
-				Set<ObjectAttachmentIFace<?>> attachees = (Set<ObjectAttachmentIFace<?>>) rec
-						.getAttachmentReferences();
-				int ordinal = 0;
-				Timestamp startTime = new Timestamp(System.currentTimeMillis());
-				for (WorkbenchRowImage image : images)
-				{
-					Attachment attachment = new Attachment();
-					attachment.initialize();
-					attachment.setOrigFilename(image.getCardImageFullPath());
-					attachment.setTitle(image.getCardImageFullPath());
-					ObjectAttachmentIFace<DataModelObjBase> oaif = (ObjectAttachmentIFace<DataModelObjBase>) getAttachmentObject(rec
-							.getClass());
-					oaif.setAttachment(attachment);
-					oaif.setObject((DataModelObjBase) rec);
-					oaif.setOrdinal(ordinal);
-					attachees.add(oaif);
-				}
-				BusinessRulesIFace busRule = DBTableIdMgr.getInstance()
-						.getBusinessRule(rec.getClass());
-				if (busRule != null)
-				{
-					busRule.beforeSave(rec, session);
-				}
-				session.saveOrUpdate(rec);
-				if (busRule != null)
-				{
-					if (!busRule.beforeSaveCommit(rec, session))
-					{
-						session.rollback();
-						throw new Exception("Business rules processing failed");
-					}
-				}
-				BusinessRulesIFace attBusRule = DBTableIdMgr.getInstance().getBusinessRule(Attachment.class);
-				if (attBusRule != null )
-				{
-					for (ObjectAttachmentIFace att : rec.getAttachmentReferences())
-					{
-						if (((DataModelObjBase )att).getTimestampCreated().compareTo(startTime) > 0)
-						{
-							if (!attBusRule.beforeSaveCommit(att.getAttachment(), session))
-							{
-								session.rollback();
-								throw new Exception("Business rules processing failed");
-							}
-						}
-					}
-				}
-				session.commit();
-//				tries = 2;
-				tblTransactionOpen = false;
-				if (busRule != null)
-				{
-					busRule.afterSaveCommit(rec, session);
-				}
-				for (ObjectAttachmentIFace att : rec.getAttachmentReferences())
-				{
-					if (((DataModelObjBase )att).getTimestampCreated().compareTo(startTime) > 0)
-					{
-						newAttachments.add(new UploadedRecordInfo(att.getAttachment().getId(), -1, 0, null, false, null, t.getWriteTable().getName()));
-					}
-				}
-			} catch (HibernateException he)
-			{
-				if (tblTransactionOpen)
-				{
-					session.rollback();
-				}
-				// XXX To avoid hibernate errors, it may be necessary to perform
-				// a merge below but that REALLY slows down uploads.
-				// (refresh is bad enough)
-//				if (tries == 0)
-//				{
-//					tries++;
-//				} else
-				{
-					throw new UploaderException(he,
-							UploaderException.ABORT_IMPORT);
-				}
-			} catch (Exception ex)
-			{
-				if (tblTransactionOpen)
-				{
-					session.rollback();
-				}
-				throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
-			} finally
-			{
-				session.close();
+				Attachment attachment = new Attachment();
+				attachment.initialize();
+				attachment.setOrigFilename(image.getCardImageFullPath());
+				attachment.setTitle(image.getCardImageFullPath());
+				ObjectAttachmentIFace<DataModelObjBase> oaif = (ObjectAttachmentIFace<DataModelObjBase>) getAttachmentObject(rec
+						.getClass());
+				oaif.setAttachment(attachment);
+				oaif.setObject((DataModelObjBase) rec);
+				oaif.setOrdinal(ordinal);
+				attachees.add(oaif);
+				currentAttachees.add(oaif);
 			}
-//		}
-//		if (newRec)
-//		{
-//			t.setCurrentRecord((DataModelObjBase )rec, 0);
-//		}
+			BusinessRulesIFace busRule = DBTableIdMgr.getInstance()
+					.getBusinessRule(rec.getClass());
+			if (busRule != null)
+			{
+				busRule.beforeSave(rec, session);
+			}
+			session.saveOrUpdate(rec);
+			if (busRule != null)
+			{
+				if (!busRule.beforeSaveCommit(rec, session))
+				{
+					session.rollback();
+					throw new Exception("Business rules processing failed");
+				}
+			}
+			for (ObjectAttachmentIFace att : currentAttachees)
+			{
+					AttachmentUtils.getAttachmentManager()
+							.setStorageLocationIntoAttachment(
+									att.getAttachment());
+					att.getAttachment().storeFile();
+			}
+			session.commit();
+			tblTransactionOpen = false;
+			if (busRule != null)
+			{
+				busRule.afterSaveCommit(rec, session);
+			}
+			for (ObjectAttachmentIFace att : currentAttachees)
+			{
+				newAttachments.add(new UploadedRecordInfo(att.getAttachment().getId(), -1, 0, null, false, null,
+							t.getWriteTable().getName()));
+			}
+		} catch (HibernateException he)
+		{
+			if (tblTransactionOpen)
+			{
+				session.rollback();
+			}
+			// XXX To avoid hibernate errors, it may be necessary to perform
+			// a merge below but that REALLY slows down uploads.
+			// (refresh is bad enough)
+			{
+				throw new UploaderException(he, UploaderException.ABORT_IMPORT);
+			}
+		} catch (Exception ex)
+		{
+			if (tblTransactionOpen)
+			{
+				session.rollback();
+			}
+			throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+		} finally
+		{
+			session.close();
+		}
 	}
     
     /**

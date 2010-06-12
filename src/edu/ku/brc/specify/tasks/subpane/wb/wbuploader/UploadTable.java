@@ -3586,8 +3586,7 @@ public class UploadTable implements Comparable<UploadTable>
     @Override
     public String toString()
     {
-        String result = DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName())
-                .getTitle();
+        String result = getTblTitle();
         if (tblClass.equals(Agent.class))
         {
             if (relationship != null)
@@ -3599,6 +3598,14 @@ public class UploadTable implements Comparable<UploadTable>
         return result;
     }
 
+    /**
+     * @return title of the underlying specify 6 table
+     */
+    public String getTblTitle()
+    {
+        return DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTitle();
+    }
+    
     public UploadMatchSetting getMatchSetting()
     {
         return matchSetting;

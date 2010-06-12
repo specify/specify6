@@ -511,7 +511,7 @@ public class UploadTableTree extends UploadTable
         try
         {
             TreeDefItemIface td = getTreeDefItem();
-            if (td != null) return td.getName();
+            if (td != null) return td.getDisplayText();
             return tblClass.getSimpleName();
         }
         catch (UploaderException ux)
@@ -520,7 +520,17 @@ public class UploadTableTree extends UploadTable
         }
     }
 
+    
     /* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#getTblTitle()
+	 */
+	@Override
+	public String getTblTitle()
+	{
+		return toString();
+	}
+
+	/* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#verifyUploadability()
      */
     @Override

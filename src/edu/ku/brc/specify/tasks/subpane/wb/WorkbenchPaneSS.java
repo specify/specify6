@@ -146,7 +146,6 @@ import edu.ku.brc.services.mapping.SimpleMapLocation;
 import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
 import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.AttachmentOwnerIFace;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
@@ -170,6 +169,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DB;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadData;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDef;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTableInvalidValue;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.WorkbenchUploadMapper;
@@ -4437,7 +4437,19 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * @return list tables in the workbench that support attachments
      */
-    public List<String> getAttachableTables()
+//    public List<Pair<String, String>> getAttachableTables()
+//    {
+//    	if (workbenchValidator != null)
+//    	{
+//    		return workbenchValidator.getUploader().getAttachableTablesInUse();
+//    	}
+//    	return null;
+//    }
+    
+    /**
+     * @return list tables in the workbench that support attachments
+     */
+    public List<UploadTable> getAttachableTables()
     {
     	if (workbenchValidator != null)
     	{
@@ -4445,5 +4457,6 @@ public class WorkbenchPaneSS extends BaseSubPane
     	}
     	return null;
     }
+
 }
 

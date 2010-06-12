@@ -3,7 +3,6 @@
  */
 package edu.ku.brc.specify.prefs;
 
-import java.awt.Component;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
