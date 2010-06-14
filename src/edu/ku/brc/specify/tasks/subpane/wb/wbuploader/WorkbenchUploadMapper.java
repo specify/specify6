@@ -22,6 +22,7 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -59,7 +60,7 @@ public class WorkbenchUploadMapper
     
     protected static final Logger      log         = Logger.getLogger(WorkbenchUploadMapper.class);
 
-    protected final WorkbenchTemplate  wbt;
+    protected final Collection<WorkbenchTemplateMappingItem> wbtItems;
     protected Vector<Short>            mappedItems = null;
     protected Vector<UploadMappingDef> maps        = null;
     
@@ -282,9 +283,9 @@ public class WorkbenchUploadMapper
     /**
      * @param wbt - the workbench template being uploaded.
      */
-    public WorkbenchUploadMapper(final WorkbenchTemplate wbt)
+    public WorkbenchUploadMapper(final Collection<WorkbenchTemplateMappingItem> wbtItems)
     {
-        this.wbt = wbt;
+        this.wbtItems = wbtItems;
         mappedItems = new Vector<Short>();
         defs = buildDefs();
         taxonLevels = buildTreeLevels("taxon");
@@ -293,6 +294,14 @@ public class WorkbenchUploadMapper
         chronoLevels = buildTreeLevels("geologictimeperiod");
         storageLevels = buildTreeLevels("storage");
         maps = new Vector<UploadMappingDef>();
+    }
+
+    /**
+     * @param wbt - the workbench template being uploaded.
+     */
+    public WorkbenchUploadMapper(final WorkbenchTemplate wbt)
+    {
+        this(wbt.getWorkbenchTemplateMappingItems());
     }
 
     /**
@@ -417,7 +426,7 @@ public class WorkbenchUploadMapper
      */
     protected void mapLeftovers()
     {
-        for (WorkbenchTemplateMappingItem wbi : wbt.getWorkbenchTemplateMappingItems())
+        for (WorkbenchTemplateMappingItem wbi : wbtItems)
         {
             if (!isMapped(wbi.getViewOrder()))
             {
@@ -443,7 +452,7 @@ public class WorkbenchUploadMapper
      */
     protected void mapRelationships() throws UploaderException
     {
-        for (WorkbenchTemplateMappingItem wbi : wbt.getWorkbenchTemplateMappingItems())
+        for (WorkbenchTemplateMappingItem wbi : wbtItems)
         {
             if (!isMapped(wbi.getViewOrder()))
             {
@@ -546,7 +555,7 @@ public class WorkbenchUploadMapper
         Vector<WorkbenchTemplateMappingItem> chronoTreeItems = new Vector<WorkbenchTemplateMappingItem>();
         Vector<WorkbenchTemplateMappingItem> storageTreeItems = new Vector<WorkbenchTemplateMappingItem>();
 
-        for (WorkbenchTemplateMappingItem wbi : wbt.getWorkbenchTemplateMappingItems())
+        for (WorkbenchTemplateMappingItem wbi : wbtItems)
         {
             if (!isMapped(wbi.getViewOrder()))
             {

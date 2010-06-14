@@ -114,7 +114,14 @@ public class UploadData
     public UploadData(Vector<UploadMappingDef> mappings, Vector<WorkbenchRow> wbRows)
     {
         this.mappings = mappings;
-        this.wbRows = wbRows;
+        if (wbRows != null)
+        {
+        	this.wbRows = wbRows;
+        } else
+        {
+        	this.wbRows = new Vector<WorkbenchRow>();
+        }
+        
     }
     
     /**

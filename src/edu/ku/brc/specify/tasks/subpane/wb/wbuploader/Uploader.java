@@ -30,7 +30,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -96,9 +95,9 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
+import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.SCOPE;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.USER_ACTION;
@@ -201,6 +200,8 @@ public class Uploader implements ActionListener, KeyListener
      * The WorkbenchPane for the uploading dataset.
      */
     protected WorkbenchPaneSS                       wbSS;
+    
+    protected java.util.Collection<WorkbenchTemplateMappingItem> workbenchTemplateMappingItems = null;
 
     protected Vector<UploadField>                   uploadFields;
 
@@ -738,17 +739,23 @@ public class Uploader implements ActionListener, KeyListener
         return lines;
     }
 
+    public Uploader(DB db, UploadData importData, final WorkbenchPaneSS wbSS) throws UploaderException
+    {
+    	this(db, importData, wbSS, wbSS.getWorkbench().getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
+    }
+
     /**
      * @param db
      * @param uploadData
      * @throws UploaderException
      */
-    public Uploader(DB db, UploadData importData, final WorkbenchPaneSS wbSS)
+    public Uploader(DB db, UploadData importData, final WorkbenchPaneSS wbSS, final java.util.Collection<WorkbenchTemplateMappingItem> wbItems)
             throws UploaderException
     {
         this.db = db;
         this.uploadData = importData;
         this.wbSS = wbSS;
+        this.workbenchTemplateMappingItems = wbItems;
         this.uploadFields = new Vector<UploadField>(importData.getCols());
         this.missingRequiredClasses = new Vector<RelatedClassSetter>();
         this.missingRequiredFields = new Vector<DefaultFieldEntry>();
@@ -802,10 +809,9 @@ public class Uploader implements ActionListener, KeyListener
         if (!detPresent)
         {
             int maxSeq = 0;
-            WorkbenchRow wbRow = uploadData.getWbRow(0);
-            for (WorkbenchDataItem mapI : wbRow.getWorkbenchDataItems())
+            for (WorkbenchTemplateMappingItem mapI : workbenchTemplateMappingItems)
             {
-                String fldName = mapI.getWorkbenchTemplateMappingItem().getFieldName();
+                String fldName = mapI.getFieldName();
                 if (fldName.startsWith("genus") || fldName.startsWith("species")
                         || fldName.startsWith("variety") || fldName.startsWith("subspecies"))
                 {
@@ -1854,7 +1860,17 @@ public class Uploader implements ActionListener, KeyListener
     	{
     		return getAttachToTable();
     	}
-    	return getUploadTableByName(wri.getAttachToTableName());
+    	
+    	UploadTable result = getUploadTableByName(wri.getAttachToTableName());
+    	if (result == null)
+    	{
+    		result = getAttachToTable();
+    		String msg = "row " + rowUploading + ": " + wri.getAttachToTableName() + " is not mapped."
+    			+ " Attaching image to " 
+    			+ (result != null ? result.toString() : /*but this CANNOT happen*/ "default") + " table.";
+    		log.warn(msg);
+    	}
+    	return result;
     }
     
     /**
@@ -4148,7 +4164,8 @@ public class Uploader implements ActionListener, KeyListener
     	AttachmentOwnerIFace<?> rec = (AttachmentOwnerIFace<?>) t
 				.getCurrentRecord(0);
 		
-		if (rec == null && t instanceof UploadTableTree)
+		//
+    	if (rec == null && t instanceof UploadTableTree)
 		{
 			rec = (AttachmentOwnerIFace<?>)t.getParentRecord(0, t);
 		}
