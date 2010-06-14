@@ -8430,7 +8430,7 @@ public class BuildSampleDatabase
                         
                     } catch (Exception e)
                     {
-                        session.rollback();
+                        if (!isDoingUpdate) session.rollback();
                         
                         e.printStackTrace();
                     }
