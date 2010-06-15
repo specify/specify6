@@ -287,7 +287,7 @@ public class PreparationAttribute extends CollectionMember implements Cloneable
     /**
      * @return the preparationType
      */
-    @Column(name = "Text22", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
+    @Column(name = "Text22", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getText22()
     {
         return text22;

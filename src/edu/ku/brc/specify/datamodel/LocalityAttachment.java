@@ -108,7 +108,7 @@ public class LocalityAttachment extends DataModelObjBase implements ObjectAttach
     }
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     @JoinColumn(name = "AttachmentID", nullable = false)
     @OrderBy("ordinal ASC")
     public Attachment getAttachment()

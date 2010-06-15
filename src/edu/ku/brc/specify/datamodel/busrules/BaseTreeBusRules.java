@@ -88,7 +88,7 @@ import edu.ku.brc.ui.UIRegistry;
 public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                                        D extends TreeDefIface<T,D,I>,
                                        I extends TreeDefItemIface<T,D,I>>
-                                       extends BaseBusRules
+                                       extends AttachmentOwnerBaseBusRules
 {
     public static final boolean ALLOW_CONCURRENT_FORM_ACCESS = true;
 	

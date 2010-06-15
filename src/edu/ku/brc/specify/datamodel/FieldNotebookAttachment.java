@@ -116,7 +116,7 @@ public class FieldNotebookAttachment extends DataModelObjBase implements ObjectA
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "AttachmentID", nullable = false)
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Attachment getAttachment()
     {
         return attachment;

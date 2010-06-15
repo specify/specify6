@@ -19,8 +19,6 @@
 */
 package edu.ku.brc.specify.dbsupport;
 
-import javax.swing.SwingUtilities;
-
 import org.hibernate.event.PostDeleteEvent;
 
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
@@ -50,13 +48,6 @@ public class PostDeleteEventListener implements org.hibernate.event.PostDeleteEv
     {
         if (obj.getEntity() instanceof FormDataObjIFace)
         {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run()
-                {
-                    
-                }
-            });
             CommandDispatcher.dispatch(new CommandAction(PostInsertEventListener.DB_CMD_TYPE, PostInsertEventListener.DELETE_CMD_ACT, obj.getEntity()));
             
             if (PostInsertEventListener.isAuditOn())
