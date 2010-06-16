@@ -111,23 +111,39 @@
 	     Mac Common Components Build
 	     ************************************************************* -->
 	
-	<target name="installer-linux" depends="">
-	    <antcall target="installer-base"/>
-		<copy file="./system_dep_libs/non-mac-application-adapter.jar" todir="${installer.dir}" />
-		<!--
-	    <antcall target="build-help-index"/>
-	    <antcall target="build-help-fulltext-linux"/>
-	    -->
+    <target name="installer-linux" depends="">
+        <antcall target="installer-base"/>
+        <copy file="./system_dep_libs/non-mac-application-adapter.jar" todir="${installer.dir}" />
+        <!--
+        <antcall target="build-help-index"/>
+        <antcall target="build-help-fulltext-linux"/>
+        -->
     </target>
-	
-	<target name="installer-mac" depends="">
-	    <antcall target="installer-base"/>
-		<!--
-	    <antcall target="build-help-index"/>
-	    <antcall target="build-help-fulltext-mac"/>
-	    -->
+    
+    <target name="installer-mac" depends="">
+        <antcall target="installer-base"/>
+        <!--
+        <antcall target="build-help-index"/>
+        <antcall target="build-help-fulltext-mac"/>
+        -->
     </target>
-	
+    
+    <target name="installer-linux-jaronly" depends="">
+        <delete dir="${installer.dir}"/>
+         <mkdir dir="${installer.dir}" />
+         <antcall target="clean-jar"/>
+         <antcall target="dist-jar-mac"/>
+    	<copy file="${jar.name}.jar" todir="${installer.dir}" />
+    </target>
+    
+    <target name="installer-mac-jaronly" depends="">
+        <delete dir="${installer.dir}"/>
+         <mkdir dir="${installer.dir}" />
+         <antcall target="clean-jar"/>
+         <antcall target="dist-jar-mac"/>
+    	<copy file="${jar.name}.jar" todir="${installer.dir}" />
+    </target>
+    
 	<target name="installer-base" depends="">
 		
 		<delete dir="${installer.dir}"/>
