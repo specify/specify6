@@ -41,7 +41,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
-import java.util.concurrent.ExecutionException;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
@@ -531,7 +530,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     
                     // Do updates for Schema 1.2
-                    doFixesForDBSchema1_2(conn, databaseName);
+                    doFixesForDBSchemaVersions(conn, databaseName);
                     
                     // Find Accession NumberingSchemes that 'attached' to Collections
                     String postfix = " FROM autonumsch_coll ac Inner Join autonumberingscheme ans ON ac.AutoNumberingSchemeID = ans.AutoNumberingSchemeID WHERE ans.TableNumber = '7'";
@@ -797,11 +796,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     pStmtDel.setInt(1, agentId);
                     if (doUpdate) pStmtDel.execute();
                     
-                    System.err.println(inx+" - " +spId +" -> "+ agentId +" -> "+ divDsp.first +" -> "+ divDsp.second);
+                    log.debug(inx+" - " +spId +" -> "+ agentId +" -> "+ divDsp.first +" -> "+ divDsp.second);
                     inx++;
                 }
                 
-                System.err.println("Number Agents: "+ agentDispList.size() +" Number of Discipline: "+ divDspList.size());
+                log.debug("Number Agents: "+ agentDispList.size() +" Number of Discipline: "+ divDspList.size());
                 
                 //--------------------------------------------------------------
                 // Now re-add the agent_discipline records.
@@ -809,7 +808,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 int i = 0;
                 for (Pair<Integer, Integer> agentDisp : agentDispList)
                 {
-                    System.err.println("Agent: "+ agentDisp.first +" Disp: "+ agentDisp.second);
+                    log.debug("Agent: "+ agentDisp.first +" Disp: "+ agentDisp.second);
                     pStmtAdd.setInt(1, agentDisp.first);
                     pStmtAdd.setInt(2, agentDisp.second);
                     if (doUpdate) pStmtAdd.execute();
@@ -1149,7 +1148,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         if (len == origLen)
         {
             int rv = BasicSQLUtils.update(conn, String.format("ALTER TABLE %s MODIFY %s varchar(%d)", tblName, fldName, newLen));
-            System.err.println("rv= "+rv);
+            log.debug(String.format("Updating %s %s.%s - %d -> %d rv= %d", databaseName, tblName, fldName, origLen, newLen, rv));
             /*if (rv != count)
             {
                 errMsgList.add("Update count didn't match for update to table: spexportschema");
@@ -1164,7 +1163,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      * @param conn
      * @throws Exception
      */
-    private boolean doFixesForDBSchema1_2(final Connection conn, final String databaseName) throws Exception
+    private boolean doFixesForDBSchemaVersions(final Connection conn, final String databaseName) throws Exception
     {
         /////////////////////////////
         // PaleoContext
@@ -1504,10 +1503,62 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     mapper.cleanup();
                     
                     frame.incOverall();
-
-                    frame.getProcessProgress().setIndeterminate(true);
-                    frame.setDesc("Loading updated schema...");
                 }
+                
+                //////////////////////////////////////////////
+                // Schema Changes 1.4
+                //////////////////////////////////////////////
+                
+                // Add New Fields to Address
+                frame.setDesc("Updating Agent Fields...");
+                String tblName = "agent";
+                addColumn(conn, databaseName, tblName, "DateType",             "ALTER TABLE %s ADD COLUMN %s TINYINT(4) AFTER Title");
+                addColumn(conn, databaseName, tblName, "DateOfBirthPrecision", "ALTER TABLE %s ADD COLUMN %s TINYINT(4) AFTER DateOfBirth");
+                addColumn(conn, databaseName, tblName, "DateOfDeathPrecision", "ALTER TABLE %s ADD COLUMN %s TINYINT(4) AFTER DateOfDeath");
+                
+                if (!doesColumnExist(databaseName, "address", "Address2"))
+                {
+                    frame.setDesc("Updating Address Fields...");
+                    String fmtStr = "ALTER TABLE address ADD COLUMN Address%d VARCHAR(64) AFTER Address%d";
+                    for (int i=3;i<6;i++)
+                    {
+                        BasicSQLUtils.update(conn, String.format(fmtStr, i, i-1));
+                    }
+                }
+                
+                frame.setDesc("Updating LocalityDetail Fields...");
+                tblName = "localitydetail";
+                addColumn(conn, databaseName, tblName, "StartDepth",         "ALTER TABLE %s ADD COLUMN %s Double AFTER Drainage");
+                addColumn(conn, databaseName, tblName, "StartDepthUnit",     "ALTER TABLE %s ADD COLUMN %s TINYINT(4) AFTER StartDepth");
+                addColumn(conn, databaseName, tblName, "StartDepthVerbatim", "ALTER TABLE %s ADD COLUMN %s VARCHAR(32) AFTER StartDepthUnit");
+
+                addColumn(conn, databaseName, tblName, "EndDepth",         "ALTER TABLE %s ADD COLUMN %s Double AFTER StartDepthVerbatim");
+                addColumn(conn, databaseName, tblName, "EndDepthUnit",     "ALTER TABLE %s ADD COLUMN %s TINYINT(4) AFTER EndDepth");
+                addColumn(conn, databaseName, tblName, "EndDepthVerbatim", "ALTER TABLE %s ADD COLUMN %s VARCHAR(32) AFTER EndDepthUnit");
+                
+                frame.setDesc("Updating PaleoContext Fields...");
+                tblName = "paleocontext";
+                addColumn(conn, databaseName, tblName, "ChronosStratEndID",  "ALTER TABLE %s ADD COLUMN %s INT AFTER ChronosStratID");
+                
+                frame.setDesc("Updating Institution Fields...");
+                tblName = "institution";
+                addColumn(conn, databaseName, tblName, "IsSingleGeographyTree",  "ALTER TABLE %s ADD COLUMN %s BIT(1) AFTER IsServerBased");
+                addColumn(conn, databaseName, tblName, "IsSharingLocalities",    "ALTER TABLE %s ADD COLUMN %s BIT(1) AFTER IsSingleGeographyTree");
+                BasicSQLUtils.update(conn, "UPDATE institution SET IsSingleGeographyTree=0, IsSharingLocalities=0");
+                
+                frame.setDesc("Updating Prep Attrs Fields...");
+                // Fix Field Length
+                final String prepAttrTbl = "preparationattribute";
+                final String prepAttrFld = "Text22";
+                len = getFieldLength(conn, databaseName, prepAttrTbl, prepAttrFld);
+                if (len != null && len == 10)
+                {
+                    alterFieldLength(conn, databaseName, prepAttrTbl, prepAttrFld, 10, 50);
+                }
+
+                frame.getProcessProgress().setIndeterminate(true);
+                frame.setDesc("Loading updated schema...");
+
             } catch (Exception ex)
             {
                 ex.printStackTrace();
@@ -1519,6 +1570,36 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         }
         
         return statusOK;
+    }
+    
+    /**
+     * @param conn
+     * @param dbName
+     * @param tableName
+     * @param colName
+     * @param updateSQL
+     * @return
+     */
+    protected boolean addColumn(final Connection conn, final String dbName, final String tableName, final String colName, final String updateSQL)
+    {
+        if (!doesColumnExist(dbName, tableName, "DateOfBirthPrecision"))
+        {
+            String fmtSQL = String.format(updateSQL, tableName, colName);
+            return BasicSQLUtils.update(conn, fmtSQL) == 1;
+        }
+        return true; // true means it was OK if it wasn't added
+    }
+    
+    /**
+     * @param dbName
+     * @param tableName
+     * @param colName
+     * @return
+     */
+    protected boolean doesColumnExist(final String dbName, final String tableName, final String colName)
+    {
+        String sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s' AND COLUMN_NAME = '%s'", dbName, tableName, colName);
+        return BasicSQLUtils.getCountAsInt(sql) == 1;
     }
     
     /**

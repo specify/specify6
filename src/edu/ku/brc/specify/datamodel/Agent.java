@@ -96,8 +96,11 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     protected String                        lastName;
     protected String                        middleInitial;
     protected String                        title;               // Mr., Mrs., Dr.
+    protected Byte                          dateType;
     protected Calendar                      dateOfBirth;
+    protected Byte                          dateOfBirthPrecision;   // Accurate to Year, Month, Day
     protected Calendar                      dateOfDeath;
+    protected Byte                          dateOfDeathPrecision;   // Accurate to Year, Month, Day
     protected String                        interests;
     protected String                        abbreviation;
     protected String                        initials;
@@ -202,8 +205,11 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         lastName                  = null;
         middleInitial             = null;
         title                     = null;
+        dateType                  = null;
         dateOfBirth               = null;
+        dateOfBirthPrecision      = null;
         dateOfDeath               = null;
+        dateOfDeathPrecision      = null;
         interests                 = null;
         abbreviation              = null;
         initials                  = null;
@@ -377,6 +383,23 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     }
 
     /**
+     * @return the dateType
+     */
+    @Column(name = "DateType")
+    public Byte getDateType()
+    {
+        return dateType;
+    }
+
+    /**
+     * @param dateType the dateType to set
+     */
+    public void setDateType(Byte dateType)
+    {
+        this.dateType = dateType;
+    }
+
+    /**
      * @return the dateOfBirth
      */
     @Temporal(TemporalType.DATE)
@@ -395,6 +418,23 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     }
 
     /**
+     * @return the dateOfBirthPrecision
+     */
+    @Column(name = "DateOfBirthPrecision")
+    public Byte getDateOfBirthPrecision()
+    {
+        return dateOfBirthPrecision;
+    }
+
+    /**
+     * @param dateOfBirthPrecision the dateOfBirthPrecision to set
+     */
+    public void setDateOfBirthPrecision(Byte dateOfBirthPrecision)
+    {
+        this.dateOfBirthPrecision = dateOfBirthPrecision;
+    }
+
+    /**
      * @return the dateOfDeath
      */
     @Temporal(TemporalType.DATE)
@@ -410,6 +450,23 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     public void setDateOfDeath(Calendar dateOfDeath)
     {
         this.dateOfDeath = dateOfDeath;
+    }
+
+    /**
+     * @return the dateOfDeathPrecision
+     */
+    @Column(name = "DateOfDeathPrecision")
+    public Byte getDateOfDeathPrecision()
+    {
+        return dateOfDeathPrecision;
+    }
+
+    /**
+     * @param dateOfDeathPrecision the dateOfDeathPrecision to set
+     */
+    public void setDateOfDeathPrecision(Byte dateOfDeathPrecision)
+    {
+        this.dateOfDeathPrecision = dateOfDeathPrecision;
     }
 
     /**
@@ -703,7 +760,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     }
     
     /**
-     * @param discipline the discipline to set
+     * @param rightsideDiscipline the discipline to set
      */
     public void setDisciplines(Set<Discipline> disciplines)
     {

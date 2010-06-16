@@ -75,6 +75,7 @@ public class PaleoContext extends CollectionMember implements Cloneable
     protected LithoStrat            lithoStrat;
     protected GeologicTimePeriod    bioStrat;
     protected GeologicTimePeriod    chronosStrat;
+    protected GeologicTimePeriod    chronosStratEnd;
     
     /**
      * Constructor.
@@ -126,6 +127,11 @@ public class PaleoContext extends CollectionMember implements Cloneable
         yesNo2         = null;
         
         collectionObjects = new HashSet<CollectionObject>();
+        
+        lithoStrat       = null;
+        bioStrat         = null;
+        chronosStrat     = null;
+        chronosStratEnd  = null;
 
     }
 
@@ -330,9 +336,6 @@ public class PaleoContext extends CollectionMember implements Cloneable
     /**
      * @return the chronosStrat
      */
-    /**
-    *
-    */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name="ChronosStratID", unique=false, nullable=true, insertable=true, updatable=true)
     public GeologicTimePeriod getChronosStrat()
@@ -346,6 +349,24 @@ public class PaleoContext extends CollectionMember implements Cloneable
     public void setChronosStrat(GeologicTimePeriod chronosStrat)
     {
         this.chronosStrat = chronosStrat;
+    }
+
+    /**
+     * @return the chronosStratEnd
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name="ChronosStratEndID", unique=false, nullable=true, insertable=true, updatable=true)
+    public GeologicTimePeriod getChronosStratEnd()
+    {
+        return chronosStratEnd;
+    }
+
+    /**
+     * @param chronosStratEnd the chronosStratEnd to set
+     */
+    public void setChronosStratEnd(GeologicTimePeriod chronosStratEnd)
+    {
+        this.chronosStratEnd = chronosStratEnd;
     }
 
     /**

@@ -60,6 +60,9 @@ public class Address extends DataModelObjBase implements Orderable,
     protected Integer           addressId;
     protected String            address;
     protected String            address2;
+    protected String            address3;
+    protected String            address4;
+    protected String            address5;
     protected String            city;
     protected String            state;
     protected String            country;
@@ -107,6 +110,9 @@ public class Address extends DataModelObjBase implements Orderable,
         addressId = null;
         address = null;
         address2 = null;
+        address3 = null;
+        address4 = null;
+        address5 = null;
         city = null;
         state = null;
         country = null;
@@ -175,7 +181,7 @@ public class Address extends DataModelObjBase implements Orderable,
     /**
      *      * Address as it should appear on mailing labels
      */
-    @Column(name = "Address", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "Address", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
     public String getAddress() {
         return this.address;
     }
@@ -187,13 +193,49 @@ public class Address extends DataModelObjBase implements Orderable,
     /**
      *
      */
-    @Column(name = "Address2", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "Address2", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
     public String getAddress2() {
         return this.address2;
     }
 
     public void setAddress2(String address2) {
         this.address2 = address2;
+    }
+
+    /**
+     *
+     */
+    @Column(name = "Address3", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getAddress3() {
+        return this.address3;
+    }
+
+    public void setAddress3(String address3) {
+        this.address3 = address3;
+    }
+
+    /**
+     *
+     */
+    @Column(name = "Address4", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getAddress4() {
+        return this.address4;
+    }
+
+    public void setAddress4(String address4) {
+        this.address4 = address4;
+    }
+
+    /**
+     *
+     */
+    @Column(name = "Address5", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getAddress5() {
+        return this.address5;
+    }
+
+    public void setAddress5(String address5) {
+        this.address5 = address5;
     }
 
     /**

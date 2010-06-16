@@ -62,6 +62,16 @@ public class LocalityDetail extends DataModelObjBase
     protected String                waterBody;
     protected String                drainage;
     
+    // Depths primarily for Paleo
+    protected Double                startDepth;
+    protected Byte                  startDepthUnit;
+    protected String                startDepthVerbatim;
+    
+    protected Double                endDepth;
+    protected Byte                  endDepthUnit;
+    protected String                endDepthVerbatim;
+    
+    // HUC Code for fishes
     protected String                hucCode;
     
     protected String                text1;
@@ -122,6 +132,14 @@ public class LocalityDetail extends DataModelObjBase
         island      = null;
         waterBody   = null;
         drainage    = null;
+        
+        startDepth         = null;
+        startDepthUnit     = null;
+        startDepthVerbatim = null;
+        endDepth           = null;
+        endDepthUnit       = null;
+        endDepthVerbatim   = null;
+        
         locality    = null;
         
         utmEasting       = null;
@@ -343,6 +361,108 @@ public class LocalityDetail extends DataModelObjBase
     
     public void setDrainage(String drainage) {
         this.drainage = drainage;
+    }
+
+    /**
+     * @return the startDepth
+     */
+    @Column(name = "StartDepth", unique = false, nullable = true, insertable = true, updatable = true)
+    public Double getStartDepth()
+    {
+        return startDepth;
+    }
+
+    /**
+     * @param startDepth the startDepth to set
+     */
+    public void setStartDepth(Double startDepth)
+    {
+        this.startDepth = startDepth;
+    }
+
+    /**
+     * @return the startDepthUnit
+     */
+    @Column(name = "StartDepthUnit", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getStartDepthUnit()
+    {
+        return startDepthUnit;
+    }
+
+    /**
+     * @param startDepthUnit the startDepthUnit to set
+     */
+    public void setStartDepthUnit(Byte startDepthUnit)
+    {
+        this.startDepthUnit = startDepthUnit;
+    }
+
+    /**
+     * @return the startDepthVerbatim
+     */
+    @Column(name = "StartDepthVerbatim", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getStartDepthVerbatim()
+    {
+        return startDepthVerbatim;
+    }
+
+    /**
+     * @param startDepthVerbatim the startDepthVerbatim to set
+     */
+    public void setStartDepthVerbatim(String startDepthVerbatim)
+    {
+        this.startDepthVerbatim = startDepthVerbatim;
+    }
+
+    /**
+     * @return the endDepth
+     */
+    @Column(name = "EndDepth", unique = false, nullable = true, insertable = true, updatable = true)
+    public Double getEndDepth()
+    {
+        return endDepth;
+    }
+
+    /**
+     * @param endDepth the endDepth to set
+     */
+    public void setEndDepth(Double endDepth)
+    {
+        this.endDepth = endDepth;
+    }
+
+    /**
+     * @return the endDepthUnit
+     */
+    @Column(name = "EndDepthUnit", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getEndDepthUnit()
+    {
+        return endDepthUnit;
+    }
+
+    /**
+     * @param endDepthUnit the endDepthUnit to set
+     */
+    public void setEndDepthUnit(Byte endDepthUnit)
+    {
+        this.endDepthUnit = endDepthUnit;
+    }
+
+    /**
+     * @return the endDepthVerbatim
+     */
+    @Column(name = "EndDepthVerbatim", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getEndDepthVerbatim()
+    {
+        return endDepthVerbatim;
+    }
+
+    /**
+     * @param endDepthVerbatim the endDepthVerbatim to set
+     */
+    public void setEndDepthVerbatim(String endDepthVerbatim)
+    {
+        this.endDepthVerbatim = endDepthVerbatim;
     }
 
     /**

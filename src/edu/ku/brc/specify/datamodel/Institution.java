@@ -74,6 +74,8 @@ public class Institution extends UserGroupScope implements java.io.Serializable
      protected Boolean       hasBeenAsked;
      protected Boolean       isSecurityOn;
      protected Boolean       isAccessionsGlobal;
+     protected Boolean       isSingleGeographyTree;
+     protected Boolean       isSharingLocalities;
      
      protected Address       address;
      protected Set<Agent>    technicalContacts;
@@ -120,6 +122,8 @@ public class Institution extends UserGroupScope implements java.io.Serializable
         regNumber         = null;
         isSecurityOn      = true;
         isAccessionsGlobal = true;
+        isSingleGeographyTree = false;
+        isSharingLocalities   = false;
         technicalContacts = new HashSet<Agent>();
         contentContacts   = new HashSet<Agent>();
         divisions         = new HashSet<Division>();
@@ -363,6 +367,24 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     }
 
     /**
+     * @return the isSingleGeographyTree
+     */
+    @Column(name = "IsSingleGeographyTree", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getIsSingleGeographyTree()
+    {
+        return isSingleGeographyTree;
+    }
+
+    /**
+     * @return the isSharingLocalities
+     */
+    @Column(name = "IsSharingLocalities", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getIsSharingLocalities()
+    {
+        return isSharingLocalities;
+    }
+
+    /**
      * @param contentContacts the contentContacts to set
      */
     public void setContentContacts(Set<Agent> contentContacts)
@@ -520,6 +542,22 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     public void setIsAccessionsGlobal(Boolean isAccessionsGlobal)
     {
         this.isAccessionsGlobal = isAccessionsGlobal;
+    }
+
+    /**
+     * @param isSingleGeographyTree the isSingleGeographyTree to set
+     */
+    public void setIsSingleGeographyTree(Boolean isSingleGeographyTree)
+    {
+        this.isSingleGeographyTree = isSingleGeographyTree;
+    }
+
+    /**
+     * @param isSharingLocalities the isSharingLocalities to set
+     */
+    public void setIsSharingLocalities(Boolean isSharingLocalities)
+    {
+        this.isSharingLocalities = isSharingLocalities;
     }
 
     /**
