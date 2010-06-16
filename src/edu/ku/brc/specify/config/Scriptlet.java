@@ -26,6 +26,7 @@ import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -63,6 +64,12 @@ import edu.ku.brc.util.Triple;
 public class Scriptlet extends JRDefaultScriptlet
 {
     private static final Logger log = Logger.getLogger(Scriptlet.class);
+    
+    private static final String SCRPLT_N = "SCRPLT_N";
+    private static final String SCRPLT_S = "SCRPLT_S";
+    private static final String SCRPLT_E = "SCRPLT_E";
+    private static final String SCRPLT_W = "SCRPLT_W";
+    
     
     protected UIFieldFormatterIFace catalogFormatter = AppContextMgr.getInstance().getFormatter("CollectionObject", "CatalogNumber");
     
@@ -208,18 +215,47 @@ public class Scriptlet extends JRDefaultScriptlet
     }
 
     /**
-     * Formats a float to a string with "N","S","E", "W".
-     * @param floatVal the float value
+     * Formats a Float to a string with "N","S","E", "W".
+     * @param floatVal the Float value
      * @param isLat whether it is a lat or lon
      * @return Formats a float to a string with "N","S","E", "W"
      */
-    public String getDirChar(Float floatVal, boolean isLat)
+    public String getDirChar(final Float floatVal, final boolean isLat)
     {
         if (floatVal == null) { return ""; }
 
+        String key;
         if (isLat)
-            return floatVal.floatValue() > 0.0 ? "N" : "S";
-        else return floatVal.floatValue() > 0.0 ? "E" : "W";
+        {
+            key = floatVal.floatValue() > 0.0 ? SCRPLT_N : SCRPLT_S;
+        } else
+        {
+            key = floatVal.floatValue() > 0.0 ? SCRPLT_E : SCRPLT_W;
+        }
+        return UIRegistry.getResourceString(key);
+    }
+    
+    
+
+    /**
+     * Formats a BigDecimal to a string with "N","S","E", "W".
+     * @param bdValue the float value
+     * @param isLat whether it is a lat or lon
+     * @return Formats a float to a string with "N","S","E", "W"
+     */
+    public String getDirChar(final BigDecimal bdValue, final boolean isLat)
+    {
+        if (bdValue == null) { return ""; }
+
+        String key;
+        if (isLat)
+        {
+            key = bdValue.floatValue() > 0.0 ? SCRPLT_N : SCRPLT_S;
+        } else
+        {
+            key = bdValue.floatValue() > 0.0 ? SCRPLT_E : SCRPLT_W;
+        }
+        return UIRegistry.getResourceString(key);
 
     }
 
@@ -229,7 +265,7 @@ public class Scriptlet extends JRDefaultScriptlet
      * @param isLat whether it is a lat or lon
      * @return Formats a String as a float with "N","S","E", "W"
      */
-    public String getDirChar(String strVal, boolean isLat)
+    public String getDirChar(final String strVal, final boolean isLat)
     {
         if (strVal == null) { return ""; }
         return getDirChar(new Float(Float.parseFloat(strVal)), isLat);
@@ -261,11 +297,11 @@ public class Scriptlet extends JRDefaultScriptlet
     /**
      * Formats a String with a float value as a degrees.
      * @param floatStr
-     * @param isLat inidcates whether it is a latitude or a longitude
+     * @param isLat indicates whether it is a latitude or a longitude
      * @return Formats a String with a float value as a degrees
      * @throws JRScriptletException XXX
      */
-    public String degrees(String floatStr, boolean isLat) throws JRScriptletException
+    public String degrees(final String floatStr, final boolean isLat) throws JRScriptletException
     {
         return "Not Implemented!";//degrees(new Float(Float.parseFloat(floatStr)), isLat);
     }
@@ -324,9 +360,18 @@ public class Scriptlet extends JRDefaultScriptlet
     {
         return fieldNumber == null ? "" : fieldNumber;
     }
+    
+    /**
+     * @param format
+     * @return
+     */
+    public String getCurrentDate(final String format)
+    {
+        return formatDate(new Date(System.currentTimeMillis()), format);
+    }
 
     /**
-     * Creates the category string wich is either "LOAN" or "GIFT"
+     * Creates the category string which is either "LOAN" or "GIFT"
      * @param isGift
      * @return "LOAN" if isGift is null else "GIFT"
      */
@@ -432,7 +477,7 @@ public class Scriptlet extends JRDefaultScriptlet
      * @param format
      * @return
      */
-    public String formatDate(final java.sql.Date date, final String format)
+    public String formatDate(final Date date, final String format)
     {
         String           fmtStr = StringUtils.isNotEmpty(format) ? format : stdFormat;
         SimpleDateFormat sdf    = dateFormatHash.get(fmtStr);
@@ -442,6 +487,16 @@ public class Scriptlet extends JRDefaultScriptlet
             dateFormatHash.put(format, sdf);
         }
         return sdf.format(date);
+    }
+
+    /**
+     * @param sqlDate
+     * @param format
+     * @return
+     */
+    public String formatDate(final java.sql.Date sqlDate, final String format)
+    {
+        return formatDate((Date)sqlDate, format);
     }
 
     /**
