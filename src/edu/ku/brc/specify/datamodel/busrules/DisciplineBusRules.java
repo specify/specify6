@@ -488,7 +488,10 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                         // This is called instead of calling 'okToDelete' because we had the SpecifyDeleteHelper
                         // delete the actual dataObj and now we tell the form to remove the dataObj from
                         // the form's list and them update the controller appropriately
-                        formViewObj.updateAfterRemove(true); // true removes item from list and/or set
+                        if (formViewObj != null)
+                        {
+                            formViewObj.updateAfterRemove(true); // true removes item from list and/or set
+                        }
                         
                     } catch (Exception ex)
                     {
