@@ -86,7 +86,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.CriteriaSpecification;
@@ -2602,9 +2601,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             strBuf.setLength(0);
             
             // Adding Institution
-            strBuf.append("INSERT INTO institution (InstitutionID, IsServerBased, IsAccessionsGlobal, TimestampModified, Name, TimestampCreated, StorageTreeDefID, ");
+            strBuf.append("INSERT INTO institution (InstitutionID, IsServerBased, IsAccessionsGlobal, IsSingleGeographyTree, IsSharingLocalities, TimestampModified, Name, TimestampCreated, StorageTreeDefID, ");
             strBuf.append("CreatedByAgentID, ModifiedByAgentID, Version, UserGroupScopeId, IsSecurityOn, Remarks) VALUES (");
-            strBuf.append(institutionId + ",FALSE,FALSE,");
+            strBuf.append(institutionId + ",FALSE,FALSE,FALSE,FALSE,");
             strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampModified
             strBuf.append("'" + instName + "',");
             strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampCreated
