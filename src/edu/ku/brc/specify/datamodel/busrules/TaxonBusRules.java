@@ -27,6 +27,7 @@ import java.awt.event.ItemListener;
 
 import javax.swing.JCheckBox;
 
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace.CreationMode;
@@ -183,6 +184,15 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
         setLSID((FormDataObjIFace)dataObj);
 
         return super.afterSaveCommit(dataObj, session);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#getExtraWhereColumns(edu.ku.brc.af.core.db.DBTableInfo)
+     */
+    @Override
+    protected String getExtraWhereColumns(final DBTableInfo tableInfo)
+    {
+        return null;
     }
     
     /* (non-Javadoc)

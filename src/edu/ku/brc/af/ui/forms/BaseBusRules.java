@@ -273,6 +273,16 @@ public class BaseBusRules implements BusinessRulesIFace
     }
 
     /**
+     * Calls QueryAdjusterForDomain.getSpecialColumns to get any extra Where Columns
+     * @param tableInfo the table information
+     * @return String or null
+     */
+    protected String getExtraWhereColumns(final DBTableInfo tableInfo)
+    {
+        return QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, false, false, tableInfo.getAbbrev());
+    }
+    
+    /**
      * @param stmt
      * @param tableName
      * @param columnName
@@ -295,7 +305,7 @@ public class BaseBusRules implements BusinessRulesIFace
             }
             idString.deleteCharAt(idString.length()-2);
             DBTableInfo tableInfo    = DBTableIdMgr.getInstance().getInfoByTableName(tableName);
-            String      extraColumns = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, false, false, tableInfo.getAbbrev());
+            String      extraColumns = getExtraWhereColumns(tableInfo);
             String      join         = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, false, tableInfo.getAbbrev(), false);
             String      queryString  = "select count(*) from " + tableName + " "+ tableInfo.getAbbrev() +" " + (join != null ? join : "") + "  where " + tableInfo.getAbbrev() + "." + columnName + " in (" + idString.toString() + ") ";
             if (StringUtils.isNotEmpty(extraColumns))
