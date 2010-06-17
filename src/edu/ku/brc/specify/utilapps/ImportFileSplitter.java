@@ -83,7 +83,7 @@ public class ImportFileSplitter extends CustomDialog
 {
 	private static final Logger log = Logger.getLogger(ImportFileSplitter.class);
 
-	protected int defaultChunkSize = 2000;
+	protected final int defaultChunkSize = 2000;
 	protected JTextField fileName;
 	protected JCheckBox headerChk;
 	protected PosIntTextField fileSize;
@@ -134,7 +134,7 @@ public class ImportFileSplitter extends CustomDialog
 		
 		pb.add(UIHelper.createLabel(UIRegistry.getResourceString("ImportFileSplitter.FileSize")), cc.xy(2, 6)); 
 		//fileSize = UIHelper.createTextField(5);
-		fileSize = new PosIntTextField(defaultChunkSize, 10000);
+		fileSize = new PosIntTextField(10000);
 		fileSize.setText(String.valueOf(defaultChunkSize));
 		pb.add(fileSize, cc.xy(4, 6));
 		
@@ -242,6 +242,14 @@ public class ImportFileSplitter extends CustomDialog
 		{
 			UIRegistry.displayErrorDlg(UIRegistry.getResourceString("ImportFileSplitter.InvalidFileName")); 
 			return;
+		}
+		if (fileSize.getValue() > defaultChunkSize)
+		{
+			if (!UIRegistry.displayConfirmLocalized("ImportFileSplitter.BigLinesConfirmTitle",
+					"ImportFileSplitter.BigLinesConfirmMsg", "OK", "Cancel", JOptionPane.WARNING_MESSAGE))
+			{
+				return;
+			}
 		}
 		chunkFile(toChunk, fileSize.getValue());
 	}
@@ -359,8 +367,8 @@ public class ImportFileSplitter extends CustomDialog
 					{
 						numRows--;
 					}
-					int				numFiles = numRows / defaultChunkSize;
-					int             leftover = numRows - (numFiles * defaultChunkSize);
+					int				numFiles = numRows / aChunkSize;
+					int             leftover = numRows - (numFiles * aChunkSize);
 					numFiles++;
 					checkXLS();
 					boolean go = false;
@@ -369,7 +377,7 @@ public class ImportFileSplitter extends CustomDialog
 						go = UIRegistry.displayConfirm(UIRegistry.getResourceString("ImportFileSplitter.FileInfoTitle"), 
 							String.format(UIRegistry.getResourceString("ImportFileSplitter.FileInfo"), 
 							numRows, numFiles-1, 
-							defaultChunkSize, leftover),
+							aChunkSize, leftover),
 							UIRegistry.getResourceString("OK"), UIRegistry.getResourceString("CANCEL"), JOptionPane.INFORMATION_MESSAGE);
 					}
 					if (!go || isCancelled())
@@ -511,14 +519,14 @@ public class ImportFileSplitter extends CustomDialog
 					{
 						numRows--;
 					}
-					int				numFiles = numRows / defaultChunkSize;
-					int             leftover = numRows - (numFiles * defaultChunkSize);
+					int				numFiles = numRows / aChunkSize;
+					int             leftover = numRows - (numFiles * aChunkSize);
 					numFiles++;
 					boolean go = UIRegistry.displayConfirm(UIRegistry.getResourceString("ImportFileSplitter.FileInfoTitle"), 
 							String.format(UIRegistry.getResourceString("ImportFileSplitter.FileInfo"), 
 							numRows, 
 							numFiles-1, 
-							defaultChunkSize, leftover),
+							aChunkSize, leftover),
 							UIRegistry.getResourceString("OK"), UIRegistry.getResourceString("CANCEL"), JOptionPane.INFORMATION_MESSAGE);
 					if (!go || isCancelled())
 					{
@@ -915,9 +923,9 @@ public class ImportFileSplitter extends CustomDialog
 	{
 		private final int maxVal;
 		
-		public PosIntTextField(int defval, int maxVal)
+		public PosIntTextField(int maxVal)
 		{
-			super("" + defval);
+			super();
 			this.maxVal = maxVal;
 		}
 
