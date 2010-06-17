@@ -2018,7 +2018,6 @@ repositoryagreement.RepositoryAgreementNumber,
                     <caption tableid="138" col="ViewName"/>
                     <caption tableid="138" col="SpecimenPart"/>
                     <caption tableid="138" col="ViewAngle"/>
-                    <caption tableid="138" col="fnps.EndDate"/>
                     <caption tableid="138" col="MorphBankExternalViewID"/>
                 </captions>
             </detailView>

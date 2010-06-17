@@ -19,6 +19,7 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Dialog;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -54,8 +55,11 @@ import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionRelType;
+import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
@@ -190,7 +194,7 @@ public class CollectionRelTask extends BaseTask
         rightList = new JList(fillLDM(colObjVec));
 
         CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g,10px,f:p:g,10px,f:p:g", "p,2px,f:p:g,2px,p"));
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g,10px,f:MAX(p;200px):g,10px,f:p:g", "p,2px,f:p:g,2px,p"));
         
         ActionListener editAL = new ActionListener() {
             @Override
@@ -258,7 +262,8 @@ public class CollectionRelTask extends BaseTask
         relList.addListSelectionListener(relLSL);
         rightList.addListSelectionListener(lsl);
         
-        CustomDialog dlg = new CustomDialog(null, getResourceString(COLREL_TITLE), true, pb.getPanel());
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString(COLREL_TITLE), true, CustomDialog.OK_BTN, pb.getPanel());
+        dlg.setOkLabel(UIRegistry.getResourceString("CLOSE"));
         dlg.setVisible(true);
     }
     
@@ -294,8 +299,68 @@ public class CollectionRelTask extends BaseTask
         createRelType(null);
     }
     
+    /**
+     * 
+     */
     private void delRel()
     {
+        CollectionRelType collectionRel = (CollectionRelType)relList.getSelectedValue();
+        if (collectionRel != null)
+        {
+            DataProviderSessionIFace session = null;
+            try
+            {
+                session = DataProviderFactory.getInstance().createSession();
+                CollectionRelType colRelTyp = session.get(CollectionRelType.class, collectionRel.getId());
+                
+                String key = null;
+                if (colRelTyp != null)
+                {
+                    int cnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM collectionrelationship WHERE CollectionRelTypeID = " +collectionRel.getId());
+                    if (cnt == 0)
+                    {
+                        Collection   rRelCol  = colRelTyp.getRightSideCollection();
+                        Collection   lRelCol  = colRelTyp.getLeftSideCollection();
+                        Discipline   leftDisp = lRelCol.getDiscipline();
+                        TaxonTreeDef leftTaxonTreeDef = leftDisp.getTaxonTreeDef();
+                        
+                        String sql = String.format("SELECT COUNT(*) FROM collectingeventattribute cea INNER JOIN taxon t ON cea.HostTaxonID = t.TaxonID WHERE cea.DisciplineID = %d AND t.TaxonTreeDefID = %d",
+                                         rRelCol.getDiscipline().getId(), leftTaxonTreeDef.getId());
+                        cnt = BasicSQLUtils.getCountAsInt(sql);
+                        if (cnt > 0)
+                        {
+                            key = "COLREL_USEDBY_HST";//"Is Used by HostTaxonID";
+                        }
+                    } else
+                    {
+                        key = "COLREL_USEDBY_CR";
+                    }
+                    
+                    if (key != null)
+                    {
+                        UIRegistry.showLocalizedError(key);
+                    } else
+                    {
+                        if (BasicSQLUtils.update("DELETE FROM collectionreltype WHERE CollectionRelTypeID = " + colRelTyp.getId()) == 1)
+                        {
+                            DefaultListModel model = (DefaultListModel)relList.getModel();
+                            model.remove(relList.getSelectedIndex());
+                        }
+                    }
+                }
+
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                
+            } finally
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
+            }
+        }
     }
     
     /**
@@ -334,7 +399,7 @@ public class CollectionRelTask extends BaseTask
      */
     private CollectionRelType createRelType(final CollectionRelType crt)
     {
-        final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UIRegistry.getTopWindow(),
+        final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Dialog)UIRegistry.getMostRecentWindow(),
                 "SystemSetup",
                 "CollectionRelType",
                 null,
@@ -459,7 +524,7 @@ public class CollectionRelTask extends BaseTask
         edaPanel.getEditBtn().setEnabled(isSelected);
         edaPanel.getDelBtn().setEnabled(isSelected);
         
-        edaPanel.getAddBtn().setEnabled(leftSelectedInx != -1 && rightSelectedInx != -1 && leftSelectedInx != rightSelectedInx);
+        edaPanel.getAddBtn().setEnabled(leftSelectedInx != -1 && rightSelectedInx != -1);// && leftSelectedInx != rightSelectedInx);
     }
     
     //-------------------------------------------------------
