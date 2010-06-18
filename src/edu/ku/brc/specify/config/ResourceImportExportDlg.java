@@ -1183,7 +1183,7 @@ public class ResourceImportExportDlg extends CustomDialog
             String importedName = null;
 
             final String IMP_DIR_PREF = "RES_LAST_IMPORT_DIR";
-            String initalImportDir = AppPreferences.getLocalPrefs().get(IMP_DIR_PREF, null);
+            String initalImportDir = AppPreferences.getLocalPrefs().get(IMP_DIR_PREF, getUserHomeDir());
             
             FileDialog fileDlg = new FileDialog(this, getResourceString("RIE_IMPORT_RES"), FileDialog.LOAD);
             
