@@ -347,6 +347,8 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
                             model.nodeChanged(newNode);
                             getTree().repaint();
                             
+                            getTree().setSelectionPath(new TreePath(newNode.getPath()));
+                            
                             lastClickComp = null;
                             updateBtnUI();
                         }
