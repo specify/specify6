@@ -24,6 +24,7 @@ import java.awt.Frame;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Set;
 
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -41,6 +42,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace.CreationMode;
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
@@ -74,6 +76,7 @@ import edu.ku.brc.ui.UIRegistry;
 public class DeterminationBusRules extends BaseBusRules
 {
     private static final Logger  log   = Logger.getLogger(DeterminationBusRules.class);
+    private static final String DT_ALREADY_DETERMINATION = "DT_ALREADY_DETERMINATION";
     
     protected Determination  determination         = null;
 
@@ -110,30 +113,39 @@ public class DeterminationBusRules extends BaseBusRules
                 {
                     if (determination.getCollectionObject() != null) //It should never be non null, but, currently, it does happen.
                     {
-                    	if (determination.getCollectionObject().getDeterminations().size() == 1)
-                    	{
-                    		if (currentComp instanceof ValCheckBox)
-                    		{
-                    		    // Do this instead of setSelected because
-                    		    // this activates the DataChangeListener
-                    			((ValCheckBox)currentComp).doClick();
-                    			
-                    			// Well, if it is already checked then we just checked it to the 'off' state,
-                    			// so we need to re-check it so it is in the "checked state"
-                    			// Note: As stated in the comment above the 'doClick' the easiest way to activate
-                    			// all the change listeners is by simulating a mouse click.
-                    			// Also keep in mind that the change listener is listening for ActionEvents for the
-                    			// checkbox instead of ChangeEvents (ChangeEvents cause to many problems).
-                    			if (!((ValCheckBox)currentComp).isSelected())
-                    			{
-                    			    ((ValCheckBox)currentComp).doClick(); 
-                    			}
-                    			
-                    		} else
-                    		{
-                    			log.error("IsCurrent not set to true because form control is of unexpected type: " + currentComp.getClass().getName());
-                    		}
-                    	}
+                		if (currentComp instanceof ValCheckBox)
+                		{
+                		    // Do this instead of setSelected because
+                		    // this activates the DataChangeListener
+                			((ValCheckBox)currentComp).doClick();
+                			
+                			// Well, if it is already checked then we just checked it to the 'off' state,
+                			// so we need to re-check it so it is in the "checked state"
+                			// Note: As stated in the comment above the 'doClick' the easiest way to activate
+                			// all the change listeners is by simulating a mouse click.
+                			// Also keep in mind that the change listener is listening for ActionEvents for the
+                			// checkbox instead of ChangeEvents (ChangeEvents cause to many problems).
+                			if (!((ValCheckBox)currentComp).isSelected())
+                			{
+                			    ((ValCheckBox)currentComp).doClick(); 
+                			}
+                			
+                			if (formViewObj.isCreatingNewObject())
+                			{
+                    			Set<Determination> detSet = determination.getCollectionObject().getDeterminations();
+                                for (Determination d : detSet)
+                                {
+                                    if (d != determination)
+                                    {
+                                        d.setIsCurrent(false);
+                                    }
+                                }
+                			}
+                            
+                		} else
+                		{
+                			log.error("IsCurrent not set to true because form control is of unexpected type: " + currentComp.getClass().getName());
+                		}
                     }
                 } else
                 {
@@ -283,9 +295,9 @@ public class DeterminationBusRules extends BaseBusRules
      * @see edu.ku.brc.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object, java.lang.Object, boolean)
      */
     @Override
-    public STATUS processBusinessRules(Object parentDataObj,
-                                       Object dataObj,
-                                       boolean isExistingObject)
+    public STATUS processBusinessRules(final Object parentDataObj,
+                                       final Object dataObj,
+                                       final boolean isExistingObject)
     {
         STATUS status = super.processBusinessRules(parentDataObj, dataObj, isExistingObject);
         
@@ -293,8 +305,34 @@ public class DeterminationBusRules extends BaseBusRules
         {
             if (!checkDeterminationStatus((CollectionObject)parentDataObj, (Determination)dataObj))
             {
-                reasonList.add(UIRegistry.getResourceString("DT_ALREADY_DETERMINATION"));
+                reasonList.add(UIRegistry.getResourceString(DT_ALREADY_DETERMINATION));
                 status = STATUS.Error;
+            }
+        }
+        return status;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object)
+     */
+    @Override
+    public STATUS processBusinessRules(final Object dataObj)
+    {
+        STATUS status = super.processBusinessRules(dataObj);
+        if (status == STATUS.OK)
+        {
+            if (formViewObj != null && formViewObj.getMVParent() != null)
+            {
+                MultiView mv = formViewObj.getMVParent();
+                if (!mv.isTopLevel())
+                {
+                    Object parentDataObj = mv.getMultiViewParent().getData();
+                    if (!checkDeterminationStatus((CollectionObject)parentDataObj, (Determination)dataObj))
+                    {
+                        reasonList.add(UIRegistry.getResourceString(DT_ALREADY_DETERMINATION));
+                        status = STATUS.Error;
+                    }
+                }
             }
         }
         return status;

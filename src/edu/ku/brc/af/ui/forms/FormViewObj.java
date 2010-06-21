@@ -131,6 +131,7 @@ import edu.ku.brc.af.ui.forms.persist.ViewDef;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.validation.AutoNumberableIFace;
 import edu.ku.brc.af.ui.forms.validation.DataChangeNotifier;
+import edu.ku.brc.af.ui.forms.validation.FormControlSaveable;
 import edu.ku.brc.af.ui.forms.validation.FormValidator;
 import edu.ku.brc.af.ui.forms.validation.FormValidatorInfo;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable;
@@ -201,6 +202,7 @@ public class FormViewObj implements Viewable,
     protected DataProviderSessionIFace      session        = null;
     protected boolean                       isEditing     = false;
     protected boolean                       isNewlyCreatedDataObj = false;
+    protected boolean                       isCreatingNewObject   = false;  // true when in the middle of creating a new Object
     protected MultiView                     mvParent       = null;
     protected ViewIFace                     view;
     protected AltViewIFace                  altView;
@@ -216,6 +218,7 @@ public class FormViewObj implements Viewable,
     protected Hashtable<String, FVOFieldInfo>  controlsByName = new Hashtable<String, FVOFieldInfo>();
     protected Hashtable<String, FVOFieldInfo>  labels         = new Hashtable<String, FVOFieldInfo>(); // ID is the Key
     protected Hashtable<String, JLabel>        allLabels      = new Hashtable<String, JLabel>(); // ID is the Key
+    protected ArrayList<FormControlSaveable>   saveableList   = new ArrayList<FormControlSaveable>();
     
     protected FormLayout                    formLayout;
     protected PanelBuilder                  builder;
@@ -2087,6 +2090,7 @@ public class FormViewObj implements Viewable,
         
         dataObj = obj;
        
+        isCreatingNewObject = true;
         if (list != null)
         {
             list.add(obj);
@@ -2106,6 +2110,7 @@ public class FormViewObj implements Viewable,
             //traverseToToSetAsNew(mvParent.getMultiViewParent(), false, false); // don't traverse deeper than our immediate children
             indexChanged(-1);
         }
+        isCreatingNewObject = false;
         
         if (recordSetItemList != null)
         {
@@ -2588,7 +2593,7 @@ public class FormViewObj implements Viewable,
                 
                 tryAgain = false;
                 
-                isNewlyCreatedDataObj = false; // shouldn't be needed, but just in case
+                isNewlyCreatedDataObj = isCreatingNewObject; // shouldn't be needed, but just in case
                 if (rsController != null)
                 {
                     rsController.setNewObj(isNewlyCreatedDataObj);
@@ -2776,11 +2781,22 @@ public class FormViewObj implements Viewable,
         
         if (saveState == SAVE_STATE.SaveOK)
         {
-            
             if (businessRules != null)
             {
                 businessRules.afterSaveCommit(dataObj, session);
             }
+            
+            try
+            {
+                for (FormControlSaveable saveable : saveableList)
+                {
+                    saveable.saveControlData();
+                }
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+            
             session.refresh(dataObj);
             
             replaceDataObjInList(beforeSaveDataObj, dataObj);
@@ -4528,6 +4544,22 @@ public class FormViewObj implements Viewable,
     }
     
     /**
+     * @return the isCreatingNewObject
+     */
+    public boolean isCreatingNewObject()
+    {
+        return isCreatingNewObject;
+    }
+
+    /**
+     * @param isCreatingNewObject the isCreatingNewObject to set
+     */
+    public void setCreatingNewObject(boolean isCreatingNewObject)
+    {
+        this.isCreatingNewObject = isCreatingNewObject;
+    }
+
+    /**
      * @return the actual value of isNewlyCreatedDataObj
      */
     public boolean getIsNewlyCreatedDataObj()
@@ -5707,6 +5739,12 @@ public class FormViewObj implements Viewable,
                 controlsByName.put(formCell.getName(), fieldInfo);
             }
             compsList.add(fieldInfo);
+            
+            //System.out.println(formCell.getName()+"  "+comp.getClass().getSimpleName());
+            if (comp instanceof FormControlSaveable)
+            {
+                saveableList.add((FormControlSaveable)comp);
+            }
         }
     }
     
@@ -5737,6 +5775,10 @@ public class FormViewObj implements Viewable,
             compsList.add(fieldInfo);
         }
         
+        if (uip.getUIComponent() instanceof FormControlSaveable)
+        {
+            saveableList.add((FormControlSaveable)uip.getUIComponent());
+        }
     }
 
     /* (non-Javadoc)
