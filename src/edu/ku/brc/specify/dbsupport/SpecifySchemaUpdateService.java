@@ -1546,6 +1546,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 addColumn(conn, databaseName, tblName, "IsSharingLocalities",    "ALTER TABLE %s ADD COLUMN %s BIT(1) AFTER IsSingleGeographyTree");
                 BasicSQLUtils.update(conn, "UPDATE institution SET IsSingleGeographyTree=0, IsSharingLocalities=0");
                 
+                frame.setDesc("Updating GeologicTimePeriod Fields...");
+                tblName = "geologictimeperiod";
+                addColumn(conn, databaseName, tblName, "Text1", "ALTER TABLE %s ADD COLUMN %s VARCHAR(64) AFTER EndUncertainty");
+                addColumn(conn, databaseName, tblName, "Text2", "ALTER TABLE %s ADD COLUMN %s VARCHAR(64) AFTER Text1");
+                
                 frame.setDesc("Updating Prep Attrs Fields...");
                 // Fix Field Length
                 final String prepAttrTbl = "preparationattribute";
@@ -1582,7 +1587,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      */
     protected boolean addColumn(final Connection conn, final String dbName, final String tableName, final String colName, final String updateSQL)
     {
-        if (!doesColumnExist(dbName, tableName, "DateOfBirthPrecision"))
+        if (!doesColumnExist(dbName, tableName, colName))
         {
             String fmtSQL = String.format(updateSQL, tableName, colName);
             return BasicSQLUtils.update(conn, fmtSQL) == 1;

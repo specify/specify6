@@ -75,6 +75,8 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     protected Float                         startUncertainty;
     protected Float                         endPeriod;
     protected Float                         endUncertainty;
+    protected String                        text1;
+    protected String                        text2;
     protected Boolean                       isBioStrat;
     protected GeologicTimePeriodTreeDef     definition;
     protected GeologicTimePeriodTreeDefItem definitionItem;
@@ -125,6 +127,8 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
         definitionItem = null;
         parent = null;
         isBioStrat = false;
+        text1 = null;
+        text2 = null;
 
         children                  = new HashSet<GeologicTimePeriod>();
         bioStratsPaleoContext     = new HashSet<PaleoContext>();
@@ -332,6 +336,40 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 
     public void setGuid(String guid) {
         this.guid = guid;
+    }
+
+    /**
+     * @return the text1
+     */
+    @Column(name = "Text1", length = 64)
+    public String getText1()
+    {
+        return text1;
+    }
+
+    /**
+     * @param text1 the text1 to set
+     */
+    public void setText1(String text1)
+    {
+        this.text1 = text1;
+    }
+
+    /**
+     * @return the text2
+     */
+    @Column(name = "Text2", length = 64)
+    public String getText2()
+    {
+        return text2;
+    }
+
+    /**
+     * @param text2 the text2 to set
+     */
+    public void setText2(String text2)
+    {
+        this.text2 = text2;
     }
 
     @Column(name="IsAccepted")

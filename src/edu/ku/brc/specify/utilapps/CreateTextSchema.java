@@ -50,8 +50,9 @@ public class CreateTextSchema
 {
     protected static String specifyDescFileName  = "specify_desc_datamodel.xml";
     protected static String schemaOutputHTMLName = "SpecifySchema.html";
+    protected static String NBSP                 = "&nbsp;";
     
-    
+
     protected String basePath = "src/edu/ku/brc/specify/utilapps/";
     
     protected PrintWriter po   = null;
@@ -69,7 +70,7 @@ public class CreateTextSchema
     {
         Element descE    = (Element)field.selectSingleNode("nameDesc");
         String nameDesc  = descE != null ? descE.getStringValue() : "XXX";
-        String type      = getAttr(field, "type", "&nbsp;");
+        String type      = getAttr(field, "type", NBSP);
         String classname = getAttr(field, "classname", "&nbsp;&nbsp;");
         if (classname.indexOf(".") > -1)
         {
@@ -94,18 +95,18 @@ public class CreateTextSchema
      */
     protected void processField(final Element field, final boolean isID, final boolean includeIndexCol)
     {
-        String column = getAttr(field, "column", "&nbsp;");
-        //String name = getAttr(field, "name", "&nbsp;");
-        String type = getAttr(field, "type", "&nbsp;");
+        String column = getAttr(field, "column", NBSP);
+        //String name = getAttr(field, "name", NBSP);
+        String type = getAttr(field, "type", NBSP);
         String length = getAttr(field, "length", "&nbsp;&nbsp;");
-        //String updatable = getAttr(field, "updatable", "&nbsp;");
-        //String required = getAttr(field, "required", "&nbsp;");
-        //String unique = getAttr(field, "unique", "&nbsp;");
-        //String indexed = getAttr(field, "indexed", "&nbsp;");
-        String indexName = getAttr(field, "indexName", "&nbsp;");
+        //String updatable = getAttr(field, "updatable", NBSP);
+        //String required = getAttr(field, "required", NBSP);
+        //String unique = getAttr(field, "unique", NBSP);
+        //String indexed = getAttr(field, "indexed", NBSP);
+        String indexName = getAttr(field, "indexName", NBSP);
         
         Element descE   = (Element)field.selectSingleNode("desc");
-        String desc     = descE != null ? descE.getStringValue() : "&nbsp;";
+        String desc     = descE != null ? descE.getStringValue() : NBSP;
         
         descE   = (Element)field.selectSingleNode("nameDesc");
         String nameDesc     = descE != null ? descE.getStringValue() : column;
@@ -192,7 +193,7 @@ public class CreateTextSchema
             Hashtable<String, String> colToTitle = new Hashtable<String, String>();
             for (Element field : (List<Element>)tn.node.selectNodes("field"))
             {
-                String column = getAttr(field, "column", "&nbsp;");
+                String column = getAttr(field, "column", NBSP);
                 Element descE   = (Element)field.selectSingleNode("nameDesc");
                 colToTitle.put(column, descE != null ? descE.getStringValue() : column);
             }
@@ -236,7 +237,7 @@ public class CreateTextSchema
                     //prevTbl = tableName;
                 //} else
                 //{
-                //    po.write("&nbsp;");
+                //    po.write(NBSP);
                 //}
                 po.write("</td>\n");
                 po.write("</tr>\n");
@@ -261,7 +262,7 @@ public class CreateTextSchema
             String tableName = getAttr(tn.node, "table", "");
             
             Element descE    = (Element)tn.node.selectSingleNode("desc");
-            String  desc     = descE != null ? descE.getStringValue() : "&nbsp;";
+            String  desc     = descE != null ? descE.getStringValue() : NBSP;
             String  nameDesc = ((Element)tn.node.selectSingleNode("nameDesc")).getStringValue();
             
             po.write("<tr>\n");
