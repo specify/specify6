@@ -295,7 +295,8 @@ public class HostTaxonPlugin extends UIPluginBase
                 if (text != null)
                 {
                     text.setText(cea.getHostTaxon().getFullName() != null ? cea.getHostTaxon().getFullName() : cea.getHostTaxon().getName());
-                } else
+                    
+                } else if (cbx != null)
                 {
                     cbx.setValue(cea.getHostTaxon(), null);
                     cbx.getTextWithQuery().setSelectedId(cea.getHostTaxon().getId());
