@@ -23,8 +23,15 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.showLocalizedMsg;
 
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -35,6 +42,8 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -51,6 +60,8 @@ import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.Project;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 
 /**
  * @author rods
@@ -64,7 +75,9 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
 {
     //private static final Logger  log = Logger.getLogger(CollectionObjectBusRules.class);
     
-    private CollectingEvent  cachedColEve = null;
+    private CollectingEvent  cachedColEve     = null;
+    private JButton          generateLabelBtn = null;
+    private JCheckBox        generateLabelChk = null;
     
     /**
      * Constructor.
@@ -74,6 +87,77 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         super(CollectionObject.class);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
+     */
+    @Override
+    public void initialize(final Viewable viewableArg)
+    {
+        super.initialize(viewableArg);
+        
+        if (formViewObj != null && formViewObj.isEditing())
+        {
+            Component comp = formViewObj.getControlByName("generateLabelBtn");
+            if (comp instanceof JButton)
+            {
+                generateLabelBtn = (JButton)comp;
+                //generateLabelBtn.setVisible(false);
+                generateLabelBtn.addActionListener(new ActionListener()
+                {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        SwingUtilities.invokeLater(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                CommandAction cmdAction = new CommandAction("Data_Entry", "PrintColObjLabel", formViewObj.getDataObj());
+                                CommandDispatcher.dispatch(cmdAction);
+                            }
+                        });
+                    }
+                });
+            }
+            
+            comp = formViewObj.getControlByName("generateLabelChk");
+            if (comp instanceof JCheckBox)
+            {
+                generateLabelChk = (JCheckBox)comp;
+                //generateLabelChk.setVisible(false);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
+     */
+    @Override
+    public void afterFillForm(Object dataObj)
+    {
+        super.afterFillForm(dataObj);
+        
+        if (formViewObj != null && formViewObj.getDataObj() instanceof CollectionObject)
+        {
+            CollectionObject colObj = (CollectionObject)dataObj;
+            
+            MultiView mvParent = formViewObj.getMVParent();
+            boolean   isNewObj = colObj.getId() == null;
+            boolean   isEdit   = mvParent.isEditable();
+
+            if (generateLabelChk != null)
+            {
+                generateLabelChk.setVisible(isEdit);
+            }
+            
+            if (generateLabelBtn != null)
+            {
+                generateLabelBtn.setVisible(isEdit);
+                generateLabelBtn.setEnabled(!isNewObj);
+            }
+        }
+    }
+
     /**
      * @param disciplineType
      * @return
@@ -277,7 +361,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         
         CollectionObject colObj = (CollectionObject)dObjAtt;
         
-        if (AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent() && (colObj.getCollectingEvent() != null || cachedColEve != null))
+        if (AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent() && 
+                (colObj.getCollectingEvent() != null || cachedColEve != null))
         {
             super.addExtraObjectForProcessing(cachedColEve != null ? cachedColEve : colObj.getCollectingEvent());
         }

@@ -186,7 +186,7 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
         double imgWidth  = pf.getImageableWidth();
         double imgHeight = pf.getImageableHeight();
         
-        if (true)
+        //if (true)
         {
             Dimension size        = getSize();
             Image     fullSizeImg = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
@@ -223,9 +223,9 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
             Image scaledImg = GraphicsUtils.getScaledImage(new ImageIcon(fullSizeImg), imgW, imgH, true);
             //System.out.println(scaledImg.getWidth(null)+", "+scaledImg.getHeight(null));
             g2.drawImage(scaledImg, 0, 0, null);
-        } else
-        {
-            printAll(g2);
+        //} else
+        //{
+        //    printAll(g2);
         }
         
         //g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);

@@ -184,7 +184,7 @@ public class JasperCompilerRunnable implements Runnable
         }
         thread = null;
         notifyAll();
-        listener.compileComplete(null);
+        listener.compileComplete(null, null);
     }
 
     /**
@@ -208,7 +208,7 @@ public class JasperCompilerRunnable implements Runnable
     		compileRequired = false;
         	if (listener != null)
         	{
-        		listener.compileComplete(files.get(files.size()-1).getCompiledFile());
+        		listener.compileComplete(files.get(files.size()-1).getCompiledFile(), null);
         	}
         } catch (Exception ex)
         {
@@ -216,7 +216,7 @@ public class JasperCompilerRunnable implements Runnable
             ex.printStackTrace();
             if (listener != null)
             {
-            	listener.compileComplete(null);
+            	listener.compileComplete(null, ex);
             }
         }
     }

@@ -115,7 +115,6 @@ import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.busrules.LoanBusRules;
-import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.LoanReturnDlg;
 import edu.ku.brc.specify.ui.LoanReturnDlg.LoanReturnInfo;
@@ -131,7 +130,6 @@ import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.Trash;
-import edu.ku.brc.util.Pair;
 
 
 /**
@@ -822,10 +820,10 @@ public class InteractionsTask extends BaseTask
         {
             RecordSetIFace rs = (RecordSetIFace)data;
             
-            InvoiceInfo invoiceInfo = getInvoiceInfo(rs.getDbTableId());
+            InfoForTaskReport invoiceInfo = getInvoiceInfo(rs.getDbTableId());
             if (invoiceInfo != null)
             {
-                launchInvoice(invoiceInfo, rs);
+                dispatchReport(invoiceInfo, rs, "LoanInvoice");
             }
         }
     }
@@ -1246,7 +1244,7 @@ public class InteractionsTask extends BaseTask
             //printLoan = false;
             if (doPrintInvoice)
             {
-                InvoiceInfo invoice = getReport(isGift);
+                InfoForTaskReport invoice = getReport(isGift);
                 
                 if (invoice == null)
                 {
@@ -1318,7 +1316,7 @@ public class InteractionsTask extends BaseTask
                             rs.setDbTableId(tableId);
                             rs.addItem(id);
                             
-                            launchInvoice(invoice, rs);
+                            dispatchReport(invoice, rs, "LoanInvoice");
                         }
                     }
                 } finally
@@ -1332,33 +1330,7 @@ public class InteractionsTask extends BaseTask
         }
     }
     
-    /**
-     * @param invoice
-     * @param rs
-     * 
-     * Builds and dispatches command to launch invoice
-     */
-    protected void launchInvoice(final InvoiceInfo invoice, final RecordSetIFace rs)
-    {
-        if (invoice.getSpReport() != null)
-        {
-            SpReport spRep = invoice.getSpReport();
-            QueryBldrPane.runReport(spRep, UIRegistry.getResourceString("LoanInvoice"), rs);
-        }
-        else
-        {
-            SpAppResource rep = invoice.getSpAppResource();
-            CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS, ReportsBaseTask.PRINT_REPORT,
-                    rs);
-            cmd.getProperties().put("title", rep.getName());
-            cmd.getProperties().put("file", rep.getFileName());
-            cmd.getProperties().put("reporttype", "report");
-            cmd.getProperties().put("name", rep.getName());
-            CommandDispatcher.dispatch(cmd);
-        }
-    }
-    
-    public InvoiceInfo getReport(final boolean isGift)
+    public InfoForTaskReport getReport(final boolean isGift)
     {
         return getInvoiceInfo(DBTableIdMgr.getInstance().getIdByShortName(isGift ? "Gift" : "Loan"));
     }
@@ -1370,16 +1342,16 @@ public class InteractionsTask extends BaseTask
      * 
      * Fairly goofy code. Eventually may want to add ui to allow labeling resources as "invoice" (see printLoan()).
      */
-    public InvoiceInfo getInvoiceInfo(final int invoiceTblId)
+    public InfoForTaskReport getInvoiceInfo(final int invoiceTblId)
     {
         DataProviderSessionIFace session = null;
-        ChooseFromListDlg<InvoiceInfo> dlg = null;
+        ChooseFromListDlg<InfoForTaskReport> dlg = null;
         try
         {
             session = DataProviderFactory.getInstance().createSession();
             List<AppResourceIFace> reps = AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.LABELS_MIME);
             reps.addAll(AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.REPORTS_MIME));
-            Vector<InvoiceInfo> repInfo = new Vector<InvoiceInfo>();
+            Vector<InfoForTaskReport> repInfo = new Vector<InfoForTaskReport>();
             
             for (AppResourceIFace rep : reps)
             {
@@ -1435,7 +1407,7 @@ public class InteractionsTask extends BaseTask
                 }
                 if (includeIt)
                 {
-                    repInfo.add(new InvoiceInfo((SpAppResource )rep, spReport));
+                    repInfo.add(new InfoForTaskReport((SpAppResource )rep, spReport));
                 }
             }
             
@@ -1451,7 +1423,7 @@ public class InteractionsTask extends BaseTask
                 return repInfo.get(0);
             }
             
-            dlg = new ChooseFromListDlg<InvoiceInfo>((Frame) UIRegistry
+            dlg = new ChooseFromListDlg<InfoForTaskReport>((Frame) UIRegistry
                     .getTopWindow(), getResourceString("REP_CHOOSE_INVOICE"),
                     repInfo);
             dlg.setVisible(true);
@@ -2395,57 +2367,4 @@ public class InteractionsTask extends BaseTask
                                 {true, false, false, false}};
     }
     
-    /**
-     * @author timbo
-     *
-     * @code_status Alpha
-     *
-     *Stores info about reports.
-     */
-    private class InvoiceInfo extends Pair<SpAppResource, SpReport> implements Comparable<InvoiceInfo>
-    {
-        /**
-         * @param appResource
-         * @param report
-         */
-        public InvoiceInfo(final SpAppResource spAppResource, final SpReport spReport)
-        {
-            super(spAppResource, spReport);
-        }
-        
-        /**
-         * @return the appResource
-         */
-        public SpAppResource getSpAppResource()
-        {
-            return getFirst();
-        }
-        
-        /**
-         * @return the spReport
-         */
-        public SpReport getSpReport()
-        {
-            return getSecond();
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.util.Pair#toString()
-         */
-        @Override
-        public String toString()
-        {
-            return getSpAppResource().getName();
-        }
-
-        /* (non-Javadoc)
-         * @see java.lang.Comparable#compareTo(java.lang.Object)
-         */
-        @Override
-        public int compareTo(InvoiceInfo o)
-        {
-            // TODO Auto-generated method stub
-            return getSpAppResource().getName().compareTo(o.getSpAppResource().getName());
-        }
-    }
 }

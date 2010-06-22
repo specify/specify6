@@ -32,6 +32,7 @@ public interface JasperCompileListener
     /**
      * The compile is complete
      * @param report the compiled report, or null if there was a compiling error
-     */
-	public void compileComplete(final File compiledFile);
+	 * @param throwable the exception if there was an error.
+	 */
+	public void compileComplete(File compiledFile, Throwable throwable);
 }

@@ -24,6 +24,7 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
@@ -32,9 +33,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
@@ -73,17 +77,23 @@ import edu.ku.brc.af.ui.forms.persist.ViewLoader;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.SpAppResource;
+import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.SCOPE;
 import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.DBObjDialogFactory.FormLockStatus;
+import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DataFlavorTableExt;
@@ -1439,6 +1449,193 @@ public class DataEntryTask extends BaseTask
                     }
                 });
 
+            }
+        } else if (cmdAction.isAction("SaveBeforeSetData"))
+        {
+            checkToPrintLabel(cmdAction, false);
+            
+        } else if (cmdAction.isAction("PrintColObjLabel"))
+        {
+            checkToPrintLabel(cmdAction, true);
+        }
+    }
+    
+    /**
+     * @param cmdAction
+     */
+    protected void checkToPrintLabel(final CommandAction cmdAction, final boolean doOverride)
+    {
+        if (cmdAction.getData() instanceof CollectionObject)
+        {
+            CollectionObject colObj =(CollectionObject)cmdAction.getData();
+            
+            Boolean     doPrintLabel = null;
+            
+            if (!doOverride)
+            {
+                FormViewObj formViewObj    = getCurrentFormViewObj();
+                if (formViewObj != null)
+                {
+                    Component comp = formViewObj.getControlByName("generateLabelChk");
+                    if (comp instanceof JCheckBox)
+                    {
+                        doPrintLabel = ((JCheckBox)comp).isSelected();
+                    }
+                }
+                
+                if (doPrintLabel == null)
+                {
+                    return;
+                }
+            }
+            
+            if (doOverride || doPrintLabel)
+            {
+                InfoForTaskReport inforForPrinting = getLabelReportInfo();
+                
+                if (inforForPrinting == null)
+                {
+                    return;
+                }
+                
+                DataProviderSessionIFace session = null;
+                try
+                {
+                    session = DataProviderFactory.getInstance().createSession();
+                    
+                    String hql ="FROM CollectionObject WHERE id = "+colObj.getId();
+                    
+                    colObj = (CollectionObject)session.getData(hql);
+                    
+                    Set<Determination> deters = colObj.getDeterminations();
+                    if (deters != null && deters.size() == 0)
+                    {
+                        UIRegistry.displayErrorDlg(getResourceString("NO_DETERS_ERROR"));
+                        
+                    } else
+                    {
+                        RecordSet rs = new RecordSet();
+                        rs.initialize();
+                        rs.setName(colObj.getIdentityTitle());
+                        rs.setDbTableId(CollectionObject.getClassTableId());
+                        rs.addItem(colObj.getId());
+                        
+                        dispatchReport(inforForPrinting, rs, "ColObjLabel");
+                    }
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * @return a loan invoice if one exists.
+     * 
+     * If more than one report is defined for loan then user must choose.
+     * 
+     * Fairly goofy code. Eventually may want to add ui to allow labeling resources as "invoice" (see printLoan()).
+     */
+    public InfoForTaskReport getLabelReportInfo()
+    {
+        DataProviderSessionIFace session = null;
+        ChooseFromListDlg<InfoForTaskReport> dlg = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            List<AppResourceIFace> reps = AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.LABELS_MIME);
+            reps.addAll(AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.REPORTS_MIME));
+            Vector<InfoForTaskReport> repInfo = new Vector<InfoForTaskReport>();
+            
+            for (AppResourceIFace rep : reps)
+            {
+                Properties params = rep.getMetaDataMap();
+                String     tableid = params.getProperty("tableid"); 
+                SpReport   spReport = null;
+                boolean    includeIt = false;
+                try
+                {
+                    Integer tblId = null;
+                    try
+                    {
+                        tblId = Integer.valueOf(tableid);
+                    }
+                    catch (NumberFormatException ex)
+                    {
+                        //continue;
+                    }
+                    if (tblId == null)
+                    {
+                        continue;
+                    }
+                    
+                    if (tblId.equals(CollectionObject.getClassTableId()))
+                    {
+                        includeIt = true;
+                    }
+                    else if (tblId.equals(-1))
+                    {
+                        QueryIFace q = session.createQuery("from SpReport spr join spr.appResource apr "
+                              + "join spr.query spq "
+                              + "where apr.id = " + ((SpAppResource )rep).getId() 
+                              + " and spq.contextTableId = " + CollectionObject.getClassTableId(), false);
+                        List<?> spReps = q.list();
+                        if (spReps.size() > 0)
+                        {
+                            includeIt = true;
+                            spReport = (SpReport )((Object[] )spReps.get(0))[0];
+                            spReport.forceLoad();
+                            if (spReps.size() > 1)
+                            {
+                                //should never happen
+                                log.error("More than SpReport exists for " + rep.getName());
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsTask.class, ex);
+                    //skip this res
+                }
+                if (includeIt)
+                {
+                    repInfo.add(new InfoForTaskReport((SpAppResource )rep, spReport));
+                }
+            }
+            
+            if (repInfo.size() == 0)
+            {
+                UIRegistry.displayInfoMsgDlgLocalized("InteractionsTask.NoInvoiceFound", 
+                            DBTableIdMgr.getInstance().getTitleForId(CollectionObject.getClassTableId()));
+                return null;
+            }
+            
+            if (repInfo.size() == 1)
+            {
+                return repInfo.get(0);
+            }
+            
+            dlg = new ChooseFromListDlg<InfoForTaskReport>((Frame) UIRegistry.getTopWindow(), getResourceString("REP_CHOOSE_INVOICE"), repInfo);
+            dlg.setVisible(true);
+            if (dlg.isCancelled()) 
+            { 
+                return null; 
+            }
+            return dlg.getSelectedObject();
+
+        }
+        finally
+        {
+            session.close();
+            if (dlg != null)
+            {
+                dlg.dispose();
             }
         }
     }

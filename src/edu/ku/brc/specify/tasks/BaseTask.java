@@ -34,8 +34,14 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.SpAppResource;
+import edu.ku.brc.specify.datamodel.SpReport;
+import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -165,6 +171,33 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
         return !((SpecifyAppContextMgr)AppContextMgr.getInstance()).displayAgentsLoggedInDlg("SystemSetupTask.CFG_SETUP");
     }
 
+    
+    /**
+     * Builds and dispatches command to launch a report.
+     * @param reportInfo information needed to launch the report printing
+     * @param rs the RecordSet containing the ids to be printed
+     * @param titleKey key to a title for display progress
+     */
+    protected void dispatchReport(final InfoForTaskReport reportInfo, 
+                                  final RecordSetIFace rs,
+                                  final String titleKey)
+    {
+        if (reportInfo.getSpReport() != null)
+        {
+            SpReport spRep = reportInfo.getSpReport();
+            QueryBldrPane.runReport(spRep, UIRegistry.getResourceString(titleKey), rs);
+        }
+        else
+        {
+            SpAppResource rep = reportInfo.getSpAppResource();
+            CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS, ReportsBaseTask.PRINT_REPORT,  rs);
+            cmd.getProperties().put("title", rep.getName());
+            cmd.getProperties().put("file", rep.getFileName());
+            cmd.getProperties().put("reporttype", "report");
+            cmd.getProperties().put("name", rep.getName());
+            CommandDispatcher.dispatch(cmd);
+        }
+    }
     
 	//---------------------------------------------------------------------------
     //-- edu.ku.brc.af.tasks.BaseTask
