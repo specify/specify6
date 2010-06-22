@@ -28,7 +28,7 @@ import edu.ku.brc.ui.UIRegistry;
  *
  *Describes a 'standard' tree level such as Genus, Species, Country...
  */
-public class TreeDefItemStandardEntry
+public class TreeDefItemStandardEntry implements Comparable<TreeDefItemStandardEntry>
 {
     protected final String name;
 	protected final String title;
@@ -75,6 +75,15 @@ public class TreeDefItemStandardEntry
     {
         return getTitle();
     }
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(TreeDefItemStandardEntry arg0)
+	{
+		
+		return rank <  arg0.getRank() ? -1 : (rank == arg0.getRank() ? 0 : -1); 
+	}
     
     
 }
