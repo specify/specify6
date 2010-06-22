@@ -30,6 +30,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -841,7 +842,29 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
             result = (int)(.5 * (child.getRankId() + parent.getRankId()));
         }
         
-        else result = parent.getRankId() + displayedDef.getRankIncrement();
+        else 
+        {
+            TreeDefItemStandardEntry stdChild = null;
+            List<TreeDefItemStandardEntry> stds = displayedDef.getStandardLevels();
+            Collections.sort(stds);
+            for (TreeDefItemStandardEntry std : displayedDef.getStandardLevels())
+            {
+               //if (std.getTitle().equals(nodeInForm.getName()) && std.getRank() == nodeInForm.getRankId())
+               if (std.getRank() > parent.getRankId())
+                {
+            	   stdChild = std;
+                    break;
+                }
+            }
+            if (stdChild == null)
+            {
+            	result = parent.getRankId() + displayedDef.getRankIncrement();
+            }
+            else
+            {
+            	result = (int)(.5 * (stdChild.getRank() + parent.getRankId()));
+            }
+        }
         
         if (displayedDef.getDefItemByRank(result) != null)
         {
