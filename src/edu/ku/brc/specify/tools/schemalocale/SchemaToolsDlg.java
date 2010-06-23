@@ -290,16 +290,20 @@ public class SchemaToolsDlg extends CustomDialog
                     {
                         localSession = DataProviderFactory.getInstance().createSession();
                         
+                        localSession.beginTransaction();
+                        
                         BuildSampleDatabase bsd = new BuildSampleDatabase();
                         bsd.loadSchemaLocalization(AppContextMgr.getInstance().getClassObject(Discipline.class), 
                                                     SpLocaleContainer.CORE_SCHEMA, 
                                                     DBTableIdMgr.getInstance(),
                                                     null, //catFmtName,
                                                     null, //accFmtName,
-                                                    true,
+                                                    true, // isDoingUpdate
                                                     file, // external file
                                                     glassPane,
                                                     localSession);
+                        localSession.commit();
+                        
                         isOK = true;
                     } catch (Exception ex)
                     {
