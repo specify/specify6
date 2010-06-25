@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
@@ -121,11 +123,17 @@ public class RelQRI extends FieldQRI
      */
     public DataObjDataFieldFormatIFace getDataObjFormatter()
     {
-        DataObjSwitchFormatter sf = DataObjFieldFormatMgr.getInstance().getDataFormatter(getTableInfo().getShortClassName());
-        if (sf != null && sf.isSingle())
-        {
-            return sf.getSingle();
-        }
+    	List<DataObjSwitchFormatter> sfs = DataObjFieldFormatMgr.getInstance().getFormatterList(getTableInfo().getClassObj());
+    	for (DataObjSwitchFormatter sf : sfs)
+    	{
+    		if (sf.isDefault())
+    		{
+    	        if (sf.isSingle())
+    	        {
+    	            return sf.getSingle();
+    	        }
+    		}
+    	}
         return null;
     }
     
