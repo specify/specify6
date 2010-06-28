@@ -73,7 +73,9 @@ import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.formatters.TypeSearchListEditor;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
+import edu.ku.brc.af.ui.forms.validation.TypeSearchForQueryFactory;
 import edu.ku.brc.af.ui.weblink.WebLinkConfigDlg;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -1003,8 +1005,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
 				 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 				 */
 				@Override
-				public int compare(BaseTreeTask<?, ?, ?> arg0,
-						BaseTreeTask<?, ?, ?> arg1)
+				public int compare(BaseTreeTask<?, ?, ?> arg0, BaseTreeTask<?, ?, ?> arg1)
 				{
 					return arg0.getTitle().compareTo(arg1.getTitle());
 				}
@@ -1080,6 +1081,25 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             mid = new MenuItemDesc(mi, SYSTEM_MENU);
             mid.setPosition(MenuItemDesc.Position.After, menuDesc);
             menuItems.add(mid);
+            
+            menuDesc = getResourceString(titleArg);
+            titleArg = getI18NKey("TYPESEARCH_MENU"); 
+            mneu     = getI18NKey("TYPESEARCH_MNEU"); 
+            mi = UIHelper.createLocalizedMenuItem(titleArg, mneu, titleArg, true, null);
+            mi.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    TypeSearchForQueryFactory.getInstance().save();
+                    
+                    TypeSearchListEditor tse = new TypeSearchListEditor();
+                    tse.setVisible(true);
+                    tse.pack();
+                }
+            }); 
+            mid = new MenuItemDesc(mi, SYSTEM_MENU);
+            mid.setPosition(MenuItemDesc.Position.After, menuDesc);
+            menuItems.add(mid);
         }
         
         if (!AppContextMgr.isSecurityOn() || 
@@ -1099,7 +1119,6 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             mid.setPosition(MenuItemDesc.Position.Top, FULL_SYSTEM_MENU);
             menuItems.add(mid);
         }
-        
         return menuItems;
     }
     

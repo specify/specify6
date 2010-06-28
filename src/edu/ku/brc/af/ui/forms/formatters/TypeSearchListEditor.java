@@ -76,7 +76,7 @@ public class TypeSearchListEditor extends CustomDialog
      */
     public TypeSearchListEditor() throws HeadlessException
     {
-        super((Frame)UIRegistry.getTopWindow(), "Type Search Editor", true, null);
+        super((Frame)UIRegistry.getTopWindow(), "Query Combobox Editor", true, CustomDialog.OK_BTN, null);
     }
 
     /* (non-Javadoc)
@@ -85,6 +85,8 @@ public class TypeSearchListEditor extends CustomDialog
     @Override
     public void createUI()
     {
+        setOkLabel(getResourceString("CLOSE"));
+        
         super.createUI();
 
         PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g,2px,p"));
@@ -182,7 +184,7 @@ public class TypeSearchListEditor extends CustomDialog
             TypeSearchInfo tsi = (TypeSearchInfo)list.getSelectedValue();
             if (edit(tsi, false))
             {
-                // do save here
+                TypeSearchForQueryFactory.getInstance().save();
             }
         }
     }
@@ -201,7 +203,7 @@ public class TypeSearchListEditor extends CustomDialog
             }
             if (TypeSearchForQueryFactory.getInstance().getHash().get(tsi.getName()) == null)
             {
-                // Do save here
+                TypeSearchForQueryFactory.getInstance().save();
                 break;
             }
         }
@@ -220,11 +222,17 @@ public class TypeSearchListEditor extends CustomDialog
             if (!tsi.isSystem())
             {
                 TypeSearchForQueryFactory.getInstance().remove(tsi);
+                TypeSearchForQueryFactory.getInstance().save();
                 list.remove(inx);
             }
         }
     }
     
+    /**
+     * @param tsi
+     * @param isNewItem
+     * @return
+     */
     protected boolean edit(final TypeSearchInfo tsi, final boolean isNewItem)
     {
         final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Dialog)UIRegistry.getMostRecentWindow(),
@@ -245,144 +253,143 @@ public class TypeSearchListEditor extends CustomDialog
             @Override
             public void adjustForm(final FormViewObj fvo)
             {
-                final ValTextField nameTF      = fvo.getCompById("name");
-                final ValTextField dispColsTF  = fvo.getCompById("displayColumns");
-
-                //----------------------- Table List -----------------------------
-                final ValComboBox         tableCBX  = fvo.getCompById("tableCBX");
-                final Vector<DBTableInfo> tableList = new Vector<DBTableInfo>(DBTableIdMgr.getInstance().getTables());
-                Collections.sort(tableList);
-                
-                tableCBX.setModel(new DefaultComboBoxModel(tableList));
-                if (tableList.size() > 0)
-                {
-                    int i   = 0;
-                    int inx = -1;
-                    for (DBTableInfo tbl : tableList)
-                    {
-                        if (tbl.getTableId() == tsi.getTableId())
-                        {
-                            inx = i;
-                            break;
-                        }
-                        i++;
-                    }
-                    tableCBX.getComboBox().setSelectedIndex(inx);
-                }
-                
-                SwingUtilities.invokeLater(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        if (tableList.size() == 0 || !isNewItem)
-                        {
-                            tableCBX.getComboBox().setEnabled(false);
-                            nameTF.setEditable(isNewItem);
-                            
-                            SwingUtilities.invokeLater(new Runnable()
-                            {
-                                @Override
-                                public void run()
-                                {
-                                    if (tableList.size() == 0 || !isNewItem)
-                                    {
-                                        dispColsTF.requestFocus();
-                                    }
-                                }
-                            });
-                        }
-                    }
-                });
-
-                //----------------------- UI Field Formatter -----------------------------
-                final ValComboBox             uiFmtCbx = fvo.getCompById("uiFieldFormatterNameCBX");
-                Vector<UIFieldFormatterIFace> uiffList = new Vector<UIFieldFormatterIFace>(UIFieldFormatterMgr.getInstance().getFormatters());
-                Collections.sort(uiffList, new Comparator<UIFieldFormatterIFace>()
-                {
-                    @Override
-                    public int compare(UIFieldFormatterIFace o1, UIFieldFormatterIFace o2)
-                    {
-                        return o1.getName().compareToIgnoreCase(o2.getName());
-                    }
-                });
-                
-                uiFmtCbx.setModel(new DefaultComboBoxModel(uiffList));
-                if (uiffList.size() > 0)
-                {
-                    int i   = 0;
-                    int inx = -1;
-                    for (UIFieldFormatterIFace dof : uiffList)
-                    {
-                        if (dof.getName().equals(tsi.getDataObjFormatterName()))
-                        {
-                            inx = i;
-                            break;
-                        }
-                        i++;
-                    }
-                    uiFmtCbx.getComboBox().setSelectedIndex(inx);
-                } else
-                {
-                    SwingUtilities.invokeLater(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            uiFmtCbx.getComboBox().setEnabled(false);
-                        }
-                    });
-                }
-                
-                //----------------------- Data Obj Formatter -----------------------------
-                Class<?> cls = DBTableIdMgr.getInstance().getInfoById(tsi.getTableId()).getClassObj();
-                List<DataObjSwitchFormatter>   list          = DataObjFieldFormatMgr.getInstance().getFormatterList(cls);
-                final ValComboBox              dataObjFmtCbx = fvo.getCompById("dataObjFormatterNameCBX");
-                Vector<DataObjSwitchFormatter> dofList       = new Vector<DataObjSwitchFormatter>(list);
-                dataObjFmtCbx.setModel(new DefaultComboBoxModel(dofList));
-                
-                if (dofList.size() > 0)
-                {
-                    int i   = 0;
-                    int inx = -1;
-                    for (DataObjSwitchFormatter dof : dofList)
-                    {
-                        if (dof.getName().equals(tsi.getDataObjFormatterName()))
-                        {
-                            inx = i;
-                            break;
-                        }
-                        i++;
-                    }
-                    dataObjFmtCbx.getComboBox().setSelectedIndex(inx);
-                } else
-                {
-                    SwingUtilities.invokeLater(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            dataObjFmtCbx.getComboBox().setEnabled(false);
-                        }
-                    });
-                }
+                adjustDlgForm(tsi, isNewItem, fvo);
             }
-        
         });
         dlg.setData(tsi);
         UIHelper.centerAndShow(dlg);
         
         return !dlg.isCancelled();
     }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.CustomDialog#okButtonPressed()
-     */
-    @Override
-    protected void okButtonPressed()
-    {
-        super.okButtonPressed();
-    }
-
     
+    /**
+     * Configures and setup the form controls in the dialog.
+     * @param tsi the current or new item
+     * @param isNewItem whether it is a new item
+     * @param fvo the form in the dlg
+     */
+    private void adjustDlgForm(final TypeSearchInfo tsi, final boolean isNewItem, final FormViewObj fvo)
+    {
+        final ValTextField nameTF      = fvo.getCompById("name");
+        final ValTextField dispColsTF  = fvo.getCompById("displayColumns");
+
+        //----------------------- Table List -----------------------------
+        final ValComboBox         tableCBX  = fvo.getCompById("tableCBX");
+        final Vector<DBTableInfo> tableList = new Vector<DBTableInfo>(DBTableIdMgr.getInstance().getTables());
+        Collections.sort(tableList);
+        
+        tableCBX.setModel(new DefaultComboBoxModel(tableList));
+        if (tableList.size() > 0)
+        {
+            int i   = 0;
+            int inx = -1;
+            for (DBTableInfo tbl : tableList)
+            {
+                if (tbl.getTableId() == tsi.getTableId())
+                {
+                    inx = i;
+                    break;
+                }
+                i++;
+            }
+            tableCBX.getComboBox().setSelectedIndex(inx);
+        }
+        
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                if (tableList.size() == 0 || !isNewItem)
+                {
+                    tableCBX.getComboBox().setEnabled(false);
+                    nameTF.setEditable(isNewItem);
+                    
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            if (tableList.size() == 0 || !isNewItem)
+                            {
+                                dispColsTF.requestFocus();
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
+        //----------------------- UI Field Formatter -----------------------------
+        final ValComboBox             uiFmtCbx = fvo.getCompById("uiFieldFormatterNameCBX");
+        Vector<UIFieldFormatterIFace> uiffList = new Vector<UIFieldFormatterIFace>(UIFieldFormatterMgr.getInstance().getFormatters());
+        Collections.sort(uiffList, new Comparator<UIFieldFormatterIFace>()
+        {
+            @Override
+            public int compare(UIFieldFormatterIFace o1, UIFieldFormatterIFace o2)
+            {
+                return o1.getName().compareToIgnoreCase(o2.getName());
+            }
+        });
+        
+        uiFmtCbx.setModel(new DefaultComboBoxModel(uiffList));
+        if (uiffList.size() > 0)
+        {
+            int i   = 0;
+            int inx = -1;
+            for (UIFieldFormatterIFace dof : uiffList)
+            {
+                if (dof.getName().equals(tsi.getDataObjFormatterName()))
+                {
+                    inx = i;
+                    break;
+                }
+                i++;
+            }
+            uiFmtCbx.getComboBox().setSelectedIndex(inx);
+        } else
+        {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    uiFmtCbx.getComboBox().setEnabled(false);
+                }
+            });
+        }
+        
+        //----------------------- Data Obj Formatter -----------------------------
+        Class<?> cls = DBTableIdMgr.getInstance().getInfoById(tsi.getTableId()).getClassObj();
+        List<DataObjSwitchFormatter>   list          = DataObjFieldFormatMgr.getInstance().getFormatterList(cls);
+        final ValComboBox              dataObjFmtCbx = fvo.getCompById("dataObjFormatterNameCBX");
+        Vector<DataObjSwitchFormatter> dofList       = new Vector<DataObjSwitchFormatter>(list);
+        dataObjFmtCbx.setModel(new DefaultComboBoxModel(dofList));
+        
+        if (dofList.size() > 0)
+        {
+            int i   = 0;
+            int inx = -1;
+            for (DataObjSwitchFormatter dof : dofList)
+            {
+                if (dof.getName().equals(tsi.getDataObjFormatterName()))
+                {
+                    inx = i;
+                    break;
+                }
+                i++;
+            }
+            dataObjFmtCbx.getComboBox().setSelectedIndex(inx);
+        } else
+        {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    dataObjFmtCbx.getComboBox().setEnabled(false);
+                }
+            });
+        }
+    }
 }

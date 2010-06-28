@@ -97,7 +97,7 @@ public class TypeSearchInfo implements Comparable<TypeSearchInfo>
      */
     public String getDisplayColumns()
     {
-        return displayColumns;
+        return displayColumns == null ? "" : displayColumns;
     }
 
     /**
@@ -105,7 +105,7 @@ public class TypeSearchInfo implements Comparable<TypeSearchInfo>
      */
     public String getFormat()
     {
-        return format;
+        return format == null ? "" : format;
     }
 
     /**
@@ -129,7 +129,7 @@ public class TypeSearchInfo implements Comparable<TypeSearchInfo>
 
     public String getSearchFieldName()
     {
-        return searchFieldName;
+        return searchFieldName == null ? "" : searchFieldName;
     }
 
     /**
@@ -140,7 +140,7 @@ public class TypeSearchInfo implements Comparable<TypeSearchInfo>
      */
     public String getSqlTemplate()
     {
-        return sqlTemplate;
+        return sqlTemplate == null ? "" : sqlTemplate;
     }
 
     /**

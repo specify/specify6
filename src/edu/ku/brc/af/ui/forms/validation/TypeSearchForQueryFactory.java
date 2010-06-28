@@ -181,12 +181,13 @@ public class TypeSearchForQueryFactory
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(typeSearchInfo.getTableId());
             if (tblInfo != null)
             {
+                String dofName = StringUtils.isNotEmpty(dataObjFormatterNameArg) ? dataObjFormatterNameArg : typeSearchInfo.getDataObjFormatterName();
                 return new TextFieldWithInfo(tblInfo.getClassName(),
                                              tblInfo.getIdFieldName(),
                                              typeSearchInfo.getSearchFieldName(),
                                              typeSearchInfo.getFormat(),
                                              typeSearchInfo.getUiFieldFormatterName(),
-                                             dataObjFormatterNameArg,
+                                             dofName,
                                              tblInfo.getNewObjDialog(),
                                              tblInfo.getTitle());
     
@@ -239,13 +240,14 @@ public class TypeSearchForQueryFactory
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(typeSearchInfo.getTableId());
             if (tblInfo != null)
             {
+                String dofName = StringUtils.isNotEmpty(dataObjFormatterNameArg) ? dataObjFormatterNameArg : typeSearchInfo.getDataObjFormatterName();
                 return new ValComboBoxFromQuery(tblInfo,
                                                 typeSearchInfo.getSearchFieldName(),
                                                 typeSearchInfo.getDisplayColumns(),
                                                 typeSearchInfo.getSearchFieldName(),
                                                 typeSearchInfo.getFormat(),
                                                 typeSearchInfo.getUiFieldFormatterName(),
-                                                dataObjFormatterNameArg,
+                                                dofName,
                                                 typeSearchInfo.getSqlTemplate(),
                                                 helpContextArg,
                                                 btnOpts);

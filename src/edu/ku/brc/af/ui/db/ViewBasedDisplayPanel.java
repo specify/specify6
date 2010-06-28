@@ -33,7 +33,6 @@ import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.Viewable;
@@ -74,7 +73,6 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     // UI
     protected JButton        okBtn;
     protected JButton        cancelBtn    = null;
-    protected JPanel         contentPanel;
     protected Window         parentWin;
     protected boolean        isCancelled  = false;
     protected boolean        doRegOKBtn;                   // Indicates whether the OK btn should be registered so it calls save
@@ -199,8 +197,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
 
-        add(multiView, BorderLayout.NORTH);
-        contentPanel = new JPanel(new NavBoxLayoutManager(0,2));
+        add(multiView, BorderLayout.CENTER);
         
         if (parentWin != null && parentWin instanceof JDialog)
         {

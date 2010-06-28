@@ -143,6 +143,7 @@ import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.ResultSetController;
 import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.af.ui.forms.formatters.TypeSearchListEditor;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.forms.validation.TypeSearchForQueryFactory;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
@@ -198,8 +199,8 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
+import edu.ku.brc.specify.dbsupport.cleanuptools.AgentCleanup;
 import edu.ku.brc.specify.prefs.SystemPrefs;
-import edu.ku.brc.specify.tasks.BaseTreeTask;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.AppBase;
@@ -642,6 +643,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     {
         // Name factories
         System.setProperty(ViewFactory.factoryName,                     "edu.ku.brc.specify.config.SpecifyViewFactory");        // Needed by ViewFactory //$NON-NLS-1$
+        
         System.setProperty(AppContextMgr.factoryName,                   "edu.ku.brc.specify.config.SpecifyAppContextMgr");      // Needed by AppContextMgr //$NON-NLS-1$
         System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");         // Needed by AppReferences //$NON-NLS-1$
         System.setProperty(AppPreferences.factoryGlobalName,            "edu.ku.brc.specify.config.AppPrefsGlobalDBIOIImpl");         // Needed by AppReferences //$NON-NLS-1$
@@ -662,6 +664,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         //System.setProperty(UserAndMasterPasswordMgr.factoryName,               "edu.ku.brc.af.auth.specify.SpecifySecurityMgr");              // Needed for Tree Field Names //$NON-NLS-1$
         System.setProperty(BackupServiceFactory.factoryName,            "edu.ku.brc.af.core.db.MySQLBackupService");                   // Needed for Backup and Restore //$NON-NLS-1$
         System.setProperty(ExceptionTracker.factoryName,                "edu.ku.brc.specify.config.SpecifyExceptionTracker");                   // Needed for Backup and Restore //$NON-NLS-1$
+        System.setProperty(TypeSearchForQueryFactory.factoryName,       "edu.ku.brc.specify.ui.SpecifyTypeSearchForQueryFactory"); // Needed by ViewFactory //$NON-NLS-1$
         
         System.setProperty(DBMSUserMgr.factoryName,                     "edu.ku.brc.dbsupport.MySQLDMBSUserMgr");
         System.setProperty(SchemaUpdateService.factoryName,             "edu.ku.brc.specify.dbsupport.SpecifySchemaUpdateService");   // needed for updating the schema

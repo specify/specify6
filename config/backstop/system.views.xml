@@ -438,7 +438,7 @@
             <enableRules/>
             
             <columnDef>p, 2px, p, p, p:g, f:250px:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,f:p:g</rowDef>
             <rows>
                 <row>
                     <cell type="separator" label="Type Search Info" colspan="6"/>
@@ -489,7 +489,11 @@
                         </rows>
                     </cell>
                 </row>
-          </rows>
+                <row>
+                    <cell type="label" labelfor="sqlTemplate" label="SQL Template"/>
+                    <cell type="field" id="sqlTemplate" name="sqlTemplate" uitype="textarea" colspan="4"/>
+                </row>
+            </rows>
 
         </viewdef>
         

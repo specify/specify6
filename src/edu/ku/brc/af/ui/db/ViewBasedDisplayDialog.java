@@ -229,6 +229,7 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
     {
         super.createUI();
 
+        contentPanel = viewBasedPanel;
         viewBasedPanel.setOkCancelBtns(okBtn, cancelBtn);
         
         mainPanel.add(viewBasedPanel, BorderLayout.CENTER);
