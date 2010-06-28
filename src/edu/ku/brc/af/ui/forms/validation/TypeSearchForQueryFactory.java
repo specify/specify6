@@ -135,7 +135,7 @@ public class TypeSearchForQueryFactory
                                                                     tsElement.attributeValue("searchfield"),
                                                                     XMLHelper.getAttr(tsElement, "format", null),
                                                                     XMLHelper.getAttr(tsElement, "uifieldformatter", null),
-                                                                    tsElement.attributeValue("dataobjformatter"),
+                                                                    XMLHelper.getAttr(tsElement, "dataobjformatter", null),
                                                                     XMLHelper.getAttr(tsElement, "system", true));
                             hash.put(name, tsi);
                             

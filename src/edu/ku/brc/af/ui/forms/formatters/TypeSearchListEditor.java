@@ -194,7 +194,7 @@ public class TypeSearchListEditor extends CustomDialog
      */
     private void addItem()
     {
-        TypeSearchInfo tsi = new TypeSearchInfo(-1, "", "", "", "", "", "", false);
+        TypeSearchInfo tsi = new TypeSearchInfo(-1, null, null, null, null, null, null, false);
         while (true)
         {
             if (!edit(tsi, true))

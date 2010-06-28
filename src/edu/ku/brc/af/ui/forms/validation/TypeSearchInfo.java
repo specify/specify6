@@ -57,14 +57,14 @@ public class TypeSearchInfo implements Comparable<TypeSearchInfo>
                           String dataObjFormatterName,
                           Boolean isSystem)
     {
-        this.tableId         = tableId;
-        this.name            = name;
-        this.displayColumns  = displayColumns;
+        this.tableId              = tableId;
+        this.name                 = name;
+        this.displayColumns       = displayColumns;
 
-        this.searchFieldName = searchFieldName;
-        this.format          = format;
-        this.uiFieldFormatterName = uiFieldFormatterName;
-        this.dataObjFormatterName = dataObjFormatterName;
+        this.searchFieldName      = StringUtils.isNotBlank(searchFieldName) ? searchFieldName : null;
+        this.format               = StringUtils.isNotBlank(format) ? format : null;
+        this.uiFieldFormatterName = StringUtils.isNotBlank(uiFieldFormatterName) ? uiFieldFormatterName : null;
+        this.dataObjFormatterName = StringUtils.isNotBlank(dataObjFormatterName) ? dataObjFormatterName : null;
         this.isSystem             = isSystem;
     }
 
@@ -97,7 +97,7 @@ public class TypeSearchInfo implements Comparable<TypeSearchInfo>
      */
     public String getDisplayColumns()
     {
-        return displayColumns == null ? "" : displayColumns;
+        return displayColumns;
     }
 
     /**
@@ -105,7 +105,7 @@ public class TypeSearchInfo implements Comparable<TypeSearchInfo>
      */
     public String getFormat()
     {
-        return format == null ? "" : format;
+        return format;
     }
 
     /**
@@ -129,7 +129,7 @@ public class TypeSearchInfo implements Comparable<TypeSearchInfo>
 
     public String getSearchFieldName()
     {
-        return searchFieldName == null ? "" : searchFieldName;
+        return searchFieldName;
     }
 
     /**
@@ -140,7 +140,7 @@ public class TypeSearchInfo implements Comparable<TypeSearchInfo>
      */
     public String getSqlTemplate()
     {
-        return sqlTemplate == null ? "" : sqlTemplate;
+        return sqlTemplate;
     }
 
     /**
@@ -148,7 +148,7 @@ public class TypeSearchInfo implements Comparable<TypeSearchInfo>
      */
     public void setSqlTemplate(String sqlTemplate)
     {
-        this.sqlTemplate = sqlTemplate;
+        if (StringUtils.isNotBlank(sqlTemplate)) this.sqlTemplate = sqlTemplate;
     }
     
     /**
@@ -164,16 +164,20 @@ public class TypeSearchInfo implements Comparable<TypeSearchInfo>
      */
     public void setSystem(Boolean isSystem)
     {
-        this.isSystem = isSystem;
+        if (StringUtils.isNotBlank(sqlTemplate)) this.isSystem = isSystem;
     }
 
+    private String getStr(final String str)
+    {
+        return str == null ? "" : str;
+    }
     /**
      * @return
      */
     public String getXML()
     {
-        String xmlFmt = "    <typesearch tableid=\"%d\"  name=\"%s\"    searchfield=\"%s\" displaycols=\"%s\" uifieldformatter=\"%s\" format=\"%s\" dataobjformatter=\"%s\" system=\"%s\"";
-        String xml    = String.format(xmlFmt, tableId, name, searchFieldName, displayColumns, format, uiFieldFormatterName, dataObjFormatterName, isSystem.toString());
+        String xmlFmt = "    <typesearch tableid=\"%d\"  name=\"%s\" searchfield=\"%s\" displaycols=\"%s\" format=\"%s\" uifieldformatter=\"%s\" dataobjformatter=\"%s\" system=\"%s\"";
+        String xml    = String.format(xmlFmt, tableId, name, getStr(searchFieldName), getStr(displayColumns), getStr(format), getStr(uiFieldFormatterName), getStr(dataObjFormatterName), isSystem.toString());
         if (StringUtils.isNotEmpty(sqlTemplate))
         {
             xml += ">\n        " + sqlTemplate + "\n";
