@@ -94,10 +94,10 @@ public class FullNameBuilder<T extends Treeable<T, D, I>, D extends TreeDefIface
 		}
 		
 		StringBuilder sb = new StringBuilder();
+		boolean backwards = reverse == TreeDefIface.REVERSE;
+		int parentIdx = backwards ? parents.size() - 1 : 0;
+		int incrementor = backwards ? -1 : 1;
 		
-		
-		Iterator<TreeNodeInfo> parentIterator = reverse == TreeDefIface.REVERSE ? parents.descendingIterator()
-				: parents.iterator();
 		Iterator<FullNameInfo> fullNameIterator = ranks.iterator();
 		boolean addedNode = false;
 		String nextSeparator = null;
@@ -110,12 +110,16 @@ public class FullNameBuilder<T extends Treeable<T, D, I>, D extends TreeDefIface
 				addedNode = true;
 				name = node.getName();
 			}
-			else if ((addedNode || reverse == TreeDefIface.FORWARD) && parentIterator.hasNext())
+			else if ((addedNode || !backwards) && parentIdx >= 0 && parentIdx < parents.size())
 			{
-				TreeNodeInfo parentInfo = parentIterator.next();
+				TreeNodeInfo parentInfo = parents.get(parentIdx);
 				if (parentInfo.getRank() == info.getRank())
 				{
 					name = parentInfo.getName();
+				}
+				if ((!backwards && parentInfo.getRank() <= info.getRank()) || (backwards && parentInfo.getRank() >= info.getRank()))
+				{
+					parentIdx += incrementor;
 				}
 			}
 			if (name != null)
