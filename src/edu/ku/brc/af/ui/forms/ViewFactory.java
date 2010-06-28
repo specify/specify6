@@ -699,7 +699,7 @@ public class ViewFactory
             
             String helpContext = cellField.getProperty("hc");
             
-            ValComboBoxFromQuery cbx = TypeSearchForQueryFactory.createValComboBoxFromQuery(cbxName, btnOpts, cellField.getFormatName(), helpContext);
+            ValComboBoxFromQuery cbx = TypeSearchForQueryFactory.getInstance().createValComboBoxFromQuery(cbxName, btnOpts, cellField.getFormatName(), helpContext);
             if (cbx != null)
             {
                 cbx.setRequired(isRequired);
@@ -895,7 +895,7 @@ public class ViewFactory
         String            txtName = cellField.getProperty("name");
         if (isNotEmpty(txtName))
         {
-            textFieldInfo = TypeSearchForQueryFactory.getTextFieldWithInfo(txtName, cellField.getFormatName());
+            textFieldInfo = TypeSearchForQueryFactory.getInstance().getTextFieldWithInfo(txtName, cellField.getFormatName());
             if (textFieldInfo != null)
             {
                 textFieldInfo.setMultiView(parent);

@@ -213,7 +213,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
      */
     public void setFormAdjuster(final FormPaneAdjusterIFace adjuster)
     {
-        if (adjuster != null && multiView.getCurrentViewAsFormViewObj() != null)
+        if (adjuster != null && multiView != null && multiView.getCurrentViewAsFormViewObj() != null)
         {
             adjuster.adjustForm(multiView.getCurrentViewAsFormViewObj());
         }

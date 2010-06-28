@@ -19,14 +19,23 @@
 */
 package edu.ku.brc.af.ui.forms.validation;
 
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.security.AccessController;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
-import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.db.TextFieldWithInfo;
@@ -44,10 +53,14 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class TypeSearchForQueryFactory
 {
+    public static final String factoryName    = "edu.ku.brc.af.ui.forms.validation.TypeSearchForQueryFactory";
+
     // Static Data Members
     private static final Logger log = Logger.getLogger(TypeSearchForQueryFactory.class);
     
-    protected static TypeSearchForQueryFactory instance   = new TypeSearchForQueryFactory();
+    private static final String TYPESEARCHES = "TypeSearches";
+    
+    protected static TypeSearchForQueryFactory instance   = null;
     protected static boolean                   doingLocal = false;
     
     // Data Members
@@ -62,15 +75,38 @@ public class TypeSearchForQueryFactory
     }
     
     /**
+     * @return
+     */
+    public Vector<TypeSearchInfo> getList()
+    {
+        Vector<TypeSearchInfo> list = new Vector<TypeSearchInfo>(instance.hash.values());
+        Collections.sort(list);
+        return list;
+    }
+    
+    /**
      * @return the DOM
      */
     protected Element getDOM()
     {
+        final String pathName = "backstop/typesearch_def.xml";
         if (doingLocal)
         {
-            return XMLHelper.readDOMFromConfigDir("backstop/typesearch_def.xml");
+            return XMLHelper.readDOMFromConfigDir(pathName);
         }
-        return AppContextMgr.getInstance().getResourceAsDOM("TypeSearches");
+        return getDOMFromResource(TYPESEARCHES, pathName);
+    }
+    
+    /**
+     * Method for getting a Resource the Database or disk.
+     * @param name
+     * @param localPath
+     * @return
+     */
+    public Element getDOMFromResource(final String name, final String localPath)
+    {
+        // Default impl is to get it from disk.
+       return XMLHelper.readDOMFromConfigDir(localPath);
     }
     
     /**
@@ -79,7 +115,6 @@ public class TypeSearchForQueryFactory
      */
     public void load()
     {
-
         if (hash.size() == 0)
         {
             try
@@ -95,11 +130,13 @@ public class TypeSearchForQueryFactory
                         if (StringUtils.isNotBlank(name))
                         {
                             TypeSearchInfo tsi = new TypeSearchInfo(XMLHelper.getAttr(tsElement, "tableid", -1),
+                                                                    name,
                                                                     tsElement.attributeValue("displaycols"),
                                                                     tsElement.attributeValue("searchfield"),
                                                                     XMLHelper.getAttr(tsElement, "format", null),
                                                                     XMLHelper.getAttr(tsElement, "uifieldformatter", null),
-                                                                    tsElement.attributeValue("dataobjformatter"));
+                                                                    tsElement.attributeValue("dataobjformatter"),
+                                                                    XMLHelper.getAttr(tsElement, "system", true));
                             hash.put(name, tsi);
                             
                             String sqlTemplate = tsElement.getTextTrim();
@@ -118,10 +155,10 @@ public class TypeSearchForQueryFactory
                 }
             } catch (Exception ex)
             {
+                log.error(ex);
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TypeSearchForQueryFactory.class, ex);
                 ex.printStackTrace();
-                log.error(ex);
             }
         }
     }
@@ -130,10 +167,11 @@ public class TypeSearchForQueryFactory
     /**
      * Creates a new ValComboBoxFromQuery by name.
      * @param name the name of the ValComboBoxFromQuery to return
+     * @param dataObjFormatterNameArg the name of the DataObjFormatter
      * @return a ValComboBoxFromQuery by name
      */
-    public static TextFieldWithInfo getTextFieldWithInfo(final String name,
-                                                         final String dataObjFormatterNameArg)
+    public TextFieldWithInfo getTextFieldWithInfo(final String name,
+                                                  final String dataObjFormatterNameArg)
     {
         instance.load();
         
@@ -167,7 +205,7 @@ public class TypeSearchForQueryFactory
      * @param name the name of the formatter to use
      * @return the name of the formatter
      */
-    public static String getDataObjFormatterName(final String name)
+    public String getDataObjFormatterName(final String name)
     {
         instance.load();
         
@@ -188,10 +226,10 @@ public class TypeSearchForQueryFactory
      * @param name the name of the ValComboBoxFromQuery to return
      * @return a ValComboBoxFromQuery by name
      */
-    public static ValComboBoxFromQuery createValComboBoxFromQuery(final String name, 
-                                                                  final int btnOpts,
-                                                                  final String dataObjFormatterNameArg,
-                                                                  final String helpContextArg)
+    public ValComboBoxFromQuery createValComboBoxFromQuery(final String name, 
+                                                           final int btnOpts,
+                                                           final String dataObjFormatterNameArg,
+                                                           final String helpContextArg)
     {
         instance.load();
         
@@ -233,87 +271,138 @@ public class TypeSearchForQueryFactory
     {
         TypeSearchForQueryFactory.doingLocal = doingLocal;
     }
-    
-    //-----------------------------------------------------
-    //-- Inner Classes
-    //-----------------------------------------------------
-    class TypeSearchInfo
+
+    /**
+     * @return the hash
+     */
+    public Hashtable<String, TypeSearchInfo> getHash()
     {
-        protected int    tableId;
-        protected String displayColumns;
-        protected String searchFieldName;
-        protected String format;
-        protected String uiFieldFormatterName;
-        protected String dataObjFormatterName;
-        protected String sqlTemplate = null;
-
-        public TypeSearchInfo(int    tableId,
-                              String displayColumns,
-                              String searchFieldName,
-                              String format,
-                              String uiFieldFormatterName,
-                              String dataObjFormatterName)
+        return hash;
+    }
+    
+    /**
+     * @param tsi
+     */
+    public void remove(final TypeSearchInfo tsi)
+    {
+        hash.remove(tsi.getName());
+    }
+    
+    /**
+     * @param tsi
+     */
+    public void add(final TypeSearchInfo tsi)
+    {
+        if (hash.get(tsi.getName()) == null)
         {
-            this.tableId         = tableId;
-            this.displayColumns  = displayColumns;
-
-            this.searchFieldName = searchFieldName;
-            this.format          = format;
-            this.uiFieldFormatterName = uiFieldFormatterName;
-            this.dataObjFormatterName = dataObjFormatterName;
+            hash.put(tsi.getName(), tsi);
+        } else
+        {
+            UIRegistry.showLocalizedError("Name is taken"); // I18N
         }
-
-        public int getTableId()
+    }
+    
+    /**
+     * 
+     */
+    public void save()
+    {
+        ArrayList<TypeSearchInfo> list = new ArrayList<TypeSearchInfo>(hash.values());
+        Collections.sort(list);
+        
+        StringBuilder sb = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<typesearches>\n");
+        for (TypeSearchInfo tsi : list)
         {
-            return tableId;
+            sb.append(tsi.getXML());
         }
-
-        public String getDisplayColumns()
+        sb.append("</typesearches>\n");
+        
+        if (doingLocal)
         {
-            return displayColumns;
-        }
-
-        public String getFormat()
-        {
-            return format;
-        }
-
-        /**
-         * @return the uiFieldFormatterName
-         */
-        public String getUiFieldFormatterName()
-        {
-            return uiFieldFormatterName;
-        }
-
-        /**
-         * @return the dataObjFormatterName
-         */
-        public String getDataObjFormatterName()
-        {
-            return dataObjFormatterName;
-        }
-
-        public String getSearchFieldName()
-        {
-            return searchFieldName;
-        }
-
-        /**
-         * @return the sqlTemplate
-         */
-        public String getSqlTemplate()
-        {
-            return sqlTemplate;
-        }
-
-        /**
-         * @param sqlTemplate the sqlTemplate to set
-         */
-        public void setSqlTemplate(String sqlTemplate)
-        {
-            this.sqlTemplate = sqlTemplate;
+            writeToFile(sb.toString());
+            return;
         }
         
+        /*AppContextMgr acm = AppContextMgr.getInstance();
+        
+        AppResourceIFace res = acm.getResource(TYPESEARCHES);
+        
+        res.setDataAsString(sb.toString());
+        
+        if (!acm.saveResource(res))
+        {
+            UIRegistry.showLocalizedError("");
+        }*/
+        saveResource(TYPESEARCHES, sb.toString());
     }
+    
+    /**
+     * Saves an Discipline level XML document to a Database Resource.
+     * @param resName the name of the resource
+     * @param xml the XML to be saved.
+     */
+    public void saveResource(final String resName, final String xml)
+    {
+        // Default implementation is to disk
+        writeToFile(xml.toString());
+    }
+    
+    /**
+     * @param xml
+     */
+    private void writeToFile(final String xml)
+    {
+        File file = XMLHelper.getConfigDir("backstop/typesearch_def.xml");
+        
+        PrintWriter pw;
+        try
+        {
+            pw = new PrintWriter(file);
+            pw.print(xml);
+            pw.close();
+            
+        } catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Returns the instance to the singleton
+     * 
+     * @return the instance to the singleton
+     */
+    public static TypeSearchForQueryFactory getInstance()
+    {
+        if (instance != null)
+        {
+            return instance;
+        }
+        
+        // else
+        String factoryNameStr = AccessController.doPrivileged(new java.security.PrivilegedAction<String>() {
+                public String run() {
+                    return System.getProperty(factoryName);
+                    }
+                });
+            
+        if (isNotEmpty(factoryNameStr)) 
+        {
+            try 
+            {
+                return instance = (TypeSearchForQueryFactory)Class.forName(factoryNameStr).newInstance();
+                 
+            } catch (Exception e) 
+            {
+                e.printStackTrace();
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SecurityMgr.class, e);
+                InternalError error = new InternalError("Can't instantiate TypeSearchForQueryFactory factory " + factoryNameStr); //$NON-NLS-1$
+                error.initCause(e);
+                throw error;
+            }
+        }
+        return instance = new TypeSearchForQueryFactory();
+    }
+
 }

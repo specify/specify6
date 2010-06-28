@@ -47,6 +47,15 @@
             </altviews>
         </view>
         
+        <view name="TypeSearchInfo"
+            class="edu.ku.brc.af.ui.forms.validation.TypeSearchInfo"
+            resourcelabels="false">
+            <desc><![CDATA[The TypeSearchInfo Object form.]]></desc>
+            <altviews>
+                <altview name="TypeSearchInfo Edit" viewdef="TypeSearchInfo" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
         <!-- <view name="DeterminationStatus"
             class="edu.ku.brc.specify.datamodel.DeterminationStatus"
             busrules="edu.ku.brc.specify.datamodel.busrules.DeterminationStatusBusRules"
@@ -418,6 +427,72 @@
                 </row>
             </rows>
         </viewdef>
+        
+        <viewdef type="form"
+            name="TypeSearchInfo"
+            class="edu.ku.brc.af.ui.forms.validation.TypeSearchInfo"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[The TypeSearchInfo Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p, 2px, p, p, p:g, f:250px:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <rows>
+                <row>
+                    <cell type="separator" label="Type Search Info" colspan="6"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="tableCBX" label="Table"/>
+                    <cell type="panel" id="tp" name="tp" coldef="p,f:p:g" rowdef="p" ignore="true" colspan="4">
+                        <rows>
+                            <row>
+                                <cell type="field" id="tableCBX" name="tableCBX" uitype="combobox" ignore="true"/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
+                <row>
+                    <cell type="label" labelfor="name" label="Name"/>
+                    <cell type="field" id="name" name="name" uitype="text" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="displayColumns" label="Display Columns"/>
+                    <cell type="field" id="displayColumns" name="displayColumns" uitype="text" isrequired="true" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="searchFieldName" label="Search Field Name"/>
+                    <cell type="field" id="searchFieldName" name="searchFieldName" uitype="text" isrequired="true" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="format" label="Format"/>
+                    <cell type="field" id="format" name="format" uitype="text" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="uiFieldFormatterNameCBX" label="UI Field Formatter Name"/>
+                    <cell type="panel" id="uip" name="uip" coldef="p,f:p:g" rowdef="p" ignore="true" colspan="4">
+                        <rows>
+                            <row>
+                                <cell type="field" id="uiFieldFormatterNameCBX" name="uiFieldFormatterNameCBX" uitype="combobox" ignore="true"/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
+                <row>
+                    <cell type="label" labelfor="dataObjFormatterNameCBX" label="Data Obj Formatter Name"/>
+                    <cell type="panel" id="dop" name="dop" coldef="p,f:p:g" rowdef="p" ignore="true" colspan="4">
+                        <rows>
+                            <row>
+                                <cell type="field" id="dataObjFormatterNameCBX" name="dataObjFormatterNameCBX" uitype="combobox" ignore="true"/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
+          </rows>
+
+        </viewdef>
+        
         
         <!-- 
         <viewdef

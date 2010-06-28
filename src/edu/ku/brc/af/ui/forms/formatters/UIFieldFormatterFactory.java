@@ -37,7 +37,7 @@ public abstract class UIFieldFormatterFactory
 	 * 
 	 * @param fieldInfo
 	 */
-	public UIFieldFormatterFactory(DBFieldInfo fieldInfo)
+	public UIFieldFormatterFactory(final DBFieldInfo fieldInfo)
 	{
 		this.fieldInfo = fieldInfo;
 	}
