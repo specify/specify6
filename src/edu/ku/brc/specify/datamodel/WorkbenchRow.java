@@ -263,6 +263,19 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
      */
     public synchronized int addImage(final File orig) throws IOException
     {
+    	return addImage(orig, null);
+    }
+
+    /**
+     * Adds a new image to the row.
+     * 
+     * @param orig the image file
+     * @param attachToTlbName the table to attach the image to
+     * @return the index of the new image
+     * @throws IOException if an error occurs while loading or scaling the image file
+     */
+    public synchronized int addImage(final File orig, final String attachToTblName) throws IOException
+    {
         if (workbenchRowImages == null)
         {
             workbenchRowImages = new HashSet<WorkbenchRowImage>();
@@ -278,6 +291,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
             newRowImage.setCardImageFullPath(orig.getAbsolutePath());
             newRowImage.setCardImageData(imgData);
             newRowImage.setWorkbenchRow(this);
+            newRowImage.setAttachToTableName(attachToTblName);
             workbenchRowImages.add(newRowImage);
             return order;
         }

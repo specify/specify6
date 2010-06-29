@@ -289,7 +289,13 @@ public class XLSExport implements DataExport
 						}
 						HSSFCell cell = hssfRow.createCell(colNum++);
 						cell.setCellType(HSSFCell.CELL_TYPE_STRING);
-						setCellValue(cell, img.getCardImageFullPath());
+						String cellValue = img.getCardImageFullPath();
+						String attachToTbl = img.getAttachToTableName();
+						if (attachToTbl != null)
+						{
+							cellValue += "\t" + attachToTbl;
+						}
+						setCellValue(cell, cellValue);
 						img = row.getRowImage(imgIdx++);
 					}
 				}

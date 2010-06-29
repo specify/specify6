@@ -298,12 +298,14 @@ public class XLSImport extends DataImport implements DataImportIFace
             HSSFCell imgCell = row.getCell(c);
             if (imgCell != null)
             {
-                String imagePath = imgCell.getRichStringCellValue().getString();
+                String imageSpec[] = imgCell.getRichStringCellValue().getString().split("\\t");
+                String imagePath = imageSpec[0];
+                String attachToTblName = imageSpec.length > 1 ? imageSpec[1] : null;
                 if (imagePath != null)
                 {
                     try
                     {
-                        wbRow.addImage(new File(imagePath));
+                        wbRow.addImage(new File(imagePath), attachToTblName);
                     }
                     catch (IOException e)
                     {
