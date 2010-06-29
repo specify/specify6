@@ -72,7 +72,9 @@
         <table name="CollectingEventAttachment" field="collectingEventAttachments">
             <alias name="Attachment"/>
         </table>
-        <table name="CollectingEventAttribute"/>
+        <table name="CollectingEventAttribute">
+        	<alias name="Taxon" field="hostTaxon"/>
+        </table>
         <alias name="CollectingTrip"/>
         <alias name="CollectionObject" field="collectionObjects"/>
         <alias name="Agent" field="createdByAgent" />
@@ -416,6 +418,9 @@
         </table>
         <table name="TaxonCitation" field="taxonCitations">
            	<alias name="ReferenceWork"/>
+        </table>
+        <table name="CollectingEventAttribute" field="collectingEventAttributes">
+        	<alias name="CollectingEvent" field="collectingEvents"/>
         </table>
         <table name="CommonNameTx" field="commonNames" >
         	<table name="CommonNameTxCitation" field="citations">
