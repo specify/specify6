@@ -33,6 +33,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -116,7 +117,10 @@ import edu.ku.brc.util.Pair;
 public class TemplateEditor extends CustomDialog
 {
     private static final Logger log = Logger.getLogger(TemplateEditor.class);
-        
+
+    private static int taxId = 4;
+    private static int taxOnlyId = 4000;
+
     protected JButton                        mapToBtn;
     protected JButton                        unmapBtn;
     protected JButton                        upBtn;
@@ -1364,46 +1368,85 @@ public class TemplateEditor extends CustomDialog
      */
     protected Vector<TableInfo> getTablesForAutoMapping()
     {
-    	//currently just makes sure Determination follows Taxon;
-    	
+    	//orders by tableId, which has effect of making 'core' tables the first to be mapped, and makes sure Determination follows Taxon;
     	Vector<TableInfo> result = new Vector<TableInfo>();
-    	Integer detIndex = null;
-    	Integer taxIndex = null;
-    	Integer taxOnlyIndex = null;
+//    	Integer detIndex = null;
+//    	Integer taxIndex = null;
+//    	Integer taxOnlyIndex = null;
     	for (int t = 0; t < tableModel.size(); t++)
     	{
     		TableInfo tbl = (TableInfo )tableModel.get(t);
-    		if (tbl.getTableInfo().getClassObj().equals(Determination.class))
-    		{
-    			detIndex = t;
-    		}
-    		if (tbl.getTableInfo().getTableId() == 4)
-    		{
-    			taxIndex = t;
-    		}
-    		if (tbl.getTableInfo().getTableId() == 4000)
-    		{
-    			taxOnlyIndex = t;
-    		}
+//    		if (tbl.getTableInfo().getClassObj().equals(Determination.class))
+//    		{
+//    			detIndex = t;
+//    		}
+//    		if (tbl.getTableInfo().getTableId() == 4)
+//    		{
+//    			taxIndex = t;
+//    		}
+//    		if (tbl.getTableInfo().getTableId() == 4000)
+//    		{
+//    			taxOnlyIndex = t;
+//    		}
     		result.add(tbl);
     	}
-    	if (taxOnlyIndex != null && taxOnlyIndex.intValue() != tableModel.size()-1)
+    	Collections.sort(result, new Comparator<TableInfo>(){
+
+			/* (non-Javadoc)
+			 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+			 */
+			@Override
+			public int compare(TableInfo arg0, TableInfo arg1)
+			{
+				int tid0 = arg0.getTableInfo().getTableId();
+				int tid1 = arg1.getTableInfo().getTableId();
+				if (tid0 == taxOnlyId)
+				{
+					tid0 = taxId;
+				}
+				if (tid1 == taxOnlyId)
+				{
+					tid1 = taxId;
+				}
+//				if (tid0 == taxId)
+//				{
+//					if (tid1 == detId)
+//					{
+//						tid1 = taxId -1;
+//					}
+//				}
+//				if (tid1 == taxId)
+//				{
+//					if (tid0 == detId)
+//					{
+//						tid0 = taxId -1;
+//					}
+//				}
+				return tid0 < tid1 ? -1 : tid0 == tid1 ? 0 : 1;
+			}
+    		
+    	});
+//    	if (taxOnlyIndex != null && taxOnlyIndex.intValue() != tableModel.size()-1)
+//    	{
+//    		TableInfo taxOnly = result.remove(taxOnlyIndex.intValue());
+//    		result.add(taxOnly);
+//    		if (detIndex != null && detIndex.intValue() > taxOnlyIndex)
+//    		{
+//    			detIndex += 1;
+//    		}
+//    		if (taxIndex != null && taxIndex.intValue() > taxOnlyIndex)
+//    		{
+//    			taxIndex += 1;
+//    		}
+//    	}
+//    	if (detIndex != null && taxIndex != null && detIndex.intValue() < taxIndex.intValue())
+//    	{
+//    		TableInfo det = result.remove(detIndex.intValue());
+//    		result.add(taxIndex, det);
+//    	}
+    	for (TableInfo tblInfo : result)
     	{
-    		TableInfo taxOnly = result.remove(taxOnlyIndex.intValue());
-    		result.add(taxOnly);
-    		if (detIndex != null && detIndex.intValue() > taxOnlyIndex)
-    		{
-    			detIndex += 1;
-    		}
-    		if (taxIndex != null && taxIndex.intValue() > taxOnlyIndex)
-    		{
-    			taxIndex += 1;
-    		}
-    	}
-    	if (detIndex != null && taxIndex != null && detIndex.intValue() < taxIndex.intValue())
-    	{
-    		TableInfo det = result.remove(detIndex.intValue());
-    		result.add(taxIndex, det);
+    		System.out.println(tblInfo.getTableInfo());
     	}
     	return result;
     }
@@ -1455,7 +1498,7 @@ public class TemplateEditor extends CustomDialog
             Vector<TableInfo> tbls = getTablesForAutoMapping(); 
         	for (TableInfo tblInfo : tbls)
             {
-                for (FieldInfo fi : tblInfo.getFieldItems())
+        		for (FieldInfo fi : tblInfo.getFieldItems())
                 {
                     DBFieldInfo dbFieldInfo = fi.getFieldInfo();
 

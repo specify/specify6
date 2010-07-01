@@ -3280,7 +3280,7 @@ public class Uploader implements ActionListener, KeyListener
                    }
                    else
                    {
-                       statText += ": " + killer.getLocalizedMessage();
+                       statText += ": " + killer.getClass().getName();
                    }
                }
                if (dotDotDot(op)) 
