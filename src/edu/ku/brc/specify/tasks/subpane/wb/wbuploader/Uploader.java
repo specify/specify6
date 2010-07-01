@@ -3972,6 +3972,7 @@ public class Uploader implements ActionListener, KeyListener
     public void retrieveUploadedData()
     {
         bogusStorages = new HashMap<String, Vector<Vector<String>>>();
+        final String savedOp = currentOp;
         setOpKiller(null);
 
         final UploaderTask retrieverTask = new UploaderTask(true, "WB_CANCEL_UPLOAD_MSG")
@@ -3996,7 +3997,7 @@ public class Uploader implements ActionListener, KeyListener
             {
                 super.finished();
                 statusBar.setText("");
-                //setCurrentOp(Uploader.SUCCESS);
+                setCurrentOp(savedOp);
                 if (!cancelled)
                 {
                     viewSelectedTable();
