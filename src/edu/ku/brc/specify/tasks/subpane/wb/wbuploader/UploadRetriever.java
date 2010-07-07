@@ -51,6 +51,7 @@ import edu.ku.brc.ui.UIRegistry;
 public class UploadRetriever //implements CommandListener, SQLExecutionListener, CustomQueryListener
 {
     protected static final Logger log = Logger.getLogger(UploadRetriever.class);
+    protected CustomDialog viewDlg = null;
     
     /**
      * @param uploadTables
@@ -60,6 +61,7 @@ public class UploadRetriever //implements CommandListener, SQLExecutionListener,
      * Produces an simple-search results -style view of uploaded data with a sub-pane for each uploadTable with
      * columns present in the dataset for which new records were created in the db. 
      */
+    @SuppressWarnings("serial")
     public void viewUploads(final List<UploadTable> uploadTables, final Taskable task, final String title)
     {
         viewUploads2(uploadTables, new ESResultsSubPane(title, task, true) 
@@ -81,25 +83,37 @@ public class UploadRetriever //implements CommandListener, SQLExecutionListener,
      * @param uploadTables
      * @param esrPane
      * 
-     * Adds results for each uploadTable and (currently) displays them in a Dialog.
+     * Adds results for each uploadTable and (currently) displays them in a window.
      */
-    protected void viewUploads2(final List<UploadTable> uploadTables, final ExpressSearchResultsPaneIFace esrPane)
+    protected void viewUploads2(final List<UploadTable> uploadTables,
+			final ExpressSearchResultsPaneIFace esrPane)
+	{
+		for (UploadTable ut : uploadTables)
+		{
+			esrPane.addSearchResults(new UploadResults(ut, Uploader
+					.getCurrentUpload().uploadData));
+		}
+		closeView();
+		viewDlg = new CustomDialog((Frame) UIRegistry.getTopWindow(),
+				"Uploaded Data", // XXX i18n
+				true, CustomDialog.OK_BTN, (ESResultsSubPane) esrPane);
+		viewDlg.setOkLabel(UIRegistry.getResourceString("CLOSE"));
+		viewDlg.setModal(false);
+		UIHelper.centerAndShow(viewDlg);
+	}
+
+    /**
+     * Closes the view window.
+     */
+    public void closeView()
     {
-        for (UploadTable ut : uploadTables)
+        if (viewDlg != null)
         {
-            esrPane.addSearchResults(new UploadResults(ut, Uploader.getCurrentUpload().uploadData));
+        	viewDlg.setVisible(false);
+        	viewDlg.dispose();
+        	viewDlg = null;
         }
-            CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), 
-                            "Uploaded Data", //XXX i18n
-                            true,
-                            CustomDialog.OK_BTN,
-                            (ESResultsSubPane )esrPane);
-            cd.setOkLabel(UIRegistry.getResourceString("CLOSE"));
-            cd.setModal(false);
-            UIHelper.centerAndShow(cd);
     }
-
-
     /**
      * @param flds
      * 
@@ -134,117 +148,5 @@ public class UploadRetriever //implements CommandListener, SQLExecutionListener,
         });
     }
     
-// /**
-// * @param esrPane
-// * @param ut
-// * @return
-// */
-// protected JPAQuery startUploadViewJPA(final ExpressSearchResultsPaneIFace esrPane,
-// final UploadTable ut)
-// {
-// JPAQuery jpaQuery = null;
-// String sqlStr = getSQL(ut);
-//        log.debug(sqlStr);
-//        if (sqlStr != null)
-//        {
-//            jpaQuery = new JPAQuery(sqlStr, this);
-//            jpaQuery.setData(new Object[] { ut, esrPane });
-//            jpaQuery.start();
-//        }
-//        return jpaQuery;
-//    }
-
-//    protected String getSQL(final UploadTable ut)
-//    {
-//        //select fields present in the uploaded dataSet
-//        String fldsClause = "";
-//        for (Vector<UploadField> flds : ut.getUploadFields())
-//        {
-//            for (UploadField fld : flds)
-//            {
-//                if (fld.getIndex() != -1 && !(fld.getSequence() > 0))
-//                {
-//                    fldsClause += (StringUtils.isNotBlank(fldsClause) ? ", " : "") + "tbl." + fld.getField().getName();
-//                }
-//            }
-//        }
-//
-//        if (StringUtils.isBlank(fldsClause))
-//        {
-//            return null;
-//        }
-//        
-//        //Make (potentially giant) IN expression for uploaded record keys
-//        //XXX Will this work???
-//        String whereClause = "";
-//        for (UploadedRecordInfo info : ut.getUploadedRecs())
-//        {
-//            whereClause += (StringUtils.isNotBlank(whereClause) ? ", " : "") + info.getKey().toString();
-//        }
-//        if (StringUtils.isNotBlank(whereClause))
-//        {
-//            whereClause = " where " + ut.getTable().getKey().getName() + " in(" + whereClause + ")";
-//        }
-//        
-//        if (StringUtils.isBlank(whereClause))
-//        {
-//            return null;
-//        }
-//        
-//        return "select " + fldsClause + " from " + ut.getWriteTable().getName() + " tbl " + whereClause;
-//    }
-    
-//    /* (non-Javadoc)
-//     * @see edu.ku.brc.dbsupport.CustomQueryListener#exectionDone(edu.ku.brc.dbsupport.CustomQueryIFace)
-//     */
-//    //@Override
-//    public void exectionDone(CustomQueryIFace customQuery)
-//    {
-//        // TODO Auto-generated method stub
-//        Object data = ((JPAQuery)customQuery).getData();
-//        UploadTable ut = (UploadTable )((Object[])data)[0];
-//        String name = ut.toString();
-//        log.debug("Upload results done for " + name + ": " + customQuery.getDataObjects().size());
-//    }
-
-//    /* (non-Javadoc)
-//     * @see edu.ku.brc.dbsupport.CustomQueryListener#executionError(edu.ku.brc.dbsupport.CustomQueryIFace)
-//     */
-//    //@Override
-//    public void executionError(CustomQueryIFace customQuery)
-//    {
-//        // TODO Auto-generated method stub
-//        log.debug("Upload results error: " + customQuery.getName());
-//    }
-
-//    /* (non-Javadoc)
-//     * @see edu.ku.brc.ui.CommandListener#doCommand(edu.ku.brc.ui.CommandAction)
-//     */
-//    //@Override
-//    public void doCommand(CommandAction cmdAction)
-//    {
-//        // TODO Auto-generated method stub
-//        
-//    }
-
-//    /* (non-Javadoc)
-//     * @see edu.ku.brc.dbsupport.SQLExecutionListener#exectionDone(edu.ku.brc.dbsupport.SQLExecutionProcessor, java.sql.ResultSet)
-//     */
-//    //@Override
-//    public void exectionDone(SQLExecutionProcessor process, ResultSet resultSet)
-//    {
-//        // TODO Auto-generated method stub
-//        
-//    }
-
-//    /* (non-Javadoc)
-//     * @see edu.ku.brc.dbsupport.SQLExecutionListener#executionError(edu.ku.brc.dbsupport.SQLExecutionProcessor, java.lang.Exception)
-//     */
-//    //@Override
-//    public void executionError(SQLExecutionProcessor process, Exception ex)
-//    {
-//        // TODO Auto-generated method stub
-//        
-//    }
 
 }

@@ -34,12 +34,10 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -186,7 +184,7 @@ public class Uploader implements ActionListener, KeyListener
     /**
      * used by bogusViewer
      */
-    Map<String, Vector<Vector<String>>>             bogusStorages            = null;
+    //Map<String, Vector<Vector<String>>>             bogusStorages            = null;
     /**
      * Displays uploaded data. Roughly.
      */
@@ -281,6 +279,8 @@ public class Uploader implements ActionListener, KeyListener
      * Attachments created during the upload
      */
     protected List<UploadedRecordInfo>              newAttachments = new Vector<UploadedRecordInfo>();
+    
+    protected UploadRetriever						uploadedObjectViewer = null;
     
     protected boolean 	                            additionalLocksSet = false;
     protected static final Logger                   log                      = Logger.getLogger(Uploader.class);
@@ -2290,6 +2290,10 @@ public class Uploader implements ActionListener, KeyListener
             {
                 t.prepareToUpload();
             }
+            if (uploadedObjectViewer != null)
+            {
+            	uploadedObjectViewer.closeView();
+            }
             newAttachments.clear();
             // But may want option to ONLY upload rows that were skipped...
             skippedRows.clear();
@@ -2712,14 +2716,7 @@ public class Uploader implements ActionListener, KeyListener
         {
             if (currentOp.equals(Uploader.SUCCESS) || currentOp.equals(Uploader.SUCCESS_PARTIAL))
             {
-                if (bogusStorages == null)
-                {
-                    retrieveUploadedData();
-                }
-                else
-                {
-                    viewSelectedTable();
-                }
+            	viewAllObjectsCreatedByUpload();
             }
         }
         else if (e.getActionCommand().equals(UploadMainPanel.VIEW_SETTINGS))
@@ -2755,14 +2752,7 @@ public class Uploader implements ActionListener, KeyListener
             mainPanel.getViewUploadBtn().setEnabled(canViewUpload(currentOp));
             if (currentOp.equals(Uploader.SUCCESS) || currentOp.equals(Uploader.SUCCESS_PARTIAL))
             {
-                if (bogusStorages == null)
-                {
-                    retrieveUploadedData();
-                }
-                else
-                {
-                    viewSelectedTable();
-                }
+            	viewAllObjectsCreatedByUpload();
             }
         }
         else if (e.getActionCommand().equals(UploadMainPanel.TBL_CLICK))
@@ -2813,7 +2803,12 @@ public class Uploader implements ActionListener, KeyListener
         }
         
         boolean result = true;
-        
+
+        if (uploadedObjectViewer != null)
+        {
+        	uploadedObjectViewer.closeView();
+        }
+
         if (result && shuttingDownSS == null && 
         		(currentOp.equals(Uploader.SUCCESS)  || currentOp.equals(Uploader.SUCCESS_PARTIAL)) && getUploadedObjects() > 0)
         {
@@ -3329,35 +3324,25 @@ public class Uploader implements ActionListener, KeyListener
     }
 
     /**
-     * Opens view of uploaded data for selected table. Initializes viewer object if necessary.
+     * Opens view of uploaded (newly created) objects for all tables. 
+     * NOTE: Currently does not include attachments.
      */
-    protected void viewSelectedTable()
+    protected void viewAllObjectsCreatedByUpload()
     {
         if (currentOp.equals(Uploader.SUCCESS) || currentOp.equals(Uploader.SUCCESS_PARTIAL)
         		|| currentOp.equals(Uploader.RETRIEVING_UPLOADED_DATA))
         {
             viewUploadsAll();
-//            if (mainPanel.getUploadTbls().getSelectedValue() != null)
-//            {
-//                if (bogusStorages != null)
-//                {
-//                    if (bogusViewer == null)
-//                    {
-//                        bogusViewer = db.new BogusViewer(bogusStorages);
-//                    }
-//                    if (bogusViewer != null)
-//                    {
-//                        bogusViewer.viewBogusTbl(((UploadInfoRenderable) mainPanel.getUploadTbls()
-//                                .getSelectedValue()).getTableName(), true);
-//                    }
-//                }
-//            }
         }
     }
 
     protected void viewUploadsAll()
     {
-        new UploadRetriever().viewUploads(uploadTables, wbSS.getTask(), getResourceString(WB_UPLOAD_VIEW_RESULTS_TITLE));
+        if (uploadedObjectViewer == null)
+        {
+        	uploadedObjectViewer = new UploadRetriever();
+        }
+    	uploadedObjectViewer.viewUploads(uploadTables, wbSS.getTask(), getResourceString(WB_UPLOAD_VIEW_RESULTS_TITLE));
     }
     
     protected void viewUpload(final UploadTable uploadTable)
@@ -3971,7 +3956,7 @@ public class Uploader implements ActionListener, KeyListener
      */
     public void retrieveUploadedData()
     {
-        bogusStorages = new HashMap<String, Vector<Vector<String>>>();
+        //bogusStorages = new HashMap<String, Vector<Vector<String>>>();
         final String savedOp = currentOp;
         setOpKiller(null);
 
@@ -4000,12 +3985,12 @@ public class Uploader implements ActionListener, KeyListener
                 setCurrentOp(savedOp);
                 if (!cancelled)
                 {
-                    viewSelectedTable();
+                    viewAllObjectsCreatedByUpload();
                     mainPanel.addMsg(new BaseUploadMessage(getResourceString("WB_UPLOAD_DATA_FETCHED")));
                 }
                 else
                 {
-                    bogusStorages = null;
+                    //bogusStorages = null;
                     mainPanel.addMsg(new BaseUploadMessage(getResourceString("RetrievalWB_UPLOAD_FETCH_CANCELLED cancelled")));
                 }
             }
