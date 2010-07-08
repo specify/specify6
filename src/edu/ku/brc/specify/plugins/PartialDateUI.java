@@ -349,7 +349,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
             StringUtils.isNotEmpty(dateTypeName) && 
             isChanged)
         {
-            verifyGetterSetters();
+            verifyGetterSetters(dataObj);
             
             setter.setFieldValue(dataObj, dateFieldName, fieldVal != null && StringUtils.isNotEmpty(fieldVal.toString()) ? fieldVal : null);
             setter.setFieldValue(dataObj, dateTypeName, formatSelector.getSelectedIndex()+1); // Need to add one because the first value is None
@@ -373,16 +373,19 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
     /**
      * 
      */
-    private void verifyGetterSetters()
+    private void verifyGetterSetters(final Object dObj)
     {
-        if (getter == null)
+        if (dObj != null)
         {
-            getter = DataObjectGettableFactory.get(dataObj.getClass().getName(), FormHelper.DATA_OBJ_GETTER);
-        }
-
-        if (setter == null)
-        {
-            setter = DataObjectSettableFactory.get(dataObj.getClass().getName(), FormHelper.DATA_OBJ_SETTER);
+            if (getter == null)
+            {
+                getter = DataObjectGettableFactory.get(dObj.getClass().getName(), FormHelper.DATA_OBJ_GETTER);
+            }
+    
+            if (setter == null)
+            {
+                setter = DataObjectSettableFactory.get(dObj.getClass().getName(), FormHelper.DATA_OBJ_SETTER);
+            }
         }
     }
     
@@ -406,14 +409,17 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
      */
     public void setValue(final Object value, final String defaultValue)
     {
-        dataObj = value;
-        
-        if (dataObj != null)
+        if (value != null)
         {
-            verifyGetterSetters();
+            if (value != null && !(value instanceof String))
+            {
+                verifyGetterSetters(dataObj == null ? value : dataObj);
+            }
 
         } else
         {
+            dataObj = null;
+
             for (UIValidatable uiv : uivs)
             {
                 ((GetSetValueIFace)uiv).setValue(null, "");
@@ -441,6 +447,8 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
         
         if (!skipProcessing)
         {
+            dataObj = value;
+
             // TODO Really need to verify right here whether the defaultValue as a String is a valid date
             Object dateObj = getter.getFieldValue(value, dateFieldName);
             if (dateObj == null && StringUtils.isNotEmpty(defaultValue))
@@ -452,7 +460,6 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
             {
                 calDate = (Calendar)dateObj;
             }
-            
             
             Object dateTypeObj = getter.getFieldValue(value, dateTypeName);
             if (dateTypeObj instanceof String)
