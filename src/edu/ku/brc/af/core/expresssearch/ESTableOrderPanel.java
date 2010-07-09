@@ -44,6 +44,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author rods
@@ -90,7 +91,7 @@ public class ESTableOrderPanel extends JPanel
         });
 
         outer.add(createLabel(getResourceString("ES_ORDER_RET_RES")), cc.xy(1,1));
-        outer.add(orderTablesList, cc.xy(1,3));
+        outer.add(UIHelper.createScrollPane(orderTablesList), cc.xy(1,3));
         
         orderUpBtn = createIconBtn("ReorderUp", "ES_RES_MOVE_UP", new ActionListener()
         {
