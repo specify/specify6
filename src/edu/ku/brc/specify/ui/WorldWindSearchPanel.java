@@ -27,7 +27,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
 
@@ -37,6 +37,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -45,9 +46,22 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.RecordSetFactory;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.services.mapping.LatLonPlacemarkIFace;
 import edu.ku.brc.services.mapping.LatLonPoint;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.tasks.DataEntryTask;
+import edu.ku.brc.specify.tasks.RecordSetTask;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
@@ -74,8 +88,12 @@ import gov.nasa.worldwind.view.OrbitView;
  */
 public class WorldWindSearchPanel extends JPanel
 {
+    protected static final int[] TABLE_IDS = {CollectionObject.getClassTableId(), Locality.getClassTableId(), CollectingEvent.getClassTableId(), Taxon.getClassTableId()};
+    
     protected static final int MAP_WIDTH  = 500;
     protected static final int MAP_HEIGHT = 500;
+    
+    protected static DBTableInfo[] TABLE_INFO;
     
     protected WorldWindPanel        wwPanel;
     protected Vector<LatLonPoint>   availPoints       = new Vector<LatLonPoint>();
@@ -83,6 +101,9 @@ public class WorldWindSearchPanel extends JPanel
     
     protected Vector<Position>      containedWWPoints = new Vector<Position>();
     protected List<Position>        polygonWWPoints   = new Vector<Position>();
+    
+    protected HashSet<Integer>      topIdHash         = new HashSet<Integer>();
+    protected HashSet<Integer>      botIdHash         = new HashSet<Integer>();
     
     protected JLabel                topLbl;
     protected JList                 dbObjList;
@@ -96,6 +117,9 @@ public class WorldWindSearchPanel extends JPanel
     
     protected JButton               dwnBtn;
     protected JButton               upBtn;
+    protected JButton               selectAllBtn;
+    protected JButton               deselectAllBtn;
+    
     
     protected JButton               rsBtn;
     protected JButton               fmBtn;
@@ -118,6 +142,11 @@ public class WorldWindSearchPanel extends JPanel
     {
         super();
 
+        TABLE_INFO = new DBTableInfo[TABLE_IDS.length];
+        for (int i=0;i<TABLE_IDS.length;i++)
+        {
+            TABLE_INFO[i] = DBTableIdMgr.getInstance().getInfoById(TABLE_IDS[i]);
+        }
         createUI();
     }
 
@@ -134,37 +163,51 @@ public class WorldWindSearchPanel extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                int inx = recSetList.getSelectedIndex();
-                if (inx > -1)
-                {
-                    DefaultListModel model = (DefaultListModel)recSetList.getModel();
-                    Object obj = model.get(inx);
-                    model.remove(inx);
-                    
-                    ((DefaultListModel)dbObjList.getModel()).addElement(obj);
-                }
+                moveItems(recSetList, botIdHash, dbObjList, topIdHash);
             }
         });
+        
         dwnBtn = UIHelper.createIconBtn("Green Arrow Down", "",  new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                int inx = dbObjList.getSelectedIndex();
-                if (inx > -1)
-                {
-                    DefaultListModel model = (DefaultListModel)dbObjList.getModel();
-                    Object obj = model.get(inx);
-                    model.remove(inx);
-                    
-                    ((DefaultListModel)recSetList.getModel()).addElement(obj);
-                }
+                moveItems(dbObjList, topIdHash, recSetList, botIdHash);
+                
+                boolean hasItems = recSetList.getModel().getSize() > 0;
+                rsBtn.setEnabled(hasItems);
+                fmBtn.setEnabled(hasItems);
+
             }
         });
-        PanelBuilder upDwnPB = new PanelBuilder(new FormLayout("f:p:g,p,10px,p,f:p:g", "p"));
-        upDwnPB.add(dwnBtn, cc.xy(2,1));
-        upDwnPB.add(upBtn,  cc.xy(4,1));
+        
+        selectAllBtn = UIHelper.createI18NButton("SELECTALL");
+        selectAllBtn.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                dbObjList.clearSelection();
+                dbObjList.getSelectionModel().setSelectionInterval(0, dbObjList.getModel().getSize());
+            }
+        });
+        deselectAllBtn = UIHelper.createI18NButton("DESELECTALL");
+        deselectAllBtn.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                dbObjList.clearSelection();
+            }
+        });
+        
+        PanelBuilder upDwnPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,p,10px,p,f:p:g,p,f:p:g", "p"));
+        //upDwnPB.add(selectAllBtn,   cc.xy(2,1));
+        upDwnPB.add(dwnBtn,         cc.xy(4,1));
+        upDwnPB.add(upBtn,          cc.xy(6,1));
+        //upDwnPB.add(deselectAllBtn, cc.xy(7,1));
         
         dbObjList = new JList(new DefaultListModel());
+        dbObjList.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         //wpList.setCellRenderer(new WPListCellRenderer());
         dbObjList.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -176,6 +219,7 @@ public class WorldWindSearchPanel extends JPanel
         });
         
         recSetList = new JList(new DefaultListModel());
+        recSetList.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         //trkList.setCellRenderer(new TrkListCellRenderer());
         recSetList.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -184,9 +228,6 @@ public class WorldWindSearchPanel extends JPanel
                 boolean isSel = recSetList.getSelectedIndex() != -1;
                 dwnBtn.setEnabled(false);
                 upBtn.setEnabled(isSel);
-                rsBtn.setEnabled(isSel);
-                fmBtn.setEnabled(isSel);
-                
             }
         });
         
@@ -229,7 +270,7 @@ public class WorldWindSearchPanel extends JPanel
         searchBtn = UIHelper.createI18NButton("SEARCH");
         clearBtn  = UIHelper.createI18NButton("Clear");
         
-        typeCBX = UIHelper.createComboBox(new String[] {"Collection Object", "Localities", "Collecting Event", "Taxon"});
+        typeCBX = UIHelper.createComboBox(TABLE_INFO);
         
         PanelBuilder btnPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,p,f:p:g,p,f:p:g,p,f:p:g,p,f:p:g", "p"));
         btnPB.add(typeCBX,       cc.xy(2, 1));
@@ -249,6 +290,30 @@ public class WorldWindSearchPanel extends JPanel
         endBtn.setEnabled(false);
         searchBtn.setEnabled(false);
         clearBtn.setEnabled(false);
+        
+        rsBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                RecordSetIFace rs = createRecordSet();
+                if (rs != null)
+                {
+                    CommandDispatcher.dispatch(new CommandAction(RecordSetTask.RECORD_SET, "Save", null, null, rs));
+                }
+            }
+        });
+        
+        fmBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                RecordSetIFace rs = createRecordSet();
+                if (rs != null)
+                {
+                    CommandDispatcher.dispatch(new CommandAction(DataEntryTask.DATA_ENTRY, DataEntryTask.EDIT_DATA, rs));
+                }
+            }
+        });
         
         searchBtn.addActionListener(new ActionListener() {
             @Override
@@ -317,6 +382,65 @@ public class WorldWindSearchPanel extends JPanel
     }
     
     /**
+     * @return the RecordSet of chosen items.
+     */
+    private RecordSetIFace createRecordSet()
+    {
+        RecordSetIFace   rs    = null;
+        DefaultListModel model = (DefaultListModel)recSetList.getModel();
+        if (model.getSize() > 0)
+        {
+            rs = RecordSetFactory.getInstance().createRecordSet();
+            rs.setDbTableId(TABLE_IDS[typeCBX.getSelectedIndex()]);
+            
+            for (int i=0;i<model.getSize();i++)
+            {
+                LatLonPoint llp = (LatLonPoint)model.get(i);
+                rs.addItem(llp.getLocId());
+            }
+        }
+        return rs;
+    }
+    
+    /**
+     * Moves selected items from one list to the other.
+     * @param srcList
+     * @param srcHash
+     * @param dstList
+     * @param dstHash
+     */
+    private void moveItems(final JList srcList, final HashSet<Integer> srcHash,
+                           final JList dstList, final HashSet<Integer> dstHash)
+    {
+        int inx = srcList.getSelectedIndex();
+        if (inx > -1)
+        {
+            DefaultListModel srcModel = (DefaultListModel)srcList.getModel();
+            DefaultListModel dstModel = (DefaultListModel)dstList.getModel();
+            
+            int[] indexes = srcList.getSelectedIndices();
+            ArrayList<LatLonPoint> llpList = new ArrayList<LatLonPoint>(indexes.length);
+            for (int selInx : indexes)
+            {
+                LatLonPoint llp = (LatLonPoint)srcModel.get(selInx);
+                llpList.add(llp);
+                
+                if (!dstHash.contains(llp.getLocId()))
+                {
+                    dstModel.addElement(llp);
+                    dstHash.add(llp.getLocId());
+                }
+            }
+            
+            for (LatLonPoint llp : llpList)
+            {
+                srcModel.removeElement(llp);
+                srcHash.remove(llp.getLocId());
+            }
+        }
+    }
+    
+    /**
      * 
      */
     private void doClear(final boolean doClearPolygon)
@@ -345,6 +469,7 @@ public class WorldWindSearchPanel extends JPanel
         }
         
         ((DefaultListModel)dbObjList.getModel()).removeAllElements();
+        topIdHash.clear();
         
         clearBtn.setEnabled(false);
         startBtn.setEnabled(true);
@@ -359,6 +484,14 @@ public class WorldWindSearchPanel extends JPanel
         boolean hadItems = dbObjList.getModel().getSize() > 0;
         doClear(false);
         topLbl.setText(typeCBX.getSelectedItem().toString());
+        
+        DefaultListModel model = (DefaultListModel)recSetList.getModel();
+        model.removeAllElements();
+        botIdHash.clear();
+        
+        rsBtn.setEnabled(false);
+        fmBtn.setEnabled(false);
+
         
         if (hadItems)
         {
@@ -402,35 +535,50 @@ public class WorldWindSearchPanel extends JPanel
             }
             pntList.add(p);
         }
-        StringBuilder sb = new StringBuilder();
+        
+        String        orderBy = null;
+        StringBuilder sb      = new StringBuilder();
         switch (typeCBX.getSelectedIndex())
         {
             case 0: sb.append(doColObjSearchSQL());
+                orderBy = "CatalogNumber";
                 break;
                 
             case 1: sb.append(getLocalitySearchSQL());
+                orderBy = "LocalityName";
                 break;
                 
             case 2: sb.append(doCollEventSearchSQL());
+                orderBy = "StartDate";
                 break;
             
             case 3: sb.append(doTaxonSearchSQL());
+                orderBy = "FullName";
                 break;
         }
         
         String whereSQL = " Latitude1 >= %10.5f AND Latitude1 <= %10.5f AND Longitude1 >= %10.5f AND Longitude1 <= %10.5f";
         sb.append(String.format(whereSQL, topMin, topMax, botMin, botMax));
-        System.err.println(sb.toString());
+        sb.append(orderBy != null ? (" ORDER BY " + orderBy) : "");
+        
+        //System.err.println(sb.toString());
         
         availPoints.clear();
         DefaultListModel model = (DefaultListModel)dbObjList.getModel();
         model.removeAllElements();
+        topIdHash.clear();
         
         List<LatLonPlacemarkIFace> markers = new Vector<LatLonPlacemarkIFace>();
         
         pntList.add(pntList.get(0));
         Polyline polygon = new Polyline(pntList);
         polygon.setClosed(true);
+        
+        UIFieldFormatterIFace fldFmt = null;
+        if (typeCBX.getSelectedIndex() == 0)
+        {
+            fldFmt = DBTableIdMgr.getFieldFormatterFor(CollectionObject.class, "catalogNumber");
+        }
         
         int index = 0;
         Vector<Object[]> pnts = BasicSQLUtils.query(sb.toString());
@@ -443,11 +591,20 @@ public class WorldWindSearchPanel extends JPanel
             if (GeometryMath.isLocationInside(pos, polygon.getPositions()))
             {
                 LatLonPoint llp = new LatLonPoint((Integer)row[0], lat, lon);
-                llp.setTitle(row[3] != null ? row[3].toString() : "N/A");
+                String title;
+                if (row[3] != null)
+                {
+                    title = (fldFmt != null ? fldFmt.formatToUI(row[3]) : row[3]).toString();
+                } else
+                {
+                    title = "N/A";
+                }
+                llp.setTitle(title);
                 llp.setIndex(index++);
                 availPoints.add(llp);
                 markers.add(llp);
                 model.addElement(llp);
+                topIdHash.add(llp.getLocId());
             }
         }
         
@@ -470,7 +627,7 @@ public class WorldWindSearchPanel extends JPanel
      */
     private String getLocalitySearchSQL()
     {
-        return "SELECT LocalityID, Latitude1, Longitude1, LocalityName FROM locality WHERE "; 
+        return "SELECT LocalityID, Latitude1, Longitude1, LocalityName FROM locality WHERE %s GROUP BY LocalityID ORDER BY LocalityName"; 
     }
     
     /**
@@ -479,7 +636,7 @@ public class WorldWindSearchPanel extends JPanel
     private String doColObjSearchSQL()
     {
         return "SELECT co.CollectionObjectID, l.Latitude1, l.Longitude1, co.CatalogNumber FROM locality l INNER JOIN collectingevent ce ON l.LocalityID = ce.LocalityID " + 
-               "INNER JOIN collectionobject co ON ce.CollectingEventID = co.CollectingEventID WHERE ";
+               "INNER JOIN collectionobject co ON ce.CollectingEventID = co.CollectingEventID WHERE %s ORDER BY CatalogNumber";
     }
     
     /**
@@ -487,7 +644,8 @@ public class WorldWindSearchPanel extends JPanel
      */
     private String doCollEventSearchSQL()
     {
-        return "SELECT ce.CollectingEventID, l.Latitude1, l.Longitude1, ce.StartDate FROM locality l INNER JOIN collectingevent ce ON l.LocalityID = ce.LocalityID WHERE ";
+        return "SELECT ce.CollectingEventID, l.Latitude1, l.Longitude1, ce.StartDate FROM locality l " +
+        		"INNER JOIN collectingevent ce ON l.LocalityID = ce.LocalityID WHERE %s GROUP BY ce.CollectingEventID ORDER BY StartDate";
     }
     
     /**
@@ -499,7 +657,7 @@ public class WorldWindSearchPanel extends JPanel
                 "FROM locality l INNER JOIN collectingevent ce ON l.LocalityID = ce.LocalityID " +
                 "INNER JOIN collectionobject co ON ce.CollectingEventID = co.CollectingEventID " +
                 "INNER JOIN determination d ON co.CollectionObjectID = d.CollectionObjectID " +
-                "INNER JOIN taxon t ON d.TaxonID = t.TaxonID WHERE d.IsCurrent = TRUE AND ";
+                "INNER JOIN taxon t ON d.TaxonID = t.TaxonID WHERE d.IsCurrent = TRUE AND %s GROUP BY t.TaxonID ORDER BY FullName";
     }
     
     /**
