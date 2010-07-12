@@ -1216,8 +1216,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             Vector<Object[]> values = BasicSQLUtils.query("SELECT ld.LocalityDetailID, ld.UtmScale, l.LocalityName FROM localitydetail ld INNER JOIN locality l ON ld.LocalityID = l.LocalityID");
             
             BasicSQLUtils.update(conn, "ALTER TABLE localitydetail DROP COLUMN UtmScale");
-            BasicSQLUtils.update(conn, "ALTER TABLE localitydetail ADD COLUMN UtmScale FLOAT AFTER utmOrigLongitude");
-            BasicSQLUtils.update(conn, "ALTER TABLE localitydetail ADD COLUMN MgrsZone VARCHAR(4) AFTER UtmScale");
+            String tblName = "localitydetail";
+            addColumn(conn, databaseName, tblName, "UtmScale", "ALTER TABLE %s ADD COLUMN %s FLOAT AFTER UtmOrigLongitude");
+            addColumn(conn, databaseName, tblName, "MgrsZone", "ALTER TABLE %s ADD COLUMN %s VARCHAR(4) AFTER UtmScale");
+
             
             HashMap<String, String> badLocalitiesHash = new HashMap<String, String>();
             
@@ -1311,21 +1313,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             try
             {
                 // Add New Fields to Determination
-                sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'determination' AND COLUMN_NAME = 'VarQualifer'", dbc.getDatabaseName());
-                count = BasicSQLUtils.getCountAsInt(sql);
-                if (count == 0)
-                {
-                    frame.setDesc("Updating VarQualifer...");
-                    BasicSQLUtils.update(conn, "ALTER TABLE determination ADD COLUMN VarQualifer VARCHAR(16) AFTER Qualifier");
-                }
                 
-                sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'determination' AND COLUMN_NAME = 'SubSpQualifier'", dbc.getDatabaseName());
-                count = BasicSQLUtils.getCountAsInt(sql);
-                if (count == 0)
-                {
-                    frame.setDesc("Updating SubSpQualifier...");
-                    BasicSQLUtils.update(conn, "ALTER TABLE determination ADD COLUMN SubSpQualifier VARCHAR(16) AFTER VarQualifer");
-                }
+                frame.setDesc("Updating Determination Table...");
+                String tblName = "determination";
+                addColumn(conn, databaseName, tblName, "VarQualifer",    "ALTER TABLE %s ADD COLUMN %s VARCHAR(16) AFTER Qualifier");
+                addColumn(conn, databaseName, tblName, "SubSpQualifier", "ALTER TABLE %s ADD COLUMN %s VARCHAR(16) AFTER VarQualifer");
                 frame.incOverall();
 
                 // CollectingEventAttributes
@@ -1511,7 +1503,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 
                 // Add New Fields to Address
                 frame.setDesc("Updating Agent Fields...");
-                String tblName = "agent";
+                tblName = "agent";
                 addColumn(conn, databaseName, tblName, "DateType",             "ALTER TABLE %s ADD COLUMN %s TINYINT(4) AFTER Title");
                 addColumn(conn, databaseName, tblName, "DateOfBirthPrecision", "ALTER TABLE %s ADD COLUMN %s TINYINT(4) AFTER DateOfBirth");
                 addColumn(conn, databaseName, tblName, "DateOfDeathPrecision", "ALTER TABLE %s ADD COLUMN %s TINYINT(4) AFTER DateOfDeath");
@@ -1585,7 +1577,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      * @param updateSQL
      * @return
      */
-    protected boolean addColumn(final Connection conn, final String dbName, final String tableName, final String colName, final String updateSQL)
+    protected boolean addColumn(final Connection conn, 
+                                final String dbName, 
+                                final String tableName, 
+                                final String colName, 
+                                final String updateSQL)
     {
         if (!doesColumnExist(dbName, tableName, colName))
         {
