@@ -432,6 +432,20 @@ public class DataObjFieldFormatMgr
             {
                 log.debug("Couldn't get resource [DataObjFormatters]");
             }
+            
+            // This needs to be refactored so we don't have to do this here
+            // I think it is because 'load' is being called from the constructor.
+            if (instance == null)
+            {
+                instance = this;
+            }
+            // now that all formats have been loaded, set table/field/formatter info\
+            // must be executed after the instance is set
+            for ( DataObjSwitchFormatter format : instance.formatHash.values() )
+            {
+                format.setTableAndFieldInfo();
+            }
+            
         } catch (Exception ex)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
