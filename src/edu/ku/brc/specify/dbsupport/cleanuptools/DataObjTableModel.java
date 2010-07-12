@@ -17,6 +17,10 @@
  */
 package edu.ku.brc.specify.dbsupport.cleanuptools;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
@@ -27,7 +31,7 @@ import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBInfoBase;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.dbsupport.DBConnection;
 
 /**
  * @author rods
@@ -35,6 +39,14 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
  * @code_status Alpha
  *
  * Created Date: Jun 18, 2010
+ *
+ */
+/**
+ * @author rods
+ *
+ * @code_status Alpha
+ *
+ * Jun 29, 2010
  *
  */
 public class DataObjTableModel extends DefaultTableModel
@@ -45,8 +57,16 @@ public class DataObjTableModel extends DefaultTableModel
     protected boolean               isEditable = false;
     protected int[]                 mapInx     = null;
     
+    protected String                colName;
+    protected String                searchValue;
+    protected int                   numColumns = 0;
+    protected ArrayList<DBInfoBase> colDefItems  = new ArrayList<DBInfoBase>();
+    protected ArrayList<Class<?>>   altClasses   = null;
+
+    protected int                   hasDataCols = 0;
     protected ArrayList<Boolean>    sameValues  = null;
     protected ArrayList<Boolean>    hasDataList = null;
+    protected ArrayList<RowInfo>    rowInfoList = new ArrayList<RowInfo>();
     
     protected HashMap<Integer, Integer> indexHash = new HashMap<Integer, Integer>();
 
@@ -64,40 +84,131 @@ public class DataObjTableModel extends DefaultTableModel
     {
         super();
         
-        this.isEditable = isEditable;
+        this.isEditable  = isEditable;
+        this.colName     = colName;
+        this.searchValue = value;
+        this.tableInfo   = DBTableIdMgr.getInstance().getInfoById(tableId);
+    }
+    
+    /**
+     * @param tableId
+     * @param colName
+     * @param value
+     * @param isEditable
+     */
+    public DataObjTableModel(final int     tableId, 
+                             final String  value,
+                             final boolean isEditable)
+    {
+        this(tableId, null, value, isEditable);
         
-        tableInfo = DBTableIdMgr.getInstance().getInfoById(tableId);
+        fillModels();
+    }
+    
+    /**
+     * @param tableId
+     * @param items
+     * @param hasDataList
+     * @param sameValues
+     * @param mapInx
+     * @param indexHash
+     */
+    public DataObjTableModel(final int tableId, 
+                             final ArrayList<DBInfoBase>     items,
+                             final ArrayList<Boolean>        hasDataList, 
+                             final ArrayList<Boolean>        sameValues, 
+                             final int[]                     mapInx, 
+                             final HashMap<Integer, Integer> indexHash)
+    {
+        super();
         
-        ArrayList<DBInfoBase> itemsList = new ArrayList<DBInfoBase>();
+        this.items       = items;
+        this.hasDataList = hasDataList;
+        this.sameValues  = sameValues;
+        this.mapInx      = mapInx;
+        this.indexHash   = indexHash;
+        this.isEditable  = true;
         
+        this.tableInfo   = DBTableIdMgr.getInstance().getInfoById(tableId);
+        
+        this.values      = new Vector<Object[]>();
+        this.values.add(new Object[items.size()]);
+    }
+    
+    /**
+     * @return the sql
+     */
+    protected String buildSQL()
+    {
         StringBuffer sql = new StringBuffer("SELECT ");
         for (DBFieldInfo fi : tableInfo.getFields())
         {
             if (fi.getColumn().equals("Version")) continue;
             
-            itemsList.add(fi);
-            if (itemsList.size() > 1) sql.append(',');
+            colDefItems.add(fi);
+            if (colDefItems.size() > 1) sql.append(',');
             sql.append(fi.getColumn());
         }
-        int numCols = itemsList.size();
+        numColumns = colDefItems.size();
         
-        sql.append(" FROM %s WHERE %s LIKE \"%s\"");
-        String sqlStr = String.format(sql.toString(), tableInfo.getName(), colName, value + '%');
-
-        values = BasicSQLUtils.query(sqlStr);
+        sql.append(" FROM %s WHERE %s LIKE ?");
+        String sqlStr = String.format(sql.toString(), tableInfo.getName(), colName, searchValue + '%');
         
-        sameValues  = new ArrayList<Boolean>(numCols);
-        hasDataList = new ArrayList<Boolean>(numCols);
-        for (int i=0;i<numCols;i++)
+        return sqlStr;
+    }
+    
+    /**
+     * The Data members must be set to call this:
+     *     numColumns
+     *     itemsList
+     * 
+     */
+    protected void fillModels()
+    {
+        final String sqlStr = buildSQL();
+        System.out.println(sqlStr);
+        
+        Connection conn = DBConnection.getInstance().getConnection();
+        try
+        {
+            values = new Vector<Object[]>();
+            
+            PreparedStatement pStmt = conn.prepareStatement(sqlStr);
+            pStmt.setString(1, searchValue);
+            System.out.println(sqlStr+" ["+searchValue+"]");
+            
+            ResultSet rs = pStmt.executeQuery();
+            while (rs.next())
+            {
+                Object[] row = new Object[numColumns];
+                for (int i=0;i<numColumns;i++)
+                {
+                    row[i] = rs.getObject(i+1);
+                }
+                rowInfoList.add(new RowInfo(rs.getInt(1), false, false));
+                values.add(row);
+            }
+            rs.close();
+            pStmt.close();
+            
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        }
+        
+        addAdditionalRows(colDefItems, rowInfoList);
+        
+        sameValues  = new ArrayList<Boolean>(numColumns);
+        hasDataList = new ArrayList<Boolean>(numColumns);
+        for (int i=0;i<numColumns;i++)
         {
             sameValues.add(true);
             hasDataList.add(false);
         }
         
-        int hasDataCols = 0;
         for (Object[] col : values)
         {
-            for (int i=0;i<numCols;i++)
+            for (int i=0;i<numColumns;i++)
             {
                 Object  data    = col[i];
                 boolean hasData = data != null;
@@ -105,27 +216,28 @@ public class DataObjTableModel extends DefaultTableModel
                 if (hasData && !hasDataList.get(i))
                 {
                     hasDataList.set(i, true);
-                    hasDataCols ++;
+                    hasDataCols++;
                 }
             }
         }
         
+        adjustHasDataColumns();
+        
         mapInx = new int[hasDataCols];
         int colInx = 0;
         System.out.println("-------------Has Data----------------------");
-        for (int i=0;i<numCols;i++)
+        for (int i=0;i<numColumns;i++)
         {
             if (hasDataList.get(i))
             {
-                System.out.println(itemsList.get(i).getTitle());
+                //System.out.println(itemsList.get(i).getTitle());
                 mapInx[colInx] = i;
                 indexHash.put(i, colInx);
-                System.out.print("indexHash: "+i +" -> "+colInx);
-                System.out.println("  mapInx:    "+colInx +" -> "+i);
+                //System.out.print("indexHash: "+i +" -> "+colInx);
+                //System.out.println("  mapInx:    "+colInx +" -> "+i);
                 colInx++;
             }
         }        
-        
         
         for (int i=0;i<mapInx.length;i++)
         {
@@ -156,7 +268,7 @@ public class DataObjTableModel extends DefaultTableModel
             }
         }
         
-        
+        /*
         System.out.println("-----------Same------------------------");
         for (int i=0;i<mapInx.length;i++)
         {
@@ -165,36 +277,36 @@ public class DataObjTableModel extends DefaultTableModel
             {
                 System.out.println(colInx + " " + itemsList.get(colInx).getTitle());
             }
-        }
+        }*/
         
-        items = new ArrayList<DBInfoBase>(itemsList);
+        items = new ArrayList<DBInfoBase>(colDefItems);
     }
     
     /**
      * 
      */
-    public DataObjTableModel(final int tableId, 
-                             final ArrayList<DBInfoBase> items,
-                             final ArrayList<Boolean> hasDataList, 
-                             final ArrayList<Boolean> sameValues, 
-                             final int[]              mapInx, 
-                             final HashMap<Integer, Integer> indexHash)
+    protected void addAdditionalRows(@SuppressWarnings("unused") final ArrayList<DBInfoBase> colDefItems,
+                                     @SuppressWarnings("unused") final ArrayList<RowInfo> rowInfoList)
     {
-        super();
         
-        this.items       = items;
-        this.hasDataList = hasDataList;
-        this.sameValues  = sameValues;
-        this.mapInx      = mapInx;
-        this.indexHash   = indexHash;
-        this.isEditable  = true;
-        
-        tableInfo = DBTableIdMgr.getInstance().getInfoById(tableId);
-        
-        values = new Vector<Object[]>();
-        values.add(new Object[items.size()]);
     }
     
+    /**
+     * 
+     */
+    protected void adjustHasDataColumns()
+    {
+        
+    }
+    
+    /**
+     * @return the rowInfoList
+     */
+    public ArrayList<RowInfo> getRowInfoList()
+    {
+        return rowInfoList;
+    }
+
     /**
      * @param column
      * @return
@@ -219,6 +331,11 @@ public class DataObjTableModel extends DefaultTableModel
     @Override
     public String getColumnName(int column)
     {
+        if (column == 0) 
+        {
+            return !isEditable ? "Is Included" : ""; // I18N
+        }
+        
         return mapInx != null ? items.get(mapInx[column]).getTitle() : "";
     }
 
@@ -237,13 +354,22 @@ public class DataObjTableModel extends DefaultTableModel
     @Override
     public Object getValueAt(int row, int column)
     {
-        System.out.println("----------------");
+        if (column == 0) 
+        {
+            if (!isEditable)
+            {
+                return rowInfoList.size() > 0 ? rowInfoList.get(row).isIncluded() : false;
+            }
+            return "";
+        }
+
+        //System.out.println("----------------");
         Object[] col = values != null ? values.get(row) : null;
         if (col != null)
         {
-            System.out.println("column "+column);
-            System.out.println("mapInx[column] "+mapInx[column]);
-            System.out.println("col len "+col.length);
+            //System.out.println("column "+column);
+            //System.out.println("mapInx[column] "+mapInx[column]);
+            //System.out.println("col len "+col.length);
             return col[mapInx[column]];
         }
         return null;
@@ -255,10 +381,23 @@ public class DataObjTableModel extends DefaultTableModel
     @Override
     public Class<?> getColumnClass(int column)
     {
-        DBInfoBase base = items.get(mapInx[column]);
-        if (base instanceof DBFieldInfo)
+        if (column == 0)
         {
-            return ((DBFieldInfo)base).getDataClass();
+            return !isEditable ? Boolean.class : String.class;
+        }
+        
+        int mappedInx = mapInx[column];
+        
+        if (altClasses == null)
+        {
+            DBInfoBase base = items.get(mappedInx);
+            if (base instanceof DBFieldInfo)
+            {
+                return ((DBFieldInfo)base).getDataClass();
+            }
+        } else
+        {
+            return altClasses.get(mappedInx);
         }
         return String.class;
     }
@@ -269,6 +408,11 @@ public class DataObjTableModel extends DefaultTableModel
     @Override
     public boolean isCellEditable(int row, int column)
     {
+        if (column == 0)
+        {
+            return !isEditable; 
+        }
+
         return isEditable;
     }
 
@@ -278,6 +422,15 @@ public class DataObjTableModel extends DefaultTableModel
     @Override
     public void setValueAt(Object aValue, int row, int column)
     {
+        if (column == 0)
+        {
+            if (!isEditable && aValue instanceof Boolean)
+            {
+                rowInfoList.get(row).setIncluded((Boolean)aValue);
+            }    
+            return;
+        }
+        
         Object[] col = values != null ? values.get(row) : null;
         if (col != null)
         {
@@ -366,5 +519,72 @@ public class DataObjTableModel extends DefaultTableModel
         this.indexHash = indexHash;
     }
     
-    
+    //-------------------------------------------------------------
+    //-- 
+    //-------------------------------------------------------------
+    class RowInfo
+    {
+        int     id;
+        boolean isMainRecord;
+        boolean isIncluded;
+
+        
+        /**
+         * @param id
+         * @param isMainRecord
+         * @param isIncluded
+         */
+        public RowInfo(int id, boolean isMainRecord, boolean isIncluded)
+        {
+            super();
+            this.id = id;
+            this.isMainRecord = isMainRecord;
+            this.isIncluded = isIncluded;
+        }
+        
+        /**
+         * @return the id
+         */
+        public int getId()
+        {
+            return id;
+        }
+
+        /**
+         * @param id the id to set
+         */
+        public void setId(int id)
+        {
+            this.id = id;
+        }
+
+        /**
+         * @return the isMainRecord
+         */
+        public boolean isMainRecord()
+        {
+            return isMainRecord;
+        }
+        /**
+         * @param isMainRecord the isMainRecord to set
+         */
+        public void setMainRecord(boolean isMainRecord)
+        {
+            this.isMainRecord = isMainRecord;
+        }
+        /**
+         * @return the isIncluded
+         */
+        public boolean isIncluded()
+        {
+            return isIncluded;
+        }
+        /**
+         * @param isIncluded the isIncluded to set
+         */
+        public void setIncluded(boolean isIncluded)
+        {
+            this.isIncluded = isIncluded;
+        }
+    }
 }
