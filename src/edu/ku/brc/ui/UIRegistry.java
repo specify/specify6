@@ -44,7 +44,6 @@ import java.lang.ref.SoftReference;
 import java.lang.reflect.Constructor;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -152,11 +151,11 @@ public class UIRegistry
     
 
     // Data Members
-    protected Hashtable<String, Component> components  = new Hashtable<String, Component>();
+    protected HashMap<String, Component> components  = new HashMap<String, Component>();
     protected Window                       topWindow   = null;
     protected Stack<Window>                windowStack = new Stack<Window>();
 
-    protected Hashtable<String, Hashtable<String, JComponent>> uiItems = new Hashtable<String, Hashtable<String, JComponent>>();
+    protected HashMap<String, HashMap<String, JComponent>> uiItems = new HashMap<String, HashMap<String, JComponent>>();
 
     protected Font           baseFont           = null;
     protected Font           defaultFont        = null;
@@ -182,7 +181,7 @@ public class UIRegistry
 
     protected ViewBasedDialogFactoryIFace viewbasedFactory = null;
     
-    protected Hashtable<String, Action> actionMap = new Hashtable<String, Action>();
+    protected HashMap<String, Action> actionMap = new HashMap<String, Action>();
     
     //------------------------------------------------
     // Undo / Redo Helpers
@@ -800,10 +799,10 @@ public class UIRegistry
      */
     public static void registerUI(final String category, final String name, final JComponent uiComp) throws UIException
     {
-        Hashtable<String, JComponent> compsHash = instance.uiItems.get(category);
+        HashMap<String, JComponent> compsHash = instance.uiItems.get(category);
         if (compsHash == null)
         {
-            compsHash = new Hashtable<String, JComponent>();
+            compsHash = new HashMap<String, JComponent>();
             instance.uiItems.put(category, compsHash);
         }
         if (compsHash.containsKey(name))
@@ -821,7 +820,7 @@ public class UIRegistry
      */
     public static void unregisterUI(final String category, final String name) throws UIException
     {
-        Hashtable<String, JComponent> compsHash = instance.uiItems.get(category);
+        HashMap<String, JComponent> compsHash = instance.uiItems.get(category);
         if (compsHash == null)
         {
             throw new UIException("Couldn't find UI Category with Name["+category+"].");
