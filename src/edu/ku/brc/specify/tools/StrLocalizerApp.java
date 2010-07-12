@@ -679,12 +679,15 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
             public void valueChanged(ListSelectionEvent e)
             {
                 //tableRowSelected();
-                StrLocaleEntry entry = (StrLocaleEntry)results.get(searchResultsTbl.getSelectedRow());
-                if (entry != null)
+                if (results != null && results.size() > 0 && searchResultsTbl.getSelectedRow() > -1)
                 {
-                    int listIndex = srcFile.getInxForKey(entry.getKey());
-                    termList.setSelectedIndex(listIndex);
-                    termList.ensureIndexIsVisible(listIndex);
+                    StrLocaleEntry entry = (StrLocaleEntry)results.get(searchResultsTbl.getSelectedRow());
+                    if (entry != null)
+                    {
+                        int listIndex = srcFile.getInxForKey(entry.getKey());
+                        termList.setSelectedIndex(listIndex);
+                        termList.ensureIndexIsVisible(listIndex);
+                    }
                 }
             }
         });
@@ -860,9 +863,16 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
      * @param src
      * @param dst
      */
-    private void mergeToSrc(final StrLocaleFile src, final StrLocaleFile dst)
+    private void mergeToSrc(final StrLocaleFile src, 
+                            final StrLocaleFile dst)
     {
         Hashtable<String, StrLocaleEntry> dstHash = dst.getItemHash();
+        /*for (String k : dstHash.keySet())
+        {
+            System.out.println("["+k+"] ");
+        }
+        System.out.println("["+(dstHash.get("TOP5") != null)+"]["+(dstHash.get("username") != null)+"]");
+        */
         
         int cnt = 0;
         for (StrLocaleEntry srcEntry : src.getItems())
@@ -872,7 +882,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
                 StrLocaleEntry dstEntry = dstHash.get(srcEntry.getKey());
                 if (dstEntry != null)
                 {
-                    System.out.println("["+dst.getItemHash().get(srcEntry.getKey()).getSrcStr()+"]["+srcEntry.getSrcStr()+"]");
+                    //System.out.println("dst["+dst.getItemHash().get(srcEntry.getKey()).getSrcStr()+"]["+srcEntry.getSrcStr()+"]src");
                     
                     // This checks to see if the text from ".orig" file matches the src file
                     // if it does it doesn't need to be changed
@@ -884,7 +894,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
                         }
                     } else
                     {
-                        newKeyList.add(srcEntry.getKey());    
+                        newKeyList.add(dstEntry.getKey());    
                     }
                     
                     srcEntry.setDstStr(dstEntry.getSrcStr());

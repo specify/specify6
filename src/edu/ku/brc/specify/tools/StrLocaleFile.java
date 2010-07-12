@@ -19,15 +19,17 @@
 */
 package edu.ku.brc.specify.tools;
 
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.axis.utils.StringUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.tools.StrLocaleEntry.STATUS;
@@ -91,6 +93,7 @@ public class StrLocaleFile
     @SuppressWarnings("unchecked")
     private void load()
     {
+        char[] dstBytes = new char[2048];
         try
         {
             itemHash.clear();
@@ -114,6 +117,65 @@ public class StrLocaleFile
                         
                         String key   = line.substring(0, inx);
                         String value = line.substring(inx+1, line.length());
+                        
+                        boolean debug = false;//key.equals("TOP5") && StringUtils.contains(dstPath, "_pt");
+                        
+                        if (debug)
+                        {
+                            //System.out.println((byte)value.charAt(12)+"="+value.charAt(12));
+                            char spec = 'Ã';
+                            int fInx = value.indexOf(spec);
+                            if (fInx > -1)
+                            {
+                                int jj = 0;
+                                byte[] bytes = value.getBytes();
+                                for (int ii=0;ii<bytes.length;ii++)
+                                {
+                                    byte b1 = bytes[ii];
+                                    short s1 = (short)(b1 < 0 ? (256 + b1) : b1);
+                                    if (s1 > 127 && s1 != 195) s1 += 64;
+                                    
+                                    //System.out.println(ii+"  "+bytes[ii]+" ");
+                                    if (s1 == 195)
+                                    {
+                                        ii++;
+                                        b1 = bytes[ii];
+                                        s1 = (short)(b1 < 0 ? (256 + b1) : b1);
+                                        if (s1 > 127 && s1 != 195) s1 += 64;
+                                        
+                                        dstBytes[jj++] = (char)s1;
+                                    } else
+                                    {
+                                        dstBytes[jj++] = (char)bytes[ii];
+                                    }
+                                }
+                                System.out.print(value+'=');
+                                value = new String(dstBytes, 0, jj);
+                                System.out.println(value);
+                            }
+                            /*for (String k : l10nMappingHash.keySet())
+                            {
+                                String before = value;
+                                int    sInx   = value.indexOf(k);
+                                if (sInx > -1)
+                                {
+                                    for (int i=0;i<value.length();i++)
+                                    {
+                                        byte b = (byte)value.charAt(i);
+                                        System.out.print(b);
+                                        if (b < 0) b = (byte)(256 + (int)b);
+                                        System.out.println(" ["+value.charAt(i)+"]["+b+"]");
+                                    }
+                                    //int eInx = sInx + 2;
+                                    //value = value.substring(0, sInx-1) + l10nMappingHash.get(k) + (eInx < value.length() ? value.substring(eInx) : "");
+                                    //value = StringUtils.replace(value, k, l10nMappingHash.get(k));
+                                    //System.out.println("Contains["+k+"] b4["+before+"]["+value+"]["+k+"]["+l10nMappingHash.get(k)+"]");
+                                } else
+                                {
+                                    System.out.println("NOT Contains["+k+"]");
+                                }
+                            }*/
+                        }
                                                 
                         if (itemHash.get(key) != null)
                         {
@@ -200,37 +262,45 @@ public class StrLocaleFile
         return false;
     }
     
-
     /**
-     * 
+     * Save as Ascii.
      */
-    public void save()
+    public boolean save()
     {
-        Vector<String> lines = new Vector<String>();
-        for (StrLocaleEntry entry : items)
-        {
-            if (entry.getKey() == null)
-            {
-                lines.add("");
-            } else if (entry.getKey().equals("#"))
-            {
-                lines.add(entry.getSrcStr());
-            } else
-            {
-                lines.add(entry.getKey()+ "="+ (entry.getDstStr() == null ? "" : entry.getDstStr()));
-            }
-        }
-        
+        FileOutputStream fos = null;
+        DataOutputStream dos = null;
+
         try
         {
-            FileUtils.writeLines(new File(dstPath), lines);
+            fos = new FileOutputStream(dstPath);
+            dos = new DataOutputStream(fos);//, "UTF-8");
             
-            //clear edited flag for all items
-            clearEditFlags();
-        } catch (IOException ex)
+            for (StrLocaleEntry entry : items)
+            {
+                String str = "";
+                if (entry.getKey() == null)
+                {
+                    
+                } else if (entry.getKey().equals("#"))
+                {
+                    str = entry.getSrcStr();
+                } else
+                {
+                    str = entry.getKey()+ "="+ (entry.getDstStr() == null ? "" : entry.getDstStr());
+                }
+                
+                str += '\n';
+                dos.writeBytes(str);
+            }
+            dos.flush();
+            dos.close();
+            return true;
+            
+        } catch (Exception e)
         {
-            ex.printStackTrace();
+            System.out.println("e: " + e);
         }
+        return false;
     }
     
     /**
