@@ -114,8 +114,17 @@ public class DatabaseService
         if(debug)log.debug("getConnection -  url:" + JaasContext.url); //$NON-NLS-1$
         if(debug)log.debug("getConnection -  embeddedSpecifyAppRootUser:" + usernamePassword.first); //$NON-NLS-1$
         if(debug)log.debug("getConnection -  embeddedSpecifyAppRootPwd:" + usernamePassword.second); //$NON-NLS-1$
-        Connection connection = DriverManager.getConnection(JaasContext.url, usernamePassword.first, usernamePassword.second);
-        return connection;
+        try
+        {
+            Connection connection = DriverManager.getConnection(JaasContext.url, usernamePassword.first, usernamePassword.second);
+            return connection;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        
+        return null;
     }
 
     /**

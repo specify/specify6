@@ -131,11 +131,13 @@ public class DatabasePolicy extends java.security.Policy
     	}
     	
 	    BasicPrincipal basicPrincipal = (BasicPrincipal) principal; 
-	    List perms = PermissionService.findPrincipalBasedPermissions(basicPrincipal.getId());
-	    for (Iterator itr = perms.iterator(); itr.hasNext();)
+	    List<Permission> perms = PermissionService.findPrincipalBasedPermissions(basicPrincipal.getId());
+	    if (perms != null)
 	    {
-	        Permission perm = (Permission)itr.next();
-	        principalPermissions.add(perm);
+    	    for (Permission perm : perms)
+    	    {
+    	        principalPermissions.add(perm);
+    	    }
 	    }
 
 	    // store principal permissions in cache for later
