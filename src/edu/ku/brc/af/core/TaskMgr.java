@@ -435,7 +435,7 @@ public class TaskMgr implements CommandListener
             MenuElement menuElement = getMenuByName(parent, label);
             if (menuElement == null)
             {
-                throw new RuntimeException("Couldn't find menu element ["+label+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                UIRegistry.showError("Couldn't find menu element ["+label+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             }
             buildMenuTree(menuElement, menuItemDesc, menuPath, currIndex+1);
         }
