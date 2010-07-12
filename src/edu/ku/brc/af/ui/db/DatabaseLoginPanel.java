@@ -1222,6 +1222,7 @@ public class DatabaseLoginPanel extends JTiledPanel
         
         if (StringUtils.isNotEmpty(dbDriver) && 
                 dbDriver.equals("com.mysql.jdbc.Driver") &&
+                loginEx != null &&
                 StringUtils.isNotEmpty(loginEx.getSQLState()) && 
                 loginEx.getSQLState().equals("08001"))
         {
