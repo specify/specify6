@@ -1516,8 +1516,10 @@ public class ViewFactory
                                                            cellField.isReadOnly() || mode == AltViewIFace.CreationMode.VIEW);
                     if (validator != null)
                     {
-                        DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getIdent(), checkbox, null);
+                        DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getIdent(), checkbox, 
+                                                    validator.createValidator(checkbox, UIValidator.Type.Changed));
                         checkbox.addActionListener(dcn);
+                        checkbox.addChangeListener(dcn);
                     }
                     bi.compToAdd = checkbox;
                     break;
