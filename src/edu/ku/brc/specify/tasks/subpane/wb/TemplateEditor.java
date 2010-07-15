@@ -1672,6 +1672,7 @@ public class TemplateEditor extends CustomDialog
         boolean unMapTaxOnlys = false;
         boolean contaminateAgent = false;
         boolean agentMapped = false;
+        boolean nonAgentMapped = false;
         for (Integer tblId : getTblsMapped())
         {
         	if (!(tblId.equals(DBTableIdMgr.getInstance().getByClassName(Taxon.class.getName()).getTableId())
@@ -1687,12 +1688,12 @@ public class TemplateEditor extends CustomDialog
         	if (tblId.equals(Agent.getClassTableId()))
         	{
         		agentMapped = true;
-        	} else if (agentMapped)
+        	} else
         	{
-        		contaminateAgent = true;
+        		nonAgentMapped = true;
         	}
-        		
         }
+        contaminateAgent = agentMapped && nonAgentMapped;
         if (contaminateAgent)
         {
             int agentFlds = 0;
