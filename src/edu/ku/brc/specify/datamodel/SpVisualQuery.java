@@ -53,12 +53,12 @@ import org.hibernate.annotations.Index;
     })
 public class SpVisualQuery extends DataModelObjBase
 {
-    protected Integer            spVisualQueryId;
-    protected String             name;
-    protected String             description;
+    protected Integer           spVisualQueryId;
+    protected String            name;
+    protected String            description;
     
     protected Set<LatLonPolygon> polygons;
-    protected SpecifyUser        specifyUser;
+    protected SpecifyUser               specifyUser;
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#initialize()
@@ -183,22 +183,13 @@ public class SpVisualQuery extends DataModelObjBase
     {
         return spVisualQueryId;
     }
-    
+
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getTableId()
      */
-    @Override
     @Transient
+    @Override
     public int getTableId()
-    {
-        return getClassTableId();
-    }
-    
-    
-    /**
-     * @return the Table ID for the class.
-     */
-    public static int getClassTableId()
     {
         return 532;
     }

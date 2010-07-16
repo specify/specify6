@@ -3765,13 +3765,9 @@
                     <cell type="field" id="7" name="prepType" uitype="combobox" picklist="PrepType" />
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" uitype="plugin" name="this" initialize="name=PartialDateUI;df=preparedDate;tp=preparedDatePrecision" uifieldformatter="Date"/>
-                    <cell type="label" label="  "/>
-                    <cell type="field" id="isOnLoan" name="isOnLoan" uitype="checkbox" label="ISONLOAN" readonly="true"/>
+                   <cell type="label" label="  "/>
+                   <cell type="field" id="isOnLoan" name="isOnLoan" uitype="checkbox" label="ISONLOAN" readonly="true"/>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="preparationAttachments" initialize="align=right;btn=true;icon=PreparationAttachment"/>
-                </row>
-                <row>
-                    <cell type="label" label=" "/>
-                    <cell type="command" id="ShowLoansBtn" name="ShowLoansBtn" label="Show Loans" ignore="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>

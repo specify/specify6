@@ -1530,7 +1530,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 
                 frame.setDesc("Updating Locality Fields...");
                 tblName = "locality";
-                addColumn(conn, databaseName, tblName, "Text1", "ALTER TABLE %s ADD COLUMN %s VARCHAR(255) AFTER SrcLatLongUnit");
+                addColumn(conn, databaseName, tblName, "Text1", "ALTER TABLE %s ADD COLUMN %s VARCHAR(255) AFTER GUID");
                 addColumn(conn, databaseName, tblName, "Text2", "ALTER TABLE %s ADD COLUMN %s VARCHAR(255) AFTER Text1");
                 
                 frame.setDesc("Updating PaleoContext Fields...");

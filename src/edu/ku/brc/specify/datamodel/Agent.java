@@ -385,7 +385,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     /**
      * @return the dateType
      */
-    @Column(name = "DateType", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "DateType")
     public Byte getDateType()
     {
         return dateType;
@@ -403,7 +403,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
      * @return the dateOfBirth
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "DateOfBirth", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "DateOfBirth")
     public Calendar getDateOfBirth()
     {
         return dateOfBirth;
@@ -420,7 +420,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     /**
      * @return the dateOfBirthPrecision
      */
-    @Column(name = "DateOfBirthPrecision", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "DateOfBirthPrecision")
     public Byte getDateOfBirthPrecision()
     {
         return dateOfBirthPrecision;
@@ -438,7 +438,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
      * @return the dateOfDeath
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "DateOfDeath", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "DateOfDeath")
     public Calendar getDateOfDeath()
     {
         return dateOfDeath;
@@ -455,7 +455,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     /**
      * @return the dateOfDeathPrecision
      */
-    @Column(name = "DateOfDeathPrecision", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "DateOfDeathPrecision")
     public Byte getDateOfDeathPrecision()
     {
         return dateOfDeathPrecision;

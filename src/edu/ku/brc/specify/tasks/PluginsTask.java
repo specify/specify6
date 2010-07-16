@@ -379,7 +379,7 @@ public class PluginsTask extends BaseTask
      */
     protected void processToolDataFromList(final Object data, final Properties requestParams, final RecordSetToolsIFace exporter)
     {
-        if (data instanceof List<?>)
+        if (data instanceof List)
         {
             doProcessTool(exporter, (List<?>)data, requestParams);
         }

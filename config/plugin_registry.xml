@@ -44,8 +44,6 @@
         <plugin class="edu.ku.brc.specify.tasks.BackupTask" addui="true"/>
         
         <plugin class="edu.ku.brc.specify.tasks.FormEditTask" addui="true"/>
-        
-        <plugin class="edu.ku.brc.specify.tasks.VisualQueryTask" addui="true"/>
 
 		
 	</core>

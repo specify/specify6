@@ -7995,7 +7995,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             Session localSession = HibernateUtil.getCurrentSession();
             HibernateUtil.beginTransaction();
     
-            int count = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM stratigraphy2");
+            int count = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM stratigraphy");
             if (count < 1) return;
             
             if (hasFrame)
@@ -8021,7 +8021,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             IdMapperIFace ceMapper = IdMapperMgr.getInstance().get("collectingevent", "CollectingEventID");
 
             // get all of the old records
-            String sql  = "SELECT s.StratigraphyID, s.SuperGroup, s.Group, s.Formation, s.Member, s.Bed, Remarks, Text1, Text2, Number1, Number2, YesNo1, YesNo2, GeologicTimePeriodID FROM stratigraphy2 s ORDER BY s.StratigraphyID";
+            String sql  = "SELECT s.StratigraphyID, s.SuperGroup, s.Group, s.Formation, s.Member, s.Bed, Remarks, Text1, Text2, Number1, Number2, YesNo1, YesNo2, GeologicTimePeriodID FROM stratigraphy s ORDER BY s.StratigraphyID";
             
             stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             rs   = stmt.executeQuery(sql);
@@ -8120,7 +8120,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             Hashtable<Integer, Integer> ceToPCHash = new Hashtable<Integer, Integer>();
             
             int ceCnt    = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT Count(CollectingEventID) FROM collectingevent");
-            int stratCnt = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT Count(CollectingEventID) FROM collectingevent INNER Join stratigraphy2 ON CollectingEventID = StratigraphyID");
+            int stratCnt = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT Count(CollectingEventID) FROM collectingevent INNER Join stratigraphy ON CollectingEventID = StratigraphyID");
             
             String msg = String.format("There are %d CE->Strat and %d CEs. The diff is %d", stratCnt, ceCnt, (ceCnt - stratCnt));
             tblWriter.log(msg);
@@ -8828,7 +8828,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             }
         }
 
-        // set up geologictimeperiod foreign key mapping for    
+        // set up geologictimeperiod foreign key mapping for stratigraphy
         IdMapperMgr.getInstance().mapForeignKey("Stratigraphy", "GeologicTimePeriodID",
                                                 "GeologicTimePeriod", "GeologicTimePeriodID");
 
@@ -8870,28 +8870,13 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 lclSession.saveOrUpdate(lithoStratTreeDef);
                 lclSession.saveOrUpdate(discipline);
                 
-                LithoStratTreeDefItem earth = null;
-                boolean oldWay = false;
-                if (oldWay)
-                {
-                                          earth     = createLithoStratTreeDefItem(lithoStratTreeDef, "Surface", 0, false);
-                    LithoStratTreeDefItem superGrp  = createLithoStratTreeDefItem(earth,     "Super Group", 100, false);
-                    LithoStratTreeDefItem lithoGrp  = createLithoStratTreeDefItem(superGrp,  "Litho Group", 200, false);
-                    LithoStratTreeDefItem formation = createLithoStratTreeDefItem(lithoGrp,  "Formation",   300, false);
-                    LithoStratTreeDefItem member    = createLithoStratTreeDefItem(formation, "Member",      400, false);
-                    @SuppressWarnings("unused")
-                    LithoStratTreeDefItem bed       = createLithoStratTreeDefItem(member,    "Bed",         500, true);
-                } else
-                {
-                    earth     = createLithoStratTreeDefItem(lithoStratTreeDef, "Surface", 0, false);
-                    LithoStratTreeDefItem superGrp  = createLithoStratTreeDefItem(earth,     "Group",     100, false);
-                    LithoStratTreeDefItem lithoGrp  = createLithoStratTreeDefItem(superGrp,  "Formation", 200, false);
-                    LithoStratTreeDefItem formation = createLithoStratTreeDefItem(lithoGrp,  "Member",    300, false);
-                    LithoStratTreeDefItem member    = createLithoStratTreeDefItem(formation, "Unit",      400, false);
-                    @SuppressWarnings("unused")
-                    LithoStratTreeDefItem bed       = createLithoStratTreeDefItem(member,    "Position",  500, true);
-  
-                }
+                LithoStratTreeDefItem earth     = createLithoStratTreeDefItem(lithoStratTreeDef, "Surface", 0, false);
+                LithoStratTreeDefItem superGrp  = createLithoStratTreeDefItem(earth,     "Super Group", 100, false);
+                LithoStratTreeDefItem lithoGrp  = createLithoStratTreeDefItem(superGrp,  "Litho Group", 200, false);
+                LithoStratTreeDefItem formation = createLithoStratTreeDefItem(lithoGrp,  "Formation",   300, false);
+                LithoStratTreeDefItem member    = createLithoStratTreeDefItem(formation, "Member",      400, false);
+                @SuppressWarnings("unused")
+                LithoStratTreeDefItem bed       = createLithoStratTreeDefItem(member,    "Bed",         500, true);
                 lclSession.saveOrUpdate(earth);
                 
                 // setup the root Geography record (planet Earth)

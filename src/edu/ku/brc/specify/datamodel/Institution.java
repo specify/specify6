@@ -372,7 +372,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     @Column(name = "IsSingleGeographyTree", unique = false, nullable = false, insertable = true, updatable = true)
     public Boolean getIsSingleGeographyTree()
     {
-        return isSingleGeographyTree == null ? false : isSingleGeographyTree;
+        return isSingleGeographyTree;
     }
 
     /**
@@ -381,7 +381,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     @Column(name = "IsSharingLocalities", unique = false, nullable = false, insertable = true, updatable = true)
     public Boolean getIsSharingLocalities()
     {
-        return isSharingLocalities == null ? false : isSharingLocalities;
+        return isSharingLocalities;
     }
 
     /**

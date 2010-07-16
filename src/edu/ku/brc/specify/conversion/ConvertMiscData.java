@@ -22,14 +22,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.Random;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
-import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PickListItem;
@@ -45,8 +42,6 @@ import edu.ku.brc.specify.datamodel.PickListItem;
 public class ConvertMiscData
 {
     protected static final Logger log = Logger.getLogger(ConvertMiscData.class);
-    
-    protected static Random generator = new Random( System.currentTimeMillis() );
     
     /**
      * @param oldDBConn
@@ -196,106 +191,4 @@ public class ConvertMiscData
             HibernateUtil.rollbackTransaction();
         }
     }
-    
-    /**
-     * @param oldDBConn
-     * @param newDBConn
-     * @param disciplineID
-     */
-    public static int getNewRecId(final Connection oldDBConn, final String tblName, String idName)
-    {
-        do
-        {
-           int id = generator.nextInt();
-           if (BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) FROM "+tblName+ " WHERE " + idName + " = " + id) < 1)
-           {
-               return id;
-           }
-        } while(true);
-    }
-    
-    /**
-     * @param oldDBConn
-     * @param newDBConn
-     * @param disciplineID
-     */
-    public static boolean moveHabitatToStratSp5(final Connection oldDBConn)
-    {
-        PreparedStatement pStmt1 = null;
-        try
-        {
-            String sqlCreate = "CREATE TABLE `stratigraphy2` (  `StratigraphyID` int(10) NOT NULL,  `GeologicTimePeriodID` int(10) DEFAULT NULL,  `SuperGroup` varchar(50) CHARACTER SET utf8 DEFAULT NULL,  `Group` varchar(50) CHARACTER SET utf8 DEFAULT NULL,  `Formation` varchar(50) CHARACTER SET utf8 DEFAULT NULL, " + 
-                              "`Member` varchar(50) CHARACTER SET utf8 DEFAULT NULL,  `Bed` varchar(50) CHARACTER SET utf8 DEFAULT NULL,  `Remarks` longtext,  `Text1` varchar(300) CHARACTER SET utf8 DEFAULT NULL,  `Text2` varchar(300) CHARACTER SET utf8 DEFAULT NULL,  `Number1` double DEFAULT NULL, " +
-                              "`Number2` double DEFAULT NULL,  `TimestampCreated` datetime DEFAULT NULL,  `TimestampModified` datetime DEFAULT NULL,  `LastEditedBy` varchar(50) CHARACTER SET utf8 DEFAULT NULL,  `YesNo1` smallint(5) DEFAULT NULL,  `YesNo2` smallint(5) DEFAULT NULL,  PRIMARY KEY (`StratigraphyID`) " +
-                              //, "KEY `IX_XXXXXX` (`GeologicTimePeriodID`), " +
-                              //"CONSTRAINT `FK_Stratigraphy_CollectingEvent` FOREIGN KEY (`StratigraphyID`) REFERENCES `collectingevent` (`CollectingEventID`) ON DELETE CASCADE ON UPDATE NO ACTION, " +
-                              //"CONSTRAINT `FK_Stratigraphy_GeologicTimePeriod` FOREIGN KEY (`GeologicTimePeriodID`) REFERENCES `geologictimeperiod` (`GeologicTimePeriodID`) ON DELETE NO ACTION ON UPDATE NO ACTION " +
-                              ") ENGINE=InnoDB DEFAULT CHARSET=latin1;";
-            
-            DBMSUserMgr dbMgr = DBMSUserMgr.getInstance();
-            dbMgr.setConnection(oldDBConn);
-            if (dbMgr.doesDBHaveTable("stratigraphy2"))
-            {
-                try
-                {
-                    BasicSQLUtils.update(oldDBConn, "DROP TABLE stratigraphy2");
-                } catch (Exception ex) {}
-            }
-            
-            BasicSQLUtils.update(oldDBConn, sqlCreate);
-
-            String sql = "SELECT ce.CollectingEventID, h.HabitatID, s.StratigraphyID, h.Text1, h.Text2, h.Text3, h.Text4, h.Text5, h.TimestampCreated, h.TimestampModified " +
-                         "FROM collectingevent AS ce " +
-                         "Left Join habitat AS h ON ce.CollectingEventID = h.HabitatID " +
-                         "Left Join stratigraphy AS s ON ce.CollectingEventID = s.StratigraphyID " +
-                         "WHERE h.Text1 IS NOT NULL OR h.Text2 IS NOT NULL OR h.Text3 IS NOT NULL OR h.Text4 IS NOT NULL OR h.Text5 IS NOT NULL";
-            
-            //Timestamp now = new Timestamp(System .currentTimeMillis());
-            pStmt1 = oldDBConn.prepareStatement("INSERT INTO stratigraphy2 (StratigraphyID, SuperGroup, `Group`, Formation, Member, Bed, TimestampCreated, TimestampModified) VALUES(?,?,?,?,?,?,?,?)");
-            
-            Vector<Object[]> rows = BasicSQLUtils.query(oldDBConn, sql);
-            for (Object[] row : rows)
-            {
-                Integer   ceID      = (Integer)row[0];
-                Integer   hbID      = (Integer)row[1];
-                Integer   stID      = (Integer)row[2];
-                String    superGrp  = (String)row[3];
-                String    group     = (String)row[4];
-                String    formation = (String)row[5];
-                String    member    = (String)row[6];
-                String    bed       = (String)row[7];
-                Timestamp crTS      = (Timestamp)row[8];      
-                Timestamp mdTS      = (Timestamp)row[9];      
-                
-                if (hbID != null && stID == null)
-                {
-                    pStmt1.setInt(1, ceID);//getNewRecId(oldDBConn, "stratigraphy", "StratigraphyID"));
-                    pStmt1.setString(2, superGrp);
-                    pStmt1.setString(3, group);
-                    pStmt1.setString(4, formation);
-                    pStmt1.setString(5, member);
-                    pStmt1.setString(6, bed);
-                    pStmt1.setTimestamp(7, crTS);
-                    pStmt1.setTimestamp(8, mdTS);
-                    pStmt1.execute();
-                }
-            }
-            return true;
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            
-        } finally
-        {
-            try
-            {
-                if (pStmt1 != null) pStmt1.close();
-                
-            } catch (Exception ex) {}
-        }
-        
-        return false;
-    }
-
 }
