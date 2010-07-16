@@ -2558,7 +2558,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                            DBTableIdMgr.getInstance(),
                                            "CatalogNumberNumeric",
                                            null,
-                                           false,
+                                           BuildSampleDatabase.UpdateType.eBuildNew,
                                            null);
                 localSession.save(discipline);
                 trans.commit();

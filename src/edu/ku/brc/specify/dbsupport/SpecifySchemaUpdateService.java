@@ -1651,7 +1651,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                            DBTableIdMgr.getInstance(),
                                            null,
                                            null,
-                                           true,
+                                           BuildSampleDatabase.UpdateType.eMerge,
                                            session);
                 frame.setProcess(cnt++);
             }

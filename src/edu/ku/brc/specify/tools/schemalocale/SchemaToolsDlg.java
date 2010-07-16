@@ -19,7 +19,7 @@
 */
 package edu.ku.brc.specify.tools.schemalocale;
 
-import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.*;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -82,10 +82,10 @@ import edu.ku.brc.ui.dnd.SimpleGlassPane;
  */
 public class SchemaToolsDlg extends CustomDialog
 {
-    protected JButton      editSchemaBtn      = createButton(getResourceString("SL_EDIT_SCHEMA"));
-    protected JButton      removeLocaleBtn    = createButton(getResourceString("SL_REMOVE_SCHEMA_LOC"));
-    protected JButton      exportSchemaLocBtn = createButton(getResourceString("SL_EXPORT_SCHEMA_LOC"));
-    protected JButton      importSchemaLocBtn = createButton(getResourceString("SL_IMPORT_SCHEMA_LOC"));
+    protected JButton      editSchemaBtn      = createI18NButton("SL_EDIT_SCHEMA");
+    protected JButton      removeLocaleBtn    = createI18NButton("SL_REMOVE_SCHEMA_LOC");
+    protected JButton      exportSchemaLocBtn = createI18NButton("SL_EXPORT_SCHEMA_LOC");
+    protected JButton      importSchemaLocBtn = createI18NButton("SL_IMPORT_SCHEMA_LOC");
     protected JList        localeList;
     protected Byte         schemaType;
     protected DBTableIdMgr tableMgr;
@@ -263,6 +263,9 @@ public class SchemaToolsDlg extends CustomDialog
         });
     }
     
+    /**
+     * 
+     */
     private void importSchema()
     {
         FileDialog fileDlg = new FileDialog((Dialog)null);
@@ -298,7 +301,7 @@ public class SchemaToolsDlg extends CustomDialog
                                                     DBTableIdMgr.getInstance(),
                                                     null, //catFmtName,
                                                     null, //accFmtName,
-                                                    true, // isDoingUpdate
+                                                    BuildSampleDatabase.UpdateType.eImport, // isDoingUpdate
                                                     file, // external file
                                                     glassPane,
                                                     localSession);

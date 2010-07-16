@@ -272,6 +272,7 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
 public class BuildSampleDatabase
 {
     private static final Logger  log      = Logger.getLogger(BuildSampleDatabase.class);
+    public enum UpdateType {eBuildNew, eImport, eMerge}
     
     //                                                  0                   1                  2                 3                   4                     5                   6                   7                     8
     private static String[] TaxonIndexNames = {"family common name", "species author", "species source", "species lsid", "species common name", "subspecies author", "subspecies source", "subspecies lsid", "subspecies common name"};
@@ -8118,7 +8119,8 @@ public class BuildSampleDatabase
                                         final SpLocaleContainerItem newItem,
                                         final SpLocaleContainerItem dispItem,
                                         final boolean               hideGenericFields,
-                                        final boolean               isFish)
+                                        final boolean               isFish,
+                                        final UpdateType            updateType)
     {
         SpLocaleContainerItem memoryItem = dispItem != null ? dispItem : memoryItemArg;
         
@@ -8142,9 +8144,10 @@ public class BuildSampleDatabase
     }
     
     /**
-     * @param hash
-     * @param baseName
      * @param strItems
+     * @param item
+     * @param isForNames
+     * @param updateType
      */
     protected static void setParentForItemStrs(final Set<SpLocaleItemStr>  strItems,
                                                final SpLocaleContainerItem item,
@@ -8288,14 +8291,14 @@ public class BuildSampleDatabase
                                         final boolean           hideGenericFields,
                                         final String            catFmtName,
                                         final String            accFmtName,
-                                        final boolean           isDoingUpdate,
+                                        final UpdateType        updateType,
                                         final DataProviderSessionIFace session)
     {
         
         boolean isColObj          = memoryContainer.getName().equals("collectionobject");
         boolean isAccession       = memoryContainer.getName().equals("accession");
-        //boolean isCollectingEvent = memoryContainer.getName().equals("collectingevent");
         boolean isFish            = disciplineName.equals("fish");
+        boolean isUpdate          = updateType == UpdateType.eImport || updateType == UpdateType.eMerge;
 
         if (newContainer.getId() == null)
         {
@@ -8354,7 +8357,7 @@ public class BuildSampleDatabase
         {
             String itemSQL     = null;
             boolean okToCreate = true;
-            if (isDoingUpdate)
+            if (isUpdate)
             {
                 String sql = String.format(" FROM splocalecontainer c INNER JOIN splocalecontaineritem ci ON c.SpLocaleContainerID = ci.SpLocaleContainerID WHERE ci.Name = '%s' AND c.DisciplineID = %d AND c.SpLocaleContainerID = %d", item.getName(), disciplineId, newContainer.getId());
                 String fullSQL = "SELECT COUNT(*)" + sql;
@@ -8382,7 +8385,7 @@ public class BuildSampleDatabase
                 
                 SpLocaleContainerItem dispItem = dispItemHash.get(item.getName());
             
-                loadLocalization(memoryContainer.getName(), item, newItem, dispItem, hideGenericFields, isFish);
+                loadLocalization(memoryContainer.getName(), item, newItem, dispItem, hideGenericFields, isFish, updateType);
             
                 if (isColObj && catFmtName != null && item.getName().equals("catalogNumber"))
                 {
@@ -8422,15 +8425,15 @@ public class BuildSampleDatabase
                     
                     try
                     {
-                        if (!isDoingUpdate) session.beginTransaction();
-                        setItemStrs(dbItem.getNames(), item.getNames(), session);
-                        setItemStrs(dbItem.getDescs(), item.getDescs(), session);
+                        if (!isUpdate) session.beginTransaction();
+                        setItemStrs(dbItem.getNames(), item.getNames(), updateType, session);
+                        setItemStrs(dbItem.getDescs(), item.getDescs(), updateType, session);
                         session.saveOrUpdate(dbItem);
-                        if (!isDoingUpdate) session.commit();
+                        if (!isUpdate) session.commit();
                         
                     } catch (Exception e)
                     {
-                        if (!isDoingUpdate) session.rollback();
+                        if (!isUpdate) session.rollback();
                         
                         e.printStackTrace();
                     }
@@ -8451,11 +8454,13 @@ public class BuildSampleDatabase
     /**
      * @param dbSet
      * @param memSet
+     * @param updateType
      * @param session
      * @throws Exception
      */
-    private static void setItemStrs(final Set<SpLocaleItemStr> dbSet, 
-                                    final Set<SpLocaleItemStr> memSet,
+    private static void setItemStrs(final Set<SpLocaleItemStr>     dbSet, 
+                                    final Set<SpLocaleItemStr>     memSet,
+                                    final UpdateType               updateType,
                                     final DataProviderSessionIFace session) throws Exception
     {
         HashMap<String, SpLocaleItemStr> hash = new HashMap<String, SpLocaleItemStr>();
@@ -8492,7 +8497,7 @@ public class BuildSampleDatabase
                                        final String       catFmtName,
                                        final String       accFmtName)
     {
-        loadSchemaLocalization(discipline, schemaType, tableMgr, catFmtName, accFmtName, false, null, null, null);
+        loadSchemaLocalization(discipline, schemaType, tableMgr, catFmtName, accFmtName, UpdateType.eBuildNew, null, null, null);
     }
     
     /**
@@ -8510,10 +8515,10 @@ public class BuildSampleDatabase
                                        final DBTableIdMgr tableMgr,
                                        final String       catFmtName,
                                        final String       accFmtName,
-                                       final boolean      isDoingUpdate,
+                                       final UpdateType   updateType,
                                        final DataProviderSessionIFace sessionArg)
     {
-        loadSchemaLocalization(discipline, schemaType, tableMgr, catFmtName, accFmtName, isDoingUpdate, null, null, sessionArg);
+        loadSchemaLocalization(discipline, schemaType, tableMgr, catFmtName, accFmtName, updateType, null, null, sessionArg);
     }
     
     /**
@@ -8531,7 +8536,7 @@ public class BuildSampleDatabase
                                        final DBTableIdMgr tableMgr,
                                        final String       catFmtName,
                                        final String       accFmtName,
-                                       final boolean      isDoingUpdate,
+                                       final UpdateType   updateType,
                                        final File         externalFile,
                                        final SimpleGlassPane glassPane,
                                        final DataProviderSessionIFace sessionArg)
@@ -8547,6 +8552,8 @@ public class BuildSampleDatabase
         
         String dispName = discipline.getType().toString();
         
+        boolean isUpdate = updateType == UpdateType.eImport || updateType == UpdateType.eMerge;
+        
         float progressCnt = 0.0f;
         float len = (float)schemaLocalizer.getSpLocaleContainers().size();
         for (SpLocaleContainer table : schemaLocalizer.getSpLocaleContainers())
@@ -8559,7 +8566,7 @@ public class BuildSampleDatabase
             
             Integer spcId      = null;
             boolean okToCreate = true;
-            if (isDoingUpdate)
+            if (isUpdate)
             {
                 String sql     = String.format(" FROM splocalecontainer WHERE Name = '%s' AND DisciplineID = %d", table.getName(), discipline.getId());
                 String fullSQL = "SELECT COUNT(*)"+sql;
@@ -8602,7 +8609,7 @@ public class BuildSampleDatabase
                 container = (SpLocaleContainer)sessionArg.getData("FROM SpLocaleContainer WHERE id = "+spcId);
             }
             
-            loadLocalization(discipline.getId(), dispName, table, container, hideGenericFields, catFmtName, accFmtName, isDoingUpdate, sessionArg);
+            loadLocalization(discipline.getId(), dispName, table, container, hideGenericFields, catFmtName, accFmtName, updateType, sessionArg);
             
             if (okToCreate)
             {
