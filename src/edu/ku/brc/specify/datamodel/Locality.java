@@ -100,12 +100,14 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     protected Byte                  visibility;
     protected SpecifyUser           visibilitySetBy;
     protected String                guid;
-    
+
     // Source Data used for formatting
     // XXX.XXXXXXXX N    Decimal Degrees
     // XXX XX.XXXXXX N   Degree Decimal Minutes
     // XXX XX XX.XXXX N  Degrees Minutes Decimal Seconds
     protected Byte                  srcLatLongUnit;
+    protected String                text1;
+    protected String                text2;
     
     protected Geography               geography;
     protected Set<LocalityCitation>   localityCitations;
@@ -156,16 +158,18 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         longitude2 = null;
         latLongMethod = null;
         latLongAccuracy = null;
-        datum = null;
-        remarks = null;
+        datum      = null;
+        remarks    = null;
 
-        lat1text = null;
-        lat2text = null;
-        long1text = null;
-        long2text = null;
+        lat1text   = null;
+        lat2text   = null;
+        long1text  = null;
+        long2text  = null;
         visibility = null;
         guid       = null;
-        
+        text1      = null;
+        text2      = null;
+
         // Source Data for Formatting
         srcLatLongUnit = 0;          // matches LATLON.DDDDDD
         
@@ -597,7 +601,6 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     {
         this.guid = guid;
     }
-    
     /**
      * @return the srcLatLongUnit
      */
@@ -615,6 +618,34 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         this.srcLatLongUnit = srcLatLongUnit;
     }
 
+    /**
+     * * User definable
+     */
+    @Column(name = "Text1", unique = false, nullable = true, insertable = true, updatable = true, length = 300)
+    public String getText1()
+    {
+        return this.text1;
+    }
+
+    public void setText1(String text1)
+    {
+        this.text1 = text1;
+    }
+
+    /**
+     * * User definable
+     */
+    @Column(name = "Text2", unique = false, nullable = true, insertable = true, updatable = true, length = 300)
+    public String getText2()
+    {
+        return this.text2;
+    }
+
+    public void setText2(String text2)
+    {
+        this.text2 = text2;
+    }
+    
     /**
      * * Indicates whether this record can be viewed - by owner, by institution, or by all
      */

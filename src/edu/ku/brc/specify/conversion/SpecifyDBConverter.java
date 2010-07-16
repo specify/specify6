@@ -698,7 +698,7 @@ public class SpecifyDBConverter extends AppBase
         "Inner Join collectionobjectcatalog AS cc ON co.CollectionObjectID = cc.CollectionObjectCatalogID " +    
         "WHERE ce.BiologicalObjectTypeCollectedID <  21 " +
         "GROUP BY ce.CollectingEventID) T1 WHERE cnt > 1";
-
+        
         /*if (true)
         {
             IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
@@ -835,7 +835,7 @@ public class SpecifyDBConverter extends AppBase
                     return;
                 }*/
                 
-                if (true)
+                if (false)
                 {
                     AgentConverter agentConverter = new AgentConverter(conversion, idMapperMgr, startfromScratch);
                     agentConverter.fixMissingAddrsFromConv();
@@ -1015,6 +1015,11 @@ public class SpecifyDBConverter extends AppBase
                 {
                     frame.incOverall();
                 }
+                
+                boolean doStratToGtp = true;
+                TableWriter stratToGTPWriter = convLogger.getWriter("StratToGTP.html", "StratToGTP Conversion");
+                StratToGTP  stratToGTP       = new StratToGTP(oldDBConn, newDBConn, dbNameSource, stratToGTPWriter);
+                stratToGTP.setFrame(frame);
 
                 frame.setDesc("Converting Geologic Time Period.");
                 log.info("Converting Geologic Time Period.");
@@ -1023,9 +1028,20 @@ public class SpecifyDBConverter extends AppBase
                 boolean doGTP = doAll;
                 if (doGTP)
                 {
-                    TableWriter tblWriter = convLogger.getWriter("GTP.html", "Geologic Time Period");
-                    GeologicTimePeriodTreeDef treeDef = conversion.convertGTPDefAndItems(conversion.isPaleo());
-                    conversion.convertGTP(tblWriter, treeDef, conversion.isPaleo());
+                    if (!doStratToGtp)
+                    {
+                        TableWriter tblWriter = convLogger.getWriter("GTP.html", "Geologic Time Period");
+                        GeologicTimePeriodTreeDef treeDef = conversion.convertGTPDefAndItems(conversion.isPaleo());
+                        conversion.convertGTP(tblWriter, treeDef, conversion.isPaleo());
+                    } else
+                    {
+                        // Moves Sp5 Habitat Table to Sp5 stratigraphy2 table 
+                        ConvertMiscData.moveHabitatToStratSp5(oldDBConn);
+                        
+                        // Creates a simple/std set of TreeIDefItems for GTP
+                        stratToGTP.createTreeDef();
+                    }
+                    
                 } else
                 {
                     idMapperMgr.addTableMapper("geologictimeperiod", "GeologicTimePeriodID");
@@ -1200,7 +1216,7 @@ public class SpecifyDBConverter extends AppBase
 
                 //checkDisciplines();
 
-                //conversion.convertHostTaxonId();
+                conversion.convertHostTaxonId();
                 
                 if (getSession() != null)
                 {
@@ -1209,14 +1225,19 @@ public class SpecifyDBConverter extends AppBase
                 }
                 
                 setSession(HibernateUtil.getNewSession());
+
                 
+                if (doStratToGtp)
+                {
+                    stratToGTP.convertStratToGTP();
+                    //ConvertMiscData.moveHabitatToStratSp5(oldDBConn);
+                }
                 frame.setDesc("Converting Straigraphy");
                 log.info("Converting Straigraphy");
                 boolean doStrat = true;
                 if (doStrat)
                 {
                      TableWriter tblWriter = convLogger.getWriter("FullStrat.html", "Straigraphy Conversion");
-                     
                      conversion.convertStrat(tblWriter, conversion.isPaleo());
                 }
 
