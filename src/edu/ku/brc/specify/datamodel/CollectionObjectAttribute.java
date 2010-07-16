@@ -69,6 +69,7 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
     protected Float  number10;
     protected String text13;
     protected String text14;
+    protected String text15;
     protected Float number11;
     protected Float number12;
     protected Float number13;
@@ -145,17 +146,18 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
     {
         super.init();
         collectionObjectAttributeId = null;
-        text10 = null;
-        text11 = null;
-        text12 = null;
+        text10   = null;
+        text11   = null;
+        text12   = null;
         number37 = null;
         number38 = null;
-        number8 = null;
-        number9 = null;
-        text8 = null;
+        number8  = null;
+        number9  = null;
+        text8    = null;
         number10 = null;
-        text13 = null;
-        text14 = null;
+        text13   = null;
+        text14   = null;
+        text15   = null;
         number11 = null;
         number12 = null;
         number13 = null;
@@ -247,6 +249,12 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
     public String getText14()
     {
         return text14;
+    }
+
+    @Column(name = "Text15", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getText15()
+    {
+        return text15;
     }
 
     @Column(name = "Number42", unique = false, nullable = true, insertable = true, updatable = true)
@@ -640,6 +648,11 @@ public class CollectionObjectAttribute extends CollectionMember implements Clone
     public void setText14(String text14)
     {
         this.text14 = text14;
+    }
+
+    public void setText15(String text15)
+    {
+        this.text15 = text15;
     }
 
     public void setNumber42(Float number42)

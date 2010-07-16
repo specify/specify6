@@ -104,7 +104,7 @@ public class DBInfoBase implements Comparable<DBInfoBase>
     }
 
     /**
-     * @return the name
+     * @return the table name
      */
     public String getName()
     {

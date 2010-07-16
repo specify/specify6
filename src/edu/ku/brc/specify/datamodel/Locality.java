@@ -100,6 +100,8 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     protected Byte                  visibility;
     protected SpecifyUser           visibilitySetBy;
     protected String                guid;
+    protected String                text1;
+    protected String                text2;
     
     // Source Data used for formatting
     // XXX.XXXXXXXX N    Decimal Degrees
@@ -159,12 +161,14 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         datum = null;
         remarks = null;
 
-        lat1text = null;
-        lat2text = null;
-        long1text = null;
-        long2text = null;
+        lat1text   = null;
+        lat2text   = null;
+        long1text  = null;
+        long2text  = null;
         visibility = null;
         guid       = null;
+        text1      = null;
+        text2      = null;
         
         // Source Data for Formatting
         srcLatLongUnit = 0;          // matches LATLON.DDDDDD
@@ -613,6 +617,40 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     public void setSrcLatLongUnit(Byte srcLatLongUnit)
     {
         this.srcLatLongUnit = srcLatLongUnit;
+    }
+
+    /**
+     * @return the text1
+     */
+    @Column(name = "Text1", unique = false, nullable = false, insertable = true, updatable = true, length = 300)
+    public String getText1()
+    {
+        return text1;
+    }
+
+    /**
+     * @param text1 the text1 to set
+     */
+    public void setText1(String text1)
+    {
+        this.text1 = text1;
+    }
+
+    /**
+     * @return the text2
+     */
+    @Column(name = "Text2", unique = false, nullable = false, insertable = true, updatable = true, length = 300)
+    public String getText2()
+    {
+        return text2;
+    }
+
+    /**
+     * @param text2 the text2 to set
+     */
+    public void setText2(String text2)
+    {
+        this.text2 = text2;
     }
 
     /**

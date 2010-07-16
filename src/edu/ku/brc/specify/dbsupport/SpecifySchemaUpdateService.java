@@ -42,6 +42,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import javax.management.RuntimeErrorException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
@@ -53,6 +54,7 @@ import org.hibernate.Transaction;
 
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -66,7 +68,19 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
 import edu.ku.brc.specify.conversion.IdTableMapper;
 import edu.ku.brc.specify.conversion.TableWriter;
+import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.CollectingEventAttribute;
+import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
+import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.FieldNotebookPage;
+import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
+import edu.ku.brc.specify.datamodel.Institution;
+import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.LocalityDetail;
+import edu.ku.brc.specify.datamodel.PaleoContext;
+import edu.ku.brc.specify.datamodel.PreparationAttribute;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpVersion;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
@@ -1168,6 +1182,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         /////////////////////////////
         // PaleoContext
         /////////////////////////////
+        setTableTitleForFrame(PaleoContext.getClassTableId());
         Integer len = getFieldLength(conn, databaseName, "paleocontext", "Text1");
         alterFieldLength(conn, databaseName, "paleocontext", "Text1", 32, 64);
         alterFieldLength(conn, databaseName, "paleocontext", "Text2", 32, 64);
@@ -1190,6 +1205,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         /////////////////////////////
         // FieldNotebookPage
         /////////////////////////////
+        setTableTitleForFrame(FieldNotebookPage.getClassTableId());
         len = getFieldLength(conn, databaseName, "fieldnotebookpage", "PageNumber");
         if (len != null && len == 16)
         {
@@ -1207,6 +1223,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         /////////////////////////////
         // LocalityDetail
         /////////////////////////////
+        
+        setTableTitleForFrame(LocalityDetail.getClassTableId());
         
         boolean statusOK = true;
         String sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'localitydetail' AND COLUMN_NAME = 'UtmScale' AND DATA_TYPE = 'varchar'", dbc.getDatabaseName());
@@ -1314,7 +1332,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             {
                 // Add New Fields to Determination
                 
-                frame.setDesc("Updating Determination Table...");
+                setTableTitleForFrame(Determination.getClassTableId());
                 String tblName = "determination";
                 addColumn(conn, databaseName, tblName, "VarQualifer",    "ALTER TABLE %s ADD COLUMN %s VARCHAR(16) AFTER Qualifier");
                 addColumn(conn, databaseName, tblName, "SubSpQualifier", "ALTER TABLE %s ADD COLUMN %s VARCHAR(16) AFTER VarQualifer");
@@ -1348,6 +1366,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     Statement stmt = null;
                     try
                     {
+                        setTableTitleForFrame(CollectingEventAttribute.getClassTableId());
+                        
                         stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                         BasicSQLUtils.update(conn, "DROP INDEX COLEVATSColMemIDX on collectingeventattribute");
                         BasicSQLUtils.update(conn, "ALTER TABLE collectingeventattribute DROP COLUMN CollectionMemberID");
@@ -1359,7 +1379,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         int    percent = 0;
                         frame.setProcess(0, 100);
                         frame.setProcessPercent(true);
-                        frame.setDesc("Updating Collecting Event Attributes...");
                         
                         PreparedStatement pStmt = conn.prepareStatement("UPDATE collectingeventattribute SET DisciplineID=? WHERE CollectingEventAttributeID=?");
                         ResultSet rs = stmt.executeQuery("SELECT CollectingEventAttributeID FROM collectingeventattribute");
@@ -1432,7 +1451,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     mapper.setFrame(frame);
                     mapper.mapAllIdsNoIncrement(count > 0 ? count : null);
                     
-                    frame.setDesc("Updating Collectors...");
+                    setTableTitleForFrame(Collector.getClassTableId());
                     Statement stmt = null;
                     try
                     {
@@ -1502,8 +1521,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 //////////////////////////////////////////////
                 
                 // Add New Fields to Address
-                frame.setDesc("Updating Agent Fields...");
-                tblName = "agent";
+                tblName = setTableTitleForFrame(Agent.getClassTableId());
                 addColumn(conn, databaseName, tblName, "DateType",             "ALTER TABLE %s ADD COLUMN %s TINYINT(4) AFTER Title");
                 addColumn(conn, databaseName, tblName, "DateOfBirthPrecision", "ALTER TABLE %s ADD COLUMN %s TINYINT(4) AFTER DateOfBirth");
                 addColumn(conn, databaseName, tblName, "DateOfDeathPrecision", "ALTER TABLE %s ADD COLUMN %s TINYINT(4) AFTER DateOfDeath");
@@ -1518,8 +1536,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                 }
                 
-                frame.setDesc("Updating LocalityDetail Fields...");
-                tblName = "localitydetail";
+                tblName = setTableTitleForFrame(LocalityDetail.getClassTableId());
                 addColumn(conn, databaseName, tblName, "StartDepth",         "ALTER TABLE %s ADD COLUMN %s Double AFTER Drainage");
                 addColumn(conn, databaseName, tblName, "StartDepthUnit",     "ALTER TABLE %s ADD COLUMN %s TINYINT(4) AFTER StartDepth");
                 addColumn(conn, databaseName, tblName, "StartDepthVerbatim", "ALTER TABLE %s ADD COLUMN %s VARCHAR(32) AFTER StartDepthUnit");
@@ -1528,34 +1545,32 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 addColumn(conn, databaseName, tblName, "EndDepthUnit",     "ALTER TABLE %s ADD COLUMN %s TINYINT(4) AFTER EndDepth");
                 addColumn(conn, databaseName, tblName, "EndDepthVerbatim", "ALTER TABLE %s ADD COLUMN %s VARCHAR(32) AFTER EndDepthUnit");
                 
-                frame.setDesc("Updating Locality Fields...");
-                tblName = "locality";
-                addColumn(conn, databaseName, tblName, "Text1", "ALTER TABLE %s ADD COLUMN %s VARCHAR(255) AFTER GUID");
+                tblName = setTableTitleForFrame(Locality.getClassTableId());
+                addColumn(conn, databaseName, tblName, "Text1", "ALTER TABLE %s ADD COLUMN %s VARCHAR(255) AFTER SrcLatLongUnit");
                 addColumn(conn, databaseName, tblName, "Text2", "ALTER TABLE %s ADD COLUMN %s VARCHAR(255) AFTER Text1");
                 
-                frame.setDesc("Updating PaleoContext Fields...");
-                tblName = "paleocontext";
+                tblName = setTableTitleForFrame(CollectionObjectAttribute.getClassTableId());
+                addColumn(conn, databaseName, tblName, "Text15",  "ALTER TABLE %s ADD COLUMN %s VARCHAR(64) AFTER Text14");
+                
+                tblName = setTableTitleForFrame(PaleoContext.getClassTableId());
                 addColumn(conn, databaseName, tblName, "ChronosStratEndID",  "ALTER TABLE %s ADD COLUMN %s INT AFTER ChronosStratID");
                 
-                frame.setDesc("Updating Institution Fields...");
-                tblName = "institution";
+                tblName = setTableTitleForFrame(Institution.getClassTableId());
                 addColumn(conn, databaseName, tblName, "IsSingleGeographyTree",  "ALTER TABLE %s ADD COLUMN %s BIT(1) AFTER IsServerBased");
                 addColumn(conn, databaseName, tblName, "IsSharingLocalities",    "ALTER TABLE %s ADD COLUMN %s BIT(1) AFTER IsSingleGeographyTree");
                 BasicSQLUtils.update(conn, "UPDATE institution SET IsSingleGeographyTree=0, IsSharingLocalities=0");
                 
-                frame.setDesc("Updating GeologicTimePeriod Fields...");
-                tblName = "geologictimeperiod";
+                tblName = setTableTitleForFrame(GeologicTimePeriod.getClassTableId());
                 addColumn(conn, databaseName, tblName, "Text1", "ALTER TABLE %s ADD COLUMN %s VARCHAR(64) AFTER EndUncertainty");
                 addColumn(conn, databaseName, tblName, "Text2", "ALTER TABLE %s ADD COLUMN %s VARCHAR(64) AFTER Text1");
                 
-                frame.setDesc("Updating Prep Attrs Fields...");
+                tblName = setTableTitleForFrame(PreparationAttribute.getClassTableId());
                 // Fix Field Length
-                final String prepAttrTbl = "preparationattribute";
-                final String prepAttrFld = "Text22";
-                len = getFieldLength(conn, databaseName, prepAttrTbl, prepAttrFld);
+                String prepAttrFld = "Text22";
+                len = getFieldLength(conn, databaseName, tblName, prepAttrFld);
                 if (len != null && len == 10)
                 {
-                    alterFieldLength(conn, databaseName, prepAttrTbl, prepAttrFld, 10, 50);
+                    alterFieldLength(conn, databaseName, tblName, prepAttrFld, 10, 50);
                 }
 
                 frame.getProcessProgress().setIndeterminate(true);
@@ -1572,6 +1587,21 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         }
         
         return statusOK;
+    }
+    
+    /**
+     * @param tableId the id of the table
+     * @return the db table name
+     */
+    private String setTableTitleForFrame(final int tableId)
+    {
+        DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
+        if (ti != null)
+        {
+            frame.setDesc(String.format("Updating %s Fields...", ti != null ? ti.getTitle() : "DB"));
+            return ti.getName();
+        }
+        throw new RuntimeException("Couldn't find table in Mgr for Table Id " + tableId);
     }
     
     /**
@@ -1615,10 +1645,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     {
         PostInsertEventListener.setAuditOn(false);
         
-        ProgressFrame            frame     = null;
-        DataProviderSessionIFace session   = null;
-        Session                  hbSession = null;
-        Transaction              trans     = null;
+        ProgressFrame            localFrame = null;
+        DataProviderSessionIFace session    = null;
+        Session                  hbSession  = null;
+        Transaction              trans      = null;
         try
         {
             session = DataProviderFactory.getInstance().createSession();
@@ -1627,23 +1657,23 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             trans     = hbSession.beginTransaction();
             List<Discipline> disciplines = session.getDataList(Discipline.class);
             
-            frame = new ProgressFrame(getResourceString("UPDATE_SCHEMA_TITLE"));
-            frame.adjustProgressFrame();
-            frame.turnOffOverAll();
-            frame.getCloseBtn().setVisible(false);
+            localFrame = new ProgressFrame(getResourceString("UPDATE_SCHEMA_TITLE"));
+            localFrame.adjustProgressFrame();
+            localFrame.turnOffOverAll();
+            localFrame.getCloseBtn().setVisible(false);
             
-            frame.setDesc("Merging New Schema Fields...");
+            localFrame.setDesc("Merging New Schema Fields...");
             if (disciplines.size() > 1)
             {
-                frame.getProcessProgress().setIndeterminate(false);
-                frame.setProcess(0, disciplines.size());
+                localFrame.getProcessProgress().setIndeterminate(false);
+                localFrame.setProcess(0, disciplines.size());
             } else
             {
-                frame.getProcessProgress().setIndeterminate(true);
+                localFrame.getProcessProgress().setIndeterminate(true);
             }
-            frame.setVisible(true);
+            localFrame.setVisible(true);
             
-            UIHelper.centerAndShow(frame);
+            UIHelper.centerAndShow(localFrame);
             
             int cnt = 1;
             for (Discipline discipline : disciplines)
@@ -1658,7 +1688,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                            null,
                                            BuildSampleDatabase.UpdateType.eMerge,
                                            session);
-                frame.setProcess(cnt++);
+                localFrame.setProcess(cnt++);
             }
             
             trans.commit();
@@ -1676,7 +1706,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             }
         } finally
         {
-            frame.setVisible(false);
+            localFrame.setVisible(false);
             
             PostInsertEventListener.setAuditOn(true);
 
@@ -1803,9 +1833,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     pStmt = currDBConn.prepareStatement("UPDATE geography SET Name=? WHERE GeographyID=?");
                     stmt  = currDBConn.createStatement();
                         
-                    int    cnt = 0;
-                    String sql = "SELECT ge.asciiname, g.GeographyID FROM geoname ge INNER JOIN geography g ON ge.name = g.Name WHERE ge.Name <> ge.asciiname";
-                    ResultSet rs  = stmt.executeQuery(sql);
+                    int    cnt    = 0;
+                    String sqlStr = "SELECT ge.asciiname, g.GeographyID FROM geoname ge INNER JOIN geography g ON ge.name = g.Name WHERE ge.Name <> ge.asciiname";
+                    ResultSet rs  = stmt.executeQuery(sqlStr);
                     while (rs.next())
                     {
                         pStmt.setString(1, rs.getString(1));
