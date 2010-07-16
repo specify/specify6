@@ -102,6 +102,7 @@
     <icon name="Formatting"     file="formatting.png" sizes="32"/>
     <icon name="WebLink"        file="weblink.png" sizes="32"/>
     
+    <icon name="VisualQuery"   file="Search32x32.png" sizes="32"/>
 
     <!-- Aliases -->
     <icon name="ShowMap"                   alias="LocalityMapper"/>

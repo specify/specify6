@@ -48,6 +48,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.UIPluginable;
 import edu.ku.brc.af.ui.forms.persist.FormDevHelper;
 import edu.ku.brc.helpers.XMLHelper;
@@ -581,6 +582,15 @@ public class TaskMgr implements CommandListener
                             }
                         }
                         
+                        String prefName = getAttr(pluginElement, "prefname", null); //$NON-NLS-1$
+                        if (prefName != null)
+                        {
+                            if (!AppPreferences.getLocalPrefs().getBoolean(prefName, false))
+                            {
+                                continue;
+                            }
+                        }
+
                         register(task, shouldAddToUI); //$NON-NLS-1$
 
                     } else
