@@ -1528,6 +1528,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 addColumn(conn, databaseName, tblName, "EndDepthUnit",     "ALTER TABLE %s ADD COLUMN %s TINYINT(4) AFTER EndDepth");
                 addColumn(conn, databaseName, tblName, "EndDepthVerbatim", "ALTER TABLE %s ADD COLUMN %s VARCHAR(32) AFTER EndDepthUnit");
                 
+                frame.setDesc("Updating Locality Fields...");
+                tblName = "locality";
+                addColumn(conn, databaseName, tblName, "Text1", "ALTER TABLE %s ADD COLUMN %s VARCHAR(255) AFTER GUID");
+                addColumn(conn, databaseName, tblName, "Text2", "ALTER TABLE %s ADD COLUMN %s VARCHAR(255) AFTER Text1");
+                
                 frame.setDesc("Updating PaleoContext Fields...");
                 tblName = "paleocontext";
                 addColumn(conn, databaseName, tblName, "ChronosStratEndID",  "ALTER TABLE %s ADD COLUMN %s INT AFTER ChronosStratID");

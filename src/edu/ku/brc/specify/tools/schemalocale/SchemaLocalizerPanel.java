@@ -85,7 +85,6 @@ import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
-import edu.ku.brc.specify.tools.schemalocale.LocalizerApp.PackageTracker;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
@@ -152,7 +151,6 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     protected JButton                   webLinkBtn = null;
     
     protected Hashtable<String, String>         resHash     = new Hashtable<String, String>();
-    protected Hashtable<String, PackageTracker> packageHash = new Hashtable<String, PackageTracker>();
     protected Hashtable<String, Boolean>        nameHash    = new Hashtable<String, Boolean>();
     
     protected PropertyChangeListener            listener    = null;

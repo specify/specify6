@@ -65,6 +65,7 @@ import com.apple.eawt.ApplicationEvent;
 
 import edu.ku.brc.specify.conversion.ConversionLogger;
 import edu.ku.brc.specify.conversion.TableWriter;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
@@ -154,6 +155,9 @@ public class LocalizerApp extends LocalizableBaseApp
         analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
     }
     
+    /**
+     * 
+     */
     public void processProperties()
     {
         initLucene();
@@ -695,7 +699,8 @@ public class LocalizerApp extends LocalizableBaseApp
      */
     public static void main(String[] args)
     {
-        if (true)
+        boolean doResCheck = false;
+        if (doResCheck)
         {
             LocalizerApp fd = new LocalizerApp();
             
@@ -723,71 +728,11 @@ public class LocalizerApp extends LocalizableBaseApp
                 
                 LocalizerApp fd = new LocalizerApp();
                 
-                fd.indexSourceFiles();
                 
-                //fd.createDisplay();
-                //UIHelper.centerAndShow(fd);
+                fd.indexSourceFiles();
             }
         });
 
     }
     
-    class PackageTracker 
-    {
-        protected String packageName;
-        protected Hashtable<File, FileTracker> fileHash = new Hashtable<File, FileTracker>();
-        /**
-         * @param packageName
-         */
-        public PackageTracker(String packageName)
-        {
-            super();
-            this.packageName = packageName;
-        }
-        /**
-         * @return the packageName
-         */
-        public String getPackageName()
-        {
-            return packageName;
-        }
-        /**
-         * @return the fileHash
-         */
-        public Hashtable<File, FileTracker> getFileHash()
-        {
-            return fileHash;
-        }
-        
-        
-    }
-
-    class FileTracker 
-    {
-        protected File file;
-        protected Hashtable<String, String> mapping = new Hashtable<String, String>();
-        /**
-         * @param file
-         */
-        public FileTracker(File file)
-        {
-            super();
-            this.file = file;
-        }
-        /**
-         * @return the file
-         */
-        public File getFile()
-        {
-            return file;
-        }
-        /**
-         * @return the mapping
-         */
-        public Hashtable<String, String> getMapping()
-        {
-            return mapping;
-        }
-    }
-
 }
