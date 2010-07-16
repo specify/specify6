@@ -1144,30 +1144,23 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         }
 
 
-        dataMenu.addSeparator();
-        
-        AbstractAction vsa = new AbstractAction("Visual Search") {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                WorldWindSearchPanel.getDlg();
-            }
-        };
-        JMenuItem visualSeachMI = new JMenuItem(vsa);
-        dataMenu.add(visualSeachMI);
-        UIRegistry.register("WWVisualSearch", visualSeachMI); //$NON-NLS-1$
-        UIRegistry.registerAction("WWVisualSearch", vsa); //$NON-NLS-1$
-        AbstractAction gpxAction = new AbstractAction("GPS Data") {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                GPXPanel.getDlgInstance().setVisible(true);
-            }
-        };
-        JMenuItem gpxMI = new JMenuItem(gpxAction);
-        dataMenu.add(gpxMI);
-        UIRegistry.register("GPXDlg", gpxMI); //$NON-NLS-1$
-        UIRegistry.registerAction("GPXDlg", gpxAction); //$NON-NLS-1$
+        if (System.getProperty("user.name").equals("rods"))
+        {
+            dataMenu.addSeparator();
+            
+            
+            AbstractAction gpxAction = new AbstractAction("GPS Data") {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    GPXPanel.getDlgInstance().setVisible(true);
+                }
+            };
+            JMenuItem gpxMI = new JMenuItem(gpxAction);
+            dataMenu.add(gpxMI);
+            UIRegistry.register("GPXDlg", gpxMI); //$NON-NLS-1$
+            UIRegistry.registerAction("GPXDlg", gpxAction); //$NON-NLS-1$
+        }
         
         
         mb.add(dataMenu);
