@@ -74,25 +74,43 @@
 	</target>
 	
 	<!-- Jar up compiled classes -->
+    <target name="copy-for-jar" depends="">
+    	
+        <mkdir dir="${installer.dir}"/>
+        <mkdir dir="${installer.dir}/jar-src"/>
+        
+        <copy todir="${installer.dir}/jar-src">
+            <fileset dir="${class.root}">
+                <include name="**/*.class" />
+                <include name="**/*.xml" />
+                <include name="**/images/**/*.*" />
+            </fileset>
+        </copy>
+    	
+    	<native2ascii src="${class.root}" dest="${installer.dir}/jar-src" includes="**/*.properties"/>
+    </target>
+	
 	<target name="dist-jar" depends="">
-		
+		<antcall target="copy-for-jar"/>
 		<jar destfile="${jar.name}.jar">
-			<fileset dir="${class.root}">
+			<fileset dir="${installer.dir}/jar-src">
 				<include name="**/*.class" />
 				<include name="**/*.properties" />
 				<include name="**/*.xml" />
 				<include name="**/images/**/*.*" />
 			</fileset>
 		</jar>
+        <!-- <delete dir="${installer.dir}/jar-src"/> -->
+		
         <!-- <copy file="${jar.name}.jar" todir="webapp/WEB-INF/lib" />
         <copy file="${jar.name}.jar" todir="upwebapp/WEB-INF/lib" /> -->
 	</target>
 
 	<!-- Jar up compiled classes -->
 	<target name="dist-jar-mac" depends="">
-		
+        <antcall target="copy-for-jar"/>
 		<jar destfile="${jar.name}.jar">
-			<fileset dir="${class.root}">
+			<fileset dir="${installer.dir}/jar-src">
 				<include name="**/*.class" />
 				<include name="**/*.properties" />
                 <include name="**/*.betwixt" />
@@ -100,11 +118,12 @@
 				<include name="**/images/**/*.*" />
 			</fileset>
 	    </jar>
+		<delete dir="${installer.dir}/jar-src"/>
 	</target>
 	
 	<!-- Jar Clean Up -->
 	<target name="clean-jar">
-		<delete file="${jar.name}.jar" />
+		<!-- <delete file="${jar.name}.jar" /> -->
 	</target>
 	
 	<!-- *************************************************************
