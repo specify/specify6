@@ -8107,20 +8107,20 @@ public class BuildSampleDatabase
         return new Properties();
     }
     
-   
     /**
      * @param tableName
-     * @param memoryItem
+     * @param memoryItemArg
      * @param newItem
+     * @param dispItem
      * @param hideGenericFields
+     * @param isFish
      */
     public static void loadLocalization(final String                tableName, 
                                         final SpLocaleContainerItem memoryItemArg, 
                                         final SpLocaleContainerItem newItem,
                                         final SpLocaleContainerItem dispItem,
                                         final boolean               hideGenericFields,
-                                        final boolean               isFish,
-                                        final UpdateType            updateType)
+                                        final boolean               isFish)
     {
         SpLocaleContainerItem memoryItem = dispItem != null ? dispItem : memoryItemArg;
         
@@ -8355,13 +8355,14 @@ public class BuildSampleDatabase
         
         for (SpLocaleContainerItem item : memoryContainer.getItems())
         {
+            //if (isColObj) System.err.println(item.getName());
             String itemSQL     = null;
             boolean okToCreate = true;
             if (isUpdate)
             {
                 String sql = String.format(" FROM splocalecontainer c INNER JOIN splocalecontaineritem ci ON c.SpLocaleContainerID = ci.SpLocaleContainerID WHERE ci.Name = '%s' AND c.DisciplineID = %d AND c.SpLocaleContainerID = %d", item.getName(), disciplineId, newContainer.getId());
                 String fullSQL = "SELECT COUNT(*)" + sql;
-                //log.debug(fullSQL);
+                //if (isColObj) log.debug(fullSQL);
                 int cnt = BasicSQLUtils.getCountAsInt(fullSQL);
                 if (cnt > 0)
                 {
@@ -8369,7 +8370,7 @@ public class BuildSampleDatabase
                     if (cnt == 1)
                     {
                         itemSQL = "SELECT ci.SpLocaleContainerItemID" + sql;
-                        //log.debug(itemSQL);
+                        //if (isColObj) log.debug(itemSQL);
                     }
                 }
             }
@@ -8385,7 +8386,7 @@ public class BuildSampleDatabase
                 
                 SpLocaleContainerItem dispItem = dispItemHash.get(item.getName());
             
-                loadLocalization(memoryContainer.getName(), item, newItem, dispItem, hideGenericFields, isFish, updateType);
+                loadLocalization(memoryContainer.getName(), item, newItem, dispItem, hideGenericFields, isFish);
             
                 if (isColObj && catFmtName != null && item.getName().equals("catalogNumber"))
                 {
@@ -8473,9 +8474,13 @@ public class BuildSampleDatabase
             SpLocaleItemStr memItem = hash.get(mkKey(dbItem));
             if (memItem != null)
             {
-                if (StringUtils.isNotEmpty(dbItem.getText()) && 
-                    StringUtils.isNotEmpty(memItem.getText()) &&
-                    !dbItem.getText().equals(memItem.getText()))
+                if (updateType != UpdateType.eMerge)
+                {
+                    dbItem.setText(memItem.getText() != null ? memItem.getText() : "");
+                    session.saveOrUpdate(dbItem);
+                    
+                } else if (StringUtils.isEmpty(dbItem.getText()) && 
+                           StringUtils.isNotEmpty(memItem.getText()))
                 {
                     dbItem.setText(memItem.getText());
                     session.saveOrUpdate(dbItem);
