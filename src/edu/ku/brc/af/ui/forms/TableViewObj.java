@@ -2607,7 +2607,7 @@ public class TableViewObj implements Viewable,
             
             if (isLoading)
             {
-                return column == 0 && row == 0 ? UIRegistry.getResourceBundle("LOADING") : "";
+                return column == 0 && row == 0 ? UIRegistry.getResourceString("LOADING") : "";
                 
             } else if (isRestricted != null && isRestricted)
             {
