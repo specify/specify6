@@ -1161,7 +1161,8 @@ public class InteractionsTask extends BaseTask
      * Creates a new InfoRequest from a RecordSet.
      * @param recordSet the recordSet to use to create the InfoRequest
      */
-    protected void createInfoRequest(final RecordSetIFace recordSetArg)
+    protected void createInfoRequest(final RecordSetIFace recordSetArg,
+                                     final CommandAction cmdAction)
     {
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(InfoRequest.getClassTableId());
         
@@ -1190,8 +1191,15 @@ public class InteractionsTask extends BaseTask
             if (recordSet.getOrderedItems() != null && recordSet.getNumItems() > 0)
             {
                 Taskable irTask = TaskMgr.getTask("InfoRequest");
-                createFormPanel(irTask.getTitle(), view.getViewSetName(), view.getName(), "edit", infoRequest, MultiView.IS_NEW_OBJECT, 
-                                irTask.getIcon(16));
+                if (cmdAction != null && cmdAction.getData() instanceof Viewable)
+                {
+                    ((Viewable)cmdAction.getData()).setNewObject(infoRequest);
+                    
+                } else
+                {
+                    createFormPanel(irTask.getTitle(), view.getViewSetName(), view.getName(), "edit", infoRequest, MultiView.IS_NEW_OBJECT, 
+                                    irTask.getIcon(16));
+                }
                 
             } else
             {
@@ -2228,10 +2236,10 @@ public class InteractionsTask extends BaseTask
             
         } else if (cmdAction.isAction(INFO_REQ_MESSAGE))
         {
-            if (cmdAction.getData() == cmdAction)
+            if (cmdAction.getData() == cmdAction || cmdAction.getData() instanceof Viewable)
             {
                 // We get here when a user clicks on a InfoRequest NB action 
-                createInfoRequest(null);
+                createInfoRequest(null, cmdAction);
                 
             } else if (cmdAction.getData() instanceof RecordSetIFace)
             {
@@ -2246,7 +2254,7 @@ public class InteractionsTask extends BaseTask
                         
                     } else if (rs.getDbTableId() == CollectionObject.getClassTableId())
                     {
-                        createInfoRequest((RecordSetIFace)data);
+                        createInfoRequest((RecordSetIFace)data, cmdAction);
                     }
                 }
             } else if (cmdAction.getData() instanceof CommandActionForDB)

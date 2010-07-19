@@ -398,7 +398,7 @@ public class FormPane extends DroppableTaskPane
             // this is causing problems for View mode commenting out the removal of the controller
             // rods - 08/27/08
             //opts &= ~MultiView.RESULTSET_CONTROLLER; // Clear Bit first
-            opts |= (dataArg != null && (dataArg instanceof List || dataArg instanceof Set)) ? MultiView.RESULTSET_CONTROLLER : 0;
+            opts |= (dataArg != null && (dataArg instanceof List<?> || dataArg instanceof Set<?>)) ? MultiView.RESULTSET_CONTROLLER : 0;
                        
             multiView = new MultiView(null, null, view, mode, opts);
             if (multiView != null)

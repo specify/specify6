@@ -743,6 +743,7 @@
 
         <view name="InfoRequest"
             class="edu.ku.brc.specify.datamodel.InfoRequest"
+            busrules="edu.ku.brc.specify.datamodel.busrules.InfoRequestBusRules"
             resourcelabels="false">
             <desc><![CDATA[Subform within the InfoRequest form.]]></desc>
             <altviews>
