@@ -54,10 +54,6 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createInstitution;
 import static edu.ku.brc.specify.config.init.DataBuilder.createJournal;
 import static edu.ku.brc.specify.config.init.DataBuilder.createLithoStratTreeDef;
 import static edu.ku.brc.specify.config.init.DataBuilder.createLithoStratTreeDefItem;
-import static edu.ku.brc.specify.config.init.DataBuilder.createLoan;
-import static edu.ku.brc.specify.config.init.DataBuilder.createLoanAgent;
-import static edu.ku.brc.specify.config.init.DataBuilder.createLoanPreparation;
-import static edu.ku.brc.specify.config.init.DataBuilder.createLoanReturnPreparation;
 import static edu.ku.brc.specify.config.init.DataBuilder.createLocality;
 import static edu.ku.brc.specify.config.init.DataBuilder.createPermit;
 import static edu.ku.brc.specify.config.init.DataBuilder.createPickList;
@@ -66,7 +62,6 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createPreparation;
 import static edu.ku.brc.specify.config.init.DataBuilder.createQuery;
 import static edu.ku.brc.specify.config.init.DataBuilder.createQueryField;
 import static edu.ku.brc.specify.config.init.DataBuilder.createReferenceWork;
-import static edu.ku.brc.specify.config.init.DataBuilder.createShipment;
 import static edu.ku.brc.specify.config.init.DataBuilder.createStorage;
 import static edu.ku.brc.specify.config.init.DataBuilder.createStorageTreeDef;
 import static edu.ku.brc.specify.config.init.DataBuilder.createStorageTreeDefItem;
@@ -206,10 +201,6 @@ import edu.ku.brc.specify.datamodel.Journal;
 import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDefItem;
-import edu.ku.brc.specify.datamodel.Loan;
-import edu.ku.brc.specify.datamodel.LoanAgent;
-import edu.ku.brc.specify.datamodel.LoanPreparation;
-import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.LocalityCitation;
 import edu.ku.brc.specify.datamodel.Permit;
@@ -218,7 +209,6 @@ import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.ReferenceWork;
 import edu.ku.brc.specify.datamodel.RepositoryAgreement;
-import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.specify.datamodel.SpLocaleBase;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
@@ -1729,7 +1719,7 @@ public class BuildSampleDatabase
                                       List<Agent>       agents,
                                       Vector<Object>    dataObjects)
     {
-        if (true) return;
+        /*
         
         ////////////////////////////////
         // loans (loan agents, shipments)
@@ -1909,6 +1899,7 @@ public class BuildSampleDatabase
         overdueLoan.getShipments().add(loan2Ship);
         dataObjects.add(loan1Ship);
         dataObjects.add(loan2Ship);   
+        */
 
     }
     
@@ -5235,10 +5226,8 @@ public class BuildSampleDatabase
         Collection voucher = null;
         if (isChoosen(DisciplineType.STD_DISCIPLINES.fish, false))
         {
-            voucher = createFishCollection(disciplineType, discipline, user, userAgent, division,
-                                            taxonTreeDef, geoTreeDef, gtpTreeDef,
-                                            lithoStratTreeDef,
-                                            journal, taxa, geos, gtps, lithoStrats,
+            voucher = createFishCollection(discipline, user, userAgent, division,
+                                            journal, taxa, geos,
                                             "KUFSH", "Fish", true, false, collChoice);
         }
         
@@ -5248,10 +5237,8 @@ public class BuildSampleDatabase
         Collection tissue = null;
         if (isChoosen(DisciplineType.STD_DISCIPLINES.fish, true))
         {
-            tissue = createFishCollection(disciplineType, discipline, user, userAgent, division,
-                                            taxonTreeDef, geoTreeDef, gtpTreeDef,
-                                            lithoStratTreeDef,
-                                            journal, taxa, geos, gtps, lithoStrats,
+            tissue = createFishCollection(discipline, user, userAgent, division,
+                                            journal, taxa, geos,
                                             "KUTIS", "Fish Tissue", false, true, collChoice);
         }
         
@@ -5494,20 +5481,13 @@ public class BuildSampleDatabase
      * @return the entire list of DB object to be persisted
      */
     @SuppressWarnings("unchecked")
-    public Collection createFishCollection(final DisciplineType            disciplineType,
-                                           final Discipline                discipline,
+    public Collection createFishCollection(final Discipline                discipline,
                                            final SpecifyUser               user,
                                            final Agent                     userAgent,
                                            final Division                  division,                  
-                                           final TaxonTreeDef              taxonTreeDef,
-                                           final GeographyTreeDef          geoTreeDef,
-                                           final GeologicTimePeriodTreeDef gtpTreeDef,
-                                           final LithoStratTreeDef         lithoStratTreeDef,
                                            final Journal                   journal,
                                            final List<Object>              taxa,
                                            final List<Object>              geos,
-                                           final List<Object>              gtps,
-                                           final List<Object>              lithoStrats,
                                            final String                    colPrefix,
                                            final String                    colName,
                                            final boolean                   isVoucherCol,
@@ -8298,7 +8278,8 @@ public class BuildSampleDatabase
         boolean isColObj          = memoryContainer.getName().equals("collectionobject");
         boolean isAccession       = memoryContainer.getName().equals("accession");
         boolean isFish            = disciplineName.equals("fish");
-        boolean isUpdate          = updateType == UpdateType.eImport || updateType == UpdateType.eMerge;
+        boolean isImport          = updateType == UpdateType.eImport;
+        boolean isMerge           = updateType == UpdateType.eMerge;
 
         if (newContainer.getId() == null)
         {
@@ -8358,7 +8339,7 @@ public class BuildSampleDatabase
             //if (isColObj) System.err.println(item.getName());
             String itemSQL     = null;
             boolean okToCreate = true;
-            if (isUpdate)
+            if (isImport || isMerge)
             {
                 String sql = String.format(" FROM splocalecontainer c INNER JOIN splocalecontaineritem ci ON c.SpLocaleContainerID = ci.SpLocaleContainerID WHERE ci.Name = '%s' AND c.DisciplineID = %d AND c.SpLocaleContainerID = %d", item.getName(), disciplineId, newContainer.getId());
                 String fullSQL = "SELECT COUNT(*)" + sql;
@@ -8409,7 +8390,7 @@ public class BuildSampleDatabase
                         ex.printStackTrace();
                     }
                 }
-            } else if (itemSQL != null)
+            } else if (itemSQL != null && !isMerge)
             {
                 Integer id = BasicSQLUtils.getCount(itemSQL);
                 if (id != null)
@@ -8426,15 +8407,15 @@ public class BuildSampleDatabase
                     
                     try
                     {
-                        if (!isUpdate) session.beginTransaction();
-                        setItemStrs(dbItem.getNames(), item.getNames(), updateType, session);
-                        setItemStrs(dbItem.getDescs(), item.getDescs(), updateType, session);
+                        if (!isImport) session.beginTransaction();
+                        setItemStrs(dbItem.getNames(), item.getNames(), session);
+                        setItemStrs(dbItem.getDescs(), item.getDescs(), session);
                         session.saveOrUpdate(dbItem);
-                        if (!isUpdate) session.commit();
+                        if (!isImport) session.commit();
                         
                     } catch (Exception e)
                     {
-                        if (!isUpdate) session.rollback();
+                        if (!isImport) session.rollback();
                         
                         e.printStackTrace();
                     }
@@ -8455,13 +8436,11 @@ public class BuildSampleDatabase
     /**
      * @param dbSet
      * @param memSet
-     * @param updateType
      * @param session
      * @throws Exception
      */
     private static void setItemStrs(final Set<SpLocaleItemStr>     dbSet, 
                                     final Set<SpLocaleItemStr>     memSet,
-                                    final UpdateType               updateType,
                                     final DataProviderSessionIFace session) throws Exception
     {
         HashMap<String, SpLocaleItemStr> hash = new HashMap<String, SpLocaleItemStr>();
@@ -8474,17 +8453,8 @@ public class BuildSampleDatabase
             SpLocaleItemStr memItem = hash.get(mkKey(dbItem));
             if (memItem != null)
             {
-                if (updateType != UpdateType.eMerge)
-                {
-                    dbItem.setText(memItem.getText() != null ? memItem.getText() : "");
-                    session.saveOrUpdate(dbItem);
-                    
-                } else if (StringUtils.isEmpty(dbItem.getText()) && 
-                           StringUtils.isNotEmpty(memItem.getText()))
-                {
-                    dbItem.setText(memItem.getText());
-                    session.saveOrUpdate(dbItem);
-                }
+                dbItem.setText(memItem.getText() != null ? memItem.getText() : "");
+                session.saveOrUpdate(dbItem);
             }
         }
     }

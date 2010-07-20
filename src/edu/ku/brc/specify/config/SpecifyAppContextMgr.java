@@ -178,7 +178,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     protected Agent          currentUserAgent      = null;
 
     protected boolean        forceReloadViews      = false;
-    protected boolean        debug                 = true;
+    protected boolean        debug                 = false;
     protected long           lastLoadTime          = 0;
     protected long           lastLoadTimeBS        = 0;
     protected UnhandledExceptionDialog uheDlg      = null;
