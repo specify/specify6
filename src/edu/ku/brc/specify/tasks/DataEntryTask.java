@@ -1469,7 +1469,14 @@ public class DataEntryTask extends BaseTask
         {
             CollectionObject colObj =(CollectionObject)cmdAction.getData();
             
-            Boolean     doPrintLabel = null;
+            if (colObj.getDeterminations().size() == 0 ||
+                colObj.getPreparations().size() == 0)
+            {
+               UIRegistry.showLocalizedError("DET_NOLBL_CO");
+               return;
+            }
+            
+            Boolean doPrintLabel = null;
             
             if (!doOverride)
             {
