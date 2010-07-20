@@ -2657,14 +2657,14 @@ public class UploadTable implements Comparable<UploadTable>
                             }
                         }
                     }
-              //  }
+                }
                 if (isCurrentPresent && trueCount != 1)
                 {
                 	invalidValues.add(new UploadTableInvalidValue(null, this, anIsCurrentFld, row,
                             new Exception(
                                     getResourceString("WB_UPLOAD_ONE_CURRENT_DETERMINATION"))));
                 }
-            }
+            //}
         }
         
         if (tblClass.equals(Agent.class))
