@@ -1996,8 +1996,8 @@
       <field column="Remarks" name="remarks" type="text" length="4096" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="ShortName" name="shortName" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="SrcLatLongUnit" name="srcLatLongUnit" type="java.lang.Byte" updatable="true" required="true" unique="false" indexed="false" partialDate="false"/>
-      <field column="Text1" name="text1" type="java.lang.String" length="300" updatable="true" required="true" unique="false" indexed="false" partialDate="false"/>
-      <field column="Text2" name="text2" type="java.lang.String" length="300" updatable="true" required="true" unique="false" indexed="false" partialDate="false"/>
+      <field column="Text1" name="text1" type="java.lang.String" length="300" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="Text2" name="text2" type="java.lang.String" length="300" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" updatable="false" required="true" unique="false" indexed="false" partialDate="false"/>
       <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="VerbatimElevation" name="verbatimElevation" type="java.lang.String" length="50" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
