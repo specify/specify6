@@ -640,11 +640,12 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
             dir.spPersistedViewSets.add(vso);
         }
         
-        for (SpAppResource ar : spAppResources)
+        for (SpAppResource ar : getSpAppResources())
         {
             dir.spAppResources.add(ar);
         }
-        for (SpViewSetObj vso : spViewSets)
+    
+        for (SpViewSetObj vso : getSpViewSets())
         {
             dir.spViewSets.add(vso);
         }

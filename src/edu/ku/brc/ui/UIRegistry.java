@@ -993,6 +993,27 @@ public class UIRegistry
     {
         showLocalizedMsg(JOptionPane.WARNING_MESSAGE, titleKey, msgKey, args);
     }
+    
+    /**
+     * Asks Yes or No question using a JOptionPane
+     * @param yesKey the resource key for the Yes button
+     * @param noKey the resource key for the No button
+     * @param nonL10NMsg the message or question NOT Localized
+     * @param titleKey the resource key for the Dialog Title
+     * @return JOptionPane.NO_OPTION or JOptionPane.YES_OPTION
+     */
+    public static int askYesNoLocalized(final String yesKey, final String noKey, final String nonL10NMsg, final String titleKey)
+    {
+        int userChoice = JOptionPane.NO_OPTION;
+        Object[] options = { getResourceString(yesKey), getResourceString(noKey) };
+
+        userChoice = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
+                                                  nonL10NMsg,
+                                                     getResourceString(titleKey),
+                                                     JOptionPane.YES_NO_OPTION,
+                                                     JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        return userChoice;
+    }
 
     /**
      * Displays an error dialog with a non-localized error message.
@@ -2096,6 +2117,16 @@ public class UIRegistry
         instance.actionMap.get(PASTE).setEnabled(enable);
     }
 
+    /**
+     * @param actionClass
+     * @param owner
+     * @param name
+     * @param icon
+     * @param toolTip
+     * @param mnemonicKeyCode
+     * @param acceleratorKey
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public Action makeAction(Class actionClass,
                              Object owner,
@@ -2145,6 +2176,15 @@ public class UIRegistry
         return a;
     }
 
+    /**
+     * @param action
+     * @param name
+     * @param icon
+     * @param toolTip
+     * @param mnemonicKeyCode
+     * @param acceleratorKey
+     * @return
+     */
     public Action makeAction(Action    action,
                              String    name,
                              ImageIcon icon,

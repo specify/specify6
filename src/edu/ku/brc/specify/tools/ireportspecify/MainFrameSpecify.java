@@ -1188,7 +1188,7 @@ public class MainFrameSpecify extends MainFrame
             if (list.size() > 0)
             {
                 ChooseFromListDlg<AppResourceIFace> dlg = new ChooseFromListDlg<AppResourceIFace>(
-                        null, UIRegistry.getResourceString(REP_CHOOSE_REPORT), list);
+                        (Frame)null, UIRegistry.getResourceString(REP_CHOOSE_REPORT), list);
                 dlg.setVisible(true);
 
                 AppResourceIFace appRes = dlg.getSelectedObject();

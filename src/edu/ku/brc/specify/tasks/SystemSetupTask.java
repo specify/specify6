@@ -78,12 +78,14 @@ import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.validation.TypeSearchForQueryFactory;
 import edu.ku.brc.af.ui.weblink.WebLinkConfigDlg;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.SpecifyUserTypes.UserType;
 import edu.ku.brc.specify.config.ResourceImportExportDlg;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Institution;
@@ -94,6 +96,7 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.busrules.PickListBusRules;
 import edu.ku.brc.specify.tools.schemalocale.PickListEditorDlg;
 import edu.ku.brc.specify.tools.schemalocale.SchemaToolsDlg;
+import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
@@ -120,6 +123,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     private static final String RESIMPORTEXPORT_SECURITY = "RESIMPORTEXPORT";
     private static final String SCHEMACONFIG_SECURITY    = "SCHEMACONFIG";
     private static final String WBSCHEMACONFIG_SECURITY  = "WBSCHEMACONFIG";
+    private static final String CANCELLED                = "_Cancelled_";
     
     public static final String     SYSTEMSETUPTASK        = "SystemSetup";
     public static final DataFlavor SYSTEMSETUPTASK_FLAVOR = new DataFlavor(SystemSetupTask.class, SYSTEMSETUPTASK);
@@ -852,7 +856,34 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                                                              JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         }
         return false;
-
+    }
+    
+    protected String pickUserName()
+    {
+        String currUserName = (AppContextMgr.getInstance().getClassObject(SpecifyUser.class)).getName();
+        String postSQL      = String.format(" FROM specifyuser WHERE Name <> '%s'", currUserName);
+        
+        int count = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) "+postSQL);
+        if (count == 0)
+        {
+            return null;
+        }
+        
+        int choice = UIRegistry.askYesNoLocalized("SYSSTP_CHSE_ME", "SYSSTP_CHSE_DIF", getResourceString("SYSSTP_CHSE_USER"), "SYSSTP_CHSE_USER_TITLE");
+        if (choice == JOptionPane.YES_OPTION)
+        {
+            return null; // null means choose the current user
+        }
+        
+        Vector<Object> names = BasicSQLUtils.querySingleCol("SELECT Name " + postSQL); 
+        if (names.size() == 1)
+        {
+            return names.get(0).toString();
+        }
+        
+        ChooseFromListDlg<Object> dlg = new ChooseFromListDlg<Object>((Frame)UIRegistry.getMostRecentWindow(), "SYSSTP_CHSE_USER_TITLE", names);
+        UIHelper.centerAndShow(dlg);
+        return !dlg.isCancelled() ? dlg.getSelectedObject().toString() : CANCELLED;
     }
 
     /**
@@ -862,7 +893,26 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     {
         if (askBeforeStartingTool())
         {
-            ResourceImportExportDlg dlg = new ResourceImportExportDlg();
+            String userName = pickUserName();
+            if (userName != null && userName.equals(CANCELLED))
+            {
+                return;
+            }
+            
+            if (userName == null)
+            {
+                userName = AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getName();
+            }
+            
+            SpecifyAppContextMgr         contextMgr = new SpecifyAppContextMgr();
+            AppContextMgr.CONTEXT_STATUS status     = contextMgr.setContext(DBConnection.getInstance().getDatabaseName(), userName, true, false);
+            if (status != AppContextMgr.CONTEXT_STATUS.OK)
+            {
+                log.error("Status is bad: "+status);
+                contextMgr = null;
+            }
+            
+            ResourceImportExportDlg dlg = new ResourceImportExportDlg(contextMgr, userName);
             dlg.setVisible(true);
             if (dlg.hasChanged())
             {

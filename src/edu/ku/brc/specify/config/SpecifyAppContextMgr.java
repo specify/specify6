@@ -72,7 +72,6 @@ import edu.ku.brc.af.ui.forms.ViewSetMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.forms.persist.FormDevHelper;
-import edu.ku.brc.af.ui.forms.persist.View;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewLoader;
 import edu.ku.brc.af.ui.forms.persist.ViewSet;
@@ -114,7 +113,6 @@ import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.dbsupport.SpecifySchemaUpdateService;
 import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
 import edu.ku.brc.specify.tasks.BaseTreeTask;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
@@ -180,7 +178,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     protected Agent          currentUserAgent      = null;
 
     protected boolean        forceReloadViews      = false;
-    protected boolean        debug                 = false;
+    protected boolean        debug                 = true;
     protected long           lastLoadTime          = 0;
     protected long           lastLoadTimeBS        = 0;
     protected UnhandledExceptionDialog uheDlg      = null;
@@ -405,7 +403,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     public List<Integer> getCollectionIdList(final DataProviderSessionIFace sessionArg)
     {
         Vector<Integer> list   = new Vector<Integer>();
-        SpecifyUser     spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+        SpecifyUser     spUser = getClassObject(SpecifyUser.class);
         if (spUser != null)
         {
             sessionArg.attach(spUser);
@@ -625,7 +623,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 return null;
             }
             
-            AppContextMgr.getInstance().setClassObject(Collection.class, collection);
+            setClassObject(Collection.class, collection);
             
             String colObjStr = "CollectionObject"; //$NON-NLS-1$
             String iconName = remotePrefs.get(FormattingPrefsPanel.getDisciplineImageName(), colObjStr);
@@ -649,7 +647,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 Institution institution = discipline.getDivision().getInstitution();
                 session.attach(institution);
                 
-                AppContextMgr.getInstance().setClassObject(Institution.class, institution);
+                setClassObject(Institution.class, institution);
                 
                 if (discipline != null)
                 {
@@ -1173,7 +1171,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 user = (SpecifyUser)list.get(0);
                 user.getAgents(); // makes sure the Agent is not lazy loaded
                 session.evict( user.getAgents());
-                AppContextMgr.getInstance().setClassObject(SpecifyUser.class, user);
+                setClassObject(SpecifyUser.class, user);
                 
                 if (!startingOver)
                 {                    
@@ -1226,15 +1224,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // work with for this "Context" then we need to go get all the Default View and
             // additional XML Resources.
             
-            Collection curColl = AppContextMgr.getInstance().getClassObject(Collection.class);
+            Collection curColl = getClassObject(Collection.class);
             int prevCollectionId =  curColl != null ? curColl.getCollectionId() : -1;
             
-            Discipline curDis = AppContextMgr.getInstance().getClassObject(Discipline.class);
+            Discipline curDis = getClassObject(Discipline.class);
             int prevDisciplineId = curDis != null ? curDis.getDisciplineId() : -1;
             
             classObjHash.clear();
             
-            AppContextMgr.getInstance().setClassObject(SpecifyUser.class, user);
+            setClassObject(SpecifyUser.class, user);
 
             // Ask the User to choose which Collection they will be working with
             Collection collection = setupCurrentCollection(user, doPrompt);
@@ -1260,17 +1258,17 @@ public class SpecifyAppContextMgr extends AppContextMgr
             Discipline discipline = session.getData(Discipline.class, "disciplineId", collection.getDiscipline().getId(), DataProviderSessionIFace.CompareType.Equals) ; //$NON-NLS-1$
             discipline.forceLoad();
             
-            AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
+            setClassObject(Discipline.class, discipline);
             
             String disciplineStr = discipline.getType().toLowerCase();
             
             Division division = discipline.getDivision();
             division.forceLoad();
-            AppContextMgr.getInstance().setClassObject(Division.class, division);
+            setClassObject(Division.class, division);
             
             DataType dataType = discipline.getDataType();
             dataType.forceLoad();
-            AppContextMgr.getInstance().setClassObject(DataType.class, dataType);
+            setClassObject(DataType.class, dataType);
             
             AppPreferences.startup();
             
@@ -1501,7 +1499,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             session = openSession();
             
-            int disciplineId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
+            int disciplineId = getClassObject(Discipline.class).getDisciplineId();
             if (disciplineId != prevDisciplineId)
             {
                 SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineId, DBTableIdMgr.getInstance(), Locale.getDefault());
@@ -1514,7 +1512,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 field.setFormatter(catNumFmtr);
             }
             
-            Institution institution = AppContextMgr.getInstance().getClassObject(Institution.class);
+            Institution institution = getClassObject(Institution.class);
             if (!institution.getIsAccessionsGlobal())
             {
                 for (AutoNumberingScheme ans : collection.getNumberingSchemes())
@@ -1590,8 +1588,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     protected boolean addFormatFromFile(final String fmtFileName, final boolean isCatNum)
     {
-        Collection  coll        = AppContextMgr.getInstance().getClassObject(Collection.class);
-        Institution inst        = AppContextMgr.getInstance().getClassObject(Institution.class);
+        Collection  coll        = getClassObject(Collection.class);
+        Institution inst        = getClassObject(Institution.class);
         boolean     isAccGlobal = inst != null && inst.getIsAccessionsGlobal();
         
         String prefix  = isCatNum || !isAccGlobal ? coll.getCollectionName() : null;
@@ -2314,7 +2312,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     {
         SpAppResource appRes = new SpAppResource();
         appRes.initialize();
-        appRes.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
+        appRes.setSpecifyUser(getClassObject(SpecifyUser.class));
         
         appResDir.getSpAppResources().add(appRes);
         appRes.setSpAppResourceDir(appResDir);
@@ -2562,7 +2560,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     public PickListItemIFace getDefaultPickListItem(final String pickListName, final String title)
     {
         PickListItemIFace dObj        = null;
-        Collection        collection  = AppContextMgr.getInstance().getClassObject(Collection.class);
+        Collection        collection  = getClassObject(Collection.class);
         String            prefName    = (collection != null ? collection.getIdentityTitle() : "") + pickListName + "_DefaultId"; //$NON-NLS-1$ //$NON-NLS-2$
         AppPreferences    appPrefs    = AppPreferences.getRemote();
         String            idStr       = appPrefs.get(prefName, null);
@@ -2606,7 +2604,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     itm.getTitle();
                 }
                 list.addAll(pickList.getItems());
-                ChooseFromListDlg<PickListItemIFace> plDlg = new ChooseFromListDlg<PickListItemIFace>(null, 
+                ChooseFromListDlg<PickListItemIFace> plDlg = new ChooseFromListDlg<PickListItemIFace>((Frame)null, 
                         getLocalizedMessage("SpecifyAppContextMgr.CHS_DEF_OBJ", title), list); //$NON-NLS-1$
                 plDlg.setModal(true);
                 plDlg.setVisible(true);
@@ -2647,7 +2645,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                              final boolean ask, 
                                              boolean useAllItems)
     {
-        Collection       collection  = AppContextMgr.getInstance().getClassObject(Collection.class);
+        Collection       collection  = getClassObject(Collection.class);
         FormDataObjIFace dObj        = null;
         String           prefName    = (collection != null ? collection.getIdentityTitle() : "") + prefPrefix + "_DefaultId"; //$NON-NLS-1$ //$NON-NLS-2$
         AppPreferences   appPrefs    = AppPreferences.getRemote();
@@ -2690,7 +2688,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 if (items != null)
                 {
                     
-                    ChooseFromListDlg<Item> colDlg = new ChooseFromListDlg<Item>(null, title, items);
+                    ChooseFromListDlg<Item> colDlg = new ChooseFromListDlg<Item>((Frame)null, title, items);
                     colDlg.setModal(true);
                     colDlg.setVisible(true);
                     if (!colDlg.isCancelled())
@@ -2776,7 +2774,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         sb.append(sdf.format(Calendar.getInstance().getTime())+"\n"); //$NON-NLS-1$
         sb.append(Specify.getSpecify().getAppBuildVersion()+"\n"); //$NON-NLS-1$
         
-        SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+        SpecifyUser spUser = getClassObject(SpecifyUser.class);
         if (spUser != null)
         {
             sb.append(spUser.toString() + "\n"); //$NON-NLS-1$
@@ -2805,7 +2803,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         }
 
-        Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+        Collection collection = getClassObject(Collection.class);
         if (collection != null)
         {
             sb.append(collection.toString() + "\n"); //$NON-NLS-1$
@@ -2980,7 +2978,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         sb.append("SELECT specifyuser.SpecifyUserID from specifyuser ");
         sb.append(" WHERE specifyuser.IsLoggedIn <> 0 and loginDisciplineName = '" + discipline.getName() + "'");
         
-        SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+        SpecifyUser spUser = getClassObject(SpecifyUser.class);
         sb.append(" AND specifyuser.SpecifyUserID <> " + spUser.getId());
         
         Vector<Integer>  ids    = new Vector<Integer>();

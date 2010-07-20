@@ -23,6 +23,7 @@ import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -194,7 +195,6 @@ public class ChooseFromListDlg<T> extends JDialog
         {
             setIconImage(appIcon.getImage());
         }
-
     }
 
     /**
@@ -262,6 +262,61 @@ public class ChooseFromListDlg<T> extends JDialog
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param frame parent frame
+     * @param title the title of the dialog
+     * @param desc
+     * @param itemList the list to be selected from
+     * @param whichBtns mask describing which buttons to create
+     * @param helpContext  help context identifier
+     * @throws HeadlessException
+     */
+    public ChooseFromListDlg(final Dialog   dlg, 
+                             final String  title, 
+                             final String  desc,
+                             final int     whichBtns,
+                             final List<T> itemList,
+                             final String  helpContext) throws HeadlessException
+    {
+        super(dlg, true);
+
+        this.title       = title;
+        this.desc        = desc;
+        this.items       = itemList;
+        this.whichBtns   = whichBtns;
+        this.helpContext = helpContext;
+
+        setLocationRelativeTo(dlg);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        
+        ImageIcon appIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
+        if (appIcon != null)
+        {
+            setIconImage(appIcon.getImage());
+        }
+    }
+    
+
+    /**
+     * Constructor.
+     * 
+     * @param frame parent frame
+     * @param title the title of the dialog
+     * @param desc
+     * @param itemList the list to be selected from
+     * @param whichBtns mask describing which buttons to create
+     * @param helpContext  help context identifier
+     * @throws HeadlessException
+     */
+    public ChooseFromListDlg(final Dialog   dlg, 
+                             final String  title, 
+                             final List<T> itemList) throws HeadlessException
+    {
+        this(dlg, title, null, OKCANCEL, itemList, null);
+    }
+    
     /**
      * Create the UI for the dialog.
      * 

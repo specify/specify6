@@ -112,6 +112,7 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.PromptDlg;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -126,6 +127,9 @@ import edu.ku.brc.util.Pair;
 public class ResourceImportExportDlg extends CustomDialog
 {
     protected static final Logger  log = Logger.getLogger(ResourceImportExportDlg.class);
+    
+    private   SpecifyAppContextMgr   contextMgr;
+    private   String                 userName;
     
     protected JComboBox              levelCBX;
     protected JList                  viewSetsList;
@@ -158,7 +162,7 @@ public class ResourceImportExportDlg extends CustomDialog
     /**
      * @throws HeadlessException
      */
-    public ResourceImportExportDlg() throws HeadlessException
+    public ResourceImportExportDlg(final SpecifyAppContextMgr contextMgr, final String userName) throws HeadlessException
     {
         super((Frame)getTopWindow(), 
                 getResourceString("RIE_TITLE"), 
@@ -166,6 +170,9 @@ public class ResourceImportExportDlg extends CustomDialog
                 OKHELP,
                 null);
         okLabel = getResourceString("CLOSE");
+        
+        this.contextMgr = contextMgr == null ? (SpecifyAppContextMgr)AppContextMgr.getInstance() : contextMgr;
+        this.userName   = userName;
     }
     
     /**
@@ -225,8 +232,7 @@ public class ResourceImportExportDlg extends CustomDialog
         {
             session = DataProviderFactory.getInstance().createSession();
             
-            SpecifyAppContextMgr context = (SpecifyAppContextMgr)AppContextMgr.getInstance();
-            for (SpAppResourceDir curDir : context.getSpAppResourceList())
+            for (SpAppResourceDir curDir : contextMgr.getSpAppResourceList())
             {
                 SpAppResourceDir dir;
                 if (curDir.getId() != null)
@@ -269,8 +275,9 @@ public class ResourceImportExportDlg extends CustomDialog
             }
         }
         
-        PanelBuilder  centerPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p"));
-        centerPB.add(levelCBX, cc.xy(2,1));
+        PanelBuilder  centerPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p,10px,p"));
+        centerPB.add(createLabel(UIRegistry.getLocalizedMessage("RIE_USR_LBL", userName)), cc.xy(2,1));
+        centerPB.add(levelCBX, cc.xy(2,3));
 
         tabbedPane = new JTabbedPane();
         
@@ -461,7 +468,7 @@ public class ResourceImportExportDlg extends CustomDialog
             levelIndex = viewSetsList.getSelectedIndex();
             if (levelIndex > -1)
             {
-                List<ViewSetIFace> vsList = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getViewSetList(dir);
+                List<ViewSetIFace> vsList = contextMgr.getViewSetList(dir);
                 if (vsList != null && levelIndex < vsList.size())
                 {
                     ViewSetIFace vs = vsList.get(levelIndex);
@@ -566,7 +573,7 @@ public class ResourceImportExportDlg extends CustomDialog
                     if (index > -1)
                     {
                         viewSetsModel.remove(index);
-                        ((SpecifyAppContextMgr)AppContextMgr.getInstance()).revertViewSet(virtualDirName, vso.getName());
+                        contextMgr.revertViewSet(virtualDirName, vso.getName());
                         setHasChanged(true);
                     }
                 }
@@ -580,7 +587,7 @@ public class ResourceImportExportDlg extends CustomDialog
             	{
             		AppResourceIFace appRes = (AppResourceIFace)theList.getSelectedValue(); 
                 
-            		AppResourceIFace revertedNewAR = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).revertResource(virtualDirName, appRes);
+            		AppResourceIFace revertedNewAR = contextMgr.revertResource(virtualDirName, appRes);
                 
             		setHasChanged(true);
                 
@@ -1357,7 +1364,7 @@ public class ResourceImportExportDlg extends CustomDialog
                                             //XXX ???????????
                                             if (fndAppRes.getSpAppResourceId() != null)
                                             {
-                                                ((SpecifyAppContextMgr) AppContextMgr.getInstance()).removeAppResourceSp(fndAppRes.getSpAppResourceDir(), fndAppRes);
+                                                contextMgr.removeAppResourceSp(fndAppRes.getSpAppResourceDir(), fndAppRes);
                                             }
                                         }
                                     } /*else if (newResName == null)
@@ -1410,7 +1417,7 @@ public class ResourceImportExportDlg extends CustomDialog
                                     dir.getSpAppResources().add(appRes);
 
                                     appRes.setDataAsString(data);
-                                    ((SpecifyAppContextMgr) AppContextMgr.getInstance()).saveResource(appRes);
+                                    contextMgr.saveResource(appRes);
                                 }
                                 setHasChanged(true);
 
@@ -1440,7 +1447,7 @@ public class ResourceImportExportDlg extends CustomDialog
                             if (doOverwrite)
                             {
                                 appRes.setDataAsString(data);
-                                ((SpecifyAppContextMgr) AppContextMgr.getInstance()).saveResource(appRes);
+                                contextMgr.saveResource(appRes);
                             }
                         }
                     }
