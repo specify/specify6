@@ -341,7 +341,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     /**
      * @return the text1
      */
-    @Column(name = "Text1", length = 64)
+    @Column(name = "Text1", length = 128)
     public String getText1()
     {
         return text1;
@@ -358,7 +358,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     /**
      * @return the text2
      */
-    @Column(name = "Text2", length = 64)
+    @Column(name = "Text2", length = 128)
     public String getText2()
     {
         return text2;
