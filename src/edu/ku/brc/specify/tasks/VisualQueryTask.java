@@ -120,7 +120,7 @@ public class VisualQueryTask extends BaseTask
                 session = DataProviderFactory.getInstance().createSession();
                 visQueryNavBox = new NavBox(title);
                 
-                List<?> visSearches = session.getDataList(InfoRequest.class);
+                List<?> visSearches = session.getDataList(SpVisualQuery.class);
                 for (Iterator<?> iter=visSearches.iterator();iter.hasNext();)
                 {
                     addVisQuery((SpVisualQuery)iter.next());
@@ -130,10 +130,10 @@ public class VisualQueryTask extends BaseTask
                 
             } catch (Exception ex)
             {
+                ex.printStackTrace();
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InfoRequestTask.class, ex);
                 log.error(ex);
-                ex.printStackTrace();
                 
             } finally
             {
