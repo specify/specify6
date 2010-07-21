@@ -25,10 +25,10 @@ import java.sql.Timestamp;
 import java.util.Random;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
-import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.PickList;
@@ -200,6 +200,117 @@ public class ConvertMiscData
     /**
      * @param oldDBConn
      * @param newDBConn
+     */
+    public static void moveStratFieldsToCEA(final Connection oldDBConn, final Connection newDBConn)
+    {
+        String  sql = null;
+        try
+        {
+            IdMapperIFace ceMapper = IdMapperMgr.getInstance().addTableMapper("collectingevent", "CollectingEventID", false);
+            
+            String postFix = " FROM collectingevent ce Inner Join collectingeventattribute AS cea ON ce.CollectingEventAttributeID = cea.CollectingEventAttributeID ";
+
+            /*
+                Specify 5 Field ----------> Specify 6 Field
+                Stratigraphy.superGroup --> CEA.text3
+                Stratigraphy.group      --> CEA.text4
+                Stratigraphy.formation  --> CEA.text5
+                Stratigraphy.text1      --> CEA.text1
+                Stratigraphy.number1    --> CEA.number1
+                Stratigraphy.text2      --> CEA.text2
+             */
+            
+            Timestamp now = new Timestamp(System .currentTimeMillis());
+            PreparedStatement pStmt = newDBConn.prepareStatement("UPDATE collectingeventattribute SET Text1=?, Text2=?, Text3=?, Text4=?, Text5=?, Number1=? WHERE CollectingEventAttributeID=?");
+            
+            PreparedStatement pStmt2 = newDBConn.prepareStatement("INSERT INTO collectingeventattribute SET Text1=?, Text2=?, Text3=?, Text4=?, Text5=?, Number1=?, Version=0, DisciplineID=?, TimestampCreated=?, TimestampModified=?");
+            PreparedStatement pStmt3 = newDBConn.prepareStatement("UPDATE collectingevent SET CollectingEventAttributeID=? WHERE CollectingEventID=?");
+            
+            int cnt = 0;
+            // Query to Create PickList
+            sql = "SELECT StratigraphyID, Text1, Text2, SuperGroup, `Group`, Formation, Number1 FROM stratigraphy";
+            for (Object[] row : BasicSQLUtils.query(oldDBConn, sql))
+            {
+                Integer id      = (Integer)row[0];
+                Integer newCEId = ceMapper.get(id);
+                if (newCEId != null)
+                {
+                    Vector<Object[]> colList = BasicSQLUtils.query("SELECT DisciplineID, CollectingEventAttributeID FROM collectingevent WHERE CollectingEventID = "+ newCEId);
+                    Object[]         cols    = colList.get(0);
+                    
+                    if (cols[1] != null)
+                    {
+                        pStmt.setString(1, (String)row[1]);
+                        pStmt.setString(2, (String)row[2]);
+                        pStmt.setString(3, (String)row[3]);
+                        pStmt.setString(4, (String)row[4]);
+                        pStmt.setString(5, (String)row[5]);
+                        pStmt.setString(6, (String)row[6]);
+                        pStmt.setInt(7,    newCEId);
+                        
+                        int rv = pStmt.executeUpdate();
+                        if (rv != 1)
+                        {
+                            log.error(String.format("Error updating CEA New Id %d  Old: %d  rv: %d", newCEId, id, rv));
+                        }
+                    } else
+                    {
+                        Integer disciplineID = (Integer)cols[0];
+                        pStmt2.setString(1, (String)row[1]);
+                        pStmt2.setString(2, (String)row[2]);
+                        pStmt2.setString(3, (String)row[3]);
+                        pStmt2.setString(4, (String)row[4]);
+                        pStmt2.setString(5, (String)row[5]);
+                        pStmt2.setString(6, (String)row[6]);
+                        pStmt2.setInt(7, disciplineID);
+                        pStmt2.setTimestamp(8, now);
+                        pStmt2.setTimestamp(9, now);
+                        
+                        int rv = pStmt2.executeUpdate();
+                        if (rv == 1)
+                        {
+                            Integer newCEAId = BasicSQLUtils.getInsertedId(pStmt2);
+                            if (newCEAId != null)
+                            {
+                                pStmt3.setInt(1,    newCEAId);
+                                pStmt3.setInt(2,    newCEId);
+                                rv = pStmt3.executeUpdate();
+                                if (rv != 1)
+                                {
+                                    log.error(String.format("Error updating CEA New Id %d To CE ID: %d", newCEAId, newCEId));
+                                }
+                            } else
+                            {
+                                log.error("Couldn't get inserted CEAId");
+                            }
+                            
+                        } else
+                        {
+                            log.error(String.format("Error updating CEA New Id %d  Old: %d  rv: %d", newCEId, id, rv));
+                        } 
+                    }
+                } else
+                {
+                    log.error(String.format("No Map for Old CE Id %d", id));
+                }
+                cnt++;
+                if (cnt % 500 == 0)
+                {
+                    log.debug("Count "+ cnt);
+                }
+            }
+            log.debug("Count "+ cnt);
+            pStmt.close();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+    
+    /**
+     * @param oldDBConn
+     * @param newDBConn
      * @param disciplineID
      */
     public static int getNewRecId(final Connection oldDBConn, final String tblName, String idName)
@@ -244,15 +355,23 @@ public class ConvertMiscData
             
             BasicSQLUtils.update(oldDBConn, sqlCreate);
 
-            String sql = "SELECT ce.CollectingEventID, h.HabitatID, s.StratigraphyID, h.Text1, h.Text2, h.Text3, h.Text4, h.Text5, h.TimestampCreated, h.TimestampModified " +
-                         "FROM collectingevent AS ce " +
-                         "Left Join habitat AS h ON ce.CollectingEventID = h.HabitatID " +
-                         "Left Join stratigraphy AS s ON ce.CollectingEventID = s.StratigraphyID " +
-                         "WHERE h.Text1 IS NOT NULL OR h.Text2 IS NOT NULL OR h.Text3 IS NOT NULL OR h.Text4 IS NOT NULL OR h.Text5 IS NOT NULL";
+            String post = " FROM collectingevent AS ce " +
+                            "Left Join habitat AS h ON ce.CollectingEventID = h.HabitatID " +
+                            "Left Join stratigraphy AS s ON ce.CollectingEventID = s.StratigraphyID " +
+                            "WHERE h.Text1 IS NOT NULL OR h.Text2 IS NOT NULL OR h.Text3 IS NOT NULL OR h.Text4 IS NOT NULL OR h.Text5 IS NOT NULL";
+
+
+            String sql = "SELECT ce.CollectingEventID, h.HabitatID, s.StratigraphyID, h.Text1, h.Text2, h.Text3, h.Text4, h.Text5, h.TimestampCreated, h.TimestampModified " +post;
             
+            String cntSQL = "SELECT COUNT(*) " + post;
+            int    habCnt = BasicSQLUtils.getCountAsInt(oldDBConn, cntSQL);
+            
+            log.debug("****** Startigraphy Count: "+habCnt);
+
             //Timestamp now = new Timestamp(System .currentTimeMillis());
             pStmt1 = oldDBConn.prepareStatement("INSERT INTO stratigraphy2 (StratigraphyID, SuperGroup, `Group`, Formation, Member, Bed, TimestampCreated, TimestampModified) VALUES(?,?,?,?,?,?,?,?)");
             
+            int cnt = 0;
             Vector<Object[]> rows = BasicSQLUtils.query(oldDBConn, sql);
             for (Object[] row : rows)
             {
@@ -267,7 +386,22 @@ public class ConvertMiscData
                 Timestamp crTS      = (Timestamp)row[8];      
                 Timestamp mdTS      = (Timestamp)row[9];      
                 
-                if (hbID != null && stID == null)
+                if (StringUtils.isNotEmpty(superGrp))
+                {
+                   if (superGrp.length() > 50)   
+                   {
+                       superGrp = superGrp.substring(0, 50);
+                   }
+                }
+                if (StringUtils.isNotEmpty(bed))
+                {
+                   if (bed.length() > 50)   
+                   {
+                       bed = bed.substring(0, 50);
+                   }
+                }
+                //if (hbID != null && stID == null)
+                if (ceID != null)
                 {
                     pStmt1.setInt(1, ceID);//getNewRecId(oldDBConn, "stratigraphy", "StratigraphyID"));
                     pStmt1.setString(2, superGrp);
@@ -278,6 +412,11 @@ public class ConvertMiscData
                     pStmt1.setTimestamp(7, crTS);
                     pStmt1.setTimestamp(8, mdTS);
                     pStmt1.execute();
+                    cnt++;
+                    if (cnt % 100 == 0)
+                    {
+                        log.debug(cnt + " / " + habCnt);
+                    }
                 }
             }
             return true;

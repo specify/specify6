@@ -32,8 +32,6 @@ import java.util.Vector;
 
 import javax.swing.table.DefaultTableModel;
 
-import mondrian.olap.MondrianDef.Row;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Transaction;

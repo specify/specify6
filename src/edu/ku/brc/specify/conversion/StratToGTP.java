@@ -107,11 +107,9 @@ public class StratToGTP
         localSession.saveOrUpdate(geoLogTmTreeDef);
         
                                       earth     = createGeologicTimePeriodTreeDefItem(geoLogTmTreeDef, "Surface", 0, false);
-        GeologicTimePeriodTreeDefItem superGrp  = createGeologicTimePeriodTreeDefItem(earth,           "Era",      100, false);
-        GeologicTimePeriodTreeDefItem lithoGrp  = createGeologicTimePeriodTreeDefItem(superGrp,        "Period",   200, false);
-        GeologicTimePeriodTreeDefItem formation = createGeologicTimePeriodTreeDefItem(lithoGrp,        "Epoch",    300, false);
-        GeologicTimePeriodTreeDefItem member    = createGeologicTimePeriodTreeDefItem(formation,       "Age",      400, false);
-                                                  createGeologicTimePeriodTreeDefItem(member,          "Post-Age", 500, true);
+        GeologicTimePeriodTreeDefItem superGrp  = createGeologicTimePeriodTreeDefItem(earth,           "Period",  100, false);
+        GeologicTimePeriodTreeDefItem lithoGrp  = createGeologicTimePeriodTreeDefItem(superGrp,        "Epoch",   200, false);
+                                                  createGeologicTimePeriodTreeDefItem(lithoGrp,        "Age",     300, false);
         localSession.saveOrUpdate(earth);
         
         // setup the root Geography record (planet Earth)
@@ -171,7 +169,8 @@ public class StratToGTP
             IdMapperIFace ceMapper = IdMapperMgr.getInstance().get("collectingevent", "CollectingEventID");
 
             // get all of the old records
-            String sql  = "SELECT s.StratigraphyID, s.SuperGroup, s.Group, s.Formation, s.Member, s.Bed FROM stratigraphy s ORDER BY s.StratigraphyID";
+            //  Future GTP                           Period      ------ Epoch -------     Age     GUID    Text1   Text2     Remarks
+            String sql  = "SELECT s.StratigraphyID, s.SuperGroup, s.Group, s.Formation, s.Member, s.Bed, s.Text1, s.Text2, s.Remarks FROM stratigraphy s ORDER BY s.StratigraphyID";
             
             stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             rs   = stmt.executeQuery(sql);
@@ -198,10 +197,37 @@ public class StratToGTP
                 String lithoGroup = rs.getString(3);
                 String formation  = rs.getString(4);
                 String member     = rs.getString(5);
-                String bed        = rs.getString(6);
+                
+                String guid       = rs.getString(6);
+                String text1      = rs.getString(7);
+                String text2      = rs.getString(8);
+                String remarks    = rs.getString(9);
+                
+                if (StringUtils.isNotEmpty(text2) && text2.length() > 128)
+                {
+                    remarks += "; " + text2;
+                    text2    = text2.substring(0, 128);
+                }
+                
+                if (StringUtils.isNotEmpty(formation))
+                {
+                    if (StringUtils.isNotEmpty(lithoGroup))
+                    {
+                        lithoGroup += ' ' + formation;
+                        
+                    } else
+                    {
+                        lithoGroup = formation;
+                    }
+                }
+                
+                if (StringUtils.isEmpty(lithoGroup))
+                {
+                    lithoGroup = "(Empty)";
+                }
                 
                 // create a new Geography object from the old data
-                GeologicTimePeriod newStrat = convertOldStratRecord(superGroup, lithoGroup, formation, member, bed, earthNode, localSession);
+                GeologicTimePeriod newStrat = convertOldStratRecord(superGroup, lithoGroup, member, guid, text1, text2, remarks, earthNode, localSession);
     
                 counter++;
     
@@ -412,13 +438,6 @@ public class StratToGTP
 
     /**
      * @param nameArg
-     * @param remarks
-     * @param text1
-     * @param text2
-     * @param number1
-     * @param number2
-     * @param yesNo1
-     * @param yesNo2
      * @param parentArg
      * @param sessionArg
      * @return
@@ -481,13 +500,15 @@ public class StratToGTP
      */
     private GeologicTimePeriod convertOldStratRecord(final String     superGroup,
                                                      final String     lithoGroup,
-                                                     final String     formation,
                                                      final String     member,
-                                                     final String     bed,
+                                                     final String     guid, 
+                                                     final String     text1, 
+                                                     final String     text2, 
+                                                     final String     remarks,
                                                      final GeologicTimePeriod stratRoot,
                                                      final Session    localSession)
     {
-        String levelNames[] = { superGroup, lithoGroup, formation, member, bed };
+        String levelNames[] = { superGroup, lithoGroup, member};
         int levelsToBuild = 0;
         for (int i = levelNames.length; i > 0; --i)
         {
@@ -510,6 +531,15 @@ public class StratToGTP
         for (int i = 0; i < levelsToBuild; ++i)
         {
             GeologicTimePeriod newLevelStrat = buildGeologicTimePeriodLevel(levelNames[i], prevLevelGeo, localSession);
+            newLevelStrat.setGuid(guid);
+            newLevelStrat.setText1(text1);
+            newLevelStrat.setText2(text2);
+            newLevelStrat.setRemarks(remarks);
+            
+            if (localSession != null)
+            {
+                localSession.save(newLevelStrat);
+            }
             prevLevelGeo = newLevelStrat;
         }
 

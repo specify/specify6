@@ -29,7 +29,6 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.specify.conversion.TableWriter;
 import edu.ku.brc.ui.ProgressFrame;
 
 

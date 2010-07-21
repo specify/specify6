@@ -616,11 +616,11 @@ public class SpecifyDBConverter extends AppBase
             IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
             DuplicateCollectingEvents dce = new DuplicateCollectingEvents(oldDBConn, newDBConn);
             //dce.performMaint(true);
-            dce.fixCollectorsForCollectingEvents();
+            dce.fixCollectorsForCollectingEvents2();
             //dce.removeUnneededCEs();
             return;
         }
-
+        
         if (!System.getProperty("user.name").equals("rods"))
         {
             OldDBStatsDlg dlg = new OldDBStatsDlg(oldDBConn);
@@ -651,6 +651,9 @@ public class SpecifyDBConverter extends AppBase
             return;
         }*/
         
+        
+        //ConvertMiscData.moveHabitatToStratSp5(oldDBConn);
+
         boolean doFix2 = false;
         if (doFix2)
         {
@@ -688,6 +691,16 @@ public class SpecifyDBConverter extends AppBase
             IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
             AgentConverter agentConverter = new AgentConverter(conversion, IdMapperMgr.getInstance(), false);
             agentConverter.fixMissingAddrsFromConv();
+            oldDBConn.close();
+            newDBConn.close();
+            return;
+        }
+        
+        boolean doFix4 = false;
+        if (doFix4)        
+        {
+            IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
+            ConvertMiscData.moveStratFieldsToCEA(oldDBConn, newDBConn);
             oldDBConn.close();
             newDBConn.close();
             return;
@@ -834,13 +847,6 @@ public class SpecifyDBConverter extends AppBase
                     addStorageTreeFomrXML(true);
                     return;
                 }*/
-                
-                if (true)
-                {
-                    AgentConverter agentConverter = new AgentConverter(conversion, idMapperMgr, startfromScratch);
-                    agentConverter.fixMissingAddrsFromConv();
-                    return;
-                }
                 
                 //---------------------------------------------------------------------------------------
                 //-- Create basic set of information.
@@ -1002,6 +1008,11 @@ public class SpecifyDBConverter extends AppBase
                 }
                 frame.incOverall();
                 
+                
+                TableWriter gtpTblWriter = convLogger.getWriter("GTP.html", "Geologic Time Period");
+                StratToGTP  stratToGTP   = null;//new StratToGTP(oldDBConn, newDBConn, dbNameDest, gtpTblWriter);
+
+                
                 frame.setDesc("Converting Geography");
                 log.info("Converting Geography");
                 boolean doGeography = doAll;
@@ -1009,12 +1020,8 @@ public class SpecifyDBConverter extends AppBase
                 {
                     GeographyTreeDef treeDef = conversion.createStandardGeographyDefinitionAndItems(true);
                     conversion.convertGeography(treeDef, null, true);
-                    frame.incOverall();
-                    
-                } else
-                {
-                    frame.incOverall();
                 }
+                frame.incOverall();
 
                 frame.setDesc("Converting Geologic Time Period.");
                 log.info("Converting Geologic Time Period.");
@@ -1023,9 +1030,15 @@ public class SpecifyDBConverter extends AppBase
                 boolean doGTP = doAll;
                 if (doGTP)
                 {
-                    TableWriter tblWriter = convLogger.getWriter("GTP.html", "Geologic Time Period");
-                    GeologicTimePeriodTreeDef treeDef = conversion.convertGTPDefAndItems(conversion.isPaleo());
-                    conversion.convertGTP(tblWriter, treeDef, conversion.isPaleo());
+                    if (stratToGTP != null)
+                    {
+                        stratToGTP.createTreeDef();
+                        
+                    } else
+                    {
+                        GeologicTimePeriodTreeDef treeDef = conversion.convertGTPDefAndItems(conversion.isPaleo());
+                        conversion.convertGTP(gtpTblWriter, treeDef, conversion.isPaleo());
+                    }
                 } else
                 {
                     idMapperMgr.addTableMapper("geologictimeperiod", "GeologicTimePeriodID");
@@ -1285,6 +1298,11 @@ public class SpecifyDBConverter extends AppBase
                     }
 
                     //checkDisciplines();
+                    
+                    if (stratToGTP != null)
+                    {
+                        stratToGTP.convertStratToGTP();
+                    }
 
                     division    = dscp.getDivision();
                     localSession.lock(division, LockMode.NONE);
