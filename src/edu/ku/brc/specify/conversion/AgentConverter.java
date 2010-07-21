@@ -606,8 +606,8 @@ public class AgentConverter
                     pStmt.setString(7,    rs.getString(37));
                     pStmt.setString(8,    rs.getString(38));
                     pStmt.setTimestamp(9, rs.getTimestamp(40));
-                    pStmt.setByte(10,     rs.getByte(17));
-                    pStmt.setByte(11,     rs.getByte(17));
+                    pStmt.setBoolean(10,  rs.getByte(17) != 0);
+                    pStmt.setBoolean(11,  rs.getByte(17) != 0);
                     pStmt.setString(12,   rs.getString(7));
                     pStmt.setString(13,   rs.getString(8));
                     pStmt.setString(14,   rs.getString(9));
