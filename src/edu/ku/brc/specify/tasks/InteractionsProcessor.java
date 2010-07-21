@@ -199,7 +199,10 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                     
                 } else if (rv == ASK_TYPE.Cancel)
                 {
-                    viewable.setNewObject(null);
+                    if (viewable != null)
+                    {
+                        viewable.setNewObject(null);
+                    }
                     return;
                 }
             }
