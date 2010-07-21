@@ -244,7 +244,7 @@ public class AdminInfoSubPanelWrapper
         }
         
         Agent uiAgent = (Agent)(agentCBX != null ? agentCBX.getValue() : null);
-        if (uiAgent == null)
+        if (agentCBX != null && uiAgent == null)
         {
             UIRegistry.showError("There is no agent selected in the QueryCombobox!"); // I18N ???
             return;
@@ -262,7 +262,6 @@ public class AdminInfoSubPanelWrapper
             user = (SpecifyUser)obj;
             
             busRules.beforeMerge(user, session);
-            
             
             // Get All the Agent Ids for this discipline.
             String sql = "SELECT a.AgentID FROM discipline d INNER JOIN agent_discipline ad ON d.UserGroupScopeId = ad.DisciplineID " +
