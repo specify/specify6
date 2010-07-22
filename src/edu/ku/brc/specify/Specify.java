@@ -1917,7 +1917,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         AppContextMgr acm        = AppContextMgr.getInstance();
         boolean       hasContext = acm.hasContext();
         
-        int baseNumRows = 9;
+        int baseNumRows = 11;
         String serverName = AppPreferences.getLocalPrefs().get("login.servers_selected", null);
         if (serverName != null)
         {
@@ -1976,6 +1976,14 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             
             infoPB.add(UIHelper.createI18NFormLabel("Specify.BLD"), cc.xy(1, y));
             infoPB.add(UIHelper.createLabel(appBuildVersion),cc.xy(3, y)); y += 2;
+            
+            UIRegistry.loadAndPushResourceBundle("bld");
+            infoPB.add(UIHelper.createFormLabel("SVN"), cc.xy(1, y));
+            infoPB.add(UIHelper.createLabel(getResourceString("build")),cc.xy(3, y)); y += 2;
+            
+            infoPB.add(UIHelper.createI18NFormLabel("Specify.BLD_TM"), cc.xy(1, y));
+            infoPB.add(UIHelper.createLabel(getResourceString("buildtime")),cc.xy(3, y)); y += 2;
+            UIRegistry.popResourceBundle();
             
             infoPB.add(UIHelper.createI18NFormLabel("Specify.REG"), cc.xy(1, y));
             infoPB.add(UIHelper.createI18NLabel(hasReged ? "Specify.HASREG" : "Specify.NOTREG"),cc.xy(3, y)); y += 2;
