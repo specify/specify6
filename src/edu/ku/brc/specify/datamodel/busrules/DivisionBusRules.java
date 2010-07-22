@@ -49,7 +49,6 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.init.SpecifyDBSetupWizard;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -267,7 +266,6 @@ public class DivisionBusRules extends BaseBusRules implements CommandListener
                     Institution    inst           = (Institution)formViewObj.getMVParent().getMultiViewParent().getData(); 
                     Institution    institution         = hSession.get(Institution.class, inst.getId());
                     SpecifyUser    specifyAdminUser = (SpecifyUser)acm.getClassObject(SpecifyUser.class);
-                    Agent          userAgent        = (Agent)hSession.getData("FROM Agent WHERE id = "+Agent.getUserAgent().getId());
                     Properties     props            = wizardPanel.getProps();
                     
                     institution      = (Institution)session.merge(institution);
@@ -426,23 +424,23 @@ public class DivisionBusRules extends BaseBusRules implements CommandListener
         
         if (deletable != null)
         {
-            Institution division = (Institution)dataObj;
+            Division division = (Division)dataObj;
             
             Integer id = division.getId();
             if (id != null)
             {
-                Institution currInstitution = AppContextMgr.getInstance().getClassObject(Institution.class);
-                if (currInstitution.getId().equals(division.getId()))
+                Division currDiv = AppContextMgr.getInstance().getClassObject(Division.class);
+                if (currDiv.getId().equals(division.getId()))
                 {
-                    UIRegistry.showError("You cannot delete the current Institution."); // I18N
+                    UIRegistry.showError("You cannot delete the current Division."); // I18N
                     
                 } else
                 {
-                    String sql = "SELECT count(*) FROM agent a WHERE a.InstitutionID = " + division.getId();
+                    String sql = "SELECT count(*) FROM agent a WHERE a.DivisionID = " + division.getId();
                     int count = BasicSQLUtils.getCount(sql);
                     if (count > 0)
                     {
-                        UIRegistry.showError(String.format("There are too many agents associated with this the `%s` Institution.", division.getName())); // I18N
+                        UIRegistry.showError(String.format("There are too many agents associated with this the `%s` Division.", division.getName())); // I18N
                     } else
                     {
                         try
@@ -510,12 +508,12 @@ public class DivisionBusRules extends BaseBusRules implements CommandListener
     @Override
     public void doCommand(final CommandAction cmdAction)
     {
-        if (cmdAction.isAction("InstitutionSaved"))
+        if (cmdAction.isAction("DivisionSaved"))
         {
-            Division divsion = (Division)cmdAction.getData();
-            formViewObj.getMVParent().getMultiViewParent().setData(divsion);
+            Division division = (Division)cmdAction.getData();
+            formViewObj.getMVParent().getMultiViewParent().setData(division);
             
-        } else if (cmdAction.isAction("InstitutionError"))
+        } else if (cmdAction.isAction("DivisionError"))
         {
         }
         
