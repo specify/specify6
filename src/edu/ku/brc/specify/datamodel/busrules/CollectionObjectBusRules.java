@@ -462,6 +462,16 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     {
         setLSID((FormDataObjIFace)dataObj);
 
+        if (formViewObj != null && formViewObj.isEditing())
+        {
+            Component comp = formViewObj.getControlByName("generateLabelChk");
+            if (comp instanceof JCheckBox && ((JCheckBox)comp).isSelected())
+            {
+                CommandAction cmdAction = new CommandAction("Data_Entry", "PrintColObjLabel", formViewObj.getDataObj());
+                CommandDispatcher.dispatch(cmdAction);
+            }
+        }
+
         return super.afterSaveCommit(dataObj, session);
     }
 

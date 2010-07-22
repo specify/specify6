@@ -1452,7 +1452,7 @@ public class DataEntryTask extends BaseTask
             }
         } else if (cmdAction.isAction("SaveBeforeSetData"))
         {
-            checkToPrintLabel(cmdAction, false);
+            //checkToPrintLabel(cmdAction, false);
             
         } else if (cmdAction.isAction("PrintColObjLabel"))
         {
