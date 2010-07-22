@@ -57,6 +57,7 @@ import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.UserGroupScope;
 import edu.ku.brc.specify.datamodel.busrules.SpecifyUserBusRules;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -761,12 +762,26 @@ public class NavigationTreeMgr
      */
     public DefaultMutableTreeNode addExistingUser(final DefaultMutableTreeNode grpNode) 
     {
-        Discipline discipline = getParentOfClass(grpNode, Discipline.class);
         
-        DataModelObjBaseWrapper wrp       = (DataModelObjBaseWrapper) grpNode.getUserObject();
+        DataModelObjBaseWrapper wrp        = (DataModelObjBaseWrapper)grpNode.getUserObject();
+        DefaultMutableTreeNode  parentNode = (DefaultMutableTreeNode)grpNode.getParent();
+        
+        ArrayList<SpPrincipal> groups = new ArrayList<SpPrincipal>();
+        for (int i=0;i<parentNode.getChildCount();i++)
+        {
+            DefaultMutableTreeNode  childNode = (DefaultMutableTreeNode)parentNode.getChildAt(i);
+            DataModelObjBaseWrapper childWrp  = (DataModelObjBaseWrapper)childNode.getUserObject();
+            SpPrincipal prin = (SpPrincipal)childWrp.getDataObj();
+            groups.add(prin);
+        }
+        
         SpPrincipal             prinGroup = (SpPrincipal) wrp.getDataObj();
-        AddExistingUserDlg      dlg       = new AddExistingUserDlg(null, prinGroup, discipline);
-        dlg.setVisible(true);
+        AddExistingUserDlg      dlg       = new AddExistingUserDlg(groups);
+        dlg.createUI();
+        dlg.pack();
+        dlg.setSize(400, 300);
+        UIHelper.centerAndShow(dlg);
+        
         
         if (dlg.isCancelled())
         {
@@ -774,7 +789,9 @@ public class NavigationTreeMgr
         }
 
         // This is the existing User to be Added to the New Collection/Discipline
-        SpecifyUser specifyUser = dlg.getSelectedUser();
+        SpecifyUser specifyUser = null;//dlg.getSelectedUser();
+        SpecifyUser[] selUsers = dlg.getSelectedUsers();
+        specifyUser = selUsers[0];
         
         if (specifyUser == null || grpNode == null || 
             !(grpNode.getUserObject() instanceof DataModelObjBaseWrapper))
