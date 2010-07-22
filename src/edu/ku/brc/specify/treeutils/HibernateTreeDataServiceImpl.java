@@ -339,6 +339,10 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         {
             return (T)session.load(clazz, id);
             
+        } catch (org.hibernate.ObjectNotFoundException e)
+        {
+        	log.error(e);
+        	
         } catch (Exception ex)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
