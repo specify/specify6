@@ -1170,7 +1170,7 @@ public class ReportsBaseTask extends BaseTask
                 if (model.getRowCount() > 0)
                 {
                     Object data = model.getValueAt(0, i);
-                    if (dataClass != null)
+                    if (data != null)
                     {
                         dataClass = data.getClass();
                     } else
