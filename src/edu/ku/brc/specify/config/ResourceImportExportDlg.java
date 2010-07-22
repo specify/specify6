@@ -1209,266 +1209,274 @@ public class ResourceImportExportDlg extends CustomDialog
             {
                 AppPreferences.getLocalPrefs().put(IMP_DIR_PREF, dirStr);
                 
-                String  data            = null;
-                File    importFile      = new File(dirStr + File.separator + fileName);
-                String  repResourceName = getSpReportResourceName(importFile); 
-                boolean isSpRepRes      = repResourceName != null;
-                boolean isJRRepRes      = false;
-                try
+                String data         = null;
+                String fullFileName = dirStr + File.separator + fileName;
+                File   importFile   = new File(fullFileName);
+                if (importFile.exists())
                 {
-                    data       = FileUtils.readFileToString(importFile);
-                    isJRRepRes = isJasperReport(data);
-
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, ex);
-                    return;
-                }
-
-                boolean isRepRes = isJRRepRes || isSpRepRes;
-
-                if (tabbedPane.getSelectedComponent() == viewsPanel)
-                {
-                    int viewIndex = viewSetsList.getSelectedIndex();
-                    if (viewIndex > -1)
+                    String  repResourceName = getSpReportResourceName(importFile); 
+                    boolean isSpRepRes      = repResourceName != null;
+                    boolean isJRRepRes      = false;
+                    try
                     {
-                        boolean      isAddItemForImport = viewSetsList.getSelectedValue() instanceof String;
-                        boolean      isOK               = false;
-                        SpViewSetObj vso                = null;
-
-                        DataProviderSessionIFace session = null;
-                        try
+                        data       = FileUtils.readFileToString(importFile);
+                        isJRRepRes = isJasperReport(data);
+    
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, ex);
+                        return;
+                    }
+    
+                    boolean isRepRes = isJRRepRes || isSpRepRes;
+    
+                    if (tabbedPane.getSelectedComponent() == viewsPanel)
+                    {
+                        int viewIndex = viewSetsList.getSelectedIndex();
+                        if (viewIndex > -1)
                         {
-                            session = DataProviderFactory.getInstance().createSession();
-                            session.beginTransaction();
-
-                            if (!isAddItemForImport)
-                            {
-                                vso = (SpViewSetObj) viewSetsList.getSelectedValue();
-                                SpAppResourceDir appResDir = vso.getSpAppResourceDir();
-                                importedName = vso.getName();
-
-                                if (vso.getSpViewSetObjId() == null)
-                                {
-                                    appResDir.getSpPersistedViewSets().add(vso);
-                                    vso.setSpAppResourceDir(appResDir);
-                                }
-                                vso.setDataAsString(data, true);
-                                session.saveOrUpdate(appResDir);
-
-                            } else
-                            {
-                                SpAppResourceDir appResDir = dirs.get(levelIndex);
-                                vso = new SpViewSetObj();
-                                vso.initialize();
-                                vso.setLevel((short)levelIndex);
-                                vso.setName(FilenameUtils.getBaseName(importFile.getName()));
-
-                                appResDir.getSpPersistedViewSets().add(vso);
-                                vso.setSpAppResourceDir(appResDir);
-
-                                vso.setDataAsString(data);
-                                session.saveOrUpdate(appResDir);
-                            }
-
-                            session.saveOrUpdate(vso);
-                            for (SpAppResourceData ard : vso.getSpAppResourceDatas())
-                            {
-                                session.saveOrUpdate(ard);
-                            }
-                            session.commit();
-                            session.flush();
-
-                            setHasChanged(true);
-                            isOK = true;
-
-                        } catch (Exception ex)
-                        {
-                            ex.printStackTrace();
-
-                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, ex);
-                            session.rollback();
-
-                        } finally
-                        {
+                            boolean      isAddItemForImport = viewSetsList.getSelectedValue() instanceof String;
+                            boolean      isOK               = false;
+                            SpViewSetObj vso                = null;
+    
+                            DataProviderSessionIFace session = null;
                             try
                             {
-                                session.close();
-
+                                session = DataProviderFactory.getInstance().createSession();
+                                session.beginTransaction();
+    
+                                if (!isAddItemForImport)
+                                {
+                                    vso = (SpViewSetObj) viewSetsList.getSelectedValue();
+                                    SpAppResourceDir appResDir = vso.getSpAppResourceDir();
+                                    importedName = vso.getName();
+    
+                                    if (vso.getSpViewSetObjId() == null)
+                                    {
+                                        appResDir.getSpPersistedViewSets().add(vso);
+                                        vso.setSpAppResourceDir(appResDir);
+                                    }
+                                    vso.setDataAsString(data, true);
+                                    session.saveOrUpdate(appResDir);
+    
+                                } else
+                                {
+                                    SpAppResourceDir appResDir = dirs.get(levelIndex);
+                                    vso = new SpViewSetObj();
+                                    vso.initialize();
+                                    vso.setLevel((short)levelIndex);
+                                    vso.setName(FilenameUtils.getBaseName(importFile.getName()));
+    
+                                    appResDir.getSpPersistedViewSets().add(vso);
+                                    vso.setSpAppResourceDir(appResDir);
+    
+                                    vso.setDataAsString(data);
+                                    session.saveOrUpdate(appResDir);
+                                }
+    
+                                session.saveOrUpdate(vso);
+                                for (SpAppResourceData ard : vso.getSpAppResourceDatas())
+                                {
+                                    session.saveOrUpdate(ard);
+                                }
+                                session.commit();
+                                session.flush();
+    
+                                setHasChanged(true);
+                                isOK = true;
+    
                             } catch (Exception ex)
                             {
                                 ex.printStackTrace();
+    
                                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, ex);
-                            }
-                        }
-
-                        if (isOK)
-                        {
-                            if (isAddItemForImport)
+                                session.rollback();
+    
+                            } finally
                             {
-                                viewSetsModel.clear();
-                                viewSetsModel.addElement(vso);
-                            } else
-                            {
-                                viewSetsModel.remove(viewIndex);
-                                viewSetsModel.insertElementAt(vso, viewIndex);
-                            }
-                            viewSetsList.repaint();
-                        }
-                    }
-
-                } else
-                {
-                    JList theList = tabbedPane.getSelectedComponent() == repPanel ? repList : resList;
-                    int resIndex = theList.getSelectedIndex();
-                    if (resIndex > -1)
-                    {
-                        if (resIndex == 0)
-                        {
-                            try
-                            {
-                                SpecifyUser user  = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-                                Agent       agent = AppContextMgr.getInstance().getClassObject(Agent.class);
-
-                                SpAppResourceDir dir = dirs.get(levelIndex);
-
-                                SpAppResource appRes = new SpAppResource();
-                                appRes.initialize();
-                                appRes.setName(fileName);
-                                appRes.setCreatedByAgent(agent);
-                                appRes.setSpecifyUser(user);
-
-                                if (dir.getId() == null)
+                                try
                                 {
-                                    dir.mergeTransientResourceAndViewSets();
+                                    session.close();
+    
+                                } catch (Exception ex)
+                                {
+                                    ex.printStackTrace();
+                                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, ex);
                                 }
-
-                                Pair<SpAppResource, String> retValues = checkForOverwriteOrNewName(isSpRepRes ? repResourceName : fileName, isSpRepRes);
-                                SpAppResource fndAppRes  = retValues != null && retValues.first != null ? retValues.first : null;
-                                String        newResName = retValues != null && retValues.second != null ? retValues.second : null;
-
-                                if (isRepRes)
+                            }
+    
+                            if (isOK)
+                            {
+                                if (isAddItemForImport)
                                 {
-                                    if (fndAppRes != null)
+                                    viewSetsModel.clear();
+                                    viewSetsModel.addElement(vso);
+                                } else
+                                {
+                                    viewSetsModel.remove(viewIndex);
+                                    viewSetsModel.insertElementAt(vso, viewIndex);
+                                }
+                                viewSetsList.repaint();
+                            }
+                        }
+    
+                    } else
+                    {
+                        JList theList = tabbedPane.getSelectedComponent() == repPanel ? repList : resList;
+                        int resIndex = theList.getSelectedIndex();
+                        if (resIndex > -1)
+                        {
+                            if (resIndex == 0)
+                            {
+                                try
+                                {
+                                    SpecifyUser user  = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+                                    Agent       agent = AppContextMgr.getInstance().getClassObject(Agent.class);
+    
+                                    SpAppResourceDir dir = dirs.get(levelIndex);
+    
+                                    SpAppResource appRes = new SpAppResource();
+                                    appRes.initialize();
+                                    appRes.setName(fileName);
+                                    appRes.setCreatedByAgent(agent);
+                                    appRes.setSpecifyUser(user);
+    
+                                    if (dir.getId() == null)
                                     {
+                                        dir.mergeTransientResourceAndViewSets();
+                                    }
+    
+                                    Pair<SpAppResource, String> retValues = checkForOverwriteOrNewName(isSpRepRes ? repResourceName : fileName, isSpRepRes);
+                                    SpAppResource fndAppRes  = retValues != null && retValues.first != null ? retValues.first : null;
+                                    String        newResName = retValues != null && retValues.second != null ? retValues.second : null;
+    
+                                    if (isRepRes)
+                                    {
+                                        if (fndAppRes != null)
+                                        {
+                                            if (isSpRepRes)
+                                            {
+                                                ReportsBaseTask.deleteReportAndResource(null, fndAppRes);
+                                            }
+                                            else
+                                            {
+                                                //XXX ???????????
+                                                if (fndAppRes.getSpAppResourceId() != null)
+                                                {
+                                                    contextMgr.removeAppResourceSp(fndAppRes.getSpAppResourceDir(), fndAppRes);
+                                                }
+                                            }
+                                        } /*else if (newResName == null)
+                                        {
+                                            return;
+                                        }*/
+                                        
                                         if (isSpRepRes)
                                         {
-                                            ReportsBaseTask.deleteReportAndResource(null, fndAppRes);
+                                            appRes = importSpReportZipResource(importFile, appRes, dir, newResName);
+                                            if (appRes != null)
+                                            {
+                                                importedName = appRes.getName();
+                                            }
                                         }
                                         else
                                         {
-                                            //XXX ???????????
-                                            if (fndAppRes.getSpAppResourceId() != null)
+                                            if (MainFrameSpecify.importJasperReport(importFile, false, newResName))
                                             {
-                                                contextMgr.removeAppResourceSp(fndAppRes.getSpAppResourceDir(), fndAppRes);
+                                                importedName = importFile.getName();
+                                            } else
+                                            {
+                                                return;
                                             }
                                         }
-                                    } /*else if (newResName == null)
+                                        if (importedName != null)
+                                        {
+                                            CommandDispatcher.dispatch(new CommandAction(ReportsBaseTask.REPORTS, ReportsBaseTask.REFRESH, null));
+                                            CommandDispatcher.dispatch(new CommandAction(QueryTask.QUERY, QueryTask.REFRESH_QUERIES, null));
+                                            levelSelected();
+                                        }
+                                    } else if (fndAppRes != null) // overriding
+                                    {
+                                        appRes.setMetaData(fndAppRes.getMetaData());
+                                        appRes.setDescription(fndAppRes.getDescription());
+                                        appRes.setFileName(fileName);
+                                        appRes.setMimeType(appRes.getMimeType());
+                                        appRes.setName(fileName);
+    
+                                        appRes.setLevel(fndAppRes.getLevel());
+    
+                                    } else if (!getMetaInformation(appRes))
                                     {
                                         return;
-                                    }*/
-                                    
-                                    if (isSpRepRes)
-                                    {
-                                        appRes = importSpReportZipResource(importFile, appRes, dir, newResName);
-                                        if (appRes != null)
-                                        {
-                                            importedName = appRes.getName();
-                                        }
                                     }
-                                    else
+    
+                                    if (!isRepRes)
                                     {
-                                        if (MainFrameSpecify.importJasperReport(importFile, false, newResName))
-                                        {
-                                            importedName = importFile.getName();
-                                        } else
-                                        {
-                                            return;
-                                        }
+                                        appRes.setSpAppResourceDir(dir);
+                                        dir.getSpAppResources().add(appRes);
+    
+                                        appRes.setDataAsString(data);
+                                        contextMgr.saveResource(appRes);
                                     }
-                                    if (importedName != null)
-                                    {
-                                        CommandDispatcher.dispatch(new CommandAction(ReportsBaseTask.REPORTS, ReportsBaseTask.REFRESH, null));
-                                        CommandDispatcher.dispatch(new CommandAction(QueryTask.QUERY, QueryTask.REFRESH_QUERIES, null));
-                                        levelSelected();
-                                    }
-                                } else if (fndAppRes != null) // overriding
+                                    setHasChanged(true);
+    
+                                } catch (Exception e)
                                 {
-                                    appRes.setMetaData(fndAppRes.getMetaData());
-                                    appRes.setDescription(fndAppRes.getDescription());
-                                    appRes.setFileName(fileName);
-                                    appRes.setMimeType(appRes.getMimeType());
-                                    appRes.setName(fileName);
-
-                                    appRes.setLevel(fndAppRes.getLevel());
-
-                                } else if (!getMetaInformation(appRes))
-                                {
-                                    return;
+                                    e.printStackTrace();
+                                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, e);
                                 }
-
-                                if (!isRepRes)
+                            } else
+                            {
+                                resIndex++;
+                                AppResourceIFace appRes = resources.get(resIndex-1);
+                                importedName = appRes.getName();
+    
+                                String fName      = FilenameUtils.getName(importedName);
+                                String dbBaseName = FilenameUtils.getBaseName(fileName);
+                                log.debug("["+fName+"]["+dbBaseName+"]");
+                                
+                                boolean doOverwrite = true;
+                                if (!dbBaseName.equals(fName))
                                 {
-                                    appRes.setSpAppResourceDir(dir);
-                                    dir.getSpAppResources().add(appRes);
-
+                                    String msg = getLocalizedMessage("RIE_OVRDE_MSG", dbBaseName, fName);
+                                    doOverwrite = displayConfirm(getResourceString("RIE_OVRDE_TITLE"), msg, "RIE_OVRDE", "CANCEL", JOptionPane.QUESTION_MESSAGE);
+                                }
+                                
+                                if (doOverwrite)
+                                {
                                     appRes.setDataAsString(data);
                                     contextMgr.saveResource(appRes);
                                 }
-                                setHasChanged(true);
-
-                            } catch (Exception e)
-                            {
-                                e.printStackTrace();
-                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, e);
-                            }
-                        } else
-                        {
-                            resIndex++;
-                            AppResourceIFace appRes = resources.get(resIndex-1);
-                            importedName = appRes.getName();
-
-                            String fName      = FilenameUtils.getName(importedName);
-                            String dbBaseName = FilenameUtils.getBaseName(fileName);
-                            log.debug("["+fName+"]["+dbBaseName+"]");
-                            
-                            boolean doOverwrite = true;
-                            if (!dbBaseName.equals(fName))
-                            {
-                                String msg = getLocalizedMessage("RIE_OVRDE_MSG", dbBaseName, fName);
-                                doOverwrite = displayConfirm(getResourceString("RIE_OVRDE_TITLE"), msg, "RIE_OVRDE", "CANCEL", JOptionPane.QUESTION_MESSAGE);
-                            }
-                            
-                            if (doOverwrite)
-                            {
-                                appRes.setDataAsString(data);
-                                contextMgr.saveResource(appRes);
                             }
                         }
                     }
-                }
-            }
-
-            if (importedName != null)
-            {
-                getStatusBar().setText(getLocalizedMessage("RIE_RES_IMPORTED", importedName));
-            }
-
-            if (hasChanged())
-            {
-                SwingUtilities.invokeLater(new Runnable()
-                {
-                    @Override
-                    public void run()
+                    
+                    if (importedName != null)
                     {
-                        okBtn.doClick();
+                        getStatusBar().setText(getLocalizedMessage("RIE_RES_IMPORTED", importedName));
                     }
-                });
+        
+                    if (hasChanged())
+                    {
+                        SwingUtilities.invokeLater(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                okBtn.doClick();
+                            }
+                        });
+                    }
+                    
+                } else
+                {
+                    UIRegistry.showLocalizedError("FILE_NO_EXISTS", fullFileName);
+                }
             }
 
             enableUI();
