@@ -1071,6 +1071,14 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         obj.agentGeographies               = new HashSet<AgentGeography>();
         obj.agentSpecialties               = new HashSet<AgentSpecialty>();
         
+        // clone addresses
+        for (Address addr : addresses)
+        {
+            Address newAddr = (Address)addr.clone();
+            obj.addresses.add(newAddr);
+            newAddr.setAgent(obj);
+        }
+        
         return obj;
     }
     

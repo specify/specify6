@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.datamodel;
 
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -52,7 +53,8 @@ import edu.ku.brc.util.Orderable;
 @Table(name = "address")
 public class Address extends DataModelObjBase implements Orderable,
                                                          Comparable<Address>,
-                                                         java.io.Serializable 
+                                                         java.io.Serializable,
+                                                         Cloneable
 {
 
     // Fields
@@ -640,5 +642,24 @@ public class Address extends DataModelObjBase implements Orderable,
             return ordinal.compareTo(obj.ordinal);
         }
         return 0;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        Address obj = (Address)super.clone();
+        
+        obj.addressId            = null;
+        obj.timestampCreated     = new Timestamp(System.currentTimeMillis());
+        obj.timestampModified    = timestampCreated;
+        
+        obj.agent                = null;
+        obj.insitutions          = new HashSet<Institution>();
+        obj.divisions            = new HashSet<Division>();
+       
+        return obj;
     }
 }

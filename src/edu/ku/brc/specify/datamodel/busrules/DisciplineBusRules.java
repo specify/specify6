@@ -805,12 +805,12 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
     @Override
     public void doCommand(final CommandAction cmdAction)
     {
-        if (cmdAction.isAction("DivisionSaved"))
+        if (cmdAction.isAction("DisciplineSaved"))
         {
             Division divsion = (Division)cmdAction.getData();
             formViewObj.getMVParent().getMultiViewParent().setData(divsion);
             
-        } else if (cmdAction.isAction("DivisionError"))
+        } else if (cmdAction.isAction("DisciplineError"))
         {
         }
         

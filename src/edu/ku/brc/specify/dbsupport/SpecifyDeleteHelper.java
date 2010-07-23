@@ -69,9 +69,9 @@ import edu.ku.brc.ui.UIRegistry;
 public class SpecifyDeleteHelper
 {
     protected static boolean    debug       = false;
-    protected static boolean    debugUpdate = false;
+    protected static boolean    debugUpdate = true;
     
-    protected boolean    doTrees           = false;
+    protected boolean    doTrees           = true;
 
     protected Integer    totalCount        = null;
     protected int        counter           = 0;
@@ -90,18 +90,20 @@ public class SpecifyDeleteHelper
         {
             statusBar = UIRegistry.getStatusBar();
         }
+        
         /*
         DBConnection dbConn = DBConnection.createInstance("com.mysql.jdbc.Driver", 
                                                           "org.hibernate.dialect.MySQLDialect", 
                                                           "testfish", 
                                                           "jdbc:mysql://localhost/testfish", 
-                                                          "Specify", 
-                                                          "Specify");
-                                                          */
+                                                          "root", 
+                                                          "root");*/
+                                                          
         DBConnection dbConn = DBConnection.getInstance();
         connection = dbConn.createConnection();
-
-        if (false)
+        //BasicSQLUtils.setDBConnection(connection);
+        
+        /*if (false)
         {
             try
             {
@@ -142,7 +144,7 @@ public class SpecifyDeleteHelper
                     ex.printStackTrace();
                 }
             }
-        }
+        }*/
     }
     
     /**
@@ -750,6 +752,11 @@ public class SpecifyDeleteHelper
                                     
                                 } else
                                 {
+                                    if (si.getTableInfo().getClassObj() == Division.class && StringUtils.contains(delSql, "FROM division"))
+                                    {
+                                        cleanUpAgentsForDivision(id);
+                                    }
+                                    
                                     if (debugUpdate) System.err.println(delSql);
                                     int count = stmt.executeUpdate(delSql);
                                     if (debugUpdate) System.err.println("Count: "+count);
@@ -806,12 +813,26 @@ public class SpecifyDeleteHelper
      */
     protected void deleteDiscipline(final String delSql, final int id) throws SQLException
     {
+        Statement stmt = connection.createStatement();
+        
+        for (Integer collId : BasicSQLUtils.queryForInts("SELECT CollectionID FROM collection WHERE DisciplineID = "+id))
+        {
+            String dSQL = "DELETE FROM sptasksemaphore WHERE CollectionID = "+collId;
+            int count = stmt.executeUpdate(dSQL);
+            if (debugUpdate) System.err.println(count +" - "+dSQL);
+        }
+        
+        // Cleanup any Semaphores
+        String dSQL = "DELETE FROM sptasksemaphore WHERE DisciplineID = "+id;
+        int count = stmt.executeUpdate(dSQL);
+        if (debugUpdate) System.err.println(count +" - "+dSQL);
+        
         Integer txTDId   = null;
         Integer geoTTDId = null;
         Integer lsTDId   = null;
         Integer gtpTDId  = null;
         
-        Statement stmt = connection.createStatement();
+        
         String    tmpSql = "SELECT TaxonTreeDefID, GeographyTreeDefID, LithoStratTreeDefID, GeologicTimePeriodTreeDefID FROM discipline WHERE DisciplineID = " + id;
         ResultSet tmpRS  = stmt.executeQuery(tmpSql);
         if (tmpRS.next())
@@ -825,17 +846,20 @@ public class SpecifyDeleteHelper
         
         if (txTDId != null && txTDId != null && txTDId != null && txTDId != null)
         {
-            stmt.executeUpdate(delSql);
+            count = stmt.executeUpdate(delSql);
+            if (debugUpdate) System.err.println(count +" - "+delSql);
             
             cleanUpTree(TaxonTreeDef.class,              txTDId);    
             cleanUpTree(GeographyTreeDef.class,          geoTTDId);    
             cleanUpTree(LithoStratTreeDef.class,         lsTDId);    
             cleanUpTree(GeologicTimePeriodTreeDef.class, gtpTDId);
+            
         } else
         {
             // error!
+            System.err.println("Error!");
         }
-        
+
         stmt.close();
     }
     
@@ -916,13 +940,22 @@ public class SpecifyDeleteHelper
         String sql;
         Vector<Integer> ids;
         
+        //stmt.executeUpdate("DELETE FROM spauditlog WHERE CreatedByAgentID =  )\
+        sql = "SELECT au.SpAuditLogID FROM spauditlog AS au Inner Join agent AS a ON au.CreatedByAgentID = a.AgentID WHERE a.DivisionID = "+divisionId;
+        if (debugUpdate) System.err.println(sql);
+        ids = getIds(sql, 0);
+        for (Integer id : ids)
+        {
+            stmt.executeUpdate("DELETE FROM spauditlog WHERE SpAuditLogID = "+id);
+        }
+        
         sql = "SELECT AgentID FROM agent WHERE DivisionID = "+divisionId + " AND ParentOrganizationID IS NOT NULL";
-        System.err.println(sql);
+        if (debugUpdate) System.err.println(sql);
         ids = getIds(sql, 0);
         cleanUpAgentsForDivision(stmt, divisionId, ids, true);
         
-        sql = "SELECT agent.AgentID FROM agent INNER JOIN groupperson ON agent.AgentID = groupperson.MemberID WHERE DivisionID = "+divisionId;
-        System.err.println(sql);
+        sql = "SELECT a.AgentID FROM agent a INNER JOIN groupperson gp ON a.AgentID = gp.MemberID WHERE a.DivisionID = "+divisionId;
+        if (debugUpdate) System.err.println(sql);
         ids = getIds(sql, 0);
         for (Integer id : ids)
         {
@@ -932,7 +965,7 @@ public class SpecifyDeleteHelper
         
         sql = "SELECT AgentID FROM agent WHERE DivisionID = "+divisionId;
         ids = getIds(sql, 0);
-        System.err.println(sql);
+        if (debugUpdate) System.err.println(sql);
         cleanUpAgentsForDivision(stmt, divisionId, ids, true);
         
         stmt.close();
@@ -952,9 +985,9 @@ public class SpecifyDeleteHelper
     {
         for (Integer agentId : ids)
         {
-            System.err.println("Agent: "+agentId);
-            cleanUpSpecifyUser(agentId);
+            if (debugUpdate) System.err.println("Agent: "+agentId);
             
+            cleanUpSpecifyUser(agentId);
             
             boolean isOKToDel = true;
             // Check to see if the Agent is has edited and remaining tables
@@ -963,13 +996,13 @@ public class SpecifyDeleteHelper
                 DBFieldInfo fi = ti.getFieldByColumnName("CreatedByAgentID");
                 if (fi != null)
                 {
-                    ResultSet rs   = stmt.executeQuery("SELECT cpount(*) FROM "+ti.getName()+" WHERE CreatedByAgentID = "+agentId+" OR ModifiedByAgentID = "+agentId);
+                    ResultSet rs = stmt.executeQuery("SELECT cpount(*) FROM "+ti.getName()+" WHERE CreatedByAgentID = "+agentId+" OR ModifiedByAgentID = "+agentId);
                     if (rs.next())
                     {
                         int count = rs.getInt(1);
                         if (count > 0)
                         {
-                            System.err.println(ti.getName()+"  uses agent "+agentId);
+                            if (debugUpdate) System.err.println(ti.getName()+"  uses agent "+agentId);
                             isOKToDel = false;
                         }
                     }
@@ -1001,17 +1034,23 @@ public class SpecifyDeleteHelper
     protected void cleanUpSpecifyUser(final int agentId) throws SQLException
     {
         Statement stmt = connection.createStatement();
-        ResultSet rs   = stmt.executeQuery("SELECT a.SpecifyUserID FROM agent a INNER JOIN specifyuser spu ON a.SpecifyUserID = spu.SpecifyUserID WHERE a.AgentId = "+agentId);
+        String    sql  = "SELECT a.SpecifyUserID FROM agent a INNER JOIN specifyuser spu ON a.SpecifyUserID = spu.SpecifyUserID WHERE a.AgentId = "+agentId;
+        if (debugUpdate) System.err.println(sql);
+        ResultSet rs   = stmt.executeQuery(sql);
         while (rs.next())
         {
             int specifyUserID = rs.getInt(1);
-            Vector<Integer> ids = getIds("SELECT SpAppResourceDirID FROM spappresourcedir WHERE SpecifyUserID = "+specifyUserID, 0);
+            sql = "SELECT SpAppResourceDirID FROM spappresourcedir WHERE SpecifyUserID = "+specifyUserID;
+            if (debugUpdate) System.err.println(sql);
+            Vector<Integer> ids = getIds(sql, 0);
             for (Integer id : ids)
             {
                 deleteAppResourceDir(id);
             }
             
-            ids = getIds("SELECT RecordSetID FROM recordset WHERE SpecifyUserID = "+specifyUserID, 0);
+            sql = "SELECT RecordSetID FROM recordset WHERE SpecifyUserID = "+specifyUserID;
+            if (debugUpdate) System.err.println(sql);
+            ids = getIds(sql, 0);
             for (Integer id : ids)
             {
                 deleteRecordSet(id);
@@ -1019,7 +1058,9 @@ public class SpecifyDeleteHelper
             
             deleteReportsAndQueries(specifyUserID);
             
-            ids = getIds("SELECT WorkbenchID FROM workbench WHERE SpecifyUserID = "+specifyUserID, 0);
+            sql = "SELECT WorkbenchID FROM workbench WHERE SpecifyUserID = "+specifyUserID;
+            if (debugUpdate) System.err.println(sql);
+            ids = getIds(sql, 0);
             for (Integer id : ids)
             {
                 deleteWorkBench(id);
@@ -1052,7 +1093,7 @@ public class SpecifyDeleteHelper
         //stmt.executeUpdate("SELECT FROM spreport WHERE SpecityUserID = "+specifyUserId);
         
         String sql = "SELECT r.SpReportID FROM spreport r INNER JOIN spquery q ON r.SpQueryID = q.SpQueryID WHERE r.SpecifyUserID  = "+specifyUserId;
-        System.err.println(sql);
+        if (debugUpdate) System.err.println(sql);
         Vector<Integer> reportIds  = getIds(sql, 0);
         
         for (Integer id : reportIds)
@@ -1061,7 +1102,7 @@ public class SpecifyDeleteHelper
         }
         
         sql = "SELECT SpQueryID FROM spquery WHERE SpecifyUserID = "+specifyUserId;
-        System.err.println(sql);
+        if (debugUpdate) System.err.println(sql);
             
         Vector<Integer> queryIds  = getIds(sql, 0);
         for (Integer id : queryIds)
@@ -1077,27 +1118,39 @@ public class SpecifyDeleteHelper
      */
     protected void deleteAppResourceDir(final int appResDirId) throws SQLException
     {
+        debugUpdate = true;
         Statement stmt = connection.createStatement();
         String    sql  = "SELECT SpAppResourceDataID FROM spappresourcedata sd INNER JOIN spappresource sr ON sd.SpAppResourceID = sr.SpAppResourceID WHERE sr.SpAppResourceDirID = "+appResDirId;
+        if (debugUpdate) System.err.println(sql);
         Vector<Integer> ids = getIds(sql, 0);
         for (Integer id : ids)
         {
-            stmt.executeUpdate("DELETE FROM spappresourcedata WHERE SpAppResourceDataID = "+id);
+            sql = "DELETE FROM spappresourcedata WHERE SpAppResourceDataID = "+id;
+            stmt.executeUpdate(sql);
+            if (debugUpdate) System.err.println(sql);
         }
         sql = "DELETE FROM spappresource WHERE SpAppResourceDirID = "+appResDirId;
+        if (debugUpdate) System.err.println(sql);
         stmt.executeUpdate(sql);
         
         sql  = "SELECT ard.SpAppResourceDataID FROM spappresourcedata ard INNER JOIN spviewsetobj v ON ard.SpViewSetObjID = v.SpViewSetObjID";
+        if (debugUpdate) System.err.println(sql);
         ids = getIds(sql, 0);
         for (Integer id : ids)
         {
-            stmt.executeUpdate("DELETE FROM spappresourcedata WHERE S�DataID "+id);
+            sql = "DELETE FROM spappresourcedata WHERE SpAppResourceDataID "+id;
+            if (debugUpdate) System.err.println(sql);
+            stmt.executeUpdate(sql);
         }
         sql = "DELETE FROM spviewsetobj WHERE SpAppResourceDirID = "+appResDirId;
+        if (debugUpdate) System.err.println(sql);
         stmt.executeUpdate(sql);
         
         sql = "DELETE FROM spappresourcedir WHERE SpAppResourceDirID = "+appResDirId;
+        if (debugUpdate) System.err.println(sql);
         stmt.executeUpdate(sql);
+        
+        debugUpdate = false;
         
         stmt.close();
     }
@@ -1117,7 +1170,9 @@ public class SpecifyDeleteHelper
         Vector<Integer> ids = getIds(sql, 0);
         for (Integer id : ids)
         {
-            stmt.executeUpdate("DELETE FROM workbenchdataitem WHERE WorkbenchDataItemID = "+id);
+            sql = "DELETE FROM workbenchdataitem WHERE WorkbenchDataItemID = "+id;
+            if (debugUpdate) System.err.println(sql);
+            stmt.executeUpdate(sql);
         }
         
         sql = "SELECT wri.WorkbenchRowImageID FROM workbench wb INNER JOIN workbenchrow wbr ON wb.WorkbenchID = wbr.WorkbenchID " +
@@ -1335,8 +1390,14 @@ public class SpecifyDeleteHelper
     {
         DBTableIdMgr.getInstance().getByShortClassName(Accession.class.getSimpleName()); // Preload
         
-        
-        new SpecifyDeleteHelper(false);
+        SpecifyDeleteHelper sdh = new SpecifyDeleteHelper(false);
+        try
+        {
+            sdh.delRecordFromTable(Division.class, 32768, false);
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
         
         //s.getSubTables(Discipline.class);
         //s.getSubTables(Division.class);

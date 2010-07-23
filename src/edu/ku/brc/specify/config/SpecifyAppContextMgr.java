@@ -510,11 +510,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // First get the Collections the User has access to.
             Hashtable<String, Pair<String, Integer>> collectionHash = new Hashtable<String, Pair<String, Integer>>();
             
-            String sqlStr = "SELECT cln.CollectionName, cln.CollectionID, cln.DisciplineID FROM collection AS cln " + 
-                            "INNER JOIN spprincipal AS p ON cln.UserGroupScopeId = p.userGroupScopeID " + 
-                            "INNER JOIN specifyuser_spprincipal AS su_pr ON p.SpPrincipalID = su_pr.SpPrincipalID " + 
-                            "INNER JOIN specifyuser AS su ON su_pr.SpecifyUserID = su.SpecifyUserID " + 
-                            "WHERE su.SpecifyUserID = "+spUser.getSpecifyUserId(); //$NON-NLS-1$
+            String sqlStr = "SELECT cln.CollectionName, cln.CollectionID, cln.DisciplineID FROM collection AS cln " +
+                            "Inner Join spprincipal AS p ON cln.UserGroupScopeId = p.userGroupScopeID " +
+                            "Inner Join specifyuser_spprincipal AS su_pr ON p.SpPrincipalID = su_pr.SpPrincipalID " +
+                            "WHERE su_pr.SpecifyUserID = " +spUser.getSpecifyUserId(); //$NON-NLS-1$
+            
             log.debug(sqlStr);
             
             for (Object[] row : BasicSQLUtils.query(sqlStr))

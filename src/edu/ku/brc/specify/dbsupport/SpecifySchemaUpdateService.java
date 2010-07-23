@@ -42,7 +42,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
-import javax.management.RuntimeErrorException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
@@ -74,6 +73,7 @@ import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.FieldNotebookPage;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.Institution;
@@ -83,6 +83,7 @@ import edu.ku.brc.specify.datamodel.PaleoContext;
 import edu.ku.brc.specify.datamodel.PreparationAttribute;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpVersion;
+import edu.ku.brc.specify.tasks.subpane.security.NavigationTreeMgr;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.ChooseFromListDlg;
@@ -1572,10 +1573,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 {
                     alterFieldLength(conn, databaseName, tblName, prepAttrFld, 10, 50);
                 }
+                
+                frame.setDesc("Fixing User's Agents...");
+                fixSpUserAndAgents();
 
                 frame.getProcessProgress().setIndeterminate(true);
                 frame.setDesc("Loading updated schema...");
-
+                
             } catch (Exception ex)
             {
                 ex.printStackTrace();
@@ -1588,6 +1592,90 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         
         return statusOK;
     }
+    
+    /**
+     * Adds Agents to Divisions.
+     */
+    private void fixSpUserAndAgents()
+    {
+        HashMap<Integer, HashSet<Integer>> spUserToDivHash = new HashMap<Integer, HashSet<Integer>>();
+        HashMap<Integer, Integer>          spUserToAgentHash = new HashMap<Integer,Integer>();
+        
+        String sql = "SELECT su.SpecifyUserID, a.AgentID, a.DivisionID FROM specifyuser AS su Inner Join agent AS a ON su.SpecifyUserID = a.SpecifyUserID ";
+        for (Object[] row : BasicSQLUtils.query(sql))
+        {
+            int spUserID = (Integer)row[0];
+            int agtId    = (Integer)row[1];
+            int divId    = (Integer)row[2];
+            
+            spUserToAgentHash.put(spUserID, agtId);
+            
+            HashSet<Integer> usersHash = spUserToDivHash.get(spUserID);
+            if (usersHash == null)
+            {
+                usersHash = new HashSet<Integer>();
+                spUserToDivHash.put(spUserID, usersHash);
+            }
+            usersHash.add(divId);
+            log.debug(String.format("Adding Division %d for user %d", divId, spUserID));
+        }
+        
+        sql = "SELECT dsp.DivisionID, su.SpecifyUserID FROM collection AS cln " +
+                "Inner Join spprincipal AS p ON cln.UserGroupScopeId = p.userGroupScopeID " +
+                "Inner Join specifyuser_spprincipal AS su_pr ON p.SpPrincipalID = su_pr.SpPrincipalID " +
+                "Inner Join specifyuser AS su ON su_pr.SpecifyUserID = su.SpecifyUserID " +
+                "Inner Join discipline AS dsp ON cln.DisciplineID = dsp.UserGroupScopeId WHERE su_pr.SpecifyUserID IS NOT NULL";
+        
+        for (Object[] row : BasicSQLUtils.query(sql))
+        {
+            int colDiv   = (Integer)row[0];
+            int spUserID = (Integer)row[1];
+            
+            HashSet<Integer> divs = spUserToDivHash.get(spUserID);
+            if (divs == null || !divs.contains(colDiv))
+            {
+                log.debug(String.format("No Agent for Division %d for user %d", colDiv, spUserID));
+                Integer agtId = spUserToAgentHash.get(spUserID);
+                
+                DataProviderSessionIFace session = null;
+                try
+                {
+                    session = DataProviderFactory.getInstance().createSession();
+                    session.beginTransaction();
+                    
+                    Agent    agent    = session.get(Agent.class, agtId);
+                    Division division = session.get(Division.class, colDiv);
+                    
+                    Agent dupAgent = (Agent)agent.clone();
+                    dupAgent.setDivision(division);
+                    
+                    session.save(dupAgent);
+                    
+                    session.commit();
+                    
+                    log.debug(String.format("Saved New Agent %s for Division %s", dupAgent.getLastName(), division.getName()));
+                    
+                } catch (final Exception e1)
+                {
+                    e1.printStackTrace();
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, e1);
+                    
+                    session.rollback();
+                    
+                    log.error("Exception caught: " + e1.toString());
+                    
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                }
+            }
+        }
+    }
+    
     
     /**
      * @param tableId the id of the table

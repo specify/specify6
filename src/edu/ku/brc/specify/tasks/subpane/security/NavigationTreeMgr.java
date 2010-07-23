@@ -53,6 +53,7 @@ import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.UserGroupScope;
@@ -419,7 +420,8 @@ public class NavigationTreeMgr
             session = DataProviderFactory.getInstance().createSession();
             session.beginTransaction();
             
-            SpecifyUser user = session.get(SpecifyUser.class, ((SpecifyUser)object).getId());
+            Integer     spuId = ((SpecifyUser)object).getId();
+            SpecifyUser user  = session.get(SpecifyUser.class, spuId);
             
             // break the association between the user and all its agents, 
             // so the user can be later deleted
@@ -430,6 +432,26 @@ public class NavigationTreeMgr
             user.getAgents().clear();
             
             BaseBusRules.removeById(spUsers, user);
+            
+            Vector<Integer> recSetIds = BasicSQLUtils.queryForInts("SELECT RecordSetID FROM recordset WHERE SpecifyUserID = "+spuId);
+            for (Integer rsId : recSetIds)
+            {
+                RecordSet rs  = session.get(RecordSet.class, rsId);
+                session.delete(rs);
+            }
+            
+            // These should be done via Delete Orphan
+            /*for (SpAppResourceDir apd : user.getSpAppResourceDirs())
+            {
+                session.delete(apd);
+            }
+            
+            for (SpAppResource ap : user.getSpAppResources())
+            {
+                session.delete(ap);
+            }
+            user.getSpQuerys();
+            */
             
             // delete related user principal (but leave other principals (admin & regular groups) intact
             for (SpPrincipal principal : user.getSpPrincipals())
@@ -650,7 +672,10 @@ public class NavigationTreeMgr
         
         AppContextMgr acMgr          = AppContextMgr.getInstance();
         Discipline    currDiscipline = acMgr.getClassObject(Discipline.class);
+        Division      currDivision   = acMgr.getClassObject(Division.class);
+        
         acMgr.setClassObject(Discipline.class, parentDiscipline);
+        acMgr.setClassObject(Division.class, parentDiscipline.getDivision());
         
         // This is just an extra safety measure to make sure the current Discipline gets set back
         try
@@ -668,6 +693,7 @@ public class NavigationTreeMgr
         } finally
         {
             acMgr.setClassObject(Discipline.class, currDiscipline);    
+            acMgr.setClassObject(Division.class,   currDivision);    
         }
         
         if (!dlg.isCancelled())
@@ -762,7 +788,6 @@ public class NavigationTreeMgr
      */
     public DefaultMutableTreeNode addExistingUser(final DefaultMutableTreeNode grpNode) 
     {
-        
         DataModelObjBaseWrapper wrp        = (DataModelObjBaseWrapper)grpNode.getUserObject();
         DefaultMutableTreeNode  parentNode = (DefaultMutableTreeNode)grpNode.getParent();
         
@@ -808,15 +833,16 @@ public class NavigationTreeMgr
         // to find the appropriate Discipline Node
         Discipline parentDiscipline = getParentDiscipline(grpNode);
         
-        AppContextMgr acMgr          = AppContextMgr.getInstance();
+        AppContextMgr acMgr         = AppContextMgr.getInstance();
         
         // Set the Parent Discipline into the Context so it thinks we are in
         // that context when we add all the security info.
         Discipline    currDiscipline = acMgr.getClassObject(Discipline.class);
-        acMgr.setClassObject(Discipline.class, parentDiscipline);
+        Division      currDivision   = acMgr.getClassObject(Division.class);
         
-        Division currDivision = parentDiscipline.getDivision();
-
+        acMgr.setClassObject(Discipline.class, parentDiscipline);
+        acMgr.setClassObject(Division.class, parentDiscipline.getDivision());
+        
         DataProviderSessionIFace session = null;
         try
         {
@@ -882,6 +908,7 @@ public class NavigationTreeMgr
         } finally
         {
             acMgr.setClassObject(Discipline.class, currDiscipline); 
+            acMgr.setClassObject(Division.class,   currDivision); 
             
             if (session != null)
             {

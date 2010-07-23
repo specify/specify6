@@ -429,6 +429,7 @@ public class DivisionBusRules extends BaseBusRules implements CommandListener
             Integer id = division.getId();
             if (id != null)
             {
+                boolean  cont    = false;
                 Division currDiv = AppContextMgr.getInstance().getClassObject(Division.class);
                 if (currDiv.getId().equals(division.getId()))
                 {
@@ -436,44 +437,53 @@ public class DivisionBusRules extends BaseBusRules implements CommandListener
                     
                 } else
                 {
-                    String sql = "SELECT count(*) FROM agent a WHERE a.DivisionID = " + division.getId();
+                    String sql = "SELECT count(*) FROM agent WHERE DivisionID = " + division.getId();
                     int count = BasicSQLUtils.getCount(sql);
                     if (count > 0)
                     {
-                        UIRegistry.showError(String.format("There are too many agents associated with this the `%s` Division.", division.getName())); // I18N
+                        String msg = String.format("There are too many agents associated with this the `%s` Division.\nDo you wish to delete them?", division.getName());
+                        //UIRegistry.showError(); // I18N
+                        if (UIRegistry.askYesNoLocalized("DELETE", "CANCEL", msg, "DELETE") == JOptionPane.YES_OPTION)
+                        {
+                            cont = true;
+                        }
                     } else
                     {
-                        try
-                        {
-                            SpecifyDeleteHelper delHelper = new SpecifyDeleteHelper(true);
-                            delHelper.delRecordFromTable(Institution.class, division.getId(), true);
-                            delHelper.done();
-                            
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run()
-                                {
-                                    // This is called instead of calling 'okToDelete' because we had the SpecifyDeleteHelper
-                                    // delete the actual dataObj and now we tell the form to remove the dataObj from
-                                    // the form's list and them update the controller appropriately
-                                    
-                                    formViewObj.updateAfterRemove(true); // true removes item from list and/or set
-                                }
-                            });
-                            
-                        } catch (Exception ex)
-                        {
-                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DivisionBusRules.class, ex);
-                            ex.printStackTrace();
-                        }
+                        cont = true;
+                    }
+                }
+                    
+                if (cont)
+                {
+                    try
+                    {
+                        SpecifyDeleteHelper delHelper = new SpecifyDeleteHelper(true);
+                        delHelper.delRecordFromTable(Division.class, division.getId(), true);
+                        delHelper.done();
+                        
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run()
+                            {
+                                // This is called instead of calling 'okToDelete' because we had the SpecifyDeleteHelper
+                                // delete the actual dataObj and now we tell the form to remove the dataObj from
+                                // the form's list and them update the controller appropriately
+                                
+                                formViewObj.updateAfterRemove(true); // true removes item from list and/or set
+                            }
+                        });
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DivisionBusRules.class, ex);
                     }
                 }
             } else
             {
                 super.okToDelete(dataObj, session, deletable);
             }
-            
         } else
         {
             super.okToDelete(dataObj, session, deletable);
