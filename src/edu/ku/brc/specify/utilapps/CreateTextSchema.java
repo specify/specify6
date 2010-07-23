@@ -30,12 +30,20 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import com.jgoodies.looks.plastic.PlasticLookAndFeel;
+import com.jgoodies.looks.plastic.theme.ExperienceBlue;
+
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.tools.datamodelgenerator.DatamodelGenerator;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.DatamodelHelper;
 
 /**
@@ -51,6 +59,7 @@ public class CreateTextSchema
     protected static String specifyDescFileName  = "specify_desc_datamodel.xml";
     protected static String schemaOutputHTMLName = "SpecifySchema.html";
     protected static String NBSP                 = "&nbsp;";
+    protected static String VERSION              =  "<!-- Version -->";
     
 
     protected String basePath = "src/edu/ku/brc/specify/utilapps/";
@@ -283,7 +292,7 @@ public class CreateTextSchema
     /**
      * @param tables
      */
-    @SuppressWarnings({ "unchecked", "unchecked" })
+    @SuppressWarnings({ "unchecked" })
     protected void processTables(final Vector<DOMNode> tables, final boolean includeIndexCol)
     {
         for (DOMNode tn : tables)
@@ -375,7 +384,7 @@ public class CreateTextSchema
      * 
      */
     @SuppressWarnings("unchecked")
-    protected void process()
+    protected void process(final String versionNum)
     {
         try
         {
@@ -422,6 +431,10 @@ public class CreateTextSchema
                 } else if (StringUtils.contains(line, "<!-- Indexes -->"))
                 {
                     makeTableIndexes(tables);
+                    
+                } else if (StringUtils.contains(line, VERSION))
+                {
+                    line = StringUtils.replace(line, VERSION, versionNum);
                 }
                 po.write(line);
                 po.write("\n");
@@ -447,12 +460,38 @@ public class CreateTextSchema
         DatamodelGenerator datamodelWriter = new DatamodelGenerator(true);
         datamodelWriter.process(specifyDescFileName);
         
-        CreateTextSchema cts = new CreateTextSchema();
-        cts.process();
-        
-        File file = XMLHelper.getConfigDir(specifyDescFileName);
-        file.delete();
-
+        SwingUtilities.invokeLater(new Runnable() {
+            @SuppressWarnings("synthetic-access") //$NON-NLS-1$
+          public void run()
+          {
+                try
+                {
+                    UIHelper.OSTYPE osType = UIHelper.getOSType();
+                    if (osType == UIHelper.OSTYPE.Windows )
+                    {
+                        UIManager.setLookAndFeel(new PlasticLookAndFeel());
+                        PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
+                        
+                    } else if (osType == UIHelper.OSTYPE.Linux )
+                    {
+                        UIManager.setLookAndFeel(new PlasticLookAndFeel());
+                    }
+                }
+                catch (Exception e)
+                {
+                }
+                
+                String schemaVersion = JOptionPane.showInputDialog("Enter Schema Version:"); 
+                
+                CreateTextSchema cts = new CreateTextSchema();
+                cts.process(schemaVersion);
+                
+                File file = XMLHelper.getConfigDir(specifyDescFileName);
+                file.delete();
+    
+                JOptionPane.showMessageDialog(null, "Done");
+          }
+        });
     }
     
     //------------------------------------------------------------------
