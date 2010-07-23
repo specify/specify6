@@ -281,10 +281,13 @@ public class TableViewObj implements Viewable,
         isEditing                          = MultiView.isOptionOn(options, MultiView.IS_EDITTING) && altView.getMode() == AltViewIFace.CreationMode.EDIT;
         
         addSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
-        if (addSearch)
+        
+        // rods 7/23/10 - Not sure why this and the code below was added, because
+        // it includes a search btn when in View mode
+        /*if (addSearch)
         {
             isEditing = false;
-        }
+        }*/
         
         setValidator(formValidator);
 
@@ -339,7 +342,7 @@ public class TableViewObj implements Viewable,
                 
                 if (altViewsList.size() > 0)
                 {
-                    if (isEditing || addSearch)
+                    if (isEditing) //|| addSearch) // rods 7/23/10 - removed 'addSearch' because it was showing up in View Mode
                     {
                         String delTTStr = ResultSetController.createTooltip("RemoveRecordTT", view.getObjTitle());
                         deleteButton = UIHelper.createIconBtnTT("DeleteRecord", IconManager.IconSize.Std16, delTTStr, false, new ActionListener() {
@@ -641,7 +644,10 @@ public class TableViewObj implements Viewable,
                             }
                             model.fireDataChanged();
                             tellMultiViewOfChange();
-                            formValidator.validateRoot();
+                            if (formValidator != null)
+                            {
+                                formValidator.validateRoot();
+                            }
                             
                             newObjsList.addAll(newDataObjects);
                             
