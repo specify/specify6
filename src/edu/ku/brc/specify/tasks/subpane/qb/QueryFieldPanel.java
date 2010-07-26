@@ -270,27 +270,27 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             return text.getText();
         }
         
-        /**
-         * @return true unless the entered criteria is really messed up.
-         */
-        public boolean isValidPairEntry()
-        {
-            if (showingPair)
-            {
-                return (StringUtils.isBlank(text1.getText()) && StringUtils.isBlank(text2.getText()))
-                    || (!StringUtils.isBlank(text1.getText()) && !StringUtils.isBlank(text2.getText()));
-            }
-            
-            return true;
-        }   
-        
-        /**
-         * @return showingPair.
-         */
-        public boolean isShowingPair()
-        {
-            return showingPair;
-        }
+//        /**
+//         * @return true unless the entered criteria is really messed up.
+//         */
+//        public boolean isValidPairEntry()
+//        {
+//            if (showingPair)
+//            {
+//                return (StringUtils.isBlank(text1.getText()) && StringUtils.isBlank(text2.getText()))
+//                    || (!StringUtils.isBlank(text1.getText()) && !StringUtils.isBlank(text2.getText()));
+//            }
+//            
+//            return true;
+//        }   
+//        
+//        /**
+//         * @return showingPair.
+//         */
+//        public boolean isShowingPair()
+//        {
+//            return showingPair;
+//        }
         
         /**
          * @param showingPair
@@ -1119,6 +1119,14 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                         for (int s = 0; s < criteriaStrs.length; s++)
                         {
                             tester.newInstance((String)criteriaStrs[s]);
+                            
+                            //remove leading zeroes
+                            String newString = criteriaStrs[s].toString();
+                            while (newString.startsWith("0"))
+                            {
+                            	newString = newString.substring(1);
+                            }
+                            criteriaStrs[s] = newString;
                         }
                     }
                     catch (NoSuchMethodException ex)
