@@ -516,18 +516,6 @@
             </altviews>
         </view>
 
-        <view name="MorphBankStatus"
-            class="edu.ku.brc.specify.datamodel.MorphBankStatus"
-            busrules="edu.ku.brc.specify.datamodel.busrules.MorphBankStatusBusRules"
-            isinternal="false"
-            resourcelabels="false">
-            <desc><![CDATA[MorphBankStatus form.]]></desc>
-            <altviews>
-                <altview name="MorphBankStatus View" viewdef="MorphBankStatus" mode="view"/>
-                <altview name="MorphBankStatus Edit" viewdef="MorphBankStatus" mode="edit" default="true"/>
-            </altviews>
-        </view>
-
         <view name="MorphBankView"
             class="edu.ku.brc.specify.datamodel.MorphBankView"
             busrules="edu.ku.brc.specify.datamodel.busrules.MorphBankViewBusRules"
@@ -2393,40 +2381,6 @@
             </rows>
         </viewdef>
         
-         <viewdef
-            type="form"
-            name="MorphBankStatus"
-            class="edu.ku.brc.specify.datamodel.MorphBankStatus"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            <desc><![CDATA[MorphBankStatus]]></desc>
-            
-            <columnDef>p,5dlu,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
-            <!--<enableRules>
-                <rule id="georef"><![CDATA[localityName.isNotEmpty() && geography.isNotEmpty()]]></rule>
-            </enableRules>-->
-            
-            <rows>
-                <row>
-                    <cell type="label" labelfor="mbImageId"/>
-                    <cell type="field" id="mbImageId" name="mbImageId" uitype="text" />
-                </row>
-                <row>
-                    <cell type="label" labelfor="timeStampLastSend"/>
-                    <cell type="field" id="timeStampLastSend" name="timeStampLastSend" uitype="text" readonly="true" uifieldformatter="Date"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="timeStampLastUpdateCheck"/>
-                    <cell type="field" id="timeStampLastUpdateCheck" name="timeStampLastUpdateCheck" uitype="text" readonly="true" uifieldformatter="Date"/>
-                </row>
-                <!--<row>
-                    <cell type="label" labelfor="attachment"/>
-                    <cell type="field" id="attachment" name="attachment" uitype="querycbx" initialize="name=Attachment" readonly="true" colspan="14"/>
-                </row>-->
-            </rows>
-        </viewdef>
-
         <viewdef
             type="form"
             name="MorphBankView"

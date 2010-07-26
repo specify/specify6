@@ -110,16 +110,22 @@ public class DataEntryConfigDlg extends TaskConfigureDlg
             if (hash.get(view.getName()) == null)
             {
                 DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
-                if (!ti.isHidden() && !InteractionsTask.isInteractionTable(ti.getTableId()))
+                if (ti != null)
                 {
-                    hash.put(view.getName(), view);
-                    String title = ti != null ? ti.getTitle() : view.getName();
-                    if (newAvailViews.get(title) != null)
+                    if (!ti.isHidden() && !InteractionsTask.isInteractionTable(ti.getTableId()))
                     {
-                        title = view.getName();
+                        hash.put(view.getName(), view);
+                        String title = ti != null ? ti.getTitle() : view.getName();
+                        if (newAvailViews.get(title) != null)
+                        {
+                            title = view.getName();
+                        }
+                        uniqueList.add(title);
+                        newAvailViews.put(title, view);
                     }
-                    uniqueList.add(title);
-                    newAvailViews.put(title, view);
+                } else
+                {
+                    System.err.println("DBTableInfo was null for class["+view.getClassName()+"]");
                 }
             }
         }
