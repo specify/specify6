@@ -40,10 +40,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.auth.BasicPermisionPanel;
 import edu.ku.brc.af.auth.SecurityMgr;
-import edu.ku.brc.af.auth.SecurityOption;
-import edu.ku.brc.af.auth.SecurityOptionIFace;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
@@ -547,28 +544,6 @@ public class CollectionRelTask extends BaseTask
         toolbarItems.add(new ToolBarItemDesc(btn));
         */
         return toolbarItems;
-    }
-    
-  //-------------------------------------------------------
-    // SecurityOption Interface
-    //-------------------------------------------------------
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.tasks.BaseTask#getAdditionalSecurityOptions()
-     */
-    @Override
-    public List<SecurityOptionIFace> getAdditionalSecurityOptions()
-    {
-        List<SecurityOptionIFace> list = new ArrayList<SecurityOptionIFace>();
-        
-        list.add(new SecurityOption(COLREL_SECURITY, 
-                getResourceString("COLREL_TITLE"), 
-                securityPrefix,
-                new BasicPermisionPanel(COLREL_TITLE, 
-                                        "COLREL_VIEW", 
-                                        "COLREL_EDIT")));
-
-        return list;
     }
     
     /* (non-Javadoc)
