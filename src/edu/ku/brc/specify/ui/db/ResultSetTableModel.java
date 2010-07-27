@@ -273,7 +273,13 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
          * Everything seems OK now.
          * 
          */
-        return Object.class; //whatever getValueAt(?, column) returns.
+        Class<?> cls = getColumnClass2(column);
+        if (cls == java.util.Calendar.class)
+        {
+            return String.class; //whatever getValueAt(?, column) returns.
+        }
+        return cls;
+        //return Object.class; //whatever getValueAt(?, column) returns.
     }
     
     protected Class<?> getColumnClass2(int column)

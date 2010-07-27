@@ -25,6 +25,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.Color;
 import java.awt.FileDialog;
 import java.awt.Frame;
+import java.awt.GraphicsEnvironment;
 import java.awt.datatransfer.DataFlavor;
 import java.io.File;
 import java.util.Comparator;
@@ -1064,10 +1065,8 @@ public class ReportsBaseTask extends BaseTask
                     {
                         LabelsPane labelsPane = new LabelsPane(name, ReportsBaseTask.this, null);
                         DynamicReport dr = buildReport(table.getModel(), pageSetup);
-
-                        JRDataSource ds = new JRTableModelDataSource(table.getModel());
-                        JasperPrint  jp = DynamicJasperHelper.generateJasperPrint(dr, new ClassicLayoutManager(), ds);
-                        
+                        JRDataSource  ds = new JRTableModelDataSource(table.getModel());
+                        JasperPrint   jp = DynamicJasperHelper.generateJasperPrint(dr, new ClassicLayoutManager(), ds);
                         labelsPane.reportFinished(jp);
                         SubPaneMgr.getInstance().addPane(labelsPane);
                         
@@ -1112,6 +1111,26 @@ public class ReportsBaseTask extends BaseTask
      */
     public DynamicReport buildReport(final TableModel model, final PageSetupDlg pageSetupDlg) throws Exception
     {
+        // Find a Sans Serif Font on the System
+        String fontName = null;
+        
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        for (java.awt.Font font : ge.getAllFonts())
+        {
+            String fName = font.getFamily().toLowerCase();
+            if (StringUtils.contains(fName, "sansserif") || 
+                StringUtils.contains(fName, "arial") || 
+                StringUtils.contains(fName, "verdana"))
+            {
+                fontName = font.getFamily();
+            }
+        }
+        
+        if (fontName == null)
+        {
+            fontName = Font._FONT_TIMES_NEW_ROMAN;
+        }
+        
         /**
          * Creates the DynamicReportBuilder and sets the basic options for the report
          */
@@ -1123,7 +1142,7 @@ public class ReportsBaseTask extends BaseTask
         Style columDetailWhite = new Style();
         columDetailWhite.setBorder(Border.THIN);
         columDetailWhite.setBackgroundColor(Color.WHITE);
-        columDetailWhite.setFont(Font.ARIAL_SMALL);
+        columDetailWhite.setFont(new Font(10, fontName, true));
         columDetailWhite.setHorizontalAlign(HorizontalAlign.CENTER);
         columDetailWhite.setBlankWhenNull(true);
         
@@ -1132,7 +1151,7 @@ public class ReportsBaseTask extends BaseTask
         columDetailWhiteBold.setBackgroundColor(Color.WHITE);
         
         Style titleStyle = new Style();
-        titleStyle.setFont(new Font(14, Font._FONT_VERDANA, true));
+        titleStyle.setFont(new Font(14, fontName, true));
         
         /*Style numberStyle = new Style();
         numberStyle.setHorizontalAlign(HorizontalAlign.RIGHT);
@@ -1211,7 +1230,7 @@ public class ReportsBaseTask extends BaseTask
             drb.addColumn(column);
             
             Style headerStyle = new Style();
-            headerStyle.setFont(new Font(12, Font._FONT_ARIAL, true));
+            headerStyle.setFont(new Font(12, fontName, true));
             headerStyle.setBorder(Border.THIN);
             headerStyle.setHorizontalAlign(HorizontalAlign.CENTER);
             headerStyle.setVerticalAlign(VerticalAlign.MIDDLE);
