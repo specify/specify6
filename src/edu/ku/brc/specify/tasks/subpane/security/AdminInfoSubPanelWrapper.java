@@ -23,26 +23,22 @@ import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Set;
-import java.util.Vector;
 
 import javax.swing.JPanel;
 
 import edu.ku.brc.af.auth.specify.permission.PermissionService;
+import edu.ku.brc.af.ui.db.TextFieldWithInfo;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayPanel;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
-import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.busrules.SpecifyUserBusRules;
-import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Wraps a JPanel with a permission editor (if panel for group or user) 
@@ -56,6 +52,7 @@ public class AdminInfoSubPanelWrapper
 {
     private JPanel                      displayPanel;
     private List<PermissionPanelEditor> permissionEditors; 
+    private TextFieldWithInfo           agentTFWI   = null;
     
     private SpPrincipal                 principal   = null;  // first  Principal
     private SpPrincipal                 principal2  = null;  // second Principal
@@ -77,14 +74,11 @@ public class AdminInfoSubPanelWrapper
         MultiView mv = getMultiView();
         if (mv != null)
         {
-            ValComboBoxFromQuery agentCBX = null;
             FormViewObj          fvo      = mv.getCurrentViewAsFormViewObj();
             Component            cbx      = fvo.getControlByName("agent");
-            if (cbx != null && cbx instanceof ValComboBoxFromQuery)
+            if (cbx != null && cbx instanceof TextFieldWithInfo)
             {
-                agentCBX = (ValComboBoxFromQuery)cbx;
-                agentCBX.setReadOnlyMode();
-                agentCBX.registerQueryBuilder(new UserAgentVSQBldr(agentCBX));
+                agentTFWI = (TextFieldWithInfo)cbx;
             }
         }
     }
@@ -137,7 +131,8 @@ public class AdminInfoSubPanelWrapper
      * @return whether new data was set (usually from setting defaults)
      */
     public boolean setData(final DataModelObjBaseWrapper firstWrpArg, 
-                           final DataModelObjBaseWrapper secondWrpArg)
+                           final DataModelObjBaseWrapper secondWrpArg,
+                           final Division                division)
     {
         firstWrp  = firstWrpArg;
         secondWrp = secondWrpArg;
@@ -176,6 +171,14 @@ public class AdminInfoSubPanelWrapper
                 secondPrincipal = (SpPrincipal)secondObj; // must be the user group
                 
                 panel.setData(user);
+                for (Agent agent : user.getAgents())
+                {
+                    if (agent.getDivision().getId().equals(division.getId()))
+                    {
+                        agentTFWI.setValue(agent, null);
+                        break;
+                    }
+                }
                 
             } else if (firstObj instanceof SpPrincipal)
             {
@@ -224,8 +227,7 @@ public class AdminInfoSubPanelWrapper
     /**
      * @param session the current session
      */
-    public void savePermissionData(final DataProviderSessionIFace session, 
-                                   final Discipline nodesDiscipline) throws Exception
+    public void savePermissionData(final DataProviderSessionIFace session) throws Exception
     {
         MultiView mv = getMultiView();
         mv.getDataFromUI();
@@ -234,21 +236,6 @@ public class AdminInfoSubPanelWrapper
         
         SpecifyUserBusRules busRules = new SpecifyUserBusRules();
         busRules.initialize(mv.getCurrentView());
-        
-        ValComboBoxFromQuery agentCBX = null;
-        FormViewObj          fvo      = mv.getCurrentViewAsFormViewObj();
-        Component            cbx      = fvo.getControlByName("agent");
-        if (cbx != null && cbx instanceof ValComboBoxFromQuery)
-        {
-            agentCBX = (ValComboBoxFromQuery)cbx;
-        }
-        
-        Agent uiAgent = (Agent)(agentCBX != null ? agentCBX.getValue() : null);
-        if (agentCBX != null && uiAgent == null)
-        {
-            UIRegistry.showError("There is no agent selected in the QueryCombobox!"); // I18N ???
-            return;
-        }
         
         // Couldn't call BuinessRules because of a double session
         // need to look into it later
@@ -264,7 +251,7 @@ public class AdminInfoSubPanelWrapper
             busRules.beforeMerge(user, session);
             
             // Get All the Agent Ids for this discipline.
-            String sql = "SELECT a.AgentID FROM discipline d INNER JOIN agent_discipline ad ON d.UserGroupScopeId = ad.DisciplineID " +
+            /*String sql = "SELECT a.AgentID FROM discipline d INNER JOIN agent_discipline ad ON d.UserGroupScopeId = ad.DisciplineID " +
                          "INNER JOIN agent a ON ad.AgentID = a.AgentID " +
                          "INNER JOIN specifyuser sp ON a.SpecifyUserID = sp.SpecifyUserID " +
                          "WHERE d.UserGroupScopeId = " + nodesDiscipline.getId() + " AND a.SpecifyUserID = " + user.getId();
@@ -291,7 +278,7 @@ public class AdminInfoSubPanelWrapper
                     set.add(uiAgent);
                     uiAgent.setSpecifyUser(user);
                 }
-            }
+            }*/
             
             user = session.merge(user);
             busRules.beforeSave(user, session);

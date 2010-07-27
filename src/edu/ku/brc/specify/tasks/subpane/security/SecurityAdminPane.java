@@ -123,6 +123,7 @@ public class SecurityAdminPane extends BaseSubPane
     private JAutoCompTextField                          searchText;
     
     private Discipline                                  nodesDiscipline = null;
+    private Division                                    nodesDivision = null;
     
     // manages creation and deletion of items on the navigation tree
     private NavigationTreeMgr            navTreeMgr;
@@ -319,6 +320,7 @@ public class SecurityAdminPane extends BaseSubPane
                 }
 
                 nodesDiscipline = navTreeMgr.getParentOfClass(node, Discipline.class);
+                nodesDivision   = nodesDiscipline.getDivision();
                 showInfoPanel(dataWrp, secondObjWrp, node.toString());
                 updateUIEnabled(dataWrp);
             }
@@ -838,7 +840,7 @@ public class SecurityAdminPane extends BaseSubPane
         if (panelWrapper != null)
         {
             currentDisplayPanel = panelWrapper;
-            if (currentDisplayPanel.setData(objWrapperArg, secondObjWrapperArg) && currentEditorPanel != null)
+            if (currentDisplayPanel.setData(objWrapperArg, secondObjWrapperArg, nodesDivision) && currentEditorPanel != null)
             {
                 currentEditorPanel.setHasChanged(true);
             }
@@ -1042,7 +1044,7 @@ public class SecurityAdminPane extends BaseSubPane
             session.beginTransaction();
             
             // then save permissions
-            currentDisplayPanel.savePermissionData(session, nodesDiscipline);
+            currentDisplayPanel.savePermissionData(session);
             currentEditorPanel.setHasChanged(false);
             
             session.commit();
@@ -1074,7 +1076,7 @@ public class SecurityAdminPane extends BaseSubPane
      */
     protected void refreshTreeNode()
     {
-        if (currentDisplayPanel.setData(objWrapper, secondObjWrapper) && currentEditorPanel != null)
+        if (currentDisplayPanel.setData(objWrapper, secondObjWrapper, nodesDivision) && currentEditorPanel != null)
         {
             currentEditorPanel.setHasChanged(true);
         }

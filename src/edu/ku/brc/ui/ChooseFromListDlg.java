@@ -41,6 +41,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
@@ -364,7 +365,7 @@ public class ChooseFromListDlg<T> extends JDialog
             list = new JList(listModel);
             if (icon != null)
             {
-                list.setCellRenderer(new IconListCellRenderer(icon)); // icon comes from the base
+                list.setCellRenderer(getListCellRenderer()); // icon comes from the base
                 // class (it's probably size
                 // 16)
             }
@@ -506,7 +507,14 @@ public class ChooseFromListDlg<T> extends JDialog
         setContentPane(builder.getPanel());
         pack();
         // setLocationRelativeTo(locationComp);
-
+    }
+    
+    /**
+     * @return a ListCellRenderer
+     */
+    protected ListCellRenderer getListCellRenderer()
+    {
+        return new IconListCellRenderer(icon);
     }
     
     /**

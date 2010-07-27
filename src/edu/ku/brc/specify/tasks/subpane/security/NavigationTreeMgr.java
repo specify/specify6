@@ -22,12 +22,14 @@ package edu.ku.brc.specify.tasks.subpane.security;
 import static edu.ku.brc.ui.UIRegistry.getMostRecentWindow;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Component;
 import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.swing.JLabel;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -43,10 +45,10 @@ import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.MultiView;
-import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.Encryption;
+import edu.ku.brc.specify.config.Scriptlet;
 import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Agent;
@@ -58,8 +60,10 @@ import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.UserGroupScope;
 import edu.ku.brc.specify.datamodel.busrules.SpecifyUserBusRules;
+import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * This class perform operations on the security administration navigation tree, such as 
@@ -647,9 +651,9 @@ public class NavigationTreeMgr
         
         SpPrincipal grpPrin = (SpPrincipal)parentWrp.getDataObj();
         
-        SpecifyUser spUser  = new SpecifyUser();
-        spUser.initialize();
-        spUser.setUserType(grpPrin.getGroupType());
+        SpecifyUser specifyUser  = new SpecifyUser();
+        specifyUser.initialize();
+        specifyUser.setUserType(grpPrin.getGroupType());
         
         ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)getMostRecentWindow(),
                                                                 null,
@@ -657,31 +661,33 @@ public class NavigationTreeMgr
                                                                 null,
                                                                 DBTableIdMgr.getInstance().getTitleForId(SpecifyUser.getClassTableId()),
                                                                 null,
-                                                                spUser.getClass().getName(),
+                                                                specifyUser.getClass().getName(),
                                                                 "specifyUserId",
                                                                 true,
                                                                 MultiView.HIDE_SAVE_BTN | 
                                                                 MultiView.DONT_ADD_ALL_ALTVIEWS | 
                                                                 MultiView.USE_ONLY_CREATION_MODE |
                                                                 MultiView.IS_NEW_OBJECT);
-        dlg.setOkLabel(getResourceString("SAVE"));
         dlg.createUI();
         
-        ValComboBoxFromQuery cbx = (ValComboBoxFromQuery)dlg.getMultiView().getCurrentViewAsFormViewObj().getControlByName("agent");
-        cbx.registerQueryBuilder(new UserAgentVSQBldr(cbx));
+        Component cbx = (Component)dlg.getMultiView().getCurrentViewAsFormViewObj().getControlByName("agent");
+        JLabel    lbl = dlg.getMultiView().getCurrentViewAsFormViewObj().getLabelFor(cbx);
+        cbx.setEnabled(false);
+        cbx.setVisible(false);
+        lbl.setVisible(false);
         
         AppContextMgr acMgr          = AppContextMgr.getInstance();
         Discipline    currDiscipline = acMgr.getClassObject(Discipline.class);
         Division      currDivision   = acMgr.getClassObject(Division.class);
         
         acMgr.setClassObject(Discipline.class, parentDiscipline);
-        acMgr.setClassObject(Division.class, parentDiscipline.getDivision());
+        acMgr.setClassObject(Division.class,   parentDiscipline.getDivision());
         
         // This is just an extra safety measure to make sure the current Discipline gets set back
         try
         {
             // Has no password here
-            dlg.setData(spUser);
+            dlg.setData(specifyUser);
             dlg.setVisible(true);
             
         } catch (Exception ex)
@@ -698,57 +704,71 @@ public class NavigationTreeMgr
         
         if (!dlg.isCancelled())
         {
-            String textPwd    = spUser.getPassword();
-            spUser.setPassword(Encryption.encrypt(textPwd, textPwd));
+            String textPwd = specifyUser.getPassword();
+            specifyUser.setPassword(Encryption.encrypt(textPwd, textPwd));
             
-            Agent userAgent = (Agent)cbx.getValue();
+            Agent userAgent = null;//(Agent)cbx.getValue();
             
             DataProviderSessionIFace session = null;
             try
             {
                 session = DataProviderFactory.getInstance().createSession();
                 
+                session.attach(parentDiscipline);
+                session.attach(parentDiscipline.getDivision());
+                
+                userAgent = getAgent(session, parentDiscipline.getDivision(), parentDiscipline, specifyUser);
+                if (userAgent == null)
+                {
+                    return null;
+                }
+                
                 session.beginTransaction();
                 
                 SpecifyUserBusRules busRules = new SpecifyUserBusRules();
                 busRules.initialize(dlg.getMultiView().getCurrentView());
-                busRules.beforeMerge(spUser, session);
-                busRules.beforeSave(spUser, session);
+                busRules.beforeMerge(specifyUser, session);
+                busRules.beforeSave(specifyUser, session);
 
                 // persist newly created user and agent
-                session.save(spUser);
+                session.save(specifyUser);
 
                 // get fresh copies of parentDiscipline and group to make Hibernate happy
                 Discipline  localDiscipline = session.get(Discipline.class, parentDiscipline.getUserGroupScopeId());
                 SpPrincipal localGroup      = session.get(SpPrincipal.class, grpPrin.getUserGroupId());
 
                 // link user to its group
-                spUser.getSpPrincipals().add(localGroup);
-                localGroup.getSpecifyUsers().add(spUser);
+                specifyUser.getSpPrincipals().add(localGroup);
+                localGroup.getSpecifyUsers().add(specifyUser);
 
                 // link agent to user
-                session.attach(userAgent);
-                spUser.getAgents().add(userAgent);
-                userAgent.setSpecifyUser(spUser);
+                if (userAgent.getId() != null)
+                {
+                    session.attach(userAgent);
+                }
+                specifyUser.getAgents().add(userAgent);
+                userAgent.setSpecifyUser(specifyUser);
 
                 // create a JAAS principal and associate it with the user
-                SpPrincipal userPrincipal = DataBuilder.createUserPrincipal(spUser);
+                SpPrincipal userPrincipal = DataBuilder.createUserPrincipal(specifyUser);
                 session.save(userPrincipal);
-                spUser.addUserToSpPrincipalGroup(userPrincipal);
+                specifyUser.addUserToSpPrincipalGroup(userPrincipal);
                 
                 // link newly create agent to discipline
                 userAgent.getDisciplines().add(localDiscipline);
+                
+                session.saveOrUpdate(userAgent);
                 
                 // this next line is not needed in order for the relationship to be saved
                 // and it is problematic when there are a lot of agents
                 //localDiscipline.getAgents().add(userAgent);
                 
-                session.commit();
+                    session.commit();
                 
                 parentWrp.setDataObj(localGroup);
                 
-                spUsers.add(spUser);
-                spUser = session.get(SpecifyUser.class, spUser.getId());
+                spUsers.add(specifyUser);
+                specifyUser = session.get(SpecifyUser.class, specifyUser.getId());
                 
             } catch (final Exception e1)
             {
@@ -765,7 +785,7 @@ public class NavigationTreeMgr
                 }
             }
             
-            DataModelObjBaseWrapper userWrp  = new DataModelObjBaseWrapper(spUser);
+            DataModelObjBaseWrapper userWrp  = new DataModelObjBaseWrapper(specifyUser);
             if (userWrp != null)
             {
                 DefaultMutableTreeNode  userNode = new DefaultMutableTreeNode(userWrp);
@@ -796,7 +816,7 @@ public class NavigationTreeMgr
         {
             DefaultMutableTreeNode  childNode = (DefaultMutableTreeNode)parentNode.getChildAt(i);
             DataModelObjBaseWrapper childWrp  = (DataModelObjBaseWrapper)childNode.getUserObject();
-            SpPrincipal prin = (SpPrincipal)childWrp.getDataObj();
+            SpPrincipal             prin      = (SpPrincipal)childWrp.getDataObj();
             groups.add(prin);
         }
         
@@ -806,7 +826,6 @@ public class NavigationTreeMgr
         dlg.pack();
         dlg.setSize(400, 300);
         UIHelper.centerAndShow(dlg);
-        
         
         if (dlg.isCancelled())
         {
@@ -847,7 +866,6 @@ public class NavigationTreeMgr
         try
         {
             session = DataProviderFactory.getInstance().createSession();
-            session.beginTransaction();
             
             prinGroup = session.merge(prinGroup);
             
@@ -859,34 +877,19 @@ public class NavigationTreeMgr
             prinGroup.getSpecifyUsers().add(specifyUser);
             specifyUser.getSpPrincipals().add(prinGroup);
             
-            Agent  clonedAgent;
-            String sql = String.format("SELECT AgentID FROM agent a WHERE a.SpecifyUserID = %d AND DivisionID = %d", specifyUser.getId(), currDivision.getId());
-            Integer existingAgentID = BasicSQLUtils.getCount(sql);
-            if (existingAgentID == null)
+            Agent userAgent = getAgent(session, parentDiscipline.getDivision(), parentDiscipline, specifyUser);
+            if (userAgent == null)
             {
-                Agent agent = specifyUser.getAgents().iterator().next();
-                clonedAgent = (Agent)agent.clone();
-                clonedAgent.setDivision(currDivision);
-                clonedAgent.getDisciplines().clear();
-                
-            } else
-            {
-                clonedAgent = (Agent)session.getData("FROM Agent agent WHERE id = " + existingAgentID);
+                return null;
             }
             
-            // Add the New Agent or Existing Agent to the New Discipline.
-            sql = String.format("SELECT COUNT(*) FROM agent_discipline WHERE AgentID = %d AND DisciplineID = %d", clonedAgent.getId(), parentDiscipline.getId());
-            int agtDspCnt = BasicSQLUtils.getCountAsInt(sql);
-            if (agtDspCnt < 1)
-            {
-                clonedAgent.getDisciplines().add(parentDiscipline);    
-            }
+            userAgent.setSpecifyUser(specifyUser);
+            specifyUser.getAgents().add(userAgent);
             
-            clonedAgent.setSpecifyUser(specifyUser);
-            specifyUser.getAgents().add(clonedAgent);
-            
+            session.beginTransaction();
+
             session.saveOrUpdate(specifyUser);
-            session.saveOrUpdate(clonedAgent);
+            session.saveOrUpdate(userAgent);
             
             // create a JAAS principal and associate it with the user
             SpPrincipal userPrincipal = DataBuilder.createUserPrincipal(specifyUser);
@@ -921,6 +924,143 @@ public class NavigationTreeMgr
         tree.setSelectionPath(new TreePath(lastUserNode.getPath()));
         
         return lastUserNode;
+    }
+    
+    /**
+     * @param session
+     * @param parentDivision
+     * @param parentDiscipline
+     * @param specifyUser
+     * @return
+     * @throws CloneNotSupportedException
+     */
+    private Agent getAgent(final DataProviderSessionIFace session,
+                           final Division    parentDivision,
+                           final Discipline  parentDiscipline,
+                           final SpecifyUser specifyUser) throws CloneNotSupportedException
+    {
+        Agent   userAgent = null;
+        Integer agentId   = null;
+        String  lastName  = null;
+        String  firstName = null;
+        
+        if (specifyUser.getId() != null)
+        {
+            String  sql = String.format("SELECT AgentID, LastName, FirstName FROM agent WHERE SpecifyUserID = %d", specifyUser.getId());
+            Vector<Object[]> agentRow = BasicSQLUtils.query(sql);
+            if (agentRow == null || agentRow.size() == 0)
+            {
+                UIRegistry.showError("Error finding an agent for the current division");
+                return null;
+            }
+            
+            Object[] row = agentRow.get(0);
+            lastName   = (String)row[1];
+            firstName  = (String)row[2];
+        }
+        
+        String sql = String.format("SELECT AgentID, LastName, FirstName, MiddleInitial FROM agent WHERE LastName = '%s' AND FirstName = '%s' AND DivisionID = %d", lastName, firstName, parentDivision.getId());
+        Vector<Object[]> agentRow = BasicSQLUtils.query(sql);
+        if (agentRow != null && agentRow.size() > 0)
+        {
+            Scriptlet scriptlet = new Scriptlet();
+            ArrayList<AgentInfo> list = new ArrayList<AgentInfo>();
+            for (Object[] agtRow : agentRow)
+            {
+                Integer  aId    = (Integer)agtRow[0];
+                String   lName  = (String)agtRow[1];
+                String   fName  = (String)agtRow[2]; 
+                String   mid    = (String)agtRow[3];
+                AgentInfo pair = new AgentInfo(aId, scriptlet.buildNameString(fName, lName, mid));
+                list.add(pair);
+            }
+            
+            ChooseFromListDlg<AgentInfo> agtDlg = new ChooseFromListDlg<AgentInfo>(
+                    (Frame)UIRegistry.getMostRecentWindow(), getResourceString("NVTM.CHSE_AGT"), list);
+            agtDlg.setVisible(true);
+            if (!agtDlg.isCancelled())
+            {
+                Pair<Integer, String> pair = agtDlg.getSelectedObject();
+                agentId = pair.first;
+            } else
+            {
+                return null;
+            }
+        }
+        
+        if (agentId == null) // Couldn't an existing agent
+        {
+            if (specifyUser.getAgents().size() > 0)
+            {
+                // Clone existing agent
+                Agent agent = specifyUser.getAgents().iterator().next();
+                userAgent = (Agent)agent.clone();
+                userAgent.setDivision(parentDivision);
+                userAgent.getDisciplines().clear();
+                
+            } else
+            {
+                // create new Agent here
+                userAgent = createNewAgent();
+                userAgent.setDivision(parentDivision);
+            }
+            
+        } else // clone existing agent
+        {
+            userAgent = (Agent)session.getData("FROM Agent agent WHERE id = " + agentId);
+            /*userAgent = (Agent)userAgent.clone();
+            userAgent.setDivision(parentDivision);
+            userAgent.getDisciplines().clear();*/
+        }
+        
+        // Add the New Agent or Existing Agent to the New Discipline.
+        int agtDspCnt = 0;
+        if (userAgent.getId() != null)
+        {
+            sql = String.format("SELECT COUNT(*) FROM agent_discipline WHERE AgentID = %d AND DisciplineID = %d", userAgent.getId(), parentDiscipline.getId());
+            agtDspCnt = BasicSQLUtils.getCountAsInt(sql);
+        }
+        
+        if (agtDspCnt < 1)
+        {
+            userAgent.getDisciplines().add(parentDiscipline);  
+            return userAgent;
+        }
+        return null;
+    }
+    
+    /**
+     * @return
+     */
+    private Agent createNewAgent()
+    {
+        Agent agent = new Agent();
+        agent.initialize();
+        
+        ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)getMostRecentWindow(),
+                null,       // ViewSet Name
+                "Agent",    // View Name
+                null,       // Display Name
+                DBTableIdMgr.getInstance().getTitleForId(Agent.getClassTableId()), // Title
+                null,       // Close Btn
+                Agent.class.getName(), // Class Name
+                "agentId",  // idFieldName
+                true,       // isEdit
+                MultiView.HIDE_SAVE_BTN | 
+                MultiView.DONT_ADD_ALL_ALTVIEWS | 
+                MultiView.USE_ONLY_CREATION_MODE |
+                MultiView.IS_NEW_OBJECT);
+        //dlg.setOkLabel(getResourceString("SAVE"));
+        dlg.createUI();
+        dlg.setData(agent);
+        
+        dlg.setVisible(true);
+        
+        if (!dlg.isCancelled())
+        {
+            return agent;
+        }
+        return null;
     }
     
     /**
@@ -963,5 +1103,36 @@ public class NavigationTreeMgr
             parent = (DefaultMutableTreeNode)parent.getParent();
         }
         return null;
+    }
+    
+    //------------------------------------------
+    class AgentInfo extends Pair<Integer, String>
+    {
+        /**
+         * 
+         */
+        public AgentInfo()
+        {
+            super();
+        }
+
+        /**
+         * @param first
+         * @param second
+         */
+        public AgentInfo(Integer first, String second)
+        {
+            super(first, second);
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.util.Pair#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return second;
+        }
+        
     }
 }

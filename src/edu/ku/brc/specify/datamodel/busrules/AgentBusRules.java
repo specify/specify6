@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import javax.swing.AbstractListModel;
 import javax.swing.JComboBox;
@@ -44,6 +45,7 @@ import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
+import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Address;
@@ -74,6 +76,8 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
     protected JTextField   lastNameText;
     
     protected String[]     typeTitles;
+    
+    protected ArrayList<Agent> cachedAgents = new ArrayList<Agent>();
     
     /**
      * Constructor.
@@ -326,6 +330,29 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
     public boolean afterSaveCommit(final Object dataObj, final DataProviderSessionIFace session)
     {
         setLSID((FormDataObjIFace)dataObj);
+        
+
+        if (cachedAgents.size() > 0)
+        {
+            try
+            {
+                session.beginTransaction();
+                for (Agent agent : cachedAgents)
+                {
+                    agent = session.merge(agent);
+                    session.saveOrUpdate(agent);
+                }
+                session.commit();
+                
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+                session.rollback();
+            } finally
+            {
+                cachedAgents.clear();
+            }
+        }
 
         return super.afterSaveCommit(dataObj, session);
     }
@@ -447,6 +474,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void beforeSave(final Object dataObj, final DataProviderSessionIFace session)
     {
@@ -466,6 +494,43 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                 // this next line is not needed in order for the relationship to be saved
                 // and it is problematic when there are a lot of agents
                 //discipline.getAgents().add(agent);
+            }
+            
+            if (agent.getId() != null && agent.getSpecifyUser() != null)
+            {
+                DataProviderSessionIFace tmpSession = null;
+                try
+                {
+                    cachedAgents.clear();
+                    tmpSession = DataProviderFactory.getInstance().createSession();
+                    
+                    String hql = String.format("SELECT a FROM Agent AS a INNER JOIN a.specifyUser AS su WHERE su.id = %d AND a.id <> %d", agent.getSpecifyUser().getId(), agent.getId());
+                    log.debug(hql);
+                    List<?> agents = tmpSession.getDataList(hql);
+                    for (Object agtObj : agents)
+                    {
+                        Agent agt = (Agent)agtObj;
+                        
+                        Agent dupAgent = (Agent)agent.clone();
+                        
+                        dupAgent.setAgentId(agt.getId());
+                        dupAgent.setVersion(agt.getVersion());
+                        
+                        cachedAgents.add(dupAgent);
+                        
+                        System.out.println(agt.getId() + agt.getLastName());
+                    }
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    ex.printStackTrace();
+                } finally
+                {
+                    if (tmpSession != null)
+                    {
+                        tmpSession.close();
+                    }
+                }
             }
         }
     }

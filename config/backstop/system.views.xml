@@ -388,7 +388,7 @@
                 </row> -->
                 <row>
                     <cell type="label" labelfor="4" label="Agent"/>
-                    <cell type="field" id="4" name="agent" uitype="querycbx" initialize="name=AgentSSPU;title=Agent;adjustquery=false" isrequired="true" ignore="true"/>
+                    <cell type="field" id="4" name="agent" uitype="textfieldinfo" initialize="name=AgentSSPU;title=Agent;" isrequired="false" ignore="true"/>
                 </row>
                 <!-- <row>
                     <cell type="label" labelfor="key" label="Key"/>
