@@ -913,6 +913,8 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         }
         srcFile.clearEditFlags();
         //System.out.println(cnt);
+        
+        statusBar.setText(String.format("%d new items.", newKeyList.size()));
     }
     
     /**

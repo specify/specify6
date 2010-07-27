@@ -116,8 +116,15 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         new MacOSAppHandler(this);
         
         appName             = "Schema Localizer"; //$NON-NLS-1$
-        appVersion          = "6.0"; //$NON-NLS-1$
-        appBuildVersion     = "200706111309 (SVN: 2291)"; //$NON-NLS-1$
+        appVersion          = UIHelper.getInstall4JInstallString();
+        if (appVersion == null)
+        {
+            appVersion = "Unknown";
+        }
+        
+        UIRegistry.loadAndPushResourceBundle("bld");
+        appBuildVersion     = UIRegistry.getResourceString("buildtime");
+        UIRegistry.popResourceBundle();
         
         setTitle(appName + " " + appVersion);// + "  -  "+ appBuildVersion); //$NON-NLS-1$
     }

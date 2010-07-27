@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -38,7 +37,6 @@ import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.DateTools;
@@ -65,7 +63,6 @@ import com.apple.eawt.ApplicationEvent;
 
 import edu.ku.brc.specify.conversion.ConversionLogger;
 import edu.ku.brc.specify.conversion.TableWriter;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
@@ -268,9 +265,9 @@ public class LocalizerApp extends LocalizableBaseApp
             System.exit(1);
         }
         File SRC_DIR = new File("src");
-        if (INDEX_DIR.exists())
+        if (!SRC_DIR.exists())
         {
-            System.out.println("Cannot save index to '" + INDEX_DIR + "' directory, please delete it first");
+            System.out.println("Source directory doesn't exist '" + SRC_DIR);
             System.exit(1);
         }
 
