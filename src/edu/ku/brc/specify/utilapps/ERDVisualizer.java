@@ -36,6 +36,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Locale;
@@ -99,6 +100,8 @@ public class ERDVisualizer extends JFrame
     protected File    schemaDir;
     protected Timer   timer;
     protected boolean doPNG = true;
+    
+    protected HashSet<String> pngNameHash = new HashSet<String>();
     
     // For Trees
     
@@ -503,6 +506,8 @@ public class ERDVisualizer extends JFrame
      */
     protected void createIndexFile()
     {
+        HashSet<String> nameHash = new HashSet<String>();
+        
         String fName = schemaDir.getAbsolutePath() + File.separator + "index.html";
         try
         {
@@ -515,11 +520,22 @@ public class ERDVisualizer extends JFrame
             output.write(StringUtils.replace(subContent, "<!-- Title -->", "Schema Index"));
         
             output.write("<UL>");
-            output.write("<LI><a href=\"CollectionOverview.html\">Schema Overview</a></LI>");
+            output.write("<LI><a href=\"CollectionOverview.html\">Schema Overview</a></LI>\n");
             for (ERDTable t : tblTracker.getList())
             {
                 DBTableInfo ti = t.getTable();
-                output.write("<LI><a href=\""+ti.getShortClassName()+".html\">"+StringEscapeUtils.escapeHtml(ti.getTitle())+"</a></LI>");
+                
+                // Make Unique file name
+                String outFileName = ti.getShortClassName();
+                int i = 1;
+                while (nameHash.contains(outFileName))
+                {
+                    outFileName = ti.getShortClassName() + i;
+                    i++;
+                }
+                nameHash.add(outFileName);
+                
+                output.write("<LI><a href=\""+outFileName+".html\">"+StringEscapeUtils.escapeHtml(ti.getTitle())+"</a></LI>\n");
             }
             output.write("</UL>");
             output.write(mapTemplate.substring(index+contentTag.length()+1, mapTemplate.length()));
@@ -671,6 +687,14 @@ public class ERDVisualizer extends JFrame
         String fName = schemaDir.getAbsolutePath() + File.separator + name;
         try
         {
+            String origName = fName;
+            int i = 1;
+            while (pngNameHash.contains(fName))
+            {
+                fName = origName + i;
+            }
+            pngNameHash.add(fName);
+            
             File           html   = new File(fName + ".html");
             BufferedWriter output = new BufferedWriter( new FileWriter(html) );
             

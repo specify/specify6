@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.utilapps;
 
 import java.awt.Font;
+import java.io.File;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -28,6 +29,9 @@ import javax.swing.JLabel;
 
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.datamodel.SpLocaleContainer;
+import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
 
 /**
  * Reads in and Tracks each tables usage.
@@ -49,6 +53,8 @@ public class TableTracker
 
     protected NodeInfo defaultNodeInfo     = new NodeInfo();
     protected NodeInfo defaultSkipNodeInfo = new NodeInfo(true, false, false, true, null);
+    
+    protected DBTableIdMgr tableMgr;
 
     
     /**
@@ -56,13 +62,27 @@ public class TableTracker
      */
     public TableTracker()
     {
+        boolean doWorkBench = false;
+        if (doWorkBench)
+        {
+            tableMgr = new DBTableIdMgr(false);
+            tableMgr.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml")));
+            
+            SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(SpLocaleContainer.WORKBENCH_SCHEMA, tableMgr);
+            schemaLocalizer.load();
+            schemaLocalizer.setTitlesIntoSchema();            
+        } else
+        {
+            tableMgr = DBTableIdMgr.getInstance();  
+        }
+        
         font = new JLabel().getFont().deriveFont((float)11.0);
         list = new Vector<ERDTable>();
         
         defaultNodeInfo.setClassName("defaultNodeInfo");
         defaultNodeInfo.setClassName("defaultSkipNodeInfo");
         
-        for (DBTableInfo tbl : DBTableIdMgr.getInstance().getTables())
+        for (DBTableInfo tbl : tableMgr.getTables())
         {
             ERDTable table = new ERDTable(tbl);
             table.build(font);
