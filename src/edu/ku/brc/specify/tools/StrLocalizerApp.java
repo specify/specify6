@@ -137,59 +137,59 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
 {
     private static final Logger  log = Logger.getLogger(StrLocalizerApp.class);
     
-    protected JFrame         frame = null;
-    protected GhostGlassPane glassPane;
+    protected JFrame                       frame         = null;
+    protected GhostGlassPane               glassPane;
 
-    protected File          rootDir      = null;
-    protected File          baseDir      = null;
-    protected String        srcLangCode  = "en";
-    protected String        currentPath  = null;
-    protected LanguageEntry destLanguage = null;
-    protected Locale        englishLocale = Locale.US;
+    protected File                         rootDir       = null;
+    protected File                         baseDir       = null;
+    protected String                       srcLangCode   = "en";
+    protected String                       currentPath   = null;
+    protected LanguageEntry                destLanguage  = null;
+    protected Locale                       englishLocale = Locale.US;
     
-    protected StrLocaleFile srcFile;
-    protected StrLocaleFile destFile;
+    protected StrLocaleFile                srcFile;
+    protected StrLocaleFile                destFile;
     
-    protected Vector<StrLocaleFile> srcFiles = new Vector<StrLocaleFile>();
-    protected Vector<StrLocaleFile> destFiles = new Vector<StrLocaleFile>();
+    protected Vector<StrLocaleFile>        srcFiles      = new Vector<StrLocaleFile>();
+    protected Vector<StrLocaleFile>        destFiles     = new Vector<StrLocaleFile>();
     
-    protected Vector<LanguageEntry> languages = new Vector<LanguageEntry>();
+    protected Vector<LanguageEntry>        languages     = new Vector<LanguageEntry>();
     
-    protected JList      termList;
-    protected JList      newTermList;
+    protected JList                        termList;
+    protected JList                        newTermList;
     
-    protected JTextArea  srcLbl;
-    protected JLabel	 destLbl;
-    protected JTextField textField;
-    protected JButton    prevBtn;
-    protected JButton    nxtBtn;
-    protected JButton    transBtn;
-    protected JLabel	 fileLbl;
-    protected JPanel     mainPane;
-    protected JStatusBar statusBar;
+    protected JTextArea                    srcLbl;
+    protected JLabel	                   destLbl;
+    protected JTextField                   textField;
+    protected JButton                      prevBtn;
+    protected JButton                      nxtBtn;
+    protected JButton                      transBtn;
+    protected JLabel	                   fileLbl;
+    protected JPanel                       mainPane;
+    protected JStatusBar                   statusBar;
     
     // SearchBox
-    protected SearchBox                     searchBox;
-    protected JAutoCompTextField            searchText;
-    protected JButton                       searchBtn;
+    protected SearchBox                    searchBox;
+    protected JAutoCompTextField           searchText;
+    protected JButton                      searchBtn;
     
-    protected JTable                        searchResultsTbl;
-    protected SearchResultsModel            model;
-    protected Vector<StrLocaleEntry>        results    = new Vector<StrLocaleEntry>();
-    protected LocalizerSearchHelper         searchable = null;
-    protected HashSet<String>               fndKeyHash = new HashSet<String>();
+    protected JTable                       searchResultsTbl;
+    protected SearchResultsModel           model;
+    protected Vector<StrLocaleEntry>       results    = new Vector<StrLocaleEntry>();
+    protected LocalizerSearchHelper        searchable = null;
+    protected HashSet<String>              fndKeyHash = new HashSet<String>();
     
     
-    protected JMenuItem  startTransMenuItem;
-    protected JMenuItem  stopTransMenuItem;
+    protected JMenuItem                    startTransMenuItem;
+    protected JMenuItem                    stopTransMenuItem;
     
-    protected ResultSetController         rsController;
-    protected ResultSetControllerListener rscListener = null;
-    protected int                         oldInx      = -1;
-    protected boolean                     hasChanged  = false;
+    protected ResultSetController          rsController;
+    protected ResultSetControllerListener  rscListener = null;
+    protected int                          oldInx      = -1;
+    protected boolean                      hasChanged  = false;
     
-    protected Vector<String> newKeyList = new Vector<String>();
-    protected AtomicBoolean  contTrans  = new AtomicBoolean(true);
+    protected Vector<String>               newKeyList  = new Vector<String>();
+    protected AtomicBoolean                contTrans   = new AtomicBoolean(true);
     
     
     /**
@@ -496,6 +496,39 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
     protected void setupSrcFiles(final String dirName)
     {
         String postFix = "_" + (destLanguage == null ? "en" : destLanguage.getCode()) + ".properties";
+        
+        boolean doRewrite = false;
+        File    verFile   = new File(dirName + File.separator + "version");
+        if (verFile.exists())
+        {
+            try
+            {
+                String appVersion = UIHelper.getInstall4JInstallString();
+                String version    = FileUtils.readFileToString(verFile);
+                
+                doRewrite = !version.equals(appVersion) && appVersion.compareTo(version) > 1;
+                
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            } 
+        } else
+        {
+            doRewrite = true;
+        }
+        
+        if (doRewrite)
+        {
+            try
+            {
+                FileUtils.writeStringToFile(verFile, UIHelper.getInstall4JInstallString());
+                
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            } 
+            doCopyLocale(englishLocale, false);
+        }
         
     	srcFiles.clear();
     	destFiles.clear();
