@@ -20,18 +20,11 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import java.awt.Dialog;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.JButton;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -41,16 +34,10 @@ import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.Viewable;
-import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Loan;
-import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -121,11 +108,12 @@ public class PreparationBusRules extends AttachmentOwnerBaseBusRules
                         "Loan",
                         null,
                         "Loans", // I18N ?
-                        null,
+                        UIRegistry.getResourceString("CLOSE"),
                         Loan.class.getName(),
                         "loanId",
                         false,
-                        MultiView.HIDE_SAVE_BTN);
+                        MultiView.HIDE_SAVE_BTN |
+                        MultiView.RESULTSET_CONTROLLER);
                 
                 Vector<Loan> loans = new Vector<Loan>();
                 
@@ -133,9 +121,8 @@ public class PreparationBusRules extends AttachmentOwnerBaseBusRules
                 try
                 {
                     session = DataProviderFactory.getInstance().createSession();
-                    
-                    
                     String sql = " SELECT DISTINCT loan.LoanID FROM loan Inner Join loanpreparation AS lp ON loan.LoanID = lp.LoanID WHERE loan.IsClosed <> 1 AND lp.PreparationID ="+prep.getId();
+                    //log.debug(sql);
                     for (Integer id : BasicSQLUtils.queryForInts(sql))
                     {
                         Loan loan = session.get(Loan.class, id);
