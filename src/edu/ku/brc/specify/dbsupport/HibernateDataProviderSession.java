@@ -40,6 +40,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.exception.JDBCConnectionException;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.StaleObjectException;
@@ -60,7 +61,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     // Used for checking to see if we have any dangling creates without closes
     protected static int     createsCounts = 0;
     protected static int     closesCounts  = 0;
-    protected static boolean SHOW_COUNTS   = false; // XXX RELEASE
+    protected static boolean SHOW_COUNTS   = AppPreferences.getLocalPrefs().getBoolean("CONN_COUNTS", false);
     
     protected Session     session         = null;
     protected Exception   recentException = null;
