@@ -6,7 +6,6 @@ package edu.ku.brc.specify.utilapps.morphbank;
 import java.util.List;
 import java.util.Vector;
 
-import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 
 /**
@@ -27,15 +26,19 @@ public class BarCodeFileNameParser implements FileNameParserIFace
 	public List<Integer> getRecordIds(String fileName)
 	{
 		List<Integer> result = new Vector<Integer>();
-		String sql = "select CollectionObjectID from collectionobject where AltCatalogNumber = '" + fileName + "'";
-		Vector<Object> idObjs = BasicSQLUtils.querySingleCol(sql);
-		if (idObjs != null)
-		{
-			for (Object idObj : idObjs)
-			{
-				result.add((Integer )idObj);
-			}
-		}
+		String id = fileName.replace("_", "");
+		id = id.substring(0, id.length() - 4);
+		String sql = "select CollectionObjectID from collectionobject where AltCatalogNumber = '" + id + "'";
+		System.out.println(sql);
+		result.add(1);
+		//Vector<Object> idObjs = BasicSQLUtils.querySingleCol(sql);
+//		if (idObjs != null)
+//		{
+//			for (Object idObj : idObjs)
+//			{
+//				result.add((Integer )idObj);
+//			}
+//		}
 		return result;
 	}
 

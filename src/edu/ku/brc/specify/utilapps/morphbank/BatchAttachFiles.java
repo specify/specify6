@@ -22,6 +22,7 @@ import edu.ku.brc.util.Pair;
  */
 public class BatchAttachFiles
 {
+	protected static String[] exts = {"TIF", "JPG", "PNG"};
 	protected final Class<?> tblClass;
 	protected final Class<?> attachmentClass;
 	protected final FileNameParserIFace fnParser;
@@ -89,7 +90,7 @@ public class BatchAttachFiles
 	protected void bldFiles()
 	{
 		files = new Vector<File>();
-		Collection<?> fs = FileUtils.listFiles(directory, null, null);
+		Collection<?> fs = FileUtils.listFiles(directory, exts, false);
 		for (Object f : fs)
 		{
 			files.add((File )f);
@@ -116,7 +117,7 @@ public class BatchAttachFiles
 	 */
 	protected void attachFile(File f)
 	{
-		
+		System.out.println("Attaching " + f.getName());
 		List<Integer> ids = fnParser.getRecordIds(f.getName());
 		if (ids.size() == 0)
 		{
@@ -133,6 +134,23 @@ public class BatchAttachFiles
 	
 	protected void attachFileTo(File f, Integer attachTo)
 	{
-		
+		System.out.println("Attaching " + f.getName() + " to " + attachTo);
+	}
+	
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) 
+	{
+		try
+		{
+			BatchAttachFiles baf = new BatchAttachFiles(CollectionObject.class, new BarCodeFileNameParser(),
+					new File("/home/timo/TroyImages"));
+			baf.attachFiles();
+		} catch (Exception ex)
+		{
+			System.out.println(ex.getMessage());
+			System.exit(-1);
+		}
 	}
 }
