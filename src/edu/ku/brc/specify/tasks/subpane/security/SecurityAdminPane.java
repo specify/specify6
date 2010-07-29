@@ -320,7 +320,7 @@ public class SecurityAdminPane extends BaseSubPane
                 }
 
                 nodesDiscipline = navTreeMgr.getParentOfClass(node, Discipline.class);
-                nodesDivision   = nodesDiscipline.getDivision();
+                nodesDivision   = nodesDiscipline != null ? nodesDiscipline.getDivision() : null;
                 showInfoPanel(dataWrp, secondObjWrp, node.toString());
                 updateUIEnabled(dataWrp);
             }

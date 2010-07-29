@@ -977,7 +977,7 @@ public class NavigationTreeMgr
             
             ChooseFromListDlg<AgentInfo> agtDlg = new ChooseFromListDlg<AgentInfo>(
                     (Frame)UIRegistry.getMostRecentWindow(), getResourceString("NVTM.CHSE_AGT"), list);
-            agtDlg.setVisible(true);
+            UIHelper.centerAndShow(agtDlg);
             if (!agtDlg.isCancelled())
             {
                 Pair<Integer, String> pair = agtDlg.getSelectedObject();
@@ -1002,7 +1002,13 @@ public class NavigationTreeMgr
             {
                 // create new Agent here
                 userAgent = createNewAgent();
-                userAgent.setDivision(parentDivision);
+                if (userAgent != null)
+                {
+                    userAgent.setDivision(parentDivision);
+                } else
+                {
+                    return null;
+                }
             }
             
         } else // clone existing agent
@@ -1054,7 +1060,8 @@ public class NavigationTreeMgr
         dlg.createUI();
         dlg.setData(agent);
         
-        dlg.setVisible(true);
+        dlg.pack();
+        UIHelper.centerAndShow(dlg);
         
         if (!dlg.isCancelled())
         {

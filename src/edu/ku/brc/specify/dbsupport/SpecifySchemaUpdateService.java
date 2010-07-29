@@ -740,11 +740,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      */
     public void fixAgentsDivsDisps(final Connection conn)
     {
-        String DDFMT = "%d,%d";
-        
-        HashMap<Integer, Integer> missingDivToSpUser = new HashMap<Integer, Integer>();
-        
-        boolean doUpdate = true;
+        boolean           doUpdate = true;
         PreparedStatement pStmt    = null;
         PreparedStatement pStmtDel = null;
         PreparedStatement pStmtAdd = null;
@@ -754,28 +750,34 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             pStmtDel = conn.prepareStatement("DELETE FROM agent_discipline WHERE AgentID = ?");
             pStmtAdd = conn.prepareStatement("INSERT INTO agent_discipline (AgentID, DisciplineID) VALUES(?, ?)");
             
-            String sql = "SELECT T1.SpecifyUserID FROM (SELECT COUNT(su.SpecifyUserID) AS cnt, su.SpecifyUserID FROM specifyuser su INNER JOIN agent a ON su.SpecifyUserID = a.SpecifyUserID GROUP BY su.SpecifyUserID) T1 WHERE cnt > 1";
+            // Remove all the agent_discipline records for agents that have users
+            String sql = " SELECT a.AgentID FROM specifyuser s INNER JOIN agent a ON s.SpecifyUserID = a.SpecifyUserID";
+            for (Object[] row : BasicSQLUtils.query(sql))
+            {
+                Integer agtId = (Integer)row[0];
+                pStmtDel.setInt(1, agtId);
+                if (doUpdate) pStmtDel.execute();
+                log.debug("Removing all agent_disp for agentId: " + agtId);
+            }
+            
+            sql = "SELECT T1.SpecifyUserID FROM (SELECT COUNT(su.SpecifyUserID) AS cnt, su.SpecifyUserID FROM specifyuser su INNER JOIN agent a ON su.SpecifyUserID = a.SpecifyUserID GROUP BY su.SpecifyUserID) T1 WHERE cnt > 1";
+            //String sql = "SELECT SpecifyUserID FROM specifyuser";
+            log.debug(sql);
             Vector<Integer> rows = BasicSQLUtils.queryForInts(conn, sql);
             for (Integer spId : rows)
             {
                 log.debug("-------- For SpUser: " + spId + " --------------");
                 
                 //--------------------------------------------------------------
-                // Get all the available Divisions
-                //--------------------------------------------------------------
-                /*Vector<Integer> divIds = new Vector<Integer>();
-                for (Object divObj : BasicSQLUtils.querySingleCol(conn, "SELECT DivisionID FROM division ORDER BY DivisionID"))
-                {
-                    divIds.add((Integer)divObj);
-                }*/
-                
-                //--------------------------------------------------------------
                 // Get the Disciplines for SpecifyUser from the Permissions
                 //--------------------------------------------------------------
-                HashMap<String, Pair<Integer, Integer>> divDspHashMap      = new HashMap<String, Pair<Integer,Integer>>();
-                HashSet<Integer>                        disciplinesHashSet = new HashSet<Integer>();
-                HashSet<Integer>                        divisionHashSet    = new HashSet<Integer>();
-                sql = "SELECT dv.UserGroupScopeId, ds.UserGroupScopeId FROM collection cln " +
+                //HashMap<String, Pair<Integer, Integer>> divDspHashMap      = new HashMap<String, Pair<Integer,Integer>>();
+                //HashSet<Integer>                        disciplinesHashSet = new HashSet<Integer>();
+                //HashSet<Integer>                        divisionHashSet    = new HashSet<Integer>();
+                
+                ArrayList<Integer>        divsList        = new ArrayList<Integer>();
+
+                sql = "SELECT DISTINCT dv.UserGroupScopeId FROM collection cln " +
                       "INNER JOIN spprincipal p ON cln.UserGroupScopeId = p.userGroupScopeID " +
                       "INNER JOIN discipline ds ON cln.DisciplineID = ds.UserGroupScopeId " +
                       "INNER JOIN division dv ON ds.DivisionID = dv.UserGroupScopeId " +
@@ -783,19 +785,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                       "INNER JOIN specifyuser su ON su_pr.SpecifyUserID = su.SpecifyUserID  WHERE su.SpecifyUserID = " + spId;
                 log.debug(sql);
                 
-                // Collect all the Div / Dsp Pairs for the SpUser
-                // where the user has been assigned to access the 
-                // a Collection
-                for (Object[] row : BasicSQLUtils.query(conn, sql))
+                // Gets all the Divisions that this SpecifyUser is assigned to
+                for (Integer divId : BasicSQLUtils.queryForInts(conn, sql))
                 {
-                    Integer divId = (Integer)row[0];
-                    Integer dspId = (Integer)row[1];
-                    
-                    divisionHashSet.add(divId);
-                    disciplinesHashSet.add(dspId);
-                    log.debug(String.format("Div: %d  Disp: %d", divId, dspId));
-                    String key = String.format(DDFMT, divId, dspId);  // Div/Disp
-                    divDspHashMap.put(key, new Pair<Integer, Integer>(divId, dspId));
+                    divsList.add(divId);
+                    log.debug(String.format("spId: %d  div: %d", divId, divId));
                 }
                 
                 //--------------------------------------------------------------
@@ -805,129 +799,135 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 // and re-add them.
                 //--------------------------------------------------------------
                 HashMap<Integer, Integer>      divToAgentHash  = new HashMap<Integer, Integer>();
-                Vector<Pair<Integer, Integer>> agentDispList   = new Vector<Pair<Integer, Integer>>();
+                HashMap<Integer, Integer>      agentToDivHash  = new HashMap<Integer, Integer>();
                 
-                HashMap<String, Integer>       divDspToDivHash = new HashMap<String, Integer>();
-                Vector<Pair<Integer, Integer>> divDspList      = new Vector<Pair<Integer,Integer>>(divDspHashMap.values());
-                int inx = 0;
-                sql = "SELECT a.AgentID FROM specifyuser su INNER JOIN agent a ON su.SpecifyUserID = a.SpecifyUserID WHERE su.SpecifyUserID = " + spId;
+                sql = String.format("SELECT a.AgentID FROM specifyuser su " +
+                            		"INNER JOIN agent a ON su.SpecifyUserID = a.SpecifyUserID " +
+                            		"WHERE su.SpecifyUserID = %d ORDER BY a.TimestampModified ASC", spId);
                 log.debug(sql);
-                for (Integer agentId : BasicSQLUtils.queryForInts(conn, sql))
-                {
-                    // Get the Div/Dsp Pair. At this point their is no relationship
-                    // between 'agentId' and the items in the 'divDspList' list
-                    // put below we will assign this agent to this div (and discipline)
-                    Pair<Integer, Integer> divDsp  = divDspList.get(inx);
-                    
-                    // Add div/dsp Pair to Set to track those that were processed
-                    agentDispList.add(new Pair<Integer, Integer>(agentId, divDsp.second));
-                    
-                    // Add div/dsp Key to HashMap to track those that were processed
-                    // This Hash will have all the Div/Dsp pairs that existed for this SpUser.
-                    divDspToDivHash.put(String.format(DDFMT, divDsp.first, divDsp.second), divDsp.first); // maps div/dsp -> Div
-                    
-                    // Add Div to Agent in Hash so later when we dicover that the SpUser is missing a Division
-                    // we will know which Agent needs to be cloned for that missing Division
-                    divToAgentHash.put(divDsp.first, agentId);
-                    
-                    // Change the Agent's Division
-                    pStmt.setInt(1, divDsp.first);  // Division
-                    pStmt.setInt(2, agentId);
-                    if (doUpdate) pStmt.execute();
-                    log.debug("Setting - agentId: " + agentId+" ->  Div: " +divDsp.first);
-                    
-                    // Delete all the 'agent_disicpline' records for this Agent ID
-                    pStmtDel.setInt(1, agentId);
-                    if (doUpdate) pStmtDel.execute();
-                    log.debug("Removing all agent_disp for agentId: " + agentId);
-                    
-                    log.debug("Inx:" + inx+" -  spId: " +spId +" ->  AgtId: "+ agentId +" ->  DivId: "+ divDsp.first +" ->  DspId: "+ divDsp.second);
-                    inx++;
-                }
+                Vector<Integer>  agentsForSpUserList = BasicSQLUtils.queryForInts(conn, sql);
+                ArrayList<Agent> agentsToBeDuped     = new ArrayList<Agent>();
                 
-                log.debug("Number Agents: "+ agentDispList.size() +" Number of Discipline: "+ divDspList.size());
-                
-                // Here we figure out which Divisions are missing Agents 
-                // for the SpUser being processed. We duplicate the Agents later
-                // for each Division for the SpUser and create the 'agent_disicpline' 
-                // records for each Discipline within the Division.
-                if (agentDispList.size() < divDspList.size())
+                DataProviderSessionIFace session = null;
+                try
                 {
-                    HashSet<String> keySet = new HashSet<String>();
-                    for (Pair<Integer, Integer> agtDsp : agentDispList)
-                    {
-                        Integer dspId = agtDsp.second;
-                        Integer divId = BasicSQLUtils.getCount("SELECT DivisionID FROM discipline WHERE DisciplineID = " + dspId);
-                        String key = String.format(DDFMT, divId, dspId);  // Div/Disp
-                        keySet.add(key);
-                    }
                     
-                    for (Pair<Integer, Integer> divDspPair : divDspList)
+                    session = DataProviderFactory.getInstance().createSession();
+                    Agent firstAgent = session.get(Agent.class, agentsForSpUserList.get(0));
+                    
+                    session.beginTransaction();
+                    int agtInx = 0;
+                    for (Integer divId : divsList)
                     {
-                        Integer divId = divDspPair.first;
-                        Integer dspId = divDspPair.second;
-                        String  key   = String.format(DDFMT, divId, dspId);  // Div/Disp
+                        Division div = session.get(Division.class, divId);
                         
-                        log.debug("Checking Key: "+key);
-                        if (!keySet.contains(key))
+                        log.debug("agtInx:" + agtInx+" -  agentsForSpUserList.size(): " +agentsForSpUserList.size() +"  DivId: "+ divId);
+                        if (agtInx < agentsForSpUserList.size())
                         {
-                            missingDivToSpUser.put(divId, spId);
-                            log.debug("Tracking - Division: "+ divId +" is missing agent for SpUser: "+ spId);
+                            Integer  agentId = agentsForSpUserList.get(agtInx);
+                            Agent    agent   = session.get(Agent.class, agentId);
+                            
+                            agent.setDivision(div);
+                            session.saveOrUpdate(agent);
+                            log.debug("Setting - agentId: " + agentId+" ->  Div: " +divId);
+                            
+                            agentToDivHash.put(agentId, divId);
+                            divToAgentHash.put(divId, agentId);
+                            
+                            if (agtInx > 0)
+                            {
+                                Agent clonedAgent = (Agent)firstAgent.clone();
+                                clonedAgent.setAgentId(agent.getId());
+                                clonedAgent.setVersion(agent.getVersion());
+                                clonedAgent.setDivision(agent.getDivision());
+                                agentsToBeDuped.add(clonedAgent);
+                            }
+                            
+                            log.debug("agtInx:" + agtInx+" -  spId: " +spId +" ->  AgtId: "+ agentId +" ->  DivId: "+ divId);
+                            agtInx++;
+                            
+                        } else
+                        {
+                            Agent dupAgent = (Agent)firstAgent.clone();
+                            dupAgent.setAgentId(null);
+                            dupAgent.setDivision(div);
+                            dupAgent.setVersion(0);
+                            
+                            session.saveOrUpdate(dupAgent);
+                            
+                            Integer newAgentId = dupAgent.getAgentId();
+                            agentToDivHash.put(newAgentId, divId);
+                            divToAgentHash.put(divId, newAgentId);
+                            
+                            log.debug(String.format("Saved New Agent %s (%d) for Division %s (%d)", 
+                                      dupAgent.getLastName(), newAgentId, div.getName(), div.getId()));
                         }
                     }
-                }
-                
-                //--------------------------------------------------------------
-                // Now re-add the agent_discipline records.
-                //--------------------------------------------------------------
-                int i = 0;
-                for (Pair<Integer, Integer> agentDisp : agentDispList)
+                    
+                    session.commit();
+                    
+                } catch (final Exception e1)
                 {
-                    log.debug("Adding - AgentId: "+ agentDisp.first +" DispId: "+ agentDisp.second);
-                    pStmtAdd.setInt(1, agentDisp.first);
-                    pStmtAdd.setInt(2, agentDisp.second);
-                    if (doUpdate) pStmtAdd.execute();
-                    i++;
-                }
-                
-                //--------------------------------------------------------------------------------
-                // Check all records with Agents to make sure the wrong agent wasn't used
-                //--------------------------------------------------------------------------------
-                /*HashSet<String> tiNames = new HashSet<String>();
-                int cntHard = 0;
-                int cntEasy = 0;
-                for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
+                    e1.printStackTrace();
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, e1);
+                    
+                    session.rollback();
+                    
+                    log.error("Exception caught: " + e1.toString());
+                    
+                } finally
                 {
-                    for (DBRelationshipInfo ri : ti.getRelationships())
+                    if (session != null)
                     {
-                        if (ri.getType() == DBRelationshipInfo.RelationshipType.ManyToOne &&
-                            ri.getDataClass() == Agent.class && 
-                            !ri.getColName().equals("CreatedByAgentID") &&
-                            !ri.getColName().equals("ModifiedByAgentID"))
-                        {
-                            System.out.print(String.format("%s.%s", ti.getName(), ri.getName()));
-                            //System.out.println(ti.getFieldByName("division") != null || ti.getFieldByName("discipline") != null ? " HAS" : " NOT");
-                            
-                            boolean easy = ti.getFieldByColumnName("DivisionID", true) != null ||
-                                           ti.getFieldByColumnName("DisciplineID", true) != null ||
-                                           ti.getFieldByColumnName("CollectionMemberId", true) != null;
-                            
-                            System.out.println(easy ? " EASY" : " HARD");
-                            cntHard += easy ? 0 : 1;
-                            cntEasy += easy ? 1 : 0;
-                            tiNames.add(ti.getName());
-                        }
+                        session.close();
                     }
                 }
-                System.out.print(String.format("Easy %d  Hard %d  TI %d", cntEasy, cntHard, tiNames.size()));
                 
-                System.out.println("//----------------------------------------------------------------");
-                Vector<String> names = new Vector<String>(tiNames);
-                Collections.sort(names);
-                for (String nm : names)
+                session = null;
+                try
                 {
-                    System.out.println("\n  //---------- "+nm);
-                }*/
+                    session = DataProviderFactory.getInstance().createSession();
+                    session.beginTransaction();
+                    for (Agent agent : agentsToBeDuped)
+                    {
+                        agent = session.merge(agent);
+                        session.save(agent);
+                    }
+                    session.commit();
+                    
+                } catch (final Exception e1)
+                {
+                    e1.printStackTrace();
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, e1);
+                    
+                    session.rollback();
+                    
+                    log.error("Exception caught: " + e1.toString());
+                    
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                }
+                
+                
+                sql = "SELECT dsp.UserGroupScopeId, dv.UserGroupScopeId FROM division dv INNER JOIN discipline dsp ON dv.UserGroupScopeId = dsp.DivisionID";
+                for (Object[] r : BasicSQLUtils.query(conn, sql))
+                {
+                    Integer dspId = (Integer)r[0];
+                    Integer divId = (Integer)r[1];
+                    Integer agtId = divToAgentHash.get(divId);
+                    
+                    pStmtAdd.setInt(1, agtId);
+                    pStmtAdd.setInt(2, dspId);
+                    pStmtAdd.execute();
+                    
+                    log.debug(String.format("Inserted - AgentId: %d DispId: %d", agtId, dspId));
+                }
                 
                 //----------------------------------------------------------------
                 // Now fix the all then agent
@@ -1105,57 +1105,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 fixAgents(conn, sql, "shipment", "ShippedByID", divToAgentHash);
             }
             
-            // Now duplicate an Agent for each missing Division
-            // and add all the 'agent_disicpline' relationship records.
-            
-            DataProviderSessionIFace session = null;
-            try
-            {
-                session = DataProviderFactory.getInstance().createSession();
-                session.beginTransaction();
-                
-                for (Integer divId : missingDivToSpUser.keySet())
-                {
-                    Integer  spUserID = missingDivToSpUser.get(divId);
-                    int      agentId  = BasicSQLUtils.getCountAsInt(conn, "SELECT AgentID FROM agent WHERE SpecifyUserID = "+spUserID);
-                    Agent    agent    = session.get(Agent.class, agentId);
-                    Division div      = session.get(Division.class, divId);
-                    for (Discipline dsp : div.getDisciplines())
-                    {
-                        Agent dupAgent = (Agent)agent.clone();
-                        dupAgent.setDivision(div);
-                        dsp.getAgents().add(dupAgent);
-                        
-                        session.save(dupAgent);
-                        session.save(dsp);
-                        log.debug(String.format("Saved New Agent %s (%d) for Discipline %s (%d), Division %s (%d)", 
-                                  dupAgent.getLastName(), dupAgent.getId(), dsp.getName(), dsp.getId(), div.getName(), div.getId()));
-                    }
-                }
-                
-                session.commit();
-                
-            } catch (final Exception e1)
-            {
-                e1.printStackTrace();
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, e1);
-                
-                session.rollback();
-                
-                log.error("Exception caught: " + e1.toString());
-                
-            } finally
-            {
-                if (session != null)
-                {
-                    session.close();
-                }
-            }
-            
         } catch (Exception ex)
         {
             ex.printStackTrace();
+            
         } finally
         {
             try
