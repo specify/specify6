@@ -1293,12 +1293,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         if (count > 0)
         {
             Vector<Object[]> values = BasicSQLUtils.query("SELECT ld.LocalityDetailID, ld.UtmScale, l.LocalityName " +
-            	                                          "FROM localitydetail ld INNER JOIN locality l ON ld.LocalityID = l.LocalityID");
+            	                                          "FROM localitydetail ld INNER JOIN locality l ON ld.LocalityID = l.LocalityID WHERE ld.UtmScale IS NOT NULL");
             
             BasicSQLUtils.update(conn, "ALTER TABLE localitydetail DROP COLUMN UtmScale");
             String tblName = "localitydetail";
-            addColumn(conn, databaseName, tblName, "UtmScale", "ALTER TABLE %s ADD COLUMN %s FLOAT AFTER UtmOrigLongitude");
-            addColumn(conn, databaseName, tblName, "MgrsZone", "ALTER TABLE %s ADD COLUMN %s VARCHAR(4) AFTER UtmScale");
+            addColumn(conn, databaseName, tblName, "UtmScale", "FLOAT",      "UtmOrigLongitude");
+            addColumn(conn, databaseName, tblName, "MgrsZone", "VARCHAR(4)", "UtmScale");
 
             
             HashMap<String, String> badLocalitiesHash = new HashMap<String, String>();
