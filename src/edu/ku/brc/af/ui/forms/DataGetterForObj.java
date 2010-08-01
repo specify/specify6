@@ -70,7 +70,7 @@ public class DataGetterForObj implements DataObjectGettable
             try
             {
                 Iterator<?> iter = null;
-                if (dataObj instanceof Set)
+                if (dataObj instanceof Set<?>)
                 {
                     iter = ((Set<?>)dataObj).iterator();
 

@@ -388,9 +388,11 @@ public class CreateTextSchema
     {
         try
         {
-            po = new PrintWriter(new File(schemaOutputHTMLName));
+            File oFile = new File(schemaOutputHTMLName);
+            po = new PrintWriter(oFile);
             
             System.out.println("Opening "+XMLHelper.getConfigDirPath(DatamodelHelper.getOutputFileName()));
+            System.out.println("Writing "+oFile.getAbsolutePath());
             
             Element root = XMLHelper.readDOMFromConfigDir(DatamodelHelper.getOutputFileName());
             if (root == null)
