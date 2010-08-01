@@ -19,6 +19,9 @@
 */
 package edu.ku.brc.specify.dbsupport;
 
+import java.awt.Dialog;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -35,14 +38,21 @@ import java.util.Vector;
 
 import javax.persistence.CascadeType;
 import javax.persistence.JoinColumn;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JProgressBar;
+import javax.swing.SwingWorker;
 
 import org.apache.commons.lang.StringUtils;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
@@ -55,7 +65,6 @@ import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -68,28 +77,28 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class SpecifyDeleteHelper
 {
-    protected static boolean    debug       = false;
-    protected static boolean    debugUpdate = true;
+    private static String CNT = "CNT";
     
-    protected boolean    doTrees           = true;
+    protected static boolean    debug        = true;
+    protected static boolean    debugUpdate  = true;
+    
+    protected boolean           doTrees      = true;
 
-    protected Integer    totalCount        = null;
-    protected int        counter           = 0;
-    protected JStatusBar statusBar         = null;
+    protected Integer           totalCount   = null;
+    protected int              counter       = 0;
     
-    protected Connection connection;
+    protected SwingWorker<?, ?> worker       = null;
+    protected JProgressBar      progressBar  = null;
+    protected JLabel            titleLbl     = null;
+    
+    protected Connection        connection   = null;
     
     /**
      * 
      */
-    public SpecifyDeleteHelper(final boolean doUpdateStatusBar)
+    public SpecifyDeleteHelper()
     {
         super();
-        
-        if (doUpdateStatusBar)
-        {
-            statusBar = UIRegistry.getStatusBar();
-        }
         
         /*
         DBConnection dbConn = DBConnection.createInstance("com.mysql.jdbc.Driver", 
@@ -148,26 +157,63 @@ public class SpecifyDeleteHelper
     }
     
     /**
+     * @param worker
+     * @param titleKey
+     * @return
+     */
+    public JDialog initProgress(final SwingWorker<?, ?> worker,
+                                final String titleKey)
+    {
+        this.worker = worker;
+        
+        if (worker != null)
+        {
+            JDialog dialog = new JDialog((Dialog)null, true);
+            
+            titleLbl    = new JLabel(UIRegistry.getResourceString(titleKey));
+            progressBar = new JProgressBar(0, 100);
+            
+            CellConstraints cc = new CellConstraints();
+            PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g,p,4px,p,f:p:g"));
+            
+            pb.add(titleLbl,    cc.xy(1, 2));
+            pb.add(progressBar, cc.xy(1, 4));
+            pb.setDefaultDialogBorder();
+            dialog.setContentPane(pb.getPanel());
+            
+            dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+            dialog.pack();
+            dialog.setSize(500, 150);
+            worker.addPropertyChangeListener(new SwingWorkerCompletionWaiter(dialog));
+            return dialog;
+        }
+        return null;
+    }
+    
+    /**
      * 
      */
-    public void done()
+    public void done(final boolean doClose)
     {
-        if (totalCount != null)
+        if (worker != null)
         {
-            statusBar.setValue(FormViewObj.STATUSBAR_NAME, totalCount);
+            worker.firePropertyChange(CNT, SwingWorker.StateValue.DONE, SwingWorker.StateValue.DONE);
         }
         
-        try
+        if (doClose)
         {
-            if (connection != null)
+            try
             {
-                connection.close();
+                if (connection != null)
+                {
+                    connection.close();
+                }
+            } catch (SQLException ex)
+            {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDeleteHelper.class, ex);
+                ex.printStackTrace();
             }
-        } catch (SQLException ex)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDeleteHelper.class, ex);
-            ex.printStackTrace();
         }
     }
 
@@ -216,9 +262,9 @@ public class SpecifyDeleteHelper
                 totalCount = counter;
                 counter    = 0;
                 
-                if (statusBar != null && totalCount != null)
+                if (worker != null && totalCount != null)
                 {
-                    statusBar.setProgressRange(FormViewObj.STATUSBAR_NAME, 0, totalCount, 0);
+                    worker.firePropertyChange(CNT, totalCount, (int)( (100.0 * counter) / totalCount));
                 }
                 
                 for (StackItem si : root.getStack())
@@ -801,9 +847,9 @@ public class SpecifyDeleteHelper
             System.err.println(counter+" / "+totalCount);
         }
         
-        if (statusBar != null)
+        if (worker != null && totalCount != null)
         {
-            statusBar.setValue(FormViewObj.STATUSBAR_NAME, counter);
+            worker.firePropertyChange(CNT, totalCount, (int)( (100.0 * counter) / totalCount));
         }
     }
     
@@ -914,7 +960,7 @@ public class SpecifyDeleteHelper
             }
         }
         
-        delSql = "DELETE FROM "+className.toLowerCase() + " WHERE "+primaryKeyTD+" = "+treeDefId+" ORDER BY AcceptedID DESC, ParentID DESC";
+        delSql = "DELETE FROM "+className.toLowerCase() + " WHERE "+primaryKeyTD+" = "+treeDefId+" ORDER BY NodeNumber DESC";
         if (debugUpdate) System.err.println(delSql);
         stmt.executeUpdate(delSql);
         
@@ -1382,6 +1428,41 @@ public class SpecifyDeleteHelper
         }
     }
     
+    /**
+     *
+     *
+     */
+    class SwingWorkerCompletionWaiter implements PropertyChangeListener
+    {
+        private JDialog dialog;
+
+        public SwingWorkerCompletionWaiter(final JDialog dialog)
+        {
+            this.dialog = dialog;
+        }
+
+        public void propertyChange(PropertyChangeEvent event)
+        {
+            
+            if (CNT.equals(event.getPropertyName())) 
+            {
+                int value = (Integer)event.getNewValue();
+                if (value < 100)
+                {
+                    progressBar.setValue(value);
+                } else
+                {
+                    progressBar.setValue(100);
+                }
+            } else if ("state".equals(event.getPropertyName()) &&
+                    SwingWorker.StateValue.DONE == event.getNewValue())
+            {
+                dialog.setVisible(false);
+                dialog.dispose();
+            }
+        }
+    };
+    
     
     /**
      * @param args
@@ -1390,7 +1471,7 @@ public class SpecifyDeleteHelper
     {
         DBTableIdMgr.getInstance().getByShortClassName(Accession.class.getSimpleName()); // Preload
         
-        SpecifyDeleteHelper sdh = new SpecifyDeleteHelper(false);
+        SpecifyDeleteHelper sdh = new SpecifyDeleteHelper();
         try
         {
             sdh.delRecordFromTable(Division.class, 32768, false);

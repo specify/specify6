@@ -39,6 +39,7 @@ import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
@@ -64,6 +65,8 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.dbsupport.HibernateDataProviderSession;
 import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
@@ -150,8 +153,9 @@ public class CollectionBusRules extends BaseBusRules
         
         final SpecifyDBSetupWizard wizardPanel = new SpecifyDBSetupWizard(SpecifyDBSetupWizard.WizardType.Collection, null);
         
+        String msg = UIRegistry.getResourceString("CREATECOLL");
         final CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), "", true, CustomDialog.NONE_BTN, wizardPanel);
-        dlg.setCustomTitleBar(UIRegistry.getResourceString("CREATEDISP"));
+        dlg.setCustomTitleBar(msg);
         wizardPanel.setListener(new SpecifyDBSetupWizard.WizardListener() {
             @Override
             public void cancelled()
@@ -190,7 +194,7 @@ public class CollectionBusRules extends BaseBusRules
         wizardPanel.processDataForNonBuild();
         
         final BuildSampleDatabase bldSampleDB   = new BuildSampleDatabase();
-        final ProgressFrame       progressFrame = bldSampleDB.createProgressFrame("Creating Disicipline"); // I18N
+        final ProgressFrame       progressFrame = bldSampleDB.createProgressFrame(msg); // I18N
         progressFrame.turnOffOverAll();
         
         progressFrame.setProcess(0, 4);
@@ -323,6 +327,11 @@ public class CollectionBusRules extends BaseBusRules
                    int curInx = dispFVO.getRsController().getCurrentIndex();
                    dispFVO.setDataObj(dataItems);
                    dispFVO.getRsController().setIndex(curInx);
+                   
+                   //UIRegistry.clearSimpleGlassPaneMsg();
+                   
+                   UIRegistry.showLocalizedMsg("Specify.ABT_EXIT");
+                   CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, BaseTask.APP_REQ_EXIT));
          
                } else
                {
@@ -621,9 +630,12 @@ public class CollectionBusRules extends BaseBusRules
                             pSession.saveOrUpdate(collection);
                             pSession.commit();
                             
-                            SpecifyDeleteHelper delHelper = new SpecifyDeleteHelper(true);
+                            SpecifyDeleteHelper delHelper = new SpecifyDeleteHelper();
                             delHelper.delRecordFromTable(Collection.class, collection.getId(), true);
-                            delHelper.done();
+                            delHelper.done(false);
+                            
+                            UIRegistry.showLocalizedMsg("Specify.ABT_EXIT");
+                            CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, BaseTask.APP_REQ_EXIT));
                             
                         } catch (Exception ex)
                         {

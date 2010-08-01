@@ -29,6 +29,7 @@ import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -274,7 +275,7 @@ public class DivisionBusRules extends BaseBusRules implements CommandListener
                     bldSampleDB.setSession(session);
                     
                     DisciplineType dispType = (DisciplineType)props.get("disciplineType");
-                    newDivision = bldSampleDB.createEmptyDivision(institution, dispType, specifyAdminUser, props, true, true);
+                    newDivision = bldSampleDB.createEmptyDivision(institution, dispType, specifyAdminUser, props, true, false, true);
                     
                     acm.setClassObject(Division.class, curDivCached);
                     acm.setClassObject(Discipline.class, curDispCached);
@@ -455,30 +456,63 @@ public class DivisionBusRules extends BaseBusRules implements CommandListener
                     
                 if (cont)
                 {
-                    try
+                    final Integer divId = division.getId();
+                    final SpecifyDeleteHelper delHelper = new SpecifyDeleteHelper();
+                    
+                    SwingWorker<Integer, Integer> worker = new SwingWorker<Integer, Integer>()
                     {
-                        SpecifyDeleteHelper delHelper = new SpecifyDeleteHelper(true);
-                        delHelper.delRecordFromTable(Division.class, division.getId(), true);
-                        delHelper.done();
-                        
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run()
+                        /* (non-Javadoc)
+                         * @see javax.swing.SwingWorker#doInBackground()
+                         */
+                        @Override
+                        protected Integer doInBackground() throws Exception
+                        {
+                            try
                             {
-                                // This is called instead of calling 'okToDelete' because we had the SpecifyDeleteHelper
-                                // delete the actual dataObj and now we tell the form to remove the dataObj from
-                                // the form's list and them update the controller appropriately
+                                delHelper.delRecordFromTable(Division.class, divId, true);
+                                delHelper.done(false);
                                 
-                                formViewObj.updateAfterRemove(true); // true removes item from list and/or set
+                            } catch (Exception ex)
+                            {
+                                ex.printStackTrace();
+                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DivisionBusRules.class, ex);
                             }
-                        });
-                        
-                    } catch (Exception ex)
-                    {
-                        ex.printStackTrace();
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DivisionBusRules.class, ex);
-                    }
+                            return null;
+                        }
+
+                        /* (non-Javadoc)
+                         * @see javax.swing.SwingWorker#done()
+                         */
+                        @Override
+                        protected void done()
+                        {
+                            super.done();
+                            
+                            SwingUtilities.invokeLater(new Runnable()
+                            {
+                                @Override
+                                public void run()
+                                {
+                                 // This is called instead of calling 'okToDelete' because we had the SpecifyDeleteHelper
+                                    // delete the actual dataObj and now we tell the form to remove the dataObj from
+                                    // the form's list and them update the controller appropriately
+                                    if (formViewObj != null)
+                                    {
+                                        formViewObj.updateAfterRemove(true); // true removes item from list and/or set
+                                    }
+                                    
+                                    //UIRegistry.showLocalizedMsg("Specify.ABT_EXIT");
+                                    //CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, BaseTask.APP_REQ_EXIT));
+                                }
+                            });
+                        }
+                    };
+                    JDialog dlg = delHelper.initProgress(worker, "Deleting Division...");
+
+                    worker.execute();
+                    
+                    UIHelper.centerAndShow(dlg);
                 }
             } else
             {
@@ -490,17 +524,6 @@ public class DivisionBusRules extends BaseBusRules implements CommandListener
         }
     }
 
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
-     */
-    @Override
-    public void beforeDelete(Object dataObj, DataProviderSessionIFace session)
-    {
-        super.beforeDelete(dataObj, session);
-        
-    }
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */

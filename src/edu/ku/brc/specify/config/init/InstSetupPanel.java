@@ -75,15 +75,15 @@ public class InstSetupPanel extends GenericFormPanel
      * @param nextBtn
      * @param makeStretchy
      */
-    public InstSetupPanel(String name, 
-                          String title, 
-                          String helpContext, 
-                          String[] labels,
-                          String[] fields, 
-                          Integer[] numCols, 
-                          JButton nextBtn, 
-                          JButton prevBtn,
-                          boolean makeStretchy)
+    public InstSetupPanel(final String name, 
+                          final String title, 
+                          final String helpContext, 
+                          final String[] labels,
+                          final String[] fields, 
+                          final Integer[] numCols, 
+                          final JButton nextBtn, 
+                          final JButton prevBtn,
+                          final boolean makeStretchy)
     {
         super(name, title, helpContext, labels, fields, numCols, nextBtn, prevBtn, makeStretchy);
     }
@@ -202,7 +202,7 @@ public class InstSetupPanel extends GenericFormPanel
                         
                         bsd.setSession(HibernateUtil.getCurrentSession());
                         
-                        isOK = bsd.createEmptyInstitution(properties, false, false);
+                        isOK = bsd.createEmptyInstitution(properties, false, false, true);
                         
                         AppContextMgr.getInstance().setClassObject(DataType.class, bsd.getDataType());
 

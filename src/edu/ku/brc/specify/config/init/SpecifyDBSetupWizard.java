@@ -910,7 +910,7 @@ public class SpecifyDBSetupWizard extends JPanel
                     
                     bsd.setDataType(dataType);
                     
-                    Division division = bsd.createEmptyDivision(institution, disciplineType, user, props, true, true);
+                    Division division = bsd.createEmptyDivision(institution, disciplineType, user, props, true, true, true);
                     if (division != null)
                     {
                         isOK = division != null;

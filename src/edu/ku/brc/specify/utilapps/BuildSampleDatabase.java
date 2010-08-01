@@ -477,7 +477,10 @@ public class BuildSampleDatabase
      * @param disciplineName the disciplineType name
      * @return the entire list of DB object to be persisted
      */
-    public boolean createEmptyInstitution(final Properties props, final boolean doCreateDiv, final boolean doCreateDisp)
+    public boolean createEmptyInstitution(final Properties props, 
+                                          final boolean doCreateDiv, 
+                                          final boolean doCreateDisp,
+                                          final boolean doFromWizard)
     {
         AppContextMgr.getInstance().setHasContext(true);
         
@@ -558,7 +561,7 @@ public class BuildSampleDatabase
         if (doCreateDiv)
         {
             DisciplineType disciplineType = (DisciplineType)props.get("disciplineType");   
-            return createEmptyDivision(institution, disciplineType, specifyAdminUser, props, doCreateDisp, false) != null;
+            return createEmptyDivision(institution, disciplineType, specifyAdminUser, props, doCreateDisp, doFromWizard, false) != null;
         }
         return true;
     }
@@ -582,6 +585,7 @@ public class BuildSampleDatabase
                                         final SpecifyUser    specifyAdminUser, 
                                         final Properties     props,
                                         final boolean        doCreateDisp,
+                                        final boolean        doFromWizard,
                                         final boolean        doSetProgressRange)
     {
         if (doSetProgressRange && frame != null)
@@ -624,7 +628,7 @@ public class BuildSampleDatabase
         Agent userAgent    = AppContextMgr.getInstance().getClassObject(Agent.class);
         Agent newUserAgent = null;
         String fromWiz = props.getProperty("fromwizard");
-        if (userAgent == null || (StringUtils.isNotEmpty(fromWiz) && fromWiz.equals("true")))
+        if (userAgent == null || (doFromWizard && StringUtils.isNotEmpty(fromWiz) && fromWiz.equals("true")))
         {
             userAgent  = createAgent(title, firstName, midInit, lastName, abbrev, email, division, null);
             
@@ -7624,7 +7628,8 @@ public class BuildSampleDatabase
      * @throws SQLException
      * @throws IOException
      */
-    public boolean buildEmptyDatabase(final Properties props)
+    public boolean buildEmptyDatabase(final Properties props,
+                                      final boolean doFromWizard)
     {
         createProgressFrame("Building Specify Database");
 
@@ -7760,7 +7765,7 @@ public class BuildSampleDatabase
             
             if (hideFrame) System.out.println("Creating Empty Database");
             
-            createEmptyInstitution(props, true, true);
+            createEmptyInstitution(props, true, true, doFromWizard);
 
             SwingUtilities.invokeLater(new Runnable()
             {

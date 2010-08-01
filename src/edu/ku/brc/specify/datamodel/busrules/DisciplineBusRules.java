@@ -36,6 +36,8 @@ import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.hibernate.Session;
@@ -481,17 +483,60 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                             collBR.okToDelete(coll, null, null);
                         }*/
                         
-                        SpecifyDeleteHelper delHelper = new SpecifyDeleteHelper(true);
-                        delHelper.delRecordFromTable(Discipline.class, discipline.getId(), true);
-                        delHelper.done();
+                        final Integer             dispId    = discipline.getId();
+                        final SpecifyDeleteHelper delHelper = new SpecifyDeleteHelper();
                         
-                        // This is called instead of calling 'okToDelete' because we had the SpecifyDeleteHelper
-                        // delete the actual dataObj and now we tell the form to remove the dataObj from
-                        // the form's list and them update the controller appropriately
-                        if (formViewObj != null)
+                        SwingWorker<Integer, Integer> worker = new SwingWorker<Integer, Integer>()
                         {
-                            formViewObj.updateAfterRemove(true); // true removes item from list and/or set
-                        }
+                            /* (non-Javadoc)
+                             * @see javax.swing.SwingWorker#doInBackground()
+                             */
+                            @Override
+                            protected Integer doInBackground() throws Exception
+                            {
+                                
+                                delHelper.delRecordFromTable(Discipline.class, dispId, true);
+                                delHelper.done(false);
+                                
+                                return null;
+                            }
+
+                            /* (non-Javadoc)
+                             * @see javax.swing.SwingWorker#done()
+                             */
+                            @Override
+                            protected void done()
+                            {
+                                super.done();
+                                
+                                SwingUtilities.invokeLater(new Runnable()
+                                {
+                                    @Override
+                                    public void run()
+                                    {
+                                     // This is called instead of calling 'okToDelete' because we had the SpecifyDeleteHelper
+                                        // delete the actual dataObj and now we tell the form to remove the dataObj from
+                                        // the form's list and them update the controller appropriately
+                                        if (formViewObj != null)
+                                        {
+                                            formViewObj.updateAfterRemove(true); // true removes item from list and/or set
+                                        }
+                                        
+                                        UIRegistry.showLocalizedMsg("Specify.ABT_EXIT");
+                                        CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, BaseTask.APP_REQ_EXIT));
+                                    }
+                                });
+                            }
+                        };
+                        JDialog dlg = delHelper.initProgress(worker, "Deleting Discipline...");
+
+                        worker.execute();
+                        
+                        UIHelper.centerAndShow(dlg);
+                        
+                        System.out.println("");
+                        //worker.get();
+                        
                         
                     } catch (Exception ex)
                     {
@@ -603,6 +648,18 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         }
         
         return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterDeleteCommit(java.lang.Object)
+     */
+    @Override
+    public void afterDeleteCommit(Object dataObj)
+    {
+        super.afterDeleteCommit(dataObj);
+        
+        UIRegistry.showLocalizedMsg("Specify.ABT_EXIT");
+        CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, BaseTask.APP_REQ_EXIT));
     }
 
     /* (non-Javadoc)
