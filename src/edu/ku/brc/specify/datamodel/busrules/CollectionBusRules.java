@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,7 +30,9 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.apache.commons.lang.StringUtils;
@@ -54,13 +58,11 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.init.SpecifyDBSetupWizard;
-import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.dbsupport.HibernateDataProviderSession;
 import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
@@ -222,7 +224,7 @@ public class CollectionBusRules extends BaseBusRules
                     DataProviderSessionIFace hSession = new HibernateDataProviderSession(session);
                     
                     Discipline     discipline       = (Discipline)formViewObj.getMVParent().getMultiViewParent().getData();
-                    Institution    institution      = acm.getClassObject(Institution.class);
+                    //Institution    institution      = acm.getClassObject(Institution.class);
                     SpecifyUser    specifyAdminUser = acm.getClassObject(SpecifyUser.class);
                     Agent          userAgent        = (Agent)hSession.getData("FROM Agent WHERE id = "+Agent.getUserAgent().getId());
                     Properties     props            = wizardPanel.getProps();
@@ -234,7 +236,7 @@ public class CollectionBusRules extends BaseBusRules
                     bldSampleDB.setSession(session);
                     
                     AutoNumberingScheme catNumScheme = bldSampleDB.createAutoNumScheme(props, "catnumfmt", "Catalog Numbering Scheme", CollectionObject.getClassTableId());
-                    AutoNumberingScheme accNumScheme = null;
+                    /*AutoNumberingScheme accNumScheme = null;
 
                     if (institution.getIsAccessionsGlobal())
                     {
@@ -246,7 +248,7 @@ public class CollectionBusRules extends BaseBusRules
                     } else
                     {
                         accNumScheme = bldSampleDB.createAutoNumScheme(props, "accnumfmt", "Accession Numbering Scheme", Accession.getClassTableId()); // I18N
-                    }
+                    }*/
                     
                     newCollection = bldSampleDB.createEmptyCollection(discipline, 
                                                                       props.getProperty("collPrefix").toString(), 
@@ -585,96 +587,117 @@ public class CollectionBusRules extends BaseBusRules
             if (id != null)
             {
                 Collection currCollection = AppContextMgr.getInstance().getClassObject(Collection.class);
-                if (currCollection.getId().equals(collection.getId()))
+                if (currCollection.getId().equals(collection.getId())) 
                 {
-                    UIRegistry.showError("You cannot delete the current Collection.");
+                    UIRegistry.showError("You cannot delete the current Collection."); // I18N
                     
                 } else
                 {
+                    DataProviderSessionIFace pSession = null;
                     try
                     {
-                        // The DeleteHelper is deleting the AutoNumberingScheme
-                        DataProviderSessionIFace pSession = null;
-                        try
+                        pSession = session != null ? session : DataProviderFactory.getInstance().createSession();
+                        
+                        pSession.attach(collection);
+                        
+                        pSession.beginTransaction();
+                        
+                        Set<AutoNumberingScheme> colANSSet = collection.getNumberingSchemes();
+                        for (AutoNumberingScheme ans : new Vector<AutoNumberingScheme>(colANSSet))
                         {
-                            pSession = session != null ? session : DataProviderFactory.getInstance().createSession();
-                            
-                            //Institution institution = AppContextMgr.getInstance().getClassObject(Institution.class);
-                            
-                            pSession.attach(collection);
-                            
-                            pSession.beginTransaction();
-                            
-                            Set<AutoNumberingScheme> colANSSet = collection.getNumberingSchemes();
-                            for (AutoNumberingScheme ans : new Vector<AutoNumberingScheme>(colANSSet))
-                            {
-                                pSession.attach(ans);
-                                //System.out.println("Removing: "+ans.getSchemeName()+", "+ans.getFormatName()+" "+ans.getTableNumber()+" disp: "+ans.getDisciplines().size()+" div: "+ans.getDivisions().size());
-                            }
-                            //System.out.println("----------------------");
-                            
-                            for (AutoNumberingScheme ans : new Vector<AutoNumberingScheme>(colANSSet))
-                            {
-                                //System.out.println("Removing: "+ans.getSchemeName()+", "+ans.getFormatName()+" "+ans.getTableNumber()+" "+ans.getDisciplines().size()+" "+ans.getDivisions().size());
-                                
-                                pSession.attach(ans);
-                                
-                                colANSSet.remove(ans);
-                                ans.getCollections().remove(collection);
-                                
-                                if (ans.getCollections().size() == 0)
-                                {
-                                    pSession.delete(ans);
-                                }
-                            }
-                            pSession.saveOrUpdate(collection);
-                            pSession.commit();
-                            
-                            SpecifyDeleteHelper delHelper = new SpecifyDeleteHelper();
-                            delHelper.delRecordFromTable(Collection.class, collection.getId(), true);
-                            delHelper.done(false);
-                            
-                            UIRegistry.showLocalizedMsg("Specify.ABT_EXIT");
-                            CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, BaseTask.APP_REQ_EXIT));
-                            
-                        } catch (Exception ex)
+                            pSession.attach(ans);
+                            //System.out.println("Removing: "+ans.getSchemeName()+", "+ans.getFormatName()+" "+ans.getTableNumber()+" disp: "+ans.getDisciplines().size()+" div: "+ans.getDivisions().size());
+                        }
+                        //System.out.println("----------------------");
+                        
+                        for (AutoNumberingScheme ans : new Vector<AutoNumberingScheme>(colANSSet))
                         {
-                            ex.printStackTrace();
-                            pSession.rollback();
+                            //System.out.println("Removing: "+ans.getSchemeName()+", "+ans.getFormatName()+" "+ans.getTableNumber()+" "+ans.getDisciplines().size()+" "+ans.getDivisions().size());
                             
-                        } finally
-                        {
-                            if (pSession != null && session == null)
+                            pSession.attach(ans);
+                            
+                            colANSSet.remove(ans);
+                            ans.getCollections().remove(collection);
+                            
+                            if (ans.getCollections().size() == 0)
                             {
-                                pSession.close();
+                                pSession.delete(ans);
                             }
                         }
+                        pSession.saveOrUpdate(collection);
+                        pSession.commit();
                         
+                        final Integer             collId    = collection.getId();
+                        final SpecifyDeleteHelper delHelper = new SpecifyDeleteHelper();
                         
+                        SwingWorker<Integer, Integer> worker = new SwingWorker<Integer, Integer>()
+                        {
+                            /* (non-Javadoc)
+                             * @see javax.swing.SwingWorker#doInBackground()
+                             */
+                            @Override
+                            protected Integer doInBackground() throws Exception
+                            {
+                                
+                                delHelper.delRecordFromTable(Collection.class, collId, true);
+                                delHelper.done(false);
+                                
+                                return null;
+                            }
+    
+                            /* (non-Javadoc)
+                             * @see javax.swing.SwingWorker#done()
+                             */
+                            @Override
+                            protected void done()
+                            {
+                                super.done();
+                                
+                                SwingUtilities.invokeLater(new Runnable()
+                                {
+                                    @Override
+                                    public void run()
+                                    {
+                                     // This is called instead of calling 'okToDelete' because we had the SpecifyDeleteHelper
+                                        // delete the actual dataObj and now we tell the form to remove the dataObj from
+                                        // the form's list and them update the controller appropriately
+                                        if (formViewObj != null)
+                                        {
+                                            formViewObj.updateAfterRemove(true); // true removes item from list and/or set
+                                        }
+                                        
+                                        UIRegistry.showLocalizedMsg("Specify.ABT_EXIT");
+                                        CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, BaseTask.APP_REQ_EXIT));
+                                    }
+                                });
+                            }
+                        };
                         
-                        // This is called instead of calling 'okToDelete' because we had the SpecifyDeleteHelper
-                        // delete the actual dataObj and now we tell the form to remove the dataObj from
-                        // the form's list and them update the controller appropriately
+                        String title = String.format("%s %s %s", getResourceString("DELETING"), 
+                                DBTableIdMgr.getInstance().getTitleForId(Collection.getClassTableId()), collection.getCollectionName());
                         
-                        formViewObj.updateAfterRemove(true); // true removes item from list and/or set
+                        JDialog dlg = delHelper.initProgress(worker, title);
+    
+                        worker.execute();
+                        
+                        UIHelper.centerAndShow(dlg);
                         
                     } catch (Exception ex)
                     {
                         ex.printStackTrace();
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionBusRules.class, ex);
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DisciplineBusRules.class, ex);
                     }
                 }
             } else
             {
                 super.okToDelete(dataObj, session, deletable);
             }
-            
         } else
         {
             super.okToDelete(dataObj, session, deletable);
         }
-    }
+}
     
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)

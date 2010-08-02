@@ -37,6 +37,7 @@ import javax.swing.SwingWorker;
 import org.hibernate.Session;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
@@ -502,13 +503,14 @@ public class DivisionBusRules extends BaseBusRules implements CommandListener
                                         formViewObj.updateAfterRemove(true); // true removes item from list and/or set
                                     }
                                     
-                                    //UIRegistry.showLocalizedMsg("Specify.ABT_EXIT");
-                                    //CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, BaseTask.APP_REQ_EXIT));
+                                    UIRegistry.showLocalizedMsg("Specify.ABT_EXIT");
+                                    CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, BaseTask.APP_REQ_EXIT));
                                 }
                             });
                         }
                     };
-                    JDialog dlg = delHelper.initProgress(worker, "Deleting Division...");
+                    String title = String.format("%s %s", getResourceString("DELETING"), DBTableIdMgr.getInstance().getTitleForId(Division.getClassTableId()));
+                    JDialog dlg = delHelper.initProgress(worker, title);
 
                     worker.execute();
                     

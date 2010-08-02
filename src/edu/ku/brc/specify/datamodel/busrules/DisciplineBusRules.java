@@ -24,6 +24,7 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createGeologicTimePerio
 import static edu.ku.brc.specify.config.init.DataBuilder.createLithoStratTreeDef;
 import static edu.ku.brc.specify.config.init.DataBuilder.createTaxonTreeDef;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
 import java.awt.Frame;
@@ -528,7 +529,8 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                                 });
                             }
                         };
-                        JDialog dlg = delHelper.initProgress(worker, "Deleting Discipline...");
+                        String title = String.format("%s %s", getResourceString("DELETING"), DBTableIdMgr.getInstance().getTitleForId(Discipline.getClassTableId()));
+                        JDialog dlg = delHelper.initProgress(worker, title);
 
                         worker.execute();
                         
