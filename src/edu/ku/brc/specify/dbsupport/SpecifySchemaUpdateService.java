@@ -750,8 +750,18 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             pStmtDel = conn.prepareStatement("DELETE FROM agent_discipline WHERE AgentID = ?");
             pStmtAdd = conn.prepareStatement("INSERT INTO agent_discipline (AgentID, DisciplineID) VALUES(?, ?)");
             
-            // Remove all the agent_discipline records for agents that have users
-            String sql = " SELECT a.AgentID FROM specifyuser s INNER JOIN agent a ON s.SpecifyUserID = a.SpecifyUserID";
+            String sql = "SELECT T1.SpecifyUserID FROM (SELECT COUNT(su.SpecifyUserID) AS cnt, su.SpecifyUserID FROM specifyuser su INNER JOIN agent a ON su.SpecifyUserID = a.SpecifyUserID GROUP BY su.SpecifyUserID) T1 WHERE cnt > 1";
+            //String sql = "SELECT SpecifyUserID FROM specifyuser";
+            log.debug(sql);
+            
+            Vector<Integer> rows = BasicSQLUtils.queryForInts(conn, sql);
+            if (rows.size() < 2)
+            {
+                return;
+            }
+            
+         // Remove all the agent_discipline records for agents that have users
+            sql = " SELECT a.AgentID FROM specifyuser s INNER JOIN agent a ON s.SpecifyUserID = a.SpecifyUserID";
             for (Object[] row : BasicSQLUtils.query(sql))
             {
                 Integer agtId = (Integer)row[0];
@@ -759,11 +769,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 if (doUpdate) pStmtDel.execute();
                 log.debug("Removing all agent_disp for agentId: " + agtId);
             }
-            
-            sql = "SELECT T1.SpecifyUserID FROM (SELECT COUNT(su.SpecifyUserID) AS cnt, su.SpecifyUserID FROM specifyuser su INNER JOIN agent a ON su.SpecifyUserID = a.SpecifyUserID GROUP BY su.SpecifyUserID) T1 WHERE cnt > 1";
-            //String sql = "SELECT SpecifyUserID FROM specifyuser";
-            log.debug(sql);
-            Vector<Integer> rows = BasicSQLUtils.queryForInts(conn, sql);
+                
             for (Integer spId : rows)
             {
                 log.debug("-------- For SpUser: " + spId + " --------------");
