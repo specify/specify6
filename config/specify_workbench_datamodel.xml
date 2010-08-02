@@ -578,8 +578,10 @@
     <field column="Water Body" name="waterBody" type="java.lang.String" length="64"/>
     <field column="Number 1 (Locality)" name="localityNumber1" type="java.lang.Double"/>
     <field column="Number 2 (Locality)" name="localityNumber2" type="java.lang.Double"/>
-    <field column="Text 1 (Locality)" name="localityText1" type="text" length="300"/>
-    <field column="Text 2 (Locality)" name="localityText2" type="text" length="300"/>
+    <field column="Text 1 (Locality)" name="localityText1" type="text" length="500"/>
+    <field column="Text 2 (Locality)" name="localityText2" type="text" length="500"/>
+    <field column="Text 1 (Locality Detail)" name="localityDetailText1" type="text" length="300"/>
+    <field column="Text 2 (Locality Detail)" name="localityDetailText2" type="text" length="300"/>
     <field column="YesNo 1 (Locality)" name="localityYesNo1" type="boolean"/>
     <field column="YesNo 2 (Locality)" name="localityYesNo2" type="boolean"/>
      
@@ -651,9 +653,11 @@
     <field column="Prep Type 2" name="prepType2" type="text" length="64"/>
     <field column="Count 2" name="count2" type="java.lang.Integer" length="10"/>
     <field column="Storage Location 2" name="storageLocation2" type="java.lang.String" length="50"/>
+    <field column="Prep YesNo 2" name="prepYesNo2" type="boolean" />
+    <field column="Prep Text1 2" name="prep2Text1" type="java.lang.String" length="500"/>
+    <field column="Prep Text2 2" name="prep2Text2" type="java.lang.String" length="500"/>
+    <field column="Prep Description 2" name="prepDescription1" type="java.lang.String" length="255"/>
     <field column="Prep Remarks 2" name="prepRemarks2" type="text" length="4096"/>
-    
-    <!--no storage tree or preparationattributes for now-->
     <field column="Building 2" name="building2" type="java.lang.String" length="64"/>
     <field column="Collection 2" name="collection2" type="java.lang.String" length="64"/>
     <field column="Room 2" name="room2" type="java.lang.String" length="64"/>
@@ -677,6 +681,10 @@
     <field column="Prep Type 3" name="prepType3" type="text" length="64"/>
     <field column="Count 3" name="count3" type="java.lang.Integer" length="10"/>
     <field column="Storage Location 3" name="storageLocation3" type="java.lang.String" length="50"/>
+    <field column="Prep YesNo 3" name="prepYesNo3" type="boolean" />
+    <field column="Prep Text1 3" name="prep3Text1" type="java.lang.String" length="500"/>
+    <field column="Prep Text2 3" name="prep3Text2" type="java.lang.String" length="500"/>
+    <field column="Prep Description 3" name="prepDescription3" type="java.lang.String" length="255"/>
     <field column="Prep Remarks 3" name="prepRemarks3" type="text" length="4096"/>
     <field column="Building 3" name="building3" type="java.lang.String" length="64"/>
     <field column="Collection 3" name="collection3" type="java.lang.String" length="64"/>
@@ -696,6 +704,10 @@
     <field column="Prep Type 4" name="prepType4" type="text" length="64"/>
     <field column="Count 4" name="count4" type="java.lang.Integer" length="10"/>
     <field column="Storage Location 4" name="storageLocation4" type="java.lang.String" length="50"/>
+    <field column="Prep YesNo 4" name="prepYesNo4" type="boolean" />
+    <field column="Prep Text1 4" name="prep4Text1" type="java.lang.String" length="500"/>
+    <field column="Prep Text2 4" name="prep4Text2" type="java.lang.String" length="500"/>
+    <field column="Prep Description 4" name="prepDescription4" type="java.lang.String" length="255"/>
     <field column="Prep Remarks 4" name="prepRemarks4" type="text" length="4096"/>
     <field column="Building 4" name="building4" type="java.lang.String" length="64"/>
     <field column="Collection 4" name="collection4" type="java.lang.String" length="64"/>
@@ -715,6 +727,10 @@
     <field column="Prep Type 5" name="prepType5" type="text" length="64"/>
     <field column="Count 5" name="count5" type="java.lang.Integer" length="10"/>
     <field column="Storage Location 5" name="storageLocation5" type="java.lang.String" length="50"/>
+    <field column="Prep YesNo 5" name="prepYesNo5" type="boolean" />
+    <field column="Prep Text1 5" name="prep5Text1" type="java.lang.String" length="500"/>
+    <field column="Prep Text2 5" name="prep5Text2" type="java.lang.String" length="500"/>
+    <field column="Prep Description 5" name="prepDescription5" type="java.lang.String" length="255"/>
     <field column="Prep Remarks 5" name="prepRemarks5" type="text" length="4096"/>
     <field column="Building 5" name="building5" type="java.lang.String" length="64"/>
     <field column="Collection 5" name="collection5" type="java.lang.String" length="64"/>
@@ -734,6 +750,10 @@
     <field column="Prep Type 6" name="prepType6" type="text" length="64"/>
     <field column="Count 6" name="count6" type="java.lang.Integer" length="10"/>
     <field column="Storage Location 6" name="storageLocation6" type="java.lang.String" length="50"/>
+    <field column="Prep YesNo 6" name="prepYesNo6" type="boolean" />
+    <field column="Prep Text1 6" name="prep6Text1" type="java.lang.String" length="500"/>
+    <field column="Prep Text2 6" name="prep6Text2" type="java.lang.String" length="500"/>
+    <field column="Prep Description 6" name="prepDescription6" type="java.lang.String" length="255"/>
     <field column="Prep Remarks 6" name="prepRemarks6" type="text" length="4096"/>
     <field column="Building 6" name="building6" type="java.lang.String" length="64"/>
     <field column="Collection 6" name="collection6" type="java.lang.String" length="64"/>
@@ -753,6 +773,10 @@
     <field column="Prep Type 7" name="prepType7" type="text" length="64"/>
     <field column="Count 7" name="count7" type="java.lang.Integer" length="10"/>
     <field column="Storage Location 7" name="storageLocation7" type="java.lang.String" length="50"/>
+    <field column="Prep YesNo 7" name="prepYesNo7" type="boolean" />
+    <field column="Prep Text1 7" name="prep7Text1" type="java.lang.String" length="500"/>
+    <field column="Prep Text2 7" name="prep7Text2" type="java.lang.String" length="500"/>
+    <field column="Prep Description 7" name="prepDescription7" type="java.lang.String" length="255"/>
     <field column="Prep Remarks 7" name="prepRemarks7" type="text" length="4096"/>
     <field column="Building 7" name="building7" type="java.lang.String" length="64"/>
     <field column="Collection 7" name="collection7" type="java.lang.String" length="64"/>
@@ -772,6 +796,10 @@
     <field column="Prep Type 8" name="prepType8" type="text" length="64"/>
     <field column="Count 8" name="count8" type="java.lang.Integer" length="10"/>
     <field column="Storage Location 8" name="storageLocation8" type="java.lang.String" length="50"/>
+    <field column="Prep YesNo 8" name="prepYesNo8" type="boolean" />
+    <field column="Prep Text1 8" name="prep8Text1" type="java.lang.String" length="500"/>
+    <field column="Prep Text2 8" name="prep8Text2" type="java.lang.String" length="500"/>
+    <field column="Prep Description 8" name="prepDescription8" type="java.lang.String" length="255"/>
     <field column="Prep Remarks 8" name="prepRemarks8" type="text" length="4096"/>
     <field column="Building 8" name="building8" type="java.lang.String" length="64"/>
     <field column="Collection 8" name="collection8" type="java.lang.String" length="64"/>

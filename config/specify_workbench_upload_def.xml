@@ -35,6 +35,16 @@
     <field table="Accession" name="accessionYesNo1" actualname="YesNo1"/>
     <field table="Accession" name="accessionYesNo2" actualname="YesNo2"/>
 
+
+	<!-- agent -->
+	<field table="Agent" name="address1" onetomanysequence="0" actualtable="address" relationshipname="agent" actualname="address"/>
+    <field table="Agent" name="address21" onetomanysequence="0" actualtable="address" relationshipname="agent" actualname="address2"/>
+    <field table="Agent" name="city1" onetomanysequence="0" actualtable="address" relationshipname="agent" actualname="city"/>
+    <field table="Agent" name="state1" onetomanysequence="0" actualtable="address" relationshipname="agent" actualname="state"/>
+    <field table="Agent" name="country1" onetomanysequence="0" actualtable="address" relationshipname="agent" actualname="country"/>
+    <field table="Agent" name="postalCode1" onetomanysequence="0" actualtable="address" relationshipname="agent" actualname="postalCode"/>
+    <field table="Agent" name="phone11" onetomanysequence="0" actualtable="address" relationshipname="agent" actualname="phone1"/>
+	
 	<!-- collectingevent -->
     <field table="CollectingEvent" name="collectorFirstName1" onetomanysequence="0" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="firstName"/>
     <field table="CollectingEvent" name="collectorLastName1" onetomanysequence="0" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="lastName"/>
@@ -436,8 +446,10 @@
    
    	<!-- locality -->
    	<field table="Locality" name="localityRemarks" actualname="Remarks"/>
-    <field table="Locality" name="localityText1" actualname="Text1" actualtable="LocalityDetail" relationshipname="locality"/>
-    <field table="Locality" name="localityText2" actualname="Text2" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="localityText1" actualname="Text1" />
+    <field table="Locality" name="localityText2" actualname="Text2" />
+    <field table="Locality" name="localityDetailText1" actualname="Text1" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="localityDetailText2" actualname="Text2" actualtable="LocalityDetail" relationshipname="locality"/>
     <field table="Locality" name="localityNumber1" actualname="Number1" actualtable="LocalityDetail" relationshipname="locality"/>
     <field table="Locality" name="localityNumber2" actualname="Number2" actualtable="LocalityDetail" relationshipname="locality"/>
     <field table="Locality" name="localityYesNo1" actualname="YesNo1" actualtable="LocalityDetail" relationshipname="locality"/>
@@ -498,6 +510,7 @@
     <field table="Preparation" name="prepType1" onetomanysequence="0" relationshipname="prepType" relatedfieldname="name"/>
     <field table="Preparation" name="prepYesNo1" actualname="yesNo1" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Preparation" name="prep1Text1" actualname="text1" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep1Text2" actualname="text2" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepDescription1" actualname="description" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Preparation" name="count1" actualname="countAmt" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation1" actualname="storageLocation" onetomanysequence="0" relationshipname="collectionObject"/>
@@ -518,6 +531,10 @@
     <field table="Preparation" name="preparedMiddleBy2" onetomanysequence="1" relationshipname="preparedByAgent" relatedfieldname="middleInitial"/>
     <field table="Preparation" name="preparedTitleBy2" onetomanysequence="1" relationshipname="preparedByAgent" relatedfieldname="title"/>
     <field table="Preparation" name="prepType2" onetomanysequence="1"  relationshipname="prepType" relatedfieldname="name"/>
+    <field table="Preparation" name="prepYesNo2" actualname="yesNo1" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep2Text1" actualname="text1" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep2Text2" actualname="text2" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prepDescription2" actualname="description" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Preparation" name="count2" actualname="countAmt" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation2" actualname="storageLocation" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks2" actualname="Remarks" onetomanysequence="1" relationshipname="collectionObject"/>
@@ -537,6 +554,10 @@
     <field table="Preparation" name="preparedMiddleBy3" onetomanysequence="2" relationshipname="preparedByAgent" relatedfieldname="middleInitial"/>
     <field table="Preparation" name="preparedTitleBy3" onetomanysequence="2" relationshipname="preparedByAgent" relatedfieldname="title"/>
     <field table="Preparation" name="prepType3" onetomanysequence="2" relationshipname="prepType" relatedfieldname="name"/>
+    <field table="Preparation" name="prepYesNo3" actualname="yesNo1" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep3Text1" actualname="text1" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep3Text2" actualname="text2" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prepDescription3" actualname="description" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Preparation" name="count3" actualname="countAmt" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation3" actualname="storageLocation" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks3" actualname="Remarks" onetomanysequence="2" relationshipname="collectionObject"/>
@@ -556,6 +577,10 @@
     <field table="Preparation" name="preparedMiddleBy4" onetomanysequence="3" relationshipname="preparedByAgent" relatedfieldname="middleInitial"/>
     <field table="Preparation" name="preparedTitleBy4" onetomanysequence="3" relationshipname="preparedByAgent" relatedfieldname="title"/>
     <field table="Preparation" name="prepType4" onetomanysequence="3" relationshipname="prepType" relatedfieldname="name"/>
+    <field table="Preparation" name="prepYesNo4" actualname="yesNo1" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep4Text1" actualname="text1" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep4Text2" actualname="text2" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prepDescription4" actualname="description" onetomanysequence="3" relationshipname="collectionObject"/>
     <field table="Preparation" name="count4" actualname="countAmt" onetomanysequence="3" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation4" actualname="storageLocation" onetomanysequence="3" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks4" actualname="Remarks" onetomanysequence="3" relationshipname="collectionObject"/>
@@ -575,6 +600,10 @@
     <field table="Preparation" name="preparedMiddleBy5" onetomanysequence="4" relationshipname="preparedByAgent" relatedfieldname="middleInitial"/>
     <field table="Preparation" name="preparedTitleBy5" onetomanysequence="4" relationshipname="preparedByAgent" relatedfieldname="title"/>
     <field table="Preparation" name="prepType5" onetomanysequence="4" relationshipname="prepType" relatedfieldname="name"/>
+    <field table="Preparation" name="prepYesNo5" actualname="yesNo1" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep5Text1" actualname="text1" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep5Text2" actualname="text2" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prepDescription5" actualname="description" onetomanysequence="4" relationshipname="collectionObject"/>
     <field table="Preparation" name="count5" actualname="countAmt" onetomanysequence="4" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation5" actualname="storageLocation" onetomanysequence="4" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks5" actualname="Remarks" onetomanysequence="4" relationshipname="collectionObject"/>
@@ -594,6 +623,10 @@
     <field table="Preparation" name="preparedMiddleBy6" onetomanysequence="5" relationshipname="preparedByAgent" relatedfieldname="middleInitial"/>
     <field table="Preparation" name="preparedTitleBy6" onetomanysequence="5" relationshipname="preparedByAgent" relatedfieldname="title"/>
     <field table="Preparation" name="prepType6" onetomanysequence="5" relationshipname="prepType" relatedfieldname="name"/>
+    <field table="Preparation" name="prepYesNo6" actualname="yesNo1" onetomanysequence="5" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep6Text1" actualname="text1" onetomanysequence="5" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep6Text2" actualname="text2" onetomanysequence="5" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prepDescription6" actualname="description" onetomanysequence="5" relationshipname="collectionObject"/>
     <field table="Preparation" name="count6" actualname="countAmt" onetomanysequence="5" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation6" actualname="storageLocation" onetomanysequence="5" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks6" actualname="Remarks" onetomanysequence="5" relationshipname="collectionObject"/>
@@ -613,6 +646,10 @@
     <field table="Preparation" name="preparedMiddleBy7" onetomanysequence="6" relationshipname="preparedByAgent" relatedfieldname="middleInitial"/>
     <field table="Preparation" name="preparedTitleBy7" onetomanysequence="6" relationshipname="preparedByAgent" relatedfieldname="title"/>
     <field table="Preparation" name="prepType7" onetomanysequence="6" relationshipname="prepType" relatedfieldname="name"/>
+    <field table="Preparation" name="prepYesNo7" actualname="yesNo1" onetomanysequence="6" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep7Text1" actualname="text1" onetomanysequence="6" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep7Text2" actualname="text2" onetomanysequence="6" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prepDescription7" actualname="description" onetomanysequence="6" relationshipname="collectionObject"/>
     <field table="Preparation" name="count7" actualname="countAmt" onetomanysequence="6" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation7" actualname="storageLocation" onetomanysequence="6" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks7" actualname="Remarks" onetomanysequence="6" relationshipname="collectionObject"/>
@@ -632,6 +669,10 @@
     <field table="Preparation" name="preparedMiddleBy8" onetomanysequence="7" relationshipname="preparedByAgent" relatedfieldname="middleInitial"/>
     <field table="Preparation" name="preparedTitleBy8" onetomanysequence="7" relationshipname="preparedByAgent" relatedfieldname="title"/>
     <field table="Preparation" name="prepType8" onetomanysequence="7" relationshipname="prepType" relatedfieldname="name"/>
+    <field table="Preparation" name="prepYesNo8" actualname="yesNo1" onetomanysequence="7" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep8Text1" actualname="text1" onetomanysequence="7" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prep8Text2" actualname="text2" onetomanysequence="7" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prepDescription8" actualname="description" onetomanysequence="7" relationshipname="collectionObject"/>
     <field table="Preparation" name="count8" actualname="countAmt" onetomanysequence="7" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation8" actualname="storageLocation" onetomanysequence="7" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks8" actualname="Remarks" onetomanysequence="7" relationshipname="collectionObject"/>
