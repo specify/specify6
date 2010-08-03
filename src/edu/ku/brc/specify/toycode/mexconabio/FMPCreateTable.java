@@ -312,9 +312,12 @@ public class FMPCreateTable extends DefaultHandler
             i++;
         }
         
-        sb.append("KEY `GenusIDX` (`SpeciesName`),");
-        sb.append("KEY `SpeciesIDX` (`GenusName`),");
-        sb.append("KEY `BarCDIDX` (`BarCD`),");
+        if (false)
+        {
+            sb.append("KEY `GenusIDX` (`SpeciesName`),");
+            sb.append("KEY `SpeciesIDX` (`GenusName`),");
+            sb.append("KEY `BarCDIDX` (`BarCD`),");
+        }
         
         sb.append(String.format("PRIMARY KEY (`%s`)\n", fields.get(primaryIndex).getName()));
         sb.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8;\n");

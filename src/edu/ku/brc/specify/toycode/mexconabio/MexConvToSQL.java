@@ -904,7 +904,7 @@ public class MexConvToSQL
                                     }
                                 } else
                                 {
-                                    System.err.println(col + " Bad Number["+val+"] ["+origValue+"] "+ fieldDefs.get(col-1).getName());
+                                    System.err.println(col + " Bad Number val["+val+"] origValue["+origValue+"] "+ fieldDefs.get(col-1).getName());
                                     pStmt.setObject(col, null);
                                 }
                             } else
@@ -1059,7 +1059,9 @@ public class MexConvToSQL
         String path = "/Users/rods/Documents/";
         MexConvToSQL m = new MexConvToSQL();
         //m.convert("michigan", "conabio", path+"ConabioAll.mer", path+"OneRecordFMP.xml");
-        m.process("michigan");
+        //m.convert("michigan", "michagents", path+"MichAgents.mer", path+"MichAgents.xml");
+        m.convert("michigan", "michtaxon", path+"MichTaxon.mer", path+"MichTaxon.xml");
+        //m.process("michigan");
     }
     
 

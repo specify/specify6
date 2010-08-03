@@ -65,7 +65,7 @@ public abstract class BaseCleanupResults extends CustomDialog
     protected DataObjTableModel model;
     protected DataObjTableModel newModel;
     
-    protected BaseFindCleanupItems.ItemInfo itemInfo;
+    protected FindItemInfo itemInfo;
     
     protected JTable  topTable;
     protected JTable  botTable;
@@ -78,7 +78,7 @@ public abstract class BaseCleanupResults extends CustomDialog
     /**
      * 
      */
-    public BaseCleanupResults(final String title, final BaseFindCleanupItems.ItemInfo itemInfo) throws HeadlessException
+    public BaseCleanupResults(final String title, final FindItemInfo itemInfo) throws HeadlessException
     {
         super((Frame) getTopWindow(), title, true, null);
         
@@ -155,15 +155,18 @@ public abstract class BaseCleanupResults extends CustomDialog
         topTable.getSelectionModel().addListSelectionListener(lsl);
         botTable.getSelectionModel().addListSelectionListener(lsl);
         
-        PanelBuilder arrowPanel = new PanelBuilder(new FormLayout("f:p:g, p, 30px, p, f:p:g", "p"));
+        PanelBuilder arrowPanel = new PanelBuilder(new FormLayout("p:g, p, 30px, p, f:p:g", "p"));
         arrowPanel.add(mvRecBtn, cc.xy(2, 1));
         //arrowPanel.add(upBtn,    cc.xy(4, 1));
         arrowPanel.add(dwnBtn,   cc.xy(4, 1));
         
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g,10px,p,10px,p:g"));
+        PanelBuilder pb = new PanelBuilder(new FormLayout("p:g", "f:p:g,10px,p,10px,p:g"));
         
-        UIHelper.calcColumnWidths(topTable);
-        UIHelper.calcColumnWidths(botTable, 3);
+        topTable.setAutoResizeMode (JTable.AUTO_RESIZE_OFF);
+        botTable.setAutoResizeMode (JTable.AUTO_RESIZE_OFF);
+
+        //UIHelper.calcColumnWidths(topTable);
+        //UIHelper.calcColumnWidths(botTable, 3);
         pb.add(UIHelper.createScrollPane(topTable, true), cc.xy(1,1));
         pb.add(arrowPanel.getPanel(),                     cc.xy(1,3));
         pb.add(UIHelper.createScrollPane(botTable, true), cc.xy(1,5));
@@ -245,7 +248,7 @@ public abstract class BaseCleanupResults extends CustomDialog
     /**
      * @return
      */
-    protected DefaultTableCellRenderer getTableCellRenderer(final List<DataObjTableModel.RowInfo> rowInfoList)
+    protected DefaultTableCellRenderer getTableCellRenderer(final List<DataObjTableModelRowInfo> rowInfoList)
     {
         final Color sameColor = new Color(0,128,0);
         
@@ -259,7 +262,7 @@ public abstract class BaseCleanupResults extends CustomDialog
                                                            int row,
                                                            int column)
             {
-                DataObjTableModel.RowInfo rowInfo = rowInfoList.get(row);
+                DataObjTableModelRowInfo rowInfo = rowInfoList.get(row);
                 
                 boolean doCenter = false;
                 Object  val      = value;

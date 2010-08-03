@@ -31,7 +31,6 @@ import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBInfoBase;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.dbsupport.DBConnection;
 
 /**
  * @author rods
@@ -51,6 +50,7 @@ import edu.ku.brc.dbsupport.DBConnection;
  */
 public class DataObjTableModel extends DefaultTableModel
 {
+    protected Connection            conn;
     protected ArrayList<DBInfoBase> items;
     protected DBTableInfo           tableInfo;
     protected Vector<Object[]>      values     = null;
@@ -66,24 +66,27 @@ public class DataObjTableModel extends DefaultTableModel
     protected int                   hasDataCols = 0;
     protected ArrayList<Boolean>    sameValues  = null;
     protected ArrayList<Boolean>    hasDataList = null;
-    protected ArrayList<RowInfo>    rowInfoList = new ArrayList<RowInfo>();
+    protected ArrayList<DataObjTableModelRowInfo>    rowInfoList = new ArrayList<DataObjTableModelRowInfo>();
     
     protected HashMap<Integer, Integer> indexHash = new HashMap<Integer, Integer>();
 
     
     /**
+     * @param conn
      * @param tableId
      * @param colName
      * @param value
      * @param isEditable
      */
-    public DataObjTableModel(final int     tableId, 
+    public DataObjTableModel(final Connection conn,
+                             final int     tableId, 
                              final String  colName, 
                              final String  value,
                              final boolean isEditable)
     {
         super();
         
+        this.conn        = conn;
         this.isEditable  = isEditable;
         this.colName     = colName;
         this.searchValue = value;
@@ -91,21 +94,23 @@ public class DataObjTableModel extends DefaultTableModel
     }
     
     /**
+     * @param conn
      * @param tableId
-     * @param colName
      * @param value
      * @param isEditable
      */
-    public DataObjTableModel(final int     tableId, 
+    public DataObjTableModel(final Connection conn,
+                             final int     tableId, 
                              final String  value,
                              final boolean isEditable)
     {
-        this(tableId, null, value, isEditable);
+        this(conn, tableId, null, value, isEditable);
         
         fillModels();
     }
     
     /**
+     * @param conn
      * @param tableId
      * @param items
      * @param hasDataList
@@ -113,7 +118,8 @@ public class DataObjTableModel extends DefaultTableModel
      * @param mapInx
      * @param indexHash
      */
-    public DataObjTableModel(final int tableId, 
+    public DataObjTableModel(final Connection conn,
+                             final int tableId, 
                              final ArrayList<DBInfoBase>     items,
                              final ArrayList<Boolean>        hasDataList, 
                              final ArrayList<Boolean>        sameValues, 
@@ -122,6 +128,7 @@ public class DataObjTableModel extends DefaultTableModel
     {
         super();
         
+        this.conn        = conn;
         this.items       = items;
         this.hasDataList = hasDataList;
         this.sameValues  = sameValues;
@@ -168,14 +175,13 @@ public class DataObjTableModel extends DefaultTableModel
         final String sqlStr = buildSQL();
         System.out.println(sqlStr);
         
-        Connection conn = DBConnection.getInstance().getConnection();
         try
         {
             values = new Vector<Object[]>();
             
             PreparedStatement pStmt = conn.prepareStatement(sqlStr);
             pStmt.setString(1, searchValue);
-            System.out.println(sqlStr+" ["+searchValue+"]");
+            //System.out.println(sqlStr+" ["+searchValue+"]");
             
             ResultSet rs = pStmt.executeQuery();
             while (rs.next())
@@ -185,7 +191,7 @@ public class DataObjTableModel extends DefaultTableModel
                 {
                     row[i] = rs.getObject(i+1);
                 }
-                rowInfoList.add(new RowInfo(rs.getInt(1), false, false));
+                rowInfoList.add(new DataObjTableModelRowInfo(rs.getInt(1), false, false));
                 values.add(row);
             }
             rs.close();
@@ -286,7 +292,7 @@ public class DataObjTableModel extends DefaultTableModel
      * 
      */
     protected void addAdditionalRows(@SuppressWarnings("unused") final ArrayList<DBInfoBase> colDefItems,
-                                     @SuppressWarnings("unused") final ArrayList<RowInfo> rowInfoList)
+                                     @SuppressWarnings("unused") final ArrayList<DataObjTableModelRowInfo> rowInfoList)
     {
         
     }
@@ -302,7 +308,7 @@ public class DataObjTableModel extends DefaultTableModel
     /**
      * @return the rowInfoList
      */
-    public ArrayList<RowInfo> getRowInfoList()
+    public ArrayList<DataObjTableModelRowInfo> getRowInfoList()
     {
         return rowInfoList;
     }
@@ -517,74 +523,5 @@ public class DataObjTableModel extends DefaultTableModel
     public void setIndexHash(HashMap<Integer, Integer> indexHash)
     {
         this.indexHash = indexHash;
-    }
-    
-    //-------------------------------------------------------------
-    //-- 
-    //-------------------------------------------------------------
-    class RowInfo
-    {
-        int     id;
-        boolean isMainRecord;
-        boolean isIncluded;
-
-        
-        /**
-         * @param id
-         * @param isMainRecord
-         * @param isIncluded
-         */
-        public RowInfo(int id, boolean isMainRecord, boolean isIncluded)
-        {
-            super();
-            this.id = id;
-            this.isMainRecord = isMainRecord;
-            this.isIncluded = isIncluded;
-        }
-        
-        /**
-         * @return the id
-         */
-        public int getId()
-        {
-            return id;
-        }
-
-        /**
-         * @param id the id to set
-         */
-        public void setId(int id)
-        {
-            this.id = id;
-        }
-
-        /**
-         * @return the isMainRecord
-         */
-        public boolean isMainRecord()
-        {
-            return isMainRecord;
-        }
-        /**
-         * @param isMainRecord the isMainRecord to set
-         */
-        public void setMainRecord(boolean isMainRecord)
-        {
-            this.isMainRecord = isMainRecord;
-        }
-        /**
-         * @return the isIncluded
-         */
-        public boolean isIncluded()
-        {
-            return isIncluded;
-        }
-        /**
-         * @param isIncluded the isIncluded to set
-         */
-        public void setIncluded(boolean isIncluded)
-        {
-            this.isIncluded = isIncluded;
-        }
     }
 }

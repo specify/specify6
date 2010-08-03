@@ -35,6 +35,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.config.Scriptlet;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author rods
@@ -61,9 +62,9 @@ public class AgentFindCleanupItems extends BaseFindCleanupItems
      * @see edu.ku.brc.specify.dbsupport.cleanuptools.BaseFindCleanupItems#doWork()
      */
     @Override
-    protected Vector<ItemInfo> doWork()
+    protected Vector<FindItemInfo> doWork()
     {
-        Vector<ItemInfo> items = super.doWork();
+        Vector<FindItemInfo> items = super.doWork();
         
         HashSet<String> lastNameHash = new HashSet<String>();
         
@@ -115,7 +116,7 @@ public class AgentFindCleanupItems extends BaseFindCleanupItems
                         String firstName  = rs.getString(2);
                         String midInitial = rs.getString(3);
                         String fullName   = scriptlet.buildNameString(firstName, lastName, midInitial);
-                        ItemInfo ii = new ItemInfo(id, fullName);
+                        FindItemInfo ii = new FindItemInfo(id, fullName);
                         items.add(ii);
                         lastNameHash.add(lastName);
                     }
@@ -138,11 +139,11 @@ public class AgentFindCleanupItems extends BaseFindCleanupItems
     @Override
     protected void doCleanupOfItem()
     {
-        ItemInfo itemInfo = (ItemInfo)itemsList.getSelectedValue();
+        FindItemInfo itemInfo = (FindItemInfo)itemsList.getSelectedValue();
         if (itemInfo != null)
         {
             AgentCleanupResults agentResults = new AgentCleanupResults(itemInfo);
-            agentResults.setVisible(true);
+            UIHelper.centerAndShow(agentResults);
         }
     }
 

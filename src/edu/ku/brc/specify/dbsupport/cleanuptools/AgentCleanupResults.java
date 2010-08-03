@@ -51,7 +51,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.dbsupport.cleanuptools.DataObjTableModel.RowInfo;
+import edu.ku.brc.specify.dbsupport.cleanuptools.DataObjTableModelRowInfo;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -72,7 +72,7 @@ public class AgentCleanupResults extends BaseCleanupResults
     /**
      * 
      */
-    public AgentCleanupResults(final BaseFindCleanupItems.ItemInfo itemInfo)
+    public AgentCleanupResults(final FindItemInfo itemInfo)
     {
         super("Agent Cleanup", itemInfo);
     }
@@ -83,7 +83,9 @@ public class AgentCleanupResults extends BaseCleanupResults
     @Override
     protected void createAndFillModels()
     {
-        model = new DataObjTableModel(Agent.getClassTableId(), itemInfo.value.toString(), false)
+        Connection conn = DBConnection.getInstance().getConnection();
+
+        model = new DataObjTableModel(conn, Agent.getClassTableId(), itemInfo.getValue().toString(), false)
         {
             /* (non-Javadoc)
              * @see edu.ku.brc.specify.dbsupport.cleanuptools.DataObjTableModel#buildSQL()
@@ -138,10 +140,10 @@ public class AgentCleanupResults extends BaseCleanupResults
              */
             @Override
             protected void addAdditionalRows(final ArrayList<DBInfoBase> colDefItems,
-                                             final ArrayList<RowInfo> rowInfoList)
+                                             final ArrayList<DataObjTableModelRowInfo> rowInfoList)
             {
                 HashSet<Integer> existingIdsHash = new HashSet<Integer>();
-                for (RowInfo ri : rowInfoList)
+                for (DataObjTableModelRowInfo ri : rowInfoList)
                 {
                     existingIdsHash.add(ri.getId());
                 }
@@ -153,7 +155,7 @@ public class AgentCleanupResults extends BaseCleanupResults
                 try
                 {
                     int len = 4;
-                    String lastName = (String)itemInfo.value.toString();
+                    String lastName = (String)itemInfo.getValue().toString();
                     if (lastName.length() > len)
                     {
                         String partialLastName = lastName.substring(0, len-1) +"%";
@@ -172,7 +174,7 @@ public class AgentCleanupResults extends BaseCleanupResults
                                     row[i] = rs.getObject(i+1);
                                 }
                                 values.add(row);
-                                rowInfoList.add(new RowInfo(rs.getInt(1), false, false));
+                                rowInfoList.add(new DataObjTableModelRowInfo(rs.getInt(1), false, false));
                             }
                         }
                         rs.close();
@@ -233,8 +235,7 @@ public class AgentCleanupResults extends BaseCleanupResults
             }
             
         };
-        
-        newModel = new DataObjTableModel(Agent.getClassTableId(), model.getItems(), model.getHasDataList(), model.getSameValues(), model.getMapInx(), model.getIndexHash());
+        newModel = new DataObjTableModel(conn, Agent.getClassTableId(), model.getItems(), model.getHasDataList(), model.getSameValues(), model.getMapInx(), model.getIndexHash());
     }
     
     /* (non-Javadoc)
@@ -245,7 +246,7 @@ public class AgentCleanupResults extends BaseCleanupResults
     {
         Integer          mainId      = null;
         HashSet<Integer> idsToChange = new HashSet<Integer>();
-        for (RowInfo ri : model.getRowInfoList())
+        for (DataObjTableModelRowInfo ri : model.getRowInfoList())
         {
             if (ri.isMainRecord)
             {

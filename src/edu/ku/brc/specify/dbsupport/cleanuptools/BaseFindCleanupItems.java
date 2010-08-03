@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.dbsupport.cleanuptools;
 
 import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.createScrollPane;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -40,6 +41,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
@@ -67,7 +69,9 @@ public class BaseFindCleanupItems extends CustomDialog
     
     protected JList       itemsList;
     protected JButton     cleanupBtn;
-    protected DBTableInfo tblInfo;
+    protected DBTableInfo tblInfo     = null;
+    protected String      title       = null;
+    protected String      topMsg      = null;
     
     
     /**
@@ -79,6 +83,30 @@ public class BaseFindCleanupItems extends CustomDialog
     {
         super((Frame)getTopWindow(), getLocalizedMessage("CLNUP.FNDTITLE", tblInfo.getTitle()), true, OK_BTN, null);
         this.tblInfo = tblInfo;
+        this.title   = tblInfo.getTitle();
+    }
+
+    /**
+     * @param frame
+     * @param title
+     * @throws HeadlessException
+     */
+    public BaseFindCleanupItems(final String title) throws HeadlessException
+    {
+        super((Frame)getTopWindow(), getLocalizedMessage("CLNUP.FNDTITLE", title), true, OK_BTN, null);
+        this.title = title;
+    }
+
+    /**
+     * @param frame
+     * @param title
+     * @throws HeadlessException
+     */
+    public BaseFindCleanupItems(final String title, final String topMsg) throws HeadlessException
+    {
+        super((Frame)getTopWindow(), getLocalizedMessage("CLNUP.FNDTITLE", title), true, OK_BTN, null);
+        this.title  = title;
+        this.topMsg = topMsg;
     }
 
     /* (non-Javadoc)
@@ -92,20 +120,29 @@ public class BaseFindCleanupItems extends CustomDialog
         super.createUI();
         
         CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,2px,p"));
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", (topMsg != null ? "p,2px," : "") + "p,2px,p"));
         
         DefaultListModel model = new DefaultListModel();
-        model.addElement(new ItemInfo(0, getResourceString("CLNUP.LOAD")));
+        model.addElement(new FindItemInfo(0, getResourceString("CLNUP.LOAD")));
         itemsList  = new JList(model);
         itemsList.setEnabled(false);
         
-        cleanupBtn = createButton(getLocalizedMessage("CLNUP.CHOOSE", tblInfo.getTitle()));
+        cleanupBtn = createButton(getLocalizedMessage("CLNUP.CHOOSE", title));
         cleanupBtn.setEnabled(false);
         
-        pb.add(createScrollPane(itemsList), cc.xyw(1,1,3));
-        pb.add(cleanupBtn, cc.xy(1,3));
+        int y = 1;
+        if (topMsg != null)
+        {
+            pb.add(createLabel(topMsg), cc.xyw(1,y,3)); y += 2;
+        }
+        pb.add(createScrollPane(itemsList), cc.xyw(1,y,3)); y += 2;
+        pb.add(cleanupBtn, cc.xy(1,y)); y += 2;
         
-        itemsList.setCellRenderer(getListCellRenderer());
+        ListCellRenderer lcr = getListCellRenderer();
+        if (lcr != null)
+        {
+            itemsList.setCellRenderer(lcr);
+        }
         
         pb.setDefaultDialogBorder();
         contentPanel = pb.getPanel();
@@ -192,9 +229,9 @@ public class BaseFindCleanupItems extends CustomDialog
     /**
      * @return
      */
-    protected Vector<ItemInfo> doWork()
+    protected Vector<FindItemInfo> doWork()
     {
-        return new Vector<ItemInfo>();
+        return new Vector<FindItemInfo>();
     }
     
     /**
@@ -213,7 +250,7 @@ public class BaseFindCleanupItems extends CustomDialog
             protected DefaultListModel doInBackground() throws Exception
             {
                 wrkModel = new DefaultListModel();
-                for (ItemInfo ii :  doWork())
+                for (FindItemInfo ii :  doWork())
                 {
                     wrkModel.addElement(ii);
                 }
@@ -235,6 +272,9 @@ public class BaseFindCleanupItems extends CustomDialog
         worker.execute();
     }
     
+    /**
+     * @return
+     */
     protected DefaultListCellRenderer getListCellRenderer()
     {
         //final Color sameColor = new Color(0,192,0);
@@ -247,30 +287,12 @@ public class BaseFindCleanupItems extends CustomDialog
                                                           boolean isSelected,
                                                           boolean cellHasFocus)
             {
-                ItemInfo itemInfo = (ItemInfo)value;
+                FindItemInfo itemInfo = (FindItemInfo)value;
                 JLabel lbl = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 //lbl.setForeground(model.isSame(column) ? sameColor : Color.BLACK);
-                lbl.setText(itemInfo.value.toString());
+                lbl.setText(itemInfo.getValue().toString());
                 return lbl;
             }
         };
-    }
-    
-    class ItemInfo
-    {
-        ItemStatusType status;
-        int            id;
-        Object         value;
-        /**
-         * @param id
-         * @param value
-         */
-        public ItemInfo(int id, Object value)
-        {
-            super();
-            this.id    = id;
-            this.value  = value;
-            this.status = ItemStatusType.eOK;
-        }
     }
 }
