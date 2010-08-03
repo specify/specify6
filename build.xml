@@ -86,7 +86,9 @@
         <copy todir="${installer.dir}/jar-src">
             <fileset dir="${class.root}">
                 <include name="**/*.class" />
+                <include name="**/*.properties" />
                 <include name="**/*.xml" />
+                <include name="**/*.betwixt" />
                 <include name="**/images/**/*.*" />
             </fileset>
         </copy>
@@ -103,6 +105,7 @@
 				<include name="**/*.class" />
 				<include name="**/*.properties" />
 				<include name="**/*.xml" />
+                <include name="**/*.betwixt" />
 				<include name="**/images/**/*.*" />
 			</fileset>
 		</jar>
