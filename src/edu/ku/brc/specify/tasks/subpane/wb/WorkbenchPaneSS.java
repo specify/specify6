@@ -57,6 +57,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.AbstractAction;
@@ -273,6 +275,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected static Uploader       datasetUploader            = null; 
     protected WorkbenchValidator    workbenchValidator         = null;
     protected boolean 		        doIncrementalValidation    = false;
+    //Single thread executor to ensure that rows are not validated concurrently as a result of batch operations
+    protected final ExecutorService validationExecutor		   = Executors.newSingleThreadExecutor(Executors.defaultThreadFactory());
     
     // XXX PREF
     protected int                   mapSize                    = 500;
@@ -3840,7 +3844,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void validateRows(final int[] rows, final int startRow, final int endRow)
     {
-		new javax.swing.SwingWorker<Object, Object>() {
+		validationExecutor.execute(new javax.swing.SwingWorker<Object, Object>() {
 
 			/*
 			 * (non-Javadoc)
@@ -3882,7 +3886,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 					model.fireDataChanged();
 				}
 			}			
-		}.execute();
+		});
     }
     //------------------------------------------------------------
     // Inner Classes
