@@ -71,6 +71,8 @@ import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
+import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.AttachmentOwnerIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
@@ -113,6 +115,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDefRel.ImportMappingRelFld;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable.PartialMatchMsg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
@@ -286,6 +289,27 @@ public class Uploader implements ActionListener, KeyListener
     protected static final Logger                   log                      = Logger.getLogger(Uploader.class);
    
       
+    private class SkippedAttachment extends BaseUploadMessage
+    {
+    	protected int row;
+    	
+    	public SkippedAttachment(String msg, int row)
+    	{
+    		super(msg);
+    		this.row = row;
+    	}
+
+		/* (non-Javadoc)
+		 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.BaseUploadMessage#getRow()
+		 */
+		@Override
+		public int getRow()
+		{
+			return row;
+		}
+    	
+    	
+    }
     /**
      * @author timbo
      *
@@ -488,6 +512,34 @@ public class Uploader implements ActionListener, KeyListener
     	}
     	return null;
     }
+    
+    /**
+     * @param name
+     * @return UploadTable named name.
+     */
+    public UploadTable getUploadTableByNameRel(final String name, final String relTblName)
+    {
+    	for (UploadTable result : uploadTables)
+    	{
+    		if (result.getTable().getName().equalsIgnoreCase(name))
+    		{
+    			if (relTblName == null)
+    			{
+    				return result;
+    			}
+    			Relationship rel = result.getRelationship();
+    			if (rel != null)
+    			{
+    				if (rel.getRelatedField().getTable().getTableInfo().getName().equalsIgnoreCase(relTblName))
+    				{
+    					return result;
+    				}
+    			}
+    		}
+    	}
+    	return null;
+    }
+
     /**
      * @throws UploaderException
      * 
@@ -1861,7 +1913,11 @@ public class Uploader implements ActionListener, KeyListener
     		return getAttachToTable();
     	}
     	
-    	UploadTable result = getUploadTableByName(wri.getAttachToTableName());
+    	String attachToStrs[] = wri.getAttachToTableName().split("\\.");
+    	String tblName = attachToStrs[0];
+    	String relTblName = attachToStrs.length > 1 ? attachToStrs[1] : null; 
+    	
+    	UploadTable result = getUploadTableByNameRel(tblName, relTblName);
     	if (result == null)
     	{
     		result = getAttachToTable();
@@ -3621,7 +3677,7 @@ public class Uploader implements ActionListener, KeyListener
         {
             wbSS.getWorkbench().getRow(rowUploading).setUploadStatus(WorkbenchRow.UPLD_FAILED);
         }
-        SkippedRow sr = new SkippedRow(cause, row + 1);
+        SkippedRow sr = new SkippedRow(cause, row);
         skippedRows.add(sr);
         newMessages.add(sr);
     }
@@ -4108,21 +4164,25 @@ public class Uploader implements ActionListener, KeyListener
     	{
     		result = new AccessionAttachment();
     	}
-    	if (cls.equals(Taxon.class))
+    	else if (cls.equals(Taxon.class))
     	{
     		result =  new TaxonAttachment();
     	}
-    	if (cls.equals(Locality.class))
+    	else if (cls.equals(Locality.class))
     	{
     		result =  new LocalityAttachment();
     	}
-    	if (cls.equals(CollectingEvent.class))
+    	else if (cls.equals(CollectingEvent.class))
     	{
     		result =  new CollectingEventAttachment();
     	}
-    	if (cls.equals(CollectionObject.class))
+    	else if (cls.equals(CollectionObject.class))
     	{
     		result =  new CollectionObjectAttachment();
+    	}
+    	else if (cls.equals(Agent.class))
+    	{
+    		result = new AgentAttachment();
     	}
     	if (result != null)
     	{
@@ -4158,6 +4218,8 @@ public class Uploader implements ActionListener, KeyListener
 		
 		if (rec /*still*/ == null)
 		{
+			String msg = String.format(UIRegistry.getResourceString("Uploader.AttachToRecordMissing"), getRow(), t.toString());
+			addMsg(new SkippedAttachment(msg, getRow()));
 			return; //maybe the row was not uploaded for some reason
 		}
 		
@@ -4183,6 +4245,12 @@ public class Uploader implements ActionListener, KeyListener
 				attachment.setTitle(image.getCardImageFullPath());
 				ObjectAttachmentIFace<DataModelObjBase> oaif = (ObjectAttachmentIFace<DataModelObjBase>) getAttachmentObject(rec
 						.getClass());
+				if (oaif == null)
+				{
+					//this should never happen
+					log.error("couldn't create attachment interface object for " + rec.getClass().getName());
+					return;
+				}
 				oaif.setAttachment(attachment);
 				oaif.setObject((DataModelObjBase) rec);
 				oaif.setOrdinal(ordinal);
@@ -4204,7 +4272,7 @@ public class Uploader implements ActionListener, KeyListener
 					throw new Exception("Business rules processing failed");
 				}
 			}
-			for (ObjectAttachmentIFace att : currentAttachees)
+			for (ObjectAttachmentIFace<?> att : currentAttachees)
 			{
 					AttachmentUtils.getAttachmentManager()
 							.setStorageLocationIntoAttachment(

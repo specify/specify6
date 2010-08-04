@@ -83,6 +83,7 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.ImageFilter;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
@@ -650,10 +651,16 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
         		Vector<String> titles = new Vector<String>();
         		for (UploadTable ut : attachableTbls)
         		{
-        			if (!titles.contains(ut.getTblTitle()))
+        			String tblTitle = ut.getTblClass().equals(Agent.class) ? ut.toString() : ut.getTblTitle();
+        			if (!titles.contains(tblTitle));
         			{
-        				titleNamePairs.add(new Pair<String, String>(ut.getTblTitle(), ut.getTable().getName()));
-        				titles.add(ut.getTblTitle());
+        				String tblSpec = ut.getTable().getName();
+        				if (ut.getTblClass().equals(Agent.class) && ut.getRelationship() != null)
+        				{
+        					tblSpec += "." + ut.getRelationship().getRelatedField().getTable().getTableInfo().getName();
+        				}
+        				titleNamePairs.add(new Pair<String, String>(tblTitle, tblSpec));
+        				titles.add(tblTitle);
         			}
         		}
         		ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>((Frame )UIRegistry.getMostRecentWindow(),
