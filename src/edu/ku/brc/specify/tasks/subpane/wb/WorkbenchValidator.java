@@ -71,13 +71,13 @@ public class WorkbenchValidator
 	public List<UploadTableInvalidValue> endCellEdit(int row, int col)
 	{
 		Vector<UploadTableInvalidValue> issues = uploader.validateData(row, col);
-		if (issues.size() > 0)
-		{
-			for (UploadTableInvalidValue i : issues)
-			{
-				System.out.println(i.getMsg());
-			}
-		}
+//		if (issues.size() > 0)
+//		{
+//			for (UploadTableInvalidValue i : issues)
+//			{
+//				System.out.println(i.getMsg());
+//			}
+//		}
 		return issues;
 	}
 	

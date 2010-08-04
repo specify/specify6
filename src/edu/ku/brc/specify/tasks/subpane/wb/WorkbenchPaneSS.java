@@ -55,6 +55,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Queue;
 import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
@@ -276,7 +277,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected WorkbenchValidator    workbenchValidator         = null;
     protected boolean 		        doIncrementalValidation    = false;
     //Single thread executor to ensure that rows are not validated concurrently as a result of batch operations
-    protected final ExecutorService validationExecutor		   = Executors.newSingleThreadExecutor(Executors.defaultThreadFactory());
+    //protected final ExecutorService validationExecutor		   = Executors.newSingleThreadExecutor(Executors.defaultThreadFactory());
+    protected final Queue<ValidationWorker> validationWorkerQueue = new LinkedList<ValidationWorker>();
     
     // XXX PREF
     protected int                   mapSize                    = 500;
@@ -1222,6 +1224,15 @@ public class WorkbenchPaneSS extends BaseSubPane
         resultsetController.setLength(model.getRowCount() - rows.length);
 
         model.deleteRows(rows);
+        
+        if (validationWorkerQueue.peek() != null)
+        synchronized(validationWorkerQueue)
+        {
+        	for (int r : rows)
+        	{
+        		validationWorkerQueue.peek().rowDeleted(r);
+        	}
+        }
         
         int rowCount = workbench.getWorkbenchRowsAsList().size();
         
@@ -3146,6 +3157,12 @@ public class WorkbenchPaneSS extends BaseSubPane
             minMaxWindowListener = null;
         }
         
+        //validationExecutor.shutdownNow();
+        if (validationWorkerQueue.peek() != null)
+        {
+        	validationWorkerQueue.peek().cancel(true);        	
+        }
+        
         removeAll();
         if (mainPanel != null)
         {
@@ -3837,6 +3854,110 @@ public class WorkbenchPaneSS extends BaseSubPane
     	return false;
     }
     
+    private class ValidationWorker extends javax.swing.SwingWorker<Object, Object>
+    {
+		private final int[] rows;
+		private final int startRow;
+		private final int endRow;
+		//Vectors are thread safe?? Right??
+		private final Vector<Integer> deletedRows = new Vector<Integer>();
+		
+    	/**
+		 * @param rows
+		 * @param startRow
+		 * @param endRow
+		 */
+		public ValidationWorker(int[] rows, int startRow, int endRow)
+		{
+			super();
+			this.rows = rows;
+			this.startRow = startRow;
+			this.endRow = endRow;
+		}
+
+		/**
+		 * @param row
+		 * @return row adjusted to account for deletes. Or -1 if the row has been deleted.
+		 */
+		private int adjustRow(int row)
+		{
+			int result = row;
+			//Not sure what happens if deletedRows is added to during the following loop.
+			//Doesn't seem important enough to worry about.
+			for (Integer deleted : deletedRows)
+			{
+				if (deleted == row)
+				{
+					result = -1;
+					break;
+					
+				} else if (row > deleted)
+				{
+					result--;
+				}
+			} 
+			return result;
+		}
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see javax.swing.SwingWorker#doInBackground()
+		 */
+		@Override
+		protected Object doInBackground() throws Exception
+		{
+			if (rows != null)
+			{
+				for (int row : rows)
+				{
+					int adjustedRow = adjustRow(row);
+					if (adjustedRow != -1)
+					{
+						updateRowValidationStatus(adjustedRow, -1);
+					}
+				}
+			} else
+			{
+				for (int row = startRow; row <= endRow; row++)
+				{
+					
+					int adjustedRow = adjustRow(row);
+					if (adjustedRow != -1)
+					{
+						updateRowValidationStatus(adjustedRow, -1);
+					}
+				}
+			}
+			return null;
+		}
+
+		/* (non-Javadoc)
+		 * @see javax.swing.SwingWorker#done()
+		 */
+		@Override
+		protected void done()
+		{
+			super.done();
+			validationWorkerQueue.remove(); //remove this worker
+			if (validationWorkerQueue.peek() != null)
+			{
+				validationWorkerQueue.peek().execute();
+			}
+			if (rows == null)
+			{
+				model.fireTableRowsUpdated(startRow, endRow); //XXX model vs table rows??
+			}
+			else
+			{
+				model.fireDataChanged();
+			}
+		}			
+		
+		public void rowDeleted(int row)
+		{
+			deletedRows.add(row);
+		}
+    }
     /**
      * @param rows
      * @param startRow
@@ -3844,49 +3965,57 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void validateRows(final int[] rows, final int startRow, final int endRow)
     {
-		validationExecutor.execute(new javax.swing.SwingWorker<Object, Object>() {
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see javax.swing.SwingWorker#doInBackground()
-			 */
-			@Override
-			protected Object doInBackground() throws Exception
-			{
-				if (rows != null)
-				{
-					for (int row : rows)
-					{
-						updateRowValidationStatus(row, -1);
-					}
-				} else
-				{
-					for (int row = startRow; row <= endRow; row++)
-					{
-						updateRowValidationStatus(row, -1);
-					}
-				}
-				return null;
-			}
-
-			/* (non-Javadoc)
-			 * @see javax.swing.SwingWorker#done()
-			 */
-			@Override
-			protected void done()
-			{
-				super.done();
-				if (rows == null)
-				{
-					model.fireTableRowsUpdated(startRow, endRow); //XXX model vs table rows??
-				}
-				else
-				{
-					model.fireDataChanged();
-				}
-			}			
-		});
+//		validationExecutor.execute(new javax.swing.SwingWorker<Object, Object>() {
+//
+//			/*
+//			 * (non-Javadoc)
+//			 * 
+//			 * @see javax.swing.SwingWorker#doInBackground()
+//			 */
+//			@Override
+//			protected Object doInBackground() throws Exception
+//			{
+//				if (rows != null)
+//				{
+//					for (int row : rows)
+//					{
+//						updateRowValidationStatus(row, -1);
+//					}
+//				} else
+//				{
+//					for (int row = startRow; row <= endRow; row++)
+//					{
+//						updateRowValidationStatus(row, -1);
+//					}
+//				}
+//				return null;
+//			}
+//
+//			/* (non-Javadoc)
+//			 * @see javax.swing.SwingWorker#done()
+//			 */
+//			@Override
+//			protected void done()
+//			{
+//				super.done();
+//				if (rows == null)
+//				{
+//					model.fireTableRowsUpdated(startRow, endRow); //XXX model vs table rows??
+//				}
+//				else
+//				{
+//					model.fireDataChanged();
+//				}
+//			}			
+//		});
+    	
+    	boolean execute = validationWorkerQueue.peek() != null;
+    	ValidationWorker newWorker = new ValidationWorker(rows, startRow, endRow);
+    	validationWorkerQueue.add(new ValidationWorker(rows, startRow, endRow));
+    	if (execute)
+    	{
+    		newWorker.execute();
+    	}
     }
     //------------------------------------------------------------
     // Inner Classes
