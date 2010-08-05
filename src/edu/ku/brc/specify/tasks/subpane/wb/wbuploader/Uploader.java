@@ -71,6 +71,7 @@ import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
+import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
@@ -90,6 +91,7 @@ import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.LocalityAttachment;
 import edu.ku.brc.specify.datamodel.LocalityDetail;
 import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
+import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
@@ -115,7 +117,6 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDefRel.ImportMappingRelFld;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable.PartialMatchMsg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
@@ -1816,24 +1817,6 @@ public class Uploader implements ActionListener, KeyListener
     	return result;
     }
     
-    /**
-     * @return a list of names tables that can have attachments in the current upload.
-     * 
-     *  Not currently used, but will be when/if we allow users to choose which tables
-     *  attachments apply to.
-     */
-//    public List<Pair<String,String>> getAttachableTablesInUse()
-//    {
-//    	List<Pair<String, String>> result = new Vector<Pair<String, String>>();
-//    	for (UploadTable ut : uploadTables)
-//    	{
-//    		if (AttachmentOwnerIFace.class.isAssignableFrom(ut.getTblClass()))
-//    		{
-//    			result.add(new Pair<String, String>(ut.getTable().getName(), ut.toString()));
-//    		}
-//    	}
-//    	return result;
-//    }
  
     /**
      * @return a list of uploadtables that can have attachments in the current upload.
@@ -1848,19 +1831,69 @@ public class Uploader implements ActionListener, KeyListener
     	{
     		if (AttachmentOwnerIFace.class.isAssignableFrom(ut.getTblClass()))
     		{
-    			result.add(ut);
+    			if (attachmentsSupported(ut.getTblClass()))
+    			{
+    				result.add(ut);
+    			}
     		}
     	}
     	return result;
     }
 
     /**
+     * @param tblClass
+     * @return true if attachments can be uploaded for tblClass
+     * 
+     * Lots of UI work needs to be done before we can support attachments
+     * for 1-many situations (collectors, determiners, preps, determinations)
+     */
+    protected boolean attachmentsSupported(Class<?> tblClass)
+    {
+    	if (tblClass.equals(Agent.class))
+    	{
+    		for (UploadTable ut : uploadTables)
+    		{
+    			if (!ut.getTblClass().equals(Agent.class) && !ut.getTblClass().equals(Address.class))
+    			{
+    				return false;
+    			}
+    		}
+    		return true;
+    	} 
+    	
+    	if (tblClass.equals(Taxon.class))
+    	{
+    		for (UploadTable ut : uploadTables)
+    		{
+    			if (!ut.getTblClass().equals(Taxon.class))
+    			{
+    				return false;
+    			}
+    		}
+    		return true;
+    	}
+    	
+    	if (tblClass.equals(Preparation.class))
+    	{
+    		return false;
+    	}
+    	
+    	
+    	return true;
+    }
+    /**
      * @return list of attachable table names.
      */
     protected String getAttachableStr()
     {
     	String result = "";
-    	for (Class<?> cls : getAttachableTables())
+    	Set<Class<?>> clss = new HashSet<Class<?>>();
+    	List<UploadTable> uts = getAttachableTablesInUse();
+    	for (UploadTable ut : uts)
+    	{
+    		clss.add(ut.getTblClass());
+    	}
+    	for (Class<?> cls : clss)
     	{
     		DBTableInfo info = DBTableIdMgr.getInstance().getByClassName(cls.getName());
     		if (info != null)

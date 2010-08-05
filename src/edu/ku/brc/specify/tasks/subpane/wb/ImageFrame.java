@@ -637,7 +637,7 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
     {
         String attachToTableName = null;
         List<UploadTable> attachableTbls = wbPane.getAttachableTables();
-        if (attachableTbls == null)
+        if (attachableTbls == null || attachableTbls.size() == 0)
         {
         	//message about default attachment table
         } else
