@@ -58,8 +58,6 @@ import java.util.Properties;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Vector;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.AbstractAction;
@@ -1223,17 +1221,27 @@ public class WorkbenchPaneSS extends BaseSubPane
 
         resultsetController.setLength(model.getRowCount() - rows.length);
 
-        model.deleteRows(rows);
         
-        if (validationWorkerQueue.peek() != null)
-        synchronized(validationWorkerQueue)
+//        if (validationWorkerQueue.peek() != null)
+//        {
+//        	synchronized(validationWorkerQueue)
+//        	{
+//        		for (int r : rows)
+//        		{
+//        			validationWorkerQueue.peek().rowDeleted(r);
+//        		}
+//        	}
+//        }
+
+        //Or Just wait until validation is done.
+        while (validationWorkerQueue.peek() != null) 
         {
-        	for (int r : rows)
-        	{
-        		validationWorkerQueue.peek().rowDeleted(r);
-        	}
+        	System.out.println("waiting for validation workers to finish");
+        	//sit and wait)
         }
-        
+        	
+        model.deleteRows(rows);
+
         int rowCount = workbench.getWorkbenchRowsAsList().size();
         
         if (currentPanelType == PanelType.Spreadsheet)
@@ -3160,7 +3168,17 @@ public class WorkbenchPaneSS extends BaseSubPane
         //validationExecutor.shutdownNow();
         if (validationWorkerQueue.peek() != null)
         {
-        	validationWorkerQueue.peek().cancel(true);        	
+        	System.out.println("Shutdown: Cancelling validation worker.");
+        	ValidationWorker vw = null;
+        	synchronized(validationWorkerQueue)
+        	{
+        		vw = validationWorkerQueue.peek();
+        		validationWorkerQueue.clear();
+        	}
+        	if (vw != null && !vw.isDone())
+        	{
+        		vw.cancel(true);
+        	}
         }
         
         removeAll();
@@ -3928,6 +3946,17 @@ public class WorkbenchPaneSS extends BaseSubPane
 					}
 				}
 			}
+			if (!isCancelled())
+			{
+				System.out.println("done(): remove current validationWorker");
+				validationWorkerQueue.remove(); //remove this worker
+			
+				if (validationWorkerQueue.peek() != null)
+				{
+					System.out.println("done(): executing next validationWorker");
+					validationWorkerQueue.peek().execute();
+				}
+			}
 			return null;
 		}
 
@@ -3938,11 +3967,21 @@ public class WorkbenchPaneSS extends BaseSubPane
 		protected void done()
 		{
 			super.done();
-			validationWorkerQueue.remove(); //remove this worker
-			if (validationWorkerQueue.peek() != null)
+			if (isCancelled())
 			{
-				validationWorkerQueue.peek().execute();
+				//currently cancellation only occurs during shutdown.
+				System.out.println("done(): Clearing validationWorkerQueue");
+				validationWorkerQueue.clear();
+				return;
 			}
+//			System.out.println("done(): remove current validationWorker");
+//			validationWorkerQueue.remove(); //remove this worker
+//			
+//			if (validationWorkerQueue.peek() != null)
+//			{
+//				System.out.println("done(): executing next validationWorker");
+//				validationWorkerQueue.peek().execute();
+//			}
 			if (rows == null)
 			{
 				model.fireTableRowsUpdated(startRow, endRow); //XXX model vs table rows??
@@ -4009,12 +4048,13 @@ public class WorkbenchPaneSS extends BaseSubPane
 //			}			
 //		});
     	
-    	boolean execute = validationWorkerQueue.peek() != null;
     	ValidationWorker newWorker = new ValidationWorker(rows, startRow, endRow);
-    	validationWorkerQueue.add(new ValidationWorker(rows, startRow, endRow));
-    	if (execute)
+    	System.out.println("validateRows(): adding worker to queue");
+    	validationWorkerQueue.add(newWorker);
+    	if (validationWorkerQueue.peek() == newWorker)
     	{
-    		newWorker.execute();
+    	   	System.out.println("validateRows(): executing new worker");
+    	   	newWorker.execute();
     	}
     }
     //------------------------------------------------------------
@@ -4567,17 +4607,6 @@ public class WorkbenchPaneSS extends BaseSubPane
         shutdownLock.decrementAndGet();
     }
     
-    /**
-     * @return list tables in the workbench that support attachments
-     */
-//    public List<Pair<String, String>> getAttachableTables()
-//    {
-//    	if (workbenchValidator != null)
-//    	{
-//    		return workbenchValidator.getUploader().getAttachableTablesInUse();
-//    	}
-//    	return null;
-//    }
     
     /**
      * @return list tables in the workbench that support attachments
