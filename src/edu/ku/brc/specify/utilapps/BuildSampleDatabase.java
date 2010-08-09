@@ -636,6 +636,9 @@ public class BuildSampleDatabase
         {
             try
             {
+                HibernateUtil.attach(specifyAdminUser, session);
+                HibernateUtil.attach(userAgent, session);
+                
                 newUserAgent = (Agent)userAgent.clone();
                 specifyAdminUser.getAgents().add(newUserAgent);
                 newUserAgent.setSpecifyUser(specifyAdminUser);
@@ -656,6 +659,7 @@ public class BuildSampleDatabase
         try
         {
             userAgent = (Agent)session.merge(userAgent);
+            AppContextMgr.getInstance().setClassObject(Agent.class, userAgent);
             
         } catch (Exception ex)
         {
@@ -665,7 +669,6 @@ public class BuildSampleDatabase
         specifyAdminUser.addReference(userAgent, "agents");
         persist(specifyAdminUser);
 
-        
         commitTx();
         
         if (doCreateDisp)

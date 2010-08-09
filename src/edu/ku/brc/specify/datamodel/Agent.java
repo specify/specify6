@@ -321,6 +321,17 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         this.agentId = agentId;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+     */
+    @Override
+    public void forceLoad()
+    {
+        getAddresses().size();
+        getDisciplines().size();
+        getVariants().size();
+    }
+
     /**
      *
      */

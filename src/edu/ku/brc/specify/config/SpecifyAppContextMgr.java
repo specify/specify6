@@ -1231,7 +1231,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             int prevDisciplineId = curDis != null ? curDis.getDisciplineId() : -1;
             
             classObjHash.clear();
-            
+
             setClassObject(SpecifyUser.class, user);
 
             // Ask the User to choose which Collection they will be working with
@@ -1269,6 +1269,18 @@ public class SpecifyAppContextMgr extends AppContextMgr
             DataType dataType = discipline.getDataType();
             dataType.forceLoad();
             setClassObject(DataType.class, dataType);
+            
+            Agent userAgent = null;
+            for (Agent agt : user.getAgents())
+            {
+                if (agt.getDivision().getId().equals(division.getId()))
+                {
+                    userAgent = agt;
+                    agt.forceLoad();
+                    break;
+                }
+            }
+            setClassObject(Agent.class, userAgent);
             
             AppPreferences.startup();
             
