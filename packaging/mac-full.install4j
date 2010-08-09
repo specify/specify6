@@ -685,7 +685,7 @@ if (condit.equals("Specify")) {
                   <java class="java.beans.XMLDecoder">
                     <object class="com.install4j.runtime.beans.actions.finish.ExecuteLauncherAction">
                       <void property="launcherId">
-                        <string>748</string>
+                        <string>807</string>
                       </void>
                     </object>
                   </java>

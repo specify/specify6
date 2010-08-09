@@ -374,25 +374,7 @@ if (condit.equals("Specify")) {
 }
 </condition>
               </action>
-              <action name="" id="1779" beanClass="com.install4j.runtime.beans.actions.finish.ExecuteLauncherAction" enabled="true" commentSet="false" comment="" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
-                <serializedBean>
-                  <java class="java.beans.XMLDecoder">
-                    <object class="com.install4j.runtime.beans.actions.finish.ExecuteLauncherAction">
-                      <void property="launcherId">
-                        <string>748</string>
-                      </void>
-                    </object>
-                  </java>
-                </serializedBean>
-                <condition>String condit = (String)context.getVariable("executeLauncherAction");
-
-if (condit.equals("SpWizard")) {
-    return true;
-} else {
-    return false;
-}</condition>
-              </action>
-            </actions>
+              </actions>
             <formComponents>
               <formComponent name="" id="1780" beanClass="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                 <serializedBean>
@@ -429,7 +411,7 @@ if (condit.equals("SpWizard")) {
                 <initScript />
                 <visibiltyScript />
               </formComponent>
-              <formComponent name="" id="1782" beanClass="com.install4j.runtime.beans.formcomponents.SingleRadiobuttonComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+              <formComponent name="" id="1782" beanClass="com.install4j.runtime.beans.formcomponents.SingleRadiobuttonComponent" enabled="false" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
                     <object class="com.install4j.runtime.beans.formcomponents.SingleRadiobuttonComponent">
