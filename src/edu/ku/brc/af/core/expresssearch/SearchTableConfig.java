@@ -263,6 +263,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
             primaryKey = StringUtils.replace(primaryKey, "Id", "ID");
         }
         
+        sqlStr.append("DISTINCT ");
         sqlStr.append(tableInfo.getAbbrev());
         sqlStr.append('.');
         sqlStr.append(primaryKey);
