@@ -30,7 +30,9 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTree;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -42,6 +44,7 @@ import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.af.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.MultiView;
@@ -717,7 +720,7 @@ public class NavigationTreeMgr
                 session.attach(parentDiscipline);
                 session.attach(parentDiscipline.getDivision());
                 
-                userAgent = getAgent(session, parentDiscipline.getDivision(), parentDiscipline, specifyUser);
+                userAgent = getAgent(session, parentDiscipline.getDivision(), parentDiscipline, specifyUser, true);
                 if (userAgent == null)
                 {
                     return null;
@@ -877,7 +880,7 @@ public class NavigationTreeMgr
             prinGroup.getSpecifyUsers().add(specifyUser);
             specifyUser.getSpPrincipals().add(prinGroup);
             
-            Agent userAgent = getAgent(session, parentDiscipline.getDivision(), parentDiscipline, specifyUser);
+            Agent userAgent = getAgent(session, parentDiscipline.getDivision(), parentDiscipline, specifyUser, false);
             if (userAgent == null)
             {
                 return null;
@@ -926,6 +929,7 @@ public class NavigationTreeMgr
         return lastUserNode;
     }
     
+    
     /**
      * @param session
      * @param parentDivision
@@ -937,7 +941,8 @@ public class NavigationTreeMgr
     private Agent getAgent(final DataProviderSessionIFace session,
                            final Division    parentDivision,
                            final Discipline  parentDiscipline,
-                           final SpecifyUser specifyUser) throws CloneNotSupportedException
+                           final SpecifyUser specifyUser,
+                           final boolean     doAddNewUser) throws CloneNotSupportedException
     {
         Agent   userAgent = null;
         Integer agentId   = null;
@@ -959,38 +964,60 @@ public class NavigationTreeMgr
             firstName  = (String)row[2];
         }
         
-        String sql = String.format("SELECT AgentID, LastName, FirstName, MiddleInitial FROM agent WHERE LastName = '%s' AND FirstName = '%s' AND DivisionID = %d", lastName, firstName, parentDivision.getId());
-        Vector<Object[]> agentRow = BasicSQLUtils.query(sql);
-        if (agentRow != null && agentRow.size() > 0)
+        int newAgentOption = JOptionPane.CANCEL_OPTION;
+        if (doAddNewUser)
         {
-            Scriptlet scriptlet = new Scriptlet();
-            ArrayList<AgentInfo> list = new ArrayList<AgentInfo>();
-            for (Object[] agtRow : agentRow)
-            {
-                Integer  aId    = (Integer)agtRow[0];
-                String   lName  = (String)agtRow[1];
-                String   fName  = (String)agtRow[2]; 
-                String   mid    = (String)agtRow[3];
-                AgentInfo pair = new AgentInfo(aId, scriptlet.buildNameString(fName, lName, mid));
-                list.add(pair);
-            }
+            newAgentOption = UIRegistry.askYesNoLocalized("NVTM.NEW_AGT", "NVTM.EXT_AGT", getResourceString("NVTM.USRAGTMSGF"), "NVTM.USRAGTMSGF_TITLE");
             
-            ChooseFromListDlg<AgentInfo> agtDlg = new ChooseFromListDlg<AgentInfo>(
-                    (Frame)UIRegistry.getMostRecentWindow(), getResourceString("NVTM.CHSE_AGT"), list);
-            UIHelper.centerAndShow(agtDlg);
-            if (!agtDlg.isCancelled())
+            if (newAgentOption == JOptionPane.NO_OPTION) // Search For Agent
             {
-                Pair<Integer, String> pair = agtDlg.getSelectedObject();
-                agentId = pair.first;
-            } else
-            {
-                return null;
+                ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(null, "AgentSearch");
+                dlg.registerQueryBuilder(null);
+                dlg.setMultipleSelection(false);
+                dlg.getDialog().setVisible(true);
+                if (!dlg.isCancelled())
+                {
+                    agentId = ((Agent)dlg.getSelectedObject()).getAgentId();
+                    return session.get(Agent.class, agentId);
+                }
             }
         }
         
-        if (agentId == null) // Couldn't an existing agent
+        if (!doAddNewUser)
         {
-            if (specifyUser.getAgents().size() > 0)
+            String sql = String.format("SELECT AgentID, LastName, FirstName, MiddleInitial FROM agent WHERE LastName = '%s' AND FirstName = '%s' AND DivisionID = %d", lastName, firstName, parentDivision.getId());
+            Vector<Object[]> agentRow = BasicSQLUtils.query(sql);
+            if (agentRow != null && agentRow.size() > 0)
+            {
+                Scriptlet scriptlet = new Scriptlet();
+                ArrayList<AgentInfo> list = new ArrayList<AgentInfo>();
+                for (Object[] agtRow : agentRow)
+                {
+                    Integer  aId    = (Integer)agtRow[0];
+                    String   lName  = (String)agtRow[1];
+                    String   fName  = (String)agtRow[2]; 
+                    String   mid    = (String)agtRow[3];
+                    AgentInfo pair = new AgentInfo(aId, scriptlet.buildNameString(fName, lName, mid));
+                    list.add(pair);
+                }
+                
+                ChooseFromListDlg<AgentInfo> agtDlg = new ChooseFromListDlg<AgentInfo>(
+                        (Frame)UIRegistry.getMostRecentWindow(), getResourceString("NVTM.CHSE_AGT"), list);
+                UIHelper.centerAndShow(agtDlg);
+                if (!agtDlg.isCancelled())
+                {
+                    Pair<Integer, String> pair = agtDlg.getSelectedObject();
+                    agentId = pair.first;
+                } else
+                {
+                    return null;
+                }
+            }
+        }
+        
+        if (agentId == null) // Couldn't find an existing agent
+        {
+            if (!doAddNewUser && specifyUser.getAgents().size() > 0)
             {
                 // Clone existing agent
                 Agent agent = specifyUser.getAgents().iterator().next();
@@ -1014,16 +1041,13 @@ public class NavigationTreeMgr
         } else // clone existing agent
         {
             userAgent = (Agent)session.getData("FROM Agent agent WHERE id = " + agentId);
-            /*userAgent = (Agent)userAgent.clone();
-            userAgent.setDivision(parentDivision);
-            userAgent.getDisciplines().clear();*/
         }
         
         // Add the New Agent or Existing Agent to the New Discipline.
         int agtDspCnt = 0;
         if (userAgent.getId() != null)
         {
-            sql = String.format("SELECT COUNT(*) FROM agent_discipline WHERE AgentID = %d AND DisciplineID = %d", userAgent.getId(), parentDiscipline.getId());
+            String sql = String.format("SELECT COUNT(*) FROM agent_discipline WHERE AgentID = %d AND DisciplineID = %d", userAgent.getId(), parentDiscipline.getId());
             agtDspCnt = BasicSQLUtils.getCountAsInt(sql);
         }
         
