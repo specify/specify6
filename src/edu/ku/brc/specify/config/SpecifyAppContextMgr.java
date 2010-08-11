@@ -1823,6 +1823,23 @@ public class SpecifyAppContextMgr extends AppContextMgr
     @Override
     public ViewIFace getView(final String viewSetName, final String viewName)
     {
+        ViewIFace view = getViewInternal(viewSetName, viewName, true);
+        if (view != null)
+        {
+            return view;
+        }
+        
+        return getViewInternal(viewSetName, viewName, false);
+    }
+
+    /**
+     * @param viewSetName
+     * @param viewName
+     * @param doCheckDB
+     * @return
+     */
+    private ViewIFace getViewInternal(final String viewSetName, final String viewName, final boolean doCheckDB)
+    {
         if (debug) log.debug("getView - viewSetName[" + viewSetName + "][" + viewName + "]");
         
         if (StringUtils.isEmpty(viewName))
@@ -1834,19 +1851,22 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         for (SpAppResourceDir dir : spAppResourceList)
         {
-            //if (debug) log.debug("getView "+getSpAppResDefAsString(appResDef)+"  ["+appResDef.getUniqueIdentifer()+"]\n  ["+appResDef.getIdentityTitle()+"]");
-            if (debug) log.debug("getView - " + dir.getIdentityTitle());
-            
-            for (ViewSetIFace vs : getViewSetList(dir))
+            if ((dir.getId() == null && !doCheckDB) || (dir.getId() != null && doCheckDB))
             {
-                if (debug) log.debug("VS  ["+vs.getName()+"]["+viewSetName+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                //if (debug) log.debug("getView "+getSpAppResDefAsString(appResDef)+"  ["+appResDef.getUniqueIdentifer()+"]\n  ["+appResDef.getIdentityTitle()+"]");
+                if (debug) log.debug("getView - " + dir.getIdentityTitle());
                 
-                if (StringUtils.isEmpty(viewSetName) || vs.getName().equals(viewSetName))
+                for (ViewSetIFace vs : getViewSetList(dir))
                 {
-                    ViewIFace view = vs.getView(viewName);
-                    if (view != null)
+                    if (debug) log.debug("VS  ["+vs.getName()+"]["+viewSetName+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    
+                    if (StringUtils.isEmpty(viewSetName) || vs.getName().equals(viewSetName))
                     {
-                        return view;
+                        ViewIFace view = vs.getView(viewName);
+                        if (view != null)
+                        {
+                            return view;
+                        }
                     }
                 }
             }
