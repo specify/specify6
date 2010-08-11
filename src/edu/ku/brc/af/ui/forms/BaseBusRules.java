@@ -431,6 +431,12 @@ public class BaseBusRules implements BusinessRulesIFace
         try
         {
             conn = DBConnection.getInstance().createConnection();
+            if (conn == null)
+            {
+                log.debug("Couldn't create connection! Reason: "+DBConnection.getInstance().getErrorMsg());
+                return false;
+            }
+            
             stmt = conn.createStatement();
 
             for (int i=0;i<nameCombos.length;i++)

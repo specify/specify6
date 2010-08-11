@@ -153,7 +153,7 @@ public class TaskMgr implements CommandListener
                 startUpTask.requestContext();
                 instance.currentTask = startUpTask;
                 
-            } else
+            } else if (instance.tasks.values().size() > 0)
             {
                 Taskable arbitraryTaskable = instance.tasks.values().iterator().next();
                 if (arbitraryTaskable != null)
