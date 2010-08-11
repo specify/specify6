@@ -327,9 +327,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     @Override
     public void forceLoad()
     {
-        getAddresses().size();
-        getDisciplines().size();
-        getVariants().size();
+        // Do not override this method
+        super.forceLoad();
     }
 
     /**

@@ -1276,7 +1276,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 if (agt.getDivision().getId().equals(division.getId()))
                 {
                     userAgent = agt;
-                    agt.forceLoad();
+                    userAgent.getAddresses().size();
+                    userAgent.getDisciplines().size();
+                    userAgent.getVariants().size();
+                    //userAgent.getDisciplines().size();
                     break;
                 }
             }
