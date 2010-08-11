@@ -65,6 +65,7 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
@@ -1132,24 +1133,27 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             mid.setPosition(MenuItemDesc.Position.After, menuDesc);
             menuItems.add(mid);
             
-            menuDesc = getResourceString(titleArg);
-            titleArg = getI18NKey("TYPESEARCH_MENU"); 
-            mneu     = getI18NKey("TYPESEARCH_MNEU"); 
-            mi = UIHelper.createLocalizedMenuItem(titleArg, mneu, titleArg, true, null);
-            mi.addActionListener(new ActionListener()
+            if (AppPreferences.getLocalPrefs().getBoolean("TYPESEARCH.ENABLE", false))
             {
-                public void actionPerformed(ActionEvent ae)
-                {
-                    TypeSearchForQueryFactory.getInstance().save();
-                    
-                    TypeSearchListEditor tse = new TypeSearchListEditor();
-                    tse.setVisible(true);
-                    tse.pack();
-                }
-            }); 
-            mid = new MenuItemDesc(mi, SYSTEM_MENU);
-            mid.setPosition(MenuItemDesc.Position.After, menuDesc);
-            menuItems.add(mid);
+	            menuDesc = getResourceString(titleArg);
+	            titleArg = getI18NKey("TYPESEARCH_MENU"); 
+	            mneu     = getI18NKey("TYPESEARCH_MNEU"); 
+	            mi = UIHelper.createLocalizedMenuItem(titleArg, mneu, titleArg, true, null);
+	            mi.addActionListener(new ActionListener()
+	            {
+	                public void actionPerformed(ActionEvent ae)
+	                {
+	                    TypeSearchForQueryFactory.getInstance().save();
+	                    
+	                    TypeSearchListEditor tse = new TypeSearchListEditor();
+	                    tse.setVisible(true);
+	                    tse.pack();
+	                }
+	            }); 
+	            mid = new MenuItemDesc(mi, SYSTEM_MENU);
+	            mid.setPosition(MenuItemDesc.Position.After, menuDesc);
+	            menuItems.add(mid);
+            }
         }
         
         if (!AppContextMgr.isSecurityOn() || 
