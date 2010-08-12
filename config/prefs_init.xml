@@ -88,7 +88,7 @@
     </section>
     
     <section title="LSIDs">
-        <pref name="LSIDs" title="LSIDS" icon="SpecifyLargeIcon" panelClass="edu.ku.brc.specify.prefs.LSIDPrefsPanel" help="PrefsLSIDs">
+        <pref name="LSIDs" title="LSIDS" icon="SpecifyLargeIcon" panelClass="edu.ku.brc.specify.prefs.LSIDPrefsPanel" help="PrefsLSID">
             <defperm name="Manager"       perm="true,true,true,true"/>
             <defperm name="FullAccess"    perm="false,false,false,false"/>
             <defperm name="LimitedAccess" perm="false,false,false,false"/>
