@@ -1122,9 +1122,15 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                             
                             //remove leading zeroes
                             String newString = criteriaStrs[s].toString();
+                            boolean isZeroes = false;
                             while (newString.startsWith("0"))
                             {
                             	newString = newString.substring(1);
+                            	isZeroes = true;
+                            }
+                            if (isZeroes && StringUtils.isBlank(newString))
+                            {
+                            	newString = "0";
                             }
                             criteriaStrs[s] = newString;
                         }
