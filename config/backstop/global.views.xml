@@ -518,8 +518,7 @@
 
         <view name="MorphBankView"
             class="edu.ku.brc.specify.datamodel.MorphBankView"
-            busrules="edu.ku.brc.specify.datamodel.busrules.MorphBankViewBusRules"
-            isinternal="false"
+            isinternal="true"
             resourcelabels="false">
             <desc><![CDATA[MorphBankView form.]]></desc>
             <altviews>
