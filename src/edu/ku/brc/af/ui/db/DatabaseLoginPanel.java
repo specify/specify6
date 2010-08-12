@@ -1213,40 +1213,43 @@ public class DatabaseLoginPanel extends JTiledPanel
     /**
      * @param usrPwd
      */
-    private void doCheckPermissions(Pair<String, String> usrPwd)
+    private void doCheckPermissions(final Pair<String, String> usrPwd)
     {
-        String       dbDriver   = DBConnection.getInstance().getDriver();
-        String       serverName = getServerName();
-        String       dbName     = getDatabaseName();
-        SQLException loginEx    = DBConnection.getLoginException();
-        
-        if (StringUtils.isNotEmpty(dbDriver) && 
-                dbDriver.equals("com.mysql.jdbc.Driver") &&
-                loginEx != null &&
-                StringUtils.isNotEmpty(loginEx.getSQLState()) && 
-                loginEx.getSQLState().equals("08001"))
+        if (System.getProperty("user.name").equals("rods"))
         {
-            boolean doFixIt = UIRegistry.displayConfirmLocalized("MISSING_PRIV_TITLE", "MISSING_PRIV", "MISSING_PRIV_FIX", "Cancel", JOptionPane.WARNING_MESSAGE);
-            if (doFixIt)
+            String       dbDriver   = DBConnection.getInstance().getDriver();
+            String       serverName = getServerName();
+            String       dbName     = getDatabaseName();
+            SQLException loginEx    = DBConnection.getLoginException();
+            
+            if (StringUtils.isNotEmpty(dbDriver) && 
+                    dbDriver.equals("com.mysql.jdbc.Driver") &&
+                    loginEx != null &&
+                    StringUtils.isNotEmpty(loginEx.getSQLState()) && 
+                    loginEx.getSQLState().equals("08001"))
             {
-                DBConnection.getInstance().setServerName(serverName); // Needed for SchemaUpdateService
-                
-                Pair<String, String> itUP = getITUsernamePwd();
-                DBMSUserMgr mgr = DBMSUserMgr.getInstance();
-                try
+                boolean doFixIt = UIRegistry.displayConfirmLocalized("MISSING_PRIV_TITLE", "MISSING_PRIV", "MISSING_PRIV_FIX", "Cancel", JOptionPane.WARNING_MESSAGE);
+                if (doFixIt)
                 {
-                    if (mgr.connectToDBMS(itUP.first, itUP.second, serverName))
+                    DBConnection.getInstance().setServerName(serverName); // Needed for SchemaUpdateService
+                    
+                    Pair<String, String> itUP = getITUsernamePwd();
+                    DBMSUserMgr mgr = DBMSUserMgr.getInstance();
+                    try
                     {
-                        boolean isOK = mgr.setPermissions(usrPwd.first, dbName, DBMSUserMgr.PERM_ALL_BASIC);
-                        UIRegistry.showLocalizedMsg(isOK ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE, getResourceString("MISSING_PRIV_TITLE"), (isOK ? "MISSING_PRIV_OK" : "MISSING_PRIV_ERR"));
-                        mgr.close();
-                    } else
+                        if (mgr.connectToDBMS(itUP.first, itUP.second, serverName))
+                        {
+                            boolean isOK = mgr.setPermissions(usrPwd.first, dbName, DBMSUserMgr.PERM_ALL_BASIC);
+                            UIRegistry.showLocalizedMsg(isOK ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE, getResourceString("MISSING_PRIV_TITLE"), (isOK ? "MISSING_PRIV_OK" : "MISSING_PRIV_ERR"));
+                            mgr.close();
+                        } else
+                        {
+                            UIRegistry.showError("MISSING_PRIV_NO_LOGIN");
+                        }
+                    } catch (Exception ex)
                     {
-                        UIRegistry.showError("MISSING_PRIV_NO_LOGIN");
+                        ex.printStackTrace();
                     }
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
                 }
             }
         }
