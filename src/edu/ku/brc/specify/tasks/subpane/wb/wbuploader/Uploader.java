@@ -1916,8 +1916,13 @@ public class Uploader implements ActionListener, KeyListener
     	int priority = -1;
     	Vector<Class<?>> attachable = getAttachableTables();
     	UploadTable result = null;
+    	boolean isAgentOnly = true;
     	for (UploadTable ut : uploadTables)
     	{
+    		if (!ut.getTblClass().equals(Agent.class) || ut.getTblClass().equals(Address.class))
+    		{
+    			isAgentOnly = false;
+    		}
     		int newPriority = attachable.indexOf(ut.getTblClass());
     		if (newPriority > priority)
     		{
@@ -1930,6 +1935,16 @@ public class Uploader implements ActionListener, KeyListener
     		while (((UploadTableTree )result).getChild() != null)
     		{
     			result = ((UploadTableTree )result).getChild();
+    		}
+    	}
+    	if (result == null && isAgentOnly)
+    	{
+    		for (UploadTable ut : uploadTables)
+    		{
+    			if (ut.getTblClass().equals(Agent.class))
+    			{
+    				return ut;
+    			}
     		}
     	}
     	return result;
