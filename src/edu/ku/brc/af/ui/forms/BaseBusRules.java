@@ -313,7 +313,7 @@ public class BaseBusRules implements BusinessRulesIFace
                 queryString += " AND " + extraColumns; 
             }
             
-            log.debug(queryString);
+            //log.debug(queryString);
             ResultSet rs = stmt.executeQuery(queryString);
             if (rs.next())
             {

@@ -177,6 +177,38 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
     }
     
     /**
+     * @param name
+     * @return
+     */
+    private int getNameCount(final String name)
+    {
+        return BasicSQLUtils.getCountAsInt(String.format("SELECT COUNT(*) FROM discipline WHERE Name = '%s'", name));
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#isOkToSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public boolean isOkToSave(final Object dataObj, final DataProviderSessionIFace session)
+    {
+        if (formViewObj != null)
+        {
+            Component comp = formViewObj.getControlByName("name");
+            if (comp instanceof ValTextField)
+            {
+                String name = ((ValTextField)comp).getText();
+                int cnt = getNameCount(name);
+                if (cnt == 0)
+                {
+                    return true;
+                }
+               reasonList.add(UIRegistry.getLocalizedMessage("DISPNAME_DUP", name));
+            }
+        }
+        return false;
+    }
+
+    /**
      * 
      */
     private void addNewDiscipline()

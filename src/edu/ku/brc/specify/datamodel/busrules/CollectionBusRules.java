@@ -21,6 +21,7 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Component;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -53,11 +54,13 @@ import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
+import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.init.SpecifyDBSetupWizard;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -142,6 +145,38 @@ public class CollectionBusRules extends BaseBusRules
         }
     }
     
+    /**
+     * @param disciplineName
+     * @return
+     */
+    private int getNameCount(final String name)
+    {
+        return BasicSQLUtils.getCountAsInt(String.format("SELECT COUNT(*) FROM collection WHERE CollectionName = '%s'", name));
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#isOkToSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public boolean isOkToSave(final Object dataObj, final DataProviderSessionIFace session)
+    {
+        if (formViewObj != null)
+        {
+            Component comp = formViewObj.getControlByName("collectionName");
+            if (comp instanceof ValTextField)
+            {
+                String name = ((ValTextField)comp).getText();
+                int cnt = getNameCount(name);
+                if (cnt == 0)
+                {
+                    return true;
+                }
+               reasonList.add(UIRegistry.getLocalizedMessage("COLLNAME_DUP", name));
+            }
+        }
+        return false;
+    }
+
     /**
      * 
      */
@@ -346,8 +381,6 @@ public class CollectionBusRules extends BaseBusRules
         bldWorker.execute();
 
     }
-    
-
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)

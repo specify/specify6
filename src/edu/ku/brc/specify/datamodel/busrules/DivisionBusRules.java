@@ -21,6 +21,7 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Component;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -45,6 +46,7 @@ import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.ResultSetController;
 import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -164,6 +166,38 @@ public class DivisionBusRules extends BaseBusRules implements CommandListener
     }
     
     /**
+     * @param name
+     * @return
+     */
+    private int getNameCount(final String name)
+    {
+        return BasicSQLUtils.getCountAsInt(String.format("SELECT COUNT(*) FROM division WHERE Name = '%s'", name));
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#isOkToSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public boolean isOkToSave(final Object dataObj, final DataProviderSessionIFace session)
+    {
+        if (formViewObj != null)
+        {
+            Component comp = formViewObj.getControlByName("name");
+            if (comp instanceof ValTextField)
+            {
+                String name = ((ValTextField)comp).getText();
+                int cnt = getNameCount(name);
+                if (cnt == 0)
+                {
+                    return true;
+                }
+               reasonList.add(UIRegistry.getLocalizedMessage("DIVNAME_DUP", name));
+            }
+        }
+        return false;
+    }
+    
+    /**
      * 
      */
     private void addNewDivision()
@@ -265,8 +299,8 @@ public class DivisionBusRules extends BaseBusRules implements CommandListener
                     session = HibernateUtil.getNewSession();
                     DataProviderSessionIFace hSession = new HibernateDataProviderSession(session);
                     
-                    Institution    inst           = (Institution)formViewObj.getMVParent().getMultiViewParent().getData(); 
-                    Institution    institution         = hSession.get(Institution.class, inst.getId());
+                    Institution    inst             = (Institution)formViewObj.getMVParent().getMultiViewParent().getData(); 
+                    Institution    institution      = hSession.get(Institution.class, inst.getId());
                     SpecifyUser    specifyAdminUser = (SpecifyUser)acm.getClassObject(SpecifyUser.class);
                     Properties     props            = wizardPanel.getProps();
                     

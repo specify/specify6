@@ -46,6 +46,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.config.DisciplineType;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -165,7 +167,19 @@ public class DisciplinePanel extends BaseSetupPanel
      */
     public boolean isUIValid()
     {
-        return StringUtils.isNotEmpty(disciplineName.getText()) && disciplines.getSelectedIndex() > -1;
+        String name = disciplineName.getText();
+        if (StringUtils.isNotEmpty(name) && disciplines.getSelectedIndex() > -1)
+        {
+            int cnt = BasicSQLUtils.getCountAsInt(String.format("SELECT COUNT(*) FROM discipline WHERE Name = '%s'", name));
+            if (cnt > 0)
+            {
+                UIRegistry.showLocalizedError("DISPNAME_DUP", name);
+                return false;
+            }
+            return true;
+        }
+        
+        return false;
     }
     
     // Getters 
@@ -196,6 +210,15 @@ public class DisciplinePanel extends BaseSetupPanel
         list.add(new Pair<String, String>(getResourceString("DSP_TYPE"), disciplines.getSelectedItem().toString()));
         list.add(new Pair<String, String>(getResourceString("DSP_NAME"), disciplineName.getText()));
         return list;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.BaseSetupPanel#doingNext()
+     */
+    @Override
+    public void doingNext()
+    {
+        super.doingNext();
     }
     
     

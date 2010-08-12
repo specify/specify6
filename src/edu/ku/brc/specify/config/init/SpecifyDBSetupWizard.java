@@ -309,7 +309,7 @@ public class SpecifyDBSetupWizard extends JPanel
         if (wizardType == WizardType.Institution ||
             wizardType == WizardType.Division)
         {
-            panels.add(new GenericFormPanel("DIV", 
+            panels.add(new DivisionPanel("DIV", 
                 "ENTER_DIV_INFO",
                 "wizard_enter_division",
                 new String[] { "NAME",    "ABBREV"}, 
@@ -370,7 +370,7 @@ public class SpecifyDBSetupWizard extends JPanel
             panels.add(geoTDPanel);
         }
 
-        panels.add(new GenericFormPanel("COLLECTION", 
+        panels.add(new CollectionPanel("COLLECTION", 
                     "ENTER_COL_INFO",
                     "wizard_create_collection",
                     new String[] { "NAME",     "PREFIX", }, 
