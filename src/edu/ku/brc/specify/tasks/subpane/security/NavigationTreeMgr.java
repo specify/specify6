@@ -32,7 +32,6 @@ import java.util.Vector;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -971,10 +970,29 @@ public class NavigationTreeMgr
             
             if (newAgentOption == JOptionPane.NO_OPTION) // Search For Agent
             {
-                ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(null, "AgentSearch");
-                dlg.registerQueryBuilder(null);
-                dlg.setMultipleSelection(false);
-                dlg.getDialog().setVisible(true);
+                Division   currDivision   = AppContextMgr.getInstance().getClassObject(Division.class);
+                Discipline currDiscipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+                
+                AppContextMgr.getInstance().setClassObject(Division.class, parentDivision);
+                AppContextMgr.getInstance().setClassObject(Discipline.class, parentDiscipline);
+                
+                ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(null, "UserAgentSearch");
+                try
+                {
+                    dlg.registerQueryBuilder(null);
+                    dlg.setMultipleSelection(false);
+                    dlg.getDialog().setVisible(true);
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    
+                } finally
+                {
+                    AppContextMgr.getInstance().setClassObject(Division.class, currDivision);
+                    AppContextMgr.getInstance().setClassObject(Discipline.class, currDiscipline);
+                }
+                
                 if (!dlg.isCancelled())
                 {
                     agentId = ((Agent)dlg.getSelectedObject()).getAgentId();

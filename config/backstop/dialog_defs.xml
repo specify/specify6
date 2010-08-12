@@ -27,6 +27,7 @@
     <dialog type="search" viewset="Search" view="ReferenceWorkSearch"      name="ReferenceWorkSearch"      class="edu.ku.brc.specify.datamodel.ReferenceWork"  idfield="referenceWorkId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="RepositoryAgreementSearch" name="RepositoryAgreementSearch" class="edu.ku.brc.specify.datamodel.RepositoryAgreement" idfield="repositoryAgreementId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="TaxonSearch"              name="TaxonSearch"              class="edu.ku.brc.specify.datamodel.Taxon"          idfield="taxonId" helpcontext="CBXQSearch"/>
+    <dialog type="search" viewset="Search" view="UserAgentSearch"          name="UserAgentSearch"          class="edu.ku.brc.specify.datamodel.Agent"          idfield="agentId" helpcontext="CBXQSearch"/>
     
     <dialog type="display" view="AccessionCO"        name="AccessionDisplay"         class="edu.ku.brc.specify.datamodel.Accession" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="AccessionAgent"     name="AccessionAgentDisplay"    class="edu.ku.brc.specify.datamodel.Address" helpcontext="CBXQViewEdit"/>

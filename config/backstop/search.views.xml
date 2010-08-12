@@ -15,6 +15,17 @@
         </view>
         
         <view 
+            name="UserAgentSearch"
+            class="edu.ku.brc.specify.datamodel.Agent"
+            usedefbusrule="false"
+            resourcelabels="false">
+            <desc><![CDATA[The Agent Search Form]]></desc>
+            <altviews>
+                <altview name="AgentSearch" viewdef="AgentSearch" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
+        <view 
             name="AgentNameSearch"
             class="edu.ku.brc.specify.datamodel.Agent"
             usedefbusrule="false"

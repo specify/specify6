@@ -416,8 +416,11 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
             if (StringUtils.isNotEmpty(sqlStr))
             {
                 resultsInfo = queryBuilder.createQueryForIdResults();
-                resultsInfo.setSQL(sqlStr);
-                resultsInfo.setMultipleSelection(isMultipleSelection);
+                if (resultsInfo != null)
+                {
+                    resultsInfo.setSQL(sqlStr);
+                    resultsInfo.setMultipleSelection(isMultipleSelection);
+                }
                 
             } else
             {

@@ -30,6 +30,7 @@ import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.ExchangeIn;
 import edu.ku.brc.specify.datamodel.ExchangeOut;
 import edu.ku.brc.specify.datamodel.Geography;
@@ -357,7 +358,16 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 
                 if (StringUtils.contains(adjSQL, DIVID))
                 {
-                    Integer divId = Agent.getUserAgent().getDivision() != null ? Agent.getUserAgent().getDivision().getDivisionId() : null;
+                    Integer  divId    = null;
+                    Division division = AppContextMgr.getInstance().getClassObject(Division.class);
+                    if (division != null)
+                    {
+                        divId = division.getId();
+                    } else
+                    {
+                        divId = Agent.getUserAgent().getDivision() != null ? Agent.getUserAgent().getDivision().getDivisionId() : null;
+                    }
+                    
                     if (divId != null)
                     {
                         adjSQL = StringUtils.replace(adjSQL, DIVID, Integer.toString(divId));

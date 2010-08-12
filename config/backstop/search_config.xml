@@ -2023,5 +2023,36 @@ repositoryagreement.RepositoryAgreementNumber,
             </detailView>
         </table>
         
+        <table id="128" tableid="5" name="UserAgentSearch" priority="1" color="30, 144, 255">
+            <detailView icon="">
+                <sql>
+                    <![CDATA[SELECT agent.AgentID,
+ agent.FirstName, 
+ agent.LastName, 
+ agent.EMail, 
+ address.Address, 
+ address.City, 
+ address.State, 
+ address.Postalcode, 
+ address.Country 
+ FROM agent 
+ LEFT JOIN address ON agent.AgentID = address.AgentID
+ WHERE agent.DivisionID = DIVID AND (%s) GROUP BY agent.AgentID]]>
+                </sql>
+                <captions>
+                    <caption tableid="5" col="AgentID" visible="false"/>
+                    <caption tableid="5" col="FirstName"/>
+                    <caption tableid="5" col="LastName"/>
+                    <caption tableid="5" col="EMail"/>
+                    <caption tableid="8" col="Address"/>
+                    <caption tableid="8" col="City"/>
+                    <caption tableid="8" col="State"/>
+                    <caption tableid="8" col="Postalcode"/>
+                    <caption tableid="8" col="Country"/>
+                </captions>
+            </detailView>
+        </table>
+    
+        
     </generic>
 </searches>
