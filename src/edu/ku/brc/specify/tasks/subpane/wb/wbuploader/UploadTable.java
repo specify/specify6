@@ -65,6 +65,7 @@ import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.AccessionAuthorization;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.AttachmentOwnerIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttribute;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -464,6 +465,12 @@ public class UploadTable implements Comparable<UploadTable>
      */
     public void prepareToUpload() throws UploaderException
     {
+        //XXX TESTING
+    	//updateMatches = tblClass.equals(CollectionObject.class) 
+    	//	|| (tblClass.equals(CollectingEvent.class) 
+    	//			&& AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent());
+    	//XXX
+    	
         uploadedRecs.clear();
         matchSetting.clear();
         isSecurityOn = AppContextMgr.isSecurityOn();
@@ -1683,7 +1690,8 @@ public class UploadTable implements Comparable<UploadTable>
                 }
             }
         }
-        else if (tblClass.equals(CollectionObject.class)/* && !updateMatches*/)
+        else if (tblClass.equals(CollectionObject.class) 
+        		&& !updateMatches) //XXX Updates
         {
             result = true;
         }
@@ -1772,7 +1780,7 @@ public class UploadTable implements Comparable<UploadTable>
                 }
             }
         }
-        else
+        else //if (!updateMatches) //XXX Updates!!!!
         // Oh no!!
         {
             log.error("Unable to check matching children for " + tblClass.getName());
@@ -1980,13 +1988,48 @@ public class UploadTable implements Comparable<UploadTable>
         }*/
     }
     
+    protected boolean getUpdateMatchCriteria(CriteriaIFace critter,
+                                       final int recNum,
+                                       Vector<MatchRestriction> restrictedVals)
+    	throws UploaderException, IllegalAccessException, NoSuchMethodException, InvocationTargetException
+    {
+    	//XXX Updates
+    	//totally hard-coded for CollectionObject - need to add RecordID field to workbench row.
+        for (UploadField uf : uploadFields.get(recNum))
+        {
+        	if (uf.getField().getFieldInfo().getName().equalsIgnoreCase("catalognumber"))
+        	{
+            	addRestriction(critter, deCapitalize("CatalogNumber"),getArgForSetter(uf)[0], true);
+            	return false;
+        	}
+        }
+        return false;
+    }
+    
+    /**
+     * 
+     * 
+     * @param critter
+     * @param recNum
+     * @param restrictedVals
+     * @return true if blank cells were ignored when matching
+     * @throws UploaderException
+     * @throws IllegalAccessException
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     */
     protected boolean getMatchCriteria(CriteriaIFace critter,
                                        final int recNum,
                                        Vector<MatchRestriction> restrictedVals)
             throws UploaderException, IllegalAccessException, NoSuchMethodException,
             InvocationTargetException
     {
-        boolean ignoringBlankCell = false;
+        if (updateMatches) //XXX Updates
+        {
+        	return getUpdateMatchCriteria(critter, recNum, restrictedVals);
+        }
+        
+    	boolean ignoringBlankCell = false;
         for (UploadField uf : uploadFields.get(recNum))
         {
             if (uf.getSetter() != null)
@@ -2155,6 +2198,7 @@ public class UploadTable implements Comparable<UploadTable>
         if (match != null)
         {
             setCurrentRecord(match, recNum);
+            //XXX Updates
             // if a match was found matchChildren don't need to do anything. (assuming
             // !updateMatches!!!)
             if (!updateMatches)
@@ -2877,7 +2921,7 @@ public class UploadTable implements Comparable<UploadTable>
     {
         int recNum = 0;
         logDebug("writeRowOrNot: " + this.table.getName());
-        //System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
+        System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
         autoAssignedVal = null;  //assumes one autoassign field per table.
         for (Vector<UploadField> seq : uploadFields)
         {
@@ -2885,7 +2929,7 @@ public class UploadTable implements Comparable<UploadTable>
             {
                 if (needToWrite(recNum))
                 {
-                    if (skipMatch || !findMatch(recNum, false))
+                    if (skipMatch || !findMatch(recNum, false) || updateMatches)
                     {
                     	if (isSecurityOn && !getWriteTable().getTableInfo().getPermissions().canAdd())
                     	{
@@ -2893,11 +2937,16 @@ public class UploadTable implements Comparable<UploadTable>
                     				UploaderException.ABORT_ROW);
                     	}
                     	DataModelObjBase rec = getCurrentRecordForSave(recNum);
-                        rec.initialize();
-                        setFields(rec, seq);
-                        setRequiredFldDefaults(rec, recNum);
+                        if (!updateMatches)
+                        {
+                        	rec.initialize();
+                        }                        setFields(rec, seq);
                         boolean gotRequiredParents = setParents(rec, recNum);
-                        setRelatedDefaults(rec, recNum);
+                        if (!updateMatches)
+                        {
+                        	setRequiredFldDefaults(rec, recNum);
+                        	setRelatedDefaults(rec, recNum);
+                        }
                         finalizeWrite(rec, recNum);
                         if (!gotRequiredParents && hasChildren)
                         {
@@ -3057,19 +3106,25 @@ public class UploadTable implements Comparable<UploadTable>
     {
         tblSession = DataProviderFactory.getInstance().createSession();
         boolean tblTransactionOpen = false;
-        try
-        {
-            BusinessRulesIFace busRule = DBTableIdMgr.getInstance().getBusinessRule(tblClass);
+		try
+		{
+			DataModelObjBase mergedRec = updateMatches ? tblSession.merge(rec) : rec; //hopefully we will only be in this method if there are actually changes to save.
+			if (updateMatches)
+			{
+				mergedRec.forceLoad();
+			}
+
+        	BusinessRulesIFace busRule = DBTableIdMgr.getInstance().getBusinessRule(tblClass);
             if (busRule != null)
             {
-                busRule.beforeSave(rec, tblSession);
+                busRule.beforeSave(mergedRec, tblSession);
             }
             tblSession.beginTransaction();
             tblTransactionOpen = true;
-            tblSession.saveOrUpdate(rec);
+            tblSession.saveOrUpdate(mergedRec);
             if (busRule != null)
             {
-                if (!busRule.beforeSaveCommit(rec, tblSession))
+                if (!busRule.beforeSaveCommit(mergedRec, tblSession))
                 {
                     tblSession.rollback();
                     throw new Exception("Business rules processing failed");
@@ -3079,9 +3134,9 @@ public class UploadTable implements Comparable<UploadTable>
             tblTransactionOpen = false;
             if (busRule != null)
             {
-                busRule.afterSaveCommit(rec, tblSession);
+                busRule.afterSaveCommit(mergedRec, tblSession);
             }
-            if (needToRefreshAfterWrite())
+            if (needToRefreshAfterWrite() || updateMatches)
             {
                 tblSession.refresh(rec);
             }
@@ -3113,7 +3168,7 @@ public class UploadTable implements Comparable<UploadTable>
         //This may be risky. At this time the refresh is required only because
         //of changes made in business rule processing of treeables.
         //But if business rules change...
-        return false;
+        return false; 
     }
     
     /**
@@ -3226,7 +3281,7 @@ public class UploadTable implements Comparable<UploadTable>
     protected Vector<DeleteQuery> getQueriesForRawDeletes(final DataProviderSessionIFace session)
     {
         Vector<DeleteQuery> result = new Vector<DeleteQuery>();
-        if (uploader.getAttachToTable() == this)
+        if (AttachmentOwnerIFace.class.isAssignableFrom(getTblClass()))
         {
         	//weird relationships/annotations require extra work. Can't delete attachments
         	//until XXXAttachment records are deleted, but can't know what attachments to delete
