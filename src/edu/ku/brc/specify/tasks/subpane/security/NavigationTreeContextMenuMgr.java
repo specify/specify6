@@ -38,6 +38,7 @@ import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.auth.specify.principal.AdminPrincipal;
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -209,6 +210,11 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
                 } else
                 {
                     canRemUser = grpUserCnt > 1;
+                    if (canRemUser && dmObject instanceof SpecifyUser)
+                    {
+                        SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+                        canRemUser = !((SpecifyUser)dmObject).getId().equals(spUser.getId());
+                    }
                 }
                 
                 if (canDelUser)
