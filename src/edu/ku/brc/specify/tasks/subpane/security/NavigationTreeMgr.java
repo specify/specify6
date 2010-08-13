@@ -1021,6 +1021,9 @@ public class NavigationTreeMgr
         } else // clone existing agent
         {
             userAgent = (Agent)session.getData("FROM Agent agent WHERE id = " + agentId);
+            ArrayList<Agent> agents = new ArrayList<Agent>(1);
+            agents.add(userAgent);
+            return agents;
         }
 
         return null;
