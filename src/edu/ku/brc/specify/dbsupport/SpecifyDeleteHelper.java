@@ -631,20 +631,6 @@ public class SpecifyDeleteHelper
         }
         
         if (debug) System.out.println();
-        
-        if (cls == Discipline.class)
-        {
-            String sql    = "SELECT DisciplineID FROM agent_discipline WHERE DisciplineID = ";
-            String delSql = "DELETE FROM agent_discipline WHERE DisciplineID = ";
-            child.push(tblInfo, sql, delSql); // NOTE: tblInfo is of parent!
-        }
-
-        if (cls == Division.class)
-        {
-            String sql    = "SELECT DisciplineID FROM agent_discipline WHERE DisciplineID = ";
-            String delSql = "DELETE FROM agent_discipline WHERE DisciplineID = ";
-            child.push(tblInfo, sql, delSql); // NOTE: tblInfo is of parent!
-        }
 
         return child;
     }

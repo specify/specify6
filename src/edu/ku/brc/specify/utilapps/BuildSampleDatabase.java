@@ -834,9 +834,6 @@ public class BuildSampleDatabase
                                                  gtpTreeDef, 
                                                  lithoStratTreeDef);
         
-        userAgent.getDisciplines().add(discipline);
-        discipline.getAgents().add(userAgent);
-
         persist(division);
         persist(discipline);
         persist(userAgent);
@@ -2192,8 +2189,6 @@ public class BuildSampleDatabase
         ku.setLastName("University of Kansas");
         ku.setEmail("webadmin@ku.edu");
         ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        ku.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
-        AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(ku);
         ku.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
         
         agents.add(ku);
@@ -2210,8 +2205,6 @@ public class BuildSampleDatabase
         otherAgent.setLastName("The Other Guys");
         otherAgent.setEmail("other@other.com");
         otherAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        otherAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
-        AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(otherAgent);
         otherAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
 
         agents.add(otherAgent);
@@ -2235,8 +2228,6 @@ public class BuildSampleDatabase
             groupAgent.setLastName("The Group");
             groupAgent.setEmail("group@group.com");
             groupAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-            groupAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
-            AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(groupAgent);
             groupAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
 
             agents.add(groupAgent);
@@ -2806,8 +2797,6 @@ public class BuildSampleDatabase
         ku.setLastName("University of Kansas");
         ku.setEmail("webadmin@ku.edu");
         ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        ku.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
-        AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(ku);
         ku.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
 
         agents.add(ku);
@@ -2824,8 +2813,6 @@ public class BuildSampleDatabase
         otherAgent.setLastName("The Other Guys");
         otherAgent.setEmail("other@other.com");
         otherAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        otherAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
-        AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(otherAgent);
         otherAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
 
         agents.add(otherAgent);
@@ -2849,8 +2836,6 @@ public class BuildSampleDatabase
             groupAgent.setLastName("The Group");
             groupAgent.setEmail("group@group.com");
             groupAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-            groupAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
-            AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(groupAgent);
             groupAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
 
             agents.add(groupAgent);
@@ -3301,8 +3286,6 @@ public class BuildSampleDatabase
         ku.setLastName("University of Kansas");
         ku.setEmail("webadmin@ku.edu");
         ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        ku.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
-        AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(ku);
         ku.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
 
         agents.add(ku);
@@ -3319,8 +3302,6 @@ public class BuildSampleDatabase
         otherAgent.setLastName("The Other Guys");
         otherAgent.setEmail("other@other.com");
         otherAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        otherAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
-        AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(otherAgent);
         otherAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
 
         agents.add(otherAgent);
@@ -3344,8 +3325,6 @@ public class BuildSampleDatabase
             groupAgent.setLastName("The Group");
             groupAgent.setEmail("group@group.com");
             groupAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-            groupAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
-            AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(groupAgent);
             groupAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
 
             
@@ -4516,8 +4495,6 @@ public class BuildSampleDatabase
         ku.setLastName("University of Kansas");
         ku.setEmail("webadmin@ku.edu");
         ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        ku.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
-        AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(ku);
         ku.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
 
         agents.add(ku);
@@ -4534,8 +4511,6 @@ public class BuildSampleDatabase
         otherAgent.setLastName("The Other Guys");
         otherAgent.setEmail("other@other.com");
         otherAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        otherAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
-        AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(otherAgent);
         otherAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
 
         agents.add(otherAgent);
@@ -4560,8 +4535,6 @@ public class BuildSampleDatabase
             groupAgent.setLastName("The Group");
             groupAgent.setEmail("group@group.com");
             groupAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-            groupAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
-            AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(groupAgent);
             groupAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
 
             agents.add(groupAgent);
@@ -5704,8 +5677,6 @@ public class BuildSampleDatabase
             ku.setLastName("University of Kansas");
             ku.setEmail("webadmin@ku.edu");
             ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-            ku.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
-            AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(ku);
             ku.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
 
             agents.add(ku);
@@ -5722,8 +5693,6 @@ public class BuildSampleDatabase
             otherAgent.setLastName("The Other Guys");
             otherAgent.setEmail("other@other.com");
             otherAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-            otherAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
-            AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(otherAgent);
             otherAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
             agents.add(otherAgent);
 
@@ -5746,9 +5715,7 @@ public class BuildSampleDatabase
                 groupAgent.setLastName("The Group");
                 groupAgent.setEmail("group@group.com");
                 groupAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-                groupAgent.getDisciplines().add(dsp);
                 groupAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
-                dsp.getAgents().add(groupAgent);
                 
                 agents.add(groupAgent);
                 

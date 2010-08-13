@@ -2878,8 +2878,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 removeForeignKeyConstraints(newDBConn, BasicSQLUtils.myDestinationServerType);
                 updateStatement.executeUpdate(strBuf2.toString());
                 
-                addAgentDisciplineJoin(userAgent.getAgentId(), curDisciplineID);
-                
                 updateStatement.clearBatch();
                 updateStatement.close();
                 updateStatement = null;
@@ -9092,31 +9090,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     	        ex.printStackTrace();
     	    }
     	}
-    }
-    
-    /**
-     * @param agentId
-     * @param disciplineID
-     */
-    public void addAgentDisciplineJoin(final int agentId, final int disciplineID)
-    {
-        String sql = "";
-        try
-        {
-            Statement updateStatement = newDBConn.createStatement();
-            
-            sql = "INSERT INTO agent_discipline (AgentID, DisciplineID) VALUES ("+agentId+","+disciplineID+")";
-            updateStatement.executeUpdate(sql);
-            updateStatement.close();
-            updateStatement = null;
-            
-        } catch (SQLException e)
-        {
-            log.error(sql);
-            e.printStackTrace();
-            System.exit(0);
-            throw new RuntimeException(e);
-        }
     }
 
     /**

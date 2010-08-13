@@ -175,7 +175,6 @@
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Collection" relationshipname="collTechContact" columnname="CollectionTCID" othersidename="technicalContacts" updatable="false" required="false" save="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Collector" relationshipname="collectors" othersidename="agent" updatable="false" required="false" save="true"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false" save="false"/>
-      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.Discipline" relationshipname="disciplines" othersidename="agents" updatable="false" required="false" jointable="agent_discipline" save="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Division" relationshipname="division" columnname="DivisionID" othersidename="members" updatable="false" required="false" save="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.GroupPerson" relationshipname="groups" othersidename="group" updatable="false" required="false" save="true"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Institution" relationshipname="instContentContact" columnname="InstitutionCCID" othersidename="contentContacts" updatable="false" required="false" save="false"/>

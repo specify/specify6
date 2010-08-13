@@ -409,7 +409,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             sessionArg.attach(spUser);
             for (Agent agent : spUser.getAgents())
             {
-                for (Discipline discipline : agent.getDisciplines())
+                for (Discipline discipline : agent.getDivision().getDisciplines())
                 {
                     for (Collection collection : discipline.getCollections())
                     {
@@ -651,7 +651,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
                 if (discipline != null)
                 {
-                    Agent.setUserAgent(spUser, discipline);
+                    Agent.setUserAgent(spUser, discipline.getDivision());
                     
                     AppContextMgr am = AppContextMgr.getInstance();
                     discipline.getTaxonTreeDef().forceLoad();
@@ -1277,9 +1277,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 {
                     userAgent = agt;
                     userAgent.getAddresses().size();
-                    userAgent.getDisciplines().size();
                     userAgent.getVariants().size();
-                    //userAgent.getDisciplines().size();
                     break;
                 }
             }

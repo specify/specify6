@@ -43,7 +43,7 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "agentvariant")
-public class AgentVariant extends DataModelObjBase implements Serializable
+public class AgentVariant extends DataModelObjBase implements Serializable, Cloneable
 {
     public static final Byte VARIANT       = 0;
     public static final Byte VERNACULAR    = 1;
@@ -265,4 +265,15 @@ public class AgentVariant extends DataModelObjBase implements Serializable
         return this.name != null ? this.name : super.getIdentityTitle();
     }
 
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        AgentVariant av = (AgentVariant) super.clone();
+        av.setAgentVariantId(null);
+        return av;
+    }
 }

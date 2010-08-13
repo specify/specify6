@@ -97,7 +97,8 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 criterion = COLMEMID;
                 
 
-            } else if (tableInfo.getTableId() == Accession.getClassTableId() ||
+            } else if (tableInfo.getTableId() == Agent.getClassTableId() ||
+                       tableInfo.getTableId() == Accession.getClassTableId() ||
                        tableInfo.getTableId() == RepositoryAgreement.getClassTableId() ||
                        tableInfo.getTableId() == ExchangeIn.getClassTableId() ||
                        tableInfo.getTableId() == ExchangeOut.getClassTableId())
@@ -181,27 +182,27 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 fld = isHQL ? "discipline" : "DisciplineID";
                 criterion = DSPLNID;
                 
-            } else if (tableInfo.getTableId() == Agent.getClassTableId())
+            } /*else if (tableInfo.getTableId() == Agent.getClassTableId())
             {
                 if (StringUtils.isEmpty(prefix))
                 {
                     prefix = "ag.";
                 }
-                criterion = DSPLNID;
+                criterion = DIVID;
                 if (isHQL)
                 {
-                    fld = criterion + " in elements(" + prefix + "disciplines)";
+                    fld = criterion + " = " + prefix + "division.id";
                     adjustFldToSQL = false;
                 }
                 else
                 {
                     //this probably won't actually work without additional
                     //changes to the from clause for the query
-                    fld = "agent_discipline.DisciplineID"; 
+                    fld = criterion + " = " + prefix + "D";
                     prefix = "";
                     //throw new RuntimeException("Fix me I am probably broken!");
                 }
-            }
+            }*/
             
             if (criterion != null && fld != null)
             {
@@ -269,23 +270,11 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
             join = "inner join ";
         }
         
-        if (tableInfo.getTableId() == Agent.getClassTableId())
-        {
-            if (isHQL)
-            {
-                return join + alias + ".disciplines as dsp" + (aliasArg == null ? "" : alias);
-            }
-            if (aliasArg != null)
-            {
-                //return "";
-                //throw new RuntimeException("SpecifyQueryAdjuster.getJoinClause does not work for SQL with non-null alias.");
-            }
-            return join + "agent_discipline ON "+(aliasArg == null ? "" : alias)+".AgentID = agent_discipline.AgentID";
-            
-        } else if (tableInfo.getTableId() == Accession.getClassTableId() ||
-                    tableInfo.getTableId() == RepositoryAgreement.getClassTableId() ||
-                    tableInfo.getTableId() == ExchangeIn.getClassTableId() ||
-                    tableInfo.getTableId() == ExchangeOut.getClassTableId())
+        if (tableInfo.getTableId() == Agent.getClassTableId() ||
+            tableInfo.getTableId() == Accession.getClassTableId() ||
+            tableInfo.getTableId() == RepositoryAgreement.getClassTableId() ||
+            tableInfo.getTableId() == ExchangeIn.getClassTableId() ||
+            tableInfo.getTableId() == ExchangeOut.getClassTableId())
         {
             if (isHQL)
             {
@@ -315,25 +304,6 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
             }
         }
         return super.getJoinClause(tableInfo, isHQL, alias, useLeftJoin);
-
-
-//        if (tableInfo.getTableId() == Agent.getClassTableId())
-//        {
-//            if (isHQL)
-//            {
-//                return "JOIN ag.disciplines as dsp";
-//            }
-//            return "INNER JOIN agent_discipline ON agent.AgentID = agent_discipline.AgentID";
-//            
-//        } else if (tableInfo.getRelationshipByName("discipline") != null)
-//        {
-//            if (isHQL)
-//            {
-//                return "JOIN "+tableInfo.getAbbrev()+".discipline as dsp";
-//            }
-//            return "INNER JOIN discipline as dsp ON "+tableInfo.getName()+".DisciplineID = discipline.DisciplineID";
-//        }
-//        return super.getJoinClause(tableInfo, isHQL);
     }
 
 

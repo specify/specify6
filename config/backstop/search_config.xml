@@ -137,7 +137,7 @@
  StartDatePrecision,
  taxon.FullName,
  %s
- FROM geography   INNER JOIN locality ON locality.geographyid = geography.geographyid 
+ FROM geography   INNER JOIN locality ON locality.GeographyID = geography.GeographyID 
  INNER JOIN collectingevent ON locality.LocalityID = collectingevent.LocalityID
  INNER JOIN collectionobject ON collectingevent.CollectingEventID = collectionobject.CollectingEventID
  INNER JOIN determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID
@@ -174,7 +174,7 @@
  taxon.FullName,
  geography.FullName,
  %s
- FROM geography   INNER JOIN locality ON locality.geographyid = geography.geographyid 
+ FROM geography   INNER JOIN locality ON locality.GeographyID = geography.GeographyID 
  INNER JOIN collectingevent ON locality.LocalityID = collectingevent.LocalityID
  INNER JOIN collectionobject ON collectingevent.CollectingEventID = collectionobject.CollectingEventID
  INNER JOIN determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID
@@ -390,9 +390,9 @@
  agent.FirstName,
  agent.AgentType,
  %s
- FROM agent INNER JOIN agent_discipline ON agent.AgentID = agent_discipline.AgentID
+ FROM agent 
  INNER JOIN agentvariant ON agent.AgentID = agentvariant.AgentID
- WHERE agent_discipline.DisciplineID = DSPLNID AND %s order by agentvariant.Name asc]]>
+ WHERE agent.DivisionID = DIVID AND %s order by agentvariant.Name asc]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="agent.AgentID" visible="false"/>
@@ -516,8 +516,8 @@
   %s 
  FROM 
  collectionobject
- INNER JOIN accession ON accession.accessionid = collectionobject.accessionid
- INNER JOIN determination ON determination.collectionobjectid = collectionobject.collectionobjectid
+ INNER JOIN accession ON accession.AccessionID = collectionobject.AccessionID
+ INNER JOIN determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID
  INNER JOIN taxon ON taxon.taxonid = determination.taxonid
  WHERE determination.isCurrent AND collectionobject.collectionmemberid = COLMEMID AND %s ORDER BY AccessionNumber, CatalogNumber]]>
                 </sql>
@@ -546,10 +546,9 @@
   %s 
  FROM 
  accession
- INNER JOIN accessionagent ON accessionagent.accessionid = accession.accessionid
- INNER JOIN agent ON agent.agentid = accessionagent.agentid
- INNER JOIN agent_discipline ON agent.AgentID = agent_discipline.AgentID
- WHERE agent_discipline.disciplineid = DSPLNID AND %s ORDER BY AccessionNumber, LastName, FirstName]]>
+ INNER JOIN accessionagent ON accessionagent.AccessionID = accession.AccessionID
+ INNER JOIN agent ON agent.AgentID = accessionagent.AgentID
+ WHERE agent.DivisionID = DIVID AND %s ORDER BY AccessionNumber, LastName, FirstName]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="AgentID" visible="false"/>
@@ -577,10 +576,9 @@
   %s 
  FROM 
  borrow
- INNER JOIN borrowagent ON borrowagent.borrowid = borrow.borrowid
- INNER JOIN agent ON agent.agentid = borrowagent.agentid
- INNER JOIN agent_discipline ON agent.AgentID = agent_discipline.AgentID
- WHERE agent_discipline.disciplineid = DSPLNID AND %s ORDER BY InvoiceNumber, LastName, FirstName]]>
+ INNER JOIN borrowagent ON borrowagent.BorrowID = borrow.BorrowID
+ INNER JOIN agent ON agent.AgentID = borrowagent.AgentID
+ WHERE agent.DivisionID = DIVID AND %s ORDER BY InvoiceNumber, LastName, FirstName]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="AgentID" visible="false"/>
@@ -607,9 +605,8 @@
   %s 
  FROM 
  appraisal
-  INNER JOIN agent ON agent.agentid = appraisal.agentid
-  INNER JOIN agent_discipline ON agent.AgentID = agent_discipline.AgentID
- WHERE agent_discipline.disciplineid = DSPLNID AND %s ORDER BY AppraisalNumber, LastName, FirstName]]>
+  INNER JOIN agent ON agent.AgentID = appraisal.AgentID
+ WHERE agent.DivisionID = DIVID AND %s ORDER BY AppraisalNumber, LastName, FirstName]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="AgentID" visible="false"/>
@@ -636,7 +633,7 @@
  FROM 
  geologictimeperiod
   INNER JOIN paleocontext ON paleocontext.chronosstratid = geologictimeperiod.geologictimeperiodid
-  INNER JOIN collectionobject ON collectionobject.paleocontextid = paleocontext.paleocontextid
+  INNER JOIN collectionobject ON collectionobject.PaleoContextID = paleocontext.PaleoContextID
  WHERE collectionobject.collectionmemberid = COLMEMID AND %s ORDER BY FullName, CatalogNumber]]>
                 </sql>
                 <captions>
@@ -665,8 +662,8 @@
   %s 
  FROM 
  collectingevent
-  INNER JOIN collector ON collector.collectingeventid = collectingevent.collectingeventid
-  INNER JOIN agent ON agent.agentid = collector.agentid
+  INNER JOIN collector ON collector.CollectingEventID = collectingevent.CollectingEventID
+  INNER JOIN agent ON agent.AgentID = collector.AgentID
  WHERE %s ORDER BY LastName, FirstName, StartDate, StationFieldNumber]]>
                 </sql>
                 <captions>
@@ -730,7 +727,7 @@
     %s 
  FROM 
  exchangein
-  INNER JOIN agent ON agent.agentid = exchangein.ReceivedFromOrganizationId
+  INNER JOIN agent ON agent.AgentID = exchangein.ReceivedFromOrganizationId
  WHERE %s ORDER BY ExchangeDate, DescriptionOfMaterial]]>
                 </sql>
                 <captions>
@@ -757,7 +754,7 @@
     %s 
  FROM 
  exchangeout
-  INNER JOIN agent ON agent.agentid = exchangeout.SentToOrganizationId
+  INNER JOIN agent ON agent.AgentID = exchangeout.SentToOrganizationId
  WHERE %s ORDER BY ExchangeDate, DescriptionOfMaterial]]>
                 </sql>
                 <captions>
@@ -777,7 +774,7 @@
             <detailView icon="CollectingEvent">
                 <sql>
                     <![CDATA[SELECT DISTINCT 
- collectingevent.collectingeventid,                   
+ collectingevent.CollectingEventID,                   
  collectingevent.StartDate,
  collectingevent.StartDatePrecision,
  collectingevent.StationFieldNumber,
@@ -785,8 +782,8 @@
  %s 
  FROM 
  geography 
-  INNER JOIN locality ON locality.geographyid = geography.geographyid 
-  INNER JOIN collectingevent on collectingevent.localityid = locality.localityid
+  INNER JOIN locality ON locality.GeographyID = geography.GeographyID 
+  INNER JOIN collectingevent on collectingevent.LocalityID = locality.LocalityID
  WHERE collectingevent.DisciplineID = DSPLNID AND %s ORDER BY FullName,StartDate]]>
                 </sql>
                 <captions>
@@ -809,15 +806,15 @@
             <detailView icon="CollectionObject">
                 <sql>
                     <![CDATA[SELECT DISTINCT
- collectionobject.collectionobjectid,                   
+ collectionobject.CollectionObjectID,                   
  collectionobject.CatalogNumber,
  geography.FullName,
  %s 
  FROM 
  geography 
-  INNER JOIN locality ON locality.geographyid = geography.geographyid 
-  INNER JOIN collectingevent on collectingevent.localityid = locality.localityid
-  INNER JOIN collectionobject on collectionobject.collectingeventid = collectingevent.collectingeventid
+  INNER JOIN locality ON locality.GeographyID = geography.GeographyID 
+  INNER JOIN collectingevent on collectingevent.LocalityID = locality.LocalityID
+  INNER JOIN collectionobject on collectionobject.CollectingEventID = collectingevent.CollectingEventID
  WHERE %s AND collectionobject.collectionmemberid = COLMEMID ORDER BY FullName,CatalogNumber]]>
                 </sql>
                 <captions>
@@ -836,17 +833,17 @@
             <detailView icon="CollectionObject">
                 <sql>
                     <![CDATA[SELECT 
- collectionobject.collectionobjectid,                   
+ collectionobject.CollectionObjectID,                   
  collectionobject.CatalogNumber,
  preptype.Name,
  gift.GiftNumber, 
      %s 
  FROM 
  gift
-  INNER JOIN giftpreparation ON giftpreparation.giftid = gift.giftid 
-  INNER JOIN preparation on preparation.preparationid = giftpreparation.preparationid
+  INNER JOIN giftpreparation ON giftpreparation.GiftID = gift.GiftID 
+  INNER JOIN preparation on preparation.PreparationID = giftpreparation.PreparationID
   INNER JOIN preptype on preptype.preptypeid = preparation.preptypeid
-  INNER JOIN collectionobject on collectionobject.collectionobjectid = preparation.collectionobjectid
+  INNER JOIN collectionobject on collectionobject.CollectionObjectID = preparation.CollectionObjectID
  WHERE collectionobject.CollectionMemberID = COLMEMID AND %s ORDER BY GiftNumber,CatalogNumber,Name]]>
                 </sql>
                 <captions>
@@ -874,8 +871,8 @@
      %s 
  FROM 
  gift
-  INNER JOIN giftagent ON giftagent.giftid = gift.giftid 
-  INNER JOIN agent on agent.agentid = giftagent.agentid
+  INNER JOIN giftagent ON giftagent.GiftID = gift.GiftID 
+  INNER JOIN agent on agent.AgentID = giftagent.AgentID
  WHERE %s ORDER BY GiftNumber,Role,LastName,FirstName]]>
                 </sql>
                 <captions>
@@ -896,17 +893,17 @@
             <detailView icon="CollectionObject">
                 <sql>
                     <![CDATA[SELECT 
- collectionobject.collectionobjectid,                   
+ collectionobject.CollectionObjectID,                   
  collectionobject.CatalogNumber,
  preptype.Name,
  loan.LoanNumber, 
      %s 
  FROM 
  loan
-  INNER JOIN loanpreparation ON loanpreparation.loanid = loan.loanid 
-  INNER JOIN preparation on preparation.preparationid = loanpreparation.preparationid
+  INNER JOIN loanpreparation ON loanpreparation.LoanID = loan.LoanID 
+  INNER JOIN preparation on preparation.PreparationID = loanpreparation.PreparationID
   INNER JOIN preptype on preptype.preptypeid = preparation.preptypeid
-  INNER JOIN collectionobject on collectionobject.collectionobjectid = preparation.collectionobjectid
+  INNER JOIN collectionobject on collectionobject.CollectionObjectID = preparation.CollectionObjectID
  WHERE %s ORDER BY LoanNumber,CatalogNumber,Name]]>
                 </sql>
                 <captions>
@@ -934,8 +931,8 @@
      %s 
  FROM 
  loan
-  INNER JOIN loanagent ON loanagent.loanid = loan.loanid 
-  INNER JOIN agent on agent.agentid = loanagent.agentid
+  INNER JOIN loanagent ON loanagent.LoanID = loan.LoanID 
+  INNER JOIN agent on agent.AgentID = loanagent.AgentID
  WHERE %s ORDER BY LoanNumber,Role,LastName,FirstName]]>
                 </sql>
                 <captions>
@@ -964,7 +961,7 @@
  FROM 
  lithostrat
   INNER JOIN paleocontext ON paleocontext.LithoStratID = lithostrat.LithoStratID
-  INNER JOIN collectionobject ON collectionobject.paleocontextid = paleocontext.paleocontextid
+  INNER JOIN collectionobject ON collectionobject.PaleoContextID = paleocontext.PaleoContextID
  WHERE collectionobject.CollectionMemberID = COLMEMID AND %s ORDER BY FullName, CatalogNumber]]>
                 </sql>
                 <captions>
@@ -991,8 +988,8 @@
  FROM 
  permit
   INNER JOIN accessionauthorization ON accessionauthorization.PermitID = permit.PermitID
-  INNER JOIN accession ON accession.accessionid = accessionauthorization.accessionid
-  INNER JOIN collectionobject ON collectionobject.accessionid = accession.accessionid
+  INNER JOIN accession ON accession.AccessionID = accessionauthorization.AccessionID
+  INNER JOIN collectionobject ON collectionobject.AccessionID = accession.AccessionID
  WHERE collectionobject.CollectionMemberID = COLMEMID AND %s ORDER BY PermitNumber, CatalogNumber]]>
                 </sql>
                 <captions>
@@ -1019,8 +1016,7 @@
  FROM 
  permit
   INNER JOIN agent ON agent.AgentID = permit.IssuedToID
-  INNER JOIN agent_discipline ON agent.AgentID = agent_discipline.AgentID
- WHERE agent_discipline.disciplineid = DSPLNID AND %s ORDER BY PermitNumber, LastName, FirstName]]>
+ WHERE agent.DivisionID = DIVID AND %s ORDER BY PermitNumber, LastName, FirstName]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="AgentID" visible="false"/>
@@ -1047,8 +1043,7 @@
  FROM 
  permit
   INNER JOIN agent ON agent.AgentID = permit.IssuedByID
-  INNER JOIN agent_discipline ON agent.AgentID = agent_discipline.AgentID
- WHERE agent_discipline.disciplineid = DSPLNID AND %s ORDER BY PermitNumber, LastName, FirstName]]>
+ WHERE agent.DivisionID = DIVID AND %s ORDER BY PermitNumber, LastName, FirstName]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="AgentID" visible="false"/>
@@ -1076,7 +1071,7 @@
  FROM 
  project
   INNER JOIN project_colobj ON project_colobj.projectid = project.projectid
-  INNER JOIN collectionobject ON collectionobject.collectionobjectid = project_colobj.collectionobjectid
+  INNER JOIN collectionobject ON collectionobject.CollectionObjectID = project_colobj.CollectionObjectID
  WHERE collectionobject.CollectionmemberID = COLMEMID AND %s ORDER BY ProjectName, ProjectNumber, CatalogNumber]]>
                 </sql>
                 <captions>
@@ -1102,11 +1097,9 @@
  project.ProjectName,
  project.ProjectNumber,
   %s 
- FROM 
- project
-  INNER JOIN agent ON agent.agentid = project.projectagentid
-  INNER JOIN agent_discipline on agent_discipline.agentid = agent.agentid
- WHERE agent_discipline.disciplineid = DSPLNID AND %s ORDER BY ProjectName, ProjectNumber, LastName, FirstName]]>
+ FROM project
+ INNER JOIN agent ON agent.AgentID = project.ProjectAgentID
+ WHERE agent.DivisionID = DIVID AND %s ORDER BY ProjectName, ProjectNumber, LastName, FirstName]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="AgentID" visible="false"/>
@@ -1133,9 +1126,8 @@ repositoryagreement.RepositoryAgreementNumber,
   %s 
  FROM 
  repositoryagreement
-  INNER JOIN agent ON agent.agentid = repositoryagreement.agentid
-  INNER JOIN agent_discipline on agent_discipline.agentid = agent.agentid
- WHERE agent_discipline.disciplineid = DSPLNID AND %s ORDER BY RepositoryAgreementNumber, LastName, FirstName]]>
+  INNER JOIN agent ON agent.AgentID = repositoryagreement.AgentID
+ WHERE agent.DivisionID = DIVID AND %s ORDER BY RepositoryAgreementNumber, LastName, FirstName]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="AgentID" visible="false"/>
@@ -1161,8 +1153,8 @@ repositoryagreement.RepositoryAgreementNumber,
   %s 
  FROM 
  storage
-  INNER JOIN preparation ON preparation.storageid = storage.storageid
-  INNER JOIN collectionobject ON collectionobject.collectionobjectid = preparation.collectionobjectid
+  INNER JOIN preparation ON preparation.StorageID = storage.StorageID
+  INNER JOIN collectionobject ON collectionobject.CollectionObjectID = preparation.CollectionObjectID
  WHERE collectionobject.CollectionMemberID = COLMEMID AND %s ORDER BY FullName, CatalogNumber]]>
                 </sql>
                 <captions>
@@ -1210,16 +1202,6 @@ repositoryagreement.RepositoryAgreementNumber,
                 </captions>
             </detailView>
         </table>
-
-
-
-
-        
-        
-
-        
-        
-
         
         
         
@@ -1617,9 +1599,9 @@ repositoryagreement.RepositoryAgreementNumber,
  address.State, 
  address.Postalcode, 
  address.Country
- FROM agent INNER JOIN agent_discipline ON agent.AgentID = agent_discipline.AgentID
+ FROM agent 
  LEFT JOIN address ON agent.AgentID = address.AgentID
- WHERE agent_discipline.DisciplineID = DSPLNID AND (%s) GROUP BY agent.AgentID]]>
+ WHERE agent.DivisionID = DIVID AND (%s) GROUP BY agent.AgentID]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="AgentID" visible="false"/>
@@ -2026,7 +2008,8 @@ repositoryagreement.RepositoryAgreementNumber,
         <table id="128" tableid="5" name="UserAgentSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT agent.AgentID,
+                    <![CDATA[SELECT DISTINCT agent.AgentID,
+ division.Name,                    
  agent.FirstName, 
  agent.LastName, 
  agent.EMail, 
@@ -2036,11 +2019,13 @@ repositoryagreement.RepositoryAgreementNumber,
  address.Postalcode, 
  address.Country 
  FROM agent 
+ INNER JOIN division ON agent.DivisionID = division.DivisionID
  LEFT JOIN address ON agent.AgentID = address.AgentID
- WHERE agent.DivisionID = DIVID AND (%s) GROUP BY agent.AgentID]]>
+ WHERE (%s) GROUP BY agent.AgentID]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="AgentID" visible="false"/>
+                    <caption tableid="96" col="Name"/>
                     <caption tableid="5" col="FirstName"/>
                     <caption tableid="5" col="LastName"/>
                     <caption tableid="5" col="EMail"/>
@@ -2052,7 +2037,5 @@ repositoryagreement.RepositoryAgreementNumber,
                 </captions>
             </detailView>
         </table>
-    
-        
     </generic>
 </searches>

@@ -455,7 +455,7 @@ public class SpecifyExplorer extends HttpServlet
                     AppContextMgr.getInstance().setClassObject(Division.class, discipline.getDivision());
                     AppContextMgr.getInstance().setClassObject(Institution.class, institution);
                     
-                	Agent.setUserAgent(user, discipline);
+                	Agent.setUserAgent(user, discipline.getDivision());
                 	
                 	AppContextMgr am = AppContextMgr.getInstance();
                     am.setClassObject(TaxonTreeDef.class, discipline.getTaxonTreeDef());

@@ -48,7 +48,7 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "agentspecialty", uniqueConstraints = { @UniqueConstraint(columnNames = {"AgentID", "OrderNumber"}) })
-public class AgentSpecialty extends DataModelObjBase implements Serializable, Orderable, Comparable<AgentSpecialty>
+public class AgentSpecialty extends DataModelObjBase implements Serializable, Orderable, Comparable<AgentSpecialty>, Cloneable
 {
 
     protected Integer agentSpecialtyId;
@@ -237,4 +237,17 @@ public class AgentSpecialty extends DataModelObjBase implements Serializable, Or
         
         return super.getIdentityTitle();
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        AgentSpecialty as = (AgentSpecialty) super.clone();
+        as.setAgentSpecialtyId(null);
+        return as;
+    }
+    
+    
 }

@@ -250,36 +250,6 @@ public class AdminInfoSubPanelWrapper
             
             busRules.beforeMerge(user, session);
             
-            // Get All the Agent Ids for this discipline.
-            /*String sql = "SELECT a.AgentID FROM discipline d INNER JOIN agent_discipline ad ON d.UserGroupScopeId = ad.DisciplineID " +
-                         "INNER JOIN agent a ON ad.AgentID = a.AgentID " +
-                         "INNER JOIN specifyuser sp ON a.SpecifyUserID = sp.SpecifyUserID " +
-                         "WHERE d.UserGroupScopeId = " + nodesDiscipline.getId() + " AND a.SpecifyUserID = " + user.getId();
-            
-            int     prevAgentID   = BasicSQLUtils.getCountAsInt(sql);
-            Integer idToBeRemoved = null;
-            if (prevAgentID != uiAgent.getId())
-            {
-                idToBeRemoved = prevAgentID;
-            }
-            
-            Set<Agent> set = user.getAgents();
-            for (Agent agent : new Vector<Agent>(set))
-            {
-                if (uiAgent.getId().equals(agent.getId()))
-                {
-                    if (!agent.getVersion().equals(uiAgent.getVersion()))
-                    {
-                        session.refresh(agent);
-                    }
-                } else if (agent.getId().equals(idToBeRemoved))
-                {
-                    toBeReleased = agent;
-                    set.add(uiAgent);
-                    uiAgent.setSpecifyUser(user);
-                }
-            }*/
-            
             user = session.merge(user);
             busRules.beforeSave(user, session);
             

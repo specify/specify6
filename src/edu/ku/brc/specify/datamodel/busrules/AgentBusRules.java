@@ -487,15 +487,6 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
             Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
             discipline = session.get(Discipline.class, discipline.getId());
             
-            if (!contains(agent, discipline))
-            {
-                agent.getDisciplines().add(discipline);
-                
-                // this next line is not needed in order for the relationship to be saved
-                // and it is problematic when there are a lot of agents
-                //discipline.getAgents().add(agent);
-            }
-            
             if (agent.getId() != null && agent.getSpecifyUser() != null)
             {
                 DataProviderSessionIFace tmpSession = null;
@@ -534,26 +525,6 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
             }
         }
     }
-    
-    /**
-     * Checks to see if the agent has already been added to the Discipline.
-     * @param agent the agent being saved
-     * @param discipline the discipline it is being saved into
-     * @return true if it is already associated with the Discipline
-     */
-    protected boolean contains(final Agent agent, final Discipline discipline)
-    {
-        
-        for (Discipline d : agent.getDisciplines())
-        {
-            if (d.getDisciplineId().equals(discipline.getDisciplineId()))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-    
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BaseBusRules#beforeMerge(edu.ku.brc.ui.forms.Viewable, java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
@@ -614,27 +585,4 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         return super.beforeSaveCommit(dataObj, session);
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeDeleteCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
-     */
-    @Override
-    public boolean beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session)
-            throws Exception
-    {
-        Agent      agent      = (Agent)dataObj;
-        Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
-        if (discipline != null)
-        {
-            for (Discipline dsp : agent.getDisciplines())
-            {
-                if (dsp.getId().equals(discipline.getId()))
-                {
-                    dsp.removeReference(agent, "agents");
-                    break;
-                }
-            }
-        }
-        
-        return super.beforeDeleteCommit(dataObj, session);
-    }
 }

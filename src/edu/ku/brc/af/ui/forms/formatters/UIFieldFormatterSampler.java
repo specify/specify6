@@ -206,13 +206,9 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
 			{
 			    String joinTable = firstTable.getName() + "_" + secondTable.getName();
 			    
-			    // XXX in the case of agent_discipline table, the field name in the join table (DisciplineID) isn't the same as in the discipline table (UserGroupScopeId)
 			    // also, there's no such information on the DBRelationshipInfo instance, so we treat this case separately
 			    String joinTableSecondIdColumnName = secondTable.getIdColumnName();
-			    if ("agent_discipline".equals(joinTable))
-			    {
-			        joinTableSecondIdColumnName = "DisciplineID";
-			    }
+
 			    
                 sql = " INNER JOIN " + joinTable + " ON " + firstTable.getName() + "." +
                     firstTable.getIdColumnName() + " = " + joinTable + "." + firstTable.getIdColumnName() + 

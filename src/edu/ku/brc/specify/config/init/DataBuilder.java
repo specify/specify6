@@ -304,20 +304,6 @@ public class DataBuilder
         agent.setTitle(title);
         agent.setEmail(email);
         
-        if (discipline == null)
-        {
-            Discipline disp = AppContextMgr.getInstance().getClassObject(Discipline.class);
-            if (disp != null)
-            {   
-                agent.getDisciplines().add(disp);
-                disp.getAgents().add(agent);
-            }
-        } else
-        {
-            agent.getDisciplines().add(discipline);
-            discipline.getAgents().add(agent);
-        }
-        
         if (division == null)
         {
             Division div = AppContextMgr.getInstance().getClassObject(Division.class);

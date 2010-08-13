@@ -46,7 +46,7 @@ import org.apache.commons.lang.StringUtils;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "agentgeography")
-public class AgentGeography extends DataModelObjBase implements Serializable
+public class AgentGeography extends DataModelObjBase implements Serializable, Cloneable
 {
 
     protected Integer agentGeographyId;
@@ -232,5 +232,17 @@ public class AgentGeography extends DataModelObjBase implements Serializable
         }
         
         return super.getIdentityTitle();
+    }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        AgentGeography ag = (AgentGeography) super.clone();
+        ag.setAgentGeographyId(null);
+        return ag;
     }
 }

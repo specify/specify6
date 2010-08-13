@@ -2553,7 +2553,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 });
             }
             
-            if (!AppPreferences.getGlobalPrefs().getBoolean("FixAgentToDisciplinesV2", false))
+            /*if (!AppPreferences.getGlobalPrefs().getBoolean("FixAgentToDisciplinesV2", false))
             {
                 // Temp Code to Fix issues with Release 6.0.9 and below
                 SwingUtilities.invokeLater(new Runnable() 
@@ -2565,7 +2565,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                         fixer.fixAgentToDisciplines();
                     }
                 });
-            }
+            }*/
 
             if (!AppPreferences.getGlobalPrefs().getBoolean("FixUploaderRecordsets", false))
             {

@@ -32,9 +32,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
@@ -132,9 +130,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     protected Set<Address>                  addresses;
     protected Set<AgentVariant>             variants;
     
-    protected Set<Discipline>               disciplines;
-
-    
     /*
     protected Set<Project>                  projects;
     protected Set<Author>                   authors;
@@ -226,7 +221,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         instContentContact        = null;
         collTechContact           = null;
         collContentContact        = null;
-        disciplines               = new HashSet<Discipline>();
         specifyUser               = null;
        
         // Agent
@@ -752,31 +746,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
        this.division = division;
    }
 
-   /**
-     * @return the discipline
-     */
-   @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
-   @JoinTable(name = "agent_discipline", joinColumns = 
-           { 
-               @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = false) 
-           }, 
-           inverseJoinColumns = 
-           { 
-               @JoinColumn(name = "DisciplineID", unique = false, nullable = false, insertable = true, updatable = false) 
-           })
-    public Set<Discipline> getDisciplines()
-    {
-        return disciplines;
-    }
-    
-    /**
-     * @param rightsideDiscipline the discipline to set
-     */
-    public void setDisciplines(Set<Discipline> disciplines)
-    {
-        this.disciplines = disciplines;
-    }
-    
     /**
     *  The Institution for Technical Contact.
     */
@@ -1072,14 +1041,12 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         obj.members                   = new HashSet<GroupPerson>();
         obj.collectors                = new HashSet<Collector>();
         
-        obj.disciplines               = new HashSet<Discipline>();
-       
         // Agent
-        obj.addresses                      = new HashSet<Address>();
-        obj.agentAttachments               = new HashSet<AgentAttachment>();
-        obj.variants                       = new HashSet<AgentVariant>();
-        obj.agentGeographies               = new HashSet<AgentGeography>();
-        obj.agentSpecialties               = new HashSet<AgentSpecialty>();
+        obj.addresses                 = new HashSet<Address>();
+        obj.agentAttachments          = new HashSet<AgentAttachment>();
+        obj.variants                  = new HashSet<AgentVariant>();
+        obj.agentGeographies          = new HashSet<AgentGeography>();
+        obj.agentSpecialties          = new HashSet<AgentSpecialty>();
         
         // clone addresses
         for (Address addr : addresses)
@@ -1087,6 +1054,55 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
             Address newAddr = (Address)addr.clone();
             obj.addresses.add(newAddr);
             newAddr.setAgent(obj);
+        }
+        
+        for (AgentVariant cObj : variants)
+        {
+            AgentVariant newObj = (AgentVariant)cObj.clone();
+            obj.variants.add(newObj);
+            cObj.setAgent(obj);
+        }
+        
+        for (AgentGeography cObj : agentGeographies)
+        {
+            AgentGeography newObj = (AgentGeography)cObj.clone();
+            obj.agentGeographies.add(newObj);
+            cObj.setAgent(obj);
+        }
+        
+        for (AgentSpecialty cObj : agentSpecialties)
+        {
+            AgentSpecialty newObj = (AgentSpecialty)cObj.clone();
+            obj.agentSpecialties.add(newObj);
+            cObj.setAgent(obj);
+        }
+        
+        for (Collector cObj : collectors)
+        {
+            Collector newObj = (Collector)cObj.clone();
+            obj.collectors.add(newObj);
+            cObj.setAgent(obj);
+        }
+        
+        for (GroupPerson cObj : members)
+        {
+            GroupPerson newObj = (GroupPerson)cObj.clone();
+            obj.members.add(newObj);
+            cObj.setMember(obj);
+        }
+        
+        for (GroupPerson cObj : groups)
+        {
+            GroupPerson newObj = (GroupPerson)cObj.clone();
+            obj.groups.add(newObj);
+            cObj.setGroup(obj);
+        }
+        
+        for (Agent cObj : orgMembers)
+        {
+            Agent newObj = (Agent)cObj.clone();
+            obj.orgMembers.add(newObj);
+            cObj.setOrganization(obj);
         }
         
         return obj;
@@ -1105,13 +1121,10 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
      * @param user User that agents will point to
      * @param agents Agents that will all point to the given user
      */
-    public static void setUserAgent(final SpecifyUser user, final Discipline discipline)
+    public static void setUserAgent(final SpecifyUser user, final Division division)
     {
         
-        String sql = "SELECT a.AgentID FROM discipline d INNER JOIN agent_discipline ad ON d.UserGroupScopeId = ad.DisciplineID "+
-                     "INNER JOIN agent a ON ad.AgentID = a.AgentID "+
-                     "INNER JOIN specifyuser su ON a.SpecifyUserID = su.SpecifyUserID WHERE " +
-                     "d.UserGroupScopeId = " + discipline.getId() + " AND su.SpecifyUserID = " + user.getId();
+        String sql = "SELECT a.AgentID FROM agent AS a WHERE a.DivisionID = " + division.getId() + " AND a.SpecifyUserID = " + user.getId();
         
         boolean notFndErr = false;
         userAgent = null;
@@ -1123,12 +1136,12 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
             userAgent = getDataObj(Agent.class, agentId);
             if (userAgent == null)
             {
-                UIRegistry.showError("A user agent was not found for the SpecifyUser for discipline["+discipline.getName()+"] and Agent id ["+agentId+"]");
+                UIRegistry.showError("A user agent was not found for the SpecifyUser for division["+division.getName()+"] and Agent id ["+agentId+"]");
                 notFndErr = true;
             }
         } else
         {
-            UIRegistry.showError("A user agent was not found for the SpecifyUser for discipline["+discipline.getName()+"]");
+            UIRegistry.showError("A user agent was not found for the SpecifyUser for division["+division.getName()+"]");
             notFndErr = true;
         }
         

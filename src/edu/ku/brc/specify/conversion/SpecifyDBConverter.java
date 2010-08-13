@@ -1392,7 +1392,6 @@ public class SpecifyDBConverter extends AppBase
                 AppContextMgr.getInstance().setClassObject(Institution.class, institution);
                 
                 dscp = (Discipline)localSession.createQuery("FROM Discipline WHERE id = " + dscp.getId()).list().iterator().next();
-                dscp.getAgents();
                 AppContextMgr.getInstance().setClassObject(Discipline.class, dscp);
 
                 //checkDisciplines();

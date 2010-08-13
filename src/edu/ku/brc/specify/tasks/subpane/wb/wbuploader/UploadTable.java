@@ -3226,12 +3226,6 @@ public class UploadTable implements Comparable<UploadTable>
     protected Vector<DeleteQuery> getQueriesForRawDeletes(final DataProviderSessionIFace session)
     {
         Vector<DeleteQuery> result = new Vector<DeleteQuery>();
-        if (tblClass.equals(Agent.class))
-        {
-            result.add(new DeleteQuery(
-            		session.createQuery("delete from agent_discipline where AgentID =:theKey", true), 
-            		true, -1));
-        }
         if (uploader.getAttachToTable() == this)
         {
         	//weird relationships/annotations require extra work. Can't delete attachments

@@ -67,6 +67,7 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
 import edu.ku.brc.specify.conversion.IdTableMapper;
 import edu.ku.brc.specify.conversion.TableWriter;
+import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttribute;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
@@ -740,36 +741,21 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      */
     public void fixAgentsDivsDisps(final Connection conn)
     {
-        boolean           doUpdate = true;
         PreparedStatement pStmt    = null;
-        PreparedStatement pStmtDel = null;
-        PreparedStatement pStmtAdd = null;
         try
         {
             pStmt    = conn.prepareStatement("UPDATE agent SET DivisionID=? WHERE AgentID = ?");
-            pStmtDel = conn.prepareStatement("DELETE FROM agent_discipline WHERE AgentID = ?");
-            pStmtAdd = conn.prepareStatement("INSERT INTO agent_discipline (AgentID, DisciplineID) VALUES(?, ?)");
             
-            String sql = "SELECT T1.SpecifyUserID FROM (SELECT COUNT(su.SpecifyUserID) AS cnt, su.SpecifyUserID FROM specifyuser su INNER JOIN agent a ON su.SpecifyUserID = a.SpecifyUserID GROUP BY su.SpecifyUserID) T1 WHERE cnt > 1";
-            //String sql = "SELECT SpecifyUserID FROM specifyuser";
+            //String sql = "SELECT T1.SpecifyUserID FROM (SELECT COUNT(su.SpecifyUserID) AS cnt, su.SpecifyUserID FROM specifyuser su INNER JOIN agent a ON su.SpecifyUserID = a.SpecifyUserID GROUP BY su.SpecifyUserID) T1 WHERE cnt > 1";
+            String sql = "SELECT SpecifyUserID FROM specifyuser";
             log.debug(sql);
             
             Vector<Integer> rows = BasicSQLUtils.queryForInts(conn, sql);
-            if (rows.size() < 2)
+            if (rows.size() == 0)
             {
                 return;
             }
             
-         // Remove all the agent_discipline records for agents that have users
-            sql = " SELECT a.AgentID FROM specifyuser s INNER JOIN agent a ON s.SpecifyUserID = a.SpecifyUserID";
-            for (Object[] row : BasicSQLUtils.query(sql))
-            {
-                Integer agtId = (Integer)row[0];
-                pStmtDel.setInt(1, agtId);
-                if (doUpdate) pStmtDel.execute();
-                log.debug("Removing all agent_disp for agentId: " + agtId);
-            }
-                
             for (Integer spId : rows)
             {
                 log.debug("-------- For SpUser: " + spId + " --------------");
@@ -801,8 +787,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 //--------------------------------------------------------------
                 // Fix up the Agent's DivisionID because they are all the same.
                 //
-                // Easier to just delete all the agent_discipline records
-                // and re-add them.
                 //--------------------------------------------------------------
                 HashMap<Integer, Integer>      divToAgentHash  = new HashMap<Integer, Integer>();
                 HashMap<Integer, Integer>      agentToDivHash  = new HashMap<Integer, Integer>();
@@ -897,7 +881,44 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     session.beginTransaction();
                     for (Agent agent : agentsToBeDuped)
                     {
-                        agent = session.merge(agent);
+                        Agent a = new Agent();
+                        a.initialize();
+                        a.setAbbreviation(agent.getAbbreviation());
+                        a.setAgentType(agent.getAgentType());
+                        a.setCollContentContact(agent.getCollContentContact());
+                        a.setCollTechContact(agent.getCollTechContact());
+                        a.setCreatedByAgent(agent.getCreatedByAgent());
+                        a.setDateOfBirth(agent.getDateOfBirth());
+                        a.setDateOfBirthPrecision(agent.getDateOfBirthPrecision());
+                        a.setDateOfDeath(agent.getDateOfDeath());
+                        a.setDateOfDeathPrecision(agent.getDateOfDeathPrecision());
+                        a.setDateType(agent.getDateType());
+                        a.setDivision(agent.getDivision());
+                        
+                        a.setFirstName(agent.getFirstName());
+                        a.setLastName(agent.getLastName());
+                        a.setMiddleInitial(agent.getMiddleInitial());
+                        a.setTitle(agent.getTitle());
+                        a.setInterests(agent.getInterests());
+                        a.setInitials(agent.getInitials());
+                        a.setRemarks(agent.getRemarks());
+                        a.setOrganization(agent.getOrganization());
+                        a.setSpecifyUser(agent.getSpecifyUser());
+                        a.setInstTechContact(agent.getInstTechContact());
+                        a.setInstContentContact(agent.getInstContentContact());
+                        a.setJobTitle(agent.getJobTitle());
+                        a.setEmail(agent.getEmail());
+                        a.setUrl(agent.getUrl());
+                        a.setGuid(agent.getGuid());
+                        
+                        for (Address addr : agent.getAddresses())
+                        {
+                            Address newAddr = (Address)addr.clone();
+                            a.getAddresses().add(newAddr);
+                            newAddr.setAgent(a);
+                        }
+
+                        
                         session.save(agent);
                     }
                     session.commit();
@@ -918,21 +939,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     {
                         session.close();
                     }
-                }
-                
-                
-                sql = "SELECT dsp.UserGroupScopeId, dv.UserGroupScopeId FROM division dv INNER JOIN discipline dsp ON dv.UserGroupScopeId = dsp.DivisionID";
-                for (Object[] r : BasicSQLUtils.query(conn, sql))
-                {
-                    Integer dspId = (Integer)r[0];
-                    Integer divId = (Integer)r[1];
-                    Integer agtId = divToAgentHash.get(divId);
-                    
-                    pStmtAdd.setInt(1, agtId);
-                    pStmtAdd.setInt(2, dspId);
-                    pStmtAdd.execute();
-                    
-                    log.debug(String.format("Inserted - AgentId: %d DispId: %d", agtId, dspId));
                 }
                 
                 //----------------------------------------------------------------
@@ -1123,18 +1129,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 {
                     pStmt.close();
                 }
-                if (pStmtDel != null)
-                {
-                    pStmtDel.close();
-                }
-                if (pStmtAdd != null)
-                {
-                    pStmtAdd.close();
-                }
-            } catch (Exception ex)
-            {
-                
-            }
+            } catch (Exception ex) {}
         }
     }
     
@@ -1588,6 +1583,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 // Schema Changes 1.4
                 //////////////////////////////////////////////
                 
+                BasicSQLUtils.update(conn, "DROP TABLE agent_discipline");
+                
                 // Add New Fields to Address
                 tblName = setTableTitleForFrame(Agent.getClassTableId());
                 addColumn(conn, databaseName, tblName, "DateType",             "TINYINT(4)", "Title");
@@ -1721,7 +1718,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     
                     Agent dupAgent = (Agent)agent.clone();
                     dupAgent.setDivision(div);
-                    dsp.getAgents().add(dupAgent);
                     
                     session.save(dupAgent);
                     session.save(dsp);

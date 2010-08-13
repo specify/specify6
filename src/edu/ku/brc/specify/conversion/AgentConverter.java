@@ -514,7 +514,7 @@ public class AgentConverter
                             throw new RuntimeException("Couldn't get the Agent's inserted ID");
                         }
                         
-                        conv.addAgentDisciplineJoin(newAgentId, conv.getDisciplineId());
+                        //conv.addAgentDisciplineJoin(newAgentId, conv.getDisciplineId());
 
                     } catch (SQLException e)
                     {
@@ -827,8 +827,6 @@ public class AgentConverter
                             throw new RuntimeException("Couldn't get the Agent's inserted ID");
                         }
                         
-                        conv.addAgentDisciplineJoin(newAgentId, conv.getDisciplineId());
-
                         newRecordsAdded++;
 
                     } catch (SQLException e)
@@ -1201,7 +1199,7 @@ public class AgentConverter
                 updateStatement.close();
                 updateStatement = null;
                 
-                conv.addAgentDisciplineJoin(newAgentId, conv.getDisciplineId());
+                //conv.addAgentDisciplineJoin(newAgentId, conv.getDisciplineId());
 
                 cnt++;
                 BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "agent", BasicSQLUtils.myDestinationServerType);
@@ -1527,8 +1525,6 @@ public class AgentConverter
                                         agent.setMiddleInitial(nameTriple.second);
                                         agent.setLastName(nameTriple.third);
                                         division.getMembers().add(agent);
-                                        agent.getDisciplines().add(discipline);
-                                        discipline.getAgents().add(agent);
                                         
                                         tblWriter.log(agentInfo.getNewAgentId().toString(), firstName+", "+lastName, "new agent, new collector");
 
@@ -1579,7 +1575,6 @@ public class AgentConverter
                 tblWriter.log(id.toString(), (row[1] == null ? "&nbsp;" : row[1].toString()) + (row[2] == null ? "" : " "+row[2].toString()), 
                                              row[3] == null ? "&nbsp;" : row[3].toString());
                 
-                updateStmtNewDB.executeUpdate("DELETE FROM agent_discipline WHERE AgentID = " + id);
                 updateStmtNewDB.executeUpdate("DELETE FROM agent WHERE AgentID = " + id);
                 
             }
@@ -1756,7 +1751,7 @@ public class AgentConverter
     {
         IdTableMapper agentIDMapper     = idMapperMgr.addTableMapper("agent",        "AgentID", false);
         IdTableMapper addrIDMapper      = idMapperMgr.addTableMapper("address",      "AddressID", false);
-        IdTableMapper agentAddrIDMapper = idMapperMgr.addTableMapper("agentaddress", "AgentAddressID", false);
+        //IdTableMapper agentAddrIDMapper = idMapperMgr.addTableMapper("agentaddress", "AgentAddressID", false);
 
         String sql = "SELECT ag.AgentID, aa.AgentAddressID, ad.AddressID FROM agent ag INNER JOIN agentaddress aa ON ag.AgentID = aa.AgentID " +
                      "INNER JOIN address ad ON aa.AddressID = ad.AddressID ";
@@ -1812,10 +1807,10 @@ public class AgentConverter
         sql = "SELECT AddressID, Address" + whereStr;
         
         Statement         stmt  = null;
-        PreparedStatement pStmt = null; 
+        //PreparedStatement pStmt = null; 
         try
         {
-            pStmt = newDBConn.prepareStatement("UPDATE address SET Address=?, Address2=?, City=?, State=?, PostalCode=? WHERE AddressID = ?");
+           // pStmt = newDBConn.prepareStatement("UPDATE address SET Address=?, Address2=?, City=?, State=?, PostalCode=? WHERE AddressID = ?");
             stmt = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             ResultSet rs = stmt.executeQuery(sql);
             

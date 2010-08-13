@@ -25,7 +25,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.Component;
 import java.awt.Frame;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
@@ -222,68 +222,6 @@ public class NavigationTreeMgr
                     }
                     user.getSpPrincipals().remove(p);        
                 }
-            }
-            
-            // Get a Set of all the Disciplines the user can no longer access
-            // And get the DivisionID so we can get the correct Agent for this SpecifyUser
-            Integer          divIdForAgent = null;
-            HashSet<Integer> dispSet       = new HashSet<Integer>();
-            for (UserGroupScope ugs : dspDivList)
-            {
-                if (ugs.getDataClass() == Division.class)
-                {
-                    for (Integer id : BasicSQLUtils.queryForInts("SELECT DisciplineID FROM discipline WHERE DivisionID = "+ugs.getId()))
-                    {
-                        dispSet.add(id);
-                    }
-                    divIdForAgent = ugs.getId();
-                    
-                } else if (ugs.getDataClass() == Discipline.class)
-                {
-                    dispSet.add(ugs.getId());
-                    divIdForAgent = BasicSQLUtils.getCount("SELECT DivisionID FROM discipline WHERE DisciplineID = "+ugs.getId());
-                    
-                } else if (ugs.getDataClass() == Collection.class)
-                {
-                    dispSet.add(ugs.getId());
-                    Vector<Object[]> ids = BasicSQLUtils.query("SELECT d.DivisionID, d.UserGroupScopeId FROM collection c Inner Join discipline d ON c.DisciplineID = d.UserGroupScopeId WHERE c.CollectionID = "+ugs.getId());
-                    if (ids.size() == 1)
-                    {
-                        dispSet.add((Integer)ids.get(0)[1]);
-                        divIdForAgent = (Integer)ids.get(0)[0];
-                    }
-                }
-            }
-            
-            // Remove all the agent_discipline
-            if (divIdForAgent != null && dispSet.size() > 0)
-            {
-                String sql = "SELECT a.AgentID, a.DivisionID FROM specifyuser s Inner Join agent a ON s.SpecifyUserID = a.SpecifyUserID WHERE s.SpecifyUserID = " + user.getId();
-                for (Object[] cols : BasicSQLUtils.query(sql))
-                {
-                    Integer agtId = (Integer)cols[0];
-                    Integer divId = (Integer)cols[1];
-                    
-                    if (divId.equals(divIdForAgent))
-                    {
-                        for (Integer disciplineId : dispSet)
-                        {
-                            int cnt = BasicSQLUtils.getCount(String.format("SELECT COUNT(*) FROM agent_discipline WHERE DisciplineID = %d AND AgentID = %d", disciplineId, agtId));
-                            if (cnt > 0)
-                            {
-                                sql = String.format("DELETE FROM agent_discipline WHERE DisciplineID = %d AND AgentID = %d", disciplineId, agtId);
-                                if (cnt != BasicSQLUtils.update(sql))
-                                {
-                                    log.error("Error deleting: " + sql);
-                                }
-                            }
-                            
-                        }
-                    }
-                }
-            } else
-            {
-                // Error 
             }
             
             session.saveOrUpdate(user);
@@ -709,8 +647,6 @@ public class NavigationTreeMgr
             String textPwd = specifyUser.getPassword();
             specifyUser.setPassword(Encryption.encrypt(textPwd, textPwd));
             
-            Agent userAgent = null;//(Agent)cbx.getValue();
-            
             DataProviderSessionIFace session = null;
             try
             {
@@ -719,14 +655,14 @@ public class NavigationTreeMgr
                 session.attach(parentDiscipline);
                 session.attach(parentDiscipline.getDivision());
                 
-                userAgent = getAgent(session, parentDiscipline.getDivision(), parentDiscipline, specifyUser, true);
-                if (userAgent == null)
+                List<Agent> userAgents = getAgent(session, parentDiscipline.getDivision(), parentDiscipline, specifyUser, true);
+                if (userAgents == null || userAgents.size() == 0)
                 {
                     return null;
                 }
                 
                 session.beginTransaction();
-                
+
                 SpecifyUserBusRules busRules = new SpecifyUserBusRules();
                 busRules.initialize(dlg.getMultiView().getCurrentView());
                 busRules.beforeMerge(specifyUser, session);
@@ -736,36 +672,55 @@ public class NavigationTreeMgr
                 session.save(specifyUser);
 
                 // get fresh copies of parentDiscipline and group to make Hibernate happy
-                Discipline  localDiscipline = session.get(Discipline.class, parentDiscipline.getUserGroupScopeId());
+                //Discipline  localDiscipline = session.get(Discipline.class, parentDiscipline.getUserGroupScopeId());
                 SpPrincipal localGroup      = session.get(SpPrincipal.class, grpPrin.getUserGroupId());
 
                 // link user to its group
                 specifyUser.getSpPrincipals().add(localGroup);
                 localGroup.getSpecifyUsers().add(specifyUser);
 
-                // link agent to user
-                if (userAgent.getId() != null)
+                boolean fndParentDiv = false;
+                for (Agent userAgent : userAgents)
                 {
-                    session.attach(userAgent);
+                    if (userAgent.getId() != null)
+                    {
+                        session.attach(userAgent);
+                    }
+                    
+                    if (!fndParentDiv && parentDiscipline.getId().equals(userAgent.getDivision().getId()))
+                    {
+                        fndParentDiv = true;
+                    }
+                    
+                    // link agent to user
+                    userAgent.setSpecifyUser(specifyUser);
+                    specifyUser.getAgents().add(userAgent);
+                    
+                    session.saveOrUpdate(userAgent);
                 }
-                specifyUser.getAgents().add(userAgent);
-                userAgent.setSpecifyUser(specifyUser);
-
+                
+                if (userAgents.size() > 0 && !fndParentDiv)
+                {
+                    Agent userAgent = (Agent)userAgents.get(0).clone();
+                    userAgent.setDivision(parentDiscipline.getDivision());
+                    
+                    userAgent.setSpecifyUser(specifyUser);
+                    specifyUser.getAgents().add(userAgent);
+                    
+                    session.saveOrUpdate(userAgent);
+                }
+                
                 // create a JAAS principal and associate it with the user
                 SpPrincipal userPrincipal = DataBuilder.createUserPrincipal(specifyUser);
                 session.save(userPrincipal);
                 specifyUser.addUserToSpPrincipalGroup(userPrincipal);
                 
-                // link newly create agent to discipline
-                userAgent.getDisciplines().add(localDiscipline);
-                
-                session.saveOrUpdate(userAgent);
+                session.saveOrUpdate(specifyUser);
                 
                 // this next line is not needed in order for the relationship to be saved
                 // and it is problematic when there are a lot of agents
-                //localDiscipline.getAgents().add(userAgent);
                 
-                    session.commit();
+                session.commit();
                 
                 parentWrp.setDataObj(localGroup);
                 
@@ -879,19 +834,21 @@ public class NavigationTreeMgr
             prinGroup.getSpecifyUsers().add(specifyUser);
             specifyUser.getSpPrincipals().add(prinGroup);
             
-            Agent userAgent = getAgent(session, parentDiscipline.getDivision(), parentDiscipline, specifyUser, false);
-            if (userAgent == null)
+            List<Agent> userAgents = getAgent(session, parentDiscipline.getDivision(), parentDiscipline, specifyUser, false);
+            if (userAgents == null || userAgents.size() == 0)
             {
                 return null;
             }
             
-            userAgent.setSpecifyUser(specifyUser);
-            specifyUser.getAgents().add(userAgent);
-            
             session.beginTransaction();
 
-            session.saveOrUpdate(specifyUser);
-            session.saveOrUpdate(userAgent);
+            for (Agent userAgent : userAgents)
+            {
+                userAgent.setSpecifyUser(specifyUser);
+                specifyUser.getAgents().add(userAgent);
+                session.saveOrUpdate(specifyUser);
+                session.saveOrUpdate(userAgent);
+            }
             
             // create a JAAS principal and associate it with the user
             SpPrincipal userPrincipal = DataBuilder.createUserPrincipal(specifyUser);
@@ -937,11 +894,11 @@ public class NavigationTreeMgr
      * @return
      * @throws CloneNotSupportedException
      */
-    private Agent getAgent(final DataProviderSessionIFace session,
-                           final Division    parentDivision,
-                           final Discipline  parentDiscipline,
-                           final SpecifyUser specifyUser,
-                           final boolean     doAddNewUser) throws CloneNotSupportedException
+    private List<Agent> getAgent(final DataProviderSessionIFace session,
+                                 final Division    parentDivision,
+                                 final Discipline  parentDiscipline,
+                                 final SpecifyUser specifyUser,
+                                 final boolean     doAddNewUser) throws CloneNotSupportedException
     {
         Agent   userAgent = null;
         Integer agentId   = null;
@@ -980,7 +937,7 @@ public class NavigationTreeMgr
                 try
                 {
                     dlg.registerQueryBuilder(null);
-                    dlg.setMultipleSelection(false);
+                    dlg.setMultipleSelection(true);
                     dlg.getDialog().setVisible(true);
                     
                 } catch (Exception ex)
@@ -995,15 +952,21 @@ public class NavigationTreeMgr
                 
                 if (!dlg.isCancelled())
                 {
-                    agentId = ((Agent)dlg.getSelectedObject()).getAgentId();
-                    return session.get(Agent.class, agentId);
+                    ArrayList<Agent> agents = new ArrayList<Agent>(dlg.getSelectedObjects().size());
+                    for (Object obj : dlg.getSelectedObjects())
+                    {
+                        Agent agt = session.get(Agent.class, ((Agent)obj).getAgentId());
+                        agt.getDivision().getId(); // forcing the Division to load
+                        agents.add(agt);
+                    }
+                    return agents;
                 }
             }
         }
         
         if (!doAddNewUser)
         {
-            String sql = String.format("SELECT AgentID, LastName, FirstName, MiddleInitial FROM agent WHERE LastName = '%s' AND FirstName = '%s' AND DivisionID = %d", lastName, firstName, parentDivision.getId());
+            String sql = String.format("SELECT DISTINCT AgentID, LastName, FirstName, MiddleInitial FROM agent WHERE LastName = '%s' AND FirstName = '%s' AND DivisionID = %d", lastName, firstName, parentDivision.getId());
             Vector<Object[]> agentRow = BasicSQLUtils.query(sql);
             if (agentRow != null && agentRow.size() > 0)
             {
@@ -1041,7 +1004,6 @@ public class NavigationTreeMgr
                 Agent agent = specifyUser.getAgents().iterator().next();
                 userAgent = (Agent)agent.clone();
                 userAgent.setDivision(parentDivision);
-                userAgent.getDisciplines().clear();
                 
             } else
             {
@@ -1060,20 +1022,7 @@ public class NavigationTreeMgr
         {
             userAgent = (Agent)session.getData("FROM Agent agent WHERE id = " + agentId);
         }
-        
-        // Add the New Agent or Existing Agent to the New Discipline.
-        int agtDspCnt = 0;
-        if (userAgent.getId() != null)
-        {
-            String sql = String.format("SELECT COUNT(*) FROM agent_discipline WHERE AgentID = %d AND DisciplineID = %d", userAgent.getId(), parentDiscipline.getId());
-            agtDspCnt = BasicSQLUtils.getCountAsInt(sql);
-        }
-        
-        if (agtDspCnt < 1)
-        {
-            userAgent.getDisciplines().add(parentDiscipline);  
-            return userAgent;
-        }
+
         return null;
     }
     
@@ -1098,7 +1047,6 @@ public class NavigationTreeMgr
                 MultiView.DONT_ADD_ALL_ALTVIEWS | 
                 MultiView.USE_ONLY_CREATION_MODE |
                 MultiView.IS_NEW_OBJECT);
-        //dlg.setOkLabel(getResourceString("SAVE"));
         dlg.createUI();
         dlg.setData(agent);
         

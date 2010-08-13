@@ -19,8 +19,6 @@
 */
 package edu.ku.brc.specify.datamodel;
 
-import java.sql.Timestamp;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -311,17 +309,7 @@ public class Collector extends DataModelObjBase implements java.io.Serializable,
     public Object clone() throws CloneNotSupportedException
     {
         Collector obj = (Collector)super.clone();
-        obj.initialize();
-        
-        obj.remarks         = remarks;
-        obj.collectingEvent = collectingEvent;
-        obj.agent           = agent;
-        obj.orderNumber     = orderNumber;
-        obj.division        = division;
-        
-        obj.timestampCreated     = new Timestamp(System.currentTimeMillis());
-        obj.timestampModified    = timestampCreated;
-        
+        obj.setCollectorId(null);
         return obj;
     }
 
