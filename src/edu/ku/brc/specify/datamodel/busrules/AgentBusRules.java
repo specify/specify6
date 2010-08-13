@@ -52,6 +52,7 @@ import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -462,6 +463,12 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                 DBTableInfo tableInfo      = DBTableIdMgr.getInstance().getInfoById(Agent.getClassTableId());
                 String[]    tableFieldList = gatherTableFieldsForDelete(new String[] {"agent", "address", "agentvariant"}, tableInfo);
                 isOK = okToDelete(tableFieldList, dbObj.getId());
+                if (isOK && ((Agent)dbObj).getSpecifyUser() != null)
+                {
+                    DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(SpecifyUser.getClassTableId());
+                    reasonList.add(ti.getTitle());
+                    isOK = false;
+                }
             }
             deletable.doDeleteDataObj(dataObj, session, isOK);
             
