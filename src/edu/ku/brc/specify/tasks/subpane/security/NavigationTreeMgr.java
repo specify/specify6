@@ -1004,29 +1004,27 @@ public class NavigationTreeMgr
                 Agent agent = specifyUser.getAgents().iterator().next();
                 userAgent = (Agent)agent.clone();
                 userAgent.setDivision(parentDivision);
-                
-            } else
-            {
-                // create new Agent here
-                userAgent = createNewAgent();
-                if (userAgent != null)
-                {
-                    userAgent.setDivision(parentDivision);
-                } else
-                {
-                    return null;
-                }
-            }
+                ArrayList<Agent> agents = new ArrayList<Agent>(1);
+                agents.add(userAgent);
+                return agents;
+            } 
             
-        } else // clone existing agent
-        {
-            userAgent = (Agent)session.getData("FROM Agent agent WHERE id = " + agentId);
-            ArrayList<Agent> agents = new ArrayList<Agent>(1);
-            agents.add(userAgent);
-            return agents;
+            // create new Agent here
+            userAgent = createNewAgent();
+            if (userAgent != null)
+            {
+                userAgent.setDivision(parentDivision);
+                ArrayList<Agent> agents = new ArrayList<Agent>(1);
+                agents.add(userAgent);
+                return agents;
+            }
+            return null;
         }
-
-        return null;
+        
+        userAgent = (Agent)session.getData("FROM Agent agent WHERE id = " + agentId);
+        ArrayList<Agent> agents = new ArrayList<Agent>(1);
+        agents.add(userAgent);
+        return agents;
     }
     
     /**
