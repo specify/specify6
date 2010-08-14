@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.toycode.mexconabio;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -27,8 +29,17 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.*;
+import org.apache.lucene.index.*;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.search.*;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Version;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
@@ -115,6 +126,7 @@ public class CopyFromGBIF
      */
     public void process()
     {
+        boolean doQueryForCollNum = false;
         
         String pSQL = "INSERT INTO raw (old_id,data_provider_id,data_resource_id,resource_access_point_id, institution_code, collection_code, " +
                       "catalogue_number, scientific_name, author, rank, kingdom, phylum, class, order_rank, family, genus, species, subspecies, latitude, longitude,  " +
@@ -122,12 +134,20 @@ public class CopyFromGBIF
                       "locality,year, month, day, basis_of_record, identifier_name, identification_date,unit_qualifier, created, modified, deleted, collector_num) " +
                       "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         
-        String gbifSQL = "SELECT r.id, r.data_provider_id, r.data_resource_id, r.resource_access_point_id, r.institution_code, r.collection_code, " +
+        String gbifSQLBase = "SELECT r.id, r.data_provider_id, r.data_resource_id, r.resource_access_point_id, r.institution_code, r.collection_code, " +
                          "r.catalogue_number, r.scientific_name, r.author, r.rank, r.kingdom, r.phylum, r.class, r.order_rank, r.family, r.genus, r.species, r.subspecies, " +
                          "r.latitude, r.longitude, r.lat_long_precision, r.max_altitude, r.min_altitude, r.altitude_precision, r.min_depth, r.max_depth, r.depth_precision, " +
                          "r.continent_ocean, r.country, r.state_province, r.county, r.collector_name, r.locality, r.year, r.month, r.day, r.basis_of_record, r.identifier_name, " +
-                         "r.identification_date, r.unit_qualifier, r.created, r.modified, r.deleted, i.identifier " +
-                         "FROM raw_occurrence_record r LEFT JOIN identifier_record i ON i.occurrence_id = r.id WHERE i.identifier_type = 3 ";
+                         "r.identification_date, r.unit_qualifier, r.created, r.modified, r.deleted";
+
+        String gbifSQL;
+        if (doQueryForCollNum)
+        {
+            gbifSQL = gbifSQLBase + " FROM raw_occurrence_record r";
+        } else
+        {
+            gbifSQL = gbifSQLBase + ", i.identifier FROM raw_occurrence_record r, identifier_record i WHERE r.id = i.occurrence_id AND i.identifier_type = 3";
+        }
 
         BasicSQLUtils.update(srcDBConn, "DELETE FROM raw WHERE id > 0");
         
@@ -142,97 +162,110 @@ public class CopyFromGBIF
         
         Statement         gStmt = null;
         PreparedStatement pStmt = null;
+        Statement         stmt  = null;
         
         try
         {
             pw = new PrintWriter("gbif.log");
             
             pStmt = srcDBConn.prepareStatement(pSQL);
-            //Statement stmt = dbConn.createStatement(ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
-            //stmt.setFetchSize(Integer.MIN_VALUE);
-            //ResultSet rs   = stmt.executeQuery("SELECT id FROM raw_occurrence_record");
-            //while (rs.next())
-            //{
+            
+            stmt = dbConn.createStatement(ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
+            stmt.setFetchSize(Integer.MIN_VALUE);
+            
             
             System.out.println("Total Records: "+totalRecs);
             pw.println("Total Records: "+totalRecs);
             
-                gStmt = dbConn.createStatement(ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
-                gStmt.setFetchSize(Integer.MIN_VALUE);
+            gStmt = dbConn.createStatement(ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
+            gStmt.setFetchSize(Integer.MIN_VALUE);
+            
+            String fullSQL = gbifSQL;
+            System.out.println(fullSQL);
+            
+            ResultSet         gRS        = gStmt.executeQuery(fullSQL);
+            ResultSetMetaData rsmd       = gRS.getMetaData();
+            int               lastColInx = rsmd.getColumnCount();
+            
+            while (gRS.next())
+            {
+                int id = gRS.getInt(1);
+                pStmt.setObject(1, id);
                 
-                String fullSQL = gbifSQL;// + " AND r.id = " + rs.getInt(1);
-                System.out.println(fullSQL);
-                
-                
-                ResultSet         gRS        = gStmt.executeQuery(fullSQL);
-                ResultSetMetaData rsmd       = gRS.getMetaData();
-                int               lastColInx = rsmd.getColumnCount();
-                
-                while (gRS.next())
+                for (int i=2;i<rsmd.getColumnCount();i++)
                 {
-                    for (int i=1;i<rsmd.getColumnCount();i++)
+                    Object obj = gRS.getObject(i);
+                    pStmt.setObject(i, obj);
+                }
+                
+                String collNum = null;
+                if (doQueryForCollNum)
+                {
+                    ResultSet rs = stmt.executeQuery(String.format("SELECT identifier FROM identifier_record WHERE id = %d identifier_type = 3", id));
+                    if (rs.next())
                     {
-                        Object obj = gRS.getObject(i);
-                        pStmt.setObject(i, obj);
+                        collNum = rs.getString(1);
                     }
-                    
-                    String collNum = gRS.getString(lastColInx-1);
-                    if (StringUtils.isNotEmpty(collNum))
+                    rs.close();
+                } else
+                {
+                    collNum = gRS.getString(lastColInx-1);
+                }
+                
+                if (StringUtils.isNotEmpty(collNum))
+                {
+                    if (collNum.length() < 256)
                     {
-                        if (collNum.length() < 256)
-                        {
-                            pStmt.setString(lastColInx, collNum);
-                            
-                        } else
-                        {
-                            pStmt.setString(lastColInx, collNum.substring(0, 255));
-                        }
+                        pStmt.setString(lastColInx, collNum);
+                        
                     } else
                     {
-                        pStmt.setObject(lastColInx, null);
+                        pStmt.setString(lastColInx, collNum.substring(0, 255));
                     }
+                } else
+                {
+                    pStmt.setObject(lastColInx, null);
+                }
+                
+                try
+                {
+                    pStmt.executeUpdate();
                     
-                    try
+                } catch (Exception ex)
+                {
+                    System.err.println("For ID["+gRS.getObject(1)+"]");
+                    ex.printStackTrace();
+                    pw.print("For ID["+gRS.getObject(1)+"] "+ex.getMessage());
+                    pw.flush();
+                }
+                
+                procRecs++;
+                if (procRecs % 10000 == 0)
+                {
+                    long endTime     = System.currentTimeMillis();
+                    long elapsedTime = endTime - startTime;
+                    
+                    double avergeTime = (double)elapsedTime / (double)procRecs;
+                    
+                    double hrsLeft = (((double)elapsedTime / (double)procRecs) * (double)totalRecs - procRecs)  / HRS;
+                    
+                    int seconds = (int)(elapsedTime / 60000.0);
+                    if (secsThreshold != seconds)
                     {
-                        pStmt.executeUpdate();
+                        secsThreshold = seconds;
                         
-                    } catch (Exception ex)
-                    {
-                        System.err.println("For ID["+gRS.getObject(1)+"]");
-                        ex.printStackTrace();
-                        pw.print("For ID["+gRS.getObject(1)+"] "+ex.getMessage());
+                        String msg = String.format("Elapsed %8.2f hr.mn   Ave Time: %5.2f    Percent: %6.3f  Hours Left: %8.2f ", 
+                                ((double)(elapsedTime)) / HRS, 
+                                avergeTime,
+                                100.0 * ((double)procRecs / (double)totalRecs),
+                                hrsLeft);
+                        System.out.println(msg);
+                        pw.println(msg);
                         pw.flush();
                     }
-                    
-                    procRecs++;
-                    if (procRecs % 10000 == 0)
-                    {
-                        long endTime     = System.currentTimeMillis();
-                        long elapsedTime = endTime - startTime;
-                        
-                        double avergeTime = (double)elapsedTime / (double)procRecs;
-                        
-                        double hrsLeft = (((double)elapsedTime / (double)procRecs) * (double)totalRecs - procRecs)  / HRS;
-                        
-                        int seconds = (int)(elapsedTime / 60000.0);
-                        if (secsThreshold != seconds)
-                        {
-                            secsThreshold = seconds;
-                            
-                            String msg = String.format("Elapsed %8.2f hr.mn   Ave Time: %5.2f    Percent: %6.3f  Hours Left: %8.2f ", 
-                                    ((double)(elapsedTime)) / HRS, 
-                                    avergeTime,
-                                    100.0 * ((double)procRecs / (double)totalRecs),
-                                    hrsLeft);
-                            System.out.println(msg);
-                            pw.println(msg);
-                            pw.flush();
-                        }
-                    }
                 }
-            //}
-            //rs.close();
-            //stmt.close();
+            }
+
             
         } catch (Exception ex)
         {
@@ -249,6 +282,10 @@ public class CopyFromGBIF
                 if (pStmt != null)
                 {
                     pStmt.close();
+                }
+                if (stmt != null)
+                {
+                    stmt.close();
                 }
                 pw.close();
                 
@@ -420,7 +457,49 @@ public class CopyFromGBIF
         return srcDBConn;
     }
 
+    protected File         INDEX_DIR = new File("index-gbif");
+    
+    protected IndexReader  reader;
+    protected Searcher     searcher;
+    protected Analyzer     analyzer;
+    public void index()
+    {
+        
+        try
+        {
+            IndexWriter writer = new IndexWriter(FSDirectory.open(INDEX_DIR), new StandardAnalyzer(Version.LUCENE_30), true, IndexWriter.MaxFieldLength.LIMITED);
 
+            System.out.println("Indexing to directory '" + INDEX_DIR + "'...");
+            
+            Integer   id  = 0;
+            
+            Document  doc = new Document();
+
+            doc.add(new Field("id", id.toString(), Field.Store.YES, Field.Index.NO));
+            
+            try 
+            { 
+                
+                writer.addDocument(doc);
+
+            } catch (IOException e) {
+
+            System.out.println("IOException adding Lucene Document: " + e.getMessage());
+
+            }
+            
+            System.out.println("Optimizing...");
+            writer.optimize();
+            writer.close();
+
+            Date end = new Date();
+            //System.out.println(end.getTime() - start.getTime() + " total milliseconds");
+
+        } catch (IOException e)
+        {
+            System.out.println(" caught a " + e.getClass() + "\n with message: " + e.getMessage());
+        }
+    }
     
     //------------------------------------------------------------------------------------------
     public static void main(String[] args)
