@@ -201,10 +201,10 @@ public class SecurityAdminPane extends BaseSubPane
         navTreePanel.setMinimumSize(new Dimension(200, 200));
         
         PanelBuilder btnPB    = new PanelBuilder(new FormLayout("p,4px,p,4px,p,4px,p,4px,p,f:p:g", "p"));
-        JButton addUserBtn    = UIHelper.createIconBtn("add-person", IconManager.IconSize.NonStd, "Add New User to Group", null); // I18N
-        JButton addExtUserBtn = UIHelper.createIconBtn("addext-person", IconManager.IconSize.NonStd, "Add Existing User to Group", null); // I18N
-        JButton addToAdminBtn = UIHelper.createIconBtn("AdminGroup", IconManager.IconSize.Std24, "Add to the Admin Group", null); // I18N
-        JButton delUserBtn    = UIHelper.createIconBtn("del-person", IconManager.IconSize.NonStd, "Delete User from Group", null);
+        JButton addUserBtn    = UIHelper.createIconBtn("add-person", IconManager.IconSize.NonStd, "SEC_ADDNEWUSERGRP_TT", null); // I18N
+        JButton addExtUserBtn = UIHelper.createIconBtn("addext-person", IconManager.IconSize.NonStd, "SEC_ADDEXTUSERGRP_TT", null); // I18N
+        JButton addToAdminBtn = UIHelper.createIconBtn("AdminGroup", IconManager.IconSize.Std24, "SEC_ADDADMUSERGRP_TT", null); // I18N
+        JButton delUserBtn    = UIHelper.createIconBtn("del-person", IconManager.IconSize.NonStd, "SEC_DELUSRGRP_TT", null);
         btnPB.add(addUserBtn,    cc.xy(1, 1));
         btnPB.add(addExtUserBtn, cc.xy(3, 1));
         btnPB.add(addToAdminBtn, cc.xy(5, 1));
