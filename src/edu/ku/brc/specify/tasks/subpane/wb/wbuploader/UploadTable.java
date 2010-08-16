@@ -3283,23 +3283,25 @@ public class UploadTable implements Comparable<UploadTable>
         Vector<DeleteQuery> result = new Vector<DeleteQuery>();
         if (AttachmentOwnerIFace.class.isAssignableFrom(getTblClass()))
         {
+        	//Attachments undo is now handled in Uploader.
+        	
         	//weird relationships/annotations require extra work. Can't delete attachments
         	//until XXXAttachment records are deleted, but can't know what attachments to delete
         	//after XXXAttachment records are deleted. 
         	
         	//gets the ids of the attachments to delete.
-        	result.add(new DeleteQuery(session.createQuery("select attachmentid from " + 
-        			getWriteTable().getName().toLowerCase() + "attachment where " +
-        			getWriteTable().getName().toLowerCase() + "id =:theKey", true), false, -1));
+//        	result.add(new DeleteQuery(session.createQuery("select attachmentid from " + 
+//        			getWriteTable().getName().toLowerCase() + "attachment where " +
+//        			getWriteTable().getName().toLowerCase() + "id =:theKey", true), false, -1));
         	
         	//deletes XXXAttachment records
-        	result.add(new DeleteQuery(
-        			session.createQuery("delete from " + getWriteTable().getName().toLowerCase() + "attachment where " +
-        					getWriteTable().getName().toLowerCase() + "id =:theKey", true), true, -1));
+//        	result.add(new DeleteQuery(
+//        			session.createQuery("delete from " + getWriteTable().getName().toLowerCase() + "attachment where " +
+//        					getWriteTable().getName().toLowerCase() + "id =:theKey", true), true, -1));
         	
         	//deletes attachments using results from first query above
-        	result.add(new DeleteQuery(
-        			session.createQuery("delete from attachment where attachmentid =:theKey", true), true, 0));
+//        	result.add(new DeleteQuery(
+//        			session.createQuery("delete from attachment where attachmentid =:theKey", true), true, 0));
         }
    
         result.add(new DeleteQuery(
