@@ -67,7 +67,6 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
 import edu.ku.brc.specify.conversion.IdTableMapper;
 import edu.ku.brc.specify.conversion.TableWriter;
-import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttribute;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
@@ -697,7 +696,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-----------------------------------------------------------------------------
                     //-- This will fix any Agents messed up by creating new Divisions
                     //-----------------------------------------------------------------------------
-                    frame.setDesc("Fixing User's Agents...");
+                    frame.setDesc("Fixing User's Agents..."); // I18N
                     fixAgentsDivsDisps(conn);
                     frame.incOverall();
                     
@@ -881,45 +880,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     session.beginTransaction();
                     for (Agent agent : agentsToBeDuped)
                     {
-                        Agent a = new Agent();
-                        a.initialize();
-                        a.setAbbreviation(agent.getAbbreviation());
-                        a.setAgentType(agent.getAgentType());
-                        a.setCollContentContact(agent.getCollContentContact());
-                        a.setCollTechContact(agent.getCollTechContact());
-                        a.setCreatedByAgent(agent.getCreatedByAgent());
-                        a.setDateOfBirth(agent.getDateOfBirth());
-                        a.setDateOfBirthPrecision(agent.getDateOfBirthPrecision());
-                        a.setDateOfDeath(agent.getDateOfDeath());
-                        a.setDateOfDeathPrecision(agent.getDateOfDeathPrecision());
-                        a.setDateType(agent.getDateType());
-                        a.setDivision(agent.getDivision());
-                        
-                        a.setFirstName(agent.getFirstName());
-                        a.setLastName(agent.getLastName());
-                        a.setMiddleInitial(agent.getMiddleInitial());
-                        a.setTitle(agent.getTitle());
-                        a.setInterests(agent.getInterests());
-                        a.setInitials(agent.getInitials());
-                        a.setRemarks(agent.getRemarks());
-                        a.setOrganization(agent.getOrganization());
-                        a.setSpecifyUser(agent.getSpecifyUser());
-                        a.setInstTechContact(agent.getInstTechContact());
-                        a.setInstContentContact(agent.getInstContentContact());
-                        a.setJobTitle(agent.getJobTitle());
-                        a.setEmail(agent.getEmail());
-                        a.setUrl(agent.getUrl());
-                        a.setGuid(agent.getGuid());
-                        
-                        for (Address addr : agent.getAddresses())
-                        {
-                            Address newAddr = (Address)addr.clone();
-                            a.getAddresses().add(newAddr);
-                            newAddr.setAgent(a);
-                        }
-
-                        
-                        session.save(agent);
+                        Agent newAgent = (Agent)agent.clone();
+                        session.save(newAgent);
                     }
                     session.commit();
                     

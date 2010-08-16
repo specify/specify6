@@ -188,6 +188,26 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     {
         this.agentId = agentId;
     }
+    
+    /**
+     * @param a
+     */
+    /*public Agent(final Agent a) throws CloneNotSupportedException
+    {
+        DataGetterForObj getter = new DataGetterForObj();
+        DataSetterForObj setter = new DataSetterForObj();
+        
+        for (Field field : Agent.class.getDeclaredFields())
+        {
+            Object val = getter.getFieldValue(a, field.getName());
+            if (!(val instanceof Set<?>))
+            {
+                setter.setFieldValue(this, field.getName(), val);
+            }
+        }
+        
+        cloneSets(a, this);
+    }*/
 
     // Initializer
     @Override
@@ -1024,6 +1044,69 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         return agentAttachments;
     }
     
+    /**
+     * @param src
+     * @param dst
+     */
+    private void cloneSets(final Agent src, final Agent dst) throws CloneNotSupportedException
+    {
+        for (Address addr : src.addresses)
+        {
+            Address newAddr = (Address)addr.clone();
+            dst.addresses.add(newAddr);
+            newAddr.setAgent(dst);
+        }
+        
+        for (AgentVariant cObj : src.variants)
+        {
+            AgentVariant newObj = (AgentVariant)cObj.clone();
+            dst.variants.add(newObj);
+            cObj.setAgent(dst);
+        }
+        
+        for (AgentGeography cObj : src.agentGeographies)
+        {
+            AgentGeography newObj = (AgentGeography)cObj.clone();
+            dst.agentGeographies.add(newObj);
+            cObj.setAgent(dst);
+        }
+        
+        for (AgentSpecialty cObj : src.agentSpecialties)
+        {
+            AgentSpecialty newObj = (AgentSpecialty)cObj.clone();
+            dst.agentSpecialties.add(newObj);
+            cObj.setAgent(dst);
+        }
+        
+        for (Collector cObj : src.collectors)
+        {
+            Collector newObj = (Collector)cObj.clone();
+            dst.collectors.add(newObj);
+            cObj.setAgent(dst);
+        }
+        
+        for (GroupPerson cObj : src.members)
+        {
+            GroupPerson newObj = (GroupPerson)cObj.clone();
+            dst.members.add(newObj);
+            cObj.setMember(dst);
+        }
+        
+        for (GroupPerson cObj : src.groups)
+        {
+            GroupPerson newObj = (GroupPerson)cObj.clone();
+            dst.groups.add(newObj);
+            cObj.setGroup(dst);
+        }
+        
+        for (Agent cObj : src.orgMembers)
+        {
+            Agent newObj = (Agent)cObj.clone();
+            dst.orgMembers.add(newObj);
+            cObj.setOrganization(dst);
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
      */
@@ -1048,62 +1131,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         obj.agentGeographies          = new HashSet<AgentGeography>();
         obj.agentSpecialties          = new HashSet<AgentSpecialty>();
         
-        // clone addresses
-        for (Address addr : addresses)
-        {
-            Address newAddr = (Address)addr.clone();
-            obj.addresses.add(newAddr);
-            newAddr.setAgent(obj);
-        }
-        
-        for (AgentVariant cObj : variants)
-        {
-            AgentVariant newObj = (AgentVariant)cObj.clone();
-            obj.variants.add(newObj);
-            cObj.setAgent(obj);
-        }
-        
-        for (AgentGeography cObj : agentGeographies)
-        {
-            AgentGeography newObj = (AgentGeography)cObj.clone();
-            obj.agentGeographies.add(newObj);
-            cObj.setAgent(obj);
-        }
-        
-        for (AgentSpecialty cObj : agentSpecialties)
-        {
-            AgentSpecialty newObj = (AgentSpecialty)cObj.clone();
-            obj.agentSpecialties.add(newObj);
-            cObj.setAgent(obj);
-        }
-        
-        for (Collector cObj : collectors)
-        {
-            Collector newObj = (Collector)cObj.clone();
-            obj.collectors.add(newObj);
-            cObj.setAgent(obj);
-        }
-        
-        for (GroupPerson cObj : members)
-        {
-            GroupPerson newObj = (GroupPerson)cObj.clone();
-            obj.members.add(newObj);
-            cObj.setMember(obj);
-        }
-        
-        for (GroupPerson cObj : groups)
-        {
-            GroupPerson newObj = (GroupPerson)cObj.clone();
-            obj.groups.add(newObj);
-            cObj.setGroup(obj);
-        }
-        
-        for (Agent cObj : orgMembers)
-        {
-            Agent newObj = (Agent)cObj.clone();
-            obj.orgMembers.add(newObj);
-            cObj.setOrganization(obj);
-        }
+        cloneSets(this, obj);
         
         return obj;
     }

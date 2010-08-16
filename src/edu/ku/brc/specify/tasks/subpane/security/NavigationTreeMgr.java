@@ -551,7 +551,7 @@ public class NavigationTreeMgr
             {
                 DataModelObjBaseWrapper wrp = (DataModelObjBaseWrapper)parent.getUserObject();
                 
-                log.debug(wrp.getDataObj()+"  "+wrp.getDataObj());
+                //log.debug(wrp.getDataObj()+"  "+wrp.getDataObj());
                 
                 FormDataObjIFace obj = wrp.getDataObj();
                 
@@ -900,6 +900,8 @@ public class NavigationTreeMgr
                                  final SpecifyUser specifyUser,
                                  final boolean     doAddNewUser) throws CloneNotSupportedException
     {
+        ArrayList<Agent> agentsList = new ArrayList<Agent>();
+        
         Agent   userAgent = null;
         Integer agentId   = null;
         String  lastName  = null;
@@ -952,14 +954,13 @@ public class NavigationTreeMgr
                 
                 if (!dlg.isCancelled())
                 {
-                    ArrayList<Agent> agents = new ArrayList<Agent>(dlg.getSelectedObjects().size());
                     for (Object obj : dlg.getSelectedObjects())
                     {
                         Agent agt = session.get(Agent.class, ((Agent)obj).getAgentId());
                         agt.getDivision().getId(); // forcing the Division to load
-                        agents.add(agt);
+                        agentsList.add(agt);
                     }
-                    return agents;
+                    return agentsList;
                 }
             }
         }
@@ -1004,9 +1005,8 @@ public class NavigationTreeMgr
                 Agent agent = specifyUser.getAgents().iterator().next();
                 userAgent = (Agent)agent.clone();
                 userAgent.setDivision(parentDivision);
-                ArrayList<Agent> agents = new ArrayList<Agent>(1);
-                agents.add(userAgent);
-                return agents;
+                agentsList.add(userAgent);
+                return agentsList;
             } 
             
             // create new Agent here
@@ -1014,17 +1014,15 @@ public class NavigationTreeMgr
             if (userAgent != null)
             {
                 userAgent.setDivision(parentDivision);
-                ArrayList<Agent> agents = new ArrayList<Agent>(1);
-                agents.add(userAgent);
-                return agents;
+                agentsList.add(userAgent);
+                return agentsList;
             }
             return null;
         }
         
         userAgent = (Agent)session.getData("FROM Agent agent WHERE id = " + agentId);
-        ArrayList<Agent> agents = new ArrayList<Agent>(1);
-        agents.add(userAgent);
-        return agents;
+        agentsList.add(userAgent);
+        return agentsList;
     }
     
     /**
