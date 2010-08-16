@@ -27,7 +27,6 @@ import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
-import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
@@ -205,6 +204,14 @@ public class DataModelObjBaseWrapper
 	}
 	
 	/**
+     * @param title the title to set
+     */
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
+
+    /**
 	 * Returns the string representation of the wrapped object
 	 * This string is what is shown as label for the the navigation tree nodes 
 	 */
@@ -214,8 +221,7 @@ public class DataModelObjBaseWrapper
 	    {
 	        if (dataObj instanceof Discipline)
 	        {
-	            DisciplineType dispType = DisciplineType.getDiscipline(((Discipline)dataObj).getType());
-	            title = dispType != null ?  dispType.getTitle() : "N/A";
+                title = ((Discipline)dataObj).getName();
 	        } else
 	        {
 	            title = dataObj.getIdentityTitle();

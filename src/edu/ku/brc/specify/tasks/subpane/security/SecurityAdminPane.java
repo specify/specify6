@@ -460,11 +460,11 @@ public class SecurityAdminPane extends BaseSubPane
         for (Division division : divisions)
         {
             //log.debug("Adding Division "+division.getName());
-            TreeSet<Discipline> disciplines = new TreeSet<Discipline>(division.getDisciplines()); 
-            for (Discipline discipline : disciplines)
+            for (Discipline discipline : division.getDisciplines())
             {
                 //log.debug("  Adding Discipline "+discipline.getName());
-                DefaultMutableTreeNode discNode = new DefaultMutableTreeNode(new DataModelObjBaseWrapper(discipline));
+                DataModelObjBaseWrapper dmob     = new DataModelObjBaseWrapper(discipline);
+                DefaultMutableTreeNode  discNode = new DefaultMutableTreeNode(dmob);
                 instNode.add(discNode);
                 addCollectionsRecursively(session, discNode, discipline);
                 addGroup(session, discNode, discipline);
