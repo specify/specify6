@@ -87,24 +87,24 @@ public class GBIFFindCleanupItems extends BaseFindCleanupItems
     @Override
     protected Vector<FindItemInfo> doWork()
     {
-        Connection srcDBConn = awg.getSrcDBConn();
+        Connection dstDBConn = awg.getDstDBConn();
         
         Vector<FindItemInfo> items = new Vector<FindItemInfo>();
         Statement        stmt  = null;
         
         try
         {
-            stmt  = srcDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            stmt  = dstDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             
-            ResultSet rs = stmt.executeQuery("SELECT id, origcatnumber, COUNT(origcatnumber) FROM raw GROUP BY origcatnumber");
+            ResultSet rs = stmt.executeQuery("SELECT id, other_collnum, COUNT(other_collnum) FROM raw_cache GROUP BY other_collnum");
             while (rs.next())
             {
                 int     id        = rs.getInt(1);
                 String  catNum    = rs.getString(2);
                 int     grpCnt    = rs.getInt(3);
                 
-                String title = String.format("%s - %d", catNum, grpCnt);
-                items.add(new FindItemInfo(id, catNum, title));
+                String titleStr = String.format("%s - %d", catNum, grpCnt);
+                items.add(new FindItemInfo(id, catNum, titleStr));
             }
             rs.close();
             

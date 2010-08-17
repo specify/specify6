@@ -33,14 +33,11 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
 public class AnalysisWithGBIF
 {
-
-    private Connection dbConn    = null;
-    private Connection srcDBConn = null;
+    public static final  String CONN_STR = "jdbc:mysql://%s:%s/%s?characterEncoding=UTF-8&autoReconnect=true";
     
-    @SuppressWarnings("unused")
-    private String     dbName;
-    @SuppressWarnings("unused")
-    private String     srcDBName = null;
+    private Connection dbGBIFConn    = null;
+    private Connection dbSrcConn = null;
+    private Connection dbDstConn = null;
     
     /**
      * @param server
@@ -67,13 +64,9 @@ public class AnalysisWithGBIF
                                    final String username, 
                                    final String pwd)
     {
-        this.dbName = dbName;
-
-        String connStr = "jdbc:mysql://%s:%s/%s?characterEncoding=UTF-8&autoReconnect=true";
         try
         {
-            dbConn = DriverManager.getConnection(String.format(connStr, server, port, dbName),
-                    username, pwd);
+            dbGBIFConn = DriverManager.getConnection(String.format(CONN_STR, server, port, dbName), username, pwd);
         } catch (SQLException e)
         {
             e.printStackTrace();
@@ -89,18 +82,40 @@ public class AnalysisWithGBIF
      * @param pwd
      */
     public void createSrcDBConnection(final String server, 
+                                           final String port, 
+                                           final String dbName, 
+                                           final String username, 
+                                           final String pwd)
+    {
+
+        try
+        {
+            dbSrcConn = DriverManager.getConnection(String.format(CONN_STR, server, port, dbName), username, pwd);
+            
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+        
+    
+    /**
+     * @param server
+     * @param port
+     * @param dbName
+     * @param username
+     * @param pwd
+     */
+    public void createDestDBConnection(final String server, 
                                       final String port, 
                                       final String dbName, 
                                       final String username, 
                                       final String pwd)
     {
 
-        this.srcDBName = dbName;
-        
-        String connStr = "jdbc:mysql://%s:%s/%s?characterEncoding=UTF-8&autoReconnect=true";
         try
         {
-            srcDBConn = DriverManager.getConnection(String.format(connStr, server, port, dbName), username, pwd);
+            dbDstConn = DriverManager.getConnection(String.format(CONN_STR, server, port, dbName), username, pwd);
             
         } catch (SQLException e)
         {
@@ -114,33 +129,44 @@ public class AnalysisWithGBIF
      */
     public void process()
     {
+        final double HRS = 1000.0 * 60.0 * 60.0; 
         Calendar cal = Calendar.getInstance();
         
-        String pSQL = "INSERT INTO raw (id,data_provider_id,data_resource_id,resource_access_point_id, institution_code, collection_code, " +
-        "catalogue_number, scientific_name, author, rank, kingdom, phylum, class, order_rank, family, genus, species, subspecies, latitude, longitude,  " +
-        "lat_long_precision, max_altitude, min_altitude, altitude_precision, min_depth, max_depth, depth_precision, continent_ocean, country, state_province, county, collector_name, " + 
-        "locality,year, month, day, basis_of_record, identifier_name, identification_date,unit_qualifier, created, modified, deleted,origcatnumber) " +
-        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-        
-        String gbifSQL = "SELECT r.* AS CollNum FROM raw_occurrence_record r, identifier_record i " +
-                         "WHERE r.id = i.occurrence_id AND i.identifier_type = 3 AND i.identifier = '%s' AND r.year = '%s' AND genus = '%s'";
+        String insertSQL = "INSERT INTO raw_cache (id, old_id,data_provider_id,data_resource_id,resource_access_point_id, institution_code, collection_code, " +
+                           "catalogue_number, scientific_name, author, rank, kingdom, phylum, class, order_rank, family, genus, species, subspecies, latitude, longitude,  " +
+                           "lat_long_precision, max_altitude, min_altitude, altitude_precision, min_depth, max_depth, depth_precision, continent_ocean, country, state_province, county, collector_name, " + 
+                           "locality,year, month, day, basis_of_record, identifier_name, identification_date,unit_qualifier, created, modified, deleted, collector_num, other_collnum) " +
+                           "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+        String gbifSQL = "SELECT DISTINCT id, old_id,data_provider_id,data_resource_id,resource_access_point_id, institution_code, collection_code, " +
+                         "catalogue_number, scientific_name, author, rank, kingdom, phylum, class, order_rank, family, genus, species, subspecies, latitude, longitude,  " +
+                         "lat_long_precision, max_altitude, min_altitude, altitude_precision, min_depth, max_depth, depth_precision, continent_ocean, country, state_province, county, collector_name, " + 
+                         "locality,year, month, day, basis_of_record, identifier_name, identification_date,unit_qualifier, created, modified, deleted, collector_num " +
+                         "FROM raw WHERE collector_num = '%s' AND year = '%s' AND genus = '%s'";
         
         String sql = "SELECT BarCD, CollNr, Collectoragent1, GenusName, SpeciesName, LocalityName, Datecollstandrd FROM conabio " +
         		     "WHERE CollNr IS NOT NULL ORDER BY CollNr LIMIT 140,1000";
         
-        Statement stmt  = null;
-        Statement gStmt = null;
+        Statement         stmt  = null;
+        Statement         gStmt = null;
         PreparedStatement pStmt = null;
+        
+        long totalRecs     = BasicSQLUtils.getCount(dbSrcConn, "SELECT COUNT(*) FROM conabio");
+        long procRecs      = 0;
+        long startTime     = System.currentTimeMillis();
+        int  secsThreshold = 0;
         
         try
         {
-            stmt  = srcDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-            gStmt = dbConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-            pStmt = srcDBConn.prepareStatement(pSQL);
+            stmt  = dbSrcConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            gStmt = dbGBIFConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            stmt.setFetchSize(Integer.MIN_VALUE);
+            pStmt = dbDstConn.prepareStatement(insertSQL);
             
-            BasicSQLUtils.update(srcDBConn, "DELETE FROM raw WHERE id > 0");
+            BasicSQLUtils.update(dbDstConn, "DELETE FROM raw_cache WHERE id > 0");
             
-            int cnt      = 0;
+            System.out.println("Starting... "+totalRecs);
+            
             int writeCnt = 0;
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next())
@@ -162,32 +188,52 @@ public class AnalysisWithGBIF
                 
                 long start = System.currentTimeMillis();
                 sql = String.format(gbifSQL, collectorNum, year, genus);
-                System.out.println(sql);
+                //System.out.println(sql);
                 
                 ResultSet         gRS  = gStmt.executeQuery(sql);
                 ResultSetMetaData rsmd = gRS.getMetaData();
-                System.out.println(String.format("Time: %8.2f", (System.currentTimeMillis()-start)/1000.0));
+                //System.out.println(String.format("Time: %8.2f", (System.currentTimeMillis()-start) / 1000.0));
                 while (gRS.next())
                 {
+                   //System.out.println(gRS.getObject(1));
                    for (int i=1;i<=rsmd.getColumnCount();i++)
                    {
                        //System.out.println(i+" "+rsmd.getColumnName(i));
                        pStmt.setObject(i, gRS.getObject(i));
                    }
-                   pStmt.setString(44, catNum);
+                   pStmt.setString(46, collectorNum);
                    pStmt.executeUpdate();
                    writeCnt++;
-                   System.out.println("Out: "+writeCnt);
+                   //System.out.println("Out: "+writeCnt);
                 }
                 gRS.close();
                 
-                cnt++;
-                //if (cnt % 100 == 0)
-                //{
-                    System.out.println(cnt);
-                //}
+                procRecs++;
+                if (procRecs % 1000 == 0)
+                {
+                    long endTime     = System.currentTimeMillis();
+                    long elapsedTime = endTime - startTime;
+                    
+                    double timePerRecord      = (elapsedTime / procRecs); 
+                    
+                    double hrsLeft = ((totalRecs - procRecs) * timePerRecord) / HRS;
+                    
+                    int seconds = (int)(elapsedTime / 60000.0);
+                    if (secsThreshold != seconds)
+                    {
+                        secsThreshold = seconds;
+                        
+                        String msg = String.format("Elapsed %8.2f hr.mn   Percent: %6.3f  Hours Left: %8.2f ", 
+                                ((double)(elapsedTime)) / HRS, 
+                                100.0 * ((double)procRecs / (double)totalRecs),
+                                hrsLeft);
+                        System.out.println(msg);
+                    }
+                }
             }
             rs.close();
+            
+            System.out.println("Done.");
             
         } catch (Exception ex)
         {
@@ -224,13 +270,17 @@ public class AnalysisWithGBIF
     {
         try
         {
-            if (dbConn != null)
+            if (dbGBIFConn != null)
             {
-                dbConn.close();
+                dbGBIFConn.close();
             }
-            if (srcDBConn != null)
+            if (dbSrcConn != null)
             {
-                srcDBConn.close();
+                dbSrcConn.close();
+            }
+            if (dbDstConn != null)
+            {
+                dbDstConn.close();
             }
         } catch (Exception ex)
         {
@@ -242,9 +292,9 @@ public class AnalysisWithGBIF
     /**
      * @return the dbConn
      */
-    public Connection getDBConn()
+    public Connection getGBIFDBConn()
     {
-        return dbConn;
+        return dbGBIFConn;
     }
 
     /**
@@ -252,17 +302,24 @@ public class AnalysisWithGBIF
      */
     public Connection getSrcDBConn()
     {
-        return srcDBConn;
+        return dbSrcConn;
     }
 
+    /**
+     * @return the dbDstConn
+     */
+    public Connection getDstDBConn()
+    {
+        return dbDstConn;
+    }
 
-    
     //------------------------------------------------------------------------------------------
     public static void main(String[] args)
     {
         AnalysisWithGBIF awg = new AnalysisWithGBIF();
-        awg.createDBConnection("lm2gbdb.nhm.ku.edu", "3399", "gbc20091216", "rods", "specify4us");
-        awg.createSrcDBConnection("localhost", "3306", "mex", "root", "root");
+        awg.createDBConnection("localhost",     "3306", "gbif",           "root", "root");
+        awg.createSrcDBConnection("localhost",  "3306", "mex",            "root", "root");
+        awg.createDestDBConnection("localhost", "3306", "analysis_cache", "root", "root");
         awg.process();
         awg.cleanup();
     }

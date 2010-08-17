@@ -73,7 +73,7 @@ public class GBIFCleanupResults extends BaseCleanupResults
                 "Max altitude", "Min altitude", "Alt Precision", "Min Depth", 
                 "Max Depth", "Depth Precision", "Continent Ocean", "Country", 
                 "State", "County", "Collector Name", "Locality", 
-                "Year", "Month", "Day", "origcatnumber"};
+                "Year", "Month", "Day", "Catalog Number"};
         
         final Class<?> dataClasses[] = {Integer.class, String.class, String.class, String.class, 
                                         String.class, String.class, String.class, String.class, 
@@ -83,7 +83,7 @@ public class GBIFCleanupResults extends BaseCleanupResults
                                         String.class, String.class, String.class, String.class, 
                                         String.class, String.class, String.class, String.class};
 
-        model = new DataObjTableModel(awg.getSrcDBConn(), 100, itemInfo.getValue().toString(), false)
+        model = new DataObjTableModel(awg.getDstDBConn(), 100, itemInfo.getValue().toString(), false)
         {
             /* (non-Javadoc)
              * @see edu.ku.brc.specify.dbsupport.cleanuptools.DataObjTableModel#buildSQL()
@@ -91,13 +91,13 @@ public class GBIFCleanupResults extends BaseCleanupResults
             @Override
             protected String buildSQL()
             {
-                String gSQL = "SELECT id, institution_code, collection_code, " +
-                "catalogue_number, scientific_name, author, genus, species, subspecies, latitude, longitude,  " +
-                "lat_long_precision, max_altitude, min_altitude, altitude_precision, min_depth, max_depth, depth_precision, " +
-                "continent_ocean, country, state_province, county, collector_name, " + 
-                "locality, year, month, day, origcatnumber FROM raw WHERE origcatnumber = ?";
-                
-                tableInfo = new DBTableInfo(100, this.getClass().getName(), "raw", "id", "r");
+                String gSQL = "SELECT old_id, institution_code, collection_code, " +
+                              "catalogue_number, scientific_name, author, genus, species, subspecies, latitude, longitude,  " +
+                              "lat_long_precision, max_altitude, min_altitude, altitude_precision, min_depth, max_depth, depth_precision, " +
+                              "continent_ocean, country, state_province, county, collector_name, " + 
+                              "locality, year, month, day, other_collnum FROM raw_cache WHERE other_collnum = ?";
+                            
+                tableInfo = new DBTableInfo(100, this.getClass().getName(), "raw_cache", "id", "r");
                 
                 for (int i=0;i<colNames.length;i++)
                 {
@@ -114,22 +114,22 @@ public class GBIFCleanupResults extends BaseCleanupResults
              * @see edu.ku.brc.specify.dbsupport.cleanuptools.DataObjTableModel#addAdditionalRows(java.util.ArrayList)
              */
             @Override
-            protected void addAdditionalRows(final ArrayList<DBInfoBase> colDefItems,
-                                             final ArrayList<DataObjTableModelRowInfo> rowInfoList)
+            protected void addAdditionalRows(final ArrayList<DBInfoBase> colDefItemsArg,
+                                             final ArrayList<DataObjTableModelRowInfo> rowInfoListArg)
             {
                 Calendar cal = Calendar.getInstance();
                 
                 String cSQL = String.format("SELECT BarCD, GenusName, SpeciesName, SubspeciesName, " +
-                                "Latminenetq, Lngminenetq, LatLongFuente, AltMaxEtq, AltMinEtq, COUNTRY, STATE, MUNIC, Collectoragent1, " +
-                                "LocalityName, Datecollstandrd, CollNr " +
-                                "FROM conabio WHERE BarCD = '%s'", searchValue);
+                                            "Latminenetq, Lngminenetq, LatLongFuente, AltMaxEtq, AltMinEtq, COUNTRY, STATE, MUNIC, Collectoragent1, " +
+                                            "LocalityName, Datecollstandrd, CollNr " +
+                                            "FROM conabio WHERE BarCD = '%s'", searchValue);
                 
-                Connection conn = awg.getSrcDBConn();
+                Connection srcConn = awg.getSrcDBConn();
                 
                 Statement stmt  = null;
                 try
                 {
-                    stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+                    stmt = srcConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
                     
                     String    collNum = null;
                     ResultSet rs      = stmt.executeQuery(cSQL);
@@ -140,7 +140,8 @@ public class GBIFCleanupResults extends BaseCleanupResults
                         int inx   = 0;
                         int dbInx = 1;
                         
-                        row[inx++] = null;                  // id
+                        //row[inx++] = null;                  // id
+                        row[inx++] = null;                  // old_id
                         row[inx++] = null;                  // institution_code
                         row[inx++] = null;                  // collection_code
                         row[inx++] = rs.getObject(dbInx++); // catalogue_number
@@ -186,11 +187,11 @@ public class GBIFCleanupResults extends BaseCleanupResults
                             row[inx++] = day.toString(); // day
                         }
                         
-                        collNum    = rs.getString(dbInx++); // origcatnumber
+                        collNum    = rs.getString(dbInx++); // other_collnum
                         row[inx++] = collNum;
                         
                         values.add(row);
-                        rowInfoList.add(new DataObjTableModelRowInfo(rs.getInt(1), false, false));
+                        rowInfoListArg.add(new DataObjTableModelRowInfo(rs.getInt(1), false, false));
                     }
                     rs.close();
                     
@@ -215,7 +216,7 @@ public class GBIFCleanupResults extends BaseCleanupResults
             }
         };
         
-        newModel = new DataObjTableModel(awg.getSrcDBConn(), 100, model.getItems(), model.getHasDataList(), 
-                                        model.getSameValues(), model.getMapInx(), model.getIndexHash());
+        newModel = new DataObjTableModel(awg.getDstDBConn(), 100, model.getItems(), model.getHasDataList(), 
+                                         model.getSameValues(), model.getMapInx(), model.getIndexHash());
     }
 }

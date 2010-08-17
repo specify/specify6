@@ -581,6 +581,21 @@ public class CopyFromGBIF
             {
                 e.printStackTrace();
                 System.out.println("IOException adding Lucene Document: " + e.getMessage());
+                
+            } finally
+            {
+                
+                if (stmt != null)
+                {
+                    try
+                    {
+                        stmt.close();
+                    } catch (SQLException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+
             }
             
             Date end = new Date();
@@ -621,15 +636,20 @@ public class CopyFromGBIF
     
     public void testSearch()
     {
-        String querystr = "cepa";
+        Statement stmt = null;
+        
+        String querystr = "5729";
+        String term     = "cln";
         try
         {
+            stmt = srcDBConn.createStatement(ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
+            
             if (analyzer == null)
             {
                 analyzer = new StandardAnalyzer(Version.LUCENE_30);
             }
             reader = IndexReader.open(FSDirectory.open(INDEX_DIR), true);
-            Query q = new QueryParser(Version.LUCENE_30, "sp", analyzer).parse(querystr);
+            Query q = new QueryParser(Version.LUCENE_30, term, analyzer).parse(querystr);
             int hitsPerPage = 10;
             searcher = new IndexSearcher(reader);
             TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, true);
@@ -640,10 +660,29 @@ public class CopyFromGBIF
                 int docId = hits[i].doc;
                 Document d = searcher.doc(docId);
                 System.out.println((i + 1) + ". " + d.get("id"));
+                
+                String id = d.get("id");
+                
+                ResultSet         rs   = stmt.executeQuery("SELECT id, catalogue_number, genus, species, collector_num, collector_name, year, month, day FROM raw WHERE id = "+id);
+                ResultSetMetaData rsmd = rs.getMetaData();
+                
+                while (rs.next())
+                {
+                    for (int j=1;j<=rsmd.getColumnCount();j++)
+                    {
+                        System.out.print(rs.getObject(j) + "\t");
+                    }
+                    System.out.println();
+                }
+                rs.close();
             }
             searcher.close();
             reader.close();
             analyzer.close();
+            
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
             
         } catch (IOException e)
         {
@@ -652,6 +691,18 @@ public class CopyFromGBIF
         } catch (ParseException e)
         {
             e.printStackTrace();
+        } finally
+        {
+            if (stmt != null)
+            {
+                try
+                {
+                    stmt.close();
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                }
+            }
         }
 
     }
@@ -672,7 +723,7 @@ public class CopyFromGBIF
         } else
         {
             awg.createSrcDBConnection("localhost", "3306", "gbif", "root", "root");
-            awg.index();
+            //awg.index();
             awg.testSearch();
             awg.cleanup();
         }
