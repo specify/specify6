@@ -637,9 +637,13 @@ public class BuildSampleDatabase
             try
             {
                 HibernateUtil.attach(specifyAdminUser, session);
-                HibernateUtil.attach(userAgent, session);
+                //HibernateUtil.attach(userAgent, session); // rods - this doesn't work 8/17/10
                 
-                newUserAgent = (Agent)userAgent.clone();
+                List<?> agentList = session.createQuery("FROM Agent WHERE id = "+userAgent.getId()).list();
+                
+                Agent cloneableAgent = (Agent)agentList.get(0);
+                
+                newUserAgent = (Agent)cloneableAgent.clone();
                 specifyAdminUser.getAgents().add(newUserAgent);
                 newUserAgent.setSpecifyUser(specifyAdminUser);
                 
