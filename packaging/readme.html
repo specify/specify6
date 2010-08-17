@@ -1,5 +1,3 @@
-</body>
-</html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -7,212 +5,74 @@
 </head>
 <body>
 <h3>Release Notes<br />
-  Specify 6.2<br />
-  20 May 2010<br />
+  Specify 6.2.02<br />
+  17 August 2010<br />
   Specify Software Project</h3>
-<p>Bugs fixed:</p>
+<br>
+
+<h4>Highlights for this release:</h4>
 <ol>
-  <li>Preparation Type on Collection Object  forms can now switch from form to grid view&nbsp;&nbsp;2010-05-11 07:49:34 -0500&nbsp;&nbsp;(Bugzilla 6276).</li>
-<li>Yellow warning shield icon no longer displays next to grid mode in Agent form&nbsp;&nbsp;2010-05-10 15:08:49 -0500&nbsp;&nbsp;(6316).</li>
-<li>Information Request will no longer try to  'send email on save' to an agent without an email address&nbsp;&nbsp;2010-05-10 14:23:10 -0500&nbsp;&nbsp;(6370).</li>
-<li>System pick lists fields were not exported and imported for use in Schema Localizer, now they are&nbsp;&nbsp;2010-05-11 07:51:09 -0500&nbsp;&nbsp;(6410).</li>
-<li>Exception no longer appears when  ColletionObject (CO) RecordSet is dragged to a  Georeference plug-in&nbsp;&nbsp;2010-05-11 07:34:16 -0500&nbsp;&nbsp;(6617).</li>
-<li>Exception no longer occurs when CollectionObject is added or deleted in grid mode under Project subform&nbsp;&nbsp;2010-05-10 13:43:20 -0500&nbsp;&nbsp;(6808).</li>
-<li>Canceling the return of a Preparation now  re-enables the Return Loan button&nbsp;&nbsp;2010-05-11 07:52:29 -0500&nbsp;&nbsp;(7046).</li>
-<li>Can now save or delete a CO when auto number is turned on&nbsp;&nbsp;2010-05-10 10:35:37 -0500&nbsp;&nbsp;(7160).</li>
-<li>Information Request can now be dragged over RecordSet entries and work properly&nbsp;&nbsp;2010-05-10 15:10:49 -0500&nbsp;&nbsp;(7422).</li>
-<li>Naming a new collection the same as an existing collection now creates a new renamed collection&nbsp;&nbsp;2010-05-05 10:19:00 -0500&nbsp;&nbsp;(7466).</li>
-<li>BackupRestore application no longer remembers the wrong username on startup&nbsp;&nbsp;2010-05-10 10:23:40 -0500&nbsp;&nbsp;(7499).</li>
-<li>Canceling the IT credentials dialog for a downloaded database schema (version) update upon login no longer causes Specify to quit&nbsp;&nbsp;2010-05-10 13:29:17 -0500&nbsp;&nbsp;(7644).</li>
-<li> Resource Import/Export, with perms enabled, is inaccessible for some Full Access User&nbsp;&nbsp;2010-05-06 08:53:38 -0500&nbsp;&nbsp;(7679).</li>
-<li>Switching to a user that has performed a WorkBench DataSet upload  no longer causes Specify to freeze&nbsp;&nbsp;2010-04-26 02:44:51 -0500&nbsp;&nbsp;(7784, 7927).</li>
-<li>Can now  change the type of a report after initially saving it as a Report or Label&nbsp;&nbsp;2010-05-13 12:38:10 -0500&nbsp;&nbsp;(7850).</li>
-<li>WorkBench no longer spits an exception on clicking Google Earth button&nbsp;&nbsp;2010-05-13 12:20:30 -0500&nbsp;&nbsp;(7921).</li>
-<li>If the 'last selected node' preference setting points to a deleted node, the tree viewer no longer crashes on startup&nbsp;&nbsp;2010-04-23 00:31:31 -0500&nbsp;&nbsp;(7924).</li>
-<li>The taxon tree editor now checks HostTaxonID relationship to see if taxon nodes are deletable&nbsp;&nbsp;2010-04-25 23:10:45 -0500&nbsp;&nbsp;(7925).</li>
-<li>Can now open DataSet summary for Workbench&nbsp;&nbsp;2010-04-27 06:27:03 -0500&nbsp;&nbsp;(7930).</li>
-<li>If CatalogNumber doesn't have a formatter, an exception no longer occurs when it is selected in a query&nbsp;&nbsp;2010-05-07 12:08:39 -0500&nbsp;&nbsp;(7931).</li>
-<li>FixDBAfterLogin queries to check for duplicate GeoCoordinate and LocalityDetails no longer take a  long time&nbsp;&nbsp;2010-05-07 12:42:23 -0500&nbsp;&nbsp;(7932).</li>
-<li>Tree data display screens are now disabled during tree updates that take place during WorkBench uploads&nbsp;&nbsp;2010-05-12 09:58:21 -0500&nbsp;&nbsp;(7937).</li>
-<li>WorkBench Mapper prevents Agent table data fields from mixing with other tables, Agent Import uploads work now like &quot;Taxon Import Only&quot; uploads&nbsp;&nbsp;2010-05-11 14:40:40 -0500&nbsp;&nbsp;(7938).</li>
-<li>Generating an invoice for Gifts no longer causes an exception&nbsp;&nbsp;2010-05-13 12:14:46 -0500&nbsp;&nbsp;(7941).</li>
-<li>If a report resource is imported as a label, it will stay as a label and not turned into a report type&nbsp;&nbsp;2010-05-13 14:07:07 -0500&nbsp;&nbsp;(7943).</li>
+<li>The uploader is now able to pick to which table attachments apply.</li>
+<li>Resource Import/Export can import and export by user.</li>
+<li>The Preparation formview now has the option of showing to which loans its preparations belong.  This feature requires a manual change of the formsystem's xml (using Resource Import/Export).</li>
+<li>The SVN number of each release now appears in Specify's "About" dialog.</li>
+<li>Specify has also been localized in Portuguese.</li>
 </ol>
-<p><BR>
-  These tables and fields have been added to the Specify WorkBench database schema, making data in them available for uploading into Specify. As requested by various users.<BR>
-</p>
-<p>New  Table: Agent<br>
-  New  fields:</p>
-<blockquote>
-  <p><br>
-    Agent Type<br>
-    Abbreviation<br>
-    Date of Birth<br>
-    Date of Death<br>
-    Email<br>
-    First Name<br>
-    Initials<br>
-    Interests<br>
-    Job Title<br>
-    Last Name<br>
-    Middle Initials<br>
-    Remarks<br>
-    Title</p>
-</blockquote>
-<p>New  Agent Feature:</p>
-<p>Agents  of any type are now supported in the WorkBench for uploading. The Uploader no  longer assumes agents are persons when checking for duplication against existing  agents in a Specify database.  Last Name  fields labeled  ' xxx Last Name' where  xxx=Collector, Author, Sender, etc. can be used for Group, Organization and  Other names.</p>
-<p>Table:  Accession<br>
-  New  fields: <br>
-</p>
-<blockquote>
-  <p>PermitNumber 2 -  4.</p>
-</blockquote>
-<p>Table:  CollectionObject<br>
-  New  fields:            <br>
-</p>
-<blockquote>
-  <p>ObjectCondition<br>
-    Citation Title 1<br>
-    Citation Remarks  1<br>
-    Citation is  Figured 1<br>
-    Citation Title 2<br>
-    Citation Remarks  2<br>
-    Citation is  Figured 2<br>
-    YesNo3<br>
-    YesNo4<br>
-    YesNo5<br>
-    YesNo6</p>
-</blockquote>
-<p>Table:  Determination<br>
-  New  fields:<br>
-</p>
-<blockquote>
-  <p>SubspQualifier  1,2 and 3<br>
-    VarQualifier 1,2  and 3<br>
-    <br>
-    3  determinations allowed instead of just 2.</p>
-</blockquote>
-<p>New  Table: Field Notebook <br>
-  New  fields:<br>
-</p>
-<blockquote>
-  <p>Description<br>
-    EndDate<br>
-    Storage<br>
-    Name<br>
-    StartDate<br>
-    Owner  First Name<br>
-    Owner  Last Name<br>
-    Owner  Middle Initials<br>
-    Owner  Title</p>
-</blockquote>
-<p>New  Table: FieldNotebookPage <br>
-  New  fields:<br>
-</p>
-<blockquote>
-  <p>Description<br>
-    PageNumber<br>
-    ScanDate</p>
-</blockquote>
-<p><br>
-  New  Table: FieldNotebookPageSet <br>
-  New  Fields:<br>
-  </p>
-<blockquote>
-  <p>Description<br>
-    EndDate<br>
-    Method<br>
-    OrderNumber<br>
-    StartDate</p>
-</blockquote>
-<p>Table:  GeoCoordDetail <br>
-  New  Fields:<br>
-</p>
-<blockquote>
-  <p>GeoRefAccuracyUnits<br>
-    GeoRefDetRef<br>
-    GeoRefVerificationStatus<br>
-    Max  Uncertainty<br>
-    Max  Uncertainty Unit<br>
-    NoGeoRefBecause<br>
-    Original  Coord System<br>
-    Protocol<br>
-    Source</p>
-</blockquote>
-<p>New  Table: GeologicTimePeriod<br>
-  New  Fields:<br>
-</p>
-<blockquote>
-  <p>Era<br>
-    Period<br>
-    Epoch<br>
-    Age</p>
-</blockquote>
-<p>  Note:  when uploading GeologicTimePeriod data with CollectionObject data, at least one  field from PaleoContext must be mapped, even though the PaleoContext columns  don't need to be filled.</p>
-<p>New  Table: Journal   <br>
-  New  Fields:<br>
-</p>
-<blockquote>
-  <p>Journal  Name</p>
-</blockquote>
-<p>New  Table: Lithostrat    <br>
-  New  fields:<br>
-</p>
-<blockquote>
-  <p>Super Group<br>
-    Litho  Group<br>
-    Formation<br>
-    Member<br>
-    Bed</p>
-</blockquote>
-<p>Note:  when uploading Lithostrat data with CollectionObject data, at least one field  from PaleoContext must be mapped, even though the PaleoContext columns don't  need to be filled.</p>
-<p>Table:  Locality<br>
-  New  Fields:<br>
-</p>
-<blockquote>
-  <p>Citation Title 2  - 4<br>
-    Short  Name<br>
-    Original  Elevation Unit<br>
-    UtmDatum<br>
-    UtmEasting<br>
-    UtmNorthing<br>
-    UtmFalseEasting<br>
-    UtmFalseNorthing<br>
-    UtmOrigLatitude<br>
-    UtmOrigLongitude<br>
-    UtmScale<br>
-    UtmZone</p>
-</blockquote>
-<p>New  Table: OtherIdentifier <br>
-  New  Fields:<br>
-</p>
-<blockquote>
-  <p>Other  Identifier 1<br>
-    Other  Identifier Institution 1<br>
-    Other  Identifier 2<br>
-    Other  Identifier Institution 2<br>
-    Other  Identifier 3<br>
-    Other Identifier  Institution 3<br>
-    Other  Identifier 4<br>
-    Other  Identifier Institution 4</p>
-</blockquote>
-<p>New  Table: PaleoContext <br>
-  New  Fields:<br>
-</p>
-<blockquote>
-  <p>BottomDistance<br>
-    Direction<br>
-    DistanceUnits<br>
-    PositionState<br>
-    Remarks<br>
-    Text1<br>
-    Text2<br>
-    TopDistance</p>
-</blockquote>
-<p>&nbsp;</p>
-<p>  </p>
-<p><BR>
-  <BR>
-</p>
+<br>
+<h4>Complete list of changes:</h4>
+<ol>
+<li>Import File Splitter splits files into 5000 rows instead of 2000.&nbsp;&nbsp;2010-06-18 09:53:49 &nbsp;&nbsp;(7978).</li>
+<li>Attachments can now be deleted.&nbsp;&nbsp;2010-06-21 11:06:59 &nbsp;&nbsp;(7974).</li>
+<li>Attachment entry fixed for Taxon.&nbsp;&nbsp;2010-06-21 11:29:12 &nbsp;&nbsp;(7973).</li>
+<li>Option for printing a label for a specimen on the data entry form added when first saving it to the database.&nbsp;&nbsp;2010-06-22 09:26:59 &nbsp;&nbsp;(7962).</li>
+<li>Query builder incorrectly used 'Single Field' format.&nbsp;&nbsp;2010-06-25 07:18:28 &nbsp;&nbsp;(7983).</li>
+<li>Fullnames were not built correctly.&nbsp;&nbsp;2010-06-28 06:42:37 &nbsp;&nbsp;(7985).</li>
+<li>Administrator users were not deletable.&nbsp;&nbsp;2010-06-29 05:22:24 &nbsp;&nbsp;(7797).</li>
+<li>New Determinations are automatically set to be the Current Determination.&nbsp;&nbsp;2010-06-29 06:31:31 &nbsp;&nbsp;(7960).</li>
+<li>Editing a new Administrator User's password caused an exception.&nbsp;&nbsp;2010-06-29 07:12:13 &nbsp;&nbsp;(7979).</li>
+<li>Storage field in Prepatation data object was not being filled in after uploading a dataset.&nbsp;&nbsp;2010-07-07 01:07:02 &nbsp;&nbsp;(7450).</li>
+<li>Apply To All button on match settings form was not functioning.&nbsp;&nbsp;2010-07-07 01:12:24 &nbsp;&nbsp;(7838).</li>
+<li>Schema Merge when updating DB schema was broken.&nbsp;&nbsp;2010-07-17 04:24:57 &nbsp;&nbsp;(7994).</li>
+<li>Determination.IsCurrent was not validating correctly.&nbsp;&nbsp;2010-07-20 15:32:36 &nbsp;&nbsp;(7998).</li>
+<li>Security's Add Existing User feature was not functioning.&nbsp;&nbsp;2010-08-11 13:27:29 &nbsp;&nbsp;(8011).</li>
+<li>Some Collections created at various Discipline levels were not appearing in Security.&nbsp;&nbsp;2010-08-11 17:03:43 &nbsp;&nbsp;(8020).</li>
+<li>Collections were not being deleted in System Configuration.&nbsp;&nbsp;2010-08-12 11:22:36 &nbsp;&nbsp;(8007).</li>
+<li>Deleting an agent attached to a user in security is no longer allowed.&nbsp;&nbsp;2010-08-16 12:14:26 &nbsp;&nbsp;(8026).</li>
+<li>Adding a Discipline duplicated the Administrator user's agent in search results.&nbsp;&nbsp;2010-08-16 12:20:05 &nbsp;&nbsp;(8012).</li>
+<li>An error dialog was appearing upon entering LSID Preferences.&nbsp;&nbsp;2010-08-16 12:36:58 &nbsp;&nbsp;(8015).</li>
+<li>The 'View' window in Workbench could only be opened once.&nbsp;&nbsp;2010-08-16 13:23:44 &nbsp;&nbsp;(7788).</li>
+<li>After using 'View', 'Commit' failed to show confirm dialog.&nbsp;&nbsp;2010-08-16 13:26:54 &nbsp;&nbsp;(7787).</li>
+<li>Updating schema from 1.3 to 1.4 caused previously unhidden fields to become hidden.&nbsp;&nbsp;2010-08-16 13:28:24 &nbsp;&nbsp;(7997).</li>
+<li>Agent records were not uploaded correctly using the Workbench.&nbsp;&nbsp;2010-08-16 13:29:18 &nbsp;&nbsp;(7789).</li>
+<li>Importing agent-only fields with fields from other tables is no longer permitted.&nbsp;&nbsp;2010-08-16 13:42:00 &nbsp;&nbsp;(7945).</li>
+<li>New Information Requests now bring up a dialog allowing the user to select a Recordset or enter Catalog Number as sources.&nbsp;&nbsp;2010-08-16 13:44:09 &nbsp;&nbsp;(7993).</li>
+<li>Importing forms at the user level has been implemented.&nbsp;&nbsp;2010-08-16 13:45:58 &nbsp;&nbsp;(7996).</li>
+<li>Users could not edit permissions for groups in Security.&nbsp;&nbsp;2010-08-16 13:48:06 &nbsp;&nbsp;(7987).</li>
+<li>Users saw an exception if an incorrect file name was entered for importing.&nbsp;&nbsp;2010-08-16 13:49:19 &nbsp;&nbsp;(7999).</li>
+<li>Text fields are no longer limited to 32 characters in PaleoContext table.&nbsp;&nbsp;2010-08-16 13:50:32 &nbsp;&nbsp;(7745).</li>
+<li>Tooltips were improved for new security-user buttons.&nbsp;&nbsp;2010-08-16 13:54:21 &nbsp;&nbsp;(7191).</li>
+<li>Preference Pane for Loans was enabled in Security for user groups.&nbsp;&nbsp;2010-08-16 13:55:29 &nbsp;&nbsp;(7295).</li>
+<li>Querying "Start Date (Month)" with a "0" before the number caused an exception.&nbsp;&nbsp;2010-08-16 13:57:39 &nbsp;&nbsp;(7935).</li>
+<li>Users received a warning about printing labels upon saving when Generate Label option was not present.&nbsp;&nbsp;2010-08-16 13:58:06 &nbsp;&nbsp;(8000).</li>
+<li>Users could add and delete Collection Objects to Accession records even though the records were in View mode.&nbsp;&nbsp;2010-08-16 13:59:28 &nbsp;&nbsp;(7800).</li>
+<li>Exporting Grid to MS Excel in the Query Results was not functioning.&nbsp;&nbsp;2010-08-16 14:00:12 &nbsp;&nbsp;(7294).</li>
+<li>Security redundantly included Tools for "Collection Relationships" and "Edit Collection Relationships".&nbsp;&nbsp;2010-08-16 14:00:58 &nbsp;&nbsp;(8004).</li>
+<li>Users could not print successfully the search results grid from a Record Set.&nbsp;&nbsp;2010-08-16 14:05:11 &nbsp;&nbsp;(7956).</li>
+<li>A feature allowing users to see to which Loans a Collection Object is attached was implemented (requires manually modifying forms' XML).&nbsp;&nbsp;2010-08-16 15:17:31 &nbsp;&nbsp;(6400).</li>
+<li>Deleting a division is now possible.&nbsp;&nbsp;2010-08-16 15:21:57 &nbsp;&nbsp;(7884).</li>
+<li>Uploads containing a Preparation agent but not PrepType were halting.&nbsp;&nbsp;2010-08-16 15:24:45 &nbsp;&nbsp;(7866).</li>
+<li>"0" can now be be entered as a criterion in the QueryBuilder.&nbsp;&nbsp;2010-08-16 15:32:24 &nbsp;&nbsp;(8025).</li>
+<li>Users were able to delete their own login "user" while they were logged in as that user.&nbsp;&nbsp;2010-08-16 15:39:00 &nbsp;&nbsp;(8030).</li>
+<li>Users were unable to change the name of new Tree Definition items.&nbsp;&nbsp;2010-08-16 15:49:10 &nbsp;&nbsp;(7981).</li>
+<li>An error preventing uploading Agent-only datasets with attachments was resolved.&nbsp;&nbsp;2010-08-16 16:04:22 &nbsp;&nbsp;(8018).</li>
+<li>Opening the Workbench no longer reduces the functionality of the search results page.&bsp;&nbsp;2010-08-17 09:49:59 &nbsp;&nbsp;(8034).</li>
+<li>Attaching an existing agent to a new user in Security duplicated that agent in search results&nbsp;&nbsp;2010-08-17 10:33:31 &nbsp;&nbsp;(8031).</li>
+<li>Users could not add a third division after adding a second division from the perspective of a single division.&nbsp;&nbsp;2010-08-17 14:35:01 &nbsp;&nbsp;(8032)</li>
+<li>Adding an existing user in Security, as well as the accompanying agent-cloning, now functions without unneeded duplication of Agent records.&nbsp;&nbsp;2010-08-17 12:34:38 &nbsp;&nbsp;(8027).</li>
+</ol>
+<br>
+<br>
+<br>
+<br>
 </body>
 </html>
