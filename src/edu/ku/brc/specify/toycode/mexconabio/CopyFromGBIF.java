@@ -68,7 +68,7 @@ public class CopyFromGBIF
     // Lucene Indexing
     //-------------------------------
     
-    protected File         INDEX_DIR = new File("index-gbif");
+    protected File         INDEX_DIR = new File("index-gbif2");
     
     protected IndexReader  reader;
     protected Searcher     searcher;
@@ -530,20 +530,24 @@ public class CopyFromGBIF
                 ResultSet         rs   = stmt.executeQuery("SELECT id, catalogue_number, genus, species, collector_num, collector_name, year, month, day FROM raw");// LIMIT 100000,1000");
                 ResultSetMetaData rsmd = rs.getMetaData();
                 
+                StringBuilder sb = new StringBuilder();
                 while (rs.next())
                 {
                     String   id  = rs.getString(1);
                     Document doc = new Document();
                     doc.add(new Field("id", id.toString(), Field.Store.YES, Field.Index.NO));
                     
+                    sb.setLength(0);
                     for (int i=2;i<=rsmd.getColumnCount();i++)
                     {
                         String val = rs.getString(i);
                         if (StringUtils.isNotEmpty(val))
                         {
-                            doc.add(new Field(fldNames[i-1], val, Field.Store.NO, Field.Index.ANALYZED));
+                            sb.append(val);
+                            sb.append(' ');
                         }
                     }
+                    doc.add(new Field("contents", sb.toString(), Field.Store.NO, Field.Index.ANALYZED));
                     
                     writer.addDocument(doc);
                     
@@ -638,8 +642,8 @@ public class CopyFromGBIF
     {
         Statement stmt = null;
         
-        String querystr = "5729";
-        String term     = "cln";
+        String querystr = "Andrew AND Bentley AND Apogon AND angustatus";
+        String term     = "contents";
         try
         {
             stmt = srcDBConn.createStatement(ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
@@ -649,6 +653,8 @@ public class CopyFromGBIF
                 analyzer = new StandardAnalyzer(Version.LUCENE_30);
             }
             reader = IndexReader.open(FSDirectory.open(INDEX_DIR), true);
+            
+            long startTime = System.currentTimeMillis();
             Query q = new QueryParser(Version.LUCENE_30, term, analyzer).parse(querystr);
             int hitsPerPage = 10;
             searcher = new IndexSearcher(reader);
@@ -676,6 +682,7 @@ public class CopyFromGBIF
                 }
                 rs.close();
             }
+            System.out.println(String.format("Time: %8.2f", (System.currentTimeMillis() - startTime) / 1000.0));
             searcher.close();
             reader.close();
             analyzer.close();
