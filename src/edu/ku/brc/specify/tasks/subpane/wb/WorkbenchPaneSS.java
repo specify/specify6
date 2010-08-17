@@ -999,9 +999,9 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         });
         //compareSchemas();
-    	buildValidator();
         if (doIncrementalValidation)
         {
+        	buildValidator();
         	validateRows(0, workbench.getWorkbenchRows().size()-1);
         }
     }
