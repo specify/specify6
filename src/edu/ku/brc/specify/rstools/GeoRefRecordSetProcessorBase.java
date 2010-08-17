@@ -226,12 +226,18 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
      */
     public static String getNameForRank(final Geography geo, final int rankId)
     {
-        if (geo.getRankId() == rankId)
+        if (geo.getRankId() != null)
         {
-            return geo.getName();
-        }
-        
-        if (geo.getRankId() < rankId)
+            if (geo.getRankId() == rankId)
+            {
+                return geo.getName();
+            }
+            
+            if (geo.getRankId() < rankId)
+            {
+                return null;
+            }
+        } else
         {
             return null;
         }
