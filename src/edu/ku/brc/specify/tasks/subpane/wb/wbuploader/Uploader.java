@@ -793,9 +793,9 @@ public class Uploader implements ActionListener, KeyListener
         return lines;
     }
 
-    public Uploader(DB db, UploadData importData, final WorkbenchPaneSS wbSS) throws UploaderException
+    public Uploader(DB db, UploadData importData, final WorkbenchPaneSS wbSS, boolean isValidator) throws UploaderException
     {
-    	this(db, importData, wbSS, wbSS.getWorkbench().getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
+    	this(db, importData, wbSS, wbSS.getWorkbench().getWorkbenchTemplate().getWorkbenchTemplateMappingItems(), isValidator);
     }
 
     /**
@@ -803,7 +803,8 @@ public class Uploader implements ActionListener, KeyListener
      * @param uploadData
      * @throws UploaderException
      */
-    public Uploader(DB db, UploadData importData, final WorkbenchPaneSS wbSS, final java.util.Collection<WorkbenchTemplateMappingItem> wbItems)
+    public Uploader(DB db, UploadData importData, final WorkbenchPaneSS wbSS, final java.util.Collection<WorkbenchTemplateMappingItem> wbItems,
+    		boolean isValidator)
             throws UploaderException
     {
         this.db = db;
@@ -829,7 +830,10 @@ public class Uploader implements ActionListener, KeyListener
         orderUploadTables();
         buildUploadTableParents();
         reOrderUploadTables();
-        currentUpload = this;
+        if (!isValidator)
+        {	
+        	currentUpload = this;
+        }
     }
 
     /**

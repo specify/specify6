@@ -3578,7 +3578,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
             Uploader.lockApp();
             spreadSheet.clearSorter();
-            datasetUploader = new Uploader(db, new UploadData(maps, workbench.getWorkbenchRowsAsList()), this);
+            datasetUploader = new Uploader(db, new UploadData(maps, workbench.getWorkbenchRowsAsList()), this, false);
             Vector<UploadMessage> structureErrors = datasetUploader.verifyUploadability();
             if (structureErrors.size() > 0) 
             { 
@@ -4613,6 +4613,10 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     public List<UploadTable> getAttachableTables()
     {
+    	if (workbenchValidator == null)
+    	{
+    		buildValidator();
+    	}
     	if (workbenchValidator != null)
     	{
     		return workbenchValidator.getUploader().getAttachableTablesInUse();

@@ -1991,7 +1991,7 @@ public class TemplateEditor extends CustomDialog
         {
         	DB db = new DB();
     		Vector<UploadMappingDef> maps = importMapper.getImporterMapping();
-        	Uploader result = new Uploader(db, new UploadData(maps, null), null, mappings);
+        	Uploader result = new Uploader(db, new UploadData(maps, null), null, mappings, true);
         	Vector<UploadMessage> structureErrors = result.verifyUploadability();
         	if (structureErrors.size() > 0) 
         	{ 
