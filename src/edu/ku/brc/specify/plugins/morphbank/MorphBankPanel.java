@@ -646,7 +646,7 @@ public class MorphBankPanel extends UIPluginBase
 							getSubmitterCredentials(), getOwnerCredentials());
 
 					String requestFileName = UIRegistry.getAppDataDir()
-							+ File.pathSeparator + colObj.getCatalogNumber()
+							+ File.separator + colObj.getCatalogNumber()
 							+ ".xml";
 					FileWriter outFile = new FileWriter(requestFileName);
 					PrintWriter out = new PrintWriter(outFile);

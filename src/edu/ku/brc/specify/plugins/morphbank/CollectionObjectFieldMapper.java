@@ -88,6 +88,19 @@ public class CollectionObjectFieldMapper
 
 	/**
 	 * @param collectionObjectId
+	 * @param dwcMapper
+	 * @throws Exception
+	 */
+	public CollectionObjectFieldMapper(Integer collectionObjectId, final DwcMapper dwcMapper) throws Exception
+	{
+		this.collectionObjectId = collectionObjectId;
+		buildQNames();
+		this.dwcMapper = dwcMapper;
+		spec = new DarwinCoreSpecimen(dwcMapper);
+		spec.setCollectionObjectId(collectionObjectId);	
+	}
+	/**
+	 * @param collectionObjectId
 	 * @throws Exception
 	 */
 	public void setCollectionObjectId(Integer collectionObjectId) throws Exception
@@ -298,8 +311,9 @@ public class CollectionObjectFieldMapper
 		try
 		{
 			String sql = "select at.AttachmentLocation, at.CopyrightHolder, at.CopyrightDate, at.MimeType, at.Credit, at.OrigFilename, " +
-					"at.Title, at.height, at.width, at.resolution, at.magnification, at.creativeCommons, coat.remarks, coat.ordinal "
-				+ "from collectionobjectattachment coat inner join attachment at on at.AttachmentID = coat.AttachmentID where "
+					"at.Title, atia.height, atia.width, atia.resolution, atia.magnification, atia.creativeCommons, coat.remarks, coat.ordinal "
+				+ "from collectionobjectattachment coat inner join attachment at on at.AttachmentID = coat.AttachmentID left join "
+				+ "attachmentimageattribute atia on atia.attachmentimageattributeid = at.attachmentimageattributeid where "
 				+ "at.MimeType like 'image/%' and coat.CollectionObjectID = " + collectionObjectId;
 			stmt = getConnection().createStatement();
 			rs = stmt.executeQuery(sql);

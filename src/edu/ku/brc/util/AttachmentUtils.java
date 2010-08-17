@@ -218,6 +218,8 @@ public class AttachmentUtils
         }
         
         MimetypesFileTypeMap mimeMap = (MimetypesFileTypeMap)FileTypeMap.getDefaultFileTypeMap();
+        mimeMap.addMimeTypes("image/tif    tif");
+        mimeMap.addMimeTypes("image/tif    TIF");
         mimeMap.addMimeTypes("image/png    png");
         mimeMap.addMimeTypes("application/vnd.google-earth.kml+xml kml");
 
