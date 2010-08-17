@@ -579,6 +579,7 @@ public class NavigationTreeMgr
         
         // discipline to which the user's being added
         Discipline parentDiscipline = getParentDiscipline(grpNode);
+        Division   parentDivision   = parentDiscipline.getDivision();
        
         //final Division   division   = parentDiscipline.getDivision();
         //final Discipline discipline = parentDiscipline;
@@ -687,7 +688,7 @@ public class NavigationTreeMgr
                         session.attach(userAgent);
                     }
                     
-                    if (!fndParentDiv && parentDiscipline.getId().equals(userAgent.getDivision().getId()))
+                    if (!fndParentDiv && parentDivision.getId().equals(userAgent.getDivision().getId()))
                     {
                         fndParentDiv = true;
                     }

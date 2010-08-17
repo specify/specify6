@@ -513,6 +513,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                         
                         dupAgent.setAgentId(agt.getId());
                         dupAgent.setVersion(agt.getVersion());
+                        dupAgent.setDivision(agt.getDivision());
                         
                         cachedAgents.add(dupAgent);
                         
