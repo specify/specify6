@@ -276,6 +276,11 @@ public class Uploader implements ActionListener, KeyListener
     protected int rowUploading;
 
     /**
+     * the index of the row to start uploading at 
+     */
+    protected int uploadStartRow;
+    
+    /**
      * The workbenchrowimages for the current workbench row
      */
     protected List<WorkbenchRowImage> 				imagesForRow = new Vector<WorkbenchRowImage>();
@@ -2399,14 +2404,22 @@ public class Uploader implements ActionListener, KeyListener
             {
                 t.prepareToUpload();
             }
-            if (uploadedObjectViewer != null)
-            {
-            	uploadedObjectViewer.closeView();
-            }
             newAttachments.clear();
             // But may want option to ONLY upload rows that were skipped...
             skippedRows.clear();
             messages.clear();
+            uploadStartRow = 0;
+        } else
+        {
+        	uploadStartRow = rowUploading;
+        	if (wbSS.getWorkbench().getRow(rowUploading).getUploadStatus() == WorkbenchRow.UPLD_SUCCESS)
+        	{
+        		uploadStartRow++; //never should be more than row behind.
+        	}
+        }
+        if (uploadedObjectViewer != null)
+        {
+        	uploadedObjectViewer.closeView();
         }
         newMessages.clear();
     }
@@ -3565,7 +3578,7 @@ public class Uploader implements ActionListener, KeyListener
                         getResourceString("WB_UPLOAD_UPLOADING") + " " + getResourceString("WB_ROW"), false);
                     try
                     {
-                        for (rowUploading = 0; rowUploading < uploadData.getRows();)
+                        for (rowUploading = uploadStartRow; rowUploading < uploadData.getRows();)
                         {
                         	if (cancelled)
                         	{
@@ -3619,7 +3632,10 @@ public class Uploader implements ActionListener, KeyListener
 
                             wbSS.getWorkbench().getRow(rowUploading).setUploadStatus(
                                 WorkbenchRow.UPLD_SUCCESS);
-                            rowUploading++;
+                            if (!cancelled)
+                            {
+                            	rowUploading++;
+                            }
                             showUploadProgress(rowUploading);
                         }
                     }
@@ -3628,7 +3644,7 @@ public class Uploader implements ActionListener, KeyListener
                         setOpKiller(ex);
                         return false;
                     }
-                    success = !cancelled || (cancelled && !paused);
+                    success = !cancelled || (cancelled && paused);
                     return success;
                 }
 
@@ -3650,7 +3666,13 @@ public class Uploader implements ActionListener, KeyListener
                     statusBar.setText("");
                     if (success)
                     {
-                        setCurrentOp(Uploader.SUCCESS);
+                        if (!paused)
+                        {
+                        	setCurrentOp(Uploader.SUCCESS);
+                        } else
+                        {
+                        	setCurrentOp(Uploader.SUCCESS_PARTIAL);
+                        }
                     }
                     else
                     {
