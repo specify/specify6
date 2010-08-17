@@ -31,13 +31,22 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.*;
-import org.apache.lucene.index.*;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.search.*;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
@@ -47,12 +56,24 @@ public class CopyFromGBIF
 {
 
     private Connection dbConn    = null;
+    private Connection dbConn2   = null;
     private Connection srcDBConn = null;
     
     @SuppressWarnings("unused")
     private String     dbName;
     @SuppressWarnings("unused")
     private String     srcDBName = null;
+    
+    //-------------------------------
+    // Lucene Indexing
+    //-------------------------------
+    
+    protected File         INDEX_DIR = new File("index-gbif");
+    
+    protected IndexReader  reader;
+    protected Searcher     searcher;
+    protected Analyzer     analyzer;
+    
     
     /**
      * @param server
@@ -84,8 +105,9 @@ public class CopyFromGBIF
         String connStr = "jdbc:mysql://%s:%s/%s?characterEncoding=UTF-8&autoReconnect=true";
         try
         {
-            dbConn = DriverManager.getConnection(String.format(connStr, server, port, dbName),
-                    username, pwd);
+            dbConn = DriverManager.getConnection(String.format(connStr, server, port, dbName), username, pwd);
+            dbConn2 = DriverManager.getConnection(String.format(connStr, server, port, dbName), username, pwd);
+            
         } catch (SQLException e)
         {
             e.printStackTrace();
@@ -126,7 +148,7 @@ public class CopyFromGBIF
      */
     public void process()
     {
-        boolean doQueryForCollNum = false;
+        boolean doQueryForCollNum = true;
         
         String pSQL = "INSERT INTO raw (old_id,data_provider_id,data_resource_id,resource_access_point_id, institution_code, collection_code, " +
                       "catalogue_number, scientific_name, author, rank, kingdom, phylum, class, order_rank, family, genus, species, subspecies, latitude, longitude,  " +
@@ -162,7 +184,7 @@ public class CopyFromGBIF
         
         Statement         gStmt = null;
         PreparedStatement pStmt = null;
-        Statement         stmt  = null;
+        PreparedStatement stmt  = null;
         
         try
         {
@@ -170,8 +192,8 @@ public class CopyFromGBIF
             
             pStmt = srcDBConn.prepareStatement(pSQL);
             
-            stmt = dbConn.createStatement(ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
-            stmt.setFetchSize(Integer.MIN_VALUE);
+            stmt = dbConn2.prepareStatement("SELECT identifier FROM identifier_record WHERE occurrence_id = ? AND identifier_type = 3");
+            //stmt.setFetchSize(Integer.MIN_VALUE);
             
             
             System.out.println("Total Records: "+totalRecs);
@@ -185,14 +207,14 @@ public class CopyFromGBIF
             
             ResultSet         gRS        = gStmt.executeQuery(fullSQL);
             ResultSetMetaData rsmd       = gRS.getMetaData();
-            int               lastColInx = rsmd.getColumnCount();
+            int               lastColInx = rsmd.getColumnCount() + (doQueryForCollNum ? 1 : 0);
             
             while (gRS.next())
             {
                 int id = gRS.getInt(1);
                 pStmt.setObject(1, id);
                 
-                for (int i=2;i<rsmd.getColumnCount();i++)
+                for (int i=2;i<=rsmd.getColumnCount();i++)
                 {
                     Object obj = gRS.getObject(i);
                     pStmt.setObject(i, obj);
@@ -201,7 +223,10 @@ public class CopyFromGBIF
                 String collNum = null;
                 if (doQueryForCollNum)
                 {
-                    ResultSet rs = stmt.executeQuery(String.format("SELECT identifier FROM identifier_record WHERE id = %d identifier_type = 3", id));
+                    //String tmpSQL = String.format("SELECT identifier FROM identifier_record WHERE occurrence_id = %d AND identifier_type = 3", id);
+                    //System.out.println(tmpSQL);
+                    stmt.setInt(1, id);
+                    ResultSet rs = stmt.executeQuery();
                     if (rs.next())
                     {
                         collNum = rs.getString(1);
@@ -295,6 +320,7 @@ public class CopyFromGBIF
             }
         }
         System.out.println("Done transferring.");
+        pw.println("Done transferring.");
         
         /*
         int     count = 0;
@@ -430,6 +456,10 @@ public class CopyFromGBIF
             {
                 dbConn.close();
             }
+            if (dbConn2 != null)
+            {
+                dbConn2.close();
+            }
             if (srcDBConn != null)
             {
                 srcDBConn.close();
@@ -457,57 +487,194 @@ public class CopyFromGBIF
         return srcDBConn;
     }
 
-    protected File         INDEX_DIR = new File("index-gbif");
     
-    protected IndexReader  reader;
-    protected Searcher     searcher;
-    protected Analyzer     analyzer;
+    /**
+     * 
+     */
     public void index()
     {
-        
+        IndexWriter writer = null;
         try
         {
-            IndexWriter writer = new IndexWriter(FSDirectory.open(INDEX_DIR), new StandardAnalyzer(Version.LUCENE_30), true, IndexWriter.MaxFieldLength.LIMITED);
+            analyzer = new StandardAnalyzer(Version.LUCENE_30);
+            
+            FileUtils.deleteDirectory(INDEX_DIR);
+            
 
             System.out.println("Indexing to directory '" + INDEX_DIR + "'...");
             
-            Integer   id  = 0;
+            long totalRecs     = BasicSQLUtils.getCount(srcDBConn, "SELECT COUNT(*) FROM raw");
+            long procRecs      = 0;
+            long startTime     = System.currentTimeMillis();
+            int  secsThreshold = 0;
             
-            Document  doc = new Document();
-
-            doc.add(new Field("id", id.toString(), Field.Store.YES, Field.Index.NO));
+            PrintWriter pw = null;
             
-            try 
-            { 
+            final double HRS = 1000.0 * 60.0 * 60.0; 
+            
+            Statement stmt = null;
+            
+            try
+            {
+                writer = new IndexWriter(FSDirectory.open(INDEX_DIR), analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
                 
-                writer.addDocument(doc);
+                pw   = new PrintWriter("gbif.log");
+                
+                System.out.println("Total Records: "+totalRecs);
+                pw.println("Total Records: "+totalRecs);
+                
+                stmt = srcDBConn.createStatement(ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
+                stmt.setFetchSize(Integer.MIN_VALUE);
+                
+                String[]          fldNames = {"id", "cn", "gn", "sp", "cln", "ctr", "yr", "mn", "dy"};
+                ResultSet         rs   = stmt.executeQuery("SELECT id, catalogue_number, genus, species, collector_num, collector_name, year, month, day FROM raw");// LIMIT 100000,1000");
+                ResultSetMetaData rsmd = rs.getMetaData();
+                
+                while (rs.next())
+                {
+                    String   id  = rs.getString(1);
+                    Document doc = new Document();
+                    doc.add(new Field("id", id.toString(), Field.Store.YES, Field.Index.NO));
+                    
+                    for (int i=2;i<=rsmd.getColumnCount();i++)
+                    {
+                        String val = rs.getString(i);
+                        if (StringUtils.isNotEmpty(val))
+                        {
+                            doc.add(new Field(fldNames[i-1], val, Field.Store.NO, Field.Index.ANALYZED));
+                        }
+                    }
+                    
+                    writer.addDocument(doc);
+                    
+                    procRecs++;
+                    if (procRecs % 10000 == 0)
+                    {
+                        long endTime     = System.currentTimeMillis();
+                        long elapsedTime = endTime - startTime;
+                        
+                        double timePerRecord      = (elapsedTime / procRecs); 
+                        
+                        double hrsLeft = ((totalRecs - procRecs) * timePerRecord) / HRS;
+                        
+                        int seconds = (int)(elapsedTime / 60000.0);
+                        if (secsThreshold != seconds)
+                        {
+                            secsThreshold = seconds;
+                            
+                            String msg = String.format("Elapsed %8.2f hr.mn   Percent: %6.3f  Hours Left: %8.2f ", 
+                                    ((double)(elapsedTime)) / HRS, 
+                                    100.0 * ((double)procRecs / (double)totalRecs),
+                                    hrsLeft);
+                            System.out.println(msg);
+                            pw.println(msg);
+                            pw.flush();
+                        }
+                    }
+                }
 
-            } catch (IOException e) {
-
-            System.out.println("IOException adding Lucene Document: " + e.getMessage());
-
+            } catch (SQLException sqlex) 
+            {
+                sqlex.printStackTrace();
+                
+            } catch (IOException e) 
+            {
+                e.printStackTrace();
+                System.out.println("IOException adding Lucene Document: " + e.getMessage());
             }
             
-            System.out.println("Optimizing...");
-            writer.optimize();
-            writer.close();
-
             Date end = new Date();
             //System.out.println(end.getTime() - start.getTime() + " total milliseconds");
 
         } catch (IOException e)
         {
+            e.printStackTrace();
+            
             System.out.println(" caught a " + e.getClass() + "\n with message: " + e.getMessage());
+            
+        } finally
+        {
+            analyzer.close();
+            analyzer = null;
+            
+            if (writer != null)
+            {
+                try
+                {
+                    System.out.println("Optimizing...");
+                    writer.optimize();
+                    writer.close();
+                    System.out.println("Done Optimizing.");
+                    
+                } catch (CorruptIndexException e)
+                {
+                    e.printStackTrace();
+                    
+                } catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+                writer = null;
+            }
         }
+    }
+    
+    public void testSearch()
+    {
+        String querystr = "cepa";
+        try
+        {
+            if (analyzer == null)
+            {
+                analyzer = new StandardAnalyzer(Version.LUCENE_30);
+            }
+            reader = IndexReader.open(FSDirectory.open(INDEX_DIR), true);
+            Query q = new QueryParser(Version.LUCENE_30, "sp", analyzer).parse(querystr);
+            int hitsPerPage = 10;
+            searcher = new IndexSearcher(reader);
+            TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, true);
+            searcher.search(q, collector);
+            ScoreDoc[] hits = collector.topDocs().scoreDocs;
+            System.out.println("Found " + hits.length + " hits.");
+            for(int i=0;i<hits.length;++i) {
+                int docId = hits[i].doc;
+                Document d = searcher.doc(docId);
+                System.out.println((i + 1) + ". " + d.get("id"));
+            }
+            searcher.close();
+            reader.close();
+            analyzer.close();
+            
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+            
+        } catch (ParseException e)
+        {
+            e.printStackTrace();
+        }
+
     }
     
     //------------------------------------------------------------------------------------------
     public static void main(String[] args)
     {
         CopyFromGBIF awg = new CopyFromGBIF();
-        awg.createDBConnection("lm2gbdb.nhm.ku.edu", "3399", "gbc20100726", "rods", "specify4us");
-        awg.createSrcDBConnection("localhost", "3306", "gbif", "root", "root");
-        awg.process();
-        awg.cleanup();
+        
+        boolean doBuild = false;
+        
+        if (doBuild)
+        {
+            awg.createDBConnection("lm2gbdb.nhm.ku.edu", "3399", "gbc20100726", "rods", "specify4us");
+            awg.createSrcDBConnection("localhost", "3306", "gbif", "root", "root");
+            awg.process();
+            awg.cleanup();
+        } else
+        {
+            awg.createSrcDBConnection("localhost", "3306", "gbif", "root", "root");
+            awg.index();
+            awg.testSearch();
+            awg.cleanup();
+        }
     }
 }
