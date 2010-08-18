@@ -1480,8 +1480,11 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         if (!this.ownerQuery.isPromptMode())
         {
             isDisplayedCkbx = createCheckBox("isDisplayedCkbx");
+            dcn = validator.hookupComponent(isDisplayedCkbx, "idcb",
+                    UIValidator.Type.Changed, "", true);
             isDisplayedCkbx.addFocusListener(focusListener);
             isDisplayedCkbx.addKeyListener(enterListener);
+            isDisplayedCkbx.addActionListener(dcn);
             isDisplayedCkbx.addActionListener(new ActionListener() {
 
 				/* (non-Javadoc)
@@ -1504,9 +1507,15 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 				}
             });
             isPromptCkbx = createCheckBox("isPromptCkbx");
+            dcn = validator.hookupComponent(isPromptCkbx, "ipcb",
+                    UIValidator.Type.Changed, "", true);
+            isPromptCkbx.addActionListener(dcn);
             isPromptCkbx.addFocusListener(focusListener);
             isPromptCkbx.addKeyListener(enterListener);
             isEnforcedCkbx = createCheckBox("isEnforcedCkbx");
+            dcn = validator.hookupComponent(isEnforcedCkbx, "ipcb",
+                    UIValidator.Type.Changed, "", true);
+            isEnforcedCkbx.addActionListener(dcn);
             isEnforcedCkbx.addFocusListener(focusListener);
             isEnforcedCkbx.addKeyListener(enterListener);
             closeBtn = createIconBtn("Close", "QB_REMOVE_FLD", new ActionListener()
