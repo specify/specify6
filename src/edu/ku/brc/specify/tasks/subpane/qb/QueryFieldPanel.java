@@ -1513,7 +1513,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             isPromptCkbx.addFocusListener(focusListener);
             isPromptCkbx.addKeyListener(enterListener);
             isEnforcedCkbx = createCheckBox("isEnforcedCkbx");
-            dcn = validator.hookupComponent(isEnforcedCkbx, "ipcb",
+            dcn = validator.hookupComponent(isEnforcedCkbx, "iecb",
                     UIValidator.Type.Changed, "", true);
             isEnforcedCkbx.addActionListener(dcn);
             isEnforcedCkbx.addFocusListener(focusListener);
