@@ -29,6 +29,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -43,6 +45,7 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.apache.commons.lang.StringUtils;
@@ -278,6 +281,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     {
                         if (doSchemaUpdate || doInsert)
                         {
+                            //SpecifySchemaUpdateService.attachUnhandledException();
+                            //BasicSQLUtils.setSkipTrackExceptions(true);
+                            
                             if (!askToUpdateSchema())
                             {
                                 CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
@@ -311,7 +317,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                     }
                                 }
                                 dbmsMgr.close();
-        
+                                
                                 frame = new ProgressFrame(getResourceString("UPDATE_SCHEMA_TITLE"));
                                 frame.adjustProgressFrame();
                                 frame.getCloseBtn().setVisible(false);
@@ -321,6 +327,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 frame.setOverall(0, OVERALL_TOTAL);
                                 
                                 UIHelper.centerAndShow(frame);
+                                
+                                //BasicSQLUtils.setSkipTrackExceptions(true); // Needs to be reset
                                 
                                 boolean ok = manuallyFixDB(DatabaseDriverInfo.getDriver(dbc.getDriver()), dbc.getServerName(), dbc.getDatabaseName(), itUserNamePassword.first,itUserNamePassword.second);
                                 if (!ok)
@@ -345,6 +353,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                 CommandDispatcher.dispatch(new CommandAction(APP, APP_REQ_EXIT, null));
                                 return SchemaUpdateType.Error;
                             }
+                            
+                            //UIHelper.attachUnhandledException();
+                            //BasicSQLUtils.setSkipTrackExceptions(false);
                         }
                         
                         if (doInsert || (appVerFromDB == null && schemaVerFromDB == null))
@@ -366,6 +377,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 } catch (SQLException e)
                 {
                     e.printStackTrace();
+                    //processUnhandledException(e);
                     
                 } finally
                 {
@@ -375,6 +387,78 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         }
         return SchemaUpdateType.Error;
     }
+    
+    /**
+     * @param e
+     */
+    private static void processUnhandledException(@SuppressWarnings("unused") final Throwable throwable)
+    {
+        /*if (UIHelper.isExceptionOKToThrow(throwable))
+        {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    String msg = "There was an error while updating the schema.";
+                    UnhandledExceptionDialog dlg = new UnhandledExceptionDialog(msg, throwable);
+                    UIHelper.centerAndShow(dlg);
+                }
+            });
+        }*/
+    }
+    
+    /**
+     * Creates and attaches the UnhandledException handler for piping them to the dialog
+     */
+    @SuppressWarnings("unused")
+    private static void attachUnhandledException()
+    {
+        log.debug("attachUnhandledException "+Thread.currentThread().getName()+ " "+Thread.currentThread().hashCode());
+        
+        Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler()
+        {
+            public void uncaughtException(Thread t, Throwable e)
+            {
+                processUnhandledException(e);
+            }
+        });
+        
+        try
+        {
+            SwingUtilities.invokeAndWait(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    log.debug("attachUnhandledException "+Thread.currentThread().getName()+ " "+Thread.currentThread().hashCode());
+                    Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler()
+                    {
+                        public void uncaughtException(Thread t, Throwable e)
+                        {
+                            processUnhandledException(e);
+                        }
+                    });
+                }
+            });
+        } catch (InterruptedException e1)
+        {
+            e1.printStackTrace();
+        } catch (InvocationTargetException e1)
+        {
+            e1.printStackTrace();
+        }
+        
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler()
+        {
+            public void uncaughtException(Thread t, Throwable e)
+            {
+                processUnhandledException(e);
+            }
+        });
+        
+    }
+
 
     /**
      * @param conn
@@ -965,6 +1049,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 // Add this Original Mapping in
                 divToAgentToFixHash.put(firstDivId, firstAgentId);
                 
+                
                 //---------- accessionagent
                 sql = "SELECT aa.AccessionAgentID, aa.AgentID, a.DivisionID " +
                       "FROM accessionagent aa INNER JOIN accession a ON aa.AccessionID = a.AccessionID ORDER BY aa.AgentID";
@@ -1162,40 +1247,42 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         "Inner Join spappresource AS ar ON ada.SpAppResourceID = ar.SpAppResourceID " +
                         "Inner Join spappresourcedir AS ad ON ar.SpAppResourceDirID = ad.SpAppResourceDirID " +
                         "Inner Join discipline AS d ON ad.DisciplineID = d.UserGroupScopeId ";
-                fixAgents(conn, sql, "spappresource", "ada.CreatedByAgentID", divToAgentToFixHash, inClause);
+                fixAgents(conn, sql, "spappresourcedata", "ada.CreatedByAgentID", divToAgentToFixHash, inClause);
                 
                 sql = "SELECT ada.SpAppResourceDataID, ada.ModifiedByAgentID, d.DivisionID FROM spappresourcedata AS ada " +
                         "Inner Join spappresource AS ar ON ada.SpAppResourceID = ar.SpAppResourceID " +
                         "Inner Join spappresourcedir AS ad ON ar.SpAppResourceDirID = ad.SpAppResourceDirID " +
                         "Inner Join discipline AS d ON ad.DisciplineID = d.UserGroupScopeId ";
-                fixAgents(conn, sql, "spappresource", "ada.ModifiedByAgentID", divToAgentToFixHash, inClause);
+                fixAgents(conn, sql, "spappresourcedata", "ada.ModifiedByAgentID", divToAgentToFixHash, inClause);
                 
                 //---------- Now Check All CreatedBy and Modified By
-                fixAlltables(conn, firstAgentId, inClause, "CreatedByAgentID");
-                fixAlltables(conn, firstAgentId, inClause, "ModifiedByAgentID");
+                fixAllTables(conn, firstAgentId, inClause, "CreatedByAgentID");
+                fixAllTables(conn, firstAgentId, inClause, "ModifiedByAgentID");
                 
                 deleteAgentRelationships(conn, "address", availAgents);
                 deleteAgentRelationships(conn, "agentvariant", availAgents);
                 deleteAgentRelationships(conn, "agentgeography", availAgents);
                 deleteAgentRelationships(conn, "agentspecialty", availAgents);
                 deleteAgentAttachments(conn, availAgents);
-                               
+                   
                 // At this point all the divisions for a SpecyUser now have an Agent,
                 // either an old one that was reused or a newly cloned one.
                 // We shouldn't have any left over Agents, but the list 'availAgents'
                 // will have any extra previous used Agents that need to be deleted.
+                BasicSQLUtils.setSkipTrackExceptions(true);
                 for (Integer agtId : availAgents)
                 {
-                    //try
-                    //{
+                    try
+                    {
                         System.out.println("Delete Agent: "+ agtId);
                         BasicSQLUtils.update(conn, "DELETE FROM agent WHERE AgentID = "+agtId);
                         
-                    //} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException ex)
-                    //{
-                    //    UIRegistry.showError("There was error deleting Agent ID %d.\nPlease write this number down and report this error immediately to the Specify team.");
-                    //}
+                    } catch (Exception ex)
+                    {
+                        UIRegistry.showError("There was error deleting Agent ID %d.\nPlease write this number down and report this error immediately to the Specify team.");
+                    }
                 }
+                BasicSQLUtils.setSkipTrackExceptions(false);
             }
             
         } catch (Exception ex)
@@ -1215,7 +1302,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         for (Integer id : ids)
         {
             String sql = String.format("DELETE FROM %s WHERE AgentID = %d", tableName, id);
-            BasicSQLUtils.update(conn, sql);
+            if (BasicSQLUtils.update(conn, sql) != 1)
+            {
+                errMsgList.add(String.format("Error deleting Agent %d Table %s\n", id, tableName));
+            }
         }
     }
     
@@ -1234,10 +1324,16 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 Integer atchId    = (Integer)row[2];
                 
                 sql = String.format("DELETE FROM attachment WHERE AttachmentID = %d", atchId);
-                BasicSQLUtils.update(conn, sql);
+                if (BasicSQLUtils.update(conn, sql) != 1)
+                {
+                    errMsgList.add(String.format("Error deleting Agent %d Table attachment\n", id));
+                }
                 
                 sql = String.format("DELETE FROM agentattachment WHERE AgentAttachmentID = %d", agtAtchId);
-                BasicSQLUtils.update(conn, sql);
+                if (BasicSQLUtils.update(conn, sql) != 1)
+                {
+                    errMsgList.add(String.format("Error deleting Agent %d Table agentattachment\n", id));
+                }
             }
         }
     }
@@ -1248,7 +1344,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      * @param fullInClause
      * @param fldName
      */
-    private void fixAlltables(final Connection conn, final Integer firstAgentId, final String inClause, final String fldName)
+    private void fixAllTables(final Connection conn, final Integer firstAgentId, final String inClause, final String fldName)
     {
         String fullInClause = String.format(inClause, fldName);
         
@@ -1268,11 +1364,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             if (ti.getRelationshipByName(relName) != null)
             {
                 String sql = String.format("SELECT COUNT(*) FROM %s %s", ti.getName(), fullInClause);
-                System.err.println(sql);
+                //log.debug(sql);
                 int total = BasicSQLUtils.getCountAsInt(sql);
                 if (total > 0)
                 {
-                    System.err.println(total);
+                    //log.debug(total);
                     
                     int    percentStep = (int)((double)total * 0.02);
                     frame.setProcess(0, total);
@@ -1282,17 +1378,20 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     try
                     {
                         sql = String.format("UPDATE %s SET %s = ? WHERE %s = ?", ti.getName(), fldName, primaryKey);
-                        System.err.println(sql);
+                        //log.debug(sql);
                         ps = conn.prepareStatement(sql);
                         
                         sql = String.format("SELECT %s FROM %s %s", primaryKey, ti.getName(), fullInClause);
-                        System.err.println(sql);
+                        //log.debug(sql);
                         int cnt = 0;
                         for (Integer id : BasicSQLUtils.queryForInts(sql))
                         {
                             ps.setInt(1, firstAgentId);
                             ps.setInt(2, id);
-                            ps.executeUpdate();
+                            if (ps.executeUpdate() != 1)
+                            {
+                                errMsgList.add(String.format("Error updating Agent %d Table [%s] Field [%s] Primary [%s]\n", firstAgentId, ti.getName(), fldName, primaryKey));
+                            }
                             
                             cnt++;
                             if (percentStep > 0 && cnt % percentStep == 0)
@@ -1305,6 +1404,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     } catch (Exception ex)
                     {
                         ex.printStackTrace();
+                        errMsgList.add(ex.getMessage());
+                        
                     } finally
                     {
                         if (ps != null)
@@ -1330,7 +1431,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         }
         
         String str = sql.substring(0, inx-1) + inClause + sql.substring(inx);
-        System.out.println(str);
+        //System.out.println(str);
         return str;
     }
     
@@ -1357,7 +1458,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             
             int    inx         = sql.indexOf("FROM");
             String tmpSQL      = "SELECT COUNT(*) " + sql.substring(inx);
-            log.debug(tmpSQL);
+            //log.debug(tmpSQL);
             
             int    total       = BasicSQLUtils.getCountAsInt(tmpSQL);
             int    percentStep = (int)((double)total * 0.02);
@@ -1377,8 +1478,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             
             String recIdColName = rs.getMetaData().getColumnName(1);
             String sqlStr       = String.format("UPDATE %s SET %s=? WHERE %s = ?", tableName, fldName, recIdColName);
-            System.out.println(sql);
-            System.out.println(sqlStr);
+            //System.out.println(sql);
+            //System.out.println(sqlStr);
             pStmt = conn.prepareStatement(sqlStr);
             
             int cnt = 0;
@@ -1400,7 +1501,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 {
                     pStmt.setInt(1, mappedAgentId);
                     pStmt.setInt(2, recID);
-                    pStmt.execute();
+                    if (pStmt.executeUpdate() != 1)
+                    {
+                        errMsgList.add(String.format("Error deleting Agent %d Table %s Field %s RecIdCol %s RecID %d", mappedAgentId, tableName, fldName, recIdColName, recID));
+                    }
                     //log.debug(String.format("CNG %s.%s (%d)  Old: %d -> New: %d", tableName, fldName, recID, agentId, mappedAgentId));
                     itemsFixed++;
                 }
@@ -1418,6 +1522,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         } catch (Exception ex)
         {
             ex.printStackTrace();
+            errMsgList.add(ex.getMessage());
             
         } finally
         {
@@ -1457,13 +1562,16 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         Integer len = getFieldLength(conn, databaseName, tblName, fldName);
         if (len == origLen)
         {
-            int rv = BasicSQLUtils.update(conn, String.format("ALTER TABLE %s MODIFY %s varchar(%d)", tblName, fldName, newLen));
-            log.debug(String.format("Updating %s %s.%s - %d -> %d rv= %d", databaseName, tblName, fldName, origLen, newLen, rv));
-            /*if (rv != count)
+            BasicSQLUtils.setSkipTrackExceptions(false);
+            try
             {
-                errMsgList.add("Update count didn't match for update to table: spexportschema");
-                return false;
-            }*/
+                BasicSQLUtils.update(conn, String.format("ALTER TABLE %s MODIFY %s varchar(%d)", tblName, fldName, newLen));
+                //log.debug(String.format("Updating %s %s.%s - %d -> %d rv= %d", databaseName, tblName, fldName, origLen, newLen, rv));
+            } catch (Exception ex)
+            {
+                errMsgList.add(String.format("Error - Updating %s %s.%s - %d -> %d  Excpt: %s", databaseName, tblName, fldName, origLen, newLen, ex.getMessage()));
+            }
+            BasicSQLUtils.setSkipTrackExceptions(false);
         }
         return true;
     }
