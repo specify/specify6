@@ -6,73 +6,121 @@
 <body>
 <h3>Release Notes<br />
   Specify 6.2.02<br />
-  17 August 2010<br />
+  19 August 2010<br />
   Specify Software Project</h3>
-<br>
 
-<h4>Highlights for this release:</h4>
+<br />
+<br />
+
+<h4>Changes to the Specify database schema in this release:</h4>
 <ol>
-<li>The uploader is now able to pick to which table attachments apply.</li>
-<li>Resource Import/Export can import and export by user.</li>
-<li>The Preparation formview now has the option of showing to which loans its preparations belong.  This feature requires a manual change of the formsystem's xml (using Resource Import/Export).</li>
-<li>The SVN number of each release now appears in Specify's "About" dialog.</li>
-<li>Specify has also been localized in Portuguese.</li>
+	<li>Agent Table<br />
+	&nbsp;&nbsp;A new byte field Date Type to indicate what the Date represents<br /> 
+	&nbsp;&nbsp;Made the Birth and Death Date partial dates
+	</li>
+	<li>Address Table<br />
+	&nbsp;&nbsp;Added 3 additional address lines of length 64
+	</li>
+	<li>
+	Locality<br />
+	&nbsp;&nbsp;Added extra field Text1 - String 255 chars<br />
+	&nbsp;&nbsp;Added Text2 - String 255
+	</li>
+	<li>
+	Locality Detail Table<br /> 
+	&nbsp;&nbsp;Added Start Depth, Units, Verbatim fields<br />
+	&nbsp;&nbsp;Added End Depth, Units, Verbatim fields 
+	</li>
+	<li>
+	Paleo Context Table<br /> 
+	&nbsp;&nbsp;Added ChronosstratigraphyEnd<br /> 
+	&nbsp;&nbsp;Lengthed text fields to 255
+	</li>
+	<li>
+	Preparation Attributes Table<br /> 
+	&nbsp;&nbsp;Changed the length of the Text22 field to 50
+	</li>
+	<li>
+	Geologic Time Period Table<br /> 
+	&nbsp;&nbsp;Added Text1 - String 128<br /> 
+	&nbsp;&nbsp;Added Text2 - String 128
+	</li>
+	<li>Morphbank Data Tables added for future integration with Morphbank (www.morphbank.net)</li>
 </ol>
-<br>
+
+<br />
+<br />
+
+<h4>New Features:</h4>
+<ol>
+	<li>The Specify Uploader now allows the designation of a table in Specify to which files being uploaded should be attached.</li>
+	<li>Resource Import/Export is now able to import and export forms for each user.</li>
+	<li>The Preparation form now has the option of showing to which loans preparations belong. This feature requires a manual change of the forms xml (using Resource Import/Export).  Contact the Project if you want this feature.</li>
+	<li>The build and Subversion (specific source software code ID) number of each release now appears in Specify's "About" dialog.  This is highly useful for diagnosing issues that may arise.</li>
+	<li>Option added for printing a label for a specimen during data entry form added when first saving it to the database.&nbsp;&nbsp;2010-06-22 09:26:59&nbsp;&nbsp;(7962).</li>
+	<li>New Determinations are automatically set to be the Current Determination.&nbsp;&nbsp;2010-06-29 06:31:31 &nbsp;&nbsp;(7960).</li>
+</ol>
+
+<br />
+<br />
+
 <h4>Complete list of changes:</h4>
 <ol>
-<li>Import File Splitter splits files into 5000 rows instead of 2000.&nbsp;&nbsp;2010-06-18 09:53:49 &nbsp;&nbsp;(7978).</li>
-<li>Attachments can now be deleted.&nbsp;&nbsp;2010-06-21 11:06:59 &nbsp;&nbsp;(7974).</li>
-<li>Attachment entry fixed for Taxon.&nbsp;&nbsp;2010-06-21 11:29:12 &nbsp;&nbsp;(7973).</li>
-<li>Option for printing a label for a specimen on the data entry form added when first saving it to the database.&nbsp;&nbsp;2010-06-22 09:26:59 &nbsp;&nbsp;(7962).</li>
-<li>Query builder incorrectly used 'Single Field' format.&nbsp;&nbsp;2010-06-25 07:18:28 &nbsp;&nbsp;(7983).</li>
-<li>Fullnames were not built correctly.&nbsp;&nbsp;2010-06-28 06:42:37 &nbsp;&nbsp;(7985).</li>
-<li>Administrator users were not deletable.&nbsp;&nbsp;2010-06-29 05:22:24 &nbsp;&nbsp;(7797).</li>
-<li>New Determinations are automatically set to be the Current Determination.&nbsp;&nbsp;2010-06-29 06:31:31 &nbsp;&nbsp;(7960).</li>
-<li>Editing a new Administrator User's password caused an exception.&nbsp;&nbsp;2010-06-29 07:12:13 &nbsp;&nbsp;(7979).</li>
-<li>Storage field in Prepatation data object was not being filled in after uploading a dataset.&nbsp;&nbsp;2010-07-07 01:07:02 &nbsp;&nbsp;(7450).</li>
-<li>Apply To All button on match settings form was not functioning.&nbsp;&nbsp;2010-07-07 01:12:24 &nbsp;&nbsp;(7838).</li>
-<li>Schema Merge when updating DB schema was broken.&nbsp;&nbsp;2010-07-17 04:24:57 &nbsp;&nbsp;(7994).</li>
-<li>Determination.IsCurrent was not validating correctly.&nbsp;&nbsp;2010-07-20 15:32:36 &nbsp;&nbsp;(7998).</li>
-<li>Security's Add Existing User feature was not functioning.&nbsp;&nbsp;2010-08-11 13:27:29 &nbsp;&nbsp;(8011).</li>
-<li>Some Collections created at various Discipline levels were not appearing in Security.&nbsp;&nbsp;2010-08-11 17:03:43 &nbsp;&nbsp;(8020).</li>
-<li>Collections were not being deleted in System Configuration.&nbsp;&nbsp;2010-08-12 11:22:36 &nbsp;&nbsp;(8007).</li>
-<li>Deleting an agent attached to a user in security is no longer allowed.&nbsp;&nbsp;2010-08-16 12:14:26 &nbsp;&nbsp;(8026).</li>
-<li>Adding a Discipline duplicated the Administrator user's agent in search results.&nbsp;&nbsp;2010-08-16 12:20:05 &nbsp;&nbsp;(8012).</li>
-<li>An error dialog was appearing upon entering LSID Preferences.&nbsp;&nbsp;2010-08-16 12:36:58 &nbsp;&nbsp;(8015).</li>
-<li>The 'View' window in Workbench could only be opened once.&nbsp;&nbsp;2010-08-16 13:23:44 &nbsp;&nbsp;(7788).</li>
-<li>After using 'View', 'Commit' failed to show confirm dialog.&nbsp;&nbsp;2010-08-16 13:26:54 &nbsp;&nbsp;(7787).</li>
-<li>Updating schema from 1.3 to 1.4 caused previously unhidden fields to become hidden.&nbsp;&nbsp;2010-08-16 13:28:24 &nbsp;&nbsp;(7997).</li>
-<li>Agent records were not uploaded correctly using the Workbench.&nbsp;&nbsp;2010-08-16 13:29:18 &nbsp;&nbsp;(7789).</li>
-<li>Importing agent-only fields with fields from other tables is no longer permitted.&nbsp;&nbsp;2010-08-16 13:42:00 &nbsp;&nbsp;(7945).</li>
-<li>New Information Requests now bring up a dialog allowing the user to select a Recordset or enter Catalog Number as sources.&nbsp;&nbsp;2010-08-16 13:44:09 &nbsp;&nbsp;(7993).</li>
-<li>Importing forms at the user level has been implemented.&nbsp;&nbsp;2010-08-16 13:45:58 &nbsp;&nbsp;(7996).</li>
-<li>Users could not edit permissions for groups in Security.&nbsp;&nbsp;2010-08-16 13:48:06 &nbsp;&nbsp;(7987).</li>
-<li>Users saw an exception if an incorrect file name was entered for importing.&nbsp;&nbsp;2010-08-16 13:49:19 &nbsp;&nbsp;(7999).</li>
-<li>Text fields are no longer limited to 32 characters in PaleoContext table.&nbsp;&nbsp;2010-08-16 13:50:32 &nbsp;&nbsp;(7745).</li>
-<li>Tooltips were improved for new security-user buttons.&nbsp;&nbsp;2010-08-16 13:54:21 &nbsp;&nbsp;(7191).</li>
-<li>Preference Pane for Loans was enabled in Security for user groups.&nbsp;&nbsp;2010-08-16 13:55:29 &nbsp;&nbsp;(7295).</li>
-<li>Querying "Start Date (Month)" with a "0" before the number caused an exception.&nbsp;&nbsp;2010-08-16 13:57:39 &nbsp;&nbsp;(7935).</li>
-<li>Users received a warning about printing labels upon saving when Generate Label option was not present.&nbsp;&nbsp;2010-08-16 13:58:06 &nbsp;&nbsp;(8000).</li>
-<li>Users could add and delete Collection Objects to Accession records even though the records were in View mode.&nbsp;&nbsp;2010-08-16 13:59:28 &nbsp;&nbsp;(7800).</li>
-<li>Exporting Grid to MS Excel in the Query Results was not functioning.&nbsp;&nbsp;2010-08-16 14:00:12 &nbsp;&nbsp;(7294).</li>
-<li>Security redundantly included Tools for "Collection Relationships" and "Edit Collection Relationships".&nbsp;&nbsp;2010-08-16 14:00:58 &nbsp;&nbsp;(8004).</li>
-<li>Users could not print successfully the search results grid from a Record Set.&nbsp;&nbsp;2010-08-16 14:05:11 &nbsp;&nbsp;(7956).</li>
-<li>A feature allowing users to see to which Loans a Collection Object is attached was implemented (requires manually modifying forms' XML).&nbsp;&nbsp;2010-08-16 15:17:31 &nbsp;&nbsp;(6400).</li>
-<li>Deleting a division is now possible.&nbsp;&nbsp;2010-08-16 15:21:57 &nbsp;&nbsp;(7884).</li>
-<li>Uploads containing a Preparation agent but not PrepType were halting.&nbsp;&nbsp;2010-08-16 15:24:45 &nbsp;&nbsp;(7866).</li>
-<li>"0" can now be be entered as a criterion in the QueryBuilder.&nbsp;&nbsp;2010-08-16 15:32:24 &nbsp;&nbsp;(8025).</li>
-<li>Users were able to delete their own login "user" while they were logged in as that user.&nbsp;&nbsp;2010-08-16 15:39:00 &nbsp;&nbsp;(8030).</li>
-<li>Users were unable to change the name of new Tree Definition items.&nbsp;&nbsp;2010-08-16 15:49:10 &nbsp;&nbsp;(7981).</li>
-<li>An error preventing uploading Agent-only datasets with attachments was resolved.&nbsp;&nbsp;2010-08-16 16:04:22 &nbsp;&nbsp;(8018).</li>
-<li>Opening the Workbench no longer reduces the functionality of the search results page.&bsp;&nbsp;2010-08-17 09:49:59 &nbsp;&nbsp;(8034).</li>
-<li>Attaching an existing agent to a new user in Security duplicated that agent in search results&nbsp;&nbsp;2010-08-17 10:33:31 &nbsp;&nbsp;(8031).</li>
-<li>Users could not add a third division after adding a second division from the perspective of a single division.&nbsp;&nbsp;2010-08-17 14:35:01 &nbsp;&nbsp;(8032)</li>
-<li>Adding an existing user in Security, as well as the accompanying agent-cloning, now functions without unneeded duplication of Agent records.&nbsp;&nbsp;2010-08-17 12:34:38 &nbsp;&nbsp;(8027).</li>
+	<li>Import File Splitter splits files into 5000 rows instead of 2000.&nbsp;&nbsp;2010-06-18 09:53:49 &nbsp;&nbsp;(7978).</li>
+	<li>File attachments can now be deleted.&nbsp;&nbsp;2010-06-21 11:06:59 &nbsp;&nbsp;(7974).</li>
+	<li>File attachments now work for Taxon records.&nbsp;&nbsp;2010-06-21 11:29:12 &nbsp;&nbsp;(7973).</li>
+	<li>Query builder incorrectly used 'Single Field' format, now fixed.&nbsp;&nbsp;2010-06-25 07:18:28 &nbsp;&nbsp;(7983).</li>
+	<li>Fullnames which are built from the names of tree levels (ranks, columns) are now formatted and displayed correctly on forms.&nbsp;&nbsp;2010-06-28 06:42:37 &nbsp;&nbsp;(7985).</li>
+	<li>Administrator level users are now deletable. Fewer administrators=more work gets done.&nbsp;&nbsp;2010-06-29 05:22:24 &nbsp;&nbsp;(7797).</li>
+	<li>Editing a new Administrator User's password no longer causes an exception.&nbsp;&nbsp;2010-06-29 07:12:13 &nbsp;&nbsp;(7979).</li>
+	<li>Storage field in Prepatation data object is now correctly filled in, after uploading a dataset.&nbsp;&nbsp;2010-07-07 01:07:02 &nbsp;&nbsp;(7450).</li>
+
+	<li>"Apply To All" choice in Specify Uploader match setting preferences now functions correctly. If you use this option, the Uploader will apply your designated 
+action when it encounters matching field values in a record being uploaded and a record already in the Specify database.  "Apply to All" means that all matches the 
+Uploader encounters in data values for all tables will be handled in the way specified.&nbsp;&nbsp;2010-07-07 01:12:24 &nbsp;&nbsp;(7838).</li>
+	<li>Schema merge when updating Specify database schema now works correctly for localization (internationalization).&nbsp;&nbsp;2010-07-17 04:24:57 &nbsp;&nbsp;(7994).</li>
+	<li>In the Specify Uploader if one of three allowable determinations was indicated as being the current determination, the Uploader now recognizes that correctly
+and that determination is recorded in the database as the current one. Previously the Uploader was ignoring the current determination and always assigned the 
+first determination uploaded as the current one.&nbsp;&nbsp;2010-07-20 15:32:36 &nbsp;&nbsp;(7998).</li>
+	<li>"Add Existing User" is Security is now functioning.&nbsp;&nbsp;2010-08-11 13:27:29 &nbsp;&nbsp;(8011).</li>
+	<li>Some Collections created at various Discipline levels were not appearing in the Security window, they now are.&nbsp;&nbsp;2010-08-11 17:03:43 &nbsp;&nbsp;(8020).</li>
+	<li>Whole Collections that are deleted are now actually erased in Specify System Configuration.&nbsp;&nbsp;2010-08-12 11:22:36 &nbsp;&nbsp;(8007).</li>
+	<li>Deleting a Specify agent record which corresponds to a Specify user is no longer allowed. One can delete a Specify user, but the corresponding agent record remains linked to records that that user created or edited.&nbsp;&nbsp;2010-08-16 12:14:26 &nbsp;&nbsp;(8026).</li>
+	<li>Adding a Discipline duplicated the Administrator user's agent in search results.&nbsp;&nbsp;2010-08-16 12:20:05 &nbsp;&nbsp;(8012).</li>
+	<li>Using LSID Preferences no longer causes an error.&nbsp;&nbsp;2010-08-16 12:36:58 &nbsp;&nbsp;(8015).</li>
+	<li>The 'View' window in the Specify WorkBench can now be opened more than once.&nbsp;&nbsp;2010-08-16 13:23:44 &nbsp;&nbsp;(7788).</li>
+	<li>In the Specify WorkBench, after using the 'View' option to see records being uploaded into Specify, using 'Commit' to complete the transaction, successfully committed the records, but
+failed to show a confirmation dialog, it now shows that confirmation.&nbsp;&nbsp;2010-08-16 13:26:54 &nbsp;&nbsp;(7787).</li>
+	<li>Updates to the Specify schema initiated by the Specify installation/updater package no longer causes previously unhidden fields to become hidden.&nbsp;&nbsp;2010-08-16 13:28:24 &nbsp;&nbsp;(7997).</li>
+	<li>Agent records are now uploaded correctly into Specify from the Specify WorkBench.&nbsp;&nbsp;2010-08-16 13:29:18 &nbsp;&nbsp;(7789).</li>
+	<li>Importing "agent-only" fields into the WorkBench with fields from other tables is no longer permitted.&nbsp;&nbsp;2010-08-16 13:42:00 &nbsp;&nbsp;(7945).</li>
+	<li>An error preventing uploading Agent-only datasets with attachments was resolved.&nbsp;&nbsp;2010-08-16 16:04:22 &nbsp;&nbsp;(8018).</li>
+	<li>New Information Requests now bring up a dialog allowing the user to select a Recordset or enter Catalog Number as sources.&nbsp;&nbsp;2010-08-16 13:44:09 &nbsp;&nbsp;(7993).</li>
+	<li>In security, one can now edit the default permissions for the default user in each security category (Guest, Manager, etc.)&nbsp;&nbsp;2010-08-16 13:48:06 &nbsp;&nbsp;(7987).</li>
+	<li>An exception is no longer created if a non-existent file name is specified for importing into the WorkBench.&nbsp;&nbsp;2010-08-16 13:49:19 &nbsp;&nbsp;(7999).</li>
+	<li>Tooltips were improved for new security-user buttons.&nbsp;&nbsp;2010-08-16 13:54:21 &nbsp;&nbsp;(7191).</li>
+	<li>Preference Pane for Loans was enabled in Security for user groups.&nbsp;&nbsp;2010-08-16 13:55:29 &nbsp;&nbsp;(7295).</li>
+	<li>Querying "Start Date (Month)" on a form with a "0" before the month number (e.g. "01" for January, "02" for February) no longer causes an exception.&nbsp;&nbsp;2010-08-16 13:57:39 &nbsp;&nbsp;(7935).</li>
+	<li>One can no longer add or delete Collection Objects to/from Accession records when the Accession records are in View mode.&nbsp;&nbsp;2010-08-16 13:59:28 &nbsp;&nbsp;(7800).</li>
+	<li>Exporting to MS Excel in the Query Results is now functioning correctly.&nbsp;&nbsp;2010-08-16 14:00:12 &nbsp;&nbsp;(7294).</li>
+	<li>Security no longer has redundant Tools for "Collection Relationships" and "Edit Collection Relationships".&nbsp;&nbsp;2010-08-16 14:00:58 &nbsp;&nbsp;(8004).</li>
+	<li>One can now print the search results grid from a RecordSet.&nbsp;&nbsp;2010-08-16 14:05:11 &nbsp;&nbsp;(7956).</li>
+	<li>A feature allowing users to see to which Loans a Collection Object is attached was implemented (requires manually modifying forms' XML).&nbsp;&nbsp;2010-08-16 15:17:31 &nbsp;&nbsp;(6400).</li>
+	<li>Divisions can now be deleted.&nbsp;&nbsp;2010-08-16 15:21:57 &nbsp;&nbsp;(7884).</li>
+	<li>Uploads from the WorkBench to Specify containing a Preparation agent but not PrepType no longer stop.&nbsp;&nbsp;2010-08-16 15:24:45 &nbsp;&nbsp;(7866).</li>
+	<li>One cannot delete their own login "user" in security while they were logged in as that user. Prevents unexpected virtual disappearance of collection managers.&nbsp;&nbsp;2010-08-16 15:39:00 &nbsp;&nbsp;(8030).</li>
+	<li>One can now change the names of Tree rank/column/level names ("Tree definition items).&nbsp;&nbsp;2010-08-16 15:49:10 &nbsp;&nbsp;(7981).</li>
+	
+	<li>Opening the WorkBench no longer impacts the behavior of the search results page.&bsp;&nbsp;2010-08-17 09:49:59 &nbsp;&nbsp;(8034).</li>
+	<li>Attaching an existing agent to a new Specify user in Security no longer duplicates that agent in search results.&nbsp;&nbsp;2010-08-17 10:33:31 &nbsp;&nbsp;(8031).</li>
+	<li>Users could not add a third division after adding a second division from the perspective of a single division.&nbsp;&nbsp;2010-08-17 14:35:01 &nbsp;&nbsp;(8032)</li>
+	<li>When adding a user to a newly created Division, Specify will now look for any existing Divisions which migh have that user already. If the user exists
+in another Division, Specify will clone that user and add him/her to the new Division. Specify will no longer erroneously make extra copies of a user cloned in this way.&nbsp;&nbsp;2010-08-17 12:34:38 &nbsp;&nbsp;(8027).</li>
+	<li>After adding a new Discipline, the cloned agent record for the Administrator user no longer appears twice in search results.&nbsp;&nbsp;2010-08-16 12:20:05&nbsp;&nbsp;(8012).</li>
 </ol>
-<br>
-<br>
-<br>
-<br>
+
+<br />
+<br />
+
 </body>
 </html>
