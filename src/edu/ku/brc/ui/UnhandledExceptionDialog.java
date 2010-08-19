@@ -62,6 +62,15 @@ public class UnhandledExceptionDialog extends JDialog
      */
     public UnhandledExceptionDialog(final String message, final Exception exception)
     {
+        this(message, (Throwable)exception);
+    }
+
+    /**
+     * @param message
+     * @param exception
+     */
+    public UnhandledExceptionDialog(final String message, final Throwable exception)
+    {
         super(UIRegistry.getTopWindow() instanceof Frame ? (Frame)UIRegistry.getTopWindow() : null, getResourceString("UnhandledExceptionTitle"), true);
         
         createUI(message, exception);
