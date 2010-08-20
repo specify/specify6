@@ -2815,7 +2815,19 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 		}
         
         UsageTracker.incrUsageCount("QB.SaveQuery." + query.getContextName());
-                
+        
+        //This is necessary to indicate that a query has been changed when only field deletes have occurred.
+        //If the query's timestampModified is not modified the schema export tool doesn't know the 
+        //export schema needs to be rebuilt.
+        if (!saveAs && query.getId() != null)
+        {
+        	int origCount = BasicSQLUtils.getCountAsInt("select count(*) from spqueryfield where spqueryid=" + query.getId());
+        	if (origCount > query.getFields().size())
+        	{
+        		query.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+        	}
+        }
+        
         TableQRI tableQRI = (TableQRI) tableList.getSelectedValue();
         if (tableQRI != null)
         {

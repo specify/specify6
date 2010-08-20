@@ -517,6 +517,14 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         		}
         	}
         	SpQuery q = map.getMappings().iterator().next().getQueryField().getQuery();
+    		if (q.getTimestampCreated().compareTo(map.getTimestampExported()) > 0)
+    		{
+    			return true;
+    		}
+    		if (q.getTimestampModified() != null && q.getTimestampModified().compareTo(map.getTimestampExported()) > 0)
+    		{
+    			return true;
+    		}
         	for (SpQueryField qf : q.getFields())
         	{
         		if (qf.getTimestampCreated().compareTo(map.getTimestampExported()) > 0)
