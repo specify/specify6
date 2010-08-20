@@ -462,6 +462,9 @@ updateSchedule.never=Never
 DirectoryChooserLabel=Enter the name of the new folder:
 DirectoryChooserTitle=Create new folder
 DirectoryChooserTooltip=New folder
+
+#Specify
+
 changesThisVersion=New This Release
 changesThatFollow=includes the following changes:
 explanationStartWizard=To use Specify for the first time, three tasks must be completed: (1) MySQL must be installed on this computer or on a server as the database engine, (2) The Specify Installer (this program) must be run, and (3) the Specify Setup Wizard (SpWizard.exe) must be run to configure a new Specify database for your collection.  If you already have a working copy of a Specify database, choose “Run Specify” or “Close Installer” then click “Done”. If you have not previously installed MySQL, click “Done” now to close the Specify Installer and then see Specify documentation for installing MySQL. If you have MySQL installed, and are setting up a new Specify database on this machine or on a server, choose “Run Specify Setup Wizard” and click “Done”.

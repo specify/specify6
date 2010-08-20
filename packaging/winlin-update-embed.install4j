@@ -5,8 +5,8 @@
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="./localization_en.utf8" />
       <additionalLanguages>
-        <language id="pt_BR" customLocalizationFile="" />
-        <language id="pt" customLocalizationFile="" />
+        <language id="pt_BR" customLocalizationFile="./localization_pt_BR.utf8" />
+        <language id="pt" customLocalizationFile="./localization_pt.utf8" />
 </additionalLanguages>
     </languages>
     <searchSequence>
