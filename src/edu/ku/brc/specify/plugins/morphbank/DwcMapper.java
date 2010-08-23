@@ -210,7 +210,8 @@ public class DwcMapper
 			rs = stmt.executeQuery(getValuesQuery(spec.getCollectionObjectId()));
 			if (!rs.next())
 			{
-				throw new Exception("no record for " + spec.getCollectionObjectId() + " in " + mappingName);
+				throw new MissingRecordException("no record for " + spec.getCollectionObjectId() + " in " + mappingName,
+						spec.getCollectionObjectId(), mappingName);
 			}
 			ResultSetMetaData metaData = rs.getMetaData();
 			for (int c = 2; c < metaData.getColumnCount(); c++)
@@ -488,6 +489,38 @@ public class DwcMapper
 	}
 		
 	
+	@SuppressWarnings("serial")
+	public class MissingRecordException extends Exception
+	{
+		protected final Integer Id;
+		protected final String mappingName;
+		/**
+		 * @param id
+		 * @param mappingName
+		 */
+		public MissingRecordException(String msg, Integer id, String mappingName)
+		{
+			super(msg);
+			Id = id;
+			this.mappingName = mappingName;
+		}
+		/**
+		 * @return the id
+		 */
+		public Integer getId()
+		{
+			return Id;
+		}
+		/**
+		 * @return the mappingName
+		 */
+		public String getMappingName()
+		{
+			return mappingName;
+		}
+		
+		
+	}
 	/**
 	 * @param args
 	 */

@@ -28,7 +28,7 @@ import edu.ku.brc.specify.plugins.morphbank.MorphBankTest;
  * Generates files containing xml submit requests for the Morphbank webservice.
  * The files can then be sent to Morphbank for batch processing 
  * 
- * A darwin core mapping must be defined in the database. THe darwin core mappings are obtained from the export cache for the mapping.
+ * A darwin core mapping must be defined in the database. THe darwin core values are obtained from the export cache for the mapping.
  * 
  * 
  */
@@ -77,12 +77,18 @@ public class BatchMorphbankSubmit
 		int fileCount = 1;
 		for (Integer key : keysToSubmit)
 		{
-			submissions.add(generateSubmission(key));
-			if (++counter == requestsPerFile)
+			try 
 			{
-				writeToFile(submissions, fileCount++);
-				submissions.clear();
-				counter = 0;
+				submissions.add(generateSubmission(key));
+				if (++counter == requestsPerFile)
+				{
+					writeToFile(submissions, fileCount++);
+					submissions.clear();
+					counter = 0;
+				}
+			} catch (DwcMapper.MissingRecordException mrex)
+			{
+				System.out.println(mrex.getMessage());
 			}
 		}
 		if (counter > 0)

@@ -177,8 +177,13 @@ public class BatchAttachLauncher implements DatabaseLoginListener
 	{
 		try
 		{
+			//Attach images
+			//BatchAttachFiles baf = new BatchAttachFiles(CollectionObject.class, new BarCodeFileNameParser(),
+			//		new File("/home/timo/TroyImages"));
+			
+			//Attach 'blank' attachments from list of image file names
 			BatchAttachFiles baf = new BatchAttachFiles(CollectionObject.class, new BarCodeFileNameParser(),
-					new File("/home/timo/TroyImages"));
+					new File("/media/Terror/ConversionsAndFixes/Troy/Troy_directory_listing.txt"));
 			baf.attachFiles();
 			System.exit(0);
 		} catch (Exception ex)

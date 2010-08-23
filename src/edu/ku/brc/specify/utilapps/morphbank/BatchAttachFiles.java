@@ -4,6 +4,7 @@
 package edu.ku.brc.specify.utilapps.morphbank;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -81,6 +82,7 @@ public class BatchAttachFiles
 	protected final File directory;
 	protected List<File> files;
 	protected List<Pair<String, String>> errors = new Vector<Pair<String, String>>();
+	protected DataProviderSessionIFace session;
 	//protected List<Integer> attachments = new Vector<Integer>();
 	
 	/**
@@ -96,7 +98,13 @@ public class BatchAttachFiles
 		this.fnParser = fnParser;
 		this.directory = directory;
 		attachmentClass = determineAttachmentClass();
-		bldFiles();
+		if (directory.isDirectory())
+		{
+			bldFilesFromDir();
+		} else
+		{
+			bldFilesFromList();
+		}
 	}
 	
 	/**
@@ -139,16 +147,38 @@ public class BatchAttachFiles
 	/**
 	 * build a list of files in directory.
 	 */
-	protected void bldFiles()
+	protected void bldFilesFromDir()
 	{
 		files = new Vector<File>();
 		Collection<?> fs = FileUtils.listFiles(directory, exts, false);
 		for (Object f : fs)
 		{
 			files.add((File )f);
+//			if (files.size() == 10)
+//			{
+//				System.out.println("!!!!!!!!!Only processing first 10 files!!!!!!!!!");
+//				break;
+//			}
 		}
 	}
 	
+	/**
+	 * builds 'files' from file containing list of file names 
+	 */
+	protected void bldFilesFromList() throws IOException
+	{
+		files = new Vector<File>();
+		List<?> fileNames = FileUtils.readLines(directory);
+		for (Object f : fileNames)
+		{
+			files.add(new File((String )f));
+//			if (files.size() == 10)
+//			{
+//				System.out.println("!!!!!!!!!Only processing first 10 files!!!!!!!!!");
+//				break;
+//			}
+		}
+	}
 	/**
 	 * Attach the files in directory.
 	 */
@@ -156,19 +186,27 @@ public class BatchAttachFiles
 	{
 		errors.clear();
 		//attachments.clear();
-		for (File f : files)
+		//session = DataProviderFactory.getInstance().createSession();
+		try
 		{
-			attachFile(f);
-		}
-		if (errors.size() > 0)
-		{
-			for (Pair<String, String> error : errors)
+			for (File f : files)
 			{
-				System.out.println(error.getFirst() + ": " + error.getSecond());
+				attachFile(f);
 			}
-		} else
+			if (errors.size() > 0)
+			{
+				for (Pair<String, String> error : errors)
+				{
+					System.out.println(error.getFirst() + ": "
+							+ error.getSecond());
+				}
+			} else
+			{
+				System.out.println("All files in the directory were attached.");
+			}
+		} finally
 		{
-			System.out.println("All files in the directory were attached.");
+			//session.close();
 		}
 	}
 	
@@ -179,7 +217,8 @@ public class BatchAttachFiles
 	 */
 	protected void attachFile(File f)
 	{
-		System.out.println("Attaching " + f.getName());
+		//System.out.println("Attaching " + f.getName());
+		//System.out.println("attachFile Entry: " + Runtime.getRuntime().freeMemory());
 		List<Integer> ids = fnParser.getRecordIds(f.getName());
 		if (ids.size() == 0)
 		{
@@ -192,6 +231,7 @@ public class BatchAttachFiles
 		{
 			attachFileTo(f, id);
 		}
+		//System.out.println("attachFile Exit: " + Runtime.getRuntime().freeMemory());
 	}
 
 	/**
@@ -237,7 +277,8 @@ public class BatchAttachFiles
 	@SuppressWarnings("unchecked")
 	protected void attachFileTo(File f, Integer attachTo)
 	{
-		System.out.println("Attaching " + f.getName() + " to " + attachTo);
+		//System.out.println("Attaching " + f.getName() + " to " + attachTo);
+		System.out.println("attachFileTo Entry: " + Runtime.getRuntime().freeMemory());
 		DataProviderSessionIFace session = DataProviderFactory.getInstance()
 				.createSession();
 		boolean tblTransactionOpen = false;
@@ -247,24 +288,35 @@ public class BatchAttachFiles
 			{
 				AttachmentOwnerIFace<?> rec = getAttachmentOwner(session,
 						attachTo);
-				session.attach(rec);
+				//session.attach(rec);
 				session.beginTransaction();
 				tblTransactionOpen = true;
+				
 				Set<ObjectAttachmentIFace<?>> attachees = (Set<ObjectAttachmentIFace<?>>) rec
 						.getAttachmentReferences();
-				//Vector<ObjectAttachmentIFace<?>> currentAttachees = new Vector<ObjectAttachmentIFace<?>>();
 				int ordinal = 0;
 				Attachment attachment = new Attachment();
 				attachment.initialize();
-				attachment.setOrigFilename(f.getPath());
-				attachment.setTitle(f.getPath());
+				if (f.exists())
+				{
+					attachment.setOrigFilename(f.getPath());
+				} else
+				{
+					attachment.setOrigFilename(f.getName());
+				}
+				
+				attachment.setTitle(f.getName());
 				ObjectAttachmentIFace<DataModelObjBase> oaif = (ObjectAttachmentIFace<DataModelObjBase>) getAttachmentObject(rec
 						.getClass());
+				//CollectionObjectAttachment oaif = new CollectionObjectAttachment();
+				//oaif.initialize();
 				oaif.setAttachment(attachment);
 				oaif.setObject((DataModelObjBase) rec);
+				//oaif.setCollectionObject((CollectionObject )rec);
 				oaif.setOrdinal(ordinal);
+				//((CollectionObject )rec).getAttachmentReferences().add(oaif);
+				
 				attachees.add(oaif);
-				// currentAttachees.add(oaif);
 
 				BusinessRulesIFace busRule = DBTableIdMgr.getInstance()
 						.getBusinessRule(rec.getClass());
@@ -273,6 +325,7 @@ public class BatchAttachFiles
 					busRule.beforeSave(rec, session);
 				}
 				session.saveOrUpdate(rec);
+				
 				if (busRule != null)
 				{
 					if (!busRule.beforeSaveCommit(rec, session))
@@ -281,30 +334,39 @@ public class BatchAttachFiles
 						throw new Exception("Business rules processing failed");
 					}
 				}
-				AttachmentUtils.getAttachmentManager()
+				if (f.exists())
+				{
+					AttachmentUtils.getAttachmentManager()
 						.setStorageLocationIntoAttachment(oaif.getAttachment());
-				oaif.getAttachment().storeFile();
+					oaif.getAttachment().storeFile();
+				}
 
 				session.commit();
-				System.out.println("ATTACHED " + f.getName() + " to " + attachTo);
+				//System.out.println("ATTACHED " + f.getName() + " to " + attachTo);
 				tblTransactionOpen = false;
 				if (busRule != null)
 				{
 					busRule.afterSaveCommit(rec, session);
 				}
+				
+				//this is necessary to prevent memory leak -- no idea why or how -- but the merge
+				//prevents out-of-memory crashes that occur after about 6300 records.
+				//session.merge(rec);
+				
+				attachees = null;
+				attachment = null;
+				rec = null;
+				oaif = null;
+				
+			
 			} catch (HibernateException he)
 			{
 				if (tblTransactionOpen)
 				{
 					session.rollback();
 				}
-				// XXX To avoid hibernate errors, it may be necessary to perform
-				// a merge below but that REALLY slows down uploads.
-				// (refresh is bad enough)
-				{
-					errors.add(new Pair<String, String>(f.getName(), he
-							.getLocalizedMessage()));
-				}
+				errors.add(new Pair<String, String>(f.getName(), he.getLocalizedMessage()));
+				
 			} catch (Exception ex)
 			{
 				if (tblTransactionOpen)
@@ -316,12 +378,14 @@ public class BatchAttachFiles
 			} finally
 			{
 				session.close();
+				//session.clear();
 			}
 		} else
 		{
 			errors.add(new Pair<String, String>(f.getName(), UIRegistry
 					.getResourceString("BatchAttachFiles.UnableToAttach")));
 		}
+		System.out.println("attachFileTo Exit: " + Runtime.getRuntime().freeMemory());
 	}
 	
 	/**
