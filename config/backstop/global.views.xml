@@ -2276,7 +2276,7 @@
                     <cell type="label" labelfor="timeStampLastUpdateCheck"/>
                     <cell type="field" id="timeStampLastUpdateCheck" name="timestampLastUpdateCheck" uitype="text" readonly="true" uifieldformatter="Date"/>
                 </row>
-    		    <!-- not ready for release
+    		    <!-- not ready for release -->
     		    <row>
     		       	<cell type="label" labelfor="morphBankView" label="MorphBank View"/>
     		       	<cell type="field" id="morphBankView" name="morphBankView" uitype="querycbx" initialize="name=MorphBankView"/>
@@ -2284,7 +2284,7 @@
                 <row>
                    	<cell type="field" id="morphbankpanel" name="this" uitype="plugin" initialize="name=MorphBankPanel" colspan="3" />
                	</row>
-               	-->
+               	<!-- -->
     		</rows>
 		</viewdef>
 

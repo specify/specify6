@@ -1804,6 +1804,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected static String getJoin(final ProcessNode node)
     {
         //XXX really should only use left join when necessary.
+    	//XXX if this is ever modified to use inner join when conditions exists in the related table
+    	//the 'allowNulls' setting must be checked and left join used when it is true.
         return " left join ";
     }
     

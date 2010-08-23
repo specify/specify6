@@ -580,7 +580,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
             }
         }
         QueryParameterPanel qpp = new QueryParameterPanel();
-        qpp.setQuery(exportQuery, tblTree, ttHash);
+        qpp.setQuery(exportQuery, tblTree, ttHash, false);
         Vector<QueryFieldPanel> qfps = QueryBldrPane.getQueryFieldPanelsForMapping(qpp, exportQuery.getFields(), tblTree, ttHash,
         		null, theMapping, null, null);
 
@@ -608,6 +608,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         catch (Exception ex)
         {
             UsageTracker.incrHandledUsageCount();
+            ex.printStackTrace();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
             UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
             return null;

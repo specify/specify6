@@ -52,23 +52,30 @@ public class QueryParameterPanel extends JPanel implements QueryFieldPanelContai
      */
     protected String columnDefStr;
     protected Vector<QueryFieldPanel> queryFields = null;
-    
+  
     public void setQuery(final SpQuery query, final TableTree tblTree, final Hashtable<String, TableTree> ttHash)
+    {
+    	setQuery(query, tblTree, ttHash, true);
+    }
+    public void setQuery(final SpQuery query, final TableTree tblTree, final Hashtable<String, TableTree> ttHash, boolean loadQueryFields)
     {
         removeAll();
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        queryFields = QueryBldrPane.getQueryFieldPanels(query, this, tblTree, ttHash);
-        add(queryFields.get(0)); //add header panel to ui
-        queryFields.remove(0); //remove it from params list.
-        for (QueryFieldPanel qfp : queryFields)
+        if (loadQueryFields)
         {
-            if (qfp.getQueryField().getIsPrompt())
-            {
-                add(qfp);
-                hasPrompts = true;
-            }
+        	queryFields = QueryBldrPane.getQueryFieldPanels(query, this, tblTree, ttHash);
+        	add(queryFields.get(0)); //add header panel to ui
+        	queryFields.remove(0); //remove it from params list.
+        	for (QueryFieldPanel qfp : queryFields)
+        	{
+        		if (qfp.getQueryField().getIsPrompt())
+        		{
+        			add(qfp);
+        			hasPrompts = true;
+        		}
+        	}
         }
-    }
+   }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#getAddBtn()

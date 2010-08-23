@@ -155,7 +155,9 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
                                       //(the data object or objects on the 'other' side of the relationship)
     protected Boolean      alwaysFilter; //true if criteria for this field should be applied in all situations, i.e. even
                                         //when query content is provided by a list of ids.
-    
+    protected Boolean	   allowNulls; //true if 'or is null' should be appended to the condition for the field
+    									//This allows, for example, a Determination.Current is true condition
+    									//to be applied without removing specimens that don't have any determinations.
     protected String	   stringId; //unique name for the field within it's query
     
     protected Byte         operStart;
@@ -265,6 +267,14 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     public void setAlwaysFilter(Boolean alwaysFilter)
     {
         this.alwaysFilter = alwaysFilter;
+    }
+
+    /**
+     * @param allowNulls the allowNulls to set
+     */
+    public void setAllowNulls(Boolean allowNulls)
+    {
+        this.allowNulls = allowNulls;
     }
 
     /**
@@ -425,6 +435,15 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     }
 
     /**
+     * @return the allowNulls
+     */
+    @Column(name = "AllowNulls", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getAllowNulls()
+    {
+        return allowNulls;
+    }
+
+    /**
      * @return the operStart
      */
     @Column(name = "OperStart", unique = false, nullable = false, insertable = true, updatable = true)
@@ -547,6 +566,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         isDisplay      = null;
         isPrompt       = null;
         alwaysFilter   = null;
+        allowNulls     = null;
         isRelFld       = null;        
         operStart      = null;
         operEnd        = null;
