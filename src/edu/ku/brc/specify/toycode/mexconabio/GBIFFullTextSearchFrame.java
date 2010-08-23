@@ -20,7 +20,12 @@ package edu.ku.brc.specify.toycode.mexconabio;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Frame;
 import java.awt.HeadlessException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -29,6 +34,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -36,6 +42,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableModel;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -90,10 +97,11 @@ import edu.ku.brc.util.Pair;
  */
 public class GBIFFullTextSearchFrame extends CustomDialog
 {
-    private Connection dbConn = null;
-    private JTextField searchField;
-    private JTable     table;
+    private Connection        dbConn = null;
+    private JTextField        searchField;
+    private JTable            table;
     private DataObjTableModel model;
+    private JLabel            status;        
     
     // Lucene
     protected File         INDEX_DIR = new File("index-gbif2");
@@ -108,7 +116,7 @@ public class GBIFFullTextSearchFrame extends CustomDialog
      */
     public GBIFFullTextSearchFrame() throws HeadlessException
     {
-        super(null, "GBIF Search", true, null);
+        super((Frame)null, "GBIF Search", true, CustomDialog.CANCEL_BTN, null);
         
         analyzer = new StandardAnalyzer(Version.LUCENE_30);
         try
@@ -157,21 +165,61 @@ public class GBIFFullTextSearchFrame extends CustomDialog
     @Override
     public void createUI()
     {
+        super.createUI();
         
-
-        PanelBuilder    builder = new PanelBuilder(new FormLayout("p,10px,f:p:g", "p,10px,f:p:g")); //$NON-NLS-1$ //$NON-NLS-2$
+        // 10029 AND Ipomoea
+        
+        PanelBuilder    builder = new PanelBuilder(new FormLayout("p,10px,f:p:g,2px,p", "p,10px,f:p:g,4px,p")); //$NON-NLS-1$ //$NON-NLS-2$
         CellConstraints cc      = new CellConstraints();
 
         searchField = new JTextField();
-        builder.add(UIHelper.createFormLabel("Search"), cc.xy(3,1));
+        builder.add(UIHelper.createFormLabel("Search"), cc.xy(1,1));
         builder.add(searchField, cc.xy(3,1));
         
-        builder.add(UIHelper.createScrollPane(table), cc.xyw(1, 3, 3));
+        JButton searchBtn = UIHelper.createButton("Search");
+        builder.add(searchBtn, cc.xy(5,1));
+        
+        table = new JTable();
+        builder.add(UIHelper.createScrollPane(table, true), cc.xyw(1, 3, 5));
+        
+        status = UIHelper.createLabel("");
+        builder.add(status, cc.xyw(1, 5, 5));
+        
+        builder.setDefaultDialogBorder();
         
         contentPanel = builder.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);
 
         pack();
+        
+        searchField.addKeyListener(new KeyAdapter()
+        {
+
+            /* (non-Javadoc)
+             * @see java.awt.event.KeyAdapter#keyPressed(java.awt.event.KeyEvent)
+             */
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+                super.keyPressed(e);
+                if (e.getKeyCode() == KeyEvent.VK_ENTER)
+                {
+                    doSearch(searchField.getText());
+                }
+            }
+            
+        });
+        
+        searchField.setText("10029 AND Ipomoea");
+        
+        searchBtn.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                doSearch(searchField.getText());
+            }
+        });
     }
     
     private void doSearch(final String serachStr)
@@ -204,9 +252,16 @@ public class GBIFFullTextSearchFrame extends CustomDialog
                 createAndFillModels(ids);
             } else
             {
-                table.setModel(null);
+                TableModel mdl = table.getModel();
+                if (mdl instanceof DataObjTableModel)
+                {
+                    ((DataObjTableModel)mdl).clear();
+                }
             }
             System.out.println(String.format("Time: %8.2f", (System.currentTimeMillis() - startTime) / 1000.0));
+            
+            String msg = String.format("Found %d items in %8.2f", hits.length, (System.currentTimeMillis() - startTime) / 1000.0);
+            status.setText(msg);
             
         } catch (Exception e)
         {
@@ -230,13 +285,13 @@ public class GBIFFullTextSearchFrame extends CustomDialog
         
         final String inClause = sb.toString();
         
-        final String[] colNames = {"Id", "Institution Code", "Collection Code", "Catalog Number", 
+        final String[] colNames = {"Id", "Collector Number", "Institution Code", "Collection Code", "Catalog Number", 
                                     "Scientific Name", "Author", "Genus", "Species", 
                                     "Subspecies", "Latitude", "Longitude", "Lat Long Prec", 
                                     "Max altitude", "Min altitude", "Alt Precision", "Min Depth", 
                                     "Max Depth", "Depth Precision", "Continent Ocean", "Country", 
                                     "State", "County", "Collector Name", "Locality", 
-                                    "Year", "Month", "Day", "Catalog Number"};
+                                    "Year", "Month", "Day"};
                             
         final Class<?> dataClasses[] = {Integer.class, String.class, String.class, String.class, 
                                         String.class, String.class, String.class, String.class, 
@@ -246,7 +301,8 @@ public class GBIFFullTextSearchFrame extends CustomDialog
                                         String.class, String.class, String.class, String.class, 
                                         String.class, String.class, String.class, String.class};
 
-        model = new DataObjTableModel(dbConn, 100, "", false)
+        
+        model = new DataObjTableModel(dbConn, 100, null, false)
         {
             /* (non-Javadoc)
              * @see edu.ku.brc.specify.dbsupport.cleanuptools.DataObjTableModel#buildSQL()
@@ -254,11 +310,11 @@ public class GBIFFullTextSearchFrame extends CustomDialog
             @Override
             protected String buildSQL()
             {
-                String gSQL = String.format("SELECT old_id, institution_code, collection_code, " +
+                String gSQL = String.format("SELECT id, collector_num, institution_code, collection_code, " +
                               "catalogue_number, scientific_name, author, genus, species, subspecies, latitude, longitude,  " +
                               "lat_long_precision, max_altitude, min_altitude, altitude_precision, min_depth, max_depth, depth_precision, " +
                               "continent_ocean, country, state_province, county, collector_name, " + 
-                              "locality, year, month, day, other_collnum FROM raw_cache WHERE id in (%s)", inClause);
+                              "locality, year, month, day FROM raw WHERE id in (%s)", inClause);
                             
                 tableInfo = new DBTableInfo(100, this.getClass().getName(), "raw", "id", "r");
                 
@@ -420,6 +476,9 @@ public class GBIFFullTextSearchFrame extends CustomDialog
                 SpecifyWebLinkMgr.setDoingLocal(true);
                 
                 GBIFFullTextSearchFrame dlg = new GBIFFullTextSearchFrame();
+                dlg.createDBConnection("localhost", "3306", "gbif", "root", "root");
+                dlg.setCancelLabel("Close");
+                dlg.setSize(900,700);
                 UIHelper.centerAndShow(dlg);
                 dlg.cleanup();
                 System.exit(0);
