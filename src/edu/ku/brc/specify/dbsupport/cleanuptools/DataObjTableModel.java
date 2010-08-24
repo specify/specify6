@@ -163,7 +163,16 @@ public class DataObjTableModel extends DefaultTableModel
         
         return sqlStr;
     }
-    
+
+    /**
+     *
+     */
+    public void clear()
+    {
+        values.clear();
+        fireTableDataChanged();
+    }
+
     /**
      * The Data members must be set to call this:
      *     numColumns
