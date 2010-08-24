@@ -287,7 +287,7 @@ public class UIFormatterEditorDlg extends CustomDialog
                 fieldInfo.getLength(),   //max
                 1);               //step
         sizeSpinner = new JSpinner(retModel);
-        isIncChk    = new JCheckBox("Is Incrementer");
+        isIncChk    = new JCheckBox("Is Incrementer"); // I18N
         
         String colDefs = "f:p:g,p,2px,"+width+"px,2px,p";
         
@@ -454,6 +454,23 @@ public class UIFormatterEditorDlg extends CustomDialog
         btn.setRolloverIcon(IconManager.getIcon("CloseHover"));
         btn.setEnabled(true);
         return btn;
+    }
+    
+    /**
+     * @return whether there is an incrementor
+     */
+    private boolean hasIncrementor()
+    {
+        for (UIFieldFormatterField fld : fields)
+        {
+            if (fld != currentField && fld.isIncrementer())
+            {
+                System.out.println("TRUE");
+                return true;
+            }
+        }
+        System.out.println("FALSE");
+        return false;
     }
     
     /**
@@ -993,6 +1010,8 @@ public class UIFormatterEditorDlg extends CustomDialog
     protected void updateUIEnabled()
     {
         boolean txtFldHasError = false;
+        
+        isIncChk.setEnabled(!hasIncrementor());
         
         // If we have a field formatter sampler, then we can check if current format 
         // invalidates an existing value in database.
