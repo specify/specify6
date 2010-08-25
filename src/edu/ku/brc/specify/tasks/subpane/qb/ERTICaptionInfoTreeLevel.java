@@ -35,8 +35,17 @@ public class ERTICaptionInfoTreeLevel extends ERTICaptionInfoQB
     protected static final Logger log = Logger.getLogger(ERTICaptionInfoTreeLevel.class);
     protected final ERTICaptionInfoTreeLevelGrp group;
     protected final int rank;
+    protected final int fldIdx;
     protected int rankIdx;
     
+    /**
+     * @param colName
+     * @param colLabel
+     * @param posIndex
+     * @param colStringId
+     * @param group
+     * @param rank
+     */
     public ERTICaptionInfoTreeLevel(String  colName, 
                                     String  colLabel, 
                                     int     posIndex,
@@ -44,11 +53,23 @@ public class ERTICaptionInfoTreeLevel extends ERTICaptionInfoQB
                                     final ERTICaptionInfoTreeLevelGrp group,
                                     final int rank)
     {
-        super(colName, colLabel, true, null, posIndex, colStringId, null, null);
-        this.group = group;
-        this.rank = rank;
+        this(colName, colLabel, posIndex, colStringId, group, rank, 0);
     }
 
+    public ERTICaptionInfoTreeLevel(String  colName, 
+            String  colLabel, 
+            int     posIndex,
+            String colStringId,
+            final ERTICaptionInfoTreeLevelGrp group,
+            final int rank, final int fldIdx)
+    {
+    	super(colName, colLabel, true, null, posIndex, colStringId, null, null);
+    	this.group = group;
+    	this.rank = rank;
+    	this.fldIdx = fldIdx;
+    }
+
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.ERTICaptionInfoQB#processValue(java.lang.Object)
      */
@@ -57,7 +78,7 @@ public class ERTICaptionInfoTreeLevel extends ERTICaptionInfoQB
     {
         try
         {
-        	return group.processValue(value, rankIdx);
+        	return group.processValue(value, rankIdx, fldIdx);
         } catch (SQLException ex)
         {
         	log.error(ex);
