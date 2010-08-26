@@ -93,6 +93,7 @@ import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -1733,9 +1734,18 @@ public class QueryTask extends BaseTask
                         {
                             try
                             {
+                                //newTreeNode.getTableQRI().addField(
+                                //        new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
+                                //                .getRankId()));
                                 newTreeNode.getTableQRI().addField(
                                         new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
-                                                .getRankId()));
+                                                .getRankId(), "name"));
+                                if (defItem instanceof TaxonTreeDefItem)
+                                {
+                                	newTreeNode.getTableQRI().addField(
+                                        new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
+                                                .getRankId(), "author"));
+                                }
                             }
                             catch (Exception ex)
                             {

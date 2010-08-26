@@ -145,7 +145,7 @@ public class ERTICaptionInfoTreeLevelGrp
         String[] vals = new String[info.length-1];
         for (int c = 0; c < vals.length; c++)
         {
-        	vals[c] = info[c].toString();
+        	vals[c] = info[c] == null ? null : info[c].toString();
         }
         return new Pair<Integer, String[]>((Integer )info[info.length - 1], vals);
     }

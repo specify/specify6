@@ -82,6 +82,10 @@ public class TreeLevelQRI extends FieldQRI
         if (treeDefItem != null)
         {
             title = treeDefItem.getDisplayText();
+            if (!"name".equals(realFldName))
+            {
+            	title += " " + realFldName.substring(0, 1).toUpperCase() + realFldName.substring(1);
+            }
         }
         else
         {
