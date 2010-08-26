@@ -55,7 +55,7 @@ public class ERTICaptionInfoTreeLevelGrp
     protected final Class<?>                         treeClass;
     protected final int                              treeDefId;
     protected final String                           alias;
-    protected final List<String>				     fieldsToRetrieve;		
+    protected final Vector<String>				     fieldsToRetrieve;		
     protected final LookupsCache                     lookupCache;
     protected final boolean                          useCache;
     
@@ -73,32 +73,21 @@ public class ERTICaptionInfoTreeLevelGrp
     protected boolean                                isSetup      = false;
     
 
-    /**
-     * @param treeClass
-     * @param treeDefId
-     * @param alias
-     */
-    public ERTICaptionInfoTreeLevelGrp(final Class<?> treeClass, final int treeDefId, final String alias,
-                                       final boolean useCache, final Integer cacheSize)
-    {
-        this(treeClass, treeDefId, alias, null, useCache, cacheSize);
-    }
 
     /**
      * @param treeClass
      * @param treeDefId
      * @param alias
-     * @param fieldsToRetrieve
      * @param useCache
      * @param cacheSize
      */
-    public ERTICaptionInfoTreeLevelGrp(final Class<?> treeClass, final int treeDefId, final String alias, final List<String> fieldsToRetrieve,
+    public ERTICaptionInfoTreeLevelGrp(final Class<?> treeClass, final int treeDefId, final String alias,
             final boolean useCache, final Integer cacheSize)
     {
     	this.treeClass = treeClass;
     	this.treeDefId = treeDefId;
     	this.alias = alias;
-    	this.fieldsToRetrieve = fieldsToRetrieve;
+    	this.fieldsToRetrieve = new Vector<String>();
     	this.members = new Vector<ERTICaptionInfoTreeLevel>();    	
     	this.useCache = useCache;
     	if (useCache)
@@ -368,7 +357,8 @@ public class ERTICaptionInfoTreeLevelGrp
      * 
      * Adds a member to the group and returns a CaptionInfo for the rank's column in the result-set.
      */
-    public ERTICaptionInfoTreeLevel addRank(final TreeLevelQRI rank, final String colName, final String lbl, final String id)
+    public ERTICaptionInfoTreeLevel addRank(final TreeLevelQRI rank, final String colName, final String lbl, final String id, 
+    		final String fldName)
     {
         if (isSetup)
         {
@@ -379,7 +369,13 @@ public class ERTICaptionInfoTreeLevelGrp
         {
             return null;
         }
-        ERTICaptionInfoTreeLevel result = new ERTICaptionInfoTreeLevel(colName, lbl, 0, id, this, rank.getRankId());
+        int fldIdx = fieldsToRetrieve.indexOf(fldName);
+        if (fldIdx == -1)
+        {
+        	fieldsToRetrieve.add(fldName);
+        	fldIdx = fieldsToRetrieve.size() - 1;
+        }
+        ERTICaptionInfoTreeLevel result = new ERTICaptionInfoTreeLevel(colName, lbl, 0, id, this, rank.getRankId(), fldIdx);
         members.add(result);
         return result;
     }

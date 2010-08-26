@@ -2078,9 +2078,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
                 else if (qfp.getFieldQRI() instanceof TreeLevelQRI)
                 {
+                    TreeLevelQRI tqri = (TreeLevelQRI )qfp.getFieldQRI();
                     for (ERTICaptionInfoTreeLevelGrp tg : treeGrps)
                     {
-                        erti = tg.addRank((TreeLevelQRI )qfp.getFieldQRI(), colName, lbl, qfp.getStringId());
+                        erti = tg.addRank((TreeLevelQRI )qfp.getFieldQRI(), colName, lbl, qfp.getStringId(), tqri.getRealFieldName());
                         if (erti != null)
                         {
                             break;
@@ -2088,10 +2089,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     }
                     if (erti == null)
                     {
-                        TreeLevelQRI tqri = (TreeLevelQRI )qfp.getFieldQRI();
                         ERTICaptionInfoTreeLevelGrp newTg = new ERTICaptionInfoTreeLevelGrp(tqri.getTreeDataClass(), 
                                 tqri.getTreeDefId(), tqri.getTableAlias(), true, null);
-                        erti = newTg.addRank(tqri, colName, lbl, qfp.getStringId());
+                        erti = newTg.addRank(tqri, colName, lbl, qfp.getStringId(), tqri.getRealFieldName());
                         treeGrps.add(newTg);
                     }
                 }
