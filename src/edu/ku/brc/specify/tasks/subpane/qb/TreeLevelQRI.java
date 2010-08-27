@@ -259,7 +259,7 @@ public class TreeLevelQRI extends FieldQRI
             TreeDefIface<?, ?, ?> treeDef = spMgr.getTreeDefForClass((Class<? extends Treeable<?,?,?>> )getTableInfo().getClassObj());
 
             String className = getTableInfo().getClassObj().getSimpleName();
-            List<?> matches = session.getDataList("from " + className + " where name " + operStr + " " +  criteria + " and " + className + "TreeDefId = " + treeDef.getTreeDefId()
+            List<?> matches = session.getDataList("from " + className + " where " + realFldName + " " + operStr + " " +  criteria + " and " + className + "TreeDefId = " + treeDef.getTreeDefId()
                     + " and rankId =" + String.valueOf(rankId));
             List<Pair<Integer, Integer>> nodeInfo = new LinkedList<Pair<Integer, Integer>>();
             if (matches.size() == 0)
