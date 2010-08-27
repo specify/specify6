@@ -1699,7 +1699,7 @@ public class UploadTable implements Comparable<UploadTable>
         {
         	for (UploadTable child : matchChildren)
             {
-                if (child.getTblClass().equals(LocalityDetail.class))
+        		if (child.getTblClass().equals(LocalityDetail.class))
                 {
                     //System.out.println("matching localitydetail children");
                     DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
@@ -1728,6 +1728,10 @@ public class UploadTable implements Comparable<UploadTable>
 							}
 							LocalityDetail ld1 = (LocalityDetail) matches.get(0);
 							result = ld1.matches(ld2);
+							if (!result)
+							{
+								return false;
+							}
 						} finally
 						{
 							child.loadFromDataSet(child.wbCurrentRow);
@@ -1768,6 +1772,10 @@ public class UploadTable implements Comparable<UploadTable>
 							GeoCoordDetail ld1 = (GeoCoordDetail) matches
 									.get(0);
 							result = ld1.matches(ld2);
+							if (!result)
+							{
+								return false;
+							}
 						} finally
 						{
 							child.loadFromDataSet(child.wbCurrentRow);
@@ -2921,7 +2929,7 @@ public class UploadTable implements Comparable<UploadTable>
     {
         int recNum = 0;
         logDebug("writeRowOrNot: " + this.table.getName());
-        System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
+        //System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
         autoAssignedVal = null;  //assumes one autoassign field per table.
         for (Vector<UploadField> seq : uploadFields)
         {

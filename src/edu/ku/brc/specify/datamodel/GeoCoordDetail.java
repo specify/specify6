@@ -464,7 +464,6 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
         }
         
     	return
-        	((geoCoordDetailId == null && o.geoCoordDetailId == null) || ((geoCoordDetailId != null && o.geoCoordDetailId != null) && geoCoordDetailId.equals(o.geoCoordDetailId))) &&
         	((namedPlaceExtent == null && o.namedPlaceExtent == null) || ((namedPlaceExtent != null && o.namedPlaceExtent != null) && namedPlaceExtent.equals(o.namedPlaceExtent))) &&
             ((geoRefAccuracyUnits == null && o.geoRefAccuracyUnits == null) || ((geoRefAccuracyUnits != null && o.geoRefAccuracyUnits != null) && geoRefAccuracyUnits.equals(o.geoRefAccuracyUnits))) &&
             ((geoRefDetRef == null && o.geoRefDetRef == null) || ((geoRefDetRef != null && o.geoRefDetRef != null) && geoRefDetRef.equals(o.geoRefDetRef))) &&
