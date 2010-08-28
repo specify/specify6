@@ -24,6 +24,7 @@ import javax.swing.JTextField;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -66,7 +67,7 @@ public class DivisionPanel extends GenericFormPanel
         if (tf != null)
         {
             String name = tf.getText();
-            if (StringUtils.isNotEmpty(name))
+            if (DBConnection.getInstance().getConnection() != null && StringUtils.isNotEmpty(name))
             {
                 int cnt = BasicSQLUtils.getCountAsInt(String.format("SELECT COUNT(*) FROM division WHERE Name = '%s'", name));
                 if (cnt > 0)

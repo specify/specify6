@@ -45,6 +45,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.ui.UIRegistry;
@@ -168,7 +169,7 @@ public class DisciplinePanel extends BaseSetupPanel
     public boolean isUIValid()
     {
         String name = disciplineName.getText();
-        if (StringUtils.isNotEmpty(name) && disciplines.getSelectedIndex() > -1)
+        if (DBConnection.getInstance().getConnection() != null && StringUtils.isNotEmpty(name) && disciplines.getSelectedIndex() > -1)
         {
             int cnt = BasicSQLUtils.getCountAsInt(String.format("SELECT COUNT(*) FROM discipline WHERE Name = '%s'", name));
             if (cnt > 0)
