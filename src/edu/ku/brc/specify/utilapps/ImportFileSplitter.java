@@ -923,17 +923,26 @@ public class ImportFileSplitter extends CustomDialog
 	{
 		private final int maxVal;
 		
+		/**
+		 * @param maxVal
+		 */
 		public PosIntTextField(int maxVal)
 		{
 			super();
 			this.maxVal = maxVal;
 		}
 
+		/* (non-Javadoc)
+		 * @see javax.swing.JTextField#createDefaultModel()
+		 */
 		protected Document createDefaultModel()
 		{
 			return new IntTextDocument();
 		}
 
+		/* (non-Javadoc)
+		 * @see java.awt.Component#isValid()
+		 */
 		public boolean isValid()
 		{
 			try
@@ -946,17 +955,28 @@ public class ImportFileSplitter extends CustomDialog
 			}
 		}
 
+		/**
+		 * @return
+		 */
 		public int getValue()
 		{
 			try
 			{
+				if (getDocument() == null)
+				{
+					return 0;
+				}
 				return Integer.parseInt(getText());
 			} catch (NumberFormatException e)
 			{
 				return 0;
-			}
+			} 		
 		}
-
+		
+		/**
+		 * @author Tadmin
+		 *
+		 */
 		class IntTextDocument extends PlainDocument
 		{
 			public void insertString(int offs, String str, AttributeSet a)
