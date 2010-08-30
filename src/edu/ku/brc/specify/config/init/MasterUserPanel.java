@@ -346,9 +346,9 @@ public class MasterUserPanel extends GenericFormPanel
                         {
                             if (mgr.doesUserExists(saUserName))
                             {
-                                if (!mgr.dropUser("\'"+saUserName+"\'@\'"+hostName+"\'"))
+                                if (!mgr.setPermissions(saUserName, dbName, DBMSUserMgr.PERM_ALL_BASIC))
                                 {
-                                    errorKey = "ERR_DROP_USR";
+                                    errorKey = "ERR_SET_PERM";
                                 }
                             }
                             
