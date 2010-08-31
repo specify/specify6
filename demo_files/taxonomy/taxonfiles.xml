@@ -1,23 +1,23 @@
 <vector>
-    <file discipline="fish"         title="Ichthyology" coverage="" file="col2008_fishes.xls" src="Catalog of Life 2008">
+    <file discipline="fish"         title="Ichthyology" coverage="" file="col2008_fishes.xls" src="Catalog of Life 2008" size="11228672">
         <description>FishBase: 533 families; 4883 genera; 8759 species.</description>
     </file>
-    <file discipline="herpetology"  title="Herpetology" coverage="" file="col2008_herps.xls" src="Catalog of Life 2008">
+    <file discipline="herpetology"  title="Herpetology" coverage="" file="col2008_herps.xls" src="Catalog of Life 2008" size="6911488">
         <description>Amphibs: 48 families; 449 genera; 5752 species.  Reptiles: 62 families; 1072 genera; 8759 species.</description>
     </file>
-    <file discipline="bird"         title="Ornithology" coverage="" file="col2008_aves.xls" src="Catalog of Life 2008">
+    <file discipline="bird"         title="Ornithology" coverage="" file="col2008_aves.xls" src="Catalog of Life 2008" size="7839232">
         <description>178 families; 2123 genera; 9913 species.</description>
     </file>
-    <file discipline="mammal"       title="Mammalogy"   coverage="" file="col2008_mammalia.xls" src="Catalog of Life 2008">
+    <file discipline="mammal"       title="Mammalogy"   coverage="" file="col2008_mammalia.xls" src="Catalog of Life 2008" size="2727424">
         <description>146 families; 1151 genera; 4832 species.</description>
     </file>
-    <file discipline="insect"       title="Entomology"  coverage="" file="col2008_orthoptera.xls" src="Catalog of Life 2008">
+    <file discipline="insect"       title="Entomology"  coverage="" file="col2008_orthoptera.xls" src="Catalog of Life 2008" size="9502720">
         <description>Order Orthoptera only: 40 families; 4320 genera; 23042 species.</description>
     </file>
-    <file discipline="botany"       title="Botany"      coverage="" file="col2008_poales.xls" src="Catalog of Life 2008">
+    <file discipline="botany"       title="Botany"      coverage="" file="col2008_poales.xls" src="Catalog of Life 2008" size="4817408">
         <description>Order Poales only: 16 families; 558 genera; 13246 species.</description>
     </file>
-    <file discipline="invertebrate" title="Invertebrate Zoology" coverage="" file="col2008_inverts.xls" src="Catalog of Life 2008">
+    <file discipline="invertebrate" title="Invertebrate Zoology" coverage="" file="col2008_inverts.xls" src="Catalog of Life 2008" size="8188416">
         <description>Phyla Mollusca, Cnidaria and Echinodermata only: 826 families; 4092 genera; 22584 species.</description>
     </file>
 </vector>

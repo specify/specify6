@@ -33,12 +33,13 @@ import com.thoughtworks.xstream.XStream;
  */
 public class TaxonFileDesc
 {
-    protected String discipline;
-    protected String title;
-    protected String coverage;
-    protected String fileName;
-    protected String description;
-    protected String src;
+    protected String  discipline;
+    protected String  title;
+    protected String  coverage;
+    protected String  fileName;
+    protected String  description;
+    protected String  src;
+    protected Integer size;
     
     /**
      * @return the discipline
@@ -127,6 +128,20 @@ public class TaxonFileDesc
         this.src = src;
     }
     
+    /**
+     * @return the size
+     */
+    public Integer getSize()
+    {
+        return size;
+    }
+    /**
+     * @param size the size to set
+     */
+    public void setSize(Integer size)
+    {
+        this.size = size;
+    }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -149,6 +164,7 @@ public class TaxonFileDesc
         xstream.useAttributeFor(TaxonFileDesc.class, "coverage");
         xstream.useAttributeFor(TaxonFileDesc.class, "fileName");
         xstream.useAttributeFor(TaxonFileDesc.class, "src");
+        xstream.useAttributeFor(TaxonFileDesc.class, "size");
                
         xstream.aliasAttribute(TaxonFileDesc.class, "fileName", "file");
         

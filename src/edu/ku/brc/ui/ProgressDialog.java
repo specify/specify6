@@ -60,6 +60,11 @@ public class ProgressDialog extends JDialog
     protected boolean      isProcessPercent = false;
     protected int          origMax          = 0;
     
+    /**
+     * @param title
+     * @param includeBothBars
+     * @param includeClose
+     */
     public ProgressDialog(final String  title, 
                           final boolean includeBothBars,
                           final boolean includeClose)

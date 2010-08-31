@@ -161,6 +161,7 @@ import edu.ku.brc.specify.config.init.BldrPickList;
 import edu.ku.brc.specify.config.init.BldrPickListItem;
 import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.config.init.HiddenTableMgr;
+import edu.ku.brc.specify.config.init.TaxonLoadSetupPanel;
 import edu.ku.brc.specify.config.init.TreeDefRow;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
@@ -333,6 +334,8 @@ public class BuildSampleDatabase
     
     protected NumberFormat     numFmt = NumberFormat.getInstance();
     protected SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    
+    protected int recCnt = 0;
 
     
     /**
@@ -726,14 +729,14 @@ public class BuildSampleDatabase
         String taxonFileName = props.getProperty("taxonfilename");
         String geoXML        = props.getProperty("GeographyTreeDef.treedefs");
         
-        Boolean usingOtherTxnFile = (Boolean)props.get("othertaxonfile");
+        Boolean doUserProvidedFile = (Boolean)props.get("othertaxonfile");
         
         frame.incOverall();
         
         Discipline discipline = createEmptyDiscipline(division, dispName, disciplineType, userAgent,
                                                       preLoadTaxon, 
                                                       taxonFileName, 
-                                                      usingOtherTxnFile != null ? usingOtherTxnFile : false,
+                                                      doUserProvidedFile != null ? doUserProvidedFile : false,
                                                       taxonXML, geoXML, props);
         if (discipline != null)
         {
@@ -802,8 +805,8 @@ public class BuildSampleDatabase
      * @param disciplineType
      * @param userAgent
      * @param preLoadTaxon
-     * @param taxonDefXML
-     * @param geoDefXML
+     * @param taxonFileName
+     * @param doUserProvidedFile
      * @return
      */
     public Discipline createEmptyDiscipline(final Division       division,
@@ -812,7 +815,7 @@ public class BuildSampleDatabase
                                             final Agent          userAgent,
                                             final boolean        preLoadTaxon, 
                                             final String         taxonFileName,
-                                            final boolean        usingOtherTxnFile, 
+                                            final boolean        doUserProvidedFile,
                                             final String         taxonDefXML, 
                                             final String         geoDefXML, 
                                             final Properties     props)
@@ -913,7 +916,7 @@ public class BuildSampleDatabase
         HashSet<String> colNameHash   = null;
         if (StringUtils.isNotEmpty(taxonFileName))
         {
-            colNameHash = getColumnNamesFromXLS(taxonFileName, usingOtherTxnFile);
+            colNameHash = getColumnNamesFromXLS(taxonFileName, doUserProvidedFile);
         }
         
         boolean taxonWasBuilt = createTaxonDefFromXML(taxa, colNameHash, taxonTreeDef, taxonDefXML);
@@ -967,7 +970,7 @@ public class BuildSampleDatabase
         log.debug(" fileName     ["+taxonFileName+"]");
         if (preLoadTaxon && taxonFileName != null)
         {
-            convertTaxonFromXLS(taxonTreeDef, taxonFileName, usingOtherTxnFile); // this does a startTx() / commitTx()
+            convertTaxonFromXLS(taxonTreeDef, taxonFileName, doUserProvidedFile); // this does a startTx() / commitTx()
         }
         
         frame.setProcess(++createStep);
@@ -1016,47 +1019,6 @@ public class BuildSampleDatabase
         log.debug("Out createEmptyDiscipline - createStep: "+createStep);
         
         return discipline;
-    }
-    
-    /**
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    public static Vector<TaxonFileDesc> readTaxonLoadFiles()
-    {
-        try
-        {
-            String fileName = "taxonfiles.xml";
-            
-            File file = XMLHelper.getConfigDir("../demo_files/taxonomy/"+fileName);
-            log.debug(" file "+file.getAbsolutePath() +"  "+file.exists());
-            if (!file.exists())
-            {
-                log.error("Couldn't file[" + file.getAbsolutePath() + "] checking the config dir");
-                file = XMLHelper.getConfigDir(fileName);
-                log.debug(" file "+file.getAbsolutePath() +"  "+file.exists());
-                if (!file.exists())
-                {
-                    file = new File("Specify/demo_files/"+fileName);
-                }
-            }
-    
-            if (file == null || !file.exists() || file.isDirectory())
-            {
-                log.error("Couldn't file[" + file.getAbsolutePath() + "]");
-                return null;
-            }
-            
-            XStream xstream = new XStream();
-            TaxonFileDesc.configXStream(xstream);
-            
-            return (Vector<TaxonFileDesc>)xstream.fromXML(FileUtils.readFileToString(file));
-            
-        } catch (IOException ex)
-        {
-            ex.printStackTrace();
-        }
-        return null;
     }
     
     /**
@@ -5710,7 +5672,7 @@ public class BuildSampleDatabase
                 persist(gm2);
                 commitTx();
                 
-                Discipline dsp = AppContextMgr.getInstance().getClassObject(Discipline.class);
+                //Discipline dsp = AppContextMgr.getInstance().getClassObject(Discipline.class);
                 
                 Agent groupAgent = new Agent();
                 groupAgent.initialize();
@@ -8759,42 +8721,15 @@ public class BuildSampleDatabase
         });
     }
     
-    private File getFileForTaxon(final String fileName, final boolean usingOtherTxnFile)
-    {
-        if (!usingOtherTxnFile)
-        {
-            File file = XMLHelper.getConfigDir("../demo_files/taxonomy/"+fileName);
-            log.debug(" file "+file.getAbsolutePath() +"  "+file.exists());
-            if (!file.exists())
-            {
-                log.error("Couldn't file[" + file.getAbsolutePath() + "] checking the config dir");
-                file = XMLHelper.getConfigDir(fileName);
-                log.debug(" file "+file.getAbsolutePath() +"  "+file.exists());
-                if (!file.exists())
-                {
-                    return new File("Specify/demo_files/"+fileName);
-                }
-            }
-    
-            if (file == null || !file.exists() || file.isDirectory())
-            {
-                log.error("Couldn't file[" + file.getAbsolutePath() + "]");
-                return null;
-            }
-            return file;
-        } 
-        
-        File file = new File(fileName);
-        return file.exists() ? file : null;
-    }
+
     
     /**
      * @param fileName
      * @return
      */
-    public HashSet<String> getColumnNamesFromXLS(final String fileName, final boolean usingOtherTxnFile)
+    public HashSet<String> getColumnNamesFromXLS(final String fileName, final boolean doUserProvidedFile)
     {
-        File file = getFileForTaxon(fileName, usingOtherTxnFile);
+        File file = TaxonLoadSetupPanel.getFileForTaxon(fileName, doUserProvidedFile);
         if (file == null)
         {
             return null;
@@ -8906,20 +8841,19 @@ public class BuildSampleDatabase
     }
     
 
-    int recCnt = 0;
-    
     /**
      * @param treeDef
      * @param fileName
+     * @param doUserProvidedFile
      * @return
      */
-    public Taxon convertTaxonFromXLS(final TaxonTreeDef treeDef, final String fileName, final boolean usingOtherTxnFile)
+    public Taxon convertTaxonFromXLS(final TaxonTreeDef treeDef, final String fileName, final boolean doUserProvidedFile)
     {
         Hashtable<String, Taxon> taxonHash = new Hashtable<String, Taxon>();
         
         taxonHash.clear();
 
-        File file = getFileForTaxon(fileName, usingOtherTxnFile);
+        File file = TaxonLoadSetupPanel.getFileForTaxon(fileName, doUserProvidedFile);
         if (file == null)
         {
             return null;

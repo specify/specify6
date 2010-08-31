@@ -34,8 +34,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -46,6 +50,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -57,14 +62,15 @@ import org.apache.commons.lang.StringUtils;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.af.ui.forms.validation.ValBrowseBtnPanel;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.specify.config.DisciplineType;
-import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.specify.utilapps.TaxonFileDesc;
 import edu.ku.brc.ui.DocumentAdaptor;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
@@ -80,6 +86,14 @@ import edu.ku.brc.util.Pair;
  */
 public class TaxonLoadSetupPanel extends BaseSetupPanel
 {
+    //private static final Logger log           = Logger.getLogger(TaxonLoadSetupPanel.class);
+    private static final String XLS              = "xls";
+    private static final String DWNLD_TAX_URL    = "DWNLD_TAX_URL";
+    private static final String BAD_TAXON_DEF_NC = "BAD_TAXON_DEF_NC";
+    private static final String BAD_TAXON_URL    = "BAD_TAXON_URL";
+    private static final String BAD_TAXON_DEF_DL = "BAD_TAXON_DEF_DL";
+    
+    
     protected JCheckBox          preloadChk;
     
     protected JLabel             fileLbl;
@@ -102,6 +116,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
     protected Component          othSep;
     
     protected boolean            firstTime = true;
+    protected String             downloadedFileName = null;
    
     /**
      * Creates a dialog for entering database name and selecting the appropriate driver.
@@ -219,7 +234,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
             @Override
             public boolean accept(File dir, String name)
             {
-                return name.toLowerCase().endsWith("xls");
+                return name.toLowerCase().endsWith(XLS);
             }
         });
     }
@@ -234,9 +249,9 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         if (fileName.isEmpty())
         {
             TaxonFileDesc tfd = (TaxonFileDesc)fileCBX.getSelectedItem();
-            if (tfd != null && FilenameUtils.isExtension(tfd.getFileName().toLowerCase(), "xls"))
+            if (tfd != null && FilenameUtils.isExtension(tfd.getFileName().toLowerCase(), XLS))
             {
-                fileName = tfd.getFileName();
+                fileName = downloadedFileName != null ? downloadedFileName : tfd.getFileName();
             }
         }
         
@@ -246,7 +261,6 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
             props.put("taxonfilename", fileName != null ? fileName : "");
             props.put("preloadtaxon", preloadChk.isSelected());
         }
-        
     }
 
     /* (non-Javadoc)
@@ -259,6 +273,74 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         updateBtnUI();
     }
     
+    /**
+     * @return
+     */
+    private String getTaxonDOMStr()
+    {
+        URL url;
+        try
+        {
+            String downloadHTTP = UIRegistry.getResourceString(DWNLD_TAX_URL);
+            if (StringUtils.isNotEmpty(downloadHTTP))
+            {
+                url = new URL(downloadHTTP + File.separator + "taxonfiles.xml");
+                URLConnection  conn = url.openConnection();
+                BufferedReader in   = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                String line;
+    
+                StringBuilder sb = new StringBuilder();
+                while ((line = in.readLine()) != null)
+                {
+                    sb.append(line);
+                }
+                in.close();
+               
+                return sb.toString();
+                
+            } else
+            {
+                UIRegistry.showLocalizedError(BAD_TAXON_URL);
+            }
+           
+        } catch (java.net.SocketException e)
+        {
+            UIRegistry.showLocalizedError(BAD_TAXON_DEF_NC);
+            
+        } catch (java.net.UnknownHostException e)
+        {
+            UIRegistry.showLocalizedError(BAD_TAXON_DEF_NC);
+            
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+            UIRegistry.showLocalizedError(BAD_TAXON_DEF_DL);
+        }
+        return null;
+    }
+   
+    /**
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    private Vector<TaxonFileDesc> readTaxonLoadFiles()
+    {
+        String taxonXML = getTaxonDOMStr();
+        while (taxonXML == null || taxonXML.length() < 1024)
+        {
+            int rv = UIRegistry.askYesNoLocalized("DWNLD_TRY_AGAIN", "SKIP", UIRegistry.getResourceString(BAD_TAXON_DEF_DL), "WARNING");
+            if (rv == JOptionPane.NO_OPTION)
+            {
+                return null;
+            }
+            taxonXML = getTaxonDOMStr();
+        }
+       
+        XStream xstream = new XStream();
+        TaxonFileDesc.configXStream(xstream);
+       
+        return (Vector<TaxonFileDesc>)xstream.fromXML(taxonXML);
+    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.config.init.BaseSetupPanel#doingNext()
@@ -272,35 +354,42 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         if (disciplineType != null)
         {
             DefaultComboBoxModel model = new DefaultComboBoxModel();
-            Vector<TaxonFileDesc> taxonFileDescs = BuildSampleDatabase.readTaxonLoadFiles();
-            for (TaxonFileDesc tfd : taxonFileDescs)
+            Vector<TaxonFileDesc> taxonFileDescs = readTaxonLoadFiles();
+            if (taxonFileDescs != null)
             {
-                if (tfd.getDiscipline().equals(disciplineType.getName()))
+                for (TaxonFileDesc tfd : taxonFileDescs)
                 {
-                    model.addElement(tfd);
-                }
-            }
-            
-            fileCBX.setModel(model);
-            if (model.getSize() > 0)
-            {
-                fileCBX.setSelectedIndex(0);
-            }
-            
-            if (firstTime)
-            {
-                firstTime = false;
-                fileCBX.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e)
+                    if (tfd.getDiscipline().equals(disciplineType.getName()))
                     {
-                        fileSelected();
+                        model.addElement(tfd);
                     }
-                });
+                }
+                
+                fileCBX.setModel(model);
+                if (model.getSize() > 0)
+                {
+                    fileCBX.setSelectedIndex(0);
+                }
+                
+                if (firstTime)
+                {
+                    firstTime = false;
+                    fileCBX.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e)
+                        {
+                            fileSelected();
+                        }
+                    });
+                }
+                fileSelected();
+                
+            } else
+            {
+                fileCBX.setEnabled(false);
+                preloadChk.setEnabled(false);
             }
         }
-        
-        fileSelected();
     }
 
     /* (non-Javadoc)
@@ -312,7 +401,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         super.doingPrev();
         
         otherBrw.setValue(null, null);
-        fileCBX.setSelectedIndex(-1);
+        fileCBX.setSelectedIndex(fileCBX.getModel().getSize() > 0 ? 0 : -1);
         coverageTF.setText("");
         srcTF.setText("");
         descTA.setText("");
@@ -325,9 +414,8 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         {
             preloadChk.doClick();
         }
-        
     }
-
+    
     /**
      * 
      */
@@ -341,6 +429,90 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
             descTA.setText(tfd.getDescription());
         }
         updateBtnUI();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.BaseSetupPanel#aboutToLeave()
+     */
+    @Override
+    public void aboutToLeave()
+    {
+        if (preloadChk.isSelected())
+        {
+            TaxonFileDesc tfd = (TaxonFileDesc)fileCBX.getSelectedItem();
+            if (tfd != null && FilenameUtils.isExtension(tfd.getFileName().toLowerCase(), XLS))
+            {
+                File txFile = getFileForTaxon(tfd.getFileName(), false);
+                if (txFile == null || !txFile.exists())
+                {
+                    File userDataFile = new File(UIRegistry.getAppDataDir() + File.separator + tfd.getFileName());
+                    if (!userDataFile.exists())
+                    {
+                        doDownloadTaxonFile(tfd.getFileName(), userDataFile, tfd.getSize());
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * @param fileName
+     * @param outFile
+     * @param fileSize
+     */
+    private void doDownloadTaxonFile(final String fileName,
+                                     final File outFile,
+                                     final int  fileSize)
+    {
+        try
+        {
+            String downloadHTTP = UIRegistry.getResourceString(DWNLD_TAX_URL);
+            if (StringUtils.isNotEmpty(downloadHTTP))
+            {
+                final URL url = new URL(downloadHTTP + File.separator + "" + fileName);
+                
+                TaxonDownloadDlg dlg = new TaxonDownloadDlg(url, outFile, fileSize);
+                dlg.setModal(true);
+                UIHelper.centerAndShow(dlg);
+                
+                if (dlg.getStatus() == TaxonDownloadDlg.StatusType.eOK)
+                {
+                    downloadedFileName = fileName;
+                }
+                
+            } else
+            {
+                UIRegistry.showLocalizedError(BAD_TAXON_URL);
+            }
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * @param fileName
+     * @param doUserProvidedFile
+     * @return
+     */
+    public static File getFileForTaxon(final String fileName, final boolean doUserProvidedFile)
+    {
+        if (!doUserProvidedFile)
+        {
+            // Check for a previously down loaded file.
+            File taxonXLSFile = new File(UIRegistry.getAppDataDir() + File.separator + fileName);
+            if (taxonXLSFile.exists())
+            {
+                return taxonXLSFile;
+            }
+            // This means we need to download one from the specify site.
+            return null;
+        } 
+        
+        // This is a user Provided File
+        File file = new File(fileName);
+        return file.exists() ? file : null;
     }
 
     /**
@@ -395,7 +567,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         if (preloadChk.isSelected() && otherBrw.isEnabled() && !otherTF.isFocusOwner())
         {
             String filePath = otherTF.getText();
-            if (!filePath.isEmpty() && FilenameUtils.isExtension(filePath.toLowerCase(), "xls"))
+            if (!filePath.isEmpty() && FilenameUtils.isExtension(filePath.toLowerCase(), XLS))
             {
                 File f = new File(filePath);
                 return f.exists();
@@ -417,6 +589,5 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         list.add(new Pair<String, String>(getResourceString("DSP_TYPE"), getResourceString(preloadChk.isSelected() ? "YES" : "NO")));
         return list;
     }
-    
     
 }
