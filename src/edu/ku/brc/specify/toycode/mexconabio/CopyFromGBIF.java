@@ -29,7 +29,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -52,17 +51,20 @@ import org.apache.lucene.util.Version;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
+/**
+ * @author rods
+ *
+ * @code_status Alpha
+ *
+ * Created Date: Aug 23, 2010
+ *
+ */
 public class CopyFromGBIF
 {
 
     private Connection dbConn    = null;
     private Connection dbConn2   = null;
     private Connection srcDBConn = null;
-    
-    @SuppressWarnings("unused")
-    private String     dbName;
-    @SuppressWarnings("unused")
-    private String     srcDBName = null;
     
     //-------------------------------
     // Lucene Indexing
@@ -100,8 +102,6 @@ public class CopyFromGBIF
                                    final String username, 
                                    final String pwd)
     {
-        this.dbName = dbName;
-
         String connStr = "jdbc:mysql://%s:%s/%s?characterEncoding=UTF-8&autoReconnect=true";
         try
         {
@@ -129,8 +129,6 @@ public class CopyFromGBIF
                                       final String pwd)
     {
 
-        this.srcDBName = dbName;
-        
         String connStr = "jdbc:mysql://%s:%s/%s?characterEncoding=UTF-8&autoReconnect=true";
         try
         {
@@ -445,6 +443,140 @@ public class CopyFromGBIF
         System.out.println("Done Indexing.");*/
     }
     
+    
+    /**
+     * 
+     */
+    public void processMissingGenusSpecies()
+    {
+        String pSQL        = "UPDATE raw SET genus=?, species=?, subspecies=? WHERE id = ?";
+        
+        String where       =  " WHERE genus IS NULL AND species IS NULL AND scientific_name IS NOT NULL";
+        String gbifSQLBase = "SELECT id, scientific_name FROM raw" + where;
+
+        long totalRecs   = BasicSQLUtils.getCount(srcDBConn, "SELECT COUNT(*) FROM raw "+ where);
+        long procRecs    = 0;
+        long startTime   = System.currentTimeMillis();
+        int  secsThreshold = 0;
+        
+        PrintWriter pw = null;
+        
+        final double HRS = 1000.0 * 60.0 * 60.0; 
+        
+        Statement         gStmt = null;
+        PreparedStatement pStmt = null;
+        
+        try
+        {
+            pw = new PrintWriter("gbif.log");
+            
+            pStmt = dbConn.prepareStatement(pSQL);
+            
+            System.out.println("Total Records: "+totalRecs);
+            pw.println("Total Records: "+totalRecs);
+            
+            gStmt = srcDBConn.createStatement(ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
+            gStmt.setFetchSize(Integer.MIN_VALUE);
+            
+            System.out.println(gbifSQLBase);
+            
+            ResultSet gRS = gStmt.executeQuery(gbifSQLBase);
+            while (gRS.next())
+            {
+                int id = gRS.getInt(1);
+                pStmt.setObject(4, id);
+                
+                String[] gs = StringUtils.split(gRS.getString(2), ' ');
+                switch (gs.length)
+                {
+                    case 1:
+                        pStmt.setString(1, gs[0]);
+                        pStmt.setString(2, null);
+                        pStmt.setString(3, null);
+                        break;
+                        
+                    case 2:
+                        pStmt.setString(1, gs[0]);
+                        pStmt.setString(2, gs[1]);
+                        pStmt.setString(3, null);
+                       break;
+                        
+                    case 3:
+                        pStmt.setString(1, gs[0]);
+                        pStmt.setString(2, gs[1]);
+                        pStmt.setString(3, gs[2]);
+                        break;
+                        
+                    default:
+                        continue;
+                }
+                try
+                {
+                    pStmt.executeUpdate();
+                    
+                } catch (Exception ex)
+                {
+                    System.err.println("For ID["+gRS.getObject(1)+"]["+gRS.getObject(2)+"]");
+                    ex.printStackTrace();
+                    pw.print("For ID["+gRS.getObject(1)+"] "+ex.getMessage());
+                    pw.flush();
+                }
+                
+                procRecs++;
+                if (procRecs % 10000 == 0)
+                {
+                    long endTime     = System.currentTimeMillis();
+                    long elapsedTime = endTime - startTime;
+                    
+                    double avergeTime = (double)elapsedTime / (double)procRecs;
+                    
+                    double hrsLeft = (((double)elapsedTime / (double)procRecs) * (double)totalRecs - procRecs)  / HRS;
+                    
+                    int seconds = (int)(elapsedTime / 60000.0);
+                    if (secsThreshold != seconds)
+                    {
+                        secsThreshold = seconds;
+                        
+                        String msg = String.format("Elapsed %8.2f hr.mn   Ave Time: %5.2f    Percent: %6.3f  Hours Left: %8.2f ", 
+                                ((double)(elapsedTime)) / HRS, 
+                                avergeTime,
+                                100.0 * ((double)procRecs / (double)totalRecs),
+                                hrsLeft);
+                        System.out.println(msg);
+                        pw.println(msg);
+                        pw.flush();
+                    }
+                }
+            }
+
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally 
+        {
+            try
+            {
+                if (gStmt != null)
+                {
+                    gStmt.close();
+                }
+                if (pStmt != null)
+                {
+                    pStmt.close();
+                }
+                pw.close();
+                
+            } catch (Exception ex)
+            {
+                
+            }
+        }
+        System.out.println("Done transferring.");
+        pw.println("Done transferring.");
+    }
+    
     /**
      * 
      */
@@ -496,7 +628,7 @@ public class CopyFromGBIF
         IndexWriter writer = null;
         try
         {
-            analyzer = new StandardAnalyzer(Version.LUCENE_30);
+            analyzer = new StandardAnalyzer(Version.LUCENE_20);
             
             FileUtils.deleteDirectory(INDEX_DIR);
             
@@ -526,7 +658,7 @@ public class CopyFromGBIF
                 stmt = srcDBConn.createStatement(ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY);
                 stmt.setFetchSize(Integer.MIN_VALUE);
                 
-                String[]          fldNames = {"id", "cn", "gn", "sp", "cln", "ctr", "yr", "mn", "dy"};
+                //String[]          fldNames = {"id", "cn", "gn", "sp", "cln", "ctr", "yr", "mn", "dy"};
                 ResultSet         rs   = stmt.executeQuery("SELECT id, catalogue_number, genus, species, collector_num, collector_name, year, month, day FROM raw");// LIMIT 100000,1000");
                 ResultSetMetaData rsmd = rs.getMetaData();
                 
@@ -602,9 +734,6 @@ public class CopyFromGBIF
 
             }
             
-            Date end = new Date();
-            //System.out.println(end.getTime() - start.getTime() + " total milliseconds");
-
         } catch (IOException e)
         {
             e.printStackTrace();
@@ -729,9 +858,14 @@ public class CopyFromGBIF
             awg.cleanup();
         } else
         {
-            awg.createSrcDBConnection("localhost", "3306", "gbif", "root", "root");
+            awg.createDBConnection("localhost", "3306", "plants", "root", "root");
+            
+            awg.createSrcDBConnection("localhost", "3306", "plants_ref", "root", "root");
+            awg.processMissingGenusSpecies();
+            
+            //awg.createSrcDBConnection("localhost", "3306", "gbif", "root", "root");
             //awg.index();
-            awg.testSearch();
+            //awg.testSearch();
             awg.cleanup();
         }
     }

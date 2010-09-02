@@ -20,6 +20,8 @@ package edu.ku.brc.specify.conversion;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
+import org.apache.axis.utils.StringUtils;
+
 /**
  * @author rods
  *
@@ -68,7 +70,7 @@ public class TableWriter extends PrintWriter
         this.title = title;
         this.extraStyle = extraStyle;
         
-        println("<HTML>\n<HEAD>\n<TITLE>"+title+"</TITLE>\n");
+        println("<HTML>\n<HEAD>\n<meta HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=UTF-8\"><TITLE>"+title+"</TITLE>\n");
         writeStyle(this);
         println("</HEAD>\n<BODY>");
         if (doCenterTitle) 
@@ -100,12 +102,12 @@ public class TableWriter extends PrintWriter
         pwOut.println("<STYLE>");
         pwOut.println("body { font-family: sans-serif; }");
         pwOut.println(" SPAN.err { color: red; }");
-        pwOut.println(" TABLE.o { border-top: solid 1px rgb(128, 128, 128); border-left: solid 1px rgb(128, 128, 128); }");
-        pwOut.println(" TABLE.o td { border-bottom: solid 1px rgb(128, 128, 128); border-right: solid 1px rgb(128, 128, 128); }");
-        pwOut.println(" TABLE.o th { border-bottom: solid 1px rgb(128, 128, 128); border-right: solid 1px rgb(128, 128, 128); }");
-        pwOut.println(" TABLE.i { border-top: solid 1px rgb(192, 192, 192); border-left: solid 1px rgb(192, 192, 192); }");
-        pwOut.println(" TABLE.i td { border-bottom: solid 1px rgb(192, 192, 192); border-right: solid 1px rgb(192, 192, 192); }");
-        pwOut.println(" TABLE.i th { border-bottom: solid 1px rgb(192, 192, 192); border-right: solid 1px rgb(192, 192, 192); }");
+        pwOut.println(" TABLE.o    { border-bottom: solid 1px rgb(128, 128, 128); border-right: solid 1px rgb(128, 128, 128); }");
+        pwOut.println(" TABLE.o td { border-top: solid 1px rgb(128, 128, 128); border-left: solid 1px rgb(128, 128, 128); }");
+        pwOut.println(" TABLE.o th { border-top: solid 1px rgb(128, 128, 128); border-left: solid 1px rgb(128, 128, 128); }");
+        pwOut.println(" TABLE.i    { border-bottom: solid 1px rgb(192, 192, 192); border-right: solid 1px rgb(192, 192, 192); }");
+        pwOut.println(" TABLE.i td { border-top: solid 1px rgb(192, 192, 192); border-left: solid 1px rgb(192, 192, 192); }");
+        pwOut.println(" TABLE.i th { border-top: solid 1px rgb(192, 192, 192); border-left: solid 1px rgb(192, 192, 192); }");
         if (extraStyle != null) pwOut.println(extraStyle);
         pwOut.println("</STYLE>");
     }
@@ -227,7 +229,7 @@ public class TableWriter extends PrintWriter
         {
             print(TD);
         }
-        print(c == null ? "&nbsp;" : c);
+        print(StringUtils.isEmpty(c) ? "&nbsp;" : c);
         print(TD_);
     }
     

@@ -22,8 +22,10 @@ package edu.ku.brc.specify.conversion;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.io.FilenameUtils;
@@ -43,6 +45,7 @@ public class ConversionLogger
     
     protected Hashtable<String, String>      printWritersNameHash  = new Hashtable<String, String>();
     protected Hashtable<String, TableWriter> printWritersHash      = new Hashtable<String, TableWriter>();
+    protected ArrayList<TableWriter>         printWritersList      = new ArrayList<TableWriter>();
     
     protected String indexTitle = "Index";
     
@@ -65,12 +68,13 @@ public class ConversionLogger
     }
     
     /**
-     * @param name
+     * @param baseDirName
+     * @param dirName
      * @return
      */
-    public boolean initialize(final String baseDirName, final String name)
+    public boolean initialize(final String baseDirName, final String dirName)
     {
-        dir = new File(baseDirName + File.separator + name);
+        dir = new File(baseDirName + File.separator + dirName);
         if (!dir.exists())
         {
             return dir.mkdirs();
@@ -132,6 +136,8 @@ public class ConversionLogger
                 tblWriter = new TableWriter(path, title, extraStyle, doCenterTitle);
                 printWritersNameHash.put(fileName, path);
                 printWritersHash.put(fileName, tblWriter);
+                printWritersList.add(tblWriter);
+                
             } else
             {
                 System.err.println("Duplicate file name["+fileName+"]");
@@ -146,20 +152,39 @@ public class ConversionLogger
      */
     public File closeAll()
     {
+        return closeAll(false);
+    }
+    
+    /**
+     * 
+     */
+    public File closeAll(final boolean byOrderAdded)
+    {
         try 
         {
             String path = dir.getAbsolutePath() + File.separator + "index.html";
             TableWriter indexWriter = new TableWriter(path, indexTitle);
             indexWriter.startTable();
             
-            Vector<String> names = new Vector<String>(printWritersHash.keySet());
-            Collections.sort(names);
-            
-            for (String nm : names)
+            List<TableWriter> orderList;
+            if (byOrderAdded)
             {
-                System.out.println(nm);
+                orderList = printWritersList;
+            } else
+            {
+                orderList = new ArrayList<TableWriter>();
+                Vector<String> names = new Vector<String>(printWritersHash.keySet());
+                Collections.sort(names); 
                 
-                TableWriter tblWriter = printWritersHash.get(nm);
+                for (String nm : names)
+                {
+                    orderList.add(printWritersHash.get(nm));
+                }
+            }
+            
+            for (TableWriter tblWriter : orderList)
+            {
+                System.out.println(tblWriter.getTitle());
                 
                 try
                 {

@@ -19,115 +19,31 @@
 */
 package edu.ku.brc.specify.toycode.mexconabio;
 
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Calendar;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
-public class AnalysisWithGBIF
+public class AnalysisWithGBIF extends AnalysisBase
 {
-    public static final  String CONN_STR = "jdbc:mysql://%s:%s/%s?characterEncoding=UTF-8&autoReconnect=true";
-    
-    private Connection dbGBIFConn    = null;
-    private Connection dbSrcConn = null;
-    private Connection dbDstConn = null;
-    
+
     /**
-     * @param server
-     * @param port
-     * @param dbName
-     * @param username
-     * @param pwd
+     * 
      */
     public AnalysisWithGBIF()
     {
         super();
      }
     
-    /**
-     * @param server
-     * @param port
-     * @param dbName
-     * @param username
-     * @param pwd
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.toycode.mexconabio.AnalysisBase#process(int, int)
      */
-    public void createDBConnection(final String server, 
-                                   final String port, 
-                                   final String dbName, 
-                                   final String username, 
-                                   final String pwd)
-    {
-        try
-        {
-            dbGBIFConn = DriverManager.getConnection(String.format(CONN_STR, server, port, dbName), username, pwd);
-        } catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-    }
-        
-    
-    /**
-     * @param server
-     * @param port
-     * @param dbName
-     * @param username
-     * @param pwd
-     */
-    public void createSrcDBConnection(final String server, 
-                                           final String port, 
-                                           final String dbName, 
-                                           final String username, 
-                                           final String pwd)
-    {
-
-        try
-        {
-            dbSrcConn = DriverManager.getConnection(String.format(CONN_STR, server, port, dbName), username, pwd);
-            
-        } catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-    }
-        
-    
-    /**
-     * @param server
-     * @param port
-     * @param dbName
-     * @param username
-     * @param pwd
-     */
-    public void createDestDBConnection(final String server, 
-                                      final String port, 
-                                      final String dbName, 
-                                      final String username, 
-                                      final String pwd)
-    {
-
-        try
-        {
-            dbDstConn = DriverManager.getConnection(String.format(CONN_STR, server, port, dbName), username, pwd);
-            
-        } catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-    }
-        
-    
-    /**
-     * 
-     */
-    public void process()
+    @Override
+    public void process(final int type, final int options)
     {
         final double HRS = 1000.0 * 60.0 * 60.0; 
         Calendar cal = Calendar.getInstance();
@@ -171,7 +87,7 @@ public class AnalysisWithGBIF
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next())
             {
-                String  catNum       = rs.getString(1).trim();
+                //String  catNum       = rs.getString(1).trim();
                 String  collectorNum = rs.getString(2).trim();
                 //String  collector    = rs.getString(3);
                 String  genus        = rs.getString(4);
@@ -186,7 +102,7 @@ public class AnalysisWithGBIF
                 //int     mon          = cal.get(Calendar.MONTH) + 1;
                 //int     day          = cal.get(Calendar.DAY_OF_MONTH);
                 
-                long start = System.currentTimeMillis();
+                //long start = System.currentTimeMillis();
                 sql = String.format(gbifSQL, collectorNum, year, genus);
                 //System.out.println(sql);
                 
@@ -263,56 +179,6 @@ public class AnalysisWithGBIF
         System.out.println("Done.");
     }
     
-    /**
-     * 
-     */
-    public void cleanup()
-    {
-        try
-        {
-            if (dbGBIFConn != null)
-            {
-                dbGBIFConn.close();
-            }
-            if (dbSrcConn != null)
-            {
-                dbSrcConn.close();
-            }
-            if (dbDstConn != null)
-            {
-                dbDstConn.close();
-            }
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-    }
-    
-    
-    /**
-     * @return the dbConn
-     */
-    public Connection getGBIFDBConn()
-    {
-        return dbGBIFConn;
-    }
-
-    /**
-     * @return the srcDBConn
-     */
-    public Connection getSrcDBConn()
-    {
-        return dbSrcConn;
-    }
-
-    /**
-     * @return the dbDstConn
-     */
-    public Connection getDstDBConn()
-    {
-        return dbDstConn;
-    }
-
     //------------------------------------------------------------------------------------------
     public static void main(String[] args)
     {
@@ -320,7 +186,7 @@ public class AnalysisWithGBIF
         awg.createDBConnection("localhost",     "3306", "gbif",           "root", "root");
         awg.createSrcDBConnection("localhost",  "3306", "mex",            "root", "root");
         awg.createDestDBConnection("localhost", "3306", "analysis_cache", "root", "root");
-        awg.process();
+        awg.process(0,0);
         awg.cleanup();
     }
 }
