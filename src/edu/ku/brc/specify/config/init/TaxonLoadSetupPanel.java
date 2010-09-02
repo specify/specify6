@@ -284,7 +284,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
             String downloadHTTP = UIRegistry.getResourceString(DWNLD_TAX_URL);
             if (StringUtils.isNotEmpty(downloadHTTP))
             {
-                url = new URL(downloadHTTP + File.separator + "taxonfiles.xml");
+                url = new URL(downloadHTTP + "/taxonfiles.xml");
                 URLConnection  conn = url.openConnection();
                 BufferedReader in   = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 String line;
