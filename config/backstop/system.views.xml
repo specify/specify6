@@ -376,6 +376,7 @@
                 <row>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="password" uitype="password" cols="15"/> 
+                    <cell type="command" id="CopyToCB" name="CopyToCB" label="" initialize="icon=ClipboardCopy;size=24;tooltip=CPY_TO_CB_TT" ignore="true"/>
                     <cell type="command" id="ShowPwd" name="ShowPwd" label="Show Password" ignore="true"/>
                 </row>
                 <row>

@@ -102,6 +102,17 @@ public class SpecifyUserBusRules extends BaseBusRules
             }
         });
         
+        if (copyBtn != null)
+        {
+            copyBtn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    UIHelper.setTextToClipboard(new String(pwdTxt.getPassword()));
+                }
+            });
+        }
+        
         pwdStrenthUI.setPasswordField(pwdTxt, genBtn);
         
         // This is in case the BusRules are used without the form.
@@ -113,6 +124,14 @@ public class SpecifyUserBusRules extends BaseBusRules
         
         copyBtn.setEnabled(false);
         
+        keyTxt.getDocument().addDocumentListener(new DocumentAdaptor() {
+            @Override
+            protected void changed(DocumentEvent e)
+            {
+                copyBtn.setEnabled(!StringUtils.deleteWhitespace(keyTxt.getText()).isEmpty());
+            }
+        });
+        
         pwdStrenthUI.setPasswordField(pwdTxt, genBtn);
         
         genBtn.addActionListener(new ActionListener() {
@@ -122,23 +141,6 @@ public class SpecifyUserBusRules extends BaseBusRules
                 createEncryptKey(keyTxt, pwdTxt);
             }
         });
-        
-        copyBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                UIHelper.setTextToClipboard(keyTxt.getText());
-            }
-        });
-        
-        keyTxt.getDocument().addDocumentListener(new DocumentAdaptor() {
-            @Override
-            protected void changed(DocumentEvent e)
-            {
-                copyBtn.setEnabled(!StringUtils.deleteWhitespace(keyTxt.getText()).isEmpty());
-            }
-        });
-
     }
 
     /**
