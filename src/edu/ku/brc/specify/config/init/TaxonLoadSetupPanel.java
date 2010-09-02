@@ -469,7 +469,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
             String downloadHTTP = UIRegistry.getResourceString(DWNLD_TAX_URL);
             if (StringUtils.isNotEmpty(downloadHTTP))
             {
-                final URL url = new URL(downloadHTTP + File.separator + "" + fileName);
+                final URL url = new URL(downloadHTTP + "/" + fileName);
                 
                 TaxonDownloadDlg dlg = new TaxonDownloadDlg(url, outFile, fileSize);
                 dlg.setModal(true);
