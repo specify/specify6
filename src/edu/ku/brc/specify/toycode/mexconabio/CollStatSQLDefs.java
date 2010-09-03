@@ -29,7 +29,7 @@ import com.thoughtworks.xstream.XStream;
  */
 public class CollStatSQLDefs
 {
-    public enum StatType {eTotalNumRecords, eGeoRefed, eHasCollNum, eHasYearOnly, eHasYearMonOnly, eHasYMDayOnly, eHasSciNameNoGenSp, eMissingLocality, eMissingCollectors, eMissingCountries, }
+    public enum StatType {eHasCollNum, eHasCollectors, eHasYMDayOnly, eHasCountries, eHasStates, eHasLocality, eHasYearOnly, eHasYearMonOnly, eGeoRefed, eHasSciNameNoGenSp, eTotalNumRecords, }
     
     protected StatType type;
     protected String name;

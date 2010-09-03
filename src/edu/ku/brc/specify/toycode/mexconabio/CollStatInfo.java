@@ -33,7 +33,8 @@ public class CollStatInfo
 {
     
     protected String title;
-    protected String chartFileName;
+    protected String instName;
+    protected String chartFileName; // Transient
     
     protected int geoRefed          = 0;
     protected int hasCollNum        = 0;
@@ -42,12 +43,15 @@ public class CollStatInfo
     protected int hasYMDayOnly      = 0;
     protected int hasSciNameNoGenSp = 0;
     
-    protected int missingDate       = 0;
-    protected int missingLocality   = 0;
-    protected int missingLatLon     = 0;
-    protected int missingCollectors = 0;
-    protected int missingCountries  = 0;
+    protected int hasLocality       = 0;
+    protected int hasLatLon         = 0;
+    protected int hasCollectors     = 0;
+    protected int hasCountries      = 0;
+    protected int hasStates         = 0;
+    
     protected int totalNumRecords   = 0;
+    
+    protected double averagePercent = 0.0; // Transient
        
     
     /**
@@ -99,16 +103,20 @@ public class CollStatInfo
                 hasSciNameNoGenSp = value;
                 break;
                 
-            case eMissingLocality:
-                missingLocality = value;
+            case eHasLocality:
+                hasLocality = value;
                 break;
                 
-            case eMissingCollectors:
-                missingCollectors = value;
+            case eHasCollectors:
+                hasCollectors = value;
                 break;
                 
-            case eMissingCountries:
-                missingCountries = value;
+            case eHasCountries:
+                hasCountries = value;
+                break;
+                
+            case eHasStates:
+                hasStates = value;
                 break;
         }
     }
@@ -138,14 +146,17 @@ public class CollStatInfo
             case eHasSciNameNoGenSp:
                 return hasSciNameNoGenSp;
                 
-            case eMissingLocality:
-                return missingLocality;
+            case eHasLocality:
+                return hasLocality;
                 
-            case eMissingCollectors:
-                return missingCollectors;
+            case eHasCollectors:
+                return hasCollectors;
                 
-            case eMissingCountries:
-                return missingCollectors;
+            case eHasCountries:
+                return hasCountries;
+                
+            case eHasStates:
+                return hasStates;
         }
         return 0;
     }
@@ -183,6 +194,22 @@ public class CollStatInfo
     }
     
     /**
+     * @return the instName
+     */
+    public String getInstName()
+    {
+        return instName;
+    }
+
+    /**
+     * @param instName the instName to set
+     */
+    public void setInstName(String instName)
+    {
+        this.instName = instName;
+    }
+
+    /**
      * @return the chartFileName
      */
     public String getChartFileName()
@@ -199,6 +226,22 @@ public class CollStatInfo
     }
 
     /**
+     * @return the averagePercent
+     */
+    public double getAveragePercent()
+    {
+        return averagePercent;
+    }
+
+    /**
+     * @param averagePercent the averagePercent to set
+     */
+    public void setAveragePercent(double averagePercent)
+    {
+        this.averagePercent = averagePercent;
+    }
+
+    /**
      * @param xstream
      */
     public static void config(final XStream xstream)
@@ -207,6 +250,7 @@ public class CollStatInfo
         xstream.useAttributeFor(CollStatInfo.class, "title"); //$NON-NLS-1$
         
         xstream.omitField(CollStatInfo.class, "chartFileName"); //$NON-NLS-1$
+        xstream.omitField(CollStatInfo.class, "averagePercent"); //$NON-NLS-1$
     }
 
 }

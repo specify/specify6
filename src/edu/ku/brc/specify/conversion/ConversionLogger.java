@@ -45,7 +45,7 @@ public class ConversionLogger
     
     protected Hashtable<String, String>      printWritersNameHash  = new Hashtable<String, String>();
     protected Hashtable<String, TableWriter> printWritersHash      = new Hashtable<String, TableWriter>();
-    protected ArrayList<TableWriter>         printWritersList      = new ArrayList<TableWriter>();
+    protected Vector<TableWriter>            printWritersList      = new Vector<TableWriter>();
     
     protected String indexTitle = "Index";
     
@@ -159,7 +159,7 @@ public class ConversionLogger
      * @param indexWriter
      * @param orderList
      */
-    protected void writeIndex(final TableWriter indexWriter, final List<TableWriter> orderList)
+    protected void writeIndex(final TableWriter indexWriter, final Vector<TableWriter> orderList)
     {
         indexWriter.startTable();
 
@@ -204,13 +204,13 @@ public class ConversionLogger
             String path = dir.getAbsolutePath() + File.separator + "index.html";
             TableWriter indexWriter = new TableWriter(path, indexTitle);
             
-            List<TableWriter> orderList;
+            Vector<TableWriter> orderList;
             if (byOrderAdded)
             {
                 orderList = printWritersList;
             } else
             {
-                orderList = new ArrayList<TableWriter>();
+                orderList = new Vector<TableWriter>();
                 Vector<String> names = new Vector<String>(printWritersHash.keySet());
                 Collections.sort(names); 
                 
@@ -226,8 +226,8 @@ public class ConversionLogger
             
             return new File(path);
             
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
+        } catch (FileNotFoundException e) 
+        {
             e.printStackTrace();
         }
         

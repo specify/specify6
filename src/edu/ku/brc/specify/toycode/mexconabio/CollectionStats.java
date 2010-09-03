@@ -22,6 +22,9 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -57,10 +60,11 @@ import edu.ku.brc.util.Pair;
  */
 public class CollectionStats extends AnalysisBase
 {
-
-    private Vector<CollStatInfo>          institutions = new Vector<CollStatInfo>();
-    private HashMap<String, CollStatInfo> instHashMap  = new HashMap<String, CollStatInfo>();
-    
+    private boolean                       loadInstsFromDB = true; 
+    private Vector<CollStatInfo>          institutions    = new Vector<CollStatInfo>();
+    private HashMap<String, CollStatInfo> instHashMap     = new HashMap<String, CollStatInfo>();
+    private TableWriter                   sortByTblWriter = null;
+    private PreparedStatement             pLMStmt         = null;
     /**
      * 
      */
@@ -72,7 +76,7 @@ public class CollectionStats extends AnalysisBase
         convLogger = new IndexedConvLogger();
     }
     
-    public void discoverInstCodesAndtotals()
+    public void discoverInstCodesAndTotals()
     {
         System.out.println("Getting Institutions");
         String sql = "SELECT * FROM (SELECT institution_code, COUNT(*) AS cnt FROM raw GROUP BY institution_code) T1 WHERE cnt > 1 ORDER BY cnt DESC";
@@ -81,6 +85,10 @@ public class CollectionStats extends AnalysisBase
             CollStatInfo csi = new CollStatInfo();
             csi.setTitle(row[0].toString());
             csi.setTotalNumRecords(((Long)row[1]).intValue());
+            if (StringUtils.isEmpty(csi.getInstName()))
+            {
+                csi.setInstName(getProviderNameFromInstCode(csi.getTitle()));
+            }
             instHashMap.put(csi.getTitle(), csi);
             institutions.add(csi);
         }
@@ -131,8 +139,13 @@ public class CollectionStats extends AnalysisBase
             dataset.addValue(p.second, p.first, ""); 
         }
         
+        if (StringUtils.isEmpty(csi.getInstName()))
+        {
+            csi.setInstName(getProviderNameFromInstCode(csi.getTitle()));
+        }
+        
         JFreeChart chart = ChartFactory.createBarChart( 
-                    csi.getTitle(),
+                    StringUtils.isEmpty(csi.getInstName()) ? csi.getTitle() : csi.getInstName(),
                     xTitle,
                     yTitle,
                     dataset, 
@@ -143,7 +156,6 @@ public class CollectionStats extends AnalysisBase
         //chart.getCategoryPlot().setRenderer(new CustomColorBarChartRenderer());
 
         chart.setBackgroundPaint(new Color(228, 243, 255));
-        
         
         try
         {
@@ -161,7 +173,7 @@ public class CollectionStats extends AnalysisBase
     /**
      * @param response
      */
-    protected boolean generateDateChart(final CollStatInfo csi, final List<CollStatSQLDefs> statTypes)
+    protected boolean generateDateChart(final CollStatInfo csi, final HashMap<StatType, CollStatSQLDefs> statTypeHash)
     {
         System.out.println(csi.getTitle());
         
@@ -171,14 +183,13 @@ public class CollectionStats extends AnalysisBase
         
         double totalPercent = 0.0;
         int    cnt          = 0;
-        int goodCnt = 0;
-        for (CollStatSQLDefs csqd : statTypes)
+        int    goodCnt      = 0;
+        for (StatType type : StatType.values())
         {
-            if (csqd.getType() == StatType.eTotalNumRecords) continue;
+            if (type == StatType.eTotalNumRecords) continue;
             
-            StatType type = csqd.getType();
+            CollStatSQLDefs csqd = statTypeHash.get(type);
             double dVal = (double)csi.getValue(type);
-            if (type.ordinal() >= StatType.eMissingLocality.ordinal()) dVal = total - dVal;
             int    val = (int)(((dVal / (double)total) * 100.0));
             
             if (val > 0)
@@ -190,14 +201,11 @@ public class CollectionStats extends AnalysisBase
             
             pairs.add(new Pair<String, Integer>(csqd.getName(), val));
             
-            if (type == StatType.eHasYearOnly)
-            {
-                totalPercent -= val;
-            } else if (type != StatType.eGeoRefed)
+            if (type.ordinal() < StatType.eHasYearOnly.ordinal())
             {
                 totalPercent += val;
+                cnt++;
             }
-            cnt++;
         }
         totalPercent = Math.max(totalPercent, 0.0);
         pairs.add(new Pair<String, Integer>("Average", (int)totalPercent/cnt));
@@ -205,7 +213,7 @@ public class CollectionStats extends AnalysisBase
         //System.out.println("goodCnt: "+goodCnt);
         if (goodCnt > 0)
         {
-            createChart(csi, pairs, "Percent", "Statistic");
+            createChart(csi, pairs, "Statistic", "Percent");
             return true;
         }
         return false;
@@ -219,6 +227,11 @@ public class CollectionStats extends AnalysisBase
         loadInstCodesAndtotals();
         
         List<CollStatSQLDefs> statTypes = getStatSQL();
+        HashMap<StatType, CollStatSQLDefs> statTypeHash = new HashMap<StatType, CollStatSQLDefs>();
+        for (CollStatSQLDefs cs : statTypes)
+        {
+            statTypeHash.put(cs.getType(), cs);
+        }
         
         CollStatInfo totals = new CollStatInfo(" Totals");
         for (CollStatInfo csi : institutions)
@@ -254,17 +267,23 @@ public class CollectionStats extends AnalysisBase
         institutions.insertElementAt(totals, 0);
         CollStatInfo clsi = totals;
         
-        
         //tblWriter.logHdr(titles);
         
         
         int i = 0;
         for (CollStatInfo csi : institutions)
         {
-            String title = csi.getTitle()+ " - "+csi.getTotalNumRecords();
+            if (StringUtils.isEmpty(csi.getInstName()))
+            {
+                csi.setInstName(getProviderNameFromInstCode(csi.getTitle()));
+            }
+            
+            String desc = StringUtils.isEmpty(csi.getInstName()) ? csi.getTitle() : csi.getInstName();
+            String title = desc + " - " + csi.getTotalNumRecords();
+            
             if (i == 0)
             {
-                startLogging("reports", "charts", clsi.hashCode()+".html",title, false);
+                startLogging("reports", "charts", clsi.hashCode()+".html", title, false);
                 tblWriter.startTable();
 
             } else
@@ -274,7 +293,7 @@ public class CollectionStats extends AnalysisBase
                 tblWriter.startTable();
             }
             
-            if (generateDateChart(csi, statTypes))
+            if (generateDateChart(csi, statTypeHash))
             {
                 int total = csi.getValue(StatType.eTotalNumRecords);
                 
@@ -287,29 +306,27 @@ public class CollectionStats extends AnalysisBase
                 
                 int cnt = 0;
                 double totalPercent = 0.0;
-                for (CollStatSQLDefs csqd : statTypes)
+                for (StatType type : StatType.values())
                 {
-                    StatType type = csqd.getType();
-                    
                     if (type == StatType.eTotalNumRecords) continue;
                     
+                    CollStatSQLDefs csqd = statTypeHash.get(type);
+                    
                     double dVal = (double)csi.getValue(type);
-                    if (type.ordinal() >= StatType.eMissingLocality.ordinal()) dVal = total - dVal;
                     double val = (((dVal / (double)total) * 100.0));
                     
                     tblWriter.println(String.format("<TR><TD>%s</TD><TD style=\"text-align:right\">%6.2f</TD></TR>", csqd.getName(), val));
                     
-                    if (type == StatType.eHasYearOnly)
-                    {
-                        totalPercent -= val;
-                    } else if (type != StatType.eGeoRefed)
+                    if (type.ordinal() < StatType.eHasYearOnly.ordinal())
                     {
                         totalPercent += val;
+                        cnt++;
                     }
-                    cnt++;
                 }
                 totalPercent = Math.max(totalPercent, 0.0);
-                tblWriter.println(String.format("<TR><TD>Average</TD><TD style=\"text-align:right\">%6.2f</TD></TR>", (totalPercent/(double)cnt)));
+                double avePercent = (totalPercent / (double)cnt);
+                tblWriter.println(String.format("<TR><TD>Average</TD><TD style=\"text-align:right\">%6.2f</TD></TR>", avePercent));
+                csi.setAveragePercent(avePercent);
                 
                 tblWriter.endTable();
                 tblWriter.println("</TD></TR>");
@@ -327,6 +344,42 @@ public class CollectionStats extends AnalysisBase
             //if (i == 100) break;
         }
         tblWriter.endTable();
+        
+        Vector<CollStatInfo> sortedByAvesList = new Vector<CollStatInfo>(institutions);
+        Collections.sort(sortedByAvesList, new Comparator<CollStatInfo>()
+        {
+            @Override
+            public int compare(CollStatInfo o1, CollStatInfo o2)
+            {
+                Double i1 = o1.getAveragePercent();
+                Double i2 = o2.getAveragePercent();
+                int rv = i2.compareTo(i1);
+                if (rv == 0)
+                {
+                    Integer cnt1 = o1.getTotalNumRecords();
+                    Integer cnt2 = o2.getTotalNumRecords();
+                    return cnt2.compareTo(cnt1); 
+                }
+                return rv;
+            }
+        });
+        
+        startNewDocument("SortedByAverages.html", " Sorted By Averages", false);
+        sortByTblWriter = tblWriter;
+        tblWriter.startTable();
+        tblWriter.logHdr("Institution", "Num of Records", "Percentage");
+        for (CollStatInfo csi : sortedByAvesList)
+        {
+            String aveStr = String.format("%8.2f", csi.getAveragePercent());
+            Integer cnt   = csi.getTotalNumRecords();
+            
+            String desc = StringUtils.isEmpty(csi.getInstName()) ? csi.getTitle() : csi.getInstName();
+            String title = desc + " - " + csi.getTotalNumRecords();
+            
+            tblWriter.log(title, cnt.toString(), aveStr);
+        }
+        tblWriter.endTable();
+        
         //tblWriter.println("</BODY></HTML>");
         endLogging(true);
     }
@@ -338,7 +391,13 @@ public class CollectionStats extends AnalysisBase
     @Override
     public void process(int type, int options)
     {
-        loadInstCodesAndtotals();
+        if (loadInstsFromDB)
+        {
+            discoverInstCodesAndTotals();
+        } else
+        {
+            loadInstCodesAndtotals();
+        }
         
         for (CollStatSQLDefs csqd : getStatSQL())
         {
@@ -451,14 +510,74 @@ public class CollectionStats extends AnalysisBase
         return array;*/
     }
     
+    /**
+     * @param instCode
+     * @return
+     */
+    private String getProviderNameFromInstCode(final String instCode)
+    {
+        if (pLMStmt == null)
+        {
+            String sql = "SELECT data_provider.name FROM occurrence_record " +
+            "Inner Join institution_code ON occurrence_record.institution_code_id = institution_code.id " +
+            "Inner Join data_provider ON occurrence_record.data_provider_id = data_provider.id WHERE institution_code.code = ? LIMIT 0, 1";
+            
+            try
+            {
+                pLMStmt = dbLMConn.prepareStatement(sql);
+                
+            } catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        
+        try
+        {
+            pLMStmt.setString(1, instCode);
+            ResultSet rs = pLMStmt.executeQuery();
+            if (rs.next())
+            {
+                return rs.getString(1);
+            }
+            rs.close();
+            
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+        
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.toycode.mexconabio.AnalysisBase#cleanup()
+     */
+    @Override
+    public void cleanup()
+    {
+        if (pLMStmt != null)
+        {
+            try
+            {
+                pLMStmt.close();
+            } catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        super.cleanup();
+    }
+
     //------------------------------------------------------------------------------------------
     public static void main(String[] args)
     {
         CollectionStats cs = new CollectionStats();
         
         //cs.createDBConnection("localhost", "3306", "plants", "root", "root");
-        //cs.createSrcDBConnection("localhost", "3306", "plants_ref", "root", "root");
-        //cs.createSrcDBConnection("conabio.nhm.ku.edu", "3306", "plants", "rs", "Nessie1601");
+        cs.createLMDBConnection("lm2gbdb.nhm.ku.edu", "3399", "gbc20100726", "rods", "specify4us");
+        cs.createSrcDBConnection("localhost", "3306", "plants_ref", "root", "root");
+        //cs.createSrcDBConnection("conabio.nhm.ku.edu", "3306", "plants", "rs", "");
         //cs.discoverInstCodesAndtotals();
         //cs.process(0, 0);
         cs.createCharts();
@@ -483,12 +602,19 @@ public class CollectionStats extends AnalysisBase
          * @param indexWriter
          * @param orderList
          */
-        protected void writeIndex(final TableWriter indexWriter, final List<TableWriter> orderList)
+        protected void writeIndex(final TableWriter indexWriter, final Vector<TableWriter> orderList)
         {
+            orderList.remove(sortByTblWriter);
+            orderList.insertElementAt(sortByTblWriter, 1);
+            
             HashSet<String> alphaSet = new HashSet<String>();
-            for (TableWriter tblWriter : orderList)
+            for (TableWriter tblWr : orderList)
             {
-                alphaSet.add(tblWriter.getTitle().substring(0,1).toUpperCase());
+                String titleLetter = tblWr.getTitle().substring(0,1).toUpperCase().trim();
+                if (!titleLetter.isEmpty())
+                {
+                    alphaSet.add(titleLetter);
+                }
             }
             Vector<String> alphaList = new Vector<String>(alphaSet);
             Collections.sort(alphaList);
@@ -507,12 +633,12 @@ public class CollectionStats extends AnalysisBase
             
             String alphaAnchor = "";
             indexWriter.startTable();
-            for (TableWriter tblWriter : orderList)
+            for (TableWriter tblWr : orderList)
             {
-                System.out.println(tblWriter.getTitle());
+                System.out.println(tblWr.getTitle());
              
-                String alpha = tblWriter.getTitle().substring(0,1).toUpperCase();
-                if (!alpha.equals(alphaAnchor))
+                String alpha = tblWr.getTitle().substring(0,1).toUpperCase();
+                if (!alpha.equals(" ") && !alpha.equals(alphaAnchor))
                 {
                     indexWriter.print("<a name=\""+alpha+"\"></a><H3>"+alpha+"</H3>");
                     alphaAnchor = alpha;
@@ -520,22 +646,8 @@ public class CollectionStats extends AnalysisBase
                 
                 try
                 {
-                    if (tblWriter.hasLines())
-                    {
-                        indexWriter.log("<A href=\""+ FilenameUtils.getName(tblWriter.getFileName())+"\">"+tblWriter.getTitle()+"</A>");
-                        tblWriter.close();
-                        
-                    } else
-                    {
-                        tblWriter.flush();
-                        tblWriter.close();
-                        
-                        File f = new File(tblWriter.getFileName());
-                        if (f.exists())
-                        {
-                            f.delete();
-                        }
-                    }
+                    indexWriter.log("<A href=\""+ FilenameUtils.getName(tblWr.getFileName())+"\">"+tblWr.getTitle()+"</A>");
+                    tblWr.close();
                    
                 } catch (Exception ex)
                 {

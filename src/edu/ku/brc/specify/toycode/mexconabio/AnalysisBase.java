@@ -92,6 +92,7 @@ public abstract class AnalysisBase
     protected Connection        dbGBIFConn = null;
     protected Connection        dbSrcConn  = null;
     protected Connection        dbDstConn  = null;
+    protected Connection        dbLMConn   = null;
 
     
     /**
@@ -337,19 +338,36 @@ public abstract class AnalysisBase
      * @param username
      * @param pwd
      */
+    protected Connection createConnection(final String server, 
+                                          final String port, 
+                                          final String dbName, 
+                                          final String username, 
+                                          final String pwd)
+    {
+        try
+        {
+            return DriverManager.getConnection(String.format(CONN_STR, server, port, dbName), username, pwd);
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }    
+    
+    /**
+     * @param server
+     * @param port
+     * @param dbName
+     * @param username
+     * @param pwd
+     */
     public void createDBConnection(final String server, 
                                    final String port, 
                                    final String dbName, 
                                    final String username, 
                                    final String pwd)
     {
-        try
-        {
-            dbGBIFConn = DriverManager.getConnection(String.format(CONN_STR, server, port, dbName), username, pwd);
-        } catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
+        dbGBIFConn = createConnection(server, port, dbName, username, pwd);
     }
         
     
@@ -366,15 +384,7 @@ public abstract class AnalysisBase
                                            final String username, 
                                            final String pwd)
     {
-
-        try
-        {
-            dbSrcConn = DriverManager.getConnection(String.format(CONN_STR, server, port, dbName), username, pwd);
-            
-        } catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
+        dbSrcConn = createConnection(server, port, dbName, username, pwd);
     }
         
     
@@ -391,15 +401,23 @@ public abstract class AnalysisBase
                                       final String username, 
                                       final String pwd)
     {
-
-        try
-        {
-            dbDstConn = DriverManager.getConnection(String.format(CONN_STR, server, port, dbName), username, pwd);
-            
-        } catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
+        dbDstConn = createConnection(server, port, dbName, username, pwd);
+    }
+        
+    /**
+     * @param server
+     * @param port
+     * @param dbName
+     * @param username
+     * @param pwd
+     */
+    public void createLMDBConnection(final String server, 
+                                      final String port, 
+                                      final String dbName, 
+                                      final String username, 
+                                      final String pwd)
+    {
+        dbLMConn = createConnection(server, port, dbName, username, pwd);
     }
         
     
@@ -427,6 +445,10 @@ public abstract class AnalysisBase
             if (dbDstConn != null)
             {
                 dbDstConn.close();
+            }
+            if (dbLMConn != null)
+            {
+                dbLMConn.close();
             }
         } catch (Exception ex)
         {
@@ -457,6 +479,14 @@ public abstract class AnalysisBase
     public Connection getDstDBConn()
     {
         return dbDstConn;
+    }
+
+    /**
+     * @return the dbDstConn
+     */
+    public Connection getLMDBConn()
+    {
+        return dbLMConn;
     }
 
 }

@@ -1,0 +1,35 @@
+<list>
+  <colstatsqldefs type="eTotalNumRecords" name="Total Number Records">
+    <SQL><![CDATA[SELECT institution_code, COUNT(*) AS cnt FROM raw GROUP BY institution_code]]></SQL>
+  </colstatsqldefs>
+  <colstatsqldefs type="eGeoRefed" name="Geo Referenced">
+    <SQL><![CDATA[SELECT institution_code, COUNT(*) AS cnt FROM raw WHERE latitude IS NULL AND longitude IS NULL GROUP BY institution_code]]></SQL>
+  </colstatsqldefs>
+  <colstatsqldefs type="eHasCollNum" name="Collector Number">
+    <SQL><![CDATA[SELECT institution_code, COUNT(*) AS cnt FROM raw WHERE collector_num IS NOT NULL GROUP BY institution_code]]></SQL>
+  </colstatsqldefs>
+  <colstatsqldefs type="eHasYearOnly" name="Year Only">
+    <SQL><![CDATA[SELECT institution_code, COUNT(*) AS cnt FROM raw WHERE year IS NOT NULL AND month IS NULL AND day IS NULL GROUP BY institution_code]]></SQL>
+  </colstatsqldefs>
+  <colstatsqldefs type="eHasYearMonOnly" name="Year Mon Only">
+    <SQL><![CDATA[SELECT institution_code, COUNT(*) AS cnt FROM raw WHERE year IS NOT NULL AND month IS NOT NULL AND day IS NULL GROUP BY institution_code]]></SQL>
+  </colstatsqldefs>
+  <colstatsqldefs type="eHasYMDayOnly" name="Year Month Day">
+    <SQL><![CDATA[SELECT institution_code, COUNT(*) AS cnt FROM raw WHERE year IS NOT NULL AND month IS NOT NULL AND day IS NOT NULL GROUP BY institution_code]]></SQL>
+  </colstatsqldefs>
+  <colstatsqldefs type="eHasSciNameNoGenSp" name="Scientific Name Missing Genus Species">
+    <SQL><![CDATA[SELECT institution_code, COUNT(*) AS cnt FROM raw WHERE scientific_name IS NOT NULL AND genus IS NULL AND species IS NULL GROUP BY institution_code]]></SQL>
+  </colstatsqldefs>
+  <colstatsqldefs type="eHasLocality" name="Locality">
+    <SQL><![CDATA[SELECT institution_code, COUNT(*) AS cnt FROM raw WHERE locality IS NOT NULL GROUP BY institution_code]]></SQL>
+  </colstatsqldefs>
+  <colstatsqldefs type="eHasCollectors" name="Collectors">
+    <SQL><![CDATA[SELECT institution_code, COUNT(*) AS cnt FROM raw WHERE collector_name IS NOT NULL GROUP BY institution_code]]></SQL>
+  </colstatsqldefs>
+  <colstatsqldefs type="eHasCountries" name="Countries">
+    <SQL><![CDATA[SELECT institution_code, COUNT(*) AS cnt FROM raw WHERE country IS NOT NULL GROUP BY institution_code]]></SQL>
+  </colstatsqldefs>
+  <colstatsqldefs type="eHasStates" name="States">
+    <SQL><![CDATA[SELECT institution_code, COUNT(*) AS cnt FROM raw WHERE state_province IS NOT NULL GROUP BY institution_code]]></SQL>
+  </colstatsqldefs>
+</list>
