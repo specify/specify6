@@ -666,7 +666,7 @@ public class SpecifyDBConverter extends AppBase
         frame.setDesc("Fixing NULL Timestamps for conversion.");
         UIHelper.centerAndShow(frame);
         
-        //fixOldTablesTimestamps(oldDBConn);
+        fixOldTablesTimestamps(oldDBConn);
         
         frame.turnOnOverAll();
         
@@ -1939,8 +1939,8 @@ public class SpecifyDBConverter extends AppBase
         	errMsgs.append("There is a mismatch between Accessions and its CollectionObject references.\n");
         }
         
-        int cntDTInnerCO = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM determination INNER JOIN collectionobject ON determination.BiologicalObjectID = collectionobject.CollectionObjectID WHERE CollectionObjectTypeID < 20");
-        int cntDTLeftCO  = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM determination LEFT JOIN collectionobject ON determination.BiologicalObjectID = collectionobject.CollectionObjectID WHERE CollectionObjectTypeID < 20");
+        int cntDTInnerCO = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM determination d INNER JOIN collectionobject co ON d.BiologicalObjectID = co.CollectionObjectID WHERE co.CollectionObjectTypeID < 20");
+        int cntDTLeftCO  = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM determination d LEFT JOIN collectionobject co ON d.BiologicalObjectID = co.CollectionObjectID WHERE co.CollectionObjectTypeID < 20");
         
         if (cntDTInnerCO != cntDTLeftCO)
         {

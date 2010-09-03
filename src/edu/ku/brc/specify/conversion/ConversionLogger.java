@@ -156,6 +156,45 @@ public class ConversionLogger
     }
     
     /**
+     * @param indexWriter
+     * @param orderList
+     */
+    protected void writeIndex(final TableWriter indexWriter, final List<TableWriter> orderList)
+    {
+        indexWriter.startTable();
+
+        for (TableWriter tblWriter : orderList)
+        {
+            System.out.println(tblWriter.getTitle());
+            
+            try
+            {
+                if (tblWriter.hasLines())
+                {
+                    indexWriter.log("<A href=\""+ FilenameUtils.getName(tblWriter.getFileName())+"\">"+tblWriter.getTitle()+"</A>");
+                    tblWriter.close();
+                    
+                } else
+                {
+                    tblWriter.flush();
+                    tblWriter.close();
+                    
+                    File f = new File(tblWriter.getFileName());
+                    if (f.exists())
+                    {
+                        f.delete();
+                    }
+                }
+               
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        indexWriter.endTable();
+    }
+    
+    /**
      * 
      */
     public File closeAll(final boolean byOrderAdded)
@@ -164,7 +203,6 @@ public class ConversionLogger
         {
             String path = dir.getAbsolutePath() + File.separator + "index.html";
             TableWriter indexWriter = new TableWriter(path, indexTitle);
-            indexWriter.startTable();
             
             List<TableWriter> orderList;
             if (byOrderAdded)
@@ -182,35 +220,8 @@ public class ConversionLogger
                 }
             }
             
-            for (TableWriter tblWriter : orderList)
-            {
-                System.out.println(tblWriter.getTitle());
-                
-                try
-                {
-                    if (tblWriter.hasLines())
-                    {
-                        indexWriter.log("<A href=\""+ FilenameUtils.getName(tblWriter.getFileName())+"\">"+tblWriter.getTitle()+"</A>");
-                        tblWriter.close();
-                        
-                    } else
-                    {
-                        tblWriter.flush();
-                        tblWriter.close();
-                        
-                        File f = new File(tblWriter.getFileName());
-                        if (f.exists())
-                        {
-                            f.delete();
-                        }
-                    }
-                   
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                }
-            }
-            indexWriter.endTable();
+            writeIndex(indexWriter, orderList);
+            
             indexWriter.close();
             
             return new File(path);

@@ -58,6 +58,15 @@ public class CollStatInfo
         super();
     }
 
+    /**
+     * 
+     */
+    public CollStatInfo(final String title)
+    {
+        super();
+        this.title = title;
+    }
+
     public void setValue(final StatType statType, final int value)
     {
         switch (statType)

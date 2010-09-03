@@ -22,14 +22,16 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -40,6 +42,8 @@ import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.conversion.ConversionLogger;
+import edu.ku.brc.specify.conversion.TableWriter;
 import edu.ku.brc.specify.toycode.mexconabio.CollStatSQLDefs.StatType;
 import edu.ku.brc.util.Pair;
 
@@ -54,7 +58,7 @@ import edu.ku.brc.util.Pair;
 public class CollectionStats extends AnalysisBase
 {
 
-    private List<CollStatInfo>            institutions = new ArrayList<CollStatInfo>();
+    private Vector<CollStatInfo>          institutions = new Vector<CollStatInfo>();
     private HashMap<String, CollStatInfo> instHashMap  = new HashMap<String, CollStatInfo>();
     
     /**
@@ -64,6 +68,8 @@ public class CollectionStats extends AnalysisBase
     {
         super();
         //discoverInstCodesAndtotals();
+        
+        convLogger = new IndexedConvLogger();
     }
     
     public void discoverInstCodesAndtotals()
@@ -163,13 +169,17 @@ public class CollectionStats extends AnalysisBase
         
         Vector<Pair<String, Integer>> pairs = new Vector<Pair<String, Integer>>();
         
+        double totalPercent = 0.0;
+        int    cnt          = 0;
         int goodCnt = 0;
         for (CollStatSQLDefs csqd : statTypes)
         {
             if (csqd.getType() == StatType.eTotalNumRecords) continue;
             
-            double dVal = (double)csi.getValue(csqd.getType());
-            int    val = (int)(((dVal / (double)total) * 100.0) + 0.5);
+            StatType type = csqd.getType();
+            double dVal = (double)csi.getValue(type);
+            if (type.ordinal() >= StatType.eMissingLocality.ordinal()) dVal = total - dVal;
+            int    val = (int)(((dVal / (double)total) * 100.0));
             
             if (val > 0)
             {
@@ -179,7 +189,18 @@ public class CollectionStats extends AnalysisBase
             //System.out.println(csqd.getName()+"  "+val+ "  " + csi.getValue(csqd.getType())+" / "+ total);
             
             pairs.add(new Pair<String, Integer>(csqd.getName(), val));
+            
+            if (type == StatType.eHasYearOnly)
+            {
+                totalPercent -= val;
+            } else if (type != StatType.eGeoRefed)
+            {
+                totalPercent += val;
+            }
+            cnt++;
         }
+        totalPercent = Math.max(totalPercent, 0.0);
+        pairs.add(new Pair<String, Integer>("Average", (int)totalPercent/cnt));
          
         //System.out.println("goodCnt: "+goodCnt);
         if (goodCnt > 0)
@@ -198,6 +219,17 @@ public class CollectionStats extends AnalysisBase
         loadInstCodesAndtotals();
         
         List<CollStatSQLDefs> statTypes = getStatSQL();
+        
+        CollStatInfo totals = new CollStatInfo(" Totals");
+        for (CollStatInfo csi : institutions)
+        {
+            for (CollStatSQLDefs csqd : statTypes)
+            {
+                StatType type = csqd.getType();
+                int totVal = totals.getValue(type) + csi.getValue(type);
+                totals.setValue(type, totVal);
+            }
+        }
         
         try
         {
@@ -219,7 +251,8 @@ public class CollectionStats extends AnalysisBase
             }
         });
         
-        CollStatInfo clsi = institutions.get(0);
+        institutions.insertElementAt(totals, 0);
+        CollStatInfo clsi = totals;
         
         
         //tblWriter.logHdr(titles);
@@ -228,24 +261,58 @@ public class CollectionStats extends AnalysisBase
         int i = 0;
         for (CollStatInfo csi : institutions)
         {
+            String title = csi.getTitle()+ " - "+csi.getTotalNumRecords();
             if (i == 0)
             {
-                startLogging("reports", "charts", clsi.hashCode()+".html", clsi.getTitle(), false);
+                startLogging("reports", "charts", clsi.hashCode()+".html",title, false);
                 tblWriter.startTable();
 
             } else
             {
                 tblWriter.endTable();
-                startNewDocument(csi.hashCode()+".html", csi.getTitle(), false);
+                startNewDocument(csi.hashCode()+".html", title, false);
                 tblWriter.startTable();
             }
             
             if (generateDateChart(csi, statTypes))
             {
+                int total = csi.getValue(StatType.eTotalNumRecords);
+                
                 tblWriter.setHasLines();
                 tblWriter.print("<TR><TD>");
                 tblWriter.print(String.format("<img src=\"%s\">", csi.getChartFileName()));
-                tblWriter.println("<BR><BR><BR><BR></TD></TR>");
+                tblWriter.println("<BR><BR><BR><BR></TD><TD>");
+                tblWriter.startTable();
+                tblWriter.logHdr("Stat", "Percent");
+                
+                int cnt = 0;
+                double totalPercent = 0.0;
+                for (CollStatSQLDefs csqd : statTypes)
+                {
+                    StatType type = csqd.getType();
+                    
+                    if (type == StatType.eTotalNumRecords) continue;
+                    
+                    double dVal = (double)csi.getValue(type);
+                    if (type.ordinal() >= StatType.eMissingLocality.ordinal()) dVal = total - dVal;
+                    double val = (((dVal / (double)total) * 100.0));
+                    
+                    tblWriter.println(String.format("<TR><TD>%s</TD><TD style=\"text-align:right\">%6.2f</TD></TR>", csqd.getName(), val));
+                    
+                    if (type == StatType.eHasYearOnly)
+                    {
+                        totalPercent -= val;
+                    } else if (type != StatType.eGeoRefed)
+                    {
+                        totalPercent += val;
+                    }
+                    cnt++;
+                }
+                totalPercent = Math.max(totalPercent, 0.0);
+                tblWriter.println(String.format("<TR><TD>Average</TD><TD style=\"text-align:right\">%6.2f</TD></TR>", (totalPercent/(double)cnt)));
+                
+                tblWriter.endTable();
+                tblWriter.println("</TD></TR>");
             }
             
             i++;
@@ -257,7 +324,7 @@ public class CollectionStats extends AnalysisBase
                 tblWriter.setHasLines();
             }*/
             
-            //if (i == 75) break;
+            //if (i == 100) break;
         }
         tblWriter.endTable();
         //tblWriter.println("</BODY></HTML>");
@@ -275,7 +342,7 @@ public class CollectionStats extends AnalysisBase
         
         for (CollStatSQLDefs csqd : getStatSQL())
         {
-            if (csqd.getType() != StatType.eMissingCountries) continue;
+            if (csqd.getType() == StatType.eTotalNumRecords) continue;
             
             System.out.println(csqd.getType().toString());
             for (Object[] row : BasicSQLUtils.query(dbSrcConn, csqd.getSQL()))
@@ -390,10 +457,92 @@ public class CollectionStats extends AnalysisBase
         CollectionStats cs = new CollectionStats();
         
         //cs.createDBConnection("localhost", "3306", "plants", "root", "root");
-        cs.createSrcDBConnection("localhost", "3306", "plants_ref", "root", "root");
+        //cs.createSrcDBConnection("localhost", "3306", "plants_ref", "root", "root");
+        //cs.createSrcDBConnection("conabio.nhm.ku.edu", "3306", "plants", "rs", "Nessie1601");
         //cs.discoverInstCodesAndtotals();
         //cs.process(0, 0);
         cs.createCharts();
         cs.cleanup();
+    }
+    
+    //------------------------------------------------------------------------------------------
+    //-- Classes
+    //------------------------------------------------------------------------------------------
+    class IndexedConvLogger extends ConversionLogger
+    {
+        
+        /**
+         * 
+         */
+        public IndexedConvLogger()
+        {
+            super();
+        }
+
+        /**
+         * @param indexWriter
+         * @param orderList
+         */
+        protected void writeIndex(final TableWriter indexWriter, final List<TableWriter> orderList)
+        {
+            HashSet<String> alphaSet = new HashSet<String>();
+            for (TableWriter tblWriter : orderList)
+            {
+                alphaSet.add(tblWriter.getTitle().substring(0,1).toUpperCase());
+            }
+            Vector<String> alphaList = new Vector<String>(alphaSet);
+            Collections.sort(alphaList);
+            
+            int i = 0;
+            for (String alpha : alphaList)
+            {
+                if (StringUtils.isAlphanumeric(alpha))
+                {
+                    if (i > 0) indexWriter.append(", ");
+                    indexWriter.print("<a href=\"#"+alpha+"\">"+alpha+"</a>");
+                }
+                i++;
+            }
+            indexWriter.println("<BR>");
+            
+            String alphaAnchor = "";
+            indexWriter.startTable();
+            for (TableWriter tblWriter : orderList)
+            {
+                System.out.println(tblWriter.getTitle());
+             
+                String alpha = tblWriter.getTitle().substring(0,1).toUpperCase();
+                if (!alpha.equals(alphaAnchor))
+                {
+                    indexWriter.print("<a name=\""+alpha+"\"></a><H3>"+alpha+"</H3>");
+                    alphaAnchor = alpha;
+                }
+                
+                try
+                {
+                    if (tblWriter.hasLines())
+                    {
+                        indexWriter.log("<A href=\""+ FilenameUtils.getName(tblWriter.getFileName())+"\">"+tblWriter.getTitle()+"</A>");
+                        tblWriter.close();
+                        
+                    } else
+                    {
+                        tblWriter.flush();
+                        tblWriter.close();
+                        
+                        File f = new File(tblWriter.getFileName());
+                        if (f.exists())
+                        {
+                            f.delete();
+                        }
+                    }
+                   
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
+            indexWriter.endTable();
+        }
     }
 }

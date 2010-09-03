@@ -28,6 +28,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Vector;
+
+import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
@@ -44,6 +47,17 @@ public class CopyPlantsFromGBIF
     private static final double HRS = 1000.0 * 60.0 * 60.0; 
     private static final String TAXSEARCH_GNSP_SQL = "SELECT * FROM raw WHERE genus = ? AND species = ? LIMIT 0,1";
     private static final String TAXSEARCH_GN_SQL   = "SELECT * FROM raw WHERE genus = ? LIMIT 0,1";
+    
+    private static final String pSQL = "INSERT INTO raw (old_id,data_provider_id,data_resource_id,resource_access_point_id, institution_code, collection_code, " +
+    "catalogue_number, scientific_name, author, rank, kingdom, phylum, class, order_rank, family, genus, species, subspecies, latitude, longitude,  " +
+    "lat_long_precision, max_altitude, min_altitude, altitude_precision, min_depth, max_depth, depth_precision, continent_ocean, country, state_province, county, collector_name, " + 
+    "locality,year, month, day, basis_of_record, identifier_name, identification_date,unit_qualifier, created, modified, deleted, collector_num) " +
+    "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+    private static final String gbifSQLBase = "SELECT old_id, data_provider_id,data_resource_id,resource_access_point_id, institution_code, collection_code, " +
+           "catalogue_number, scientific_name, author, rank, kingdom, phylum, class, order_rank, family, genus, species, subspecies, latitude, longitude,  " +
+           "lat_long_precision, max_altitude, min_altitude, altitude_precision, min_depth, max_depth, depth_precision, continent_ocean, country, state_province, county, collector_name, " + 
+           "locality,year, month, day, basis_of_record, identifier_name, identification_date,unit_qualifier, created, modified, deleted, collector_num ";
 
     private Connection srcConn = null;
     private Connection dstConn = null;
@@ -207,7 +221,7 @@ public class CopyPlantsFromGBIF
     /**
      * 
      */
-    public void process(final boolean isDoingNull)
+    public void processNullKingdom()
     {
         PrintWriter pw = null;
         try
@@ -219,21 +233,10 @@ public class CopyPlantsFromGBIF
             e.printStackTrace();
         }
         
-        System.out.println("----------------------- "+ (isDoingNull ? "Searching NULL" : "Search non-Plantae") + "----------------------- ");
+        System.out.println("----------------------- Searching NULL ----------------------- ");
         
-        String pSQL = "INSERT INTO raw (old_id,data_provider_id,data_resource_id,resource_access_point_id, institution_code, collection_code, " +
-                      "catalogue_number, scientific_name, author, rank, kingdom, phylum, class, order_rank, family, genus, species, subspecies, latitude, longitude,  " +
-                      "lat_long_precision, max_altitude, min_altitude, altitude_precision, min_depth, max_depth, depth_precision, continent_ocean, country, state_province, county, collector_name, " + 
-                      "locality,year, month, day, basis_of_record, identifier_name, identification_date,unit_qualifier, created, modified, deleted, collector_num) " +
-                      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        String gbifWhereStr = "FROM raw WHERE kingdom IS NULL";
         
-        String gbifSQLBase = "SELECT old_id, data_provider_id,data_resource_id,resource_access_point_id, institution_code, collection_code, " +
-                             "catalogue_number, scientific_name, author, rank, kingdom, phylum, class, order_rank, family, genus, species, subspecies, latitude, longitude,  " +
-                             "lat_long_precision, max_altitude, min_altitude, altitude_precision, min_depth, max_depth, depth_precision, continent_ocean, country, state_province, county, collector_name, " + 
-                             "locality,year, month, day, basis_of_record, identifier_name, identification_date,unit_qualifier, created, modified, deleted, collector_num ";
-        
-        String gbifWhereStr = "FROM raw WHERE " + (isDoingNull ? "kingdom IS NULL"  : "NOT (lower(kingdom) LIKE '%plant%')");
-
         long startTime   = System.currentTimeMillis();
         
         String cntGBIFSQL = "SELECT COUNT(*) " + gbifWhereStr;// + " LIMIT 0,1000";
@@ -352,9 +355,168 @@ public class CopyPlantsFromGBIF
         }
         System.out.println("Done transferring.");
         pw.println("Done transferring.");
+    }
+    
+    /**
+     * 
+     */
+    public void processNonNullNonPlantKingdom()
+    {
+        PrintWriter pw = null;
+        try
+        {
+            pw = new PrintWriter("gbif_plants_from_nonnull.log");
+            
+        } catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        
+        System.out.println("----------------------- Search non-Plantae ----------------------- ");
+        
+        String gbifWhereStr = "FROM raw WHERE kingdom = '%s'";
+        
+        Vector<String> nonPlantKingdoms = new Vector<String>();
+        String sqlStr = "SELECT * FROM (select kingdom, count(kingdom) as cnt from plants.raw WHERE kingdom is not null AND NOT (lower(kingdom) like '%plant%') group by kingdom) T1 ORDER BY cnt desc;";
+        for (Object[] obj : BasicSQLUtils.query(sqlStr))
+        {
+            String  kingdom = (String)obj[0];
+            Integer count   = (Integer)obj[1];
+            
+            System.out.println(kingdom + " " + count);
+            pw.println(kingdom + " " + count);
+            if (!StringUtils.contains(kingdom.toLowerCase(), "plant"))
+            {
+                nonPlantKingdoms.add(kingdom);
+            }
+        }
+
+        long startTime   = System.currentTimeMillis();
+        
+        for (String kingdom : nonPlantKingdoms)
+        {
+            String where = String.format(gbifWhereStr, kingdom);
+            
+            String cntGBIFSQL = "SELECT COUNT(*) " + where;
+            String gbifSQL    = gbifSQLBase + where;
+    
+            System.out.println(cntGBIFSQL);
+            
+            long totalRecs     = BasicSQLUtils.getCount(srcConn, cntGBIFSQL);
+            long procRecs      = 0;
+            int  secsThreshold = 0;
+            
+            String msg = String.format("Query: %8.2f secs",  (double)(System.currentTimeMillis() - startTime) / 1000.0);
+            System.out.println(msg);
+            pw.println(msg);
+            pw.flush();
+    
+            startTime = System.currentTimeMillis();
+            
+            Statement         gStmt = null;
+            PreparedStatement pStmt = null;
+            
+            try
+            {
+                pStmt = dstConn.prepareStatement(pSQL);
+                
+                System.out.println("Total Records: "+totalRecs);
+                pw.println("Total Records: "+totalRecs);
+                pw.flush();
+                
+                gStmt = srcConn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                gStmt.setFetchSize(Integer.MIN_VALUE);
+                
+                ResultSet         rs   = gStmt.executeQuery(gbifSQL);
+                ResultSetMetaData rsmd = rs.getMetaData();
+                
+                while (rs.next())
+                {
+                    String genus = rs.getString(16);
+                    if (genus == null) continue;
+                    
+                    String species = rs.getString(17);
+                    
+                    if (isPlant(colStmtGN, colStmtGNSP, genus, species) || isPlant(colDstStmtGN, colDstStmtGNSP, genus, species))
+                    {
+                    
+                        for (int i=1;i<=rsmd.getColumnCount();i++)
+                        {
+                            Object obj = rs.getObject(i);
+                            pStmt.setObject(i, obj);
+                        }
+                        
+                        try
+                        {
+                            pStmt.executeUpdate();
+                            
+                        } catch (Exception ex)
+                        {
+                            System.err.println("For Old ID["+rs.getObject(1)+"]");
+                            ex.printStackTrace();
+                            pw.print("For Old ID["+rs.getObject(1)+"] "+ex.getMessage());
+                            pw.flush();
+                        }
+                        
+                        procRecs++;
+                        if (procRecs % 10000 == 0)
+                        {
+                            long endTime     = System.currentTimeMillis();
+                            long elapsedTime = endTime - startTime;
+                            
+                            double avergeTime = (double)elapsedTime / (double)procRecs;
+                            
+                            double hrsLeft = (((double)elapsedTime / (double)procRecs) * (double)totalRecs - procRecs)  / HRS;
+                            
+                            int seconds = (int)(elapsedTime / 60000.0);
+                            if (secsThreshold != seconds)
+                            {
+                                secsThreshold = seconds;
+                                
+                                msg = String.format("Elapsed %8.2f hr.mn   Ave Time: %5.2f    Percent: %6.3f  Hours Left: %8.2f ", 
+                                        ((double)(elapsedTime)) / HRS, 
+                                        avergeTime,
+                                        100.0 * ((double)procRecs / (double)totalRecs),
+                                        hrsLeft);
+                                System.out.println(msg);
+                                pw.println(msg);
+                                pw.flush();
+                            }
+                        }
+                    }
+                }
+    
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                
+            } finally 
+            {
+                try
+                {
+                    if (gStmt != null)
+                    {
+                        gStmt.close();
+                    }
+                    if (pStmt != null)
+                    {
+                        pStmt.close();
+                    }
+                    pw.close();
+                    
+                } catch (Exception ex)
+                {
+                    
+                }
+            }
+        }
+        System.out.println("Done transferring.");
+        pw.println("Done transferring.");
         
     }
     
+
     /**
      * 
      */
@@ -407,8 +569,8 @@ public class CopyPlantsFromGBIF
             app.connectToSrc("localhost",     "3306", "gbif",     "root", "root");
             app.connectToDst("localhost",     "3306", "plants",   "root", "root");
             app.connectToCOLTaxa("localhost", "3306", "col_taxa", "root", "root");
-            app.process(true);
-            app.process(false);
+            app.processNullKingdom();
+            //app.processNonNullNonPlantKingdom();
             app.cleanup();
             
         } catch (SQLException e)
@@ -416,6 +578,19 @@ public class CopyPlantsFromGBIF
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
     }
+    /*
+     Query for transferring plant data:
+     
+     INSERT INTO plants.raw (id, old_id,data_provider_id,data_resource_id,resource_access_point_id, institution_code, collection_code, 
+     catalogue_number, scientific_name, author, rank, kingdom, phylum, class, order_rank, family, genus, species, subspecies, 
+     latitude, longitude, lat_long_precision, max_altitude, min_altitude, altitude_precision, min_depth, max_depth, depth_precision, 
+     continent_ocean, country, state_province, county, collector_name, locality,year, month, day, basis_of_record, identifier_name, 
+     identification_date,unit_qualifier, created, modified, deleted, collector_num) SELECT id, old_id,data_provider_id,data_resource_id,
+     resource_access_point_id, institution_code, collection_code,    catalogue_number, scientific_name, author, rank, kingdom, phylum, 
+     class, order_rank, family, genus, species, subspecies, latitude, longitude,
+     lat_long_precision, max_altitude, min_altitude, altitude_precision, min_depth, max_depth, depth_precision, continent_ocean, country, 
+     state_province, county, collector_name, locality,year, month, day, basis_of_record, identifier_name, identification_date,unit_qualifier, 
+     created, modified, deleted, collector_num FROM raw WHERE lower(kingdom) LIKE "%plant%";
+     */
 }
