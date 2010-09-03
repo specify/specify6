@@ -81,26 +81,31 @@ public class SpecifyUserBusRules extends BaseBusRules
         final PasswordStrengthUI pwdStrenthUI = formViewObj.getCompById("6");
         
         // This is in case the BusRules are used without the form.
-        if (pwdTxt == null || showPwdBtn == null || pwdStrenthUI == null)
+        if (pwdTxt == null)
         {
             return;
         }
         
         final char echoChar = pwdTxt.getEchoChar();
         currEcho = echoChar;
+
         
         // For now
         //showPwdBtn.setVisible(false);
         
-        showPwdBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                currEcho = currEcho == echoChar ? 0 : echoChar;
-                pwdTxt.setEchoChar(currEcho);
-                showPwdBtn.setText(UIRegistry.getResourceString(currEcho == echoChar ? "SHOW_PASSWORD" : "HIDE_PASSWORD"));
-            }
-        });
+        if (showPwdBtn != null)
+        {
+            showPwdBtn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    currEcho = currEcho == echoChar ? 0 : echoChar;
+                    pwdTxt.setEchoChar(currEcho);
+                    showPwdBtn.setText(UIRegistry.getResourceString(currEcho == echoChar ? "SHOW_PASSWORD" : "HIDE_PASSWORD"));
+                }
+            });
+        }
+        
         
         if (copyBtn != null)
         {
@@ -111,6 +116,40 @@ public class SpecifyUserBusRules extends BaseBusRules
                     UIHelper.setTextToClipboard(new String(pwdTxt.getPassword()));
                 }
             });
+        }
+        
+        if (genBtn != null)
+        {
+            pwdTxt.getDocument().addDocumentListener(new DocumentAdaptor() {
+                @Override
+                protected void changed(DocumentEvent e)
+                {
+                    String passwordStr = new String(pwdTxt.getPassword());
+                    genBtn.setEnabled(passwordStr.length() > 0 && passwordStr.length() < 25);
+                }
+            });
+            
+            genBtn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    String key = createEncryptKey(pwdTxt);
+                    if (key != null)
+                    {
+                        if (keyTxt != null)
+                        {
+                            keyTxt.setText(key);
+                        }
+                        UIHelper.setTextToClipboard(key);
+                        UIRegistry.showLocalizedMsg("SPUSR_KEYGEN");
+                    }
+                }
+            });
+        }
+        
+        if (pwdStrenthUI == null)
+        {
+            return;
         }
         
         pwdStrenthUI.setPasswordField(pwdTxt, genBtn);
@@ -133,14 +172,6 @@ public class SpecifyUserBusRules extends BaseBusRules
         });
         
         pwdStrenthUI.setPasswordField(pwdTxt, genBtn);
-        
-        genBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                createEncryptKey(keyTxt, pwdTxt);
-            }
-        });
     }
 
     /**
@@ -186,8 +217,7 @@ public class SpecifyUserBusRules extends BaseBusRules
     /**
      * @param txtFld
      */
-    protected void createEncryptKey(final JTextField txtFld, 
-                                    final JTextField password)
+    protected String createEncryptKey(final JTextField password)
     {
         String pwdStr = password.getText();
         if (!pwdStr.isEmpty())
@@ -197,8 +227,9 @@ public class SpecifyUserBusRules extends BaseBusRules
             String key = Encryption.encrypt(usrPwd.first+","+usrPwd.second, pwdStr);
             Encryption.setEncryptDecryptPassword("Specify");
             
-            txtFld.setText(key);
+            return key;
         }
+        return null;
     }
     
     /**
