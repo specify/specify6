@@ -83,13 +83,13 @@ public class CollectionStats extends AnalysisBase
         for (Object[] row : BasicSQLUtils.query(dbSrcConn, sql))
         {
             CollStatInfo csi = new CollStatInfo();
-            csi.setTitle(row[0].toString());
+            csi.setCode(row[0].toString());
             csi.setTotalNumRecords(((Long)row[1]).intValue());
             if (StringUtils.isEmpty(csi.getInstName()))
             {
-                csi.setInstName(getProviderNameFromInstCode(csi.getTitle()));
+                csi.setInstName(getProviderNameFromInstCode(csi.getCode()));
             }
-            instHashMap.put(csi.getTitle(), csi);
+            instHashMap.put(csi.getCode(), csi);
             institutions.add(csi);
         }
         System.out.println("Done Getting Institutions");
@@ -114,7 +114,7 @@ public class CollectionStats extends AnalysisBase
         List<CollStatInfo> list = (List<CollStatInfo>)xstream.fromXML(xml);
         for (CollStatInfo csi : list)
         {
-            instHashMap.put(csi.getTitle(), csi);
+            instHashMap.put(csi.getCode(), csi);
             institutions.add(csi);
         }
         return list;
@@ -141,11 +141,11 @@ public class CollectionStats extends AnalysisBase
         
         if (StringUtils.isEmpty(csi.getInstName()))
         {
-            csi.setInstName(getProviderNameFromInstCode(csi.getTitle()));
+            csi.setInstName(getProviderNameFromInstCode(csi.getCode()));
         }
         
         JFreeChart chart = ChartFactory.createBarChart( 
-                    StringUtils.isEmpty(csi.getInstName()) ? csi.getTitle() : csi.getInstName(),
+                    csi.getTitle(),
                     xTitle,
                     yTitle,
                     dataset, 
@@ -257,7 +257,7 @@ public class CollectionStats extends AnalysisBase
             @Override
             public int compare(CollStatInfo o1, CollStatInfo o2)
             {
-                return o1.getTitle().compareToIgnoreCase(o2.getTitle());
+                return o1.getCode().compareToIgnoreCase(o2.getCode());
                 //Integer cnt1 = o1.getTotalNumRecords();
                 //Integer cnt2 = o2.getTotalNumRecords();
                 //return cnt2.compareTo(cnt1);
@@ -275,11 +275,10 @@ public class CollectionStats extends AnalysisBase
         {
             if (StringUtils.isEmpty(csi.getInstName()))
             {
-                csi.setInstName(getProviderNameFromInstCode(csi.getTitle()));
+                csi.setInstName(getProviderNameFromInstCode(csi.getCode()));
             }
             
-            String desc = StringUtils.isEmpty(csi.getInstName()) ? csi.getTitle() : csi.getInstName();
-            String title = desc + " - " + csi.getTotalNumRecords();
+            String title = csi.getTitle() + " - " + csi.getTotalNumRecords();
             
             if (i == 0)
             {
@@ -373,8 +372,7 @@ public class CollectionStats extends AnalysisBase
             String aveStr = String.format("%8.2f", csi.getAveragePercent());
             Integer cnt   = csi.getTotalNumRecords();
             
-            String desc = StringUtils.isEmpty(csi.getInstName()) ? csi.getTitle() : csi.getInstName();
-            String title = desc + " - " + csi.getTotalNumRecords();
+            String title = csi.getTitle() + " - " + csi.getTotalNumRecords();
             
             tblWriter.log(title, cnt.toString(), aveStr);
         }
@@ -382,6 +380,8 @@ public class CollectionStats extends AnalysisBase
         
         //tblWriter.println("</BODY></HTML>");
         endLogging(true);
+        
+        saveInstitutions();
     }
     
 
@@ -429,6 +429,14 @@ public class CollectionStats extends AnalysisBase
             }
         }
         
+        saveInstitutions();
+    }
+    
+    /**
+     * 
+     */
+    private void saveInstitutions()
+    {
         XStream xstream = new XStream();
         CollStatInfo.config(xstream);
         File file = new File(XMLHelper.getConfigDirPath("../src/edu/ku/brc/specify/toycode/mexconabio/collstatinfo.xml"));
@@ -576,7 +584,7 @@ public class CollectionStats extends AnalysisBase
         
         //cs.createDBConnection("localhost", "3306", "plants", "root", "root");
         cs.createLMDBConnection("lm2gbdb.nhm.ku.edu", "3399", "gbc20100726", "rods", "specify4us");
-        cs.createSrcDBConnection("localhost", "3306", "plants_ref", "root", "root");
+        //cs.createSrcDBConnection("localhost", "3306", "plants_ref", "root", "root");
         //cs.createSrcDBConnection("conabio.nhm.ku.edu", "3306", "plants", "rs", "");
         //cs.discoverInstCodesAndtotals();
         //cs.process(0, 0);

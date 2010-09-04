@@ -17,6 +17,8 @@
  */
 package edu.ku.brc.specify.toycode.mexconabio;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.specify.toycode.mexconabio.CollStatSQLDefs.StatType;
@@ -32,7 +34,7 @@ import edu.ku.brc.specify.toycode.mexconabio.CollStatSQLDefs.StatType;
 public class CollStatInfo
 {
     
-    protected String title;
+    protected String code;
     protected String instName;
     protected String chartFileName; // Transient
     
@@ -65,10 +67,10 @@ public class CollStatInfo
     /**
      * 
      */
-    public CollStatInfo(final String title)
+    public CollStatInfo(final String instName)
     {
         super();
-        this.title = title;
+        this.instName = instName;
     }
 
     public void setValue(final StatType statType, final int value)
@@ -182,23 +184,31 @@ public class CollStatInfo
      */
     public String getTitle()
     {
-        return title;
+        return code + (StringUtils.isNotEmpty(instName) ? (" - "+instName) : "");
     }
 
-    /**
-     * @param title the title to set
-     */
-    public void setTitle(String title)
-    {
-        this.title = title;
-    }
-    
     /**
      * @return the instName
      */
     public String getInstName()
     {
         return instName;
+    }
+
+    /**
+     * @return the code
+     */
+    public String getCode()
+    {
+        return code;
+    }
+
+    /**
+     * @param code the code to set
+     */
+    public void setCode(String code)
+    {
+        this.code = code;
     }
 
     /**
@@ -240,14 +250,14 @@ public class CollStatInfo
     {
         this.averagePercent = averagePercent;
     }
-
+    
     /**
      * @param xstream
      */
     public static void config(final XStream xstream)
     {
         xstream.alias("colstatinfo", CollStatInfo.class); //$NON-NLS-1$
-        xstream.useAttributeFor(CollStatInfo.class, "title"); //$NON-NLS-1$
+        xstream.useAttributeFor(CollStatInfo.class, "code"); //$NON-NLS-1$
         
         xstream.omitField(CollStatInfo.class, "chartFileName"); //$NON-NLS-1$
         xstream.omitField(CollStatInfo.class, "averagePercent"); //$NON-NLS-1$
