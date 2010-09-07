@@ -220,6 +220,7 @@
 			<fileset dir="libs">
                 <exclude name="**/*.svn" />
                 <exclude name="**/derby.jar" />
+				<exclude name="**/lucene-core.jar" />
 			</fileset>
 		</copy>
         <copy todir="${installer.dir}/wwlib">
@@ -296,12 +297,12 @@
         <copy file="./demo_files/topbrc195x68.png" todir="${installer.dir}/demo_files" />
         <copy file="./demo_files/chronostrat_tree.xls" todir="${installer.dir}/demo_files" />
 		
-		<!-- Copy of Wizard Taxon Information -->
+		<!-- Copy of Wizard Taxon Information
 		<copy todir="${installer.dir}/demo_files/taxonomy">
 			<fileset dir="demo_files/taxonomy">
 				<include name="**/*" />
 			</fileset>
-		</copy>
+		</copy>  -->
 	</target>
 	
 	
@@ -456,7 +457,6 @@
 				<include name="*.jar" />
 				<exclude name="**/json-lib.jar" />
 				<exclude name="**/ezmorph.jar" />
-				<exclude name="**/lucene-core.jar" />
 			</fileset>
 			<fileset dir="${hibernatelib.dir}">
 				<include name="*.jar" />
