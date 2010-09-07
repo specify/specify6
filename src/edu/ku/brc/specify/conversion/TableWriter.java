@@ -19,6 +19,7 @@ package edu.ku.brc.specify.conversion;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 
 import org.apache.axis.utils.StringUtils;
 
@@ -53,7 +54,7 @@ public class TableWriter extends PrintWriter
      * @param title
      * @throws FileNotFoundException
      */
-    public TableWriter(final String fileName, final String title, final boolean doCenterTitle) throws FileNotFoundException
+    public TableWriter(final String fileName, final String title, final boolean doCenterTitle) throws FileNotFoundException, UnsupportedEncodingException
     {
         this(fileName, title, null, doCenterTitle);
     }
@@ -62,10 +63,11 @@ public class TableWriter extends PrintWriter
      * @param fileName
      * @param title
      * @throws FileNotFoundException
+     * @throws UnsupportedEncodingException 
      */
-    public TableWriter(final String fileName, final String title, final String extraStyle, final boolean doCenterTitle) throws FileNotFoundException
+    public TableWriter(final String fileName, final String title, final String extraStyle, final boolean doCenterTitle) throws FileNotFoundException, UnsupportedEncodingException
     {
-        super(fileName);
+        super(fileName, "UTF8");
         this.fName = fileName;
         this.title = title;
         this.extraStyle = extraStyle;
@@ -89,7 +91,7 @@ public class TableWriter extends PrintWriter
      * @param title
      * @throws FileNotFoundException
      */
-    public TableWriter(final String fileName, final String title) throws FileNotFoundException
+    public TableWriter(final String fileName, final String title) throws FileNotFoundException, UnsupportedEncodingException
     {
         this(fileName, title, false);
     }

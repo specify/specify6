@@ -142,6 +142,28 @@ public abstract class AnalysisBase
         startNewDocument(fileName, title, includeTable);
     }
     
+    protected String getStyle()
+    {
+        StringBuilder extraStyle = new StringBuilder();
+        extraStyle.append("TD.yw  { color: rgb(200, 200, 0); }\n");   // Dark Yellow
+        extraStyle.append("TD.gr  { color: rgb(200, 0, 200); }\n");   // Green
+        extraStyle.append("TD.bgr { color: rgb(0, 255, 0); }\n");     // Bright Green
+        extraStyle.append("TD.byw { color: yellow; }\n");           // Yellow
+        extraStyle.append("TD.df  { color: rgb(100, 255, 200); }\n"); // Magenta
+        extraStyle.append("TD.rd  { color: rgb(255, 0, 0); }\n");     // Red
+        extraStyle.append("TD.bl  { color: rgb(0, 0, 0); }\n");       // Black
+        extraStyle.append("TR.od  { background-color: rgb(240, 240, 240); }\n");       // white
+        extraStyle.append("TR.ev  { background-color: rgb(232, 242, 254); }\n"); // light blue
+        
+        extraStyle.append("TR.odh { font-weight: bold; background-color: rgb(240, 240, 240); }\n"); // white
+        extraStyle.append("TR.evh { font-weight: bold; background-color: rgb(232, 242, 254); }\n"); // light blue
+        //extraStyle.append("TR.hd  { border }\n"); // light blue
+        
+        extraStyle.append(" TABLE.o tr.hd { border-top: solid 2px rgb(0, 0, 0); border-left: solid 1px rgb(128, 128, 128); }\n");
+//        /extraStyle.append(" TABLE.o    { border-bottom: solid 1px rgb(128, 128, 128); border-right: solid 1px rgb(128, 128, 128); }\n");
+        return extraStyle.toString();
+    }
+    
     /**
      * @param fileName
      * @param title
@@ -155,26 +177,7 @@ public abstract class AnalysisBase
             tblWriter.close();
         }
         
-        // rgb
-        StringBuilder extraStyle = new StringBuilder();
-        extraStyle.append("TD.yw  { color: rgb(200, 200, 0); }\n");   // Dark Yellow
-        extraStyle.append("TD.gr  { color: rgb(200, 0, 200); }\n");   // Green
-        extraStyle.append("TD.bgr { color: rgb(0, 255, 0); }\n");     // Bright Green
-        extraStyle.append("TD.byw { color: yellow; }\n");           // Yellow
-        extraStyle.append("TD.df  { color: rgb(100, 255, 200); }\n"); // Magenta
-        extraStyle.append("TD.rd  { color: rgb(255, 0, 0); }\n");     // Red
-        extraStyle.append("TD.bl  { color: rgb(0, 0, 0); }\n");       // Black
-        extraStyle.append("TR.od  { background-color: rgb(240, 240, 240); }\n");       // white
-        extraStyle.append("TR.ev  { background-color: rgb(232, 242, 254); }\n"); // light blue
-        
-        extraStyle.append("TR.odh { font-weight: bold; background-color: rgb(240, 240, 240); }\n");       // white
-        extraStyle.append("TR.evh { font-weight: bold; background-color: rgb(232, 242, 254); }\n"); // light blue
-        //extraStyle.append("TR.hd  { border }\n"); // light blue
-        
-        extraStyle.append(" TABLE.o tr.hd { border-top: solid 2px rgb(0, 0, 0); border-left: solid 1px rgb(128, 128, 128); }\n");
-//        /extraStyle.append(" TABLE.o    { border-bottom: solid 1px rgb(128, 128, 128); border-right: solid 1px rgb(128, 128, 128); }\n");
-
-        tblWriter = convLogger.getWriter(fileName, title, extraStyle.toString());
+        tblWriter = convLogger.getWriter(fileName, title, getStyle());
 
         if (includeTable)
         {

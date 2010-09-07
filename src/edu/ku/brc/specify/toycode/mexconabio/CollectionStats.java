@@ -18,10 +18,13 @@
 package edu.ku.brc.specify.toycode.mexconabio;
 
 import java.awt.Color;
+import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -60,11 +63,13 @@ import edu.ku.brc.util.Pair;
  */
 public class CollectionStats extends AnalysisBase
 {
-    private boolean                       loadInstsFromDB = true; 
-    private Vector<CollStatInfo>          institutions    = new Vector<CollStatInfo>();
-    private HashMap<String, CollStatInfo> instHashMap     = new HashMap<String, CollStatInfo>();
-    private TableWriter                   sortByTblWriter = null;
-    private PreparedStatement             pLMStmt         = null;
+    private boolean                            loadInstsFromDB = false; 
+    private Vector<CollStatInfo>               institutions    = new Vector<CollStatInfo>();
+    private HashMap<Integer, CollStatInfo>     instHashMap     = new HashMap<Integer, CollStatInfo>();
+    private HashMap<TableWriter, CollStatInfo> tblInstHash     = new HashMap<TableWriter, CollStatInfo>();
+    private TableWriter                        sortByTblWriter = null;
+    private PreparedStatement                  pLMStmt         = null;
+    
     /**
      * 
      */
@@ -76,26 +81,33 @@ public class CollectionStats extends AnalysisBase
         convLogger = new IndexedConvLogger();
     }
     
+    /**
+     * 
+     */
     public void discoverInstCodesAndTotals()
     {
         System.out.println("Getting Institutions");
-        String sql = "SELECT * FROM (SELECT institution_code, COUNT(*) AS cnt FROM raw GROUP BY institution_code) T1 WHERE cnt > 1 ORDER BY cnt DESC";
+        String sql = "SELECT * FROM (SELECT data_provider_id, COUNT(*) AS cnt FROM raw GROUP BY data_provider_id) T1 WHERE cnt > 1 ORDER BY cnt DESC";
         for (Object[] row : BasicSQLUtils.query(dbSrcConn, sql))
         {
             CollStatInfo csi = new CollStatInfo();
-            csi.setCode(row[0].toString());
+            csi.setProviderId((Integer)row[0]);
             csi.setTotalNumRecords(((Long)row[1]).intValue());
+            
             if (StringUtils.isEmpty(csi.getInstName()))
             {
-                csi.setInstName(getProviderNameFromInstCode(csi.getCode()));
+                csi.setInstName(getProviderNameFromInstCode(csi.getProviderId()));
             }
-            instHashMap.put(csi.getCode(), csi);
+            instHashMap.put(csi.getProviderId(), csi);
             institutions.add(csi);
         }
         System.out.println("Done Getting Institutions");
     }
     
     
+    /**
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public List<CollStatInfo> loadInstCodesAndtotals()
     {
@@ -105,7 +117,7 @@ public class CollectionStats extends AnalysisBase
         String xml = "";
         try
         {
-            xml = FileUtils.readFileToString(new File(XMLHelper.getConfigDirPath("../src/edu/ku/brc/specify/toycode/mexconabio/collstatinfo.xml")));
+            xml = FileUtils.readFileToString(new File(XMLHelper.getConfigDirPath("../src/edu/ku/brc/specify/toycode/mexconabio/collstatinfo.xml")), "UTF8");
         } catch (IOException e)
         {
             e.printStackTrace();
@@ -114,7 +126,7 @@ public class CollectionStats extends AnalysisBase
         List<CollStatInfo> list = (List<CollStatInfo>)xstream.fromXML(xml);
         for (CollStatInfo csi : list)
         {
-            instHashMap.put(csi.getCode(), csi);
+            instHashMap.put(csi.getProviderId(), csi);
             institutions.add(csi);
         }
         return list;
@@ -139,10 +151,10 @@ public class CollectionStats extends AnalysisBase
             dataset.addValue(p.second, p.first, ""); 
         }
         
-        if (StringUtils.isEmpty(csi.getInstName()))
-        {
-            csi.setInstName(getProviderNameFromInstCode(csi.getCode()));
-        }
+        //if (StringUtils.isEmpty(csi.getInstName()))
+        //{
+        //    csi.setInstName(getProviderNameFromInstCode(csi.getProviderId()));
+        //}
         
         JFreeChart chart = ChartFactory.createBarChart( 
                     csi.getTitle(),
@@ -173,7 +185,7 @@ public class CollectionStats extends AnalysisBase
     /**
      * @param response
      */
-    protected boolean generateDateChart(final CollStatInfo csi, final HashMap<StatType, CollStatSQLDefs> statTypeHash)
+    protected boolean generateChart(final CollStatInfo csi, final HashMap<StatType, CollStatSQLDefs> statTypeHash)
     {
         System.out.println(csi.getTitle());
         
@@ -226,6 +238,11 @@ public class CollectionStats extends AnalysisBase
     {
         loadInstCodesAndtotals();
         
+        //for (CollStatInfo csi : institutions)
+        //{
+        //    csi.setInstName(getProviderNameFromInstCode(csi.getProviderId()));
+        //}
+        
         List<CollStatSQLDefs> statTypes = getStatSQL();
         HashMap<StatType, CollStatSQLDefs> statTypeHash = new HashMap<StatType, CollStatSQLDefs>();
         for (CollStatSQLDefs cs : statTypes)
@@ -257,7 +274,7 @@ public class CollectionStats extends AnalysisBase
             @Override
             public int compare(CollStatInfo o1, CollStatInfo o2)
             {
-                return o1.getCode().compareToIgnoreCase(o2.getCode());
+                return o1.getInstName().compareToIgnoreCase(o2.getInstName());
                 //Integer cnt1 = o1.getTotalNumRecords();
                 //Integer cnt2 = o2.getTotalNumRecords();
                 //return cnt2.compareTo(cnt1);
@@ -275,7 +292,7 @@ public class CollectionStats extends AnalysisBase
         {
             if (StringUtils.isEmpty(csi.getInstName()))
             {
-                csi.setInstName(getProviderNameFromInstCode(csi.getCode()));
+                csi.setInstName(getProviderNameFromInstCode(csi.getProviderId()));
             }
             
             String title = csi.getTitle() + " - " + csi.getTotalNumRecords();
@@ -284,15 +301,17 @@ public class CollectionStats extends AnalysisBase
             {
                 startLogging("reports", "charts", clsi.hashCode()+".html", title, false);
                 tblWriter.startTable();
+                tblInstHash.put(tblWriter, csi);
 
             } else
             {
                 tblWriter.endTable();
                 startNewDocument(csi.hashCode()+".html", title, false);
+                tblInstHash.put(tblWriter, csi);
                 tblWriter.startTable();
             }
             
-            if (generateDateChart(csi, statTypeHash))
+            if (generateChart(csi, statTypeHash))
             {
                 int total = csi.getValue(StatType.eTotalNumRecords);
                 
@@ -303,7 +322,8 @@ public class CollectionStats extends AnalysisBase
                 tblWriter.startTable();
                 tblWriter.logHdr("Stat", "Percent");
                 
-                int cnt = 0;
+                int    rowCnt       = 0;
+                int    cnt          = 0;
                 double totalPercent = 0.0;
                 for (StatType type : StatType.values())
                 {
@@ -314,13 +334,17 @@ public class CollectionStats extends AnalysisBase
                     double dVal = (double)csi.getValue(type);
                     double val = (((dVal / (double)total) * 100.0));
                     
-                    tblWriter.println(String.format("<TR><TD>%s</TD><TD style=\"text-align:right\">%6.2f</TD></TR>", csqd.getName(), val));
-                    
                     if (type.ordinal() < StatType.eHasYearOnly.ordinal())
                     {
+                        tblWriter.print(String.format("<TR class=\"%s\">", (rowCnt % 2 == 0 ? "od" : "ev")));
                         totalPercent += val;
                         cnt++;
+                    } else
+                    {
+                        tblWriter.print(String.format("<TR>", csqd.getName()));
                     }
+                    tblWriter.println(String.format("<TD>%s</TD><TD style=\"text-align:right\">%6.2f</TD></TR>", csqd.getName(), val));
+                    rowCnt++;
                 }
                 totalPercent = Math.max(totalPercent, 0.0);
                 double avePercent = (totalPercent / (double)cnt);
@@ -363,25 +387,32 @@ public class CollectionStats extends AnalysisBase
             }
         });
         
+        Integer rank    = 0;
+        String  average = "";
         startNewDocument("SortedByAverages.html", " Sorted By Averages", false);
         sortByTblWriter = tblWriter;
         tblWriter.startTable();
-        tblWriter.logHdr("Institution", "Num of Records", "Percentage");
+        tblWriter.logHdr("Rank", "Institution", "Num of Records", "Percentage");
         for (CollStatInfo csi : sortedByAvesList)
         {
             String aveStr = String.format("%8.2f", csi.getAveragePercent());
             Integer cnt   = csi.getTotalNumRecords();
+            if (!aveStr.equals(average))
+            {
+                rank++;
+                average = aveStr;
+            }
             
-            String title = csi.getTitle() + " - " + csi.getTotalNumRecords();
-            
-            tblWriter.log(title, cnt.toString(), aveStr);
+            String fileName = StringUtils.replace(csi.getChartFileName(), "png", "html");
+            String link = String.format("<a href=\"%s\">%s</>", fileName, csi.getTitle());
+            tblWriter.log(rank.toString(), link, cnt.toString(), aveStr);
         }
         tblWriter.endTable();
         
         //tblWriter.println("</BODY></HTML>");
         endLogging(true);
         
-        saveInstitutions();
+        //saveInstitutions();
     }
     
 
@@ -406,16 +437,17 @@ public class CollectionStats extends AnalysisBase
             System.out.println(csqd.getType().toString());
             for (Object[] row : BasicSQLUtils.query(dbSrcConn, csqd.getSQL()))
             {
-                String  instCode = (String)row[0];
-                Long count       = (Long)row[1];
+                //String  instCode = (String)row[0];
+                Integer providerId = (Integer)row[0];
+                Long    count      = (Long)row[1];
                 
-                CollStatInfo csi = instHashMap.get(instCode);
+                CollStatInfo csi = instHashMap.get(providerId);
                 if (csi != null)
                 {
                     csi.setValue(csqd.getType(), count.intValue());
                 } else
                 {
-                    System.err.println("Couldn't find institution["+instCode+"]");
+                    System.err.println("Couldn't find institution["+providerId+"]");
                 }
             }
         }
@@ -443,12 +475,22 @@ public class CollectionStats extends AnalysisBase
         System.out.println(file.getAbsolutePath());
         try
         {
-            FileUtils.writeStringToFile(file, xstream.toXML(institutions));
+            Writer writer = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(file), "UTF8"));
+            xstream.toXML(institutions, writer);
+            
         } catch (IOException e)
         {
             e.printStackTrace();
         }
     }
+    
+    /*private XStream createXStreamWriter() throws UnsupportedEncodingException, FileNotFoundException
+    {
+        Writer writer = new BufferedWriter(new OutputStreamWriter( new FileOutputStream("outfilename"), "UTF8"));
+        
+        XStream xstream = new PrettyPrintWriter(writer);
+        return xstream;
+    }*/
     
     /**
      * @return
@@ -462,100 +504,51 @@ public class CollectionStats extends AnalysisBase
         String xml = "";
         try
         {
-            xml = FileUtils.readFileToString(new File(XMLHelper.getConfigDirPath("../src/edu/ku/brc/specify/toycode/mexconabio/collstatsqldefs.xml")));
+            xml = FileUtils.readFileToString(new File(XMLHelper.getConfigDirPath("../src/edu/ku/brc/specify/toycode/mexconabio/collstatsqldefs.xml")), "UTF8");
         } catch (IOException e)
         {
             e.printStackTrace();
         }
         return (List<CollStatSQLDefs>)xstream.fromXML(xml);
-        
-        /*
-        XStream xstream = new XStream(
-                new XppDriver() 
-                {
-                    @Override
-                    public HierarchicalStreamWriter createWriter(Writer out) 
-                    {
-                        return new PrettyPrintWriter(out) 
-                        {
-                            @Override
-                            protected void writeText(QuickWriter writer, String text) 
-                            {
-                                writer.write("<![CDATA[");
-                                writer.write(text);
-                                writer.write("]]>");
-                            }
-                        };
-                    }
-                }
-            );
-        CollStatSQLDefs.config(xstream);
-        
-        ArrayList<CollStatSQLDefs> array = new ArrayList<CollStatSQLDefs>();
-        for (StatType st : StatType.values())
-        {
-            CollStatSQLDefs csi = new CollStatSQLDefs();
-            csi.setType(st);
-            csi.setName(st.toString());
-            csi.setSQL("SELECT * FROM (SELECT institution_code, COUNT(*) AS cnt FROM raw GROUP BY institution_code) T1 WHERE cnt > 1 ORDER BY cnt DESC");
-            array.add(csi);
-        }
-        
-        File file = new File(XMLHelper.getConfigDirPath("../src/edu/ku/brc/specify/toycode/mexconabio/collstatsqldefs.xml"));
-        System.out.println(file.getAbsolutePath());
-        //if (file.exists())
-        //{
-        //    //return (Hashtable<String, Skin>)xstream.fromXML(XMLHelper.getContents(skinsFile));
-        //}
-        try
-        {
-            FileUtils.writeStringToFile(file, xstream.toXML(array));
-        } catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return array;*/
     }
     
     /**
      * @param instCode
      * @return
      */
-    private String getProviderNameFromInstCode(final String instCode)
+    private String getProviderNameFromInstCode(final int providerId)
     {
-        if (pLMStmt == null)
+        if (dbLMConn != null)
         {
-            String sql = "SELECT data_provider.name FROM occurrence_record " +
-            "Inner Join institution_code ON occurrence_record.institution_code_id = institution_code.id " +
-            "Inner Join data_provider ON occurrence_record.data_provider_id = data_provider.id WHERE institution_code.code = ? LIMIT 0, 1";
+            if (pLMStmt == null)
+            {
+                String sql = "SELECT name FROM data_provider WHERE id = ?";
+                try
+                {
+                    pLMStmt = dbLMConn.prepareStatement(sql);
+                    
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                }
+            }
             
             try
             {
-                pLMStmt = dbLMConn.prepareStatement(sql);
+                pLMStmt.setInt(1, providerId);
+                ResultSet rs = pLMStmt.executeQuery();
+                if (rs.next())
+                {
+                    return rs.getString(1);
+                }
+                rs.close();
                 
             } catch (SQLException e)
             {
                 e.printStackTrace();
             }
         }
-        
-        try
-        {
-            pLMStmt.setString(1, instCode);
-            ResultSet rs = pLMStmt.executeQuery();
-            if (rs.next())
-            {
-                return rs.getString(1);
-            }
-            rs.close();
-            
-        } catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-        return null;
-        
+        return "N/A";
     }
     
     /* (non-Javadoc)
@@ -584,9 +577,8 @@ public class CollectionStats extends AnalysisBase
         
         //cs.createDBConnection("localhost", "3306", "plants", "root", "root");
         cs.createLMDBConnection("lm2gbdb.nhm.ku.edu", "3399", "gbc20100726", "rods", "specify4us");
-        //cs.createSrcDBConnection("localhost", "3306", "plants_ref", "root", "root");
+        cs.createSrcDBConnection("localhost", "3306", "plants", "root", "root");
         //cs.createSrcDBConnection("conabio.nhm.ku.edu", "3306", "plants", "rs", "");
-        //cs.discoverInstCodesAndtotals();
         //cs.process(0, 0);
         cs.createCharts();
         cs.cleanup();
@@ -637,7 +629,7 @@ public class CollectionStats extends AnalysisBase
                 }
                 i++;
             }
-            indexWriter.println("<BR>");
+            indexWriter.println("<BR><BR>");
             
             String alphaAnchor = "";
             indexWriter.startTable();
@@ -654,7 +646,8 @@ public class CollectionStats extends AnalysisBase
                 
                 try
                 {
-                    indexWriter.log("<A href=\""+ FilenameUtils.getName(tblWr.getFileName())+"\">"+tblWr.getTitle()+"</A>");
+                    String title = tblWr == sortByTblWriter ? "Rankings" : tblInstHash.get(tblWr).getTitle();
+                    indexWriter.log("<A href=\""+ FilenameUtils.getName(tblWr.getFileName())+"\">"+title+"</A>");
                     tblWr.close();
                    
                 } catch (Exception ex)

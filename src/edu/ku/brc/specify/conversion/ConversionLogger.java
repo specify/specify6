@@ -22,10 +22,9 @@ package edu.ku.brc.specify.conversion;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.io.FilenameUtils;
@@ -227,6 +226,9 @@ public class ConversionLogger
             return new File(path);
             
         } catch (FileNotFoundException e) 
+        {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e)
         {
             e.printStackTrace();
         }

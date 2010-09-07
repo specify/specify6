@@ -35,6 +35,7 @@ public class CollStatInfo
 {
     
     protected String code;
+    protected int    providerId;
     protected String instName;
     protected String chartFileName; // Transient
     
@@ -184,7 +185,7 @@ public class CollStatInfo
      */
     public String getTitle()
     {
-        return code + (StringUtils.isNotEmpty(instName) ? (" - "+instName) : "");
+        return (StringUtils.isNotEmpty(instName) ? instName : "N/A");
     }
 
     /**
@@ -251,6 +252,22 @@ public class CollStatInfo
         this.averagePercent = averagePercent;
     }
     
+    /**
+     * @return the providerId
+     */
+    public int getProviderId()
+    {
+        return providerId;
+    }
+
+    /**
+     * @param providerId the providerId to set
+     */
+    public void setProviderId(int providerId)
+    {
+        this.providerId = providerId;
+    }
+
     /**
      * @param xstream
      */
