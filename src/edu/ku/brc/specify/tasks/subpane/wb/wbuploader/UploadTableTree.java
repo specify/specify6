@@ -678,7 +678,9 @@ public class UploadTableTree extends UploadTable
         super.finishUpload(cancelled);
         if (this.parent == null  && !this.incrementalNodeNumberUpdates && !cancelled)
         {
-            try
+            //XXX Really should check descendants to see if any changes have been made that require
+        	//a tree update.
+        	try
             {
                 getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot(), true, false);
             }
