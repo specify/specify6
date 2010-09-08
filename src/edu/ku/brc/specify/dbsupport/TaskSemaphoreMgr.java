@@ -23,6 +23,7 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -43,7 +44,6 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -986,7 +986,15 @@ public class TaskSemaphoreMgr
         {
             semaphore.setIsLocked(doLock);
             semaphore.setContext(context);
-            String machineName = InetAddress.getLocalHost().toString();
+            String machineName = "";
+            try
+            {
+            	machineName = InetAddress.getLocalHost().toString();
+            } catch (UnknownHostException ex)
+            {
+            	//no internet connection. ignore.
+            }
+            
             machineName =  StringUtils.isNotEmpty(machineName) ? machineName.substring(0, Math.min(64, machineName.length())) : null;
             semaphore.setMachineName(doLock ? machineName : null);
             semaphore.setScope(new Byte((byte)scope.ordinal()));
