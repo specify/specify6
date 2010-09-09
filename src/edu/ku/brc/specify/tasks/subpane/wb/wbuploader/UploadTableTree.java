@@ -669,6 +669,25 @@ public class UploadTableTree extends UploadTable
         return dataToWrite(recNum);
     }
 
+    /**
+     * @return true if changes that require a tree update have occurred.
+     */
+    protected boolean needToUpdateTree()
+    {
+    	//XXX may need to check other things when 'update' uploads are implemented
+    	if (uploadedRecs.size() > 0)
+    	{
+    		return true;
+    	}
+    	
+    	if (child != null)
+    	{
+    		return child.needToUpdateTree();
+    	}
+    	
+    	return false;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#finishUpload()
      */
@@ -678,20 +697,21 @@ public class UploadTableTree extends UploadTable
         super.finishUpload(cancelled);
         if (this.parent == null  && !this.incrementalNodeNumberUpdates && !cancelled)
         {
-            //XXX Really should check descendants to see if any changes have been made that require
-        	//a tree update.
-        	try
-            {
-                getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot(), true, false);
-            }
-            catch (Exception ex)
-            {
-                if (ex instanceof UploaderException) 
-                { 
-                    throw (UploaderException) ex; 
-                }
-                throw new UploaderException(ex);
-            }
+        	if (needToUpdateTree())
+        	{
+        		try
+        		{
+        			getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot(), true, false);
+        		}
+        		catch (Exception ex)
+        		{
+        			if (ex instanceof UploaderException) 
+        			{ 
+        				throw (UploaderException) ex; 
+        			}
+        			throw new UploaderException(ex);
+        		}
+        	}
         }
     }
 
