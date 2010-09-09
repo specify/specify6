@@ -671,6 +671,8 @@ public class UploadTableTree extends UploadTable
 
     /**
      * @return true if changes that require a tree update have occurred.
+     * 
+     * This method should be called by the highest level in the tree.
      */
     protected boolean needToUpdateTree()
     {
