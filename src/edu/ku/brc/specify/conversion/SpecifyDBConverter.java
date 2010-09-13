@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -524,7 +525,6 @@ public class SpecifyDBConverter extends AppBase
                             {
                                 BasicSQLUtils.update(oldDBConn, "UPDATE "+tableName+ " SET TimestampCreated='"+nowStr+"' WHERE TimestampCreated IS NULL");
                             }
-                            break;
                         }
                     }
                 } catch (Exception ex)
@@ -537,6 +537,61 @@ public class SpecifyDBConverter extends AppBase
         log.debug("Done setting Timestamps");
     }
     
+    /**
+     * @param oldDBConn
+     */
+    private HashSet<String> getOldEditedByStrings(final Connection oldDBConn)
+    {
+        HashSet<String> names = new HashSet<String>();
+        
+        // Makes sure old data has all the TimestampCreated filled in
+        List<String> tableNames = BasicSQLUtils.getTableNames(oldDBConn);
+        
+        frame.setProcess(0, tableNames.size());
+        
+        int cnt = 0;
+        for (String tableName : tableNames)
+        {
+            frame.setProcess(cnt++);
+            
+            if (!tableName.toLowerCase().startsWith("usys") && 
+                !tableName.toLowerCase().startsWith("web") && 
+                !tableName.toLowerCase().equals("taxonomytype") && 
+                !tableName.toLowerCase().equals("taxonomicunittype") && 
+                !tableName.toLowerCase().equals("reports"))
+            {
+                try
+                {
+                    System.out.println("Table: "+tableName);
+                    
+                    List<String> fieldNames = BasicSQLUtils.getFieldNamesFromSchema(oldDBConn, tableName);
+                    for (String fieldName : fieldNames)
+                    {
+                        if (fieldName.equals("LastEditedBy"))
+                        {
+                            String sql = "SELECT LastEditedBy FROM " + tableName + " WHERE LastEditedBy IS NOT NULL GROUP BY LastEditedBy";
+                            for (Object obj : BasicSQLUtils.querySingleCol(oldDBConn, sql))
+                            {
+                                names.add(obj.toString());
+                            }
+                            break;
+                        }
+                    }
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        frame.setProcess(tableNames.size());
+        
+        for (String name : names)
+        {
+            System.out.println(name);
+        }
+        log.debug("Done getting LastEditedBy");
+        return names;
+    }
 
     /**
      * Convert old Database to New 
@@ -610,6 +665,13 @@ public class SpecifyDBConverter extends AppBase
             return;
         }
         
+        boolean doGetLastEditedByNamesHashSet = true;
+        if (doGetLastEditedByNamesHashSet)
+        {
+            getOldEditedByStrings(oldDBConn);
+            //return;
+        }
+        
         boolean doFix = false;
         if (doFix)
         {
@@ -651,6 +713,20 @@ public class SpecifyDBConverter extends AppBase
             return;
         }*/
         
+        boolean doCheckLastEditedByNamesHashSet = false;
+        if (doCheckLastEditedByNamesHashSet)
+        {
+            IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
+            IdMapperMgr.getInstance().addTableMapper("agent", "AgentID", false);
+            IdMapperMgr.getInstance().addTableMapper("address", "AddressID", false);
+            
+            convLogger.initialize(dbNameDest);
+            convLogger.setIndexTitle(dbNameDest + " Conversion "+(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).format(Calendar.getInstance().getTime()));
+            conversion = new GenericDBConversion(oldDBConn, newDBConn, dbNameSource, convLogger);
+            conversion.checkCreatedModifiedByAgents();
+            //conversion.fixCreatedModifiedByAgents(itUsrPwd.first, itUsrPwd.second, dbNameSource);
+            return;
+        } 
         
         //ConvertMiscData.moveHabitatToStratSp5(oldDBConn);
 
@@ -1593,6 +1669,14 @@ public class SpecifyDBConverter extends AppBase
                     }
                 }
                 
+                
+                boolean doCheckLastEditedByNamesHashSet2 = !doCheckLastEditedByNamesHashSet;
+                if (doCheckLastEditedByNamesHashSet2)
+                {
+                    conversion.checkCreatedModifiedByAgents();
+                    //conversion.fixCreatedModifiedByAgents(itUsrPwd.first, itUsrPwd.second, dbNameSource);
+                } 
+                
                 log.info("Done - " + dbNameDest + " " + convertTimeInSeconds);
                 frame.setDesc("Done - " + dbNameDest + " " + convertTimeInSeconds);
 
@@ -1939,8 +2023,8 @@ public class SpecifyDBConverter extends AppBase
         	errMsgs.append("There is a mismatch between Accessions and its CollectionObject references.\n");
         }
         
-        int cntDTInnerCO = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM determination d INNER JOIN collectionobject co ON d.BiologicalObjectID = co.CollectionObjectID WHERE co.CollectionObjectTypeID < 20");
-        int cntDTLeftCO  = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM determination d LEFT JOIN collectionobject co ON d.BiologicalObjectID = co.CollectionObjectID WHERE co.CollectionObjectTypeID < 20");
+        int cntDTInnerCO = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM determination INNER JOIN collectionobject ON determination.BiologicalObjectID = collectionobject.CollectionObjectID WHERE CollectionObjectTypeID < 20");
+        int cntDTLeftCO  = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM determination LEFT JOIN collectionobject ON determination.BiologicalObjectID = collectionobject.CollectionObjectID WHERE CollectionObjectTypeID < 20");
         
         if (cntDTInnerCO != cntDTLeftCO)
         {

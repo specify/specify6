@@ -32,7 +32,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.axis.utils.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -112,6 +112,7 @@ public class ConvertTaxonHelper
     
     protected int missingParentTaxonCount = 0;
     protected int lastEditedByInx;
+    protected int modifiedByAgentInx;
     protected int rankIdOldDBInx;
 
     
@@ -574,6 +575,7 @@ public class ConvertTaxonHelper
             
             missingParentTaxonCount = 0;
             lastEditedByInx         = oldFieldToColHash.get("LastEditedBy");
+            modifiedByAgentInx      = fieldToColHash.get("ModifiedByAgentID");
             stmtTx                  = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             pStmtTx                 = newDBConn.prepareStatement(pStr);
             
@@ -701,12 +703,19 @@ public class ConvertTaxonHelper
                     }
                 } else if (colInx == lastEditedByInx)
                 {
-                    Integer agtId = conversion.getModifiedByAgentId(rs.getString(colInx));
-                    if (agtId != null)
+                    String lastEditedByStr = rs.getString(colInx);
+                    if (StringUtils.isNotEmpty(lastEditedByStr))
                     {
-                        pStmtTx.setInt(colInx, agtId);
-                        continue;
+                        Integer agtId = conversion.getModifiedByAgentId(lastEditedByStr);
+                        if (agtId != null)
+                        {
+                            pStmtTx.setInt(modifiedByAgentInx, agtId);
+                            continue;
+                        }
                     }
+                    
+                    pStmtTx.setInt(colInx, conversion.getCurAgentModifierID());
+                    continue;
                     
                 } else if (colInx != 20)
                 {
@@ -807,7 +816,7 @@ public class ConvertTaxonHelper
                 case java.sql.Types.TIMESTAMP:
                 {
                     Timestamp val = rs.getTimestamp(colInx);
-                    if (!rs.wasNull()) pStmtTx.setTimestamp(newInx, val);
+                    pStmtTx.setTimestamp(newInx, !rs.wasNull() ? val : now);
                     break;
                 }
                 case java.sql.Types.LONGVARCHAR:

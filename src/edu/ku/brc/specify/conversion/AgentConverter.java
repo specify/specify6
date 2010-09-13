@@ -494,7 +494,7 @@ public class AgentConverter
                             sqlStr.append(BasicSQLUtils.getStrValue(rs.getObject(inx)));
                         }
                     }
-                    sqlStr.append("," + conv.getCreatorAgentId(lastEditedBy) + "," + conv.getModifiedByAgentId(lastEditedBy) + ",0");
+                    sqlStr.append("," + conv.getCreatorAgentIdForAgent(lastEditedBy) + "," + conv.getModifiedByAgentIdForAgent(lastEditedBy) + ",0");
                     sqlStr.append(")");
                     
                     //AddressID, TimestampModified,    Address,    Address2,     City, State, Country, PostalCode, Remarks, TimestampCreated, IsPrimary, Phone1, Phone2, Fax, RoomOrBuilding, AgentID, CreatedByAgentID, ModifiedByAgentID, Version) VALUES 
@@ -613,8 +613,8 @@ public class AgentConverter
                     pStmt.setString(14,   rs.getString(9));
                     pStmt.setString(15,   rs.getString(10));
                     pStmt.setInt(16,      agentInfo.getNewAgentId());
-                    pStmt.setInt(17,      conv.getCreatorAgentId(lastEditedBy));
-                    pStmt.setInt(18,      conv.getModifiedByAgentId(lastEditedBy));
+                    pStmt.setInt(17,      conv.getCreatorAgentIdForAgent(lastEditedBy));
+                    pStmt.setInt(18,      conv.getModifiedByAgentIdForAgent(lastEditedBy));
                     pStmt.setInt(19,      0);
                     pStmt.setInt(20,      agentInfo.addrOrd);
                     
@@ -810,7 +810,7 @@ public class AgentConverter
                             sqlStr.append(BasicSQLUtils.getStrValue(rs.getObject(inx)));
                         }
                     }
-                    sqlStr.append("," + conv.getCreatorAgentId(lastEditedBy) + "," + conv.getModifiedByAgentId(lastEditedBy) + ", 0"); // '0' is Version
+                    sqlStr.append("," + conv.getCreatorAgentIdForAgent(lastEditedBy) + "," + conv.getModifiedByAgentIdForAgent(lastEditedBy) + ", 0"); // '0' is Version
                     sqlStr.append(")");
 
                     try
@@ -1156,7 +1156,16 @@ public class AgentConverter
                     } else
                     {
                         String value = "";
-                        Integer index = oldIndexFromNameMap.get(fieldName);
+                        Integer index;
+                        
+                        if (fieldName.equals("ModifiedByAgentID"))
+                        {
+                            index = oldIndexFromNameMap.get("LastEditedBy");
+                        } else 
+                        {
+                            index = oldIndexFromNameMap.get(fieldName);
+                        }
+                        
                         if (index == null)
                         {
                             // log.debug(fieldName);
@@ -1400,7 +1409,7 @@ public class AgentConverter
         {
             Division   division       = (Division)session.createQuery("FROM Division WHERE id = " + divisionArg.getId()).list().iterator().next();
             Discipline discipline     = (Discipline)session.createQuery("FROM Discipline WHERE id = " + disciplineArg.getId()).list().iterator().next();
-            Agent      createdByAgent = (Agent)session.createQuery("FROM Agent WHERE id = " + conv.getCreatorAgentId(null)).list().iterator().next();
+            Agent      createdByAgent = (Agent)session.createQuery("FROM Agent WHERE id = " + conv.getCreatorAgentIdForAgent(null)).list().iterator().next();
             
             tblWriter.log("<H4>Splitting Mutliple Collectors names into Multiple Agents</H4>");
             tblWriter.startTable();

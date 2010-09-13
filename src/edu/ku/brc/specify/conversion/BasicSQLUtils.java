@@ -22,6 +22,7 @@ package edu.ku.brc.specify.conversion;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -1306,7 +1307,7 @@ public class BasicSQLUtils
             {
                 //if (myDestinationServerType == SERVERTYPE.MS_SQLServer)
                 {
-                    s = s.replaceAll("\'", "\'\'");
+                    s = s.replaceAll("'", "''");
                 }
                 // s = s.replaceAll("\'","\\\'\'");
                 // s = s.replaceAll("\'","\\\'");
@@ -1642,6 +1643,108 @@ public class BasicSQLUtils
         return null;
     }
     
+    /**
+     * @param pStmt
+     * @param type
+     * @param data
+     * @throws SQLException 
+     */
+    public static void setData(final PreparedStatement pStmt, final int type, final int colInx, final Object data) throws SQLException
+    {
+        if (data == null)
+        {
+            pStmt.setObject(colInx, null);
+            return;
+        }
+        
+        boolean isStr = data instanceof String;
+        switch (type)
+        {
+            case java.sql.Types.TINYINT:
+            case java.sql.Types.SMALLINT:
+            case java.sql.Types.INTEGER:
+        if (isStr)
+                {
+                    pStmt.setString(colInx, (String)data);
+                } else
+                {
+                    pStmt.setInt(colInx, (Integer)data);
+                }
+                break;
+                
+            case java.sql.Types.FLOAT:
+                if (isStr)
+                {
+                    pStmt.setString(colInx, (String)data);
+                } else
+                {               
+                    pStmt.setFloat(colInx, (Float)data);
+                }
+                break;
+                
+            case java.sql.Types.VARCHAR:
+            case java.sql.Types.CHAR:
+            case java.sql.Types.LONGVARCHAR:
+            case java.sql.Types.LONGNVARCHAR:
+            case java.sql.Types.NCHAR:
+                if (isStr)
+                {
+                    pStmt.setString(colInx, (String)data);
+                } else
+                {                
+                    pStmt.setString(colInx, (String)data);
+                }
+                break;
+                
+            case java.sql.Types.DOUBLE:
+                if (isStr)
+                {
+                    pStmt.setString(colInx, (String)data);
+                } else
+                {
+                    pStmt.setDouble(colInx, (Double)data);
+                }
+                break;
+                
+            case java.sql.Types.DATE:
+                if (isStr)
+                {
+                    pStmt.setString(colInx, (String)data);
+                } else
+                {
+                    pStmt.setDate(colInx, (java.sql.Date)data);
+                }
+                break;
+                
+            case java.sql.Types.TIMESTAMP:
+                if (isStr)
+                {
+                    pStmt.setString(colInx, (String)data);
+                } else
+                {
+                    pStmt.setTimestamp(colInx, (Timestamp)data);
+                }
+                break;
+                
+            case java.sql.Types.BOOLEAN:
+                if (isStr)
+                {
+                    String val = (String)data;
+                    pStmt.setBoolean(colInx, !val.equalsIgnoreCase("true"));
+                } else
+                {
+                    pStmt.setBoolean(colInx, (Boolean)data);
+                }
+                break;
+                
+            case java.sql.Types.BIT:
+                pStmt.setBoolean(colInx, !(((Integer)data) == 0));
+                break;
+
+            default:
+                throw new RuntimeException(String.format("Missing case for SQL Type %d for Column: %d Data[%s]", type, colInx, data.getClass().getSimpleName()));
+        }
+    }
     
     /**
      * @param connection
@@ -2266,6 +2369,14 @@ public class BasicSQLUtils
                             
                         } else 
                         {
+                            if (columnValueMapper != null)
+                            {
+                                BasicSQLUtilsMapValueIFace valueMapper = columnValueMapper.get(newColName);
+                                if (valueMapper != null)
+                                {
+                                    dataObj = valueMapper.mapValue(dataObj);
+                                }
+                            }
                             
                             if (dataObj instanceof String && newFldMetaData.isString())
                             {

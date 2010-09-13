@@ -60,6 +60,8 @@ public class CollectionInfo implements Comparable<CollectionInfo>
     protected static final Logger           log         = Logger.getLogger(CollectionInfo.class);
     
     protected static Vector<CollectionInfo> collectionInfoList = new Vector<CollectionInfo>();
+    
+    public static boolean        DOING_ACCESSSION = false;
 
     protected boolean            isIncluded    = true;
     protected Integer            colObjTypeId;
@@ -287,7 +289,7 @@ public class CollectionInfo implements Comparable<CollectionInfo>
         int inx = 0;
         for (CollectionInfo ci : getCollectionInfoList(oldDBConn))
         {
-            if (ci.getColObjCnt() > max)
+            if (ci.getColObjCnt() > max || DOING_ACCESSSION)
             {
                 max = ci.getColObjCnt();
                 colInfo = ci;
@@ -418,9 +420,9 @@ public class CollectionInfo implements Comparable<CollectionInfo>
                     log.debug(sql);
                     
                     String detSQLStr = "SELECT ct.TaxonomyTypeID, (select distinct relatedsubtypevalues FROM usysmetacontrol c " +
-                    	               "LEFT JOIN usysmetafieldsetsubtype fst ON fst.fieldsetsubtypeid = c.fieldsetsubtypeid " +
-                    	               "WHERE objectid = 10290 AND ct.taxonomytypeid = c.relatedsubtypevalues) AS DeterminationTaxonType " +
-                    	               "FROM collectiontaxonomytypes ct WHERE ct.biologicalobjecttypeid = " + info.getColObjTypeId();
+                                       "LEFT JOIN usysmetafieldsetsubtype fst ON fst.fieldsetsubtypeid = c.fieldsetsubtypeid " +
+                                       "WHERE objectid = 10290 AND ct.taxonomytypeid = c.relatedsubtypevalues) AS DeterminationTaxonType " +
+                                       "FROM collectiontaxonomytypes ct WHERE ct.biologicalobjecttypeid = " + info.getColObjTypeId();
                     log.debug(detSQLStr);
                     
                     String txNameSQL = "SELECT TaxonomyTypeName FROM taxonomytype WHERE TaxonomyTypeID = ";
@@ -753,10 +755,23 @@ public class CollectionInfo implements Comparable<CollectionInfo>
 
 
     /**
-     * @return932413666
+     * @return
+     */
+    public static Vector<CollectionInfo> getCollectionInfoList()
+    {
+        return collectionInfoList;
+    }
+    
+    /**
+     * @return
      */
     public static Vector<CollectionInfo> getFilteredCollectionInfoList()
     {
+        if (DOING_ACCESSSION)
+        {
+            return new Vector<CollectionInfo>(collectionInfoList);
+        }
+        
         Vector<CollectionInfo> colList = new Vector<CollectionInfo>();
         for (CollectionInfo ci : collectionInfoList)
         {
