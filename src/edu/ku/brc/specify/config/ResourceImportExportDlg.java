@@ -34,6 +34,7 @@ import static edu.ku.brc.ui.UIRegistry.showLocalizedMsg;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.HeadlessException;
@@ -304,7 +305,7 @@ public class ResourceImportExportDlg extends CustomDialog
         resPane.add(sp, cc.xy(1,3));
 
         PanelBuilder repPane = new PanelBuilder(new FormLayout("f:p:g", "p,2px,f:p:g"));
-        resPane.add(createLabel(getResourceString("RIE_REPORT_RES"), SwingConstants.CENTER), cc.xy(1,1));
+        repPane.add(createLabel(getResourceString("RIE_REPORT_RES"), SwingConstants.CENTER), cc.xy(1,1));
         repList   = new JList(repModel);
         repList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         repList.setCellRenderer(new ARListRenderer());
@@ -365,6 +366,15 @@ public class ResourceImportExportDlg extends CustomDialog
                 	//revertBtn.setVisible(selectedComp != repPanel);
                 }
                 enableUI();
+                
+                // JGoodies Resizes the panel in the Dialog and 
+                // partially hides the buttons, this fixes that.
+                Dimension size = ResourceImportExportDlg.this.getSize();
+                //ResourceImportExportDlg.this.pack();
+                //Dimension newSize = ResourceImportExportDlg.this.getSize();
+                Dimension newSize = ResourceImportExportDlg.this.getPreferredSize();
+                size.height = newSize.height;
+                ResourceImportExportDlg.this.setSize(size);
             }
         });
         
@@ -1082,18 +1092,20 @@ public class ResourceImportExportDlg extends CustomDialog
     }
     
     /**
-     * @param currAppResName
-     * @param isSpRepRes
+     * @param dir dir that the resource will be added to
+     * @param currAppResName the name of the resource
+     * @param isSpReportRes that it is a Report
      * @return
      */
-    private Pair<SpAppResource, String> checkForOverwriteOrNewName(final String currAppResName,
-                                                                   final boolean isSpRepRes)
+    private Pair<SpAppResource, String> checkForOverwriteOrNewName(final SpAppResourceDir dir,
+                                                                   final String  currAppResName,
+                                                                   final boolean isSpReportRes)
     {
         while (true)
         {
             // First check the name of the resource. 
             // If is a JasperReport and it wasn't found, then check the name again without the extension.
-            SpAppResource fndAppRes = checkForOverrideAppRes(currAppResName, !isSpRepRes ? FilenameUtils.getBaseName(currAppResName) : null);
+            SpAppResource fndAppRes = checkForOverrideAppRes(dir, currAppResName, !isSpReportRes ? FilenameUtils.getBaseName(currAppResName) : null);
             if (fndAppRes != null)
             {
                 // Show Dialog here and tell them it found a
@@ -1106,12 +1118,12 @@ public class ResourceImportExportDlg extends CustomDialog
                 try
                 {
                     session = DataProviderFactory.getInstance().createSession();
-                    SpAppResourceDir dir = session.get(SpAppResourceDir.class, fndAppRes.getSpAppResourceDir().getId());
-                    dir.getSpPersistedAppResources().size(); // Force Load
+                    SpAppResourceDir dirTmp = session.get(SpAppResourceDir.class, dir.getId());
                     
                     if (dir != null)
                     {
-                        ardTitle = getHierarchicalTitle(dir);
+                        dirTmp.getSpPersistedAppResources().size(); // Force Load
+                        ardTitle = getHierarchicalTitle(dirTmp);
                     }
                     msg = String.format(getResourceString("RIE_ConfirmResourceOverwriteMsg"), fndAppRes.getName(), StringUtils.isNotEmpty(ardTitle) ? ardTitle : levelCBX.getSelectedItem().toString());
                     
@@ -1122,8 +1134,7 @@ public class ResourceImportExportDlg extends CustomDialog
                 } finally
                 {
                     if (session != null) session.close();
-                }
-                
+                }                    
                 String title = getResourceString("RIE_ConfirmResourceOverwriteTitle");
                 final PromptDlg dlg = new PromptDlg((Dialog)getMostRecentWindow(), title, msg, true, CustomDialog.OKCANCELAPPLY);
                 dlg.setOkLabel(getResourceString("RIE_ConfirmResourceOverwrite"));
@@ -1166,7 +1177,7 @@ public class ResourceImportExportDlg extends CustomDialog
                 
                 if (option == CustomDialog.APPLY_BTN) // Override
                 {
-                    SpAppResource appRes = checkForOverrideAppRes(dlg.getTextField().getText(), null);
+                    SpAppResource appRes = checkForOverrideAppRes(dir, dlg.getTextField().getText(), null);
                     if (appRes == null)
                     {
                         return new Pair<SpAppResource, String>(null, dlg.getTextField().getText());
@@ -1176,7 +1187,7 @@ public class ResourceImportExportDlg extends CustomDialog
             {
                 return null;
             }
-        }
+        } // while
     }
 
     /**
@@ -1215,12 +1226,12 @@ public class ResourceImportExportDlg extends CustomDialog
                 if (importFile.exists())
                 {
                     String  repResourceName = getSpReportResourceName(importFile); 
-                    boolean isSpRepRes      = repResourceName != null;
-                    boolean isJRRepRes      = false;
+                    boolean isSpReportRes   = repResourceName != null;
+                    boolean isJRReportRes   = false;
                     try
                     {
-                        data       = FileUtils.readFileToString(importFile);
-                        isJRRepRes = isJasperReport(data);
+                        data          = FileUtils.readFileToString(importFile);
+                        isJRReportRes = isJasperReport(data);
     
                     } catch (Exception ex)
                     {
@@ -1230,7 +1241,7 @@ public class ResourceImportExportDlg extends CustomDialog
                         return;
                     }
     
-                    boolean isRepRes = isJRRepRes || isSpRepRes;
+                    boolean isReportRes = isJRReportRes || isSpReportRes;
     
                     if (tabbedPane.getSelectedComponent() == viewsPanel)
                     {
@@ -1330,7 +1341,7 @@ public class ResourceImportExportDlg extends CustomDialog
                         int resIndex = theList.getSelectedIndex();
                         if (resIndex > -1)
                         {
-                            if (resIndex == 0)
+                            if (resIndex == 0) // means we are adding a new resource
                             {
                                 try
                                 {
@@ -1350,15 +1361,15 @@ public class ResourceImportExportDlg extends CustomDialog
                                         dir.mergeTransientResourceAndViewSets();
                                     }
     
-                                    Pair<SpAppResource, String> retValues = checkForOverwriteOrNewName(isSpRepRes ? repResourceName : fileName, isSpRepRes);
+                                    Pair<SpAppResource, String> retValues = checkForOverwriteOrNewName(dir, isSpReportRes ? repResourceName : fileName, isSpReportRes);
                                     SpAppResource fndAppRes  = retValues != null && retValues.first != null ? retValues.first : null;
                                     String        newResName = retValues != null && retValues.second != null ? retValues.second : null;
     
-                                    if (isRepRes)
+                                    if (isReportRes)
                                     {
                                         if (fndAppRes != null)
                                         {
-                                            if (isSpRepRes)
+                                            if (isSpReportRes)
                                             {
                                                 ReportsBaseTask.deleteReportAndResource(null, fndAppRes);
                                             }
@@ -1375,7 +1386,7 @@ public class ResourceImportExportDlg extends CustomDialog
                                             return;
                                         }*/
                                         
-                                        if (isSpRepRes)
+                                        if (isSpReportRes)
                                         {
                                             appRes = importSpReportZipResource(importFile, appRes, dir, newResName);
                                             if (appRes != null)
@@ -1409,12 +1420,12 @@ public class ResourceImportExportDlg extends CustomDialog
     
                                         appRes.setLevel(fndAppRes.getLevel());
     
-                                    } else if (!getMetaInformation(appRes))
+                                    } else if (!getMetaInformation(appRes, fileName))
                                     {
                                         return;
                                     }
     
-                                    if (!isRepRes)
+                                    if (!isReportRes)
                                     {
                                         appRes.setSpAppResourceDir(dir);
                                         dir.getSpAppResources().add(appRes);
@@ -1485,33 +1496,37 @@ public class ResourceImportExportDlg extends CustomDialog
     
     /**
      * @param appRes
+     * @param fileName
      * @return
      */
-    protected boolean getMetaInformation(final SpAppResource appRes)
+    protected boolean getMetaInformation(final SpAppResource appRes, final String fileName)
     {
-        ResImpExpMetaInfoDlg dlg = new ResImpExpMetaInfoDlg(appRes);
+        ResImpExpMetaInfoDlg dlg = new ResImpExpMetaInfoDlg(appRes, fileName);
         dlg.setVisible(true);
         return !dlg.isCancelled();
     }
     
     /**
      * Checks to see if a resource exists by either name.
+     * @param dir the parent resource directory
      * @param filename a name of a resource
      * @param secondName an optional second name to check
      * @return true if a resource exists
      */
-    protected SpAppResource checkForOverrideAppRes(final String filename, final String secondName)
+    protected SpAppResource checkForOverrideAppRes(final SpAppResourceDir dir,
+                                                   final String filename, 
+                                                   final String secondName)
     {
     	String name = filename;
-    	for (SpAppResourceDir dir : dirs)
+	    log.debug(dir.getTitle());
+        for (SpAppResource ar : dir.getSpAppResources())
         {
-            for (SpAppResource ar : dir.getSpAppResources())
+            String title = ar.getName();
+            log.debug("  "+title);
+            if (title != null && 
+                (title.equals(name) || (StringUtils.isNotEmpty(secondName) && title.equals(secondName))))
             {
-                if (ar.getName() != null && 
-                    (ar.getName().equals(name) || (StringUtils.isNotEmpty(secondName) && ar.getName().equals(secondName))))
-                {
-                    return ar;
-                }
+                return ar;
             }
         }
         return null;
