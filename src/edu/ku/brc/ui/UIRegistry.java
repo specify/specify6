@@ -1793,6 +1793,13 @@ public class UIRegistry
         {
             ((JFrame)UIRegistry.getTopWindow()).setGlassPane(oldGlassPane);
             oldGlassPane.setVisible(false);
+        } else
+        {
+            Component glassPane = ((JFrame)UIRegistry.getTopWindow()).getGlassPane();
+            if (glassPane != null)
+            {
+                glassPane.setVisible(false);
+            }
         }
         oldGlassPane     = null;
         showingGlassPane = false;
