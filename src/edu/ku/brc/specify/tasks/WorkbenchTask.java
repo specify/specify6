@@ -851,6 +851,25 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         return result;
     }
    
+	/**
+	 * @param cols
+	 * @param colName
+	 * @return index of column with name or title equal to colName
+	 */
+	protected int indexOfName(Vector<?> cols, String colName)
+	{
+		int c = 0;
+		for (Object col : cols)
+		{
+			if (col.toString().equalsIgnoreCase(colName))
+			{
+				return c;
+			}
+			c++;
+		}
+		return -1;
+	}
+	
     /**
      * If the colInfo Vector is null then all the templates are added to the list to be displayed.<br>
      * If not, then it checks all the column in the file against the columns in each Template to see if there is a match
@@ -872,7 +891,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         }
         
         Vector<WorkbenchTemplate> matchingTemplates = new Vector<WorkbenchTemplate>();
-        HashMap<WorkbenchTemplate, Vector<ImportColumnInfo>> unMappedCols = new HashMap<WorkbenchTemplate, Vector<ImportColumnInfo>>();
+        HashMap<WorkbenchTemplate, Vector<?>> unMappedCols = new HashMap<WorkbenchTemplate, Vector<?>>();
         
         // Check for any matches with existing templates
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -886,49 +905,103 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 {
                     matchingTemplates.add(template);
                     
-                } else if (template.getWorkbenchTemplateMappingItems().size() <= colInfo.size())
+                } if (colInfo.size() <= template.getWorkbenchTemplateMappingItems().size())
                 {
                     boolean match = true;
                     Vector<WorkbenchTemplateMappingItem> items = new Vector<WorkbenchTemplateMappingItem>(template.getWorkbenchTemplateMappingItems());
                     Vector<ImportColumnInfo> mapped = new Vector<ImportColumnInfo>();
-                    for (int i=0;i<items.size();i++)
+                    for (ImportColumnInfo col : colInfo)
                     {
-                        WorkbenchTemplateMappingItem wbItem = items.get(i);
-                        int origIdx = wbItem.getOrigImportColumnIndex().intValue();
-                        if (origIdx == -1)
+                        int idx = indexOfName(items, col.getColName());
+                    	if (idx != -1)
                         {
-                        	//try the viewOrder
-                        	origIdx = wbItem.getViewOrder().intValue();
-                        }
-                        ImportColumnInfo fileItem = origIdx > -1 && origIdx < colInfo.size() ? colInfo.get(origIdx) : null;
-                        // Check to see if there is an exact match by name
-                        if (colsMatchByName(wbItem, fileItem))
+                        	mapped.add(col);
+                        	items.get(idx).setViewOrder(Short.valueOf(col.getColInx().toString()));
+                        	items.get(idx).setOrigImportColumnIndex(Short.valueOf(col.getColInx().toString()));
+                        } else
                         {
-                        	//might do additional type checking
-                        	mapped.add(fileItem);
-                        }
-                        else
-                        {
-                            //log.error("["+wbItem.getImportedColName()+"]["+fileItem.getColName()+"]");
-                            match = false;
-                            break;
+                        	match = false;
+                        	break;
                         }
                     }
-                    // All columns match with their order etc.
                     if (match)
                     {
-                        matchingTemplates.add(template);
-                        Vector<ImportColumnInfo> unmapped = new Vector<ImportColumnInfo>();
-                        for (ImportColumnInfo fileItem : colInfo)
+                        Vector<WorkbenchTemplateMappingItem> unmapped = new Vector<WorkbenchTemplateMappingItem>();
+                        for (WorkbenchTemplateMappingItem item : items)
                         {
-                        	if (mapped.indexOf(fileItem) == -1)
+                        	if (indexOfName(mapped, item.getImportedColName()) == -1)
                         	{
-                        		unmapped.add(fileItem);
+                        		unmapped.add(item);
+                        		//item.setViewOrder(c++);
                         	}
                         }
+                        if (unmapped.size() == 0)
+                        {
+                        	matchingTemplates.insertElementAt(template, 0); //put full matches at head of list
+                        } else
+                        {
+                        	matchingTemplates.add(template);
+                        }
                         unMappedCols.put(template, unmapped);
+                        for (WorkbenchTemplateMappingItem unmappedItem : unmapped)
+                        {
+                        	template.getWorkbenchTemplateMappingItems().remove(unmappedItem);
+                        }
                     }
                 }
+//                else if (colInfo.size() > template.getWorkbenchTemplateMappingItems().size())
+//                {
+//                    boolean match = true;
+//                    Vector<WorkbenchTemplateMappingItem> items = new Vector<WorkbenchTemplateMappingItem>(template.getWorkbenchTemplateMappingItems());
+//                    Vector<ImportColumnInfo> mapped = new Vector<ImportColumnInfo>();
+//                    for (WorkbenchTemplateMappingItem item : items)
+//                    {
+//                    	int idx = indexOfName(colInfo, item.getImportedColName());
+//                    	if (idx != -1)
+//                    	{
+//                    		mapped.add(colInfo.get(idx));
+//                    		item.setViewOrder(Short.valueOf(colInfo.get(idx).getColInx().toString()));
+//                    		item.setOrigImportColumnIndex(Short.valueOf(colInfo.get(idx).getColInx().toString()));
+//                    	}
+//                    }
+//                    for (int i=0; i<items.size(); i++)
+//                    {
+//                        WorkbenchTemplateMappingItem wbItem = items.get(i);
+//                        int origIdx = wbItem.getOrigImportColumnIndex().intValue();
+//                        if (origIdx == -1)
+//                        {
+//                        	//try the viewOrder
+//                        	origIdx = wbItem.getViewOrder().intValue();
+//                        }
+//                        ImportColumnInfo fileItem = origIdx > -1 && origIdx < colInfo.size() ? colInfo.get(origIdx) : null;
+//                        // Check to see if there is an exact match by name
+//                        if (colsMatchByName(wbItem, fileItem))
+//                        {
+//                        	//might do additional type checking
+//                        	mapped.add(fileItem);
+//                        }
+//                        else
+//                        {
+//                            //log.error("["+wbItem.getImportedColName()+"]["+fileItem.getColName()+"]");
+//                            match = false;
+//                            break;
+//                        }
+//                    }
+//                    // All columns match with their order etc.
+//                    if (match)
+//                    {
+//                        matchingTemplates.add(template);
+//                        Vector<ImportColumnInfo> unmapped = new Vector<ImportColumnInfo>();
+//                        for (ImportColumnInfo fileItem : colInfo)
+//                        {
+//                        	if (mapped.indexOf(fileItem) == -1)
+//                        	{
+//                        		unmapped.add(fileItem);
+//                        	}
+//                        }
+//                        unMappedCols.put(template, unmapped);
+//                    }
+//                }
             }
             
         } catch (Exception ex)
@@ -963,20 +1036,23 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 if (!dlg.isCreateNew())
                 {
                 	selection = dlg.getSelectedObject();
-                	Vector<ImportColumnInfo> unmapped = unMappedCols.get(selection);
+                	Vector<?> unmapped = unMappedCols.get(selection);
                 	if (unmapped != null && unmapped.size() > 0)
                 	{
                 		StringBuilder flds = new StringBuilder();
-                		for (ImportColumnInfo info : unmapped) //if there are a lot of these the message will be ugly
+                		for (Object info : unmapped) //if there are a lot of these the message will be ugly
                 		{
                 			if (flds.length() != 0)
                 			{
                 				flds.append(", ");
                 			}
-                			flds.append(info.getColTitle());
+                			flds.append(info.toString());
                 		}
+                		String msg = unmapped.get(0) instanceof ImportColumnInfo ?
+                				String.format(UIRegistry.getResourceString("WB_UNMAPPED_NOT_IMPORTED"), flds.toString()) :
+                				String.format(UIRegistry.getResourceString("WB_UNUSED_NOT_INCLUDED"), flds.toString());
                 		if (!UIRegistry.displayConfirm(UIRegistry.getResourceString("WB_INCOMPLETE_MAP_TITLE"), 
-                				String.format(UIRegistry.getResourceString("WB_UNMAPPED_NOT_IMPORTED"), flds.toString()), 
+                				msg, 
                 				UIRegistry.getResourceString("YES"), UIRegistry.getResourceString("NO"), 
                 				JOptionPane.WARNING_MESSAGE))
                 		{
@@ -984,8 +1060,11 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 		}
                 	}
                 	
-                    loadTemplateFromData(selection);
-                    
+                    //loadTemplateFromData(selection);
+                    for (WorkbenchTemplateMappingItem mi : selection.getWorkbenchTemplateMappingItems())
+                    {
+                    	System.out.println(mi.getImportedColName() + " - " + mi.getViewOrder());
+                    }
                     return new Pair<Boolean, WorkbenchTemplate>(true, selection); // means reuse an existing one
                 }
 
@@ -1609,7 +1688,22 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             
         } else 
         {
-            workbenchTemplate = cloneWorkbenchTemplate(workbenchTemplate);
+            //workbenchTemplate = cloneWorkbenchTemplate(workbenchTemplate);
+        	try
+        	{
+        		workbenchTemplate = (WorkbenchTemplate)workbenchTemplate.clone();
+                for (WorkbenchTemplateMappingItem mi : workbenchTemplate.getWorkbenchTemplateMappingItems())
+                {
+                	System.out.println(mi.getImportedColName() + " - " + mi.getViewOrder());
+                }
+
+        	} catch (CloneNotSupportedException ex)
+        	{
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+                log.error(ex);
+                workbenchTemplate = null;
+        	}
         }
         
         if (workbenchTemplate != null)
@@ -1840,6 +1934,114 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
 
     
     /**
+     * @param workbench
+     * @param glassPane
+     * @param showImageView
+     * @param thisTask
+     * @return workbenchPaneSS containing workbench
+     * 
+     * workbench must be attached to a session.
+     */
+    protected WorkbenchPaneSS createEditorForWorkbench(final Workbench workbench, 
+    		//final DataProviderSessionIFace session,
+    		final SimpleGlassPane glassPane, final boolean showImageView, final WorkbenchTask  thisTask)
+    {
+        final int rowCount = workbench.getWorkbenchRows().size() + 1;
+        
+        //force load the workbench here instead of calling workbench.forceLoad() because
+        //is so time-consuming and needs progress bar.
+        //workbench.getWorkbenchTemplate().forceLoad();
+        workbench.getWorkbenchTemplate().checkMappings(getDatabaseSchema());
+        //UIRegistry.getStatusBar().incrementValue(workbench.getName());
+        int count = 1;
+        // Adjust paint increment for number of rows in DataSet
+        int mod;
+        if (rowCount < 50) mod = 1;
+        else if (rowCount < 100) mod = 10;
+        else if (rowCount < 500) mod = 20;
+        else  if (rowCount < 1000) mod = 40;
+        else mod = 50;
+        for (WorkbenchRow row : workbench.getWorkbenchRows())
+        {
+            row.forceLoad();
+            
+            if (glassPane != null)
+            {
+            	if (count % mod == 0)
+            	{
+            		glassPane.setProgress((int)( (100.0 * count) / rowCount));
+            	}
+            }
+            count++;
+        }
+        if (glassPane != null)
+        {
+        	glassPane.setProgress(100);
+        }
+        
+        // do the conversion code right here!
+        boolean convertedAnImage = false;
+        Set<WorkbenchRow> rows = workbench.getWorkbenchRows();
+        if (rows != null)
+        {
+            for (WorkbenchRow row: rows)
+            {
+                // move any single images over to the wb row image table
+                Set<WorkbenchRowImage> rowImages = row.getWorkbenchRowImages();
+                if (rowImages == null)
+                {
+                    rowImages = new HashSet<WorkbenchRowImage>();
+                    row.setWorkbenchRowImages(rowImages);
+                }
+                if (row.getCardImageFullPath() != null && row.getCardImageData() != null && row.getCardImageData().length > 0)
+                {
+                    // create the WorkbenchRowImage record
+                    WorkbenchRowImage rowImage = new WorkbenchRowImage();
+                    rowImage.initialize();
+                    rowImage.setCardImageData(row.getCardImageData());
+                    rowImage.setCardImageFullPath(row.getCardImageFullPath());
+                    rowImage.setImageOrder(0);
+                    
+                    // clear the fields holding the single-image data
+                    row.setCardImageData(null);
+                    row.setCardImageFullPath(null);
+
+                    // connect the image and the row
+                    rowImage.setWorkbenchRow(row);
+                    rowImages.add(rowImage);
+                    
+                    convertedAnImage = true;
+                }
+            }
+        }
+        
+        WorkbenchPaneSS workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench, showImageView, 
+                !isPermitted());
+        addSubPaneToMgr(workbenchPane);
+        
+        if (convertedAnImage)
+        {
+            Component topFrame = UIRegistry.getTopWindow();
+            String message     = getResourceString("WB_DATASET_IMAGE_CONVERSION_NOTIFICATION");
+            String msgTitle    = getResourceString("WB_DATASET_IMAGE_CONVERSION_NOTIFICATION_TITLE");
+            JOptionPane.showMessageDialog(topFrame, message, msgTitle, JOptionPane.INFORMATION_MESSAGE);
+            workbenchPane.setChanged(true);
+        }
+
+        RolloverCommand roc = getNavBtnById(workbenchNavBox, workbench.getWorkbenchId(), "workbench");
+        if (roc != null)
+        {
+            roc.setEnabled(false);
+            
+        } else
+        {
+            log.error("Couldn't find RolloverCommand for WorkbenchId ["+workbench.getWorkbenchId()+"]");
+        }
+        
+        return workbenchPane;
+    }
+    
+    /**
      * Creates the Pane for editing a Workbench.
      * @param workbench the workbench to be edited
      * @param session a session to use to load the workbench (can be null)
@@ -1875,102 +2077,103 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                          {
                              finiSession.attach(workbench);
                          }
-                         final int rowCount = workbench.getWorkbenchRows().size() + 1;
-                         /*SwingUtilities.invokeLater(new Runnable() {
-                             public void run()
-                             {
-                                 UIRegistry.getStatusBar().setProgressRange(workbench.getName(), 0, rowCount);
-                                 UIRegistry.getStatusBar().setIndeterminate(workbench.getName(), false);
-                             }
-                         });*/
-                         
-                         //force load the workbench here instead of calling workbench.forceLoad() because
-                         //is so time-consuming and needs progress bar.
-                         //workbench.getWorkbenchTemplate().forceLoad();
-                         workbench.getWorkbenchTemplate().checkMappings(getDatabaseSchema());
-                         //UIRegistry.getStatusBar().incrementValue(workbench.getName());
-                         int count = 1;
-                         // Adjust paint increment for number of rows in DataSet
-                         int mod;
-                         if (rowCount < 50) mod = 1;
-                         else if (rowCount < 100) mod = 10;
-                         else if (rowCount < 500) mod = 20;
-                         else  if (rowCount < 1000) mod = 40;
-                         else mod = 50;
-                         for (WorkbenchRow row : workbench.getWorkbenchRows())
-                         {
-                             row.forceLoad();
-                             //UIRegistry.getStatusBar().incrementValue(workbench.getName());
-                             
-                             if (count % mod == 0)
-                             {
-                                 glassPane.setProgress((int)( (100.0 * count) / rowCount));
-                             }
-                             count++;
-                         }
-                         glassPane.setProgress(100);
-                         
-                         // do the conversion code right here!
-                         boolean convertedAnImage = false;
-                         Set<WorkbenchRow> rows = workbench.getWorkbenchRows();
-                         if (rows != null)
-                         {
-                             for (WorkbenchRow row: rows)
-                             {
-                                 // move any single images over to the wb row image table
-                                 Set<WorkbenchRowImage> rowImages = row.getWorkbenchRowImages();
-                                 if (rowImages == null)
-                                 {
-                                     rowImages = new HashSet<WorkbenchRowImage>();
-                                     row.setWorkbenchRowImages(rowImages);
-                                 }
-                                 if (row.getCardImageFullPath() != null && row.getCardImageData() != null && row.getCardImageData().length > 0)
-                                 {
-                                     // create the WorkbenchRowImage record
-                                     WorkbenchRowImage rowImage = new WorkbenchRowImage();
-                                     rowImage.initialize();
-                                     rowImage.setCardImageData(row.getCardImageData());
-                                     rowImage.setCardImageFullPath(row.getCardImageFullPath());
-                                     rowImage.setImageOrder(0);
-                                     
-                                     // clear the fields holding the single-image data
-                                     row.setCardImageData(null);
-                                     row.setCardImageFullPath(null);
-
-                                     // connect the image and the row
-                                     rowImage.setWorkbenchRow(row);
-                                     rowImages.add(rowImage);
-                                     
-                                     convertedAnImage = true;
-                                 }
-                             }
-                         }
-                         
+                         createEditorForWorkbench(workbench, glassPane, showImageView, thisTask);
+//                         final int rowCount = workbench.getWorkbenchRows().size() + 1;
+//                         /*SwingUtilities.invokeLater(new Runnable() {
+//                             public void run()
+//                             {
+//                                 UIRegistry.getStatusBar().setProgressRange(workbench.getName(), 0, rowCount);
+//                                 UIRegistry.getStatusBar().setIndeterminate(workbench.getName(), false);
+//                             }
+//                         });*/
+//                         
+//                         //force load the workbench here instead of calling workbench.forceLoad() because
+//                         //is so time-consuming and needs progress bar.
+//                         //workbench.getWorkbenchTemplate().forceLoad();
+//                         workbench.getWorkbenchTemplate().checkMappings(getDatabaseSchema());
+//                         //UIRegistry.getStatusBar().incrementValue(workbench.getName());
+//                         int count = 1;
+//                         // Adjust paint increment for number of rows in DataSet
+//                         int mod;
+//                         if (rowCount < 50) mod = 1;
+//                         else if (rowCount < 100) mod = 10;
+//                         else if (rowCount < 500) mod = 20;
+//                         else  if (rowCount < 1000) mod = 40;
+//                         else mod = 50;
+//                         for (WorkbenchRow row : workbench.getWorkbenchRows())
+//                         {
+//                             row.forceLoad();
+//                             //UIRegistry.getStatusBar().incrementValue(workbench.getName());
+//                             
+//                             if (count % mod == 0)
+//                             {
+//                                 glassPane.setProgress((int)( (100.0 * count) / rowCount));
+//                             }
+//                             count++;
+//                         }
+//                         glassPane.setProgress(100);
+//                         
+//                         // do the conversion code right here!
+//                         boolean convertedAnImage = false;
+//                         Set<WorkbenchRow> rows = workbench.getWorkbenchRows();
+//                         if (rows != null)
+//                         {
+//                             for (WorkbenchRow row: rows)
+//                             {
+//                                 // move any single images over to the wb row image table
+//                                 Set<WorkbenchRowImage> rowImages = row.getWorkbenchRowImages();
+//                                 if (rowImages == null)
+//                                 {
+//                                     rowImages = new HashSet<WorkbenchRowImage>();
+//                                     row.setWorkbenchRowImages(rowImages);
+//                                 }
+//                                 if (row.getCardImageFullPath() != null && row.getCardImageData() != null && row.getCardImageData().length > 0)
+//                                 {
+//                                     // create the WorkbenchRowImage record
+//                                     WorkbenchRowImage rowImage = new WorkbenchRowImage();
+//                                     rowImage.initialize();
+//                                     rowImage.setCardImageData(row.getCardImageData());
+//                                     rowImage.setCardImageFullPath(row.getCardImageFullPath());
+//                                     rowImage.setImageOrder(0);
+//                                     
+//                                     // clear the fields holding the single-image data
+//                                     row.setCardImageData(null);
+//                                     row.setCardImageFullPath(null);
+//
+//                                     // connect the image and the row
+//                                     rowImage.setWorkbenchRow(row);
+//                                     rowImages.add(rowImage);
+//                                     
+//                                     convertedAnImage = true;
+//                                 }
+//                             }
+//                         }
+//                         
+////                         WorkbenchPaneSS workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench, showImageView, 
+////                                     AppContextMgr.isSecurityOn() && !getPermissions().canModify());
 //                         WorkbenchPaneSS workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench, showImageView, 
-//                                     AppContextMgr.isSecurityOn() && !getPermissions().canModify());
-                         WorkbenchPaneSS workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench, showImageView, 
-                                 !isPermitted());
-                         addSubPaneToMgr(workbenchPane);
-                         
-                         if (convertedAnImage)
-                         {
-                             Component topFrame = UIRegistry.getTopWindow();
-                             String message     = getResourceString("WB_DATASET_IMAGE_CONVERSION_NOTIFICATION");
-                             String msgTitle    = getResourceString("WB_DATASET_IMAGE_CONVERSION_NOTIFICATION_TITLE");
-                             JOptionPane.showMessageDialog(topFrame, message, msgTitle, JOptionPane.INFORMATION_MESSAGE);
-                             workbenchPane.setChanged(true);
-                         }
-
-                         RolloverCommand roc = getNavBtnById(workbenchNavBox, workbench.getWorkbenchId(), "workbench");
-                         if (roc != null)
-                         {
-                             roc.setEnabled(false);
-                             
-                         } else
-                         {
-                             log.error("Couldn't find RolloverCommand for WorkbenchId ["+workbench.getWorkbenchId()+"]");
-                         }
-                         
+//                                 !isPermitted());
+//                         addSubPaneToMgr(workbenchPane);
+//                         
+//                         if (convertedAnImage)
+//                         {
+//                             Component topFrame = UIRegistry.getTopWindow();
+//                             String message     = getResourceString("WB_DATASET_IMAGE_CONVERSION_NOTIFICATION");
+//                             String msgTitle    = getResourceString("WB_DATASET_IMAGE_CONVERSION_NOTIFICATION_TITLE");
+//                             JOptionPane.showMessageDialog(topFrame, message, msgTitle, JOptionPane.INFORMATION_MESSAGE);
+//                             workbenchPane.setChanged(true);
+//                         }
+//
+//                         RolloverCommand roc = getNavBtnById(workbenchNavBox, workbench.getWorkbenchId(), "workbench");
+//                         if (roc != null)
+//                         {
+//                             roc.setEnabled(false);
+//                             
+//                         } else
+//                         {
+//                             log.error("Couldn't find RolloverCommand for WorkbenchId ["+workbench.getWorkbenchId()+"]");
+//                         }
+//                         
                      } catch (Exception ex)
                      {
                          edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
@@ -3219,30 +3422,46 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     {
         if (recordSet != null)
         {
-            DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();
-            try
-            {
-                Workbench workbench  = session.get(Workbench.class, recordSet.getOnlyItem().getRecordId());
-                if (workbench != null)
-                {
-                    workbench.getWorkbenchId();
-                }
-                return workbench;
-                
-            } catch (Exception ex)
-            {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-                log.error(ex);
-            }
-            finally
-            {
-                session.close();            
-            }
+            return loadWorkbench(recordSet.getOnlyItem().getRecordId(), null);
         }
         return null;
     }
 
+    /**
+     * @param workbenchId
+     * @return workbench with matching id or null
+     */
+    protected Workbench loadWorkbench(final Integer workbenchId, final DataProviderSessionIFace session)
+    {
+    	DataProviderSessionIFace mySession = session != null ? session :
+    		DataProviderFactory.getInstance().createSession();
+    	try
+    	{
+    		if (workbenchId != null)
+    		{
+    				Workbench workbench  = mySession.get(Workbench.class, workbenchId);
+    				if (workbench != null)
+    				{
+    					workbench.getWorkbenchId();
+    				}
+    				return workbench;       
+    		}
+    	}	catch (Exception ex)
+		{
+    		edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+			edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+			log.error(ex);
+		} finally
+		{
+			if (session == null)
+			{
+				mySession.close();
+			}
+		}
+        return null;
+    }
+
+    
     /**
      * Loads a Workbench into Memory 
      * @param recordSet the RecordSet containing thew ID
@@ -3282,7 +3501,14 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      */
     protected void workbenchSelected(final CommandAction cmdAction)
     {
-        Object cmdData = cmdAction.getData();
+        if (false)
+        {
+        	Vector<Integer> wbIds = new Vector<Integer>();
+        	wbIds.add(1);
+        	uploadWorkbenches(wbIds);
+        }
+    	
+    	Object cmdData = cmdAction.getData();
         if (cmdData != null && cmdData instanceof CommandAction && cmdData != cmdAction)
         {
             CommandAction subCmd = (CommandAction)cmdData;
@@ -3323,6 +3549,41 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 log.error("Workbench was null!");
             }
         }
+    }
+    
+    
+    /**
+     * @param workbenchNames
+     */
+    public void uploadWorkbenches(List<Integer> workbenchIds)
+    {
+    	for (Integer wbId : workbenchIds)
+    	{
+    		DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();
+            try
+            {
+                Workbench wb = loadWorkbench(wbId, session);  
+        		if (wb != null)
+        		{
+        			System.out.println("loaded " + wb.getName());
+        			WorkbenchPaneSS wbPane = createEditorForWorkbench(wb, null, false, this);
+        			System.out.println("uploading " + wb.getName());
+         			//SubPaneMgr.getInstance().removePane(wbPane);
+        		} else
+        		{
+        			System.out.println("No workbench with id = " + wbId);
+                } 
+            }catch (Exception ex)
+            {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+                    log.error(ex);
+            }
+            finally
+            {
+                session.close();            
+            }
+    	}
     }
     
     /**

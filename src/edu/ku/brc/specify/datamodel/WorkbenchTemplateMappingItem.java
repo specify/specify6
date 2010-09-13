@@ -508,7 +508,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         wbtmi.tableName             = tableName;
         wbtmi.srcTableId            = srcTableId;
         wbtmi.fieldName             = fieldName;
-        wbtmi.importedColName       = fieldName;
+        wbtmi.importedColName       = importedColName;
         wbtmi.caption               = caption;
         wbtmi.viewOrder             = viewOrder;
         wbtmi.origImportColumnIndex = origImportColumnIndex;
