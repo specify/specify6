@@ -44,12 +44,10 @@ import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
-import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace.CreationMode;
 import edu.ku.brc.af.ui.forms.validation.UIValidator;
-import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
@@ -1372,7 +1370,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
      */
     protected STATUS checkForRequiredFields(Object dataObj)
     {
-		if (dataObj instanceof Treeable)
+		if (dataObj instanceof Treeable<?,?,?>)
 		{
 			STATUS result = STATUS.OK;
 			Treeable<?,?,?> obj = (Treeable<?,?,?> )dataObj;
@@ -1408,10 +1406,11 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 	 */
 	@Override
 	public STATUS processBusinessRules(Object parentDataObj, Object dataObj,
-			boolean isExistingObject) {
+			boolean isExistingObject) 
+	{
 		reasonList.clear();
 		STATUS result = STATUS.OK;
-		if (!processedRules && dataObj instanceof Treeable)
+		if (!processedRules && dataObj instanceof Treeable<?, ?, ?>)
 		{	
 			result = checkForSiblingWithSameName(parentDataObj, dataObj, isExistingObject);
 			if (result == STATUS.OK)
