@@ -22,7 +22,11 @@ package edu.ku.brc.specify.ui;
 import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Properties;
 
 import javax.swing.JPanel;
@@ -52,6 +56,7 @@ import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rod
@@ -77,6 +82,8 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, C
     protected final String LONGITUDE = "LO";
     
     protected String[] tokens = {FIELD_NUM, LOC_DATE, CONTINENT, COUNTRY, STATE, COUNTY, LOC_STR, LATITUDE, LONGITUDE};
+    protected List<Pair<Integer, String>> sepsList = new ArrayList<Pair<Integer, String>>(tokens.length);
+
     protected Hashtable<String, String> values      = new Hashtable<String, String>();
     protected Hashtable<String, Boolean> fieldsHash = new Hashtable<String, Boolean>();
     
@@ -132,7 +139,7 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, C
         }
         return "";
     }
-    
+
     private void fillGeoValues(final Geography geo)
     {
         String[] keys = {CONTINENT, COUNTRY, STATE, COUNTY};
@@ -246,31 +253,67 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, C
 
         if (StringUtils.isNotEmpty(formatStr))
         {
-            String formattedValue = formatStr;
-            for (String token : tokens)
+            if (sepsList.size() == 0)
             {
-                if (StringUtils.contains(formattedValue, token))
+                ArrayList<Pair<Integer, String>> tokenMappings = new ArrayList<Pair<Integer,String>>();
+                for (int i=0;i<tokens.length;i++)
                 {
-                    String valStr = values.get(token);
-                    
-                    if (StringUtils.isEmpty(valStr))
+                    int inx = formatStr.indexOf(tokens[i]);
+                    if (inx > -1)
                     {
-                        valStr = "";
-                        int  inx = formattedValue.indexOf(token);
-                        char sep = (inx+token.length() < formattedValue.length()) ? formattedValue.charAt(inx+token.length()) : ' ';
-                        if (sep == ',' || sep == ';')
-                        {
-                            token += sep;
-                        }
+                        tokenMappings.add(new Pair<Integer, String>(inx, tokens[i]));
                     }
-                    formattedValue = StringUtils.replace(formattedValue, token, valStr);
+                }
+                
+                Collections.sort(tokenMappings, new Comparator<Pair<Integer, String>>()
+                {
+                    @Override
+                    public int compare(Pair<Integer, String> o1, Pair<Integer, String> o2)
+                    {
+                        return o1.first.compareTo(o2.first);
+                    }
+                });
+                
+                /*for (Pair<Integer, String> locPair : tokenMappings)
+                {
+                    System.out.println(locPair);
+                }*/
+                
+                int inx = -1;
+                int prv = -1;
+                for (int i=0;i<tokenMappings.size();i++)
+                {
+                    Pair<Integer, String> locPair = tokenMappings.get(i);
+                    if (prv > -1)
+                    {
+                        inx = locPair.first;
+                        String sep = formatStr.substring(prv, inx);
+                        Pair<Integer, String> p = new Pair<Integer, String>(i, sep);
+                        sepsList.add(p);
+                    } else
+                    {
+                        inx = 0;
+                    }
+                    prv = inx + locPair.second.length();
                 }
             }
-            if (StringUtils.deleteWhitespace(formattedValue).isEmpty())
+            
+            if (sepsList.size() > 0)
             {
-                formattedValue = "";
+                StringBuilder sb  = new StringBuilder();
+                String        sep = null;
+                for (Pair<Integer, String> pair : sepsList)
+                {
+                    String valStr = values.get(tokens[pair.first]);
+                    if (StringUtils.isNotEmpty(valStr))
+                    {
+                        if (sep != null) sb.append(sep);   
+                        sb.append(valStr);  
+                        sep = pair.second;
+                    }
+                }
+                return sb.toString();
             }
-            return formattedValue;
         }
         return "";
     }
