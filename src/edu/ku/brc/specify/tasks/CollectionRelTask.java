@@ -562,9 +562,10 @@ public class CollectionRelTask extends BaseTask
         JMenuItem mi;
         String    menuDesc = getResourceString(COLREL_MENU);
 
+        String securityName = "Task." + COLREL_SECURITY;
         if (!AppContextMgr.isSecurityOn() || 
-            (secMgr.getPermission(COLREL_SECURITY) != null && 
-             !secMgr.getPermission(COLREL_SECURITY).hasNoPerm()))
+            (secMgr.getPermission(securityName) != null && 
+             !secMgr.getPermission(securityName).hasNoPerm()))
         {
             mi       = UIHelper.createLocalizedMenuItem(COLREL_MENU, COLREL_MNU, COLREL_TITLE, true, null); 
             mi.addActionListener(new ActionListener()

@@ -330,9 +330,10 @@ public class VisualQueryTask extends BaseTask
         JMenuItem mi;
         String    menuDesc = getResourceString(VISQRY_MENU);
 
+        String securityName = buildTaskPermissionName(VISQRY_SECURITY);
         if (!AppContextMgr.isSecurityOn() || 
-            (secMgr.getPermission(VISQRY_SECURITY) != null && 
-             !secMgr.getPermission(VISQRY_SECURITY).hasNoPerm()))
+            (secMgr.getPermission(securityName) != null && 
+             !secMgr.getPermission(securityName).hasNoPerm()))
         {
             mi       = UIHelper.createLocalizedMenuItem(VISQRY_MENU, VISQRY_MNU, VISQRY_TITLE, true, null); 
             mi.addActionListener(new ActionListener()

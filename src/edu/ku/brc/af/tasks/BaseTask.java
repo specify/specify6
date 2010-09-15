@@ -1458,9 +1458,18 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     {
         if (permissions == null)
         {
-            permissions = SecurityMgr.getInstance().getPermission(securityPrefix + "." + getPermissionName());
+            permissions = SecurityMgr.getInstance().getPermission(buildTaskPermissionName(getPermissionName()));
         }
         return permissions;
+    }
+    
+    /**
+     * @param baseName
+     * @return
+     */
+    protected String buildTaskPermissionName(final String baseName)
+    {
+        return securityPrefix + "." + baseName;
     }
     
     /* (non-Javadoc)

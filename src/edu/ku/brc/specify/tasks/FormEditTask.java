@@ -124,9 +124,10 @@ public class FormEditTask extends BaseTask
         String    mneu; 
         JMenuItem mi;
         
+        String securityName = buildTaskPermissionName(FORM_SECURITY);
         if (!AppContextMgr.isSecurityOn() || 
-            (secMgr.getPermission(FORM_SECURITY) != null && 
-             !secMgr.getPermission(FORM_SECURITY).hasNoPerm()))
+            (secMgr.getPermission(securityName) != null && 
+             !secMgr.getPermission(securityName).hasNoPerm()))
         {
             final String reloadViews = "reload_views"; //$NON-NLS-1$
             JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem(getResourceString("Specify.RELOAD_VIEWS")); //$NON-NLS-1$

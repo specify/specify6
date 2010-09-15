@@ -863,6 +863,67 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return null;
     }
     
+    /**
+     * @param resDirName
+     * @param resourceName
+     */
+    public void addDiskResourceToAppDir(final String resDirName, 
+                                        final String resourceName)
+    {
+        SpAppResourceDir appResDir = spAppResourceHash.get(resDirName);
+        if (appResDir != null)
+        {
+            if (appResDir.getId() != null)
+            {
+                Discipline     discipline     = getClassObject(Discipline.class);
+                DisciplineType disciplineType = DisciplineType.getDiscipline(discipline.getType());
+                String         folderName     = disciplineType.getFolder();
+                File           dir            = XMLHelper.getConfigDir(folderName);
+                if (dir.exists())
+                {
+                    AppResourceMgr appResMgr = new AppResourceMgr(dir);
+                    
+                    for (SpAppResource appRes : appResMgr.getSpAppResources())
+                    {
+                        String fileAppResName = appRes.getName();
+                        if (fileAppResName.equals(resourceName))
+                        {
+                            appRes.setSpAppResourceDir(appResDir);
+                            appResDir.getSpAppResources().add(appRes);
+                            DataProviderSessionIFace session = null;
+                            try
+                            {
+                                session = DataProviderFactory.getInstance().createSession();
+                                session.attach(appResDir);
+                                session.save(appResDir);
+                                session.commit();
+                                session.flush();
+                                
+                            } catch (Exception ex)
+                            {
+                                ex.printStackTrace();
+                                session.rollback();
+                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
+                                
+                            } finally
+                            {
+                                if (session != null)
+                                {
+                                    session.close();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+        } else
+        {
+            // error
+        }
+    }
+    
     
     /**
      * @param virtualDirName
@@ -2019,7 +2080,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             session = openSession();
             for (SpAppResourceDir appResDir : new ArrayList<SpAppResourceDir>(spAppResourceList))
             {
-                //log.debug(appResDir.getIdentityTitle());
+                //log.debug(appResDir.getIdentityTitle()+"  "+appResDir.getId());
                 
                 if (appResDir.getSpAppResourceDirId() != null)
                 {
@@ -2039,6 +2100,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
                 for (AppResourceIFace appRes : appResDir.getSpAppResources())
                 {
+                    //log.debug("    "+appRes.getName());
                     if (appRes.getName().equals(name))
                     {
                         return appRes;

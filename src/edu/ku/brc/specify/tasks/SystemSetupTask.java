@@ -1094,11 +1094,10 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
 			}
 		}
 		
-        
-        
+        String securityName = buildTaskPermissionName(RESIMPORTEXPORT_SECURITY);
         if (!AppContextMgr.isSecurityOn() || 
-            (secMgr.getPermission(RESIMPORTEXPORT_SECURITY) != null && 
-             !secMgr.getPermission(RESIMPORTEXPORT_SECURITY).hasNoPerm()))
+            (secMgr.getPermission(securityName) != null && 
+             !secMgr.getPermission(securityName).hasNoPerm()))
         {
             titleArg = getI18NKey("RIE_MENU"); //$NON-NLS-1$
             mneu     = getI18NKey("RIE_MNU");  //$NON-NLS-1$
@@ -1115,9 +1114,10 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             menuItems.add(mid);
         }
         
+        securityName = buildTaskPermissionName(SCHEMACONFIG_SECURITY);
         if (!AppContextMgr.isSecurityOn() || 
-            (secMgr.getPermission(SCHEMACONFIG_SECURITY) != null && 
-             secMgr.getPermission(SCHEMACONFIG_SECURITY).canAdd()))
+            (secMgr.getPermission(securityName) != null && 
+             secMgr.getPermission(securityName).canAdd()))
         {
             titleArg = getI18NKey("SCHEMA_CONFIG_MENU"); //$NON-NLS-1$
             mneu = getI18NKey("SCHEMA_CONFIG_MNU");  //$NON-NLS-1$

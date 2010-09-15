@@ -345,7 +345,23 @@ public class QueryTask extends BaseTask
                 xmlStr = newAppRes.getDataAsString();
             } else
             {
-                xmlStr = "";
+                if (resourceName.equals("QueryFreqList") || resourceName.equals("QueryExtraList"))
+                {
+                    ((SpecifyAppContextMgr)AppContextMgr.getInstance()).addDiskResourceToAppDir(SpecifyAppContextMgr.DISCPLINEDIR, resourceName);
+                    newAppRes = AppContextMgr.getInstance().copyToDirAppRes("Personal", resourceName);
+                    if (newAppRes != null)
+                    {
+                        // Save it in the User Area
+                        AppContextMgr.getInstance().saveResource(newAppRes);
+                        xmlStr = newAppRes.getDataAsString();
+                    } else
+                    {
+                        xmlStr = ""; 
+                    }
+                } else
+                {
+                    xmlStr = "";    
+                }
             }
         }
         

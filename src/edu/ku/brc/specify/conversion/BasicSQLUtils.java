@@ -503,16 +503,21 @@ public class BasicSQLUtils
         Statement stmt  = null;
         try
         {
-            //log.debug(sql);
-            stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-            if (rs.next())
+            if (connection != null)
             {
-                count = rs.getInt(1);
-                return rs.wasNull() ? null : count;
+                //log.debug(sql);
+                stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                if (rs.next())
+                {
+                    count = rs.getInt(1);
+                    return rs.wasNull() ? null : count;
+                }
+                rs.close();
+            } else
+            {
+                log.error("No database connection!");
             }
-            rs.close();
-            
             //log.debug(count+" - "+sql);
 
         } catch (Exception ex)

@@ -302,7 +302,8 @@ public class SecurityAdminTask extends BaseTask
         // check whether user can see the security admin panel
         // other permissions will be checked when the panel is created 
         // XXX RELEASE
-        if (!AppContextMgr.isSecurityOn() || SecurityMgr.getInstance().checkPermission("Task." + SECURITY_ADMIN, BasicSpPermission.view)) //$NON-NLS-1$
+        String securityName = buildTaskPermissionName(SECURITY_ADMIN);
+        if (!AppContextMgr.isSecurityOn() || SecurityMgr.getInstance().checkPermission(securityName, BasicSpPermission.view)) //$NON-NLS-1$
         {
             // security tools menu item
             menuTitle = getKey("SECURITY_TOOLS_MENU"); //$NON-NLS-1$

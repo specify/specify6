@@ -246,10 +246,10 @@ public abstract class AppContextMgr
     public AppResourceIFace copyToDirAppRes(final String appResDirName, final String resourceName)
     {
         AppResourceIFace toAppRes   = null;
-        AppResourceIFace fromAppRes = AppContextMgr.getInstance().getResource(resourceName);
+        AppResourceIFace fromAppRes = getResource(resourceName);
         if (fromAppRes != null)
         {
-            toAppRes = AppContextMgr.getInstance().createAppResourceForDir(appResDirName);
+            toAppRes = createAppResourceForDir(appResDirName);
             copy(fromAppRes, toAppRes);
         }
         return toAppRes;
