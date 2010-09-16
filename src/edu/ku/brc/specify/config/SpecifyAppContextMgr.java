@@ -838,7 +838,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             {
                 log.debug(appRes.getName());
             }
-            for (SpViewSetObj vso : appResDir.getSpViewSets())
+            for (SpViewSetObj vso : appResDir.getSpPersistedViewSets())
             {
                 log.debug(vso.getName());
             }
@@ -1085,6 +1085,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                                               final String           viewSetMgrName, 
                                                               final File             dir)
     {
+        debug = true;
         if (debug) 
         {
             log.debug("Creating AppResourceDef from Dir ["+virtualDirName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1138,6 +1139,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
         for (SpAppResource appRes : spAppResourceDir.getSpAppResources())
         {
             if (debug) log.debug("In AppResDir ["+appRes.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        
+        if (debug)
+        {
+            log.debug("-------------["+spAppResourceDir.getTitle()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+            for (SpViewSetObj vso : spAppResourceDir.getSpViewSets())
+            {
+                log.debug("    VSO["+vso.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+            }
         }
         
         return spAppResourceDir;

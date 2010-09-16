@@ -243,13 +243,21 @@ public class ResourceImportExportDlg extends CustomDialog
                     
                     // Force Load
                     dir.getSpAppResources().size();
-                    dir.getSpViewSets().size();
+                    dir.getSpPersistedAppResources().size();
+                    dir.getSpPersistedViewSets().size();
                     
                     for (SpAppResource appRes : curDir.getSpAppResources())
                     {
                         if (appRes.getId() == null)
                         {
                             dir.getSpAppResources().add(appRes);
+                        }
+                    }
+                    for (SpViewSetObj vso : curDir.getSpViewSets())
+                    {
+                        if (vso.getId() == null)
+                        {
+                            dir.getSpViewSets().add(vso);
                         }
                     }
                     
