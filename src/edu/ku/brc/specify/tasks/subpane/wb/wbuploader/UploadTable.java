@@ -2427,6 +2427,14 @@ public class UploadTable implements Comparable<UploadTable>
     }
     
     /**
+     * @param seq
+     * @return adjusted seq.
+     */
+    protected int getAdjustedSeqForBlankRowCheck(int seq)
+    {
+    	return seq;
+    }
+    /**
      * @param row
      * @param uploadData
      * @param seq
@@ -2434,7 +2442,7 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected boolean isBlankRow(int row, UploadData uploadData, int seq) 
     {
-		for (UploadField fld : uploadFields.get(seq)) 
+    	for (UploadField fld : uploadFields.get(getAdjustedSeqForBlankRowCheck(seq))) 
 		{
 			if (fld.getIndex() != -1 || fld.getField().isForeignKey()) 
 			{

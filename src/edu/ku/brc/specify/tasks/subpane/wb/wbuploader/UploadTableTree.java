@@ -553,17 +553,20 @@ public class UploadTableTree extends UploadTable
         		Vector<UploadField> uploadFields = new Vector<UploadField>();
         		for (UploadField fld : flds)
         		{
-        			int idx = fields.indexOf(fld.getField());
-        			if (idx != -1)
+        			if (fld.getIndex() != -1)
         			{
-        				String msg = String.format(getResourceString("WB_UPLOAD_EQUIV_RANKS"), fld.getWbFldName(), 
+        				int idx = fields.indexOf(fld.getField());
+        				if (idx != -1)
+        				{
+        					String msg = String.format(getResourceString("WB_UPLOAD_EQUIV_RANKS"), fld.getWbFldName(), 
         						uploadFields.get(idx).getWbFldName(), getTreeDefItem().getName());
-        				result.add(new InvalidStructure(msg, this));
-        			}
-        			else
-        			{
-        				fields.add(fld.getField());
-        				uploadFields.add(fld);
+        					result.add(new InvalidStructure(msg, this));
+        				}
+        				else
+        				{
+        					fields.add(fld.getField());
+        					uploadFields.add(fld);
+        				}
         			}
         		}
         	}
@@ -1000,6 +1003,18 @@ public class UploadTableTree extends UploadTable
 		return child;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#getAdjustedSeqForBlankRowCheck(int)
+	 */
+	@Override
+	protected int getAdjustedSeqForBlankRowCheck(int seq)
+	{
+		if (uploadFields.size() == 1 && seq > 0)
+		{
+			return 0;
+		}
+		return seq;
+	}
     /**
      * @author timo
      * 
