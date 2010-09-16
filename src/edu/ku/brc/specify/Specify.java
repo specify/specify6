@@ -533,22 +533,20 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         DatabaseLoginPanel.MasterPasswordProviderIFace usrPwdProvider = new DatabaseLoginPanel.MasterPasswordProviderIFace()
         {
             @Override
-            public boolean hasMasterUserAndPwdInfo(final String username, final String password)
+            public boolean hasMasterUserAndPwdInfo(final String username, final String password, final String dbName)
             {
                 if (StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password))
                 {
-                    UserAndMasterPasswordMgr.getInstance().setUsersUserName(username);
-                    UserAndMasterPasswordMgr.getInstance().setUsersPassword(password);
+                    UserAndMasterPasswordMgr.getInstance().set(username, password, dbName);
                     return UserAndMasterPasswordMgr.getInstance().hasMasterUsernameAndPassword();
                 }
                 return false;
             }
 
             @Override
-            public Pair<String, String> getUserNamePassword(final String username, final String password)
+            public Pair<String, String> getUserNamePassword(final String username, final String password, final String dbName)
             {
-                UserAndMasterPasswordMgr.getInstance().setUsersUserName(username);
-                UserAndMasterPasswordMgr.getInstance().setUsersPassword(password);
+                UserAndMasterPasswordMgr.getInstance().set(username, password, dbName);
                 
                 Pair<String, String> usrPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
                 
@@ -556,9 +554,9 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             }
 
             @Override
-            public boolean editMasterInfo(final String username, final boolean askForCredentials)
+            public boolean editMasterInfo(final String username, final String databaseNameArg, final boolean askForCredentials)
             {
-                return UserAndMasterPasswordMgr.getInstance().editMasterInfo(username, askForCredentials);
+                return UserAndMasterPasswordMgr.getInstance().editMasterInfo(username, databaseNameArg, askForCredentials);
             }
             
         };
@@ -3183,6 +3181,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                           
                       } catch (Exception ex)
                       {
+                          ex.printStackTrace();
                           startApp();
                       }
                   } else

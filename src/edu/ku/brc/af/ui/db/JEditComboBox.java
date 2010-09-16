@@ -324,13 +324,19 @@ public class JEditComboBox extends JComboBox
                 {
                     if (textField != null)
                     {
-                        int pos = textField.getCaretPosition();
-                        String currentText = textField.getText();
-                        setSelectedIndex(-1);
-                        textField.setText(currentText);
-                        textField.moveCaretPosition(pos);
-                        textField.setSelectionStart(pos);
-                        textField.setSelectionEnd(pos);
+                        System.out.println(getSelectedIndex());
+                        
+                        if (getSelectedIndex() > -1)
+                        {
+                            int    pos         = textField.getCaretPosition();
+                            String currentText = textField.getText();
+                            setSelectedIndex(-1);    
+                            textField.setText(currentText);
+                            textField.moveCaretPosition(pos);
+                            textField.setSelectionStart(pos);
+                            textField.setSelectionEnd(pos);
+                        }
+                        
                     } else
                     {
                         setSelectedIndex(-1);

@@ -1231,12 +1231,12 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
                 DatabaseLoginPanel.MasterPasswordProviderIFace usrPwdProvider = new DatabaseLoginPanel.MasterPasswordProviderIFace()
                 {
                     @Override
-                    public boolean hasMasterUserAndPwdInfo(final String username, final String password)
+                    public boolean hasMasterUserAndPwdInfo(final String username, final String password, final String dbName)
                     {
                         if (StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password))
                         {
-                            UserAndMasterPasswordMgr.getInstance().setUsersUserName(username);
-                            UserAndMasterPasswordMgr.getInstance().setUsersPassword(password);
+                            UserAndMasterPasswordMgr.getInstance().set(username, password, dbName);
+                            
                             boolean result = false;
                             try
                             {
@@ -1266,10 +1266,9 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
                     }
                     
                     @Override
-                    public Pair<String, String> getUserNamePassword(final String username, final String password)
+                    public Pair<String, String> getUserNamePassword(final String username, final String password, final String dbName)
                     {
-                        UserAndMasterPasswordMgr.getInstance().setUsersUserName(username);
-                        UserAndMasterPasswordMgr.getInstance().setUsersPassword(password);
+                        UserAndMasterPasswordMgr.getInstance().set(username, password, dbName);
                         Pair<String, String> result = null;
                         try
                         {
@@ -1296,7 +1295,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
                         return result;
                     }
                     @Override
-                    public boolean editMasterInfo(final String username, final boolean askFroCredentials)
+                    public boolean editMasterInfo(final String username, final String dbName, final boolean askFroCredentials)
                     {
                         boolean result = false;
                     	try
@@ -1304,24 +1303,19 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
                         	try
                         	{
                         		AppPreferences.getLocalPrefs().flush();
-                        		AppPreferences.getLocalPrefs()
-									.setDirPath(SpPrefDir);
+                        		AppPreferences.getLocalPrefs().setDirPath(SpPrefDir);
                         		AppPreferences.getLocalPrefs().setProperties(null);
-                        		result =  UserAndMasterPasswordMgr
-									.getInstance()
-									.editMasterInfo(username, askFroCredentials);
+                        		result =  UserAndMasterPasswordMgr.getInstance().editMasterInfo(username, dbName, askFroCredentials);
                         	} finally
                         	{
                         		AppPreferences.getLocalPrefs().flush();
-                        		AppPreferences.getLocalPrefs().setDirPath(
-									iRepPrefDir);
+                        		AppPreferences.getLocalPrefs().setDirPath(iRepPrefDir);
                         		AppPreferences.getLocalPrefs().setProperties(null);
                         	}
                         } catch (Exception e)
                         {
                         	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        	edu.ku.brc.exceptions.ExceptionTracker.getInstance()
-								.capture(MainFrameSpecify.class, e);
+                        	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, e);
                         	result = false;
                         }
                     	return result;

@@ -117,7 +117,8 @@ public class UserAndMasterPasswordMgr
     private Pair<String, String> dbUsernameAndPassword = null;
     private String               usersUserName         = null;
     private String               usersPassword         = null;
-
+    private String               databaseName          = null;
+    
     
     /**
      * Protected Constructor
@@ -129,17 +130,72 @@ public class UserAndMasterPasswordMgr
     }
     
     /**
+     * @param includeDBName
+     * @return
+     */
+    public String getIsLocalPrefPath(final boolean includeDBName)
+    {
+        return getIsLocalPrefPath(usersUserName, databaseName, includeDBName);
+    }
+    
+    /**
+     * @param usrName
+     * @param dbName
+     * @param includeDBName
+     * @return
+     */
+    public String getIsLocalPrefPath(final String usrName, final String dbName, final boolean includeDBName)
+    {
+        return (StringUtils.isNotEmpty(dbName) && includeDBName? (dbName + '_') : "") + usrName + "_" + MASTER_LOCAL;
+    }
+    
+    /**
+     * @param includeDBName
+     * @return
+     */
+    public String getMasterPrefPath(final boolean includeDBName)
+    {
+        return getMasterPrefPath(usersUserName, databaseName, includeDBName);
+    }
+    
+    /**
+     * @param usrName
+     * @param dbName
+     * @param includeDBName
+     * @return
+     */
+    public String getMasterPrefPath(final String usrName, final String dbName, final boolean includeDBName)
+    {
+        return (StringUtils.isNotEmpty(dbName) && includeDBName? (dbName + '_') : "") + usrName + "_" + MASTER_PATH;
+    }
+    
+    /**
      * Displays a dialog that is used for changing the Mast Username and Password.
      * @param username the current user's username
      * @return true if changed successfully
      */
-    public boolean editMasterInfo(final String username, final boolean askForCredentials)
+    public boolean editMasterInfo(final String username, final String dbName, final boolean askForCredentials)
     {
         String uNameCached = username != null ? username: usersUserName;
         usersUserName = username;
         
-        Boolean isLocal   = AppPreferences.getLocalPrefs().getBoolean(usersUserName+"_"+MASTER_LOCAL, null);
-        String  masterKey = AppPreferences.getLocalPrefs().get(usersUserName+"_"+MASTER_PATH, null); 
+        Boolean isLocal = AppPreferences.getLocalPrefs().getBoolean(getIsLocalPrefPath(true), null);
+        if (isLocal == null)
+        {
+            isLocal = AppPreferences.getLocalPrefs().getBoolean(getIsLocalPrefPath(false), null); 
+        } else
+        {
+            AppPreferences.getLocalPrefs().remove(getIsLocalPrefPath(false));
+        }
+        
+        String  masterKey = AppPreferences.getLocalPrefs().get(getMasterPrefPath(true), null); 
+        if (StringUtils.isEmpty(masterKey))
+        {
+            masterKey = AppPreferences.getLocalPrefs().get(getMasterPrefPath(false), null); 
+        } else
+        {
+            AppPreferences.getLocalPrefs().remove(getMasterPrefPath(false));
+        }
         
         if (masterKey == null)
         {
@@ -148,7 +204,7 @@ public class UserAndMasterPasswordMgr
                 return false;
             }
         }
-        boolean isOK = askForInfo(isLocal, masterKey);
+        boolean isOK = askForInfo(isLocal, usersUserName, dbName, masterKey);
         
         if (StringUtils.isEmpty(usersUserName) && StringUtils.isNotEmpty(uNameCached))
         {
@@ -157,11 +213,19 @@ public class UserAndMasterPasswordMgr
         
         return isOK;
     }
+    
+    public void set(final String usersUserName, final String usersPassword, final String databaseName)
+    {
+        this.usersUserName = usersUserName;
+        this.usersPassword = usersPassword;
+        this.databaseName  = databaseName;
+        clear();
+    }
 
     /**
      * @param usersPassword
      */
-    public void setUsersPassword(String usersPassword)
+    public void setUsersPasswordX(String usersPassword)
     {
         this.usersPassword = usersPassword;
         clear();
@@ -170,9 +234,26 @@ public class UserAndMasterPasswordMgr
     /**
      * @param usersUserName
      */
-    public void setUsersUserName(final String usersUserName)
+    public void setUsersUserNameX(final String usersUserName)
     {
         this.usersUserName = usersUserName;
+        clear();
+    }
+
+    /**
+     * @return the databaseName
+     */
+    public String getDatabaseName()
+    {
+        return databaseName;
+    }
+
+    /**
+     * @param databaseName the databaseName to set
+     */
+    public void setDatabaseNameX(String databaseName)
+    {
+        this.databaseName = databaseName;
         clear();
     }
 
@@ -189,12 +270,21 @@ public class UserAndMasterPasswordMgr
      */
     public boolean hasMasterUsernameAndPassword()
     {
-        Boolean isLocal = AppPreferences.getLocalPrefs().getBoolean(usersUserName+"_"+MASTER_LOCAL, true);
+        Boolean isLocal = AppPreferences.getLocalPrefs().getBoolean(getIsLocalPrefPath(true), null);
+        if (isLocal == null)
+        {
+            isLocal = AppPreferences.getLocalPrefs().getBoolean(getIsLocalPrefPath(false), true); 
+        }
+        
         if (isLocal)
         {
-            return AppPreferences.getLocalPrefs().get(usersUserName+"_"+MASTER_PATH, null) != null;
+            String masterKey = AppPreferences.getLocalPrefs().get(getMasterPrefPath(true), null); 
+            if (StringUtils.isEmpty(masterKey))
+            {
+                return AppPreferences.getLocalPrefs().get(getMasterPrefPath(false), null) != null;
+            }
         }
-        return true; // using network approaqch
+        return true; // using network approach
     }
     
     /**
@@ -237,8 +327,17 @@ public class UserAndMasterPasswordMgr
     {
         Pair<String, String> noUP = new Pair<String, String>("", "");
         
-        Boolean isLocal   = AppPreferences.getLocalPrefs().getBoolean(usersUserName+"_"+MASTER_LOCAL, null);
-        String  masterKey = AppPreferences.getLocalPrefs().get(usersUserName+"_"+MASTER_PATH, null);
+        Boolean isLocal = AppPreferences.getLocalPrefs().getBoolean(getIsLocalPrefPath(true), null);
+        if (isLocal == null)
+        {
+            isLocal = AppPreferences.getLocalPrefs().getBoolean(getIsLocalPrefPath(false), null); 
+        }
+        
+        String masterKey = AppPreferences.getLocalPrefs().get(getMasterPrefPath(true), null); 
+        if (StringUtils.isEmpty(masterKey))
+        {
+            masterKey = AppPreferences.getLocalPrefs().get(getMasterPrefPath(false), null); 
+        }
         
         if (isLocal == null || StringUtils.isEmpty(masterKey))
         {
@@ -247,7 +346,7 @@ public class UserAndMasterPasswordMgr
                 return null;
             }
             
-            if (!askForInfo(null, null))
+            if (!askForInfo(null, null, null, null))
             {
                 return noUP;//getUserNamePassword();
             }
@@ -304,10 +403,14 @@ public class UserAndMasterPasswordMgr
     /**
      * Displays a dialog used for editing the Master Username and Password.
      * @param isLocal whether u/p is stored locally or not
+     * @param usrName
+     * @param dbName
      * @param masterPath the path to the password
      * @return whether to ask for the information because it wasn't found
      */
     protected boolean askForInfo(final Boolean isLocal, 
+                                 final String  usrName, 
+                                 final String  dbName,
                                  final String  masterPath)
     {
         loadAndPushResourceBundle("masterusrpwd");
@@ -426,7 +529,7 @@ public class UserAndMasterPasswordMgr
         isNetworkRB.addChangeListener(chgListener);
         isPrefBasedRB.addChangeListener(chgListener);
         
-        boolean isPref = AppPreferences.getLocalPrefs().getBoolean(usersUserName+"_"+MASTER_LOCAL, true);
+        boolean isPref = AppPreferences.getLocalPrefs().getBoolean(getIsLocalPrefPath(usrName, dbName, true), true);
         isNetworkRB.setSelected(!isPref);
         isPrefBasedRB.setSelected(isPref);
         
@@ -463,8 +566,9 @@ public class UserAndMasterPasswordMgr
             {
                 value = keyTxt.getText();
             }
-            AppPreferences.getLocalPrefs().putBoolean(usersUserName+"_"+MASTER_LOCAL, !isNetworkRB.isSelected());
-            AppPreferences.getLocalPrefs().put(usersUserName+"_"+MASTER_PATH, value);
+            
+            AppPreferences.getLocalPrefs().putBoolean(getIsLocalPrefPath(usrName, dbName, true), !isNetworkRB.isSelected());
+            AppPreferences.getLocalPrefs().put(getMasterPrefPath(usrName, dbName, true), value);
             return true;
         }
         return false;
@@ -764,14 +868,12 @@ public class UserAndMasterPasswordMgr
                                      final String newPwd)
     {
         SpecifyUser spUser    = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-        String      username  = spUser.getName();
-
         Pair<String, String> masterPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
         
         String encryptedMasterUP = UserAndMasterPasswordMgr.getInstance().encrypt(masterPwd.first, masterPwd.second, newPwd);
         if (StringUtils.isNotEmpty(encryptedMasterUP))
         {
-            AppPreferences.getLocalPrefs().put(username+"_"+UserAndMasterPasswordMgr.MASTER_PATH, encryptedMasterUP);
+            AppPreferences.getLocalPrefs().put(getMasterPrefPath(true), encryptedMasterUP);
             spUser.setPassword(newPwd);
             if (DataModelObjBase.save(spUser))
             {

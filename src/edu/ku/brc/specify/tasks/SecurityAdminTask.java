@@ -57,6 +57,7 @@ import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.validation.ValPasswordField;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -233,7 +234,7 @@ public class SecurityAdminTask extends BaseTask
                         String encryptedMasterUP = UserAndMasterPasswordMgr.getInstance().encrypt(masterPwd.first, masterPwd.second, newPwd2);
                         if (StringUtils.isNotEmpty(encryptedMasterUP))
                         {
-                            AppPreferences.getLocalPrefs().put(username+"_"+UserAndMasterPasswordMgr.MASTER_PATH, encryptedMasterUP);
+                            AppPreferences.getLocalPrefs().put(UserAndMasterPasswordMgr.getInstance().getMasterPrefPath(true), encryptedMasterUP);
                         } else
                         {
                             UIRegistry.writeTimedSimpleGlassPaneMsg(getResourceString(getKey("PWD_ERR_RTRV")), Color.RED);
@@ -337,7 +338,7 @@ public class SecurityAdminTask extends BaseTask
             public void actionPerformed(ActionEvent ae)
             {
                 SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-                UserAndMasterPasswordMgr.getInstance().editMasterInfo(spUser.getName(), true);
+                UserAndMasterPasswordMgr.getInstance().editMasterInfo(spUser.getName(), DBConnection.getInstance().getDatabaseName(), true);
             }
         });
         MenuItemDesc mid = new MenuItemDesc(mi, UIHelper.isMacOS() ? "HELP" : "HELP/ABOUT", UIHelper.isMacOS() ? MenuItemDesc.Position.Bottom : MenuItemDesc.Position.Before); //$NON-NLS-1$ $NON-NLS-2$

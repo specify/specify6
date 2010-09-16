@@ -475,10 +475,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
                 dlg.setModal(true);
                 UIHelper.centerAndShow(dlg);
                 
-                if (dlg.getStatus() == TaxonDownloadDlg.StatusType.eOK)
-                {
-                    downloadedFileName = fileName;
-                }
+                downloadedFileName = dlg.getStatus() == TaxonDownloadDlg.StatusType.eOK ? fileName : null;
                 
             } else
             {

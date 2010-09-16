@@ -189,7 +189,10 @@ public class DataObjTableModel extends DefaultTableModel
             values = new Vector<Object[]>();
             
             PreparedStatement pStmt = conn.prepareStatement(sqlStr);
-            pStmt.setString(1, searchValue);
+            if (searchValue != null)
+            {
+                pStmt.setString(1, searchValue);
+            }
             //System.out.println(sqlStr+" ["+searchValue+"]");
             
             ResultSet rs = pStmt.executeQuery();

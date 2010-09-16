@@ -216,10 +216,11 @@ public class InstSetupPanel extends GenericFormPanel
                         
                         String userName = properties.getProperty("usrUsername");
                         String password = properties.getProperty("usrPassword");
+                        String dbName   = properties.getProperty("dbName");
                         
                         firePropertyChange(propName, 0, 2);
                         
-                        isOK = tryLogginIn(userName, password);
+                        isOK = tryLogginIn(userName, password, dbName);
                         if (!isOK)
                         {
                             errorKey = "BAD_LOGIN";
@@ -287,9 +288,10 @@ public class InstSetupPanel extends GenericFormPanel
     /**
      * @param usrName
      * @param pwd
+     * @param databaseName is optional (can be null) 
      * @return
      */
-    protected boolean tryLogginIn(final String usrName, final String pwd)
+    protected boolean tryLogginIn(final String usrName, final String pwd, final String databaseName)
     {
         String uUserName = properties.getProperty("usrUsername");
         String uPassword = properties.getProperty("usrPassword");
@@ -306,22 +308,21 @@ public class InstSetupPanel extends GenericFormPanel
         DatabaseLoginPanel.MasterPasswordProviderIFace usrPwdProvider = new DatabaseLoginPanel.MasterPasswordProviderIFace()
         {
             @Override
-            public boolean hasMasterUserAndPwdInfo(final String username, final String password)
+            public boolean hasMasterUserAndPwdInfo(final String username, final String password, final String dbName)
             {
                 if (StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password))
                 {
-                    UserAndMasterPasswordMgr.getInstance().setUsersUserName(username);
-                    UserAndMasterPasswordMgr.getInstance().setUsersPassword(password);
+                    UserAndMasterPasswordMgr.getInstance().set(username, password, dbName);
+                    
                     return UserAndMasterPasswordMgr.getInstance().hasMasterUsernameAndPassword();
                 }
                 return false;
             }
 
             @Override
-            public Pair<String, String> getUserNamePassword(final String username, final String password)
+            public Pair<String, String> getUserNamePassword(final String username, final String password, final String dbName)
             {
-                UserAndMasterPasswordMgr.getInstance().setUsersUserName(username);
-                UserAndMasterPasswordMgr.getInstance().setUsersPassword(password);
+                UserAndMasterPasswordMgr.getInstance().set(username, password, dbName);
                 
                 Pair<String, String> usrPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
                 
@@ -329,17 +330,18 @@ public class InstSetupPanel extends GenericFormPanel
             }
 
             @Override
-            public boolean editMasterInfo(final String username, final boolean askForCredentials)
+            public boolean editMasterInfo(final String username, final String dbName, final boolean askForCredentials)
             {
-                return UserAndMasterPasswordMgr.getInstance().editMasterInfo(username, askForCredentials);
+                return UserAndMasterPasswordMgr.getInstance().editMasterInfo(username, dbName, askForCredentials);
             }
         };
         
-        Pair<String, String> masterUsrPwd = usrPwdProvider.getUserNamePassword(usrName, pwd);
+        String dbName = properties.getProperty("dbName");
+
+        Pair<String, String> masterUsrPwd = usrPwdProvider.getUserNamePassword(usrName, pwd, dbName);
         
         if (masterUsrPwd != null)
         {
-            String dbName   = properties.getProperty("dbName");
             String hostName = properties.getProperty("hostName");
             
             DatabaseDriverInfo driverInfo = (DatabaseDriverInfo)properties.get("driverObj");

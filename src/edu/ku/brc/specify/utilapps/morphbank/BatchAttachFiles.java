@@ -529,12 +529,11 @@ public class BatchAttachFiles
 	                DatabaseLoginPanel.MasterPasswordProviderIFace usrPwdProvider = new DatabaseLoginPanel.MasterPasswordProviderIFace()
 	                {
 	                    @Override
-	                    public boolean hasMasterUserAndPwdInfo(final String username, final String password)
+	                    public boolean hasMasterUserAndPwdInfo(final String username, final String password, final String dbName)
 	                    {
 	                        if (StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password))
 	                        {
-	                            UserAndMasterPasswordMgr.getInstance().setUsersUserName(username);
-	                            UserAndMasterPasswordMgr.getInstance().setUsersPassword(password);
+	                            UserAndMasterPasswordMgr.getInstance().set(username, password, dbName);
 	                            boolean result = false;
 	                            try
 	                            {
@@ -564,10 +563,10 @@ public class BatchAttachFiles
 	                    }
 	                    
 	                    @Override
-	                    public Pair<String, String> getUserNamePassword(final String username, final String password)
+	                    public Pair<String, String> getUserNamePassword(final String username, final String password, final String dbName)
 	                    {
-	                        UserAndMasterPasswordMgr.getInstance().setUsersUserName(username);
-	                        UserAndMasterPasswordMgr.getInstance().setUsersPassword(password);
+	                        UserAndMasterPasswordMgr.getInstance().set(username, password, dbName);
+                            
 	                        Pair<String, String> result = null;
 	                        try
 	                        {
@@ -594,7 +593,7 @@ public class BatchAttachFiles
 	                        return result;
 	                    }
 	                    @Override
-	                    public boolean editMasterInfo(final String username, final boolean askFroCredentials)
+	                    public boolean editMasterInfo(final String username, final String dbName, final boolean askFroCredentials)
 	                    {
 	                        boolean result = false;
 	                    	try
@@ -607,7 +606,7 @@ public class BatchAttachFiles
 	                        		AppPreferences.getLocalPrefs().setProperties(null);
 	                        		result =  UserAndMasterPasswordMgr
 										.getInstance()
-										.editMasterInfo(username, askFroCredentials);
+										.editMasterInfo(username, dbName, askFroCredentials);
 	                        	} finally
 	                        	{
 	                        		AppPreferences.getLocalPrefs().flush();
