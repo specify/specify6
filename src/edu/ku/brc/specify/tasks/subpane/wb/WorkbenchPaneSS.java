@@ -733,7 +733,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 doDatasetUpload();
             }
         });
-        uploadDatasetBtn.setVisible(isUploadPermitted());
+        uploadDatasetBtn.setVisible(isUploadPermitted() && !UIRegistry.isMobile());
         uploadDatasetBtn.setEnabled(canUpload());
         if (!uploadDatasetBtn.isEnabled())
         {
@@ -3777,16 +3777,19 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
     }
 
+    /**
+     * @return true if current user has upload privileges
+     */
     protected boolean isUploadPermitted()
     {
-    	return ContextMgr.getTaskByClass(WorkbenchTask.class).getPermissions().canModify();	
+    	return ContextMgr.getTaskByClass(WorkbenchTask.class).getPermissions().canModify();
     }
     /**
      * @return true if it is OK/possible to perform an upload.
      */
     protected boolean canUpload()
     {
-    	return datasetUploader == null && isUploadPermitted();
+    	return datasetUploader == null && isUploadPermitted() && !UIRegistry.isMobile();
     }
     
     /**
