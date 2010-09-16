@@ -298,31 +298,39 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         //i have no idea WHY this has to be called.  i rearranged
         //the table and find replace panel, 
         // i started getting an array index out of
-        //bounds on teh column header ON MAC ONLY.  
+        //bounds on the column header ON MAC ONLY.  
         //tried firing this off, first and it fixed the problem.//meg
         this.getModel().fireTableStructureChanged();
         
-        TableColumn       column   = getColumnModel().getColumn(0);
-        TableCellRenderer renderer = getTableHeader().getDefaultRenderer();
-        if (renderer == null)
-        {
-            renderer = column.getHeaderRenderer();
-        }
-        
-        // Calculate Row Height
-        Component   cellRenderComp = renderer.getTableCellRendererComponent(this, column.getHeaderValue(), false, false, -1, 0);
-        cellFont                   = cellRenderComp.getFont();
-        cellBorder                 = (Border)UIManager.getDefaults().get("TableHeader.cellBorder");
-        Insets      insets         = cellBorder.getBorderInsets(tableHeader);
-        FontMetrics metrics        = getFontMetrics(cellFont);
-
-        rowHeight = insets.bottom + metrics.getHeight() + insets.top;
-
         /*
          * Create the Row Header Panel
          */
         rowHeaderPanel = new JPanel((LayoutManager)null);
-        rowLabelWidth  = metrics.stringWidth("9999") + insets.right + insets.left;
+        
+        if (getColumnModel().getColumnCount() > 0)
+        {
+            TableColumn       column   = getColumnModel().getColumn(0);
+            TableCellRenderer renderer = getTableHeader().getDefaultRenderer();
+            if (renderer == null)
+            {
+                renderer = column.getHeaderRenderer();
+            }
+            
+            Component   cellRenderComp = renderer.getTableCellRendererComponent(this, column.getHeaderValue(), false, false, -1, 0);
+            cellFont                   = cellRenderComp.getFont();
+            
+        } else
+        {
+            cellFont = (new JLabel()).getFont();
+        }
+
+        // Calculate Row Height
+        cellBorder          = (Border)UIManager.getDefaults().get("TableHeader.cellBorder");
+        Insets      insets  = cellBorder.getBorderInsets(tableHeader);
+        FontMetrics metrics = getFontMetrics(cellFont);
+
+        rowHeight           = insets.bottom + metrics.getHeight() + insets.top;
+        rowLabelWidth       = metrics.stringWidth("9999") + insets.right + insets.left;            
         
         Dimension dim  = new Dimension(rowLabelWidth, rowHeight * numRows);
         rowHeaderPanel.setPreferredSize(dim); // need to call this when no layout manager is used.
