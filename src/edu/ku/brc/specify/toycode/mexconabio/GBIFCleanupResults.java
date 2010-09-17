@@ -68,12 +68,12 @@ public class GBIFCleanupResults extends BaseCleanupResults
     protected void createAndFillModels()
     {
         final String[] colNames = {"Id", "Institution Code", "Collection Code", "Catalog Number", 
-                "Scientific Name", "Author", "Genus", "Species", 
-                "Subspecies", "Latitude", "Longitude", "Lat Long Prec", 
-                "Max altitude", "Min altitude", "Alt Precision", "Min Depth", 
-                "Max Depth", "Depth Precision", "Continent Ocean", "Country", 
-                "State", "County", "Collector Name", "Locality", 
-                "Year", "Month", "Day", "Catalog Number"};
+                                    "Scientific Name", "Author", "Genus", "Species", 
+                                    "Subspecies", "Latitude", "Longitude", "Lat Long Prec", 
+                                    "Max altitude", "Min altitude", "Alt Precision", "Min Depth", 
+                                    "Max Depth", "Depth Precision", "Continent Ocean", "Country", 
+                                    "State", "County", "Collector Name", "Locality", 
+                                    "Year", "Month", "Day", "Collector Number", "Phase", "Score"};
         
         final Class<?> dataClasses[] = {Integer.class, String.class, String.class, String.class, 
                                         String.class, String.class, String.class, String.class, 
@@ -81,9 +81,10 @@ public class GBIFCleanupResults extends BaseCleanupResults
                                         String.class, String.class, String.class, String.class, 
                                         String.class, String.class, String.class, String.class, 
                                         String.class, String.class, String.class, String.class, 
-                                        String.class, String.class, String.class, String.class};
+                                        String.class, String.class, String.class, String.class,
+                                        Integer.class, Integer.class, };
 
-        model = new DataObjTableModel(awg.getDstDBConn(), 100, itemInfo.getValue().toString(), false)
+        model = new DataObjTableModel(awg.getDstDBConn(), 100, itemInfo.getId(), false)
         {
             /* (non-Javadoc)
              * @see edu.ku.brc.specify.dbsupport.cleanuptools.DataObjTableModel#buildSQL()
@@ -91,13 +92,14 @@ public class GBIFCleanupResults extends BaseCleanupResults
             @Override
             protected String buildSQL()
             {
-                String gSQL = "SELECT old_id, institution_code, collection_code, " +
-                              "catalogue_number, scientific_name, author, genus, species, subspecies, latitude, longitude,  " +
-                              "lat_long_precision, max_altitude, min_altitude, altitude_precision, min_depth, max_depth, depth_precision, " +
-                              "continent_ocean, country, state_province, county, collector_name, " + 
-                              "locality, year, month, day, other_collnum FROM raw_cache WHERE other_collnum = ?";
+                String sql = " SELECT id, r.institution_code, r.collection_code, " +
+                              "catalogue_number, r.scientific_name, r.author, r.genus, r.species, r.subspecies, r.latitude, r.longitude, " +
+                              "lat_long_precision, r.max_altitude, r.min_altitude, r.altitude_precision, r.min_depth, r.max_depth, r.depth_precision, " +
+                              "continent_ocean, r.country, r.state_province, r.county, r.collector_name, " + 
+                              "locality, r.year, r.month, r.day, r.collector_num, g.reltype, g.score " +
+                              "FROM gbifsnib AS g Inner Join raw AS r ON g.GBIFID = r.id WHERE g.SNIBID = ? AND g.score > 50 ORDER BY g.score DESC";
                             
-                tableInfo = new DBTableInfo(100, this.getClass().getName(), "raw_cache", "id", "r");
+                tableInfo = new DBTableInfo(100, this.getClass().getName(), "raw", "id", "r");
                 
                 for (int i=0;i<colNames.length;i++)
                 {
@@ -107,7 +109,7 @@ public class GBIFCleanupResults extends BaseCleanupResults
                 }
                 numColumns = colNames.length;
                 
-                return gSQL;
+                return sql;
             }
 
             /* (non-Javadoc)
@@ -122,7 +124,7 @@ public class GBIFCleanupResults extends BaseCleanupResults
                 String cSQL = String.format("SELECT BarCD, GenusName, SpeciesName, SubspeciesName, " +
                                             "Latminenetq, Lngminenetq, LatLongFuente, AltMaxEtq, AltMinEtq, COUNTRY, STATE, MUNIC, Collectoragent1, " +
                                             "LocalityName, Datecollstandrd, CollNr " +
-                                            "FROM conabio WHERE BarCD = '%s'", searchValue);
+                                            "FROM conabio WHERE ID = %d", (Integer)searchValue);
                 
                 Connection srcConn = awg.getSrcDBConn();
                 
@@ -140,7 +142,7 @@ public class GBIFCleanupResults extends BaseCleanupResults
                         int inx   = 0;
                         int dbInx = 1;
                         
-                        //row[inx++] = null;                  // id
+                        //row[inx++] = null;                // id
                         row[inx++] = null;                  // old_id
                         row[inx++] = null;                  // institution_code
                         row[inx++] = null;                  // collection_code
@@ -187,18 +189,21 @@ public class GBIFCleanupResults extends BaseCleanupResults
                             row[inx++] = day.toString(); // day
                         }
                         
-                        collNum    = rs.getString(dbInx++); // other_collnum
+                        collNum    = rs.getString(dbInx++); // collector_num
                         row[inx++] = collNum;
+                        
+                        row[inx++] = (Integer)0;
+                        row[inx++] = (Integer)0;
                         
                         values.add(row);
                         rowInfoListArg.add(new DataObjTableModelRowInfo(rs.getInt(1), false, false));
                     }
                     rs.close();
                     
-                    for (int i=0;i<values.size()-1;i++)
-                    {
-                        values.get(i)[numColumns-1] = collNum;
-                    }
+                    //for (int i=0;i<values.size()-1;i++)
+                    //{
+                    //    values.get(i)[numColumns-1] = collNum;
+                    //}
                         
                 } catch (SQLException ex)
                 {

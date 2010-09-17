@@ -23,24 +23,42 @@ import java.io.PrintWriter;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.HashSet;
+
+import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
-public class AnalysisWithGBIF extends AnalysisBase
+public class AnalysisWithGBIFToGBIF extends AnalysisBase
 {
-
+    //private static final Logger  log                = Logger.getLogger(AnalysisWithSNIB.class);
+    
+    private StringBuilder sb = new StringBuilder();
+    
     /**
      * 
      */
-    public AnalysisWithGBIF()
+    public AnalysisWithGBIFToGBIF()
     {
         super();
-     }
+    }
+
+    /**
+     * @param val
+     * @return
+     */
+    private String getIntToStr(final Object val)
+    {
+        if (val != null && val instanceof Integer)
+        {
+            return Integer.toString((Integer)val);
+        }
+        return null;
+    }
+
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.toycode.mexconabio.AnalysisBase#process(int, int)
@@ -49,21 +67,19 @@ public class AnalysisWithGBIF extends AnalysisBase
     public void process(final int type, final int options)
     {
         final double HRS = 1000.0 * 60.0 * 60.0; 
-        Calendar cal = Calendar.getInstance();
         
         calcMaxScore();
         
-                                     //      1         2           3        4        5           6         7          8          9               10            11      12    13    14        15
         String gbifSQL   = "SELECT DISTINCT id, catalogue_number, genus, species, subspecies, latitude, longitude, country, state_province, collector_name, locality, year, month, day, collector_num ";
         
-        String fromClause1 = "FROM raw WHERE collector_num = ? AND year = ? AND genus = ?";
-        String fromClause2 = "FROM raw WHERE collector_num IS NULL AND year = ? AND month = ? AND genus = ?";
+        String fromClause1 = "FROM raw WHERE collector_num = ? AND year = ? AND genus = ? AND id <> ?";
+        String fromClause2 = "FROM raw WHERE collector_num IS NULL AND year = ? AND month = ? AND genus = ? AND id <> ?";
         
-        //                        1       2           3              4           5             6              7               8           9        10   11
-        String sql121K = "SELECT BarCD, CollNr, Collectoragent1, GenusName, SpeciesName, SubSpeciesName, LocalityName, Datecollstandrd, COUNTRY, STATE, ID FROM conabio " +
-        		         "WHERE CollNr IS NOT NULL ORDER BY CollNr";
+        //                        1       2           3        4           5         6          7         8           9               10          11       12    13    14      15
+        String postSQL = "FROM raw WHERE collector_num IS NOT NULL GROUP BY collector_num, year, genus ORDER BY collector_num";
+        String srcSQL  = "SELECT id, catalogue_number, genus, species, subspecies, latitude, longitude, country, state_province, collector_name, locality, year, month, day, collector_num " + postSQL;
         
-        String gbifsnibInsert = "INSERT INTO gbifsnib (reltype, score, GBIFID, SNIBID) VALUES (?,?,?,?)";
+        String gbifgbifInsert = "INSERT INTO gbifgbif (reltype, score, GBIFID, SNIBID) VALUES (?,?,?,?)";
         
         Statement         stmt   = null;
         PreparedStatement gStmt1 = null;
@@ -74,7 +90,7 @@ public class AnalysisWithGBIF extends AnalysisBase
         Object[] cmpRow = new Object[14];
 
         
-        long totalRecs     = BasicSQLUtils.getCount(dbSrcConn, "SELECT COUNT(*) FROM conabio");
+        long totalRecs     = BasicSQLUtils.getCount(dbSrcConn, "SELECT COUNT(*) " + postSQL);
         long procRecs      = 0;
         long startTime     = System.currentTimeMillis();
         int  secsThreshold = 0;
@@ -82,24 +98,29 @@ public class AnalysisWithGBIF extends AnalysisBase
         PrintWriter pw = null;
         try
         {
-            pw = new PrintWriter("scoring.log");
+            pw = new PrintWriter("scoring_gbifgbif.log");
             
             gStmt1 = dbGBIFConn.prepareStatement(gbifSQL + fromClause1);
             gStmt2 = dbGBIFConn.prepareStatement(gbifSQL + fromClause2);
-            gsStmt = dbDstConn.prepareStatement(gbifsnibInsert);
+            gsStmt = dbDstConn.prepareStatement(gbifgbifInsert);
             
             stmt  = dbSrcConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             stmt.setFetchSize(Integer.MIN_VALUE);
             
             System.out.println("Starting Query... "+totalRecs);
             pw.println("Starting Query... "+totalRecs);
+            System.out.flush();
+            pw.flush();
             
             HashSet<Integer> idHash = new HashSet<Integer>();
             int writeCnt = 0;
-            ResultSet rs = stmt.executeQuery(sql121K);
+            ResultSet rs = stmt.executeQuery(srcSQL);
             
             System.out.println(String.format("Starting Processing... Total Records %d  Max Score: %d  Threshold: %d", totalRecs, maxScore, thresholdScore));
             pw.println(String.format("Starting Processing... Total Records %d  Max Score: %d  Threshold: %d", totalRecs, maxScore, thresholdScore));
+            System.out.flush();
+            pw.flush();
+            
             while (rs.next())
             {
                 if (procRecs < 140)
@@ -108,75 +129,22 @@ public class AnalysisWithGBIF extends AnalysisBase
                     continue;
                 }
                 
-                String  catNum       = rs.getString(1).trim();
-                String  collectorNum = rs.getString(2);
-                String  collector    = rs.getString(3);
-                String  genus        = rs.getString(4);
-                String  species      = rs.getString(5);
-                String  subspecies   = rs.getString(6);
-                String  locality     = rs.getString(7);
-                Date    collDate     = rs.getDate(8);
-                String  country      = rs.getString(9);
-                String  state        = rs.getString(10);
-                
-                int snibID           = rs.getInt(11);
-                
-                int     year;
-                int     mon;
-                int     day;
-                
-                if (collDate != null)
-                {
-                    cal.setTime(collDate);
-                    year         = cal.get(Calendar.YEAR);
-                    mon          = cal.get(Calendar.MONTH) + 1;
-                    day          = cal.get(Calendar.DAY_OF_MONTH);
-                } else
-                {
-                    year = 0;
-                    mon  = 0;
-                    day  = 0;
-                }
+                fillGBIF(refRow, rs);
+
+                Integer srcId = rs.getInt(1);
                 
                 // Search Records with Collector Number match
-                gStmt1.setString(1, collectorNum);
-                gStmt1.setString(2, Integer.toString(year));
-                gStmt1.setString(3, genus);
-                
-                refRow[CATNUM_INX]     = catNum;
-                refRow[COLNUM_INX]     = collectorNum;
-                refRow[GENUS_INX]      = genus;
-                refRow[SPECIES_INX]    = species;
-                refRow[SUBSPECIES_INX] = subspecies;
-                refRow[COLLECTOR_INX]  = collector;
-                refRow[LOCALITY_INX]   = locality;
-                refRow[LATITUDE_INX]   = null;
-                refRow[LONGITUDE_INX]  = null;
-                refRow[YEAR_INX]       = year > 0 ? Integer.toString(year) : null;
-                refRow[MON_INX]        = mon > 0  ? Integer.toString(mon) : null;
-                refRow[DAY_INX]        = day > 0  ? Integer.toString(day) : null;
-                refRow[COUNTRY_INX]    = country;
-                refRow[STATE_INX]      = state;
+                gStmt1.setString(1, (String)refRow[COLNUM_INX]);
+                gStmt1.setString(2, (String)refRow[YEAR_INX]);
+                gStmt1.setString(3, (String)refRow[GENUS_INX]);
+                gStmt1.setInt(4,    srcId);
                 
                 idHash.clear();
                 
                 ResultSet gRS = gStmt1.executeQuery();
                 while (gRS.next())
                 {
-                   cmpRow[CATNUM_INX]     = gRS.getString(2);
-                   cmpRow[COLNUM_INX]     = gRS.getString(15);
-                   cmpRow[GENUS_INX]      = gRS.getString(3);
-                   cmpRow[SPECIES_INX]    = gRS.getString(4);
-                   cmpRow[SUBSPECIES_INX] = gRS.getString(5);
-                   cmpRow[COLLECTOR_INX]  = gRS.getString(10);
-                   cmpRow[LOCALITY_INX]   = gRS.getString(11);
-                   cmpRow[LATITUDE_INX]   = gRS.getString(6);
-                   cmpRow[LONGITUDE_INX]  = gRS.getString(7);
-                   cmpRow[YEAR_INX]       = gRS.getString(12);
-                   cmpRow[MON_INX]        = gRS.getString(13);
-                   cmpRow[DAY_INX]        = gRS.getString(14);
-                   cmpRow[COUNTRY_INX]    = gRS.getString(8);
-                   cmpRow[STATE_INX]      = gRS.getString(9);
+                   fillGBIF(cmpRow, gRS);
                    
                    int score = score(refRow, cmpRow);
                    
@@ -185,10 +153,10 @@ public class AnalysisWithGBIF extends AnalysisBase
                        writeCnt++;
                        
                        int gbifID = gRS.getInt(1);
-                       gsStmt.setInt(1, 1);     // reltype
-                       gsStmt.setInt(2, score); // score
+                       gsStmt.setInt(1, 1);      // reltype
+                       gsStmt.setInt(2, score);  // score
                        gsStmt.setInt(3, gbifID);
-                       gsStmt.setInt(4, snibID);
+                       gsStmt.setInt(4, srcId);
                        gsStmt.executeUpdate();
                        
                        idHash.add(gbifID);
@@ -197,9 +165,10 @@ public class AnalysisWithGBIF extends AnalysisBase
                 gRS.close();
                 
                 // Search Records with NULL Collector Number
-                gStmt2.setString(1, Integer.toString(year));
-                gStmt2.setString(2, Integer.toString(mon));
-                gStmt2.setString(3, genus);
+                gStmt2.setString(1, (String)refRow[YEAR_INX]);
+                gStmt2.setString(2, (String)refRow[MON_INX]);
+                gStmt2.setString(3, (String)refRow[GENUS_INX]);
+                gStmt2.setInt(4,    srcId);
                 
                 gRS  = gStmt2.executeQuery();
                 while (gRS.next())
@@ -208,38 +177,22 @@ public class AnalysisWithGBIF extends AnalysisBase
                     
                     if (idHash.contains(gbifID)) continue;
                     
-                    //                 1         2           3        4        5           6         7          8          9               10            11      12    13    14        15
-                    //SELECT DISTINCT id, catalogue_number, genus, species, subspecies, latitude, longitude, country, state_province, collector_name, locality, year, month, day, collector_num ";
-                    
-                    cmpRow[CATNUM_INX]     = gRS.getString(2);
-                    cmpRow[COLNUM_INX]     = gRS.getString(15);
-                    cmpRow[GENUS_INX]      = gRS.getString(3);
-                    cmpRow[SPECIES_INX]    = gRS.getString(4);
-                    cmpRow[SUBSPECIES_INX] = gRS.getString(5);
-                    cmpRow[COLLECTOR_INX]  = gRS.getString(10);
-                    cmpRow[LOCALITY_INX]   = gRS.getString(11);
-                    cmpRow[LATITUDE_INX]   = gRS.getString(6);
-                    cmpRow[LONGITUDE_INX]  = gRS.getString(7);
-                    cmpRow[YEAR_INX]       = gRS.getString(12);
-                    cmpRow[MON_INX]        = gRS.getString(13);
-                    cmpRow[DAY_INX]        = gRS.getString(14);
-                    cmpRow[COUNTRY_INX]    = gRS.getString(8);
-                    cmpRow[STATE_INX]      = gRS.getString(9);
+                    fillGBIF(cmpRow, gRS);
                     
                     int score = score(refRow, cmpRow);
-                    
+                   
                     if (score > thresholdScore)
                     {
                         writeCnt++;
+                       
                         gsStmt.setInt(1, 2);     // reltype
                         gsStmt.setInt(2, score); // score
                         gsStmt.setInt(3, gbifID);
-                        gsStmt.setInt(4, snibID);
+                        gsStmt.setInt(4, srcId);
                         gsStmt.executeUpdate();
                     }
                 }
                 gRS.close();
-                
                 
                 procRecs++;
                 if (procRecs % 500 == 0)
@@ -304,11 +257,13 @@ public class AnalysisWithGBIF extends AnalysisBase
     //------------------------------------------------------------------------------------------
     public static void main(String[] args)
     {
-        AnalysisWithGBIF awg = new AnalysisWithGBIF();
+        AnalysisWithGBIFToGBIF awg = new AnalysisWithGBIFToGBIF();
         awg.createDBConnection("localhost",     "3306", "plants", "root", "root");
-        awg.createSrcDBConnection("localhost",  "3306", "mex",    "root", "root");
+        awg.createSrcDBConnection("localhost",  "3306", "plants", "root", "root");
         awg.createDestDBConnection("localhost", "3306", "plants", "root", "root");
-        awg.process(0,0);
+        awg.process(1, DO_ALL);
+        awg.endLogging();
+        
         awg.cleanup();
     }
 }

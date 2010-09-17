@@ -123,8 +123,8 @@ public class AnalysisWithGBIFUIApp extends AnalysisWithGBIF
                 SpecifyWebLinkMgr.setDoingLocal(true);
                
                 AnalysisWithGBIF awgUI = new AnalysisWithGBIF();
-                awgUI.createSrcDBConnection("localhost",  "3306", "mex",            "root", "root");
-                awgUI.createDestDBConnection("localhost", "3306", "analysis_cache", "root", "root");
+                awgUI.createSrcDBConnection("localhost",  "3306", "plants", "root", "root");
+                awgUI.createDestDBConnection("localhost", "3306", "plants", "root", "root");
                 
                 GBIFFindCleanupItems gbiffci = new GBIFFindCleanupItems(awgUI);
                 gbiffci.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);

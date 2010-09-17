@@ -59,7 +59,7 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
  * Created Date: Aug 23, 2010
  *
  */
-public class CopyFromGBIF
+public class CopyFromGBIFToPlants
 {
 
     private Connection dbConn    = null;
@@ -84,7 +84,7 @@ public class CopyFromGBIF
      * @param username
      * @param pwd
      */
-    public CopyFromGBIF()
+    public CopyFromGBIFToPlants()
     {
         super();
      }
@@ -845,7 +845,7 @@ public class CopyFromGBIF
     //------------------------------------------------------------------------------------------
     public static void main(String[] args)
     {
-        CopyFromGBIF awg = new CopyFromGBIF();
+        CopyFromGBIFToPlants awg = new CopyFromGBIFToPlants();
         
         boolean doBuild = false;
         

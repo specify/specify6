@@ -19,20 +19,24 @@
 */
 package edu.ku.brc.specify.toycode.mexconabio;
 
+import java.io.PrintWriter;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Calendar;
+import java.util.HashSet;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
 public class AnalysisWithSNIB extends AnalysisBase
 {
-    private static final Logger  log                = Logger.getLogger(AnalysisWithSNIB.class);
+    //private static final Logger  log                = Logger.getLogger(AnalysisWithSNIB.class);
+    
+    private StringBuilder sb = new StringBuilder();
     
     /**
      * 
@@ -46,17 +50,17 @@ public class AnalysisWithSNIB extends AnalysisBase
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.toycode.mexconabio.AnalysisBase#process(int, int)
      */
-    @Override
+    /*@Override
     public void process(final int typeArg, final int options)
     {
         processGBIF(DO_ALL);
-    }
+    }*/
 
     
     /**
      * @param options
      */
-    public void processConabio(final int options)
+    /*public void processConabio(final int options)
     {
         PreparedStatement[] pStmts    = new PreparedStatement[2];
         PreparedStatement[] pCntStmts = new PreparedStatement[2];
@@ -69,7 +73,7 @@ public class AnalysisWithSNIB extends AnalysisBase
             String cntSQL = "SELECT COUNT(*) FROM conabio" + michWhere;
             log.debug(cntSQL);
 
-            String snibSQL   = "SELECT CatalogNumber, CollectorNumber,  Genus, Species, Nameinfraspecies, LastNameFather, LastNameMother, FirstName, Locality, Latitude, Longitude, `Year`, `Month`, `Day`, Country ";
+            String snibSQL   = "SELECT CatalogNumber, CollectorNumber, Genus, Species, Nameinfraspecies, LastNameFather, LastNameMother, FirstName, Locality, Latitude, Longitude, `Year`, `Month`, `Day`, Country ";
             
             // Query without Year
             String whereStr = " FROM angiospermas WHERE CollectorNumber = ? AND Genus = ?";
@@ -109,12 +113,13 @@ public class AnalysisWithSNIB extends AnalysisBase
             System.out.println("Done.");
         }
 
-    }
+    }*/
 
     /**
      * @param options
+     * @throws SQLException 
      */
-    public void processGBIF(final int options)
+    /*public void processGBIF(final int options)
     {
         PreparedStatement[] pStmts    = new PreparedStatement[2];
         PreparedStatement[] pCntStmts = new PreparedStatement[2];
@@ -160,14 +165,307 @@ public class AnalysisWithSNIB extends AnalysisBase
             }
             System.out.println("Done.");
         }
-
+    }*/
+    
+    /**
+     * @param val
+     * @return
+     */
+    private String getIntToStr(final Object val)
+    {
+        if (val != null && val instanceof Integer)
+        {
+            return Integer.toString((Integer)val);
+        }
+        return null;
     }
-
+    
+    /**
+     * @param cmpRow
+     * @param gRS
+     * @throws SQLException
+     */
+    private void fill(final Object[] cmpRow, final ResultSet gRS) throws SQLException
+    {
+        //   1          2           3        4                5             6         7          8       9         10               11           12       13        14     15       16         17
+        // IdSNIB, CatalogNumber, Genus, Species, Cataegoryinfraspecies, Latitude, Longitude, Country, State, LastNameFather, LastNameMother, FirstName, Locality, `Year`, `Month`, `Day`, CollectorNumber FROM angiospermas "; 
+        
+        cmpRow[CATNUM_INX]     = gRS.getString(2);
+        cmpRow[COLNUM_INX]     = gRS.getString(17);
+        cmpRow[GENUS_INX]      = gRS.getString(3);
+        cmpRow[SPECIES_INX]    = gRS.getString(4);
+        cmpRow[SUBSPECIES_INX] = gRS.getString(5);
+        cmpRow[LOCALITY_INX]   = gRS.getString(13);
+        cmpRow[LATITUDE_INX]   = gRS.getString(6);
+        cmpRow[LONGITUDE_INX]  = gRS.getString(7);
+        cmpRow[YEAR_INX]       = getIntToStr(gRS.getObject(14));
+        cmpRow[MON_INX]        = getIntToStr(gRS.getObject(15));
+        cmpRow[DAY_INX]        = getIntToStr(gRS.getObject(16));
+        cmpRow[COUNTRY_INX]    = gRS.getString(16);
+        cmpRow[STATE_INX]      = gRS.getString(9);
+        
+        String fatherName      = gRS.getString(10);
+        String motherName      = gRS.getString(11);
+        String firstName       = gRS.getString(12);
+        
+        boolean hasFather = StringUtils.isNotEmpty(fatherName);
+        boolean hasMother = StringUtils.isNotEmpty(motherName);
+        boolean hasFirst  = StringUtils.isNotEmpty(firstName);
+        
+        sb.setLength(0);
+        if (hasFather)
+        {
+            sb.append(fatherName);
+        }
+        if (hasMother)
+        {
+            if (hasFather) sb.append(", ");
+            sb.append(sb.append(fatherName));
+        }
+        if (hasFirst)
+        {
+            if (hasFather || hasMother) sb.append(", ");
+            sb.append(sb.append(hasFirst));
+        }
+        cmpRow[COLLECTOR_INX] = sb.toString();
+    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.toycode.mexconabio.AnalysisBase#process(int, int)
      */
-    public void process(final String baseDirName,
+    @Override
+    public void process(final int type, final int options)
+    {
+        final double HRS = 1000.0 * 60.0 * 60.0; 
+        Calendar cal = Calendar.getInstance();
+        
+        calcMaxScore();
+        
+                            //      1          2           3        4                5             6         7          8           9               10            11      12       13        14     15       16         17
+        String gbifSQL   = "SELECT IdSNIB, CatalogNumber, Genus, Species, Cataegoryinfraspecies, Latitude, Longitude, Country, LastNameFather, LastNameMother, FirstName, State, Locality, `Year`, `Month`, `Day`, CollectorNumber "; 
+        
+        String fromClause1 = "FROM angiospermas WHERE CollectorNumber = ? AND `Year` = ? AND Genus = ?";
+        String fromClause2 = "FROM angiospermas WHERE CollectorNumber IS NULL AND `Year` = ? AND `Month` = ? AND Genus = ?";
+        
+        //                        1       2           3              4           5             6              7               8           9        10   11
+        String sql121K = "SELECT BarCD, CollNr, Collectoragent1, GenusName, SpeciesName, SubSpeciesName, LocalityName, Datecollstandrd, COUNTRY, STATE, ID FROM conabio " +
+                         "WHERE CollNr IS NOT NULL ORDER BY CollNr";
+        
+        String gbifsnibInsert = "INSERT INTO snibmex (reltype, score, GBIFID, SNIBID) VALUES (?,?,?,?)";
+        
+        Statement         stmt   = null;
+        PreparedStatement gStmt1 = null;
+        PreparedStatement gStmt2 = null;
+        PreparedStatement gsStmt = null;
+        
+        Object[] refRow = new Object[14];
+        Object[] cmpRow = new Object[14];
+
+        
+        long totalRecs     = BasicSQLUtils.getCount(dbSrcConn, "SELECT COUNT(*) FROM conabio");
+        long procRecs      = 0;
+        long startTime     = System.currentTimeMillis();
+        int  secsThreshold = 0;
+        
+        PrintWriter pw = null;
+        try
+        {
+            pw = new PrintWriter("scoring_snib.log");
+            
+            gStmt1 = dbGBIFConn.prepareStatement(gbifSQL + fromClause1);
+            gStmt2 = dbGBIFConn.prepareStatement(gbifSQL + fromClause2);
+            gsStmt = dbDstConn.prepareStatement(gbifsnibInsert);
+            
+            stmt  = dbSrcConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            stmt.setFetchSize(Integer.MIN_VALUE);
+            
+            System.out.println("Starting Query... "+totalRecs);
+            pw.println("Starting Query... "+totalRecs);
+            
+            HashSet<Integer> idHash = new HashSet<Integer>();
+            int writeCnt = 0;
+            ResultSet rs = stmt.executeQuery(sql121K);
+            
+            System.out.println(String.format("Starting Processing... Total Records %d  Max Score: %d  Threshold: %d", totalRecs, maxScore, thresholdScore));
+            pw.println(String.format("Starting Processing... Total Records %d  Max Score: %d  Threshold: %d", totalRecs, maxScore, thresholdScore));
+            while (rs.next())
+            {
+                if (procRecs < 140)
+                {
+                    procRecs++;
+                    continue;
+                }
+                
+                String  catNum       = rs.getString(1).trim();
+                String  collectorNum = rs.getString(2);
+                String  collector    = rs.getString(3);
+                String  genus        = rs.getString(4);
+                String  species      = rs.getString(5);
+                String  subspecies   = rs.getString(6);
+                String  locality     = rs.getString(7);
+                Date    collDate     = rs.getDate(8);
+                String  country      = rs.getString(9);
+                String  state        = rs.getString(10);
+                
+                int snibID           = rs.getInt(11);
+                
+                int     year;
+                int     mon;
+                int     day;
+                
+                if (collDate != null)
+                {
+                    cal.setTime(collDate);
+                    year         = cal.get(Calendar.YEAR);
+                    mon          = cal.get(Calendar.MONTH) + 1;
+                    day          = cal.get(Calendar.DAY_OF_MONTH);
+                } else
+                {
+                    year = 0;
+                    mon  = 0;
+                    day  = 0;
+                }
+                
+                // Search Records with Collector Number match
+                gStmt1.setString(1, collectorNum);
+                gStmt1.setString(2, Integer.toString(year));
+                gStmt1.setString(3, genus);
+                
+                refRow[CATNUM_INX]     = catNum;
+                refRow[COLNUM_INX]     = collectorNum;
+                refRow[GENUS_INX]      = genus;
+                refRow[SPECIES_INX]    = species;
+                refRow[SUBSPECIES_INX] = subspecies;
+                refRow[COLLECTOR_INX]  = collector;
+                refRow[LOCALITY_INX]   = locality;
+                refRow[LATITUDE_INX]   = null;
+                refRow[LONGITUDE_INX]  = null;
+                refRow[YEAR_INX]       = year > 0 ? Integer.toString(year) : null;
+                refRow[MON_INX]        = year > 0 ? Integer.toString(mon) : null;
+                refRow[DAY_INX]        = year > 0 ? Integer.toString(day) : null;
+                refRow[COUNTRY_INX]    = country;
+                refRow[STATE_INX]      = state;
+                
+                idHash.clear();
+                
+                //long st = System.currentTimeMillis();
+                //int c = 0;
+                ResultSet gRS = gStmt1.executeQuery();
+                while (gRS.next())
+                {
+                   fill(cmpRow, gRS);
+                   
+                   int score = score(refRow, cmpRow);
+                   
+                   if (score > thresholdScore)
+                   {
+                       writeCnt++;
+                       
+                       int gbifID = gRS.getInt(1);
+                       gsStmt.setInt(1, 1);      // reltype
+                       gsStmt.setInt(2, score);  // score
+                       gsStmt.setInt(3, gbifID);
+                       gsStmt.setInt(4, snibID);
+                       gsStmt.executeUpdate();
+                       
+                       idHash.add(gbifID);
+                   }
+                }
+                gRS.close();
+                
+                // Search Records with NULL Collector Number
+                gStmt2.setString(1, Integer.toString(year));
+                gStmt2.setString(2, Integer.toString(mon));
+                gStmt2.setString(3, genus);
+                
+                gRS  = gStmt2.executeQuery();
+                while (gRS.next())
+                {
+                    int gbifID = gRS.getInt(1);
+                    
+                    if (idHash.contains(gbifID)) continue;
+                    
+                    fill(cmpRow, gRS);
+                    
+                    int score = score(refRow, cmpRow);
+                   
+                    if (score > thresholdScore)
+                    {
+                        writeCnt++;
+                       
+                        gsStmt.setInt(1, 2);     // reltype
+                        gsStmt.setInt(2, score); // score
+                        gsStmt.setInt(3, gbifID);
+                        gsStmt.setInt(4, snibID);
+                        gsStmt.executeUpdate();
+                    }
+                }
+                gRS.close();
+                
+                procRecs++;
+                if (procRecs % 500 == 0)
+                {
+                    long endTime     = System.currentTimeMillis();
+                    long elapsedTime = endTime - startTime;
+                    
+                    double timePerRecord      = (elapsedTime / procRecs); 
+                    
+                    double hrsLeft = ((totalRecs - procRecs) * timePerRecord) / HRS;
+                    
+                    int seconds = (int)(elapsedTime / 60000.0);
+                    if (secsThreshold != seconds)
+                    {
+                        secsThreshold = seconds;
+                        
+                        String msg = String.format("Elapsed %8.2f hr.mn   Percent: %6.3f  Hours Left: %8.2f ", 
+                                ((double)(elapsedTime)) / HRS, 
+                                100.0 * ((double)procRecs / (double)totalRecs),
+                                hrsLeft);
+                        System.out.println(msg);
+                        pw.println(msg);
+                        pw.flush();
+                    }
+                }
+            }
+            rs.close();
+            
+            System.out.println("Done.");
+            pw.println("Done.");
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } finally 
+        {
+            try
+            {
+                if (stmt != null)
+                {
+                    stmt.close();
+                }
+                if (gStmt1 != null)
+                {
+                    gStmt1.close();
+                }
+                if (gStmt2 != null)
+                {
+                    gStmt2.close();
+                }
+            } catch (Exception ex)
+            {
+                
+            }
+        }
+        System.out.println("Done.");
+        pw.println("Done.");
+        pw.flush();
+        pw.close();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.toycode.mexconabio.AnalysisBase#process(int, int)
+     */
+    /*public void process(final String baseDirName,
                         final String dataDirName,
                         final String cntSQL, 
                         final String mainSQL,
@@ -503,19 +801,19 @@ public class AnalysisWithSNIB extends AnalysisBase
                         }
                     }
                     
-                    /*if (refGenus != null && species != null && refGenus.equals(species))     
-                    {
-                        cCls[3] = DF;
-                        mCls[2] = DF;                        
-                        score += 10;
-                    }
-                    
-                    if (refSpecies != null && genus != null && refSpecies.equals(genus))
-                    {
-                        cCls[2] = DF;
-                        mCls[3] = DF;
-                        score += 15;
-                    }*/
+//                    if (refGenus != null && species != null && refGenus.equals(species))     
+//                    {
+//                        cCls[3] = DF;
+//                        mCls[2] = DF;                        
+//                        score += 10;
+//                    }
+//                    
+//                    if (refSpecies != null && genus != null && refSpecies.equals(genus))
+//                    {
+//                        cCls[2] = DF;
+//                        mCls[3] = DF;
+//                        score += 15;
+//                    }
                     
                     if (catNum.equals(refCatNum))
                     {
@@ -625,17 +923,16 @@ public class AnalysisWithSNIB extends AnalysisBase
             System.out.println("Done.");
         }
         System.out.println("Done.");
-    }
+    }*/
     
     
     //------------------------------------------------------------------------------------------
     public static void main(String[] args)
     {
         AnalysisWithSNIB awg = new AnalysisWithSNIB();
-        awg.createDBConnection("localhost",     "3306", "gbif",           "root", "root");
-        awg.createSrcDBConnection("localhost",  "3306", "mex",            "root", "root");
-        
-        //awg.createDestDBConnection("localhost", "3306", "analysis_cache", "root", "root");
+        awg.createDBConnection("localhost",     "3306", "snib",   "root", "root");
+        awg.createSrcDBConnection("localhost",  "3306", "mex",    "root", "root");
+        awg.createDestDBConnection("localhost", "3306", "plants", "root", "root");
         awg.process(1, DO_ALL);
         awg.endLogging();
         

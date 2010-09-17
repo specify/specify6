@@ -96,14 +96,16 @@ public class GBIFFindCleanupItems extends BaseFindCleanupItems
         {
             stmt  = dstDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             
-            ResultSet rs = stmt.executeQuery("SELECT id, other_collnum, COUNT(other_collnum) FROM raw_cache GROUP BY other_collnum");
+            String sql = "SELECT c.id, c.BarCd, T1.CNT FROM (SELECT SNIBID, COUNT(SNIBID) CNT FROM gbifsnib WHERE score > 50 GROUP BY SNIBID) T1 INNER JOIN conabio c on c.id = SNIBID WHERE CNT > 1";
+            
+            ResultSet rs = stmt.executeQuery(sql);
             while (rs.next())
             {
-                int     id        = rs.getInt(1);
-                String  catNum    = rs.getString(2);
-                int     grpCnt    = rs.getInt(3);
+                int     id       = rs.getInt(1);
+                String  catNum   = rs.getString(2);
+                int     cnt      = rs.getInt(3);
                 
-                String titleStr = String.format("%s - %d", catNum, grpCnt);
+                String titleStr = String.format("%s - %d", catNum, cnt);
                 items.add(new FindItemInfo(id, catNum, titleStr));
             }
             rs.close();
