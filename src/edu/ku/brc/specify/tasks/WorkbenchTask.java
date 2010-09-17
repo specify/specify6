@@ -2925,124 +2925,274 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         TemplateEditor dlg = showColumnMapperDlg(null, wbTemplate, "WB_MAPPING_EDITOR");
         if (!dlg.isCancelled())
         {
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            try
-            {
-                Collection<WorkbenchTemplateMappingItem> deletedItems = dlg.getDeletedItems();
-                Collection<WorkbenchTemplateMappingItem> newItems     = dlg.updateAndGetNewItems();
-                
-                for (WorkbenchTemplateMappingItem item : newItems)
-                {
-                    log.error(item.getFieldName());
-                }
-                //Collection<WorkbenchTemplateMappingItem> updatedItems = dlg.getUpdatedItems();
-                
-                session.beginTransaction();
-                
-                // Merge with current session
-                WorkbenchTemplate workbenchTemplate = session.merge(wbTemplate);
-                
-                Set<WorkbenchTemplateMappingItem> items = workbenchTemplate.getWorkbenchTemplateMappingItems();
-                for (WorkbenchTemplateMappingItem delItem : deletedItems)
-                {
-                    for (WorkbenchTemplateMappingItem wbtmi : items)
-                    {
-                    	if (delItem.getWorkbenchTemplateMappingItemId().longValue() == wbtmi.getWorkbenchTemplateMappingItemId().longValue())
-                        {
-                            //log.debug("del ["+wbtmi.getCaption()+"]["+wbtmi.getWorkbenchTemplateMappingItemId().longValue()+"]");
-                            //wbtmi.setWorkbenchTemplate(null);
-                    		
-                    		items.remove(wbtmi);
-                    		wbtmi.setWorkbenchTemplate(null);
-                            if (wbtmi.getWorkbenchDataItems() != null)
-                            {
-                              
-                            	for (WorkbenchDataItem wbdi : wbtmi.getWorkbenchDataItems())
-                                {
-                                    wbdi.getWorkbenchRow().getWorkbenchDataItems().remove(wbdi);
-                                    wbdi.setWorkbenchRow(null);
-                            		session.delete(wbdi);
-                            		wbdi.setWorkbenchTemplateMappingItem(null);
-                                }
-                            	wbtmi.getWorkbenchDataItems().clear();
-                            }
-                            session.delete(wbtmi);
-                            break;
-                        }
-                    }
-                }
-                
-                for (WorkbenchTemplateMappingItem wbtmi : newItems)
-                {
-                    wbtmi.setWorkbenchTemplate(workbenchTemplate);
-                    items.add(wbtmi);
-                    //log.debug("new ["+wbtmi.getCaption()+"]["+wbtmi.getViewOrder().shortValue()+"]");
-                    session.saveOrUpdate(wbtmi) ;
-                }
-                                
-                //Check to see if geo/ref data needs to be updated
-                //This is actually only necessary if lat/long mappings have been switched - lat mapping changed to a long mapping or vice-versa.
-                //XXX Surely it is possible to tell if a lat/long switch has been made and not do this after every template change??
-                WorkbenchTemplateMappingItem aGeoRefMapping = null;
-                for (WorkbenchTemplateMappingItem wbtmi : workbenchTemplate.getWorkbenchTemplateMappingItems())
-                {
-                    if (aGeoRefMapping == null && wbtmi.getTableName().equals("locality"))
-                    {
-                        if (wbtmi.getFieldName().equalsIgnoreCase("latitude1") || wbtmi.getFieldName().equalsIgnoreCase("latitude2")
-                                || wbtmi.getFieldName().equalsIgnoreCase("longitude1") || wbtmi.getFieldName().equalsIgnoreCase("longitude2"))
-                        {
-                        	aGeoRefMapping = wbtmi;
-                        	break;
-                        }
-                    }
-                }
-                if (aGeoRefMapping != null)
-                {
-                	for (Workbench wb : workbenchTemplate.getWorkbenches())
-                	{
-                		wb.forceLoad();
-                		for (WorkbenchRow wbRow : wb.getWorkbenchRows())
-                		{
-                			wbRow.updateGeoRefTextFldsIfNecessary(aGeoRefMapping);
-                		}
-                		//session.saveOrUpdate(wb);
-                	}
-                }
-
-                session.saveOrUpdate(workbenchTemplate);
-                for (Workbench wb : workbenchTemplate.getWorkbenches())
-                {
-                	session.saveOrUpdate(wb);
-                }
-                
-                session.commit();
-                session.flush();
-                
-                UIRegistry.getStatusBar().setText(getResourceString("WB_SAVED_MAPPINGS"));
-                
-            } catch (Exception ex)
-            {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-                log.error(ex);
-                ex.printStackTrace();
-                
-            } finally
-            {
-                try
-                {
-                    session.close();
-                } catch (Exception ex)
-                {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-                    log.error(ex);
-                }  
-            }
+        	updateGeoRefInfoAfterTemplateEdit(wbTemplate,
+        			dlg.getDeletedItems(), dlg.updateAndGetNewItems());
+//            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+//            try
+//            {
+//                Collection<WorkbenchTemplateMappingItem> deletedItems = dlg.getDeletedItems();
+//                Collection<WorkbenchTemplateMappingItem> newItems     = dlg.updateAndGetNewItems();
+//                
+//                for (WorkbenchTemplateMappingItem item : newItems)
+//                {
+//                    log.error(item.getFieldName());
+//                }
+//                //Collection<WorkbenchTemplateMappingItem> updatedItems = dlg.getUpdatedItems();
+//                
+//                session.beginTransaction();
+//                
+//                // Merge with current session
+//                WorkbenchTemplate workbenchTemplate = session.merge(wbTemplate);
+//                
+//                Set<WorkbenchTemplateMappingItem> items = workbenchTemplate.getWorkbenchTemplateMappingItems();
+//                for (WorkbenchTemplateMappingItem delItem : deletedItems)
+//                {
+//                    for (WorkbenchTemplateMappingItem wbtmi : items)
+//                    {
+//                    	if (delItem.getWorkbenchTemplateMappingItemId().longValue() == wbtmi.getWorkbenchTemplateMappingItemId().longValue())
+//                        {
+//                            //log.debug("del ["+wbtmi.getCaption()+"]["+wbtmi.getWorkbenchTemplateMappingItemId().longValue()+"]");
+//                            //wbtmi.setWorkbenchTemplate(null);
+//                    		
+//                    		items.remove(wbtmi);
+//                    		wbtmi.setWorkbenchTemplate(null);
+//                            if (wbtmi.getWorkbenchDataItems() != null)
+//                            {
+//                              
+//                            	for (WorkbenchDataItem wbdi : wbtmi.getWorkbenchDataItems())
+//                                {
+//                                    wbdi.getWorkbenchRow().getWorkbenchDataItems().remove(wbdi);
+//                                    wbdi.setWorkbenchRow(null);
+//                            		session.delete(wbdi);
+//                            		wbdi.setWorkbenchTemplateMappingItem(null);
+//                                }
+//                            	wbtmi.getWorkbenchDataItems().clear();
+//                            }
+//                            session.delete(wbtmi);
+//                            break;
+//                        }
+//                    }
+//                }
+//                
+//                for (WorkbenchTemplateMappingItem wbtmi : newItems)
+//                {
+//                    wbtmi.setWorkbenchTemplate(workbenchTemplate);
+//                    items.add(wbtmi);
+//                    //log.debug("new ["+wbtmi.getCaption()+"]["+wbtmi.getViewOrder().shortValue()+"]");
+//                    session.saveOrUpdate(wbtmi) ;
+//                }
+//                                
+//                //Check to see if geo/ref data needs to be updated
+//                //This is actually only necessary if lat/long mappings have been switched - lat mapping changed to a long mapping or vice-versa.
+//                //XXX Surely it is possible to tell if a lat/long switch has been made and not do this after every template change??
+//                WorkbenchTemplateMappingItem aGeoRefMapping = null;
+//                for (WorkbenchTemplateMappingItem wbtmi : workbenchTemplate.getWorkbenchTemplateMappingItems())
+//                {
+//                    if (aGeoRefMapping == null && wbtmi.getTableName().equals("locality"))
+//                    {
+//                        if (wbtmi.getFieldName().equalsIgnoreCase("latitude1") || wbtmi.getFieldName().equalsIgnoreCase("latitude2")
+//                                || wbtmi.getFieldName().equalsIgnoreCase("longitude1") || wbtmi.getFieldName().equalsIgnoreCase("longitude2"))
+//                        {
+//                        	aGeoRefMapping = wbtmi;
+//                        	break;
+//                        }
+//                    }
+//                }
+//                if (aGeoRefMapping != null)
+//                {
+//                	for (Workbench wb : workbenchTemplate.getWorkbenches())
+//                	{
+//                		wb.forceLoad();
+//                		for (WorkbenchRow wbRow : wb.getWorkbenchRows())
+//                		{
+//                			wbRow.updateGeoRefTextFldsIfNecessary(aGeoRefMapping);
+//                		}
+//                		//session.saveOrUpdate(wb);
+//                	}
+//                }
+//
+//                session.saveOrUpdate(workbenchTemplate);
+//                for (Workbench wb : workbenchTemplate.getWorkbenches())
+//                {
+//                	session.saveOrUpdate(wb);
+//                }
+//                
+//                session.commit();
+//                session.flush();
+//                
+//                UIRegistry.getStatusBar().setText(getResourceString("WB_SAVED_MAPPINGS"));
+//                
+//            } catch (Exception ex)
+//            {
+//                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+//                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+//                log.error(ex);
+//                ex.printStackTrace();
+//                
+//            } finally
+//            {
+//                try
+//                {
+//                    session.close();
+//                } catch (Exception ex)
+//                {
+//                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+//                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+//                    log.error(ex);
+//                }  
+//            }
         }
         dlg.dispose();
     }
     
+    protected void updateGeoRefInfoAfterTemplateEdit(final WorkbenchTemplate wbTemplate,
+    		final Collection<WorkbenchTemplateMappingItem> deletedItems,
+    		final Collection<WorkbenchTemplateMappingItem> newItems)
+    {
+    	final SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg(getResourceString("WB_SAVING_TEMPLATE_CHANGES"), GLASSPANE_FONT_SIZE);
+    	javax.swing.SwingWorker<Object, Object> sw = new javax.swing.SwingWorker<Object, Object>()
+    	{
+
+			/* (non-Javadoc)
+			 * @see javax.swing.SwingWorker#doInBackground()
+			 */
+			@Override
+			protected Object doInBackground() throws Exception 
+			{
+	            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+	            try
+	            {
+	                //Collection<WorkbenchTemplateMappingItem> deletedItems = dlg.getDeletedItems();
+	                //Collection<WorkbenchTemplateMappingItem> newItems     = dlg.updateAndGetNewItems();
+	                
+	                for (WorkbenchTemplateMappingItem item : newItems)
+	                {
+	                    log.error(item.getFieldName());
+	                }
+	                //Collection<WorkbenchTemplateMappingItem> updatedItems = dlg.getUpdatedItems();
+	                
+	                session.beginTransaction();
+	                
+	                // Merge with current session
+	                WorkbenchTemplate workbenchTemplate = session.merge(wbTemplate);
+	                
+	                Set<WorkbenchTemplateMappingItem> items = workbenchTemplate.getWorkbenchTemplateMappingItems();
+	                for (WorkbenchTemplateMappingItem delItem : deletedItems)
+	                {
+	                    for (WorkbenchTemplateMappingItem wbtmi : items)
+	                    {
+	                    	if (delItem.getWorkbenchTemplateMappingItemId().longValue() == wbtmi.getWorkbenchTemplateMappingItemId().longValue())
+	                        {
+	                            //log.debug("del ["+wbtmi.getCaption()+"]["+wbtmi.getWorkbenchTemplateMappingItemId().longValue()+"]");
+	                            //wbtmi.setWorkbenchTemplate(null);
+	                    		
+	                    		items.remove(wbtmi);
+	                    		wbtmi.setWorkbenchTemplate(null);
+	                            if (wbtmi.getWorkbenchDataItems() != null)
+	                            {
+	                              
+	                            	for (WorkbenchDataItem wbdi : wbtmi.getWorkbenchDataItems())
+	                                {
+	                                    wbdi.getWorkbenchRow().getWorkbenchDataItems().remove(wbdi);
+	                                    wbdi.setWorkbenchRow(null);
+	                            		session.delete(wbdi);
+	                            		wbdi.setWorkbenchTemplateMappingItem(null);
+	                                }
+	                            	wbtmi.getWorkbenchDataItems().clear();
+	                            }
+	                            session.delete(wbtmi);
+	                            break;
+	                        }
+	                    }
+	                }
+	                
+	                for (WorkbenchTemplateMappingItem wbtmi : newItems)
+	                {
+	                    wbtmi.setWorkbenchTemplate(workbenchTemplate);
+	                    items.add(wbtmi);
+	                    //log.debug("new ["+wbtmi.getCaption()+"]["+wbtmi.getViewOrder().shortValue()+"]");
+	                    session.saveOrUpdate(wbtmi) ;
+	                }
+	                                
+	                //Check to see if geo/ref data needs to be updated
+	                //This is actually only necessary if lat/long mappings have been switched - lat mapping changed to a long mapping or vice-versa.
+	                //XXX Surely it is possible to tell if a lat/long switch has been made and not do this after every template change??
+	                WorkbenchTemplateMappingItem aGeoRefMapping = null;
+	                for (WorkbenchTemplateMappingItem wbtmi : workbenchTemplate.getWorkbenchTemplateMappingItems())
+	                {
+	                    if (aGeoRefMapping == null && wbtmi.getTableName().equals("locality"))
+	                    {
+	                        if (wbtmi.getFieldName().equalsIgnoreCase("latitude1") || wbtmi.getFieldName().equalsIgnoreCase("latitude2")
+	                                || wbtmi.getFieldName().equalsIgnoreCase("longitude1") || wbtmi.getFieldName().equalsIgnoreCase("longitude2"))
+	                        {
+	                        	aGeoRefMapping = wbtmi;
+	                        	break;
+	                        }
+	                    }
+	                }
+	                if (aGeoRefMapping != null)
+	                {
+	                	for (Workbench wb : workbenchTemplate.getWorkbenches())
+	                	{
+	                		wb.forceLoad();
+	                		int rowCount = wb.getWorkbenchRows().size();
+	                		int count = 0;
+	                		for (WorkbenchRow wbRow : wb.getWorkbenchRows())
+	                		{
+	                			wbRow.updateGeoRefTextFldsIfNecessary(aGeoRefMapping);
+	                			glassPane.setProgress((int)( (100.0 * count++) / rowCount));
+	                		}
+	                		//session.saveOrUpdate(wb);
+	                	}
+	                }
+
+	                session.saveOrUpdate(workbenchTemplate);
+	                for (Workbench wb : workbenchTemplate.getWorkbenches())
+	                {
+	                	session.saveOrUpdate(wb);
+	                }
+	                
+	                session.commit();
+	                session.flush();
+	                
+	                UIRegistry.getStatusBar().setText(getResourceString("WB_SAVED_MAPPINGS"));
+	                
+	            } catch (Exception ex)
+	            {
+	                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+	                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+	                log.error(ex);
+	                ex.printStackTrace();
+	                
+	            } finally
+	            {
+	                try
+	                {
+	                    session.close();
+	                } catch (Exception ex)
+	                {
+	                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+	                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+	                    log.error(ex);
+	                }  
+	            }
+	            return null;
+			}
+
+			/* (non-Javadoc)
+			 * @see javax.swing.SwingWorker#done()
+			 */
+			@Override
+			protected void done() 
+			{
+				super.done();
+				UIRegistry.clearSimpleGlassPaneMsg();
+			}
+    		
+
+    	};
+        sw.execute();
+    }
     /**
      * Returns a path from the prefs and if it isn't valid then it return the User's Home Directory.
      * @param prefKey the Preferences key to look up
