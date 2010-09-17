@@ -878,10 +878,11 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @param colInfo the column info
      * @param helpContext the help context
      * 
-     * @return a Pair. The first element in the pair is false then the selection was cancelled. 
-     * Otherwise, the second element will be the selected WorkbenchTemplate or null if a new template should be created.
+     * @return a List. The first element in the pair is false then the selection was cancelled. 
+     * Otherwise, the second element will be the selected WorkbenchTemplate or null if a new template should be created,
+     * and the third element will be a list of columns that are not used in the selected template
      */
-    public Pair<Boolean, WorkbenchTemplate> selectExistingTemplate(final Vector<ImportColumnInfo> colInfo, final String helpContext)
+    public List<?> selectExistingTemplate(final Vector<ImportColumnInfo> colInfo, final String helpContext)
     {
         WorkbenchTemplate selection = null;
         
@@ -1018,7 +1019,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         }
         
         selection = null;
-        
+
+        Vector<Object> result = new Vector<Object>();
         // Ask the user to choose an existing template.
         if (matchingTemplates.size() > 0)
         {
@@ -1667,15 +1669,15 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                                            final File   inputFile)
     {
         String wbName  = inputFile != null ? FilenameUtils.getBaseName(inputFile.getName()) : null;
-        Pair<Boolean, WorkbenchTemplate> selection = selectExistingTemplate(inputFile != null ? dataFileInfo.getColInfo() : null, 
+        List<?> selection = selectExistingTemplate(inputFile != null ? dataFileInfo.getColInfo() : null, 
                 inputFile != null ? "WorkbenchImportData" : "WorkbenchNewDataSet");
         
-        if (!selection.getFirst())
+        if (selection.size() == 0 || !(Boolean )selection.get(0))
         {
         	return null;  //cancelled
         }
         
-        WorkbenchTemplate workbenchTemplate = selection.getSecond();        
+        WorkbenchTemplate workbenchTemplate = selection.size() > 1 ? (WorkbenchTemplate )selection.get(1) : null;        
         
         if (workbenchTemplate == null)
         {
@@ -3270,14 +3272,15 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         
         if (workbenchArg == null) // create a new Workbench
         {
-            Pair<Boolean, WorkbenchTemplate> selection = selectExistingTemplate(null, "WorkbenchImportImages");
+            List<?> selection = selectExistingTemplate(null, "WorkbenchImportImages");
+        	//Pair<Boolean, WorkbenchTemplate> selection = selectExistingTemplate(null, "WorkbenchImportImages");
             
-            if (!selection.getFirst())
+            if (selection.size() == 0 || !(Boolean )selection.get(0))
             {
             	return; //cancelled
             }
             
-            WorkbenchTemplate workbenchTemplate = selection.getSecond();
+            WorkbenchTemplate workbenchTemplate = selection.size() > 1 ? (WorkbenchTemplate )selection.get(1) : null;
             
             if (workbenchTemplate == null)
             {
@@ -3834,5 +3837,11 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
 		return new BasicPermisionPanel("WorkbenchTask.PermTitle", "WorkbenchTask.PermEnable", "WorkbenchTask.PermUpload", null, null);
 	}
     
-    
+    public void uploadWorkbenches(List<String> workbenchNames)
+    {
+    	for (String wbName : workbenchNames)
+    	{
+    		
+    	}
+    }
 }
