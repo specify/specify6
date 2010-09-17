@@ -58,7 +58,7 @@ public class DataObjTableModel extends DefaultTableModel
     protected int[]                 mapInx     = null;
     
     protected String                colName;
-    protected String                searchValue;
+    protected Object                searchValue;
     protected int                   numColumns = 0;
     protected ArrayList<DBInfoBase> colDefItems  = new ArrayList<DBInfoBase>();
     protected ArrayList<Class<?>>   altClasses   = null;
@@ -81,7 +81,7 @@ public class DataObjTableModel extends DefaultTableModel
     public DataObjTableModel(final Connection conn,
                              final int     tableId, 
                              final String  colName, 
-                             final String  value,
+                             final Object  value,
                              final boolean isEditable)
     {
         super();
@@ -101,7 +101,7 @@ public class DataObjTableModel extends DefaultTableModel
      */
     public DataObjTableModel(final Connection conn,
                              final int     tableId, 
-                             final String  value,
+                             final Object  value,
                              final boolean isEditable)
     {
         this(conn, tableId, null, value, isEditable);
@@ -159,7 +159,7 @@ public class DataObjTableModel extends DefaultTableModel
         numColumns = colDefItems.size();
         
         sql.append(" FROM %s WHERE %s LIKE ?");
-        String sqlStr = String.format(sql.toString(), tableInfo.getName(), colName, searchValue + '%');
+        String sqlStr = String.format(sql.toString(), tableInfo.getName(), colName, searchValue.toString() + '%');
         
         return sqlStr;
     }
@@ -191,7 +191,7 @@ public class DataObjTableModel extends DefaultTableModel
             PreparedStatement pStmt = conn.prepareStatement(sqlStr);
             if (searchValue != null)
             {
-                pStmt.setString(1, searchValue);
+                pStmt.setObject(1, searchValue);
             }
             //System.out.println(sqlStr+" ["+searchValue+"]");
             
