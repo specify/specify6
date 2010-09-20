@@ -944,10 +944,10 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                         	matchingTemplates.add(template);
                         }
                         unMappedCols.put(template, unmapped);
-                        for (WorkbenchTemplateMappingItem unmappedItem : unmapped)
-                        {
-                        	template.getWorkbenchTemplateMappingItems().remove(unmappedItem);
-                        }
+                        //for (WorkbenchTemplateMappingItem unmappedItem : unmapped)
+                        //{
+                        //	template.getWorkbenchTemplateMappingItems().remove(unmappedItem);
+                        //}
                     }
                 }
 //                else if (colInfo.size() > template.getWorkbenchTemplateMappingItems().size())
@@ -1058,7 +1058,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 				UIRegistry.getResourceString("YES"), UIRegistry.getResourceString("NO"), 
                 				JOptionPane.WARNING_MESSAGE))
                 		{
-                			return new Pair<Boolean, WorkbenchTemplate>(true, null); // means create a new one
+                			result.add(true);
+                			return result; // means create a new one
                 		}
                 	}
                 	
@@ -1067,16 +1068,19 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     {
                     	System.out.println(mi.getImportedColName() + " - " + mi.getViewOrder());
                     }
-                    return new Pair<Boolean, WorkbenchTemplate>(true, selection); // means reuse an existing one
+                    result.add(true);
+                    result.add(selection);
+                    result.add(unMappedCols.get(selection));
+                    return result; // means reuse an existing one
                 }
-
-                return new Pair<Boolean, WorkbenchTemplate>(true, null); // means create a new one
+                result.add(true);
+                return result; // means create a new one
             }
-            
-            return new Pair<Boolean, WorkbenchTemplate>(false, null); //cancelled
+            result.add(false);
+            return result; //cancelled
         }
-
-        return new Pair<Boolean, WorkbenchTemplate>(true, null); // means create a new one
+        result.add(true);
+        return result; // means create a new one
     }
     
     /**
@@ -3987,11 +3991,11 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
 		return new BasicPermisionPanel("WorkbenchTask.PermTitle", "WorkbenchTask.PermEnable", "WorkbenchTask.PermUpload", null, null);
 	}
     
-    public void uploadWorkbenches(List<String> workbenchNames)
-    {
-    	for (String wbName : workbenchNames)
-    	{
-    		
-    	}
-    }
+//    public void uploadWorkbenches(List<String> workbenchNames)
+//    {
+//    	for (String wbName : workbenchNames)
+//    	{
+//    		
+//    	}
+//    }
 }
