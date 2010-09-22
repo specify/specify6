@@ -20,13 +20,13 @@
 package edu.ku.brc.specify.toycode.mexconabio;
 
 import java.io.PrintWriter;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Stack;
+import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -36,7 +36,11 @@ public class AnalysisWithGBIFToGBIF extends AnalysisBase
 {
     //private static final Logger  log                = Logger.getLogger(AnalysisWithSNIB.class);
     
+    protected Stack<Object[]> rowRecycler = new Stack<Object[]>();
+    
     private StringBuilder sb = new StringBuilder();
+    
+    protected Object[] nullRow = null;
     
     /**
      * 
@@ -44,21 +48,13 @@ public class AnalysisWithGBIFToGBIF extends AnalysisBase
     public AnalysisWithGBIFToGBIF()
     {
         super();
-    }
-
-    /**
-     * @param val
-     * @return
-     */
-    private String getIntToStr(final Object val)
-    {
-        if (val != null && val instanceof Integer)
+        
+        nullRow = new Object[14];
+        for (int i=0;i<nullRow.length;i++)
         {
-            return Integer.toString((Integer)val);
+            nullRow[i] = null;
         }
-        return null;
     }
-
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.toycode.mexconabio.AnalysisBase#process(int, int)
@@ -72,39 +68,47 @@ public class AnalysisWithGBIFToGBIF extends AnalysisBase
         
         String gbifSQL   = "SELECT DISTINCT id, catalogue_number, genus, species, subspecies, latitude, longitude, country, state_province, collector_name, locality, year, month, day, collector_num ";
         
-        String fromClause1 = "FROM raw WHERE collector_num = ? AND year = ? AND genus = ? AND id <> ?";
-        String fromClause2 = "FROM raw WHERE collector_num IS NULL AND year = ? AND month = ? AND genus = ? AND id <> ?";
+        String fromClause1a = "FROM raw WHERE collector_num LIKE ? AND year = ? AND genus = ?";
+        String fromClause1b = "FROM raw WHERE collector_num IS NULL AND year = ? AND genus = ?";
+        //String fromClause2  = "FROM raw WHERE collector_num IS NULL AND year = ? AND month = ? AND genus = ? AND id <> ?";
         
         //                        1       2           3        4           5         6          7         8           9               10          11       12    13    14      15
-        String postSQL = "FROM raw WHERE collector_num IS NOT NULL GROUP BY collector_num, year, genus ORDER BY collector_num";
-        String srcSQL  = "SELECT id, catalogue_number, genus, species, subspecies, latitude, longitude, country, state_province, collector_name, locality, year, month, day, collector_num " + postSQL;
+        String postSQL = "FROM raw WHERE collector_num IS NOT NULL GROUP BY collector_num, year, genus";
+        String srcSQL  = "SELECT id, catalogue_number, genus, species, subspecies, latitude, longitude, country, state_province, collector_name, locality, year, month, day, collector_num " + postSQL +  " ORDER BY collector_num";
+        
+        String grphashSQL = "SELECT name FROM group_hash";
         
         String gbifgbifInsert = "INSERT INTO gbifgbif (reltype, score, GBIFID, SNIBID) VALUES (?,?,?,?)";
         
-        Statement         stmt   = null;
-        PreparedStatement gStmt1 = null;
-        PreparedStatement gStmt2 = null;
-        PreparedStatement gsStmt = null;
+        Statement         stmt    = null;
+        PreparedStatement gStmt1a = null;
+        PreparedStatement gStmt1b = null;
+        //PreparedStatement gStmt2  = null;
+        PreparedStatement gsStmt  = null;
         
         Object[] refRow = new Object[14];
         Object[] cmpRow = new Object[14];
 
         
-        long totalRecs     = BasicSQLUtils.getCount(dbSrcConn, "SELECT COUNT(*) " + postSQL);
+        long totalRecs     = BasicSQLUtils.getCount(dbSrcConn, "SELECT COUNT(*) FROM group_hash");
         long procRecs      = 0;
         long startTime     = System.currentTimeMillis();
         int  secsThreshold = 0;
+        
+        String blank = "X?";
         
         PrintWriter pw = null;
         try
         {
             pw = new PrintWriter("scoring_gbifgbif.log");
             
-            gStmt1 = dbGBIFConn.prepareStatement(gbifSQL + fromClause1);
-            gStmt2 = dbGBIFConn.prepareStatement(gbifSQL + fromClause2);
+            gStmt1a = dbGBIFConn.prepareStatement(gbifSQL + fromClause1a);
+            gStmt1b = dbGBIFConn.prepareStatement(gbifSQL + fromClause1b);
+            
+            //gStmt2 = dbGBIFConn.prepareStatement(gbifSQL + fromClause2);
             gsStmt = dbDstConn.prepareStatement(gbifgbifInsert);
             
-            stmt  = dbSrcConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            stmt  = dbSrcConn.createStatement(ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
             stmt.setFetchSize(Integer.MIN_VALUE);
             
             System.out.println("Starting Query... "+totalRecs);
@@ -114,83 +118,133 @@ public class AnalysisWithGBIFToGBIF extends AnalysisBase
             
             HashSet<Integer> idHash = new HashSet<Integer>();
             int writeCnt = 0;
-            ResultSet rs = stmt.executeQuery(srcSQL);
+            ResultSet rs = stmt.executeQuery(grphashSQL);
             
             System.out.println(String.format("Starting Processing... Total Records %d  Max Score: %d  Threshold: %d", totalRecs, maxScore, thresholdScore));
             pw.println(String.format("Starting Processing... Total Records %d  Max Score: %d  Threshold: %d", totalRecs, maxScore, thresholdScore));
             System.out.flush();
             pw.flush();
             
+            Vector<Object[]>   group = new Vector<Object[]>();
+            ArrayList<Integer> ids   = new ArrayList<Integer>();
             while (rs.next())
             {
-                if (procRecs < 140)
+                String[] tokens = StringUtils.split(rs.getString(1), '_');
+                
+                String colNum = tokens[0].trim();
+                String year   = tokens[1].trim();
+                String genus  = tokens[2].trim();
+                
+                if (StringUtils.isEmpty(colNum) || colNum.equals(blank)) colNum = null;
+                if (StringUtils.isEmpty(year)   || year.equals(blank)) year = null;
+                if (StringUtils.isEmpty(genus)  || genus.equals(blank)) genus = null;
+                
+                PreparedStatement gStmt1;
+                if (colNum != null)
                 {
-                    procRecs++;
+                    gStmt1 = gStmt1a;
+                    gStmt1.setString(1, "%"+colNum+"%");
+                } else
+                {
+                    gStmt1 = gStmt1b;
+                    gStmt1.setString(1, null);
+                }
+                gStmt1.setString(2, year);
+                gStmt1.setString(3, genus);
+                ResultSet gRS = gStmt1.executeQuery();
+                
+                ids.clear();
+                int maxNonNullTot = -1;
+                int maxNonNullInx = -1;
+                int inx           = 0;
+                while (gRS.next())
+                {
+                    
+                    Object[] row = getRow();
+                    int cnt = fillRowWithScore(row, gRS);
+                    if (cnt > maxNonNullTot)
+                    {
+                        maxNonNullInx = inx;
+                        maxNonNullTot = cnt;
+                    }
+                    group.add(row);
+                    ids.add(gRS.getInt(1));
+                    inx++;
+                }
+                gRS.close();
+                
+                if (inx < 2)
+                {
+                    for (Object[] r : group)
+                    {
+                        recycleRow(r);
+                    }
+                    group.clear();
                     continue;
                 }
                 
-                fillGBIF(refRow, rs);
+                System.arraycopy(group.get(maxNonNullInx), 0, refRow, 0, refRow.length);
+                
+                Integer srcId = ids.get(maxNonNullInx);
+                
+                for (int i=0;i<group.size();i++)
+                {
+                    if (i != maxNonNullInx)
+                    {
+                        int score = score(refRow, group.get(i));
+                        
+                        if (score > thresholdScore)
+                        {
+                            writeCnt++;
+                            
+                            int gbifID = ids.get(i);
+                            gsStmt.setInt(1, 1);      // reltype
+                            gsStmt.setInt(2, score);  // score
+                            gsStmt.setInt(3, gbifID);
+                            gsStmt.setInt(4, srcId);
+                            gsStmt.executeUpdate();
+                            
+                            idHash.add(gbifID);
+                        }
+                    }
+                }
 
-                Integer srcId = rs.getInt(1);
-                
-                // Search Records with Collector Number match
-                gStmt1.setString(1, (String)refRow[COLNUM_INX]);
-                gStmt1.setString(2, (String)refRow[YEAR_INX]);
-                gStmt1.setString(3, (String)refRow[GENUS_INX]);
-                gStmt1.setInt(4,    srcId);
-                
                 idHash.clear();
                 
-                ResultSet gRS = gStmt1.executeQuery();
+                for (Object[] r : group)
+                {
+                    recycleRow(r);
+                }
+                group.clear();
+                
+                if (gStmt1 == gStmt1b)
+                {
+                    continue;
+                }
+                
+                gStmt1 = gStmt1b;
+                gStmt1.setString(1, year);
+                gStmt1.setString(2, genus);
+                
+                gRS = gStmt1.executeQuery();
                 while (gRS.next())
                 {
-                   fillGBIF(cmpRow, gRS);
+                   fillRowWithScore(cmpRow, gRS);
+                   
+                   int gbifID = gRS.getInt(1);
+                   if (gbifID == srcId) continue;
                    
                    int score = score(refRow, cmpRow);
                    
                    if (score > thresholdScore)
                    {
                        writeCnt++;
-                       
-                       int gbifID = gRS.getInt(1);
                        gsStmt.setInt(1, 1);      // reltype
                        gsStmt.setInt(2, score);  // score
                        gsStmt.setInt(3, gbifID);
                        gsStmt.setInt(4, srcId);
                        gsStmt.executeUpdate();
-                       
-                       idHash.add(gbifID);
                    }
-                }
-                gRS.close();
-                
-                // Search Records with NULL Collector Number
-                gStmt2.setString(1, (String)refRow[YEAR_INX]);
-                gStmt2.setString(2, (String)refRow[MON_INX]);
-                gStmt2.setString(3, (String)refRow[GENUS_INX]);
-                gStmt2.setInt(4,    srcId);
-                
-                gRS  = gStmt2.executeQuery();
-                while (gRS.next())
-                {
-                    int gbifID = gRS.getInt(1);
-                    
-                    if (idHash.contains(gbifID)) continue;
-                    
-                    fillGBIF(cmpRow, gRS);
-                    
-                    int score = score(refRow, cmpRow);
-                   
-                    if (score > thresholdScore)
-                    {
-                        writeCnt++;
-                       
-                        gsStmt.setInt(1, 2);     // reltype
-                        gsStmt.setInt(2, score); // score
-                        gsStmt.setInt(3, gbifID);
-                        gsStmt.setInt(4, srcId);
-                        gsStmt.executeUpdate();
-                    }
                 }
                 gRS.close();
                 
@@ -235,14 +289,18 @@ public class AnalysisWithGBIFToGBIF extends AnalysisBase
                 {
                     stmt.close();
                 }
-                if (gStmt1 != null)
+                if (gStmt1a != null)
                 {
-                    gStmt1.close();
+                    gStmt1a.close();
                 }
-                if (gStmt2 != null)
+                if (gStmt1b != null)
+                {
+                    gStmt1b.close();
+                }
+                /*if (gStmt2 != null)
                 {
                     gStmt2.close();
-                }
+                }*/
             } catch (Exception ex)
             {
                 
@@ -252,6 +310,18 @@ public class AnalysisWithGBIFToGBIF extends AnalysisBase
         pw.println("Done.");
         pw.flush();
         pw.close();
+    }
+    
+    private Object[] getRow()
+    {
+        Object[] row = rowRecycler.size() == 0 ? new Object[14] : rowRecycler.pop();
+        System.arraycopy(nullRow, 0, row, 0, row.length);
+        return row;
+    }
+    
+    private void recycleRow(final Object[] row)
+    {
+        rowRecycler.push(row);
     }
     
     //------------------------------------------------------------------------------------------

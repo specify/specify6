@@ -19,23 +19,44 @@
 */
 package edu.ku.brc.specify.toycode.mexconabio;
 
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Stack;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.jfree.util.Log;
+
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.util.Triple;
 
 public class MakeGBIFProcessHash extends AnalysisBase
 {
-    PrintWriter pw = null;
-    Statement         stmt       = null;
-    PreparedStatement insertStmt = null;
-    long totalRecs;
-    HashSet<String> groupHash = new HashSet<String>();
-    int writeCnt = 0;
+    private static final Logger log = Logger.getLogger(MakeGBIFProcessHash.class);
+    
+    private final int MAX_RECORDS_SEG = 300000;
+    
+    protected PrintWriter       pw         = null;
+    protected Statement         stmt       = null;
+    protected PreparedStatement insertStmt = null;
+    protected PreparedStatement updateStmt = null;
+    protected PreparedStatement checkStmt  = null;
+    protected PreparedStatement insertIds  = null;
+    
+    protected long totalRecs;
+    protected int writeCnt  = 0;
+    protected int updateCnt = 0;
+    
+    protected Stack<DataEntry>           recycleStack = new Stack<DataEntry>();
+    protected HashMap<String, DataEntry> groupHash    = new HashMap<String, DataEntry>();
     
     /**
      * 
@@ -45,6 +66,30 @@ public class MakeGBIFProcessHash extends AnalysisBase
         super();
     }
     
+    /**
+     * @param grpId
+     * @param rawIds
+     */
+    private void writeIds(final int grpId, final ArrayList<Integer> rawIds)
+    {
+        for (Integer rawId : rawIds)
+        {
+            try
+            {
+                insertIds.setInt(1, grpId);
+                insertIds.setInt(2, rawId);
+                insertIds.executeUpdate();
+                
+            } catch (Exception ex) 
+            { 
+                ex.printStackTrace();
+            }  
+        }
+    }
+    
+    /**
+     * @throws SQLException
+     */
     private void writeHash() throws SQLException
     {
         System.out.println("Writing Hash...");
@@ -53,16 +98,63 @@ public class MakeGBIFProcessHash extends AnalysisBase
         long sTm = System.currentTimeMillis();
         int err = 0;
         int cnt = 0;
-        for (String nm : groupHash)
+        for (DataEntry de : groupHash.values())
         {
-            insertStmt.setString(1, nm);
-            try
+            checkStmt.setString(1, de.collnum);
+            checkStmt.setString(2, de.genus);
+            checkStmt.setString(3, de.year);
+            
+            ResultSet rs = checkStmt.executeQuery();
+            if (rs.next())
             {
-                insertStmt.executeUpdate();
-                writeCnt++;
-                cnt++;
-            } catch (Exception ex) { err++;}
+                int id = rs.getInt(1);
+                try
+                {
+                    updateStmt.setInt(1, de.cnt);
+                    updateStmt.setInt(2, id);
+                    updateStmt.executeUpdate();
+                    updateCnt++;
+                    
+                    writeIds(id, de.ids);
+                    
+                } catch (Exception ex) 
+                { 
+                    ex.printStackTrace();
+                    err++;
+                }
+                
+            } else
+            {
+                insertStmt.setString(1, de.collnum);
+                insertStmt.setString(2, de.genus);
+                insertStmt.setString(3, de.year);
+                insertStmt.setString(4, de.mon);
+                insertStmt.setInt(5,    de.cnt);
+                
+                try
+                {
+                    insertStmt.executeUpdate();
+                    writeCnt++;
+                    
+                    writeIds(BasicSQLUtils.getInsertedId(insertStmt), de.ids);
+                    
+                } catch (Exception ex) 
+                { 
+                    ex.printStackTrace();
+                    err++;
+                }
+            }
+            cnt++;
+            rs.close();
+            
+            if (cnt % 10000 == 0)
+            {
+                System.out.println(cnt);
+                pw.println(cnt);
+            }
         }
+        
+        recycle(groupHash.values());
         groupHash.clear();
         
         long elapsed = (System.currentTimeMillis() - sTm) / 1000;
@@ -77,111 +169,285 @@ public class MakeGBIFProcessHash extends AnalysisBase
     @Override
     public void process(final int type, final int options)
     {
-        final double HRS = 1000.0 * 60.0 * 60.0; 
+        final double HRS = 1000.0 * 60.0 * 60.0;
+        final long PAGE_CNT = 1000000;
         
-        String gbifSQL        = "SELECT  collector_num, year, genus FROM raw LIMIT 900000,10000000";
-        String gbifsnibInsert = "INSERT INTO group_hash (name) VALUES (?)";
+        totalRecs = BasicSQLUtils.getCount(dbGBIFConn, "SELECT COUNT(*) FROM raw");
         
-        totalRecs     = 51253307;//BasicSQLUtils.getCount(dbGBIFConn, "SELECT COUNT(*) FROM raw");
-        long procRecs      = 0;
-        long startTime     = System.currentTimeMillis();
-        int  secsThreshold = 0;
+        int minIndex = BasicSQLUtils.getCount(dbGBIFConn, "SELECT MIN(id) FROM raw");
+        //int maxIndex = BasicSQLUtils.getCount(dbGBIFConn, "SELECT MAX(id) FROM raw");
+        
+        int segs = (int)(totalRecs / PAGE_CNT) + 1;
         
         try
         {
             pw = new PrintWriter("GroupHash.log");
+        } catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        
+        long procRecs      = 0;
+        long startTime     = System.currentTimeMillis();
+        int  secsThreshold = 0;
+
+        try
+        {
+            String idsInsert = "INSERT INTO group_hash_ids (GrpID, RawID) VALUES (?,?)";
+            insertIds = dbDstConn.prepareStatement(idsInsert);
             
+            String gbifsnibInsert = "INSERT INTO group_hash (collnum, genus, year, mon, cnt) VALUES (?,?,?,?,?)";
             insertStmt = dbDstConn.prepareStatement(gbifsnibInsert);
             
-            stmt       = dbGBIFConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.FETCH_FORWARD);
-            stmt.setFetchSize(Integer.MIN_VALUE);
+            String gbifsnibUpdate = "UPDATE group_hash SET cnt=? WHERE id = ?";
+            updateStmt = dbDstConn.prepareStatement(gbifsnibUpdate);
             
-            System.out.println("Starting Query... "+totalRecs);
-            pw.println("Starting Query... "+totalRecs);
+            String gbifsnibCheck = "SELECT id FROM group_hash WHERE collnum=? AND genus=? AND year=?";
+            checkStmt = dbDstConn.prepareStatement(gbifsnibCheck);
             
-            ResultSet rs = stmt.executeQuery(gbifSQL);
-            
-            String msg = String.format("Starting Processing... Total Records %d  Max Score: %d  Threshold: %d", totalRecs, maxScore, thresholdScore);
-            System.out.println(msg);
-            pw.println(msg);
-            
-            while (rs.next())
-            {
-                String  collectorNum = rs.getString(1);
-                String  genus        = rs.getString(2);
-                String  year         = rs.getString(3);
-                
-                collectorNum = StringUtils.isNotEmpty(collectorNum) ? collectorNum : "X?";
-                genus        = StringUtils.isNotEmpty(genus) ? genus : "X?";
-                year         = StringUtils.isNotEmpty(year) ? year : "X?";
-                
-                String name = String.format("%s_%s_%s", collectorNum, genus, year);
-                groupHash.add(name);
-                
-                if (groupHash.size() > 100000)
-                {
-                    writeHash();
-                }
-                
-                procRecs++;
-                if (procRecs % 100 == 0)
-                {
-                    long endTime     = System.currentTimeMillis();
-                    long elapsedTime = endTime - startTime;
-                    
-                    double timePerRecord      = (elapsedTime / procRecs); 
-                    
-                    double hrsLeft = ((totalRecs - procRecs) * timePerRecord) / HRS;
-                    
-                    int seconds = (int)(elapsedTime / 60000.0);
-                    if (secsThreshold != seconds)
-                    {
-                        secsThreshold = seconds;
-                        
-                        msg = String.format("Elapsed %8.2f hr.mn   Percent: %6.3f  Hours Left: %8.2f ", 
-                                ((double)(elapsedTime)) / HRS, 
-                                100.0 * ((double)procRecs / (double)totalRecs),
-                                hrsLeft);
-                        System.out.println(msg);
-                        pw.println(msg);
-                        pw.flush();
-                    }
-                }
-            }
-            rs.close();
-            
-            if (groupHash.size() > 0)
-            {
-                writeHash();
-            }
-            
-            System.out.println("Done.");
-            pw.println("Done.");
-            
-        } catch (Exception ex)
+        } catch (SQLException ex)
         {
             ex.printStackTrace();
-        } finally 
+        }
+
+        for (int pc=0;pc<segs;pc++)
         {
             try
             {
-                if (stmt != null)
+                String clause  = String.format(" FROM raw WHERE id > %d AND id < %d", (pc * PAGE_CNT)+minIndex,  ((pc+1) * PAGE_CNT)+minIndex+1);
+                String gbifSQL = "SELECT  id, collector_num, genus, year, month " + clause;
+                
+                System.out.println(gbifSQL);
+                pw.println(gbifSQL);
+                
+                stmt  = dbGBIFConn.createStatement(ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
+                stmt.setFetchSize(Integer.MIN_VALUE);
+                
+                String msg = "Starting Query... "+totalRecs;
+                System.out.println(msg);
+                pw.println(msg);
+                
+                ResultSet rs = stmt.executeQuery(gbifSQL);
+                
+                msg = String.format("Starting Processing... Total Records %d  Max Score: %d  Threshold: %d", totalRecs, maxScore, thresholdScore);
+                System.out.println(msg);
+                pw.println(msg);
+
+                while (rs.next())
                 {
-                    stmt.close();
+                    procRecs++;
+                    
+                    String year = rs.getString(4);
+                    
+                    year = StringUtils.isNotEmpty(year) ? year.trim() : null;
+                    
+                    if (StringUtils.isNotEmpty(year) && !StringUtils.isNumeric(year))
+                    {
+                        continue;
+                    }
+                    
+                    int     rawId   = rs.getInt(1);
+                    String  collnum = rs.getString(2);
+                    String  genus   = rs.getString(3);
+                    String  mon     = rs.getString(5);
+                    
+                    collnum = StringUtils.isNotEmpty(collnum) ? collnum.trim() : null;
+                    genus   = StringUtils.isNotEmpty(genus) ? genus.trim() : null;
+                    mon     = StringUtils.isNotEmpty(mon) ? mon.trim() : null;
+                    
+                    int c = 0;
+                    if (collnum == null) c++;
+                    if (genus == null) c++;
+                    if (year == null) c++;
+                    
+                    if (c == 2)
+                    {
+                        continue;
+                    }
+                    
+                    collnum = collnum != null ? collnum : "";
+                    genus   = genus   != null ? genus   : "";
+                    year    = year    != null ? year    : "";
+                    mon     = mon     != null ? mon     : "";
+                    
+                    if (collnum.length() > 64)
+                    {
+                        collnum = collnum.substring(0, 63);
+                    }
+
+                    if (genus.length() > 64)
+                    {
+                        genus= genus.substring(0, 63);
+                    }
+
+                    if (year.length() > 8)
+                    {
+                        year = year.substring(0, 8);
+                    }
+
+                    if (mon.length() > 8)
+                    {
+                        mon = year.substring(0, 8);
+                    }
+
+                    String    name = String.format("%s_%s_%s", collnum, genus, year);
+                    DataEntry de   = groupHash.get(name);
+                    if (de != null)
+                    {
+                        de.cnt++;
+                    } else
+                    {
+                        de = getDataEntry(collnum, genus, year, mon);
+                        groupHash.put(name, de);
+                    }
+                    de.ids.add(rawId);
+                    
+                    if (groupHash.size() > MAX_RECORDS_SEG)
+                    {
+                        writeHash();
+                    }
                 }
-                if (insertStmt != null)
+                rs.close();
+                
+                if (groupHash.size() > 0)
                 {
-                    insertStmt.close();
+                    writeHash();
                 }
+            
+            
+                System.out.println("Done with seg "+pc);
+                pw.println("Done with seg "+pc);
+                
             } catch (Exception ex)
             {
+                ex.printStackTrace();
+            } finally 
+            {
+                try
+                {
+                    if (stmt != null)
+                    {
+                        stmt.close();
+                    }
+                } catch (Exception ex) {}
+            }
+            
+            long endTime     = System.currentTimeMillis();
+            long elapsedTime = endTime - startTime;
+            
+            double timePerRecord      = (elapsedTime / procRecs); 
+            
+            double hrsLeft = ((totalRecs - procRecs) * timePerRecord) / HRS;
+            
+            int seconds = (int)(elapsedTime / 60000.0);
+            if (secsThreshold != seconds)
+            {
+                secsThreshold = seconds;
                 
+                String msg = String.format("Elapsed %8.2f hr.mn   Percent: %6.3f  Hours Left: %8.2f ", 
+                        ((double)(elapsedTime)) / HRS, 
+                        100.0 * ((double)procRecs / (double)totalRecs),
+                        hrsLeft);
+                System.out.println(msg);
+                pw.println(msg);
+                pw.flush();
             }
         }
-        System.out.println("Done.");
-        pw.println("Done.");
+        
+        try
+        {
+            if (insertStmt != null)
+            {
+                insertStmt.close();
+            }
+            if (updateStmt != null)
+            {
+                updateStmt.close();
+            }
+            if (checkStmt != null)
+            {
+                checkStmt.close();
+            }
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        }
+        
+        String msg = String.format("Done - Writes: %d  Updates: %d", writeCnt, updateCnt);
+        System.out.println(msg);
+        pw.println(msg);
         pw.flush();
         pw.close();
+    }
+    
+    /**
+     * @param collnumArg
+     * @param genusArg
+     * @param yearArg
+     * @return
+     */
+    private DataEntry getDataEntry(String collnumArg, String genusArg, String yearArg, String monArg)
+    {
+        if (recycleStack.size() > 0)
+        {
+            DataEntry de = recycleStack.pop();
+            de.collnum = collnumArg;
+            de.genus   = genusArg;
+            de.year    = yearArg;
+            de.mon     = monArg;
+            de.cnt     = 1;
+            de.clear();
+            return de;
+        }
+        return new DataEntry(collnumArg, genusArg, yearArg, monArg);
+    }
+    
+    /**
+     * @param dec
+     */
+    protected void recycle(final Collection<DataEntry> dec)
+    {
+        recycleStack.addAll(dec);
+    }
+    
+    //------------------------------------------------------------------------------------------
+    //-- 
+    //------------------------------------------------------------------------------------------
+    class DataEntry
+    {
+        String collnum;
+        String genus;
+        String year;
+        String mon;
+        int    cnt;
+        
+        ArrayList<Integer> ids = new ArrayList<Integer>();
+        
+        /**
+         * @param collnum
+         * @param genus
+         * @param year
+         * @param cnt
+         */
+        public DataEntry(String collnum, String genus, String year, String mon)
+        {
+            super();
+            this.collnum = collnum;
+            this.genus   = genus;
+            this.year    = year;
+            this.mon     = mon;
+            this.cnt     = 1;
+        }
+        
+        public void addId(final int id)
+        {
+            ids.add(id);
+        }
+        
+        public void clear()
+        {
+            ids.clear();
+        }
     }
     
     //------------------------------------------------------------------------------------------

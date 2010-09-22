@@ -168,19 +168,6 @@ public class AnalysisWithSNIB extends AnalysisBase
     }*/
     
     /**
-     * @param val
-     * @return
-     */
-    private String getIntToStr(final Object val)
-    {
-        if (val != null && val instanceof Integer)
-        {
-            return Integer.toString((Integer)val);
-        }
-        return null;
-    }
-    
-    /**
      * @param cmpRow
      * @param gRS
      * @throws SQLException
@@ -364,8 +351,8 @@ public class AnalysisWithSNIB extends AnalysisBase
                        int gbifID = gRS.getInt(1);
                        gsStmt.setInt(1, 1);      // reltype
                        gsStmt.setInt(2, score);  // score
-                       gsStmt.setInt(3, gbifID);
-                       gsStmt.setInt(4, snibID);
+                       gsStmt.setInt(3, gbifID);   // SNIB Database 
+                       gsStmt.setInt(4, snibID);   // Inigo's Database
                        gsStmt.executeUpdate();
                        
                        idHash.add(gbifID);

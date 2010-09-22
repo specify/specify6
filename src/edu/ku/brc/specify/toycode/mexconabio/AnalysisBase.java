@@ -25,7 +25,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -36,6 +35,8 @@ import edu.ku.brc.util.AttachmentUtils;
 
 public abstract class AnalysisBase
 {
+    public static final int NUM_FIELDS = 15;
+    
     protected static final int COLNUM_INX     = 0;
     protected static final int CATNUM_INX     = 1;
     protected static final int GENUS_INX      = 2;
@@ -69,7 +70,7 @@ public abstract class AnalysisBase
     
     public static final  String CONN_STR = "jdbc:mysql://%s:%s/%s?characterEncoding=UTF-8&autoReconnect=true";
     
-    protected String[] titles         = {"Cat Num", "Col Num", "Genus", "Species", "SubSpecies", "Collector", "Locality", "Latitude", "Longitude", "Year", "Mon", "Day", "Country", "State", "Score"};
+    protected String[] titles         = {"Col Num", "Cat Num", "Genus", "Species", "SubSpecies", "Collector", "Locality", "Latitude", "Longitude", "Year", "Mon", "Day", "Country", "State", "Score"};
     protected int[]    MAXSCORES      = {0,         0,         15,       20,        20,          10,          10,          0,          0,            10,     10,    10,    10,      10,      0};
     protected int      maxScore       = 0;
     protected int      thresholdScore = 50;
@@ -83,7 +84,6 @@ public abstract class AnalysisBase
     protected static final String BL  = "bl";
     
     protected String[]          cCls;
-    protected String[]          mCls;
     
     protected Vector<String>    toks       = new Vector<String>();
     protected char[]            seps       = {'`', '~', '|', '+'};
@@ -92,6 +92,9 @@ public abstract class AnalysisBase
     protected SimpleDateFormat  sdf        = new SimpleDateFormat("yyyy-MM-dd");
     
     protected TableWriter       tblWriter  = null;
+    
+    protected String[]           strNulls  = new String[NUM_FIELDS];
+    protected String[]           objNulls  = new String[NUM_FIELDS];
     
     // Database Connections
     protected Connection        dbGBIFConn = null;
@@ -107,14 +110,14 @@ public abstract class AnalysisBase
     {
         super();
         
-        cCls = new String[titles.length];
-        mCls = new String[titles.length];
+        cCls = new String[NUM_FIELDS];
         
-        for (int i=0;i<titles.length;i++)
+        for (int i=0;i<NUM_FIELDS;i++)
         {
-            cCls[i] = null;
-            mCls[i] = null;
+            strNulls[i] = null;
+            objNulls[i] = null;
         }
+        System.arraycopy(strNulls, 0, cCls, 0, NUM_FIELDS);
     }
     
     
@@ -145,6 +148,22 @@ public abstract class AnalysisBase
         convLogger.initialize(baseDirName, dirName);
         
         startNewDocument(fileName, title, includeTable);
+    }
+    
+    /**
+     * @param baseDirName
+     * @param dirName
+     */
+    public void startLogging(final String baseDirName, 
+                             final String dirName,
+                             final String fileName,
+                             final String title,
+                             final boolean includeTable,
+                             final Integer width)
+    {
+        convLogger.initialize(baseDirName, dirName);
+        
+        startNewDocument(fileName, title, includeTable, width);
     }
     
     /**
@@ -180,6 +199,18 @@ public abstract class AnalysisBase
                                  final String title,
                                  final boolean includeTable)
     {
+        startNewDocument(fileName, title, includeTable, null);
+    }
+
+    /**
+     * @param fileName
+     * @param title
+     */
+    public void startNewDocument(final String fileName,
+                                 final String title,
+                                 final boolean includeTable,
+                                 final Integer width)
+    {
         if (tblWriter != null)
         {
             tblWriter.close();
@@ -189,11 +220,18 @@ public abstract class AnalysisBase
 
         if (includeTable)
         {
-            tblWriter.startTable();
+            if (width == null)
+            {
+                tblWriter.startTable();
+            } else
+            {
+                tblWriter.startTable(width);
+            }
             //tblWriter.log("<TR><TH COLSPAN=\"7\">Conabio</TH><TH COLSPAN=\"7\">Michigan</TH><TD>&nbsp;</TH></TR>");
             tblWriter.logHdr(titles);
         }
     }
+
 
     
     /**
@@ -259,12 +297,57 @@ public abstract class AnalysisBase
     }
     
     
+    static int rowScore = 0;
+    private Object cntObject(final Object obj)
+    {
+        if (obj != null)
+        {
+            rowScore++;
+        }
+        return obj;
+    }
+    
+    /**
+     * 
+     */
+    protected void clearRowAttrs(final Object[] row)
+    {
+        System.arraycopy(strNulls, 0, cCls, 0, NUM_FIELDS);
+        
+        if (row != null)
+        {
+            System.arraycopy(objNulls, 0, row, 0, NUM_FIELDS);
+        }
+    }
+    
+    
+    /**
+     * @param val
+     * @return
+     */
+    protected String getIntToStr(final Object val)
+    {
+        if (val != null && val instanceof Integer)
+        {
+            return Integer.toString((Integer)val);
+        }
+        return null;
+    }
+    
+    /**
+     * 
+     */
+    protected void clearRowAttrs()
+    {
+        clearRowAttrs(null);
+    }
+    
     /**
      * @param cmpRow
      * @param gRS
      * @throws SQLException
      */
-    protected void fillGBIF(final Object[] cmpRow, final ResultSet gRS) throws SQLException
+    protected void fillRow(final Object[] cmpRow, final ResultSet gRS) throws SQLException
     {
         //                        1       2               3        4         5         6          7         8           9               10          11       12    13    14      15
         //String srcSQL = "SELECT id, catalogue_number, genus, species, subspecies, latitude, longitude, country, state_province, collector_name, locality, year, month, day, collector_num " +
@@ -283,6 +366,70 @@ public abstract class AnalysisBase
         cmpRow[COUNTRY_INX]    = gRS.getString(8);
         cmpRow[STATE_INX]      = gRS.getString(9);
         cmpRow[COLLECTOR_INX] = gRS.getString(10);
+    }
+    
+    /**
+     * @param cmpRow
+     * @param gRS
+     * @throws SQLException
+     */
+    protected int fillRowWithScore(final Object[] cmpRow, final ResultSet gRS) throws SQLException
+    {
+        //                        1       2               3        4         5         6          7         8           9               10          11       12    13    14      15
+        //String srcSQL = "SELECT id, catalogue_number, genus, species, subspecies, latitude, longitude, country, state_province, collector_name, locality, year, month, day, collector_num " +
+        
+        rowScore = 0;
+        cmpRow[CATNUM_INX]     = cntObject(gRS.getString(2));
+        cmpRow[COLNUM_INX]     = cntObject(gRS.getString(15));
+        cmpRow[GENUS_INX]      = cntObject(gRS.getString(3));
+        cmpRow[SPECIES_INX]    = cntObject(gRS.getString(4));
+        cmpRow[SUBSPECIES_INX] = cntObject(gRS.getString(5));
+        cmpRow[LOCALITY_INX]   = cntObject(gRS.getString(11));
+        cmpRow[LATITUDE_INX]   = cntObject(gRS.getString(6));
+        cmpRow[LONGITUDE_INX]  = cntObject(gRS.getString(7));
+        cmpRow[YEAR_INX]       = cntObject(gRS.getString(12));
+        cmpRow[MON_INX]        = cntObject(gRS.getString(13));
+        cmpRow[DAY_INX]        = cntObject(gRS.getString(14));
+        cmpRow[COUNTRY_INX]    = cntObject(gRS.getString(8));
+        cmpRow[STATE_INX]      = cntObject(gRS.getString(9));
+        cmpRow[COLLECTOR_INX] = cntObject(gRS.getString(10));
+        
+        if (cmpRow[COLNUM_INX] != null)
+        {
+            rowScore += 15;
+        }
+        if (cmpRow[GENUS_INX] != null)
+        {
+            rowScore += 10;
+        }
+        if (cmpRow[SPECIES_INX] != null)
+        {
+            rowScore += 10;
+        }
+        if (cmpRow[COUNTRY_INX] != null)
+        {
+            rowScore += 8;
+        }
+        if (cmpRow[YEAR_INX] != null)
+        {
+            rowScore += 10;
+        }
+        if (cmpRow[MON_INX] != null)
+        {
+            rowScore += 5;
+        }
+        
+        return rowScore;
+    }
+    
+    /**
+     * @param row
+     * @param scores
+     * @param codes
+     */
+    protected void colorCode(final Object[] row, final int[] scores, final String[] codes)
+    {
+        
     }
     
     /**
@@ -310,14 +457,23 @@ public abstract class AnalysisBase
         if (year == refYear && mon == refMon && day == refDay && year != 0 && mon != 0 && day != 0)
         {
             score = 30;
+            cCls[YEAR_INX] = BGR;
+            cCls[MON_INX]  = BGR;
+            cCls[DAY_INX]  = BGR;
             
         } else if (year == refYear && mon == refMon && year != 0 && mon != 0)
         {
             score = 20;
+            cCls[YEAR_INX] = BGR;
+            cCls[MON_INX]  = BGR;
+            cCls[DAY_INX]  = RD;
             
         } else if (year == refYear)
         {
             score = 10;
+            cCls[YEAR_INX] = BGR;
+            cCls[MON_INX]  = RD;
+            cCls[DAY_INX]  = RD;
         }
         return score;
     }
@@ -338,23 +494,23 @@ public abstract class AnalysisBase
         
         if (year == refYear && mon == refMon && day == refDay && year != 0 && mon != 0 && day != 0)
         {
-            mCls[YEAR_INX] = BGR;
-            mCls[MON_INX]  = BGR;
-            mCls[DAY_INX]  = BGR;
+            cCls[YEAR_INX] = BGR;
+            cCls[MON_INX]  = BGR;
+            cCls[DAY_INX]  = BGR;
             score = 30;
             
         } else if (year == refYear && mon == refMon && year != 0 && mon != 0)
         {
-            mCls[YEAR_INX] = BGR;
-            mCls[MON_INX]  = BGR;
-            mCls[DAY_INX]  = RD;
+            cCls[YEAR_INX] = BGR;
+            cCls[MON_INX]  = BGR;
+            cCls[DAY_INX]  = RD;
             score = 20;
             
         } else if (year == refYear)
         {
-            mCls[YEAR_INX] = BGR;
-            mCls[MON_INX]  = RD;
-            mCls[DAY_INX]  = RD;
+            cCls[YEAR_INX] = BGR;
+            cCls[MON_INX]  = RD;
+            cCls[DAY_INX]  = RD;
             score = 10;
         }
         return score;
@@ -389,30 +545,30 @@ public abstract class AnalysisBase
             calcMaxScore();
         }
            
-        String refCatNum       = (String)refRow[CATNUM_INX];
+        //String refCatNum       = (String)refRow[CATNUM_INX];
         String refCollectorNum = (String)refRow[COLNUM_INX];
         String refGenus        = (String)refRow[GENUS_INX];
         String refSpecies      = (String)refRow[SPECIES_INX];
         String refSubSpecies   = (String)refRow[SUBSPECIES_INX];
         String refCollector    = (String)refRow[COLLECTOR_INX];
         String refLocality     = (String)refRow[LOCALITY_INX];
-        String refLatitude     = (String)refRow[LATITUDE_INX];
-        String refLongitude    = (String)refRow[LONGITUDE_INX];
+        //String refLatitude     = (String)refRow[LATITUDE_INX];
+        //String refLongitude    = (String)refRow[LONGITUDE_INX];
         String refYear         = (String)refRow[YEAR_INX];
         String refMon          = (String)refRow[MON_INX];
         String refDay          = (String)refRow[DAY_INX];
         String refCountry      = (String)refRow[COUNTRY_INX];
         String refState        = (String)refRow[STATE_INX];
         
-        String catNum       = (String)compareRow[CATNUM_INX];
+        //String catNum       = (String)compareRow[CATNUM_INX];
         String collectorNum = (String)compareRow[COLNUM_INX];
         String genus        = (String)compareRow[GENUS_INX];
         String species      = (String)compareRow[SPECIES_INX];
         String subSpecies   = (String)compareRow[SUBSPECIES_INX];
         String collector    = (String)compareRow[COLLECTOR_INX];
         String locality     = (String)compareRow[LOCALITY_INX];
-        String latitude     = (String)compareRow[LATITUDE_INX];
-        String longitude    = (String)compareRow[LONGITUDE_INX];
+        //String latitude     = (String)compareRow[LATITUDE_INX];
+        //String longitude    = (String)compareRow[LONGITUDE_INX];
         String year         = (String)compareRow[YEAR_INX];
         String mon          = (String)compareRow[MON_INX];
         String day          = (String)compareRow[DAY_INX];
@@ -464,51 +620,70 @@ public abstract class AnalysisBase
         if (ratingLoc > 50.0)
         {
             score += 10;
+            cCls[LOCALITY_INX] = BGR;
             
         } else if (ratingLoc > 30.0)
         {
             score += 6;
+            cCls[LOCALITY_INX] = GR;
             
         } else if (ratingLoc > 0.0)
         {
             score += 3;
+            cCls[LOCALITY_INX] = YW;
         }
         
         if (ratingColtr > 50.0)
         {
             score += 10;
+            cCls[COLLECTOR_INX] = BGR;
             
         } else if (ratingColtr > 30.0)
         {
             score += 6;
+            cCls[COLLECTOR_INX] = GR;
             
         } else if (ratingColtr > 0.0)
         {
             score += 3;
+            cCls[COLLECTOR_INX] = YW;
         }
 
-        
+        boolean genusMatches = false;
         if (refGenus != null && genus != null)
         {
             if (refGenus.equals(genus))
             {
                 score += 15;
+                genusMatches = true;
+                cCls[GENUS_INX] = GR;
                 
             } else if (StringUtils.getLevenshteinDistance(genus, refGenus) < 3)
             {
                 score += 7;
+                cCls[GENUS_INX] = YW;
             }
         }
         
+        boolean speciesMatches = false;
         if (refSpecies != null && species != null) 
         {
             if (refSpecies.equals(species))
             {
                 score += 20;
-
+                speciesMatches = true;
+                if (genusMatches)
+                {
+                    cCls[GENUS_INX]   = BGR;
+                    cCls[SPECIES_INX] = BGR;
+                } else
+                {
+                    cCls[SPECIES_INX] = GR;
+                }
             } else if (StringUtils.getLevenshteinDistance(species, refSpecies) < 3)
             {
                 score += 10;
+                cCls[SPECIES_INX] = YW;
             }
         }
         
@@ -517,10 +692,25 @@ public abstract class AnalysisBase
             if (refSubSpecies.equals(subSpecies))
             {
                 score += 20;
+                if (genusMatches && speciesMatches)
+                {
+                    cCls[GENUS_INX]      = BGR;
+                    cCls[SPECIES_INX]    = BGR;
+                    cCls[SUBSPECIES_INX] = BGR;
+                    
+                } else if (speciesMatches)
+                {
+                    cCls[SPECIES_INX]    = BGR;
+                    cCls[SUBSPECIES_INX] = BGR;
+                } else
+                {
+                    cCls[SUBSPECIES_INX] = GR;
+                }
                 
             } else if (StringUtils.getLevenshteinDistance(subSpecies, refSubSpecies) < 3)
             {
                 score += 10;
+                cCls[SUBSPECIES_INX] = YW;
             }
         }
         
@@ -529,30 +719,47 @@ public abstract class AnalysisBase
             if (refCountry.equals(country))
             {
                 score += 10;
+                cCls[COUNTRY_INX] = BGR;
                 
             } else if (StringUtils.getLevenshteinDistance(country, refCountry) < 3)
             {
                 score += 5;
+                cCls[COUNTRY_INX] = YW;
+            }
+        }
+        
+        if (refState != null && state != null) 
+        {
+            if (refState.equals(state))
+            {
+                score += 10;
+                cCls[STATE_INX] = BGR;
+                
+            } else if (StringUtils.getLevenshteinDistance(state, refState) < 3)
+            {
+                score += 5;
+                cCls[STATE_INX] = YW;
             }
         }
         
         /*if (refGenus != null && species != null && refGenus.equals(species))     
         {
             cCls[3] = DF;
-            mCls[2] = DF;                        
+            cCls[2] = DF;                        
             score += 10;
         }
         
         if (refSpecies != null && genus != null && refSpecies.equals(genus))
         {
             cCls[2] = DF;
-            mCls[3] = DF;
+            cCls[3] = DF;
             score += 15;
         }*/
         
         if (collectorNum != null && refCollectorNum != null && collectorNum.equals(refCollectorNum))
         {
             score += 10;
+            cCls[COLNUM_INX] = BGR;
         }
         
         return score;

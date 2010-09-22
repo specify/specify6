@@ -88,7 +88,7 @@ public class AnalysisWithGBIF extends AnalysisBase
             gStmt2 = dbGBIFConn.prepareStatement(gbifSQL + fromClause2);
             gsStmt = dbDstConn.prepareStatement(gbifsnibInsert);
             
-            stmt  = dbSrcConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            stmt  = dbSrcConn.createStatement(ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
             stmt.setFetchSize(Integer.MIN_VALUE);
             
             System.out.println("Starting Query... "+totalRecs);
@@ -187,8 +187,8 @@ public class AnalysisWithGBIF extends AnalysisBase
                        int gbifID = gRS.getInt(1);
                        gsStmt.setInt(1, 1);     // reltype
                        gsStmt.setInt(2, score); // score
-                       gsStmt.setInt(3, gbifID);
-                       gsStmt.setInt(4, snibID);
+                       gsStmt.setInt(3, gbifID);    // GBIF Database
+                       gsStmt.setInt(4, snibID);    // Inigo's Database
                        gsStmt.executeUpdate();
                        
                        idHash.add(gbifID);
