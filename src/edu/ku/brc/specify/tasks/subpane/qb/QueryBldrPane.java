@@ -1197,7 +1197,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         StringBuilder orderStr = new StringBuilder();
         LinkedList<SortElement> sortElements = new LinkedList<SortElement>();
         boolean postSortPresent = false;
-        boolean debug = true;
+        boolean debug = false;
         ProcessNode root = new ProcessNode();
         int fldPosition = distinct ? 0 : 1;
 
