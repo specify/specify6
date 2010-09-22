@@ -1925,8 +1925,12 @@ public class TemplateEditor extends CustomDialog
                     item = new WorkbenchTemplateMappingItem();
                     item.initialize();
                 
-                    item.setCaption(colInfo.getColName());
-                    item.setImportedColName(colInfo.getColName());
+                    //trim to fit. User will have been warned of truncation during import.
+                    String caption = colInfo.getColName();
+                    int maxCapLen = DBTableIdMgr.getInstance().getInfoByTableName("workbenchtemplatemappingitem").getFieldByColumnName("Caption").getLength();
+                    int maxImportedColNameLen = DBTableIdMgr.getInstance().getInfoByTableName("workbenchtemplatemappingitem").getFieldByColumnName("ImportedColName").getLength();
+                    item.setCaption(caption.length() > maxCapLen ? caption.substring(0, maxCapLen) : caption);
+                    item.setImportedColName(caption.length() > maxImportedColNameLen ? caption.substring(0, maxImportedColNameLen) : caption);
                     origColNum = fmp.isAdded() ? -1 : colInfo.getColInx();
                     newItems.add(item);
                     
