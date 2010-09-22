@@ -2430,7 +2430,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         ReportsBaseTask.PRINT_REPORT, src);
                 cmd.setProperty("title", title);
                 cmd.setProperty("file", report.getName());
-                cmd.setProperty("skip-parameter-prompt", "true");
+                if (rs == null)
+                {
+                	cmd.setProperty("skip-parameter-prompt", "true");
+                }
                 //if isCompileRequired is true then an error probably occurred while compiling,
                 //and, if so, it will be caught again and reported in the report results pane.
                 if (!jcr.isCompileRequired())
