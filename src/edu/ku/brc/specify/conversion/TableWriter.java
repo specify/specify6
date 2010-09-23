@@ -194,6 +194,12 @@ public class TableWriter extends PrintWriter
         flush();
     }
     
+    public void startTable(final int width)
+    {
+        println(String.format("<TABLE class=\"o\" cellspacing=\"0\" width=\"%d%c\">", width, '%'));
+        flush();
+    }
+    
     public void endTable()
     {
         println("</TABLE>");
