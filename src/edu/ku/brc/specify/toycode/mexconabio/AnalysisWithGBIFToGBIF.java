@@ -37,9 +37,6 @@ public class AnalysisWithGBIFToGBIF extends AnalysisBase
     //private static final Logger  log                = Logger.getLogger(AnalysisWithSNIB.class);
     
     protected Stack<Object[]> rowRecycler = new Stack<Object[]>();
-    
-    private StringBuilder sb = new StringBuilder();
-    
     protected Object[] nullRow = null;
     
     /**
@@ -49,7 +46,7 @@ public class AnalysisWithGBIFToGBIF extends AnalysisBase
     {
         super();
         
-        nullRow = new Object[14];
+        nullRow = new Object[NUM_FIELDS];
         for (int i=0;i<nullRow.length;i++)
         {
             nullRow[i] = null;
@@ -62,8 +59,6 @@ public class AnalysisWithGBIFToGBIF extends AnalysisBase
     @Override
     public void process(final int type, final int options)
     {
-        final double HRS = 1000.0 * 60.0 * 60.0; 
-        
         calcMaxScore();
         
         String gbifSQL   = "SELECT DISTINCT id, catalogue_number, genus, species, subspecies, latitude, longitude, country, state_province, collector_name, locality, year, month, day, collector_num ";
@@ -86,8 +81,8 @@ public class AnalysisWithGBIFToGBIF extends AnalysisBase
         //PreparedStatement gStmt2  = null;
         PreparedStatement gsStmt  = null;
         
-        Object[] refRow = new Object[14];
-        Object[] cmpRow = new Object[14];
+        Object[] refRow = new Object[NUM_FIELDS];
+        Object[] cmpRow = new Object[NUM_FIELDS];
 
         
         long totalRecs     = BasicSQLUtils.getCount(dbSrcConn, "SELECT COUNT(*) FROM group_hash");
@@ -312,13 +307,19 @@ public class AnalysisWithGBIFToGBIF extends AnalysisBase
         pw.close();
     }
     
+    /**
+     * @return
+     */
     private Object[] getRow()
     {
-        Object[] row = rowRecycler.size() == 0 ? new Object[14] : rowRecycler.pop();
+        Object[] row = rowRecycler.size() == 0 ? new Object[NUM_FIELDS] : rowRecycler.pop();
         System.arraycopy(nullRow, 0, row, 0, row.length);
         return row;
     }
     
+    /**
+     * @param row
+     */
     private void recycleRow(final Object[] row)
     {
         rowRecycler.push(row);

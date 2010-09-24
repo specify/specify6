@@ -17,20 +17,20 @@
  */
 package edu.ku.brc.specify.toycode.mexconabio;
 
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Stack;
 import java.util.Vector;
 
-import org.apache.commons.lang.StringUtils;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.Triple;
 
 /**
  * @author rods
@@ -42,10 +42,10 @@ import org.apache.commons.lang.StringUtils;
  */
 public class CreateReportForXRef extends AnalysisBase
 {
-    protected Calendar      cal = Calendar.getInstance();
-    protected StringBuilder sb  = new StringBuilder();
+    protected HashMap<String, Pair<Integer, Integer>> instAverageScoresHashpMap = new HashMap<String, Pair<Integer,Integer>>();
     
     protected Stack<Object[]> recycler = new Stack<Object[]>();
+    
     /**
      * 
      */
@@ -79,147 +79,6 @@ public class CreateReportForXRef extends AnalysisBase
         recycler.addAll(collection);
         collection.clear();
     }
-
-    /**
-     * @param refRow
-     * @param rs
-     * @throws SQLException 
-     */
-    protected void fillRefRow(final Object[] refRow, final ResultSet rs) throws SQLException
-    {
-        String  catNum       = rs.getString(1).trim();
-        String  collectorNum = rs.getString(2);
-        String  collector    = rs.getString(3);
-        String  genus        = rs.getString(4);
-        String  species      = rs.getString(5);
-        String  subspecies   = rs.getString(6);
-        String  locality     = rs.getString(7);
-        Date    collDate     = rs.getDate(8);
-        String  country      = rs.getString(9);
-        String  state        = rs.getString(10);
-        
-        int     year;
-        int     mon;
-        int     day;
-        
-        if (collDate != null)
-        {
-            cal.setTime(collDate);
-            year         = cal.get(Calendar.YEAR);
-            mon          = cal.get(Calendar.MONTH) + 1;
-            day          = cal.get(Calendar.DAY_OF_MONTH);
-        } else
-        {
-            year = 0;
-            mon  = 0;
-            day  = 0;
-        }
-        
-        refRow[CATNUM_INX]     = catNum;
-        refRow[COLNUM_INX]     = collectorNum;
-        refRow[GENUS_INX]      = genus;
-        refRow[SPECIES_INX]    = species;
-        refRow[SUBSPECIES_INX] = subspecies;
-        refRow[COLLECTOR_INX]  = collector;
-        refRow[LOCALITY_INX]   = locality;
-        refRow[LATITUDE_INX]   = null;
-        refRow[LONGITUDE_INX]  = null;
-        refRow[YEAR_INX]       = year > 0 ? Integer.toString(year) : null;
-        refRow[MON_INX]        = year > 0 ? Integer.toString(mon) : null;
-        refRow[DAY_INX]        = year > 0 ? Integer.toString(day) : null;
-        refRow[COUNTRY_INX]    = country;
-        refRow[STATE_INX]      = state;
-    }
-    
-    /**
-     * @param cmpRow
-     * @param rs
-     * @throws SQLException
-     */
-    private void fillSNIBRow(final Object[] cmpRow, final ResultSet rs) throws SQLException
-    {
-        //   1          2           3        4                5             6         7          8       9         10               11           12       13        14     15       16         17
-        // IdSNIB, CatalogNumber, Genus, Species, Cataegoryinfraspecies, Latitude, Longitude, Country, State, LastNameFather, LastNameMother, FirstName, Locality, `Year`, `Month`, `Day`, CollectorNumber FROM angiospermas "; 
-        
-        cmpRow[CATNUM_INX]     = rs.getString(2);
-        cmpRow[COLNUM_INX]     = rs.getString(17);
-        cmpRow[GENUS_INX]      = rs.getString(3);
-        cmpRow[SPECIES_INX]    = rs.getString(4);
-        cmpRow[SUBSPECIES_INX] = rs.getString(5);
-        cmpRow[LOCALITY_INX]   = rs.getString(13);
-        cmpRow[LATITUDE_INX]   = rs.getString(6);
-        cmpRow[LONGITUDE_INX]  = rs.getString(7);
-        cmpRow[YEAR_INX]       = getIntToStr(rs.getObject(14));
-        cmpRow[MON_INX]        = getIntToStr(rs.getObject(15));
-        cmpRow[DAY_INX]        = getIntToStr(rs.getObject(16));
-        cmpRow[COUNTRY_INX]    = rs.getString(16);
-        cmpRow[STATE_INX]      = rs.getString(9);
-        
-        String fatherName      = rs.getString(10);
-        String motherName      = rs.getString(11);
-        String firstName       = rs.getString(12);
-        
-        boolean hasFather = StringUtils.isNotEmpty(fatherName);
-        boolean hasMother = StringUtils.isNotEmpty(motherName);
-        boolean hasFirst  = StringUtils.isNotEmpty(firstName);
-        
-        sb.setLength(0);
-        if (hasFather)
-        {
-            sb.append(fatherName);
-        }
-        if (hasMother)
-        {
-            if (hasFather) sb.append(", ");
-            sb.append(motherName);
-        }
-        if (hasFirst)
-        {
-            if (hasFather || hasMother) sb.append(", ");
-            sb.append(firstName);
-        }
-        cmpRow[COLLECTOR_INX] = sb.toString();
-    }
-    
-    /**
-     * @param cmpRow
-     * @param rs
-     * @throws SQLException
-     */
-    protected void fillGBIFRow(final Object[] cmpRow, final ResultSet rs) throws SQLException
-    {
-        cmpRow[CATNUM_INX]     = rs.getString(2);
-        cmpRow[COLNUM_INX]     = rs.getString(15);
-        cmpRow[GENUS_INX]      = rs.getString(3);
-        cmpRow[SPECIES_INX]    = rs.getString(4);
-        cmpRow[SUBSPECIES_INX] = rs.getString(5);
-        cmpRow[COLLECTOR_INX]  = rs.getString(10);
-        cmpRow[LOCALITY_INX]   = rs.getString(11);
-        cmpRow[LATITUDE_INX]   = rs.getString(6);
-        cmpRow[LONGITUDE_INX]  = rs.getString(7);
-        cmpRow[YEAR_INX]       = rs.getString(12);
-        cmpRow[MON_INX]        = rs.getString(13);
-        cmpRow[DAY_INX]        = rs.getString(14);
-        cmpRow[COUNTRY_INX]    = rs.getString(8);
-        cmpRow[STATE_INX]      = rs.getString(9);
-    }
-    
-    
-    /**
-     * @param row
-     * @param colorCodes
-     */
-    protected void writeRow(final String trClass, final Object[] row, final String[] colorCodes)
-    {
-        tblWriter.println(String.format("<TR class=\"%s\">", trClass));
-        for (int i=0;i<NUM_FIELDS;i++)
-        {
-            tblWriter.logTDCls(colorCodes != null ? colorCodes[i] : null, 
-                               row[i] != null ? row[i].toString() : "");
-        }
-        tblWriter.println("</TR>");
-    }
-    
     
     /**
      * @param refRow
@@ -229,11 +88,26 @@ public class CreateReportForXRef extends AnalysisBase
     {
         clearRowAttrs(); // Clears Color Codes
         
-        int score = score(refRow, cmpRow); // Sets Color Codes
+        // rescore to set Color Codes
+        score(refRow, cmpRow); // Sets Color Codes
         
-        //cmpRow[SCORE_INX] = score;
-        
-        writeRow(trClass, cmpRow, cCls);
+        writeRow(trClass, cmpRow, tdColorCodes);
+    }
+    
+    /**
+     * @param instCode
+     * @param score
+     */
+    protected void regScore(final String instCode, final int score)
+    {
+        Pair<Integer, Integer> entry = instAverageScoresHashpMap.get(instCode);
+        if (entry == null)
+        {
+            entry = new Pair<Integer, Integer>(0, 0);
+            instAverageScoresHashpMap.put(instCode, entry);
+        }
+        entry.first++;
+        entry.second += score;
     }
     
     /* (non-Javadoc)
@@ -252,22 +126,19 @@ public class CreateReportForXRef extends AnalysisBase
                         "Inner Join raw AS r ON gs.GBIFID = r.id " +
                         "Inner Join angiospermas AS a ON sm.GBIFID = a.IdSNIB " +
                         "WHERE r.genus =  a.Genus AND r.`year` =  CONVERT(a.`Year`, CHAR(8)) AND r.`month` =  CONVERT(a.`Month`, CHAR(8)) AND a.latitude IS NOT NULL " +
-                        "ORDER BY sm.SNIBID, a.IdSNIB, r.id " +
-                        "LIMIT 0,500";
+                        "ORDER BY sm.SNIBID, a.IdSNIB, r.id";
         
-                                   //      1          2           3        4                5             6         7          8           9               10            11      12       13        14     15       16         17
-        String snibSQL         = "SELECT IdSNIB, CatalogNumber, Genus, Species, Cataegoryinfraspecies, Latitude, Longitude, Country, LastNameFather, LastNameMother, FirstName, State, Locality, `Year`, `Month`, `Day`, CollectorNumber "; 
+        String sqlCnt = "SELECT COUNT(*) FROM gbifsnib AS gs " +
+                        "Inner Join snibmex AS sm ON gs.SNIBID = sm.SNIBID " +
+                        "Inner Join raw AS r ON gs.GBIFID = r.id " +
+                        "Inner Join angiospermas AS a ON sm.GBIFID = a.IdSNIB " +
+                        "WHERE r.genus =  a.Genus AND r.`year` =  CONVERT(a.`Year`, CHAR(8)) AND r.`month` =  CONVERT(a.`Month`, CHAR(8)) AND a.latitude IS NOT NULL " +
+                        "ORDER BY sm.SNIBID, a.IdSNIB, r.id";
+
+        
         String snibFromClause1 = "FROM angiospermas WHERE IdSNIB = ?";
-        //String snibFromClause2 = "FROM angiospermas WHERE CollectorNumber IS NULL AND `Year` = ? AND `Month` = ? AND Genus = ?";
-        
-                                           //      1         2           3        4        5           6         7          8          9               10            11      12    13    14        15
-        String gbifSQL         = "SELECT id, catalogue_number, genus, species, subspecies, latitude, longitude, country, state_province, collector_name, locality, year, month, day, collector_num ";
         String gbifFromClause1 = "FROM raw WHERE id = ?";
-        //String gbifFromClause2 = "FROM raw WHERE collector_num IS NULL AND year = ? AND month = ? AND genus = ?";
-        
-        //                        1       2           3              4           5             6              7               8           9        10   11
-        String sql121K = "SELECT BarCD, CollNr, Collectoragent1, GenusName, SpeciesName, SubSpeciesName, LocalityName, Datecollstandrd, COUNTRY, STATE, ID FROM conabio " +
-                         "WHERE ID = ?";
+        String michFromClause1 = "FROM conabio WHERE ID = ?";
         
         Comparator<Object[]> comparator = new Comparator<Object[]>()
         {
@@ -281,7 +152,11 @@ public class CreateReportForXRef extends AnalysisBase
         };
         
         //System.out.println(String.format("Starting Processing... Total Records %d  Max Score: %d  Threshold: %d", totalRecs, maxScore, thresholdScore));
-
+        long totalRecs     = BasicSQLUtils.getCount(dbLMConn, sqlCnt);
+        long procRecs      = 0;
+        long startTime     = System.currentTimeMillis();
+        int  secsThreshold = 0;
+        
         Statement         stmt     = null;
         PreparedStatement refStmt  = null;
         PreparedStatement snibStmt = null;
@@ -291,7 +166,7 @@ public class CreateReportForXRef extends AnalysisBase
             stmt  = dbLMConn.createStatement(ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
             stmt.setFetchSize(Integer.MIN_VALUE);
             
-            refStmt  = dbSrcConn.prepareStatement(sql121K);
+            refStmt  = dbSrcConn.prepareStatement(michSQL + michFromClause1);
             snibStmt = dbDstConn.prepareStatement(snibSQL + snibFromClause1);
             gbifStmt = dbGBIFConn.prepareStatement(gbifSQL + gbifFromClause1);
             
@@ -312,7 +187,6 @@ public class CreateReportForXRef extends AnalysisBase
             Vector<Object[]> gbifRows = new Vector<Object[]>();
             Vector<Object[]> snibRows = new Vector<Object[]>();
             
-            int procRecs = 0;
             while (rs.next())
             {
                 int refId  = rs.getInt(1);    // Inigo's database
@@ -329,7 +203,9 @@ public class CreateReportForXRef extends AnalysisBase
                         {
                             cmpRow = getRow();
                             fillSNIBRow(cmpRow, snibRS);
-                            cmpRow[SCORE_INX] = (int)Math.round((score(refRow, cmpRow) / (double)maxScore) * 100.0); // Sets Color Codes
+                            int score = (int)Math.round((score(refRow, cmpRow) / (double)maxScore) * 100.0); // Sets Color Codes
+                            cmpRow[SCORE_INX] = score;
+                            regScore((String)cmpRow[INST_INX], score);
                             snibRows.add(cmpRow);
                         }
                         snibRS.close();
@@ -353,7 +229,9 @@ public class CreateReportForXRef extends AnalysisBase
                         {
                             cmpRow = getRow();
                             fillGBIFRow(cmpRow, gbifRS);
-                            cmpRow[SCORE_INX] =  (int)Math.round((score(refRow, cmpRow) / (double)maxScore) * 100.0); // Sets Color Codes
+                            int score = (int)Math.round((score(refRow, cmpRow) / (double)maxScore) * 100.0); // Sets Color Codes
+                            cmpRow[SCORE_INX] = score;
+                            regScore((String)cmpRow[INST_INX], score);
                             gbifRows.add(cmpRow);
                         }
                         gbifRS.close();
@@ -385,7 +263,7 @@ public class CreateReportForXRef extends AnalysisBase
                         refRS.close();
                         continue;
                     }
-                    fillRefRow(refRow, refRS);
+                    fillMichRow(refRow, refRS);
                     refRS.close();
                     
                     writeRow("", refRow, null);
@@ -399,16 +277,12 @@ public class CreateReportForXRef extends AnalysisBase
                 {
                     System.out.println(procRecs);
                     
-                    break;
-                    
-                    /*
                     title    = String.format("%s %d - %d",    dataDirName, procRecs, (procRecs+reportRecsSize));
                     fileName = String.format("%s_%d_%d.html", dataDirName, procRecs, (procRecs+reportRecsSize));
                             
                     startNewDocument(fileName, title, true, 100);
-                    */
                     
-                    /*long endTime     = System.currentTimeMillis();
+                    long endTime     = System.currentTimeMillis();
                     long elapsedTime = endTime - startTime;
                     
                     double timePerRecord      = (elapsedTime / procRecs); 
@@ -425,8 +299,7 @@ public class CreateReportForXRef extends AnalysisBase
                                 100.0 * ((double)procRecs / (double)totalRecs),
                                 hrsLeft);
                         System.out.println(msg);
-                        */
-                    
+                    }
                 }
             }
             rs.close();
@@ -462,9 +335,42 @@ public class CreateReportForXRef extends AnalysisBase
             
             tblWriter.endTable();
             
+            Vector<Triple<String, Integer, Double>> instScores = new Vector<Triple<String, Integer, Double>>();
+            for (String ic : instAverageScoresHashpMap.keySet())
+            {
+                Pair<Integer, Integer> p = instAverageScoresHashpMap.get(ic);
+                if (p != null)
+                {
+                    double averageScore = ((double)p.second) / ((double)p.first);
+                    Triple<String, Integer, Double> ip = new Triple<String, Integer, Double>(ic, p.first, averageScore);
+                    instScores.add(ip);
+                }
+            }
+            Collections.sort(instScores, new Comparator<Triple<String, Integer, Double>>()
+            {
+                @Override
+                public int compare(Triple<String, Integer, Double> o1, Triple<String, Integer, Double> o2)
+                {
+                    return o2.third.compareTo(o1.third);
+                }
+            });
+            
+            startNewDocument("InstScores.html", "Average Institution Scores", false, 100);
+            tblWriter.startTable(100);
+            tblWriter.logHdr("Institution", "Average Matching Score", "Number Matches");
+            for (Triple<String, Integer, Double> p : instScores)
+            {
+                String scoreStr = String.format("%5.2f", p.third);
+                tblWriter.logWithSpaces(p.first, scoreStr, Integer.toString(p.second));
+            }
+            tblWriter.endTable();
+            tblWriter.setHasLines();
+            
+            
         } catch (Exception ex)
         {
             ex.printStackTrace();
+            
         } finally 
         {
             try

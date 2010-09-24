@@ -21,21 +21,29 @@ package edu.ku.brc.specify.toycode.mexconabio;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.ConversionLogger;
 import edu.ku.brc.specify.conversion.TableWriter;
 import edu.ku.brc.util.AttachmentUtils;
 
 public abstract class AnalysisBase
 {
-    public static final int NUM_FIELDS = 15;
+    protected final double        HRS = 1000.0 * 60.0 * 60.0;
+    protected final Calendar      cal = Calendar.getInstance();
+    protected final StringBuilder sb  = new StringBuilder();
+    
+    public    static final int NUM_FIELDS = 16;
     
     protected static final int COLNUM_INX     = 0;
     protected static final int CATNUM_INX     = 1;
@@ -51,7 +59,8 @@ public abstract class AnalysisBase
     protected static final int DAY_INX        = 11;
     protected static final int COUNTRY_INX    = 12;
     protected static final int STATE_INX      = 13;
-    protected static final int SCORE_INX      = 14;
+    protected static final int INST_INX       = 14;
+    protected static final int SCORE_INX      = 15;
     
     protected static final int DO_COLNUM     = 1;
     protected static final int DO_CATNUM     = 2;
@@ -68,9 +77,19 @@ public abstract class AnalysisBase
     protected static final int DO_STATE      = 16192;
     protected static final int DO_ALL        = (DO_STATE*2)-1;
     
+//                                                     1          2           3       4              5               6         7          8           9               10           11       12       13        14     15       16         17               18
+    protected static final String snibSQL = "SELECT IdSNIB, CatalogNumber, Genus, Species, Cataegoryinfraspecies, Latitude, Longitude, Country, LastNameFather, LastNameMother, FirstName, State, Locality, `Year`, `Month`, `Day`, CollectorNumber, InstitutionAcronym "; 
+    
+//                                                  1         2           3        4         5           6         7          8          9               10            11      12    13    14        15               16
+    protected static final String gbifSQL = "SELECT id, catalogue_number, genus, species, subspecies, latitude, longitude, country, state_province, collector_name, locality, year, month, day, collector_num, institution_code ";
+    
+//                                                    1       2           3              4           5             6              7               8           9       10   11
+    protected static final String michSQL = "SELECT BarCD, CollNr, Collectoragent1, GenusName, SpeciesName, SubSpeciesName, LocalityName, Datecollstandrd, COUNTRY, STATE, ID ";
+
+    
     public static final  String CONN_STR = "jdbc:mysql://%s:%s/%s?characterEncoding=UTF-8&autoReconnect=true";
     
-    protected String[] titles         = {"Col Num", "Cat Num", "Genus", "Species", "SubSpecies", "Collector", "Locality", "Latitude", "Longitude", "Year", "Mon", "Day", "Country", "State", "Score"};
+    protected String[] titles         = {"Collector<BR>Number", "Catalog<BR>Number", "Genus", "Species", "SubSpecies", "Collector", "Locality", "Latitude", "Longitude", "Year", "Mon", "Day", "Country", "State", "Institution<BR>Code", "Matching<BR>Score"};
     protected int[]    MAXSCORES      = {0,         0,         15,       20,        20,          10,          10,          0,          0,            10,     10,    10,    10,      10,      0};
     protected int      maxScore       = 0;
     protected int      thresholdScore = 50;
@@ -83,7 +102,7 @@ public abstract class AnalysisBase
     protected static final String RD  = "rd";
     protected static final String BL  = "bl";
     
-    protected String[]          cCls;
+    protected String[]          tdColorCodes;
     
     protected Vector<String>    toks       = new Vector<String>();
     protected char[]            seps       = {'`', '~', '|', '+'};
@@ -96,13 +115,14 @@ public abstract class AnalysisBase
     protected String[]           strNulls  = new String[NUM_FIELDS];
     protected String[]           objNulls  = new String[NUM_FIELDS];
     
+    protected HashMap<Integer, String> instHashMap = new HashMap<Integer, String>();
+    
     // Database Connections
     protected Connection        dbGBIFConn = null;
     protected Connection        dbSrcConn  = null;
     protected Connection        dbDstConn  = null;
     protected Connection        dbLMConn   = null;
 
-    
     /**
      * 
      */
@@ -110,14 +130,14 @@ public abstract class AnalysisBase
     {
         super();
         
-        cCls = new String[NUM_FIELDS];
+        tdColorCodes = new String[NUM_FIELDS];
         
         for (int i=0;i<NUM_FIELDS;i++)
         {
             strNulls[i] = null;
             objNulls[i] = null;
         }
-        System.arraycopy(strNulls, 0, cCls, 0, NUM_FIELDS);
+        System.arraycopy(strNulls, 0, tdColorCodes, 0, NUM_FIELDS);
     }
     
     
@@ -227,7 +247,7 @@ public abstract class AnalysisBase
             {
                 tblWriter.startTable(width);
             }
-            //tblWriter.log("<TR><TH COLSPAN=\"7\">Conabio</TH><TH COLSPAN=\"7\">Michigan</TH><TD>&nbsp;</TH></TR>");
+            //tblWriter.log("<TR><TH COLSPAN=\"7\">Conabio</TretrieveInstitutionNamesH><TH COLSPAN=\"7\">Michigan</TH><TD>&nbsp;</TH></TR>");
             tblWriter.logHdr(titles);
         }
     }
@@ -254,12 +274,47 @@ public abstract class AnalysisBase
             AttachmentUtils.openURI(indexFile.toURI());
         } catch (Exception e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
     
     
+    /**
+     * 
+     */
+    protected void retrieveInstitutionNames()
+    {
+        Connection conn = null;
+        try
+        {
+            conn = createConnection("lm2gbdb.nhm.ku.edu", "3399", "gbc20100726", "rods", "specify4us");
+            
+            System.out.println("Getting Institutions");
+            for (Object[] row : BasicSQLUtils.query(conn, "SELECT data_provider_id, name FROM data_provider"))
+            {
+                instHashMap.put((Integer)row[0], (String)row[0]);
+            }
+            System.out.println("Done Getting Institutions");
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            if (conn != null)
+            {
+                try
+                {
+                    conn.close();
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+
     /**
      * @param rs
      * @param colInx
@@ -312,7 +367,7 @@ public abstract class AnalysisBase
      */
     protected void clearRowAttrs(final Object[] row)
     {
-        System.arraycopy(strNulls, 0, cCls, 0, NUM_FIELDS);
+        System.arraycopy(strNulls, 0, tdColorCodes, 0, NUM_FIELDS);
         
         if (row != null)
         {
@@ -343,30 +398,188 @@ public abstract class AnalysisBase
     }
     
     /**
+     * @param row
+     * @param colorCodes
+     */
+    protected void writeRow(final String trClass, final Object[] row, final String[] colorCodes)
+    {
+        tblWriter.println(String.format("<TR class=\"%s\">", trClass));
+        for (int i=0;i<NUM_FIELDS;i++)
+        {
+            tblWriter.logTDCls(colorCodes != null ? colorCodes[i] : null, 
+                               row[i] != null ? row[i].toString() : "");
+        }
+        tblWriter.println("</TR>");
+    }
+    
+    /**
+     * @param refRow
+     * @param rs
+     * @throws SQLException 
+     */
+    protected void fillMichRow(final Object[] refRow, final ResultSet rs) throws SQLException
+    {
+        String  catNum       = rs.getString(1);
+        String  collectorNum = rs.getString(2);
+        String  collector    = rs.getString(3);
+        String  genus        = rs.getString(4);
+        String  species      = rs.getString(5);
+        String  subspecies   = rs.getString(6);
+        String  locality     = rs.getString(7);
+        Date    collDate     = rs.getDate(8);
+        String  country      = rs.getString(9);
+        String  state        = rs.getString(10);
+        
+        int     year;
+        int     mon;
+        int     day;
+        
+        if (collDate != null)
+        {
+            cal.setTime(collDate);
+            year         = cal.get(Calendar.YEAR);
+            mon          = cal.get(Calendar.MONTH) + 1;
+            day          = cal.get(Calendar.DAY_OF_MONTH);
+        } else
+        {
+            year = 0;
+            mon  = 0;
+            day  = 0;
+        }
+        
+        refRow[CATNUM_INX]     = catNum;
+        refRow[COLNUM_INX]     = collectorNum;
+        refRow[GENUS_INX]      = genus;
+        refRow[SPECIES_INX]    = species;
+        refRow[SUBSPECIES_INX] = subspecies;
+        refRow[COLLECTOR_INX]  = collector;
+        refRow[LOCALITY_INX]   = locality;
+        refRow[LATITUDE_INX]   = null;
+        refRow[LONGITUDE_INX]  = null;
+        refRow[YEAR_INX]       = year > 0 ? Integer.toString(year) : null;
+        refRow[MON_INX]        = year > 0 ? Integer.toString(mon) : null;
+        refRow[DAY_INX]        = year > 0 ? Integer.toString(day) : null;
+        refRow[COUNTRY_INX]    = country;
+        refRow[STATE_INX]      = state;
+        refRow[INST_INX]       = "MICH";
+        
+        for (int i=COLNUM_INX;i<SCORE_INX;i++)
+        {
+            if (refRow[i] != null)
+            {
+                refRow[i] = ((String)refRow[i]).trim();
+            }
+        }
+    }
+    
+    /**
      * @param cmpRow
-     * @param gRS
+     * @param rs
      * @throws SQLException
      */
-    protected void fillRow(final Object[] cmpRow, final ResultSet gRS) throws SQLException
+    protected void fillSNIBRow(final Object[] cmpRow, final ResultSet rs) throws SQLException
     {
-        //                        1       2               3        4         5         6          7         8           9               10          11       12    13    14      15
-        //String srcSQL = "SELECT id, catalogue_number, genus, species, subspecies, latitude, longitude, country, state_province, collector_name, locality, year, month, day, collector_num " +
+        //   1          2           3        4                5             6         7          8          9               10            11       12       13        14     15       16         17                18
+        // IdSNIB, CatalogNumber, Genus, Species, Cataegoryinfraspecies, Latitude, Longitude, Country, LastNameFather, LastNameMother, FirstName, State, Locality, `Year`, `Month`, `Day`, CollectorNumber, InstitutionAcronym FROM angiospermas "; 
         
-        cmpRow[CATNUM_INX]     = gRS.getString(2);
-        cmpRow[COLNUM_INX]     = gRS.getString(15);
-        cmpRow[GENUS_INX]      = gRS.getString(3);
-        cmpRow[SPECIES_INX]    = gRS.getString(4);
-        cmpRow[SUBSPECIES_INX] = gRS.getString(5);
-        cmpRow[LOCALITY_INX]   = gRS.getString(11);
-        cmpRow[LATITUDE_INX]   = gRS.getString(6);
-        cmpRow[LONGITUDE_INX]  = gRS.getString(7);
-        cmpRow[YEAR_INX]       = gRS.getString(12);
-        cmpRow[MON_INX]        = gRS.getString(13);
-        cmpRow[DAY_INX]        = gRS.getString(14);
-        cmpRow[COUNTRY_INX]    = gRS.getString(8);
-        cmpRow[STATE_INX]      = gRS.getString(9);
-        cmpRow[COLLECTOR_INX] = gRS.getString(10);
+        cmpRow[CATNUM_INX]     = rs.getString(2);
+        cmpRow[COLNUM_INX]     = rs.getString(17);
+        cmpRow[GENUS_INX]      = rs.getString(3);
+        cmpRow[SPECIES_INX]    = rs.getString(4);
+        cmpRow[SUBSPECIES_INX] = rs.getString(5);
+        cmpRow[LOCALITY_INX]   = rs.getString(13);
+        cmpRow[LATITUDE_INX]   = rs.getString(6);
+        cmpRow[LONGITUDE_INX]  = rs.getString(7);
+        cmpRow[YEAR_INX]       = getIntToStr(rs.getObject(14));
+        cmpRow[MON_INX]        = getIntToStr(rs.getObject(15));
+        cmpRow[DAY_INX]        = getIntToStr(rs.getObject(16));
+        cmpRow[COUNTRY_INX]    = rs.getString(16);
+        cmpRow[STATE_INX]      = rs.getString(12);
+        cmpRow[INST_INX]       = rs.getString(18);
+        
+        String fatherName      = rs.getString(9);
+        String motherName      = rs.getString(10);
+        String firstName       = rs.getString(11);
+        
+        boolean hasFather = StringUtils.isNotEmpty(fatherName);
+        boolean hasMother = StringUtils.isNotEmpty(motherName);
+        boolean hasFirst  = StringUtils.isNotEmpty(firstName);
+        
+        sb.setLength(0);
+        if (hasFather)
+        {
+            sb.append(fatherName);
+        }
+        if (hasMother)
+        {
+            if (hasFather) sb.append(", ");
+            sb.append(motherName);
+        }
+        if (hasFirst)
+        {
+            if (hasFather || hasMother) sb.append(", ");
+            sb.append(firstName);
+        }
+        cmpRow[COLLECTOR_INX] = sb.toString();
+        
+        for (int i=COLNUM_INX;i<SCORE_INX;i++)
+        {
+            if (cmpRow[i] != null)
+            {
+                cmpRow[i] = ((String)cmpRow[i]).trim();
+            }
+        }
     }
+    
+    /**
+     * @param cmpRow
+     * @param rs
+     * @throws SQLException
+     */
+    protected void fillGBIFRow(final Object[] cmpRow, final ResultSet rs) throws SQLException
+    {
+        cmpRow[CATNUM_INX]     = rs.getString(2);
+        cmpRow[COLNUM_INX]     = rs.getString(15);
+        cmpRow[GENUS_INX]      = rs.getString(3);
+        cmpRow[SPECIES_INX]    = rs.getString(4);
+        cmpRow[SUBSPECIES_INX] = rs.getString(5);
+        cmpRow[COLLECTOR_INX]  = rs.getString(10);
+        cmpRow[LOCALITY_INX]   = rs.getString(11);
+        cmpRow[LATITUDE_INX]   = rs.getString(6);
+        cmpRow[LONGITUDE_INX]  = rs.getString(7);
+        cmpRow[YEAR_INX]       = rs.getString(12);
+        cmpRow[MON_INX]        = rs.getString(13);
+        cmpRow[DAY_INX]        = rs.getString(14);
+        cmpRow[COUNTRY_INX]    = rs.getString(8);
+        cmpRow[STATE_INX]      = rs.getString(9);
+        
+        String instCode        = rs.getString(16);
+        
+        cmpRow[INST_INX] = (StringUtils.isNotEmpty(instCode) && instCode.length() > 8) ? instCode.substring(0, 8) : instCode;
+        
+        for (int i=COLNUM_INX;i<SCORE_INX;i++)
+        {
+            if (cmpRow[i] != null)
+            {
+                cmpRow[i] = ((String)cmpRow[i]).trim();
+            }
+        }
+        
+        if (cmpRow[YEAR_INX] != null && StringUtils.isNotEmpty((String)cmpRow[YEAR_INX]))
+        {
+            cmpRow[MON_INX] = null;
+        }
+        if (cmpRow[MON_INX] != null && StringUtils.isNotEmpty((String)cmpRow[MON_INX]))
+        {
+            cmpRow[YEAR_INX] = null;
+        }
+        if (cmpRow[DAY_INX] != null && StringUtils.isNotEmpty((String)cmpRow[DAY_INX]))
+        {
+            cmpRow[DAY_INX] = null;
+        }
+    }
+    
+
     
     /**
      * @param cmpRow
@@ -393,6 +606,14 @@ public abstract class AnalysisBase
         cmpRow[COUNTRY_INX]    = cntObject(gRS.getString(8));
         cmpRow[STATE_INX]      = cntObject(gRS.getString(9));
         cmpRow[COLLECTOR_INX] = cntObject(gRS.getString(10));
+        
+        for (int i=COLNUM_INX;i<SCORE_INX;i++)
+        {
+            if (cmpRow[i] != null)
+            {
+                cmpRow[i] = ((String)cmpRow[i]).trim();
+            }
+        }
         
         if (cmpRow[COLNUM_INX] != null)
         {
@@ -457,23 +678,23 @@ public abstract class AnalysisBase
         if (year == refYear && mon == refMon && day == refDay && year != 0 && mon != 0 && day != 0)
         {
             score = 30;
-            cCls[YEAR_INX] = BGR;
-            cCls[MON_INX]  = BGR;
-            cCls[DAY_INX]  = BGR;
+            tdColorCodes[YEAR_INX] = BGR;
+            tdColorCodes[MON_INX]  = BGR;
+            tdColorCodes[DAY_INX]  = BGR;
             
         } else if (year == refYear && mon == refMon && year != 0 && mon != 0)
         {
             score = 20;
-            cCls[YEAR_INX] = BGR;
-            cCls[MON_INX]  = BGR;
-            cCls[DAY_INX]  = RD;
+            tdColorCodes[YEAR_INX] = BGR;
+            tdColorCodes[MON_INX]  = BGR;
+            tdColorCodes[DAY_INX]  = RD;
             
         } else if (year == refYear)
         {
             score = 10;
-            cCls[YEAR_INX] = BGR;
-            cCls[MON_INX]  = RD;
-            cCls[DAY_INX]  = RD;
+            tdColorCodes[YEAR_INX] = BGR;
+            tdColorCodes[MON_INX]  = RD;
+            tdColorCodes[DAY_INX]  = RD;
         }
         return score;
     }
@@ -494,23 +715,23 @@ public abstract class AnalysisBase
         
         if (year == refYear && mon == refMon && day == refDay && year != 0 && mon != 0 && day != 0)
         {
-            cCls[YEAR_INX] = BGR;
-            cCls[MON_INX]  = BGR;
-            cCls[DAY_INX]  = BGR;
+            tdColorCodes[YEAR_INX] = BGR;
+            tdColorCodes[MON_INX]  = BGR;
+            tdColorCodes[DAY_INX]  = BGR;
             score = 30;
             
         } else if (year == refYear && mon == refMon && year != 0 && mon != 0)
         {
-            cCls[YEAR_INX] = BGR;
-            cCls[MON_INX]  = BGR;
-            cCls[DAY_INX]  = RD;
+            tdColorCodes[YEAR_INX] = BGR;
+            tdColorCodes[MON_INX]  = BGR;
+            tdColorCodes[DAY_INX]  = RD;
             score = 20;
             
         } else if (year == refYear)
         {
-            cCls[YEAR_INX] = BGR;
-            cCls[MON_INX]  = RD;
-            cCls[DAY_INX]  = RD;
+            tdColorCodes[YEAR_INX] = BGR;
+            tdColorCodes[MON_INX]  = RD;
+            tdColorCodes[DAY_INX]  = RD;
             score = 10;
         }
         return score;
@@ -620,33 +841,33 @@ public abstract class AnalysisBase
         if (ratingLoc > 50.0)
         {
             score += 10;
-            cCls[LOCALITY_INX] = BGR;
+            tdColorCodes[LOCALITY_INX] = BGR;
             
         } else if (ratingLoc > 30.0)
         {
             score += 6;
-            cCls[LOCALITY_INX] = GR;
+            tdColorCodes[LOCALITY_INX] = GR;
             
         } else if (ratingLoc > 0.0)
         {
             score += 3;
-            cCls[LOCALITY_INX] = YW;
+            tdColorCodes[LOCALITY_INX] = YW;
         }
         
         if (ratingColtr > 50.0)
         {
             score += 10;
-            cCls[COLLECTOR_INX] = BGR;
+            tdColorCodes[COLLECTOR_INX] = BGR;
             
         } else if (ratingColtr > 30.0)
         {
             score += 6;
-            cCls[COLLECTOR_INX] = GR;
+            tdColorCodes[COLLECTOR_INX] = GR;
             
         } else if (ratingColtr > 0.0)
         {
             score += 3;
-            cCls[COLLECTOR_INX] = YW;
+            tdColorCodes[COLLECTOR_INX] = YW;
         }
 
         boolean genusMatches = false;
@@ -656,12 +877,12 @@ public abstract class AnalysisBase
             {
                 score += 15;
                 genusMatches = true;
-                cCls[GENUS_INX] = GR;
+                tdColorCodes[GENUS_INX] = GR;
                 
             } else if (StringUtils.getLevenshteinDistance(genus, refGenus) < 3)
             {
                 score += 7;
-                cCls[GENUS_INX] = YW;
+                tdColorCodes[GENUS_INX] = YW;
             }
         }
         
@@ -674,16 +895,16 @@ public abstract class AnalysisBase
                 speciesMatches = true;
                 if (genusMatches)
                 {
-                    cCls[GENUS_INX]   = BGR;
-                    cCls[SPECIES_INX] = BGR;
+                    tdColorCodes[GENUS_INX]   = BGR;
+                    tdColorCodes[SPECIES_INX] = BGR;
                 } else
                 {
-                    cCls[SPECIES_INX] = GR;
+                    tdColorCodes[SPECIES_INX] = GR;
                 }
             } else if (StringUtils.getLevenshteinDistance(species, refSpecies) < 3)
             {
                 score += 10;
-                cCls[SPECIES_INX] = YW;
+                tdColorCodes[SPECIES_INX] = YW;
             }
         }
         
@@ -694,23 +915,23 @@ public abstract class AnalysisBase
                 score += 20;
                 if (genusMatches && speciesMatches)
                 {
-                    cCls[GENUS_INX]      = BGR;
-                    cCls[SPECIES_INX]    = BGR;
-                    cCls[SUBSPECIES_INX] = BGR;
+                    tdColorCodes[GENUS_INX]      = BGR;
+                    tdColorCodes[SPECIES_INX]    = BGR;
+                    tdColorCodes[SUBSPECIES_INX] = BGR;
                     
                 } else if (speciesMatches)
                 {
-                    cCls[SPECIES_INX]    = BGR;
-                    cCls[SUBSPECIES_INX] = BGR;
+                    tdColorCodes[SPECIES_INX]    = BGR;
+                    tdColorCodes[SUBSPECIES_INX] = BGR;
                 } else
                 {
-                    cCls[SUBSPECIES_INX] = GR;
+                    tdColorCodes[SUBSPECIES_INX] = GR;
                 }
                 
             } else if (StringUtils.getLevenshteinDistance(subSpecies, refSubSpecies) < 3)
             {
                 score += 10;
-                cCls[SUBSPECIES_INX] = YW;
+                tdColorCodes[SUBSPECIES_INX] = YW;
             }
         }
         
@@ -719,12 +940,12 @@ public abstract class AnalysisBase
             if (refCountry.equals(country))
             {
                 score += 10;
-                cCls[COUNTRY_INX] = BGR;
+                tdColorCodes[COUNTRY_INX] = BGR;
                 
             } else if (StringUtils.getLevenshteinDistance(country, refCountry) < 3)
             {
                 score += 5;
-                cCls[COUNTRY_INX] = YW;
+                tdColorCodes[COUNTRY_INX] = YW;
             }
         }
         
@@ -733,12 +954,12 @@ public abstract class AnalysisBase
             if (refState.equals(state))
             {
                 score += 10;
-                cCls[STATE_INX] = BGR;
+                tdColorCodes[STATE_INX] = BGR;
                 
             } else if (StringUtils.getLevenshteinDistance(state, refState) < 3)
             {
                 score += 5;
-                cCls[STATE_INX] = YW;
+                tdColorCodes[STATE_INX] = YW;
             }
         }
         
@@ -759,7 +980,7 @@ public abstract class AnalysisBase
         if (collectorNum != null && refCollectorNum != null && collectorNum.equals(refCollectorNum))
         {
             score += 10;
-            cCls[COLNUM_INX] = BGR;
+            tdColorCodes[COLNUM_INX] = BGR;
         }
         
         return score;

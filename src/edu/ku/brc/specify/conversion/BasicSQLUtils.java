@@ -383,19 +383,22 @@ public class BasicSQLUtils
      */
     public static Integer getInsertedId(final Statement stmt)
     {
+        Integer id = null;
         try
         {
             ResultSet resultSet = stmt.getGeneratedKeys(); 
     
             if ( resultSet != null && resultSet.next() ) 
             { 
-                return resultSet.getInt(1); 
+                id =  resultSet.getInt(1);
             }
+            resultSet.close();
+            
         } catch (SQLException ex)
         {
             ex.printStackTrace();
         }
-        return null;
+        return id;
     }
     
     /**

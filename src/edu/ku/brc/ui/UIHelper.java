@@ -2285,6 +2285,18 @@ public final class UIHelper
      */
     public static void calcColumnWidths(final JTable table, final Integer numRowsHeight)
     {
+        calcColumnWidths(table, numRowsHeight, null);
+    }
+    
+    /**
+     * Calculates and sets the each column to it preferred size.  NOTE: This
+     * method also sets the table height to 10 rows.
+     * 
+     * @param table the table to fix up
+     * @param numRowsHeight the number of rows to make the table height (or null not to set it)
+     */
+    public static void calcColumnWidths(final JTable table, final Integer numRowsHeight, final Integer maxWidth)
+    {
         JTableHeader header = table.getTableHeader();
 
         TableCellRenderer defaultHeaderRenderer = null;
@@ -2335,6 +2347,11 @@ public final class UIHelper
                     false, false, row, i);
 
                     width = Math.max(width, c.getPreferredSize().width+10); // adding an arbitray 10 pixels to make it look nicer
+                    
+                    if (maxWidth != null)
+                    {
+                        width = Math.min(width, maxWidth);
+                    }
             }
 
             if (width >= 0)

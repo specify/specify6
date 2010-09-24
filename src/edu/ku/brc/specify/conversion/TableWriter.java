@@ -104,6 +104,7 @@ public class TableWriter extends PrintWriter
         pwOut.println("<STYLE>");
         pwOut.println("body { font-family: sans-serif; }");
         pwOut.println(" SPAN.err { color: red; }");
+        //pwOut.println(" TH         { word-wrap: break-word; }");
         pwOut.println(" TABLE.o    { border-bottom: solid 1px rgb(128, 128, 128); border-right: solid 1px rgb(128, 128, 128); }");
         pwOut.println(" TABLE.o td { border-top: solid 1px rgb(128, 128, 128); border-left: solid 1px rgb(128, 128, 128); }");
         pwOut.println(" TABLE.o th { border-top: solid 1px rgb(128, 128, 128); border-left: solid 1px rgb(128, 128, 128); }");

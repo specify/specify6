@@ -200,6 +200,10 @@ public class ConversionLogger
     {
         try 
         {
+            if (dir == null)
+            {
+                dir = new File(".");
+            }
             String path = dir.getAbsolutePath() + File.separator + "index.html";
             TableWriter indexWriter = new TableWriter(path, indexTitle);
             

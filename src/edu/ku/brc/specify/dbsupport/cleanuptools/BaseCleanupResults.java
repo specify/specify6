@@ -45,6 +45,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -106,6 +107,8 @@ public abstract class BaseCleanupResults extends CustomDialog
         topTable = new JTable(model);
         botTable = new JTable(newModel);
         
+        //UIHelper.calcColumnWidths(topTable, null, 200);
+        
         DefaultTableCellRenderer tcr = getTableCellRenderer(model.getRowInfoList());
         for (int i=0;i<model.getColumnCount();i++)
         {
@@ -160,10 +163,16 @@ public abstract class BaseCleanupResults extends CustomDialog
         //arrowPanel.add(upBtn,    cc.xy(4, 1));
         arrowPanel.add(dwnBtn,   cc.xy(4, 1));
         
-        PanelBuilder pb = new PanelBuilder(new FormLayout("p:g", "f:p:g,10px,p,10px,p:g"));
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g,10px,p,10px,p:g"));
         
-        topTable.setAutoResizeMode (JTable.AUTO_RESIZE_OFF);
-        botTable.setAutoResizeMode (JTable.AUTO_RESIZE_OFF);
+        topTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        botTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        
+        UIHelper.makeTableHeadersCentered(topTable, false);
+        topTable.setDefaultRenderer(String.class, new BiColorTableCellRenderer(false));
+
+        UIHelper.makeTableHeadersCentered(botTable, false);
+
 
         //UIHelper.calcColumnWidths(topTable);
         //UIHelper.calcColumnWidths(botTable, 3);
