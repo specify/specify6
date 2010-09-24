@@ -3,10 +3,12 @@
  */
 package edu.ku.brc.specify.plugins.morphbank;
 
+import static edu.ku.brc.ui.UIHelper.createIconBtn;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.loadAndPushResourceBundle;
 
 import java.awt.Color;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -16,11 +18,16 @@ import java.sql.Timestamp;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.swing.Action;
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
+import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
 import net.morphbank.mbsvc3.xml.Credentials;
@@ -51,6 +58,7 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
 import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
 import edu.ku.brc.specify.plugins.UIPluginBase;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ProgressDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -166,7 +174,27 @@ public class MorphBankPanel extends UIPluginBase
 		}
 		settingsComplete = conceptMappingId != null && ownerId != null && groupId != null && baseURL != null && imageUploadURL != null;
 	}
-	
+
+    /**
+     * Adds a Key mappings.
+     * @param comp comp
+     * @param keyCode keyCode
+     * @param actionName actionName
+     * @param action action 
+     * @return the action
+     */
+    protected Action addRecordKeyMappings(final JComponent comp, final int keyCode, final String actionName, final Action action)
+    {
+        InputMap  inputMap  = comp.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        ActionMap actionMap = comp.getActionMap();
+        
+        inputMap.put(KeyStroke.getKeyStroke(keyCode, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), actionName);
+        actionMap.put(actionName, action);
+        
+        //UIRegistry.registerAction(actionName, action);
+        return action;
+    }
+
 	/**
 	 * 
 	 */
@@ -181,8 +209,8 @@ public class MorphBankPanel extends UIPluginBase
     	
 		//PanelBuilder bpb = new PanelBuilder(new FormLayout("2dlu, f:p:g, 1dlu, f:p:g, 1dlu, f:p:g, 1dlu, f:p:g, 2dlu", 
 		//		"f:p"));
-		detailsBtn = new JButton(texts[kDetailsBtn]);
-		detailsBtn.addActionListener(new ActionListener() {
+
+    	detailsBtn = createIconBtn("InfoIcon", IconManager.IconSize.Std24, null, false, new ActionListener() {
 
 			/* (non-Javadoc)
 			 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
@@ -192,16 +220,32 @@ public class MorphBankPanel extends UIPluginBase
 			{
 				showMorphBankDetails();
 			}
-		});
+    		
+    	});
+
+    	
+//    	detailsBtn = new JButton(texts[kDetailsBtn]);
+//		detailsBtn.addActionListener(new ActionListener() {
+//
+//			/* (non-Javadoc)
+//			 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+//			 */
+//			@Override
+//			public void actionPerformed(ActionEvent e)
+//			{
+//				showMorphBankDetails();
+//			}
+//		});
+		
     	tpb.add(detailsBtn, cc.xy(4, 2));
-    	viewMBBtn = new JButton(texts[kViewMBBtn]);
-    	viewMBBtn.addActionListener(new ActionListener() {
+    	
+    	viewMBBtn = createIconBtn("MorphBankLogo", IconManager.IconSize.Std24, null, false, new ActionListener() {
 
 			/* (non-Javadoc)
 			 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 			 */
 			@Override
-			public void actionPerformed(ActionEvent arg0)
+			public void actionPerformed(ActionEvent e)
 			{
 		        SwingUtilities.invokeLater(new Runnable() {
 		            public void run()
@@ -209,13 +253,34 @@ public class MorphBankPanel extends UIPluginBase
 		            	viewMorphBankImagePage(getMbImageId());
 		            }
 		          });
-				
 			}
     		
     	});
+        
+    	
+//    	viewMBBtn = new JButton(texts[kViewMBBtn]);
+//    	viewMBBtn.addActionListener(new ActionListener() {
+//
+//			/* (non-Javadoc)
+//			 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+//			 */
+//			@Override
+//			public void actionPerformed(ActionEvent arg0)
+//			{
+//		        SwingUtilities.invokeLater(new Runnable() {
+//		            public void run()
+//		            {
+//		            	viewMorphBankImagePage(getMbImageId());
+//		            }
+//		          });
+//				
+//			}
+//    		
+//    	});
+        
     	tpb.add(viewMBBtn, cc.xy(6, 2));
-    	putBtn = new JButton(texts[kPutBtn]);
-    	putBtn.addActionListener(new ActionListener() {
+
+    	putBtn = createIconBtn("Green Arrow Up", IconManager.IconSize.Std24, null, false, new ActionListener() {
 
 			/* (non-Javadoc)
 			 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
@@ -227,8 +292,38 @@ public class MorphBankPanel extends UIPluginBase
 			}
     		
     	});
+    	
+//    	putBtn = new JButton(texts[kPutBtn]);
+//    	putBtn.addActionListener(new ActionListener() {
+//
+//			/* (non-Javadoc)
+//			 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+//			 */
+//			@Override
+//			public void actionPerformed(ActionEvent e)
+//			{
+//				sendToMorphBank(false);
+//			}
+//    		
+//    	});
+    	
     	tpb.add(putBtn, cc.xy(8, 2));
-    	getBtn = new JButton(texts[kGetBtn]);
+    	
+    	getBtn = createIconBtn("Green Arrow Down", IconManager.IconSize.Std24, null, false, new ActionListener() {
+
+			/* (non-Javadoc)
+			 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+			 */
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				//nothing yet;
+			}
+    		
+    	});
+
+    	//getBtn = new JButton(texts[kGetBtn]);
+    	
     	tpb.add(getBtn, cc.xy(10, 2));
 
         Color bgColor = getBackground();
@@ -312,7 +407,7 @@ public class MorphBankPanel extends UIPluginBase
 	{
 		if (isMorphBanked.get())
 		{
-			return attachment.getAttachmentImageAttribute().getMbImageId();
+			return imageAttribute.getMbImageId();
 		}
 		return null;
 	}
@@ -404,7 +499,7 @@ public class MorphBankPanel extends UIPluginBase
 					if (attachment != null)
 					{
 						isImage = isImageMimeType(attachment.getMimeType());
-						isMorphBanked.set(getMbImageId() != null);
+						isMorphBanked.set(imageAttribute.getMbImageId() != null);
 					}
 				}
 				else
@@ -502,17 +597,17 @@ public class MorphBankPanel extends UIPluginBase
 		        boolean tblTransactionOpen = false;
 		        try
 		        {
+		        	session.attach(attachment);
 		        	AttachmentImageAttribute aia = attachment.getAttachmentImageAttribute();
 		        	if (aia == null)
 		        	{
 		        		aia = new AttachmentImageAttribute();
+			        	aia.initialize();
+			        	aia.getAttachments().add(attachment);
+			        	attachment.setAttachmentImageAttribute(aia);
 		        	}
-		        	aia.initialize();
 		        	aia.setMbImageId(morphbankImageId);
 		        	aia.setTimestampLastSend(new Timestamp(System.currentTimeMillis()));
-		        	session.attach(attachment);
-		        	aia.getAttachments().add(attachment);
-		        	attachment.setAttachmentImageAttribute(aia);
 		            BusinessRulesIFace busRule = DBTableIdMgr.getInstance().getBusinessRule(AttachmentImageAttribute.class);
 		            if (busRule != null)
 		            {
@@ -539,6 +634,8 @@ public class MorphBankPanel extends UIPluginBase
 		            //session.merge(attachment);
 		            //attacher = session.merge(attacher);
 		            session.refresh(attacher);
+		            imageAttribute = attachment.getAttachmentImageAttribute();
+		            imageAttribute.forceLoad();
 		        	return true;
 		        }
 		        catch (Exception ex)
@@ -655,8 +752,11 @@ public class MorphBankPanel extends UIPluginBase
 					PostXMLSp.PostResponse response = poster
 							.post(requestFileName);
 					if (response.getStatusCode() == 200)
+					if (true)
 					{
 						String morphbankIDStr = getMorphbankIdStr(response);
+						//String morphbankIDStr = "666";
+						
 						//System.out.println(morphbankIDStr);
 						if (morphbankIDStr != null)
 						{
@@ -715,7 +815,7 @@ public class MorphBankPanel extends UIPluginBase
 										getResourceString("INFORMATION"),
 										JOptionPane.INFORMATION_MESSAGE);
 							}
-							setValue(attacher, null);
+							setValue(imageAttribute, null);
 						}
 					});
 				} else
