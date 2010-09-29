@@ -1085,7 +1085,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                                               final String           viewSetMgrName, 
                                                               final File             dir)
     {
-        debug = true;
         if (debug) 
         {
             log.debug("Creating AppResourceDef from Dir ["+virtualDirName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -2242,7 +2241,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
                 if (appRes.getSpAppResourceId() != null)
                 {
-                    session.attach(appRes);
+                    // This needs to be looked into, hack for 6.2.04
+                    try
+                    {
+                        session.attach(appRes);
+                    } catch (org.hibernate.NonUniqueObjectException ex) {}
                 }
                 
                 if (appRes.getMimeType() != null && appRes.getMimeType().equals("text/xml")) //$NON-NLS-1$
