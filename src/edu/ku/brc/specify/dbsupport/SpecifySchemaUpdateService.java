@@ -1957,7 +1957,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     } catch (Exception ex) {}
                 }
                 
-                BasicSQLUtils.update(conn, "DROP TABLE agent_discipline");
+                if (BasicSQLUtils.doesTableExist(conn, "agent_discipline"))
+                {
+                    BasicSQLUtils.update(conn, "DROP TABLE agent_discipline");
+                }
                 
                 // Add New Fields to Address
                 tblName = setTableTitleForFrame(Agent.getClassTableId());

@@ -69,7 +69,6 @@ import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
-import edu.ku.brc.specify.datamodel.SpVersion;
 import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.IconManager;
@@ -236,27 +235,16 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
      */
     public boolean doExit(boolean doAppExit)
     {
-        // Create Version Record and copy if there is a connection
-        if (DBConnection.getInstance().getConnection() != null)
+        if (UIRegistry.isMobile())
         {
-            String  appVerNum = UIHelper.getInstall4JInstallString();
-            String  dbVersion = SchemaUpdateService.getInstance().getDBSchemaVersionFromXML();
-            SpVersion.createInitialRecord(DBConnection.getInstance().getConnection(), appVerNum, dbVersion);
-    
-            if (UIRegistry.isMobile())
-            {
-                DBConnection.setCopiedToMachineDisk(true);
-            }
+            DBConnection.setCopiedToMachineDisk(true);
         }
         
         DBConnection.shutdown();
         HibernateUtil.shutdown();
         
-        SwingUtilities.invokeLater(new Runnable() {
-
-            /* (non-Javadoc)
-             * @see java.lang.Runnable#run()
-             */
+        SwingUtilities.invokeLater(new Runnable() 
+        {
             @Override
             public void run()
             {
@@ -267,7 +255,6 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
                 {
                     System.exit(0);
                 }
-
             }
         });
         

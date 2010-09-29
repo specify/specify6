@@ -62,6 +62,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
@@ -70,6 +71,7 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.Institution;
+import edu.ku.brc.specify.datamodel.SpVersion;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
@@ -929,10 +931,6 @@ public class SpecifyDBSetupWizard extends JPanel
                         isOK = false;
                     }
                     
-                    JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
-                                                  getLocalizedMessage("BLD_DONE", getResourceString(isOK ? "BLD_OK" :"BLD_NOTOK")),
-                                                  getResourceString("COMPLETE"), JOptionPane.INFORMATION_MESSAGE);                                
-                
                 } catch (Exception ex)
                 {
                     //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
@@ -948,15 +946,23 @@ public class SpecifyDBSetupWizard extends JPanel
             @Override
             protected void done()
             {
-                if (isOK)
+                // Create Version Record and copy if there is a connection
+                if (DBConnection.getInstance().getConnection() != null)
                 {
+                    String  appVerNum = UIHelper.getInstall4JInstallString();
+                    String  dbVersion = SchemaUpdateService.getInstance().getDBSchemaVersionFromXML();
+                    SpVersion.createInitialRecord(DBConnection.getInstance().getConnection(), appVerNum, dbVersion);
+            
                     if (UIRegistry.isMobile())
                     {
                         DBConnection.setCopiedToMachineDisk(true);
                     }
-                    HibernateUtil.shutdown();
-                    DBConnection.shutdown();
                 }
+                
+                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                        getLocalizedMessage("BLD_DONE", getResourceString(isOK ? "BLD_OK" :"BLD_NOTOK")),
+                        getResourceString("COMPLETE"), JOptionPane.INFORMATION_MESSAGE);                                
+
                 if (listener != null)
                 {
                     listener.hide();
