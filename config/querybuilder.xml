@@ -113,7 +113,6 @@
     	<table name="Collection" field="collection" >
     		<alias name="Agent" field="contentContacts" />
         	<alias name="Agent" field="createdByAgent" />
-    		<table name="FieldNotebook" field="fieldNoteBooks" />
       		<!-- <alias name="CollectionRelType" field="leftSideRelTypes" />  -->
          	<alias name="Agent" field="modifiedByAgent" />
          	<table name="AutoNumberingScheme" field="numberingSchemes" />
