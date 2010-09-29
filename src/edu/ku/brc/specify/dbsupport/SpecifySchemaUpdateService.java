@@ -1925,40 +1925,41 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 // Schema Changes 1.4
                 //////////////////////////////////////////////
                 
-                PreparedStatement pStmt    = null;
-                try
-                {
-                    pStmt    = conn.prepareStatement("UPDATE agent SET DivisionID=? WHERE AgentID = ?");
-                
-                    sql = "SELECT a.AgentID, d.DivisionID FROM agent AS a " +
-                          "Inner Join agent_discipline AS ad ON a.AgentID = ad.AgentID " +
-                          "Inner Join discipline AS d ON ad.DisciplineID = d.UserGroupScopeId " +    
-                          "WHERE a.DivisionID IS NULL";
-
-                    for (Object[] row : BasicSQLUtils.query(conn, sql))
-                    {
-                        int agtId = (Integer)row[0];
-                        int divId = (Integer)row[1];
-                        pStmt.setInt(1, divId);
-                        pStmt.setInt(2, agtId);
-                        pStmt.executeUpdate();
-                    }
-                } catch (Exception e1)
-                {
-                    e1.printStackTrace();
-                } finally
-                {
-                    try
-                    {
-                        if (pStmt != null)
-                        {
-                            pStmt.close();
-                        }
-                    } catch (Exception ex) {}
-                }
-                
                 if (BasicSQLUtils.doesTableExist(conn, "agent_discipline"))
                 {
+                    PreparedStatement pStmt    = null;
+                    try
+                    {
+                        pStmt    = conn.prepareStatement("UPDATE agent SET DivisionID=? WHERE AgentID = ?");
+                    
+                        sql = "SELECT a.AgentID, d.DivisionID FROM agent AS a " +
+                              "Inner Join agent_discipline AS ad ON a.AgentID = ad.AgentID " +
+                              "Inner Join discipline AS d ON ad.DisciplineID = d.UserGroupScopeId " +    
+                              "WHERE a.DivisionID IS NULL";
+    
+                        for (Object[] row : BasicSQLUtils.query(conn, sql))
+                        {
+                            int agtId = (Integer)row[0];
+                            int divId = (Integer)row[1];
+                            pStmt.setInt(1, divId);
+                            pStmt.setInt(2, agtId);
+                            pStmt.executeUpdate();
+                        }
+                    } catch (Exception e1)
+                    {
+                        e1.printStackTrace();
+                    } finally
+                    {
+                        try
+                        {
+                            if (pStmt != null)
+                            {
+                                pStmt.close();
+                            }
+                        } catch (Exception ex) {}
+                    }
+                
+
                     BasicSQLUtils.update(conn, "DROP TABLE agent_discipline");
                 }
                 
