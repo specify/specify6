@@ -20,6 +20,7 @@ package edu.ku.brc.specify.dbsupport.cleanuptools;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,10 +28,14 @@ import java.util.Vector;
 
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBInfoBase;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.specify.conversion.TimeLogger;
 
 /**
  * @author rods
@@ -50,12 +55,15 @@ import edu.ku.brc.af.core.db.DBTableInfo;
  */
 public class DataObjTableModel extends DefaultTableModel
 {
+    protected static final Logger   log = Logger.getLogger(DataObjTableModel.class);
+
     protected Connection            conn;
     protected ArrayList<DBInfoBase> items;
     protected DBTableInfo           tableInfo;
-    protected Vector<Object[]>      values     = null;
-    protected boolean               isEditable = false;
-    protected int[]                 mapInx     = null;
+    protected Vector<Object[]>      values         = null;
+    protected boolean               isEditable     = false;
+    protected boolean               isFirstColBool = true;
+    protected int[]                 mapInx         = null;
     
     protected String                colName;
     protected Object                searchValue;
@@ -139,9 +147,17 @@ public class DataObjTableModel extends DefaultTableModel
         this.tableInfo   = DBTableIdMgr.getInstance().getInfoById(tableId);
         
         this.values      = new Vector<Object[]>();
-        this.values.add(new Object[items.size()]);
+        this.values.add(new Object[items != null ? items.size() : 1]);
     }
     
+    /**
+     * @param isFirstColBool the isFirstColBool to set
+     */
+    public void setFirstColBool(boolean isFirstColBool)
+    {
+        this.isFirstColBool = isFirstColBool;
+    }
+
     /**
      * @return the sql
      */
@@ -172,6 +188,16 @@ public class DataObjTableModel extends DefaultTableModel
         values.clear();
         fireTableDataChanged();
     }
+    
+    /**
+     * @param cmpRow
+     * @param rs
+     * @throws SQLException
+     */
+    protected void processColumns(final Object[] cmpRow)
+    {
+        
+    }
 
     /**
      * The Data members must be set to call this:
@@ -182,122 +208,148 @@ public class DataObjTableModel extends DefaultTableModel
     protected void fillModels()
     {
         final String sqlStr = buildSQL();
-        System.out.println(sqlStr);
         
-        try
+        if (StringUtils.isNotEmpty(sqlStr))
         {
-            values = new Vector<Object[]>();
+            log.debug(sqlStr);
             
-            PreparedStatement pStmt = conn.prepareStatement(sqlStr);
-            if (searchValue != null)
+            TimeLogger tml  = new TimeLogger("Fetching Rows");
+            try
             {
-                pStmt.setObject(1, searchValue);
-            }
-            //System.out.println(sqlStr+" ["+searchValue+"]");
-            
-            ResultSet rs = pStmt.executeQuery();
-            while (rs.next())
-            {
-                Object[] row = new Object[numColumns];
-                for (int i=0;i<numColumns;i++)
+                values = new Vector<Object[]>();
+                
+                PreparedStatement pStmt = conn.prepareStatement(sqlStr);
+                if (searchValue != null)
                 {
-                    row[i] = rs.getObject(i+1);
+                    pStmt.setObject(1, searchValue);
                 }
-                rowInfoList.add(new DataObjTableModelRowInfo(rs.getInt(1), false, false));
-                values.add(row);
+                log.debug(sqlStr+" ["+searchValue+"]");
+                
+                tml.restart("Query");
+                ResultSet         rs   = pStmt.executeQuery();
+                ResultSetMetaData rsmd = rs.getMetaData();
+                
+                tml.restart("Loading");
+                while (rs.next())
+                {
+                    Object[] row = new Object[numColumns];
+                    for (int i=0;i<rsmd.getColumnCount();i++)
+                    {
+                        Object obj = rs.getObject(i+1);
+                        row[i] = obj instanceof String ? obj.toString().trim() : obj;
+                    }
+                    rowInfoList.add(new DataObjTableModelRowInfo(rs.getInt(1), false, false));
+                    values.add(row);
+                    processColumns(row);
+                }
+                rs.close();
+                pStmt.close();
+                tml.end();
+                
+            } catch (SQLException ex)
+            {
+                ex.printStackTrace();
             }
-            rs.close();
-            pStmt.close();
+            tml.restart("Step 2 - Addl Rows");
+            addAdditionalRows(colDefItems, rowInfoList);
             
-        } catch (SQLException ex)
-        {
-            ex.printStackTrace();
-        }
-        
-        addAdditionalRows(colDefItems, rowInfoList);
-        
-        sameValues  = new ArrayList<Boolean>(numColumns);
-        hasDataList = new ArrayList<Boolean>(numColumns);
-        for (int i=0;i<numColumns;i++)
-        {
-            sameValues.add(true);
-            hasDataList.add(false);
-        }
-        
-        for (Object[] col : values)
-        {
+            tml.restart("Step 3");
+            
+            sameValues  = new ArrayList<Boolean>(numColumns);
+            hasDataList = new ArrayList<Boolean>(numColumns);
             for (int i=0;i<numColumns;i++)
             {
-                Object  data    = col[i];
-                boolean hasData = data != null;
-                
-                if (hasData && !hasDataList.get(i))
-                {
-                    hasDataList.set(i, true);
-                    hasDataCols++;
-                }
+                sameValues.add(true);
+                hasDataList.add(false);
             }
-        }
-        
-        adjustHasDataColumns();
-        
-        mapInx = new int[hasDataCols];
-        int colInx = 0;
-        System.out.println("-------------Has Data----------------------");
-        for (int i=0;i<numColumns;i++)
-        {
-            if (hasDataList.get(i))
-            {
-                //System.out.println(itemsList.get(i).getTitle());
-                mapInx[colInx] = i;
-                indexHash.put(i, colInx);
-                //System.out.print("indexHash: "+i +" -> "+colInx);
-                //System.out.println("  mapInx:    "+colInx +" -> "+i);
-                colInx++;
-            }
-        }        
-        
-        for (int i=0;i<mapInx.length;i++)
-        {
-            colInx = mapInx[i];
             
-            if (hasDataList.get(colInx))
+            for (Object[] col : values)
             {
-                Object data = null;
-                for (Object[] col : values)
+                for (int i=0;i<numColumns;i++)
                 {
-                    Object newData = col[colInx];
+                    Object  data    = col[i];
+                    boolean hasData = data != null;
                     
-                    if (data == null)
+                    if (hasData && !hasDataList.get(i))
                     {
-                        if (newData != null)
-                        {
-                            data = newData;
-                        }
-                        continue;
-                    }
-                   
-                    if (newData != null && !data.equals(newData))
-                    {
-                        sameValues.set(colInx, false);
-                        break;
+                        hasDataList.set(i, true);
+                        hasDataCols++;
                     }
                 }
             }
-        }
-        
-        /*
-        System.out.println("-----------Same------------------------");
-        for (int i=0;i<mapInx.length;i++)
-        {
-            colInx = mapInx[i];
-            if (sameValues.get(colInx))
+            
+            tml.restart("Step  4 - adj cols");
+            adjustHasDataColumns();
+            
+            tml.restart("Step  5 - Map");
+            mapInx = new int[hasDataCols];
+            int colInx = 0;
+            //log.debug("-------------Has Data----------------------");
+            for (int i=0;i<numColumns;i++)
             {
-                System.out.println(colInx + " " + itemsList.get(colInx).getTitle());
+                if (hasDataList.get(i))
+                {
+                    //log.debug(itemsList.get(i).getTitle());
+                    mapInx[colInx] = i;
+                    indexHash.put(i, colInx);
+                    //System.out.print("indexHash: "+i +" -> "+colInx);
+                    //log.debug("  mapInx:    "+colInx +" -> "+i);
+                    colInx++;
+                }
+            }        
+            
+            tml.restart("Step  6 - same data");
+            for (int i=0;i<mapInx.length;i++)
+            {
+                colInx = mapInx[i];
+                
+                if (hasDataList.get(colInx))
+                {
+                    Object data = null;
+                    for (Object[] col : values)
+                    {
+                        Object newData = col[colInx];
+                        
+                        if (data == null)
+                        {
+                            if (newData != null)
+                            {
+                                data = newData;
+                            }
+                            continue;
+                        }
+                       
+                        if (newData != null && !data.equals(newData))
+                        {
+                            sameValues.set(colInx, false);
+                            break;
+                        }
+                    }
+                }
             }
-        }*/
+            tml.end();
+            /*
+            log.debug("-----------Same------------------------");
+            for (int i=0;i<mapInx.length;i++)
+            {
+                colInx = mapInx[i];
+                if (sameValues.get(colInx))
+                {
+                    log.debug(colInx + " " + itemsList.get(colInx).getTitle());
+                }
+            }*/
+            
+            items = new ArrayList<DBInfoBase>(colDefItems);
+            doneFillingModels(values);
+        }
+    }
+    
+    /**
+     * Called after the models are filled.
+     */
+    protected void doneFillingModels(@SuppressWarnings("unused") final Vector<Object[]> values)
+    {
         
-        items = new ArrayList<DBInfoBase>(colDefItems);
     }
     
     /**
@@ -349,7 +401,7 @@ public class DataObjTableModel extends DefaultTableModel
     @Override
     public String getColumnName(int column)
     {
-        if (column == 0) 
+        if (isFirstColBool && column == 0) 
         {
             return !isEditable ? "Is Included" : ""; // I18N
         }
@@ -372,7 +424,7 @@ public class DataObjTableModel extends DefaultTableModel
     @Override
     public Object getValueAt(int row, int column)
     {
-        if (column == 0) 
+        if (isFirstColBool && column == 0) 
         {
             if (!isEditable)
             {
@@ -381,13 +433,13 @@ public class DataObjTableModel extends DefaultTableModel
             return "";
         }
 
-        //System.out.println("----------------");
+        //log.debug("----------------");
         Object[] col = values != null ? values.get(row) : null;
         if (col != null)
         {
-            //System.out.println("column "+column);
-            //System.out.println("mapInx[column] "+mapInx[column]);
-            //System.out.println("col len "+col.length);
+            //log.debug("column "+column);
+            //log.debug("mapInx[column] "+mapInx[column]);
+            //log.debug("col len "+col.length);
             return col[mapInx[column]];
         }
         return null;
@@ -399,7 +451,7 @@ public class DataObjTableModel extends DefaultTableModel
     @Override
     public Class<?> getColumnClass(int column)
     {
-        if (column == 0)
+        if (isFirstColBool && column == 0)
         {
             return !isEditable ? Boolean.class : String.class;
         }
@@ -426,7 +478,7 @@ public class DataObjTableModel extends DefaultTableModel
     @Override
     public boolean isCellEditable(int row, int column)
     {
-        if (column == 0)
+        if (isFirstColBool && column == 0)
         {
             return !isEditable; 
         }
@@ -440,7 +492,7 @@ public class DataObjTableModel extends DefaultTableModel
     @Override
     public void setValueAt(Object aValue, int row, int column)
     {
-        if (column == 0)
+        if (isFirstColBool && column == 0)
         {
             if (!isEditable && aValue instanceof Boolean)
             {
@@ -536,4 +588,14 @@ public class DataObjTableModel extends DefaultTableModel
     {
         this.indexHash = indexHash;
     }
+
+    /**
+     * @return the values
+     */
+    public Vector<Object[]> getValues()
+    {
+        return values;
+    }
+    
+    
 }

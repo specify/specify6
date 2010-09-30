@@ -50,6 +50,7 @@ import java.net.ConnectException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EventObject;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -189,6 +190,7 @@ import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UnhandledExceptionDialog;
+import edu.ku.brc.ui.WorkBenchPluginIFace;
 import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
 import edu.ku.brc.ui.tmanfe.SearchReplacePanel;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
@@ -236,7 +238,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected JButton               showMapBtn             = null;
     protected JButton               controlPropsBtn        = null;
     protected JButton               exportKmlBtn           = null;
-    protected JButton               biogeomancerBtn        = null;
+    protected JButton               geoRefToolBtn          = null;
     protected JButton               convertGeoRefFormatBtn = null;
     protected JButton               exportExcelCsvBtn      = null;
     protected JButton               uploadDatasetBtn       = null;
@@ -266,6 +268,9 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected WindowListener        minMaxWindowListener       = null; 
     
     protected CustomDialog          geoRefConvertDlg           = null;
+    
+    protected Vector<JButton>                        workBenchPluginBtns = new Vector<JButton>();
+    protected HashMap<String, WorkBenchPluginIFace>  workBenchPlugins    = new HashMap<String, WorkBenchPluginIFace>();
     
     /**
      * The currently active Uploader. 
@@ -615,11 +620,21 @@ public class WorkbenchPaneSS extends BaseSubPane
                         }
                     });
         }
+        
+        // 
+        
+        if (!isReadOnly)
+        {
+            // Will come from XML
+            //createPlugin("edu.ku.brc.specify.plugins.sgr.SGRPluginImpl", "SGR", "WB_SHOW_IN_GOOGLE_EARTH");
+        }
+        
+        
         // enable or disable along with Show Map and Geo Ref Convert buttons
         
         if (isReadOnly)
         {
-            biogeomancerBtn = null;
+            geoRefToolBtn = null;
         }
         else
         {
@@ -628,7 +643,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             String iconName = "GEOLocate20"; //tool.equalsIgnoreCase("geolocate") ? "GeoLocate" : "BioGeoMancer";
             String toolTip = tool.equalsIgnoreCase("geolocate") ? "WB_DO_GEOLOCATE_LOOKUP"
             		: "WB_DO_BIOGEOMANCER_LOOKUP";
-            biogeomancerBtn = createIconBtn(iconName, IconManager.IconSize.NonStd,
+            geoRefToolBtn = createIconBtn(iconName, IconManager.IconSize.NonStd,
                     toolTip, false, new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
@@ -649,19 +664,19 @@ public class WorkbenchPaneSS extends BaseSubPane
             String[] missingColumnsForBG = getMissingButRequiredColumnsForBioGeomancer();
             if (missingColumnsForBG.length > 0)
             {
-                biogeomancerBtn.setEnabled(false);
+                geoRefToolBtn.setEnabled(false);
                 String ttText = "<p>" + getResourceString("WB_ADDITIONAL_FIELDS_REQD") + ":<ul>";
                 for (String reqdField : missingColumnsForBG)
                 {
                     ttText += "<li>" + reqdField + "</li>";
                 }
                 ttText += "</ul>";
-                String origTT = biogeomancerBtn.getToolTipText();
-                biogeomancerBtn.setToolTipText("<html>" + origTT + ttText);
+                String origTT = geoRefToolBtn.getToolTipText();
+                geoRefToolBtn.setToolTipText("<html>" + origTT + ttText);
             }
             else
             {
-                biogeomancerBtn.setEnabled(true);
+                geoRefToolBtn.setEnabled(true);
             }
         }
         
@@ -756,13 +771,11 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         
         
-        for (int c = 0; c < spreadSheet.getTableHeader().getColumnModel()
-				.getColumnCount(); c++)
+        for (int c = 0; c < spreadSheet.getTableHeader().getColumnModel().getColumnCount(); c++)
 		{
 			// TableColumn column =
 			// spreadSheet.getTableHeader().getColumnModel().getColumn(spreadSheet.getTableHeader().getColumnModel().getColumnCount()-1);
-			TableColumn column = spreadSheet.getTableHeader().getColumnModel()
-					.getColumn(c);
+			TableColumn column = spreadSheet.getTableHeader().getColumnModel().getColumn(c);
 			column.setCellRenderer(new WbCellRenderer());
 		}
 
@@ -815,15 +828,21 @@ public class WorkbenchPaneSS extends BaseSubPane
         // start putting together the visible UI
         CellConstraints cc = new CellConstraints();
 
-        JComponent[] allComps      = {addRowsBtn, deleteRowsBtn, clearCellsBtn, showMapBtn, exportKmlBtn, biogeomancerBtn, convertGeoRefFormatBtn, exportExcelCsvBtn, uploadDatasetBtn};
-        Vector<JComponent> availableComps = new Vector<JComponent>(allComps.length);
-        for (JComponent c : allComps)
+        JComponent[] compsArray = {addRowsBtn, deleteRowsBtn, clearCellsBtn, showMapBtn, exportKmlBtn, 
+                                   geoRefToolBtn, convertGeoRefFormatBtn, exportExcelCsvBtn, uploadDatasetBtn};
+        Vector<JComponent> availableComps = new Vector<JComponent>(compsArray.length + workBenchPluginBtns.size());
+        for (JComponent c : compsArray)
         {
             if (c != null)
             {
                 availableComps.add(c);
             }
         }
+        for (JComponent c : workBenchPluginBtns)
+        {
+            availableComps.add(c);
+        }
+        
         PanelBuilder spreadSheetControlBar = new PanelBuilder(new FormLayout("f:p:g,4px,"+createDuplicateJGoodiesDef("p", "4px", availableComps.size())+",4px,", "c:p:g"));
         
         int x = 3;
@@ -2632,6 +2651,14 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected List<GeoCoordDataIFace> getSelectedRowsFromViewForGeoRef()
     {
+        return new Vector<GeoCoordDataIFace>(getSelectedRows());
+    }
+    
+    /**
+     * @return
+     */
+    protected List<WorkbenchRow> getSelectedRows()
+    {
         // get the indexes into the model for all of the selected rows
         int[] selection = spreadSheet.getSelectedRowModelIndexes();
         if (selection.length == 0)
@@ -2641,13 +2668,13 @@ public class WorkbenchPaneSS extends BaseSubPane
             selection = new int[rowCnt];
             for (int i = 0; i < rowCnt; ++i)
             {
-                selection[i]=spreadSheet.convertRowIndexToModel(i);
+                selection[i] = spreadSheet.convertRowIndexToModel(i);
             }
         }
 
         // gather all of the WorkbenchRows into a vector
-        List<WorkbenchRow>      rows         = workbench.getWorkbenchRowsAsList();
-        List<GeoCoordDataIFace> selectedRows = new Vector<GeoCoordDataIFace>();
+        List<WorkbenchRow> rows         = workbench.getWorkbenchRowsAsList();
+        List<WorkbenchRow> selectedRows = new Vector<WorkbenchRow>();
         for (int i: selection)
         {
             selectedRows.add(rows.get(i));
@@ -3000,6 +3027,11 @@ public class WorkbenchPaneSS extends BaseSubPane
     public boolean aboutToShutdown()
     {
         super.aboutToShutdown();
+        
+        for (WorkBenchPluginIFace wbp : workBenchPlugins.values())
+        {
+            wbp.shutdown();
+        }
         
         // Tell it is about to be hidden.
         // this way it can end any editing
@@ -3714,9 +3746,9 @@ public class WorkbenchPaneSS extends BaseSubPane
     	{
     		exportKmlBtn.setEnabled(enabled && !missingGeoRefFlds);
     	}
-    	if (biogeomancerBtn != null)
+    	if (geoRefToolBtn != null)
     	{
-    		biogeomancerBtn.setEnabled(enabled);
+    		geoRefToolBtn.setEnabled(enabled);
     	}
     	if (convertGeoRefFormatBtn != null)
     	{
@@ -3733,6 +3765,11 @@ public class WorkbenchPaneSS extends BaseSubPane
     	if (exportExcelCsvBtn != null)
     	{
     		exportExcelCsvBtn.setEnabled(enabled);
+    	}
+    	
+    	for (JButton btn : workBenchPluginBtns)
+    	{
+    	    btn.setEnabled(enabled);
     	}
     }
     
@@ -3875,6 +3912,71 @@ public class WorkbenchPaneSS extends BaseSubPane
     	return false;
     }
     
+    /**
+     * @param className
+     * @param iconName
+     * @param tooltipKey
+     */
+    protected void createPlugin(final String className, final String iconName, final String tooltipKey)
+    {
+        try
+        {
+            final Class<?>             wbPluginCls = Class.forName(className);
+            final WorkBenchPluginIFace wbPlugin    = (WorkBenchPluginIFace) wbPluginCls.newInstance();
+            
+            wbPlugin.setSpreadSheet(spreadSheet);
+            wbPlugin.setWorkbench(workbench);
+            workBenchPlugins.put(wbPluginCls.getSimpleName(), wbPlugin);
+            
+            JButton btn = createIconBtn(iconName, IconManager.IconSize.Std20,
+                    tooltipKey, false, new ActionListener()
+                    {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            SwingUtilities.invokeLater(new Runnable()
+                            {
+                                public void run()
+                                {
+                                    wbPlugin.process(getSelectedRows());
+                                }
+                            });
+                        }
+                    });
+            workBenchPluginBtns.add(btn);
+            
+            List<String> missingFields = wbPlugin.getMissingFieldsForPlugin();
+            if (missingFields != null && missingFields.size() > 0)
+            {
+                btn.setEnabled(false);
+                String ttText = "<p>" + getResourceString("WB_ADDITIONAL_FIELDS_REQD") + ":<ul>";
+                for (String reqdField : missingFields)
+                {
+                    ttText += "<li>" + reqdField + "</li>";
+                }
+                ttText += "</ul>";
+                String origTT = btn.getToolTipText();
+                btn.setToolTipText("<html>" + origTT + ttText);
+            }
+            else
+            {
+                btn.setEnabled(true);
+            }
+            
+        } catch (ClassNotFoundException e)
+        {
+            e.printStackTrace();
+        } catch (InstantiationException e)
+        {
+            e.printStackTrace();
+        } catch (IllegalAccessException e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
+    //----------------------------------------------------------------------------------------
+    //--
+    //----------------------------------------------------------------------------------------
     private class ValidationWorker extends javax.swing.SwingWorker<Object, Object>
     {
 		private final int[] rows;
@@ -4087,7 +4189,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         	init(combo, caption, length, gcSaveBtn);
         }
         
-        protected void init(final JComponent comp, final String caption, final int length, final JButton gcSaveBtn)
+        protected void init(final JComponent comp, final String caption, final int length, @SuppressWarnings("unused") final JButton gcSaveBtn)
         {
            	this.uiComponent = comp;
             this.length    = length;

@@ -14,6 +14,9 @@
     <icon name="GEOLocate20"      file="geolocate20.png" sizes="20"/>
     <icon name="GEOLocate16"      file="geolocate16.png" sizes="16"/>
     <icon name="WorldWind"        file="worldwind32x32.png" sizes="32"/>
+    <icon name="SGR"              file="sgr.png" sizes="32"/>
+    <icon name="ColorPalette"     file="colorpalette.png" sizes="32"/>
+    <icon name="Weightings"       file="weightings.png" sizes="32"/>
     
     <icon name="SearchBoxMac"      file="SearchBoxMac.gif"  sizes="NonStd"/>
     <icon name="SearchBoxLinux"    file="Search32x32.png" sizes="all"/>

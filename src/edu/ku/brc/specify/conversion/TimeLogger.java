@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.conversion;
 
 /**
+ * Simple class that makes it easy to show elapsed time.
  * @author rods
  *
  * @code_status Alpha
@@ -29,11 +30,12 @@ package edu.ku.brc.specify.conversion;
  */
 public class TimeLogger
 {
-
-    private long startTime;
-    private long endTime;
+    private String desc        = null;
+    private long   startTime;
+    private long   endTime;
+    
     /**
-     * 
+     * Constructor - Captures the start time.
      */
     public TimeLogger()
     {
@@ -41,23 +43,59 @@ public class TimeLogger
         start();
     }
     
+    /**
+     * Constructor - Captures the start time.
+     */
+    public TimeLogger(final String desc)
+    {
+        this();
+        this.desc = desc;
+    }
+    
+    /**
+     * Sets the start time (automatically called by the constructor).
+     */
     public void start()
     {
         startTime = System.currentTimeMillis();
         endTime   = 0;
     }
     
+    /**
+     * Sets the start time (automatically called by the constructor).
+     * @param description set the output description
+     */
+    public void start(final String description)
+    {
+        this.desc = description;
+        start();
+    }
+    
+    /**
+     * Call end and then start Sets the start time (automatically called by the constructor).
+     * @param description set the output description
+     */
+    public void restart(final String description)
+    {
+        end();
+        this.desc = description;
+        start();
+    }
+    
+    /**
+     * @return a string with hrs:min:secs (total seconds) (milliseconds) and prints to System.out.
+     */
     public String end()
     {
         endTime = System.currentTimeMillis();
         
-        double totalSeconds = (endTime - startTime) / 1000.0;
+        double totalSeconds = ((double)(endTime - startTime)) / 1000.0;
         
         int hours = (int)(totalSeconds / 3600.0);
         int mins  = (int)((totalSeconds - (hours * 3600)) / 60);
         int secs  = (int)(totalSeconds - (hours * 3600) - (mins * 60));
                
-        String str = String.format("Elapsed Time: %02d:%02d:%02d (%8.4f)", hours, mins, secs, totalSeconds);
+        String str = String.format("%sElapsed Time: %02d:%02d:%02d (%8.4f) (%d)", (desc != null ? (desc + " - ") : ""), hours, mins, secs, totalSeconds, endTime);
         System.out.println(str);
         return str;
     }

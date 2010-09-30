@@ -2085,7 +2085,26 @@ public final class UIHelper
                                         final ActionListener       al)
     {
         String ttText = StringUtils.isNotEmpty(toolTipTextKey) ? getResourceString(toolTipTextKey) : null;
-        return createIconBtnTT(iconName, size, ttText, withEmptyBorder, al);
+        return createIconBtnTT(iconName, size, ttText, withEmptyBorder, false, al);
+    }
+    
+    /**
+     * Creates an icon button with tooltip and action listener.
+     * @param iconName the name of the icon (use default size)
+     * @param toolTipTextKey the tooltip text resource bundle key
+     * @param al the action listener
+     * @param withEmptyBorder set an empyt border
+     * @return the JButton icon button
+     */
+    public static JButton createIconBtn(final String               iconName, 
+                                        final IconManager.IconSize size,
+                                        final String               toolTipTextKey, 
+                                        final boolean              withEmptyBorder,
+                                        final boolean              enabled,
+                                        final ActionListener       al)
+    {
+        String ttText = StringUtils.isNotEmpty(toolTipTextKey) ? getResourceString(toolTipTextKey) : null;
+        return createIconBtnTT(iconName, size, ttText, withEmptyBorder, enabled, al);
     }
 
     /**
@@ -2102,6 +2121,24 @@ public final class UIHelper
                                           final boolean              withEmptyBorder,
                                           final ActionListener       al)
     {
+        return createIconBtnTT(iconName, size, toolTipText, withEmptyBorder, false, al);
+    }
+
+    /**
+      * Creates an icon button with tooltip and action listener.
+     * @param iconName the name of the icon (use default size)
+     * @param toolTipTextKey the actual localized tooltip text 
+     * @param al the action listener
+     * @param withEmptyBorder set an empyt border
+     * @return the JButton icon button
+     */
+    public static JButton createIconBtnTT(final String               iconName, 
+                                          final IconManager.IconSize size,
+                                          final String               toolTipText, 
+                                          final boolean              withEmptyBorder,
+                                          final boolean              enabled,
+                                          final ActionListener       al)
+    {
         
         IconButton btn = new IconButton(size != null ? IconManager.getIcon(iconName, size) : IconManager.getIcon(iconName), withEmptyBorder);
         if (StringUtils.isNotEmpty(toolTipText))
@@ -2112,7 +2149,7 @@ public final class UIHelper
         {
             btn.addActionListener(al);
         }
-        btn.setEnabled(false);
+        btn.setEnabled(enabled);
         return btn;
     }
 
