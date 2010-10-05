@@ -48,7 +48,10 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.specify.datamodel.Determination;
+import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
 import edu.ku.brc.ui.UIRegistry;
@@ -404,6 +407,108 @@ public class Scriptlet extends JRDefaultScriptlet
         return name;
     }
 
+    /**
+     * @param catalogNumber
+     * @return string giving type status for determinations for catalogNumber. "" if no type determinations exist.
+     * 
+     * NOTE: for testing. Not yet suitable for multi-collection dbs.
+     * 
+     */
+    public String getTypeStatus(final String catalogNumber)
+    {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        //System.out.println(colEvId);
+        
+        try
+        {
+        	String result = "";
+        	CollectionObject co = session.getData(CollectionObject.class, "catalogNumber", catalogNumber, DataProviderSessionIFace.CompareType.Equals);
+        	if (co != null)
+        	{
+        	
+        		List<Determination> list = session.getDataList(Determination.class, "collectionObjectId", co.getId(), DataProviderSessionIFace.CompareType.Equals);
+        
+        		if (list.size() > 0)
+        		{
+        			Determination d = list.get(0);
+        			if (d.getTypeStatusName() != null)
+        			{
+        				if (!result.equals(""))
+        				{
+        					result += ", ";
+        				}
+        				result += d.getTypeStatusName();
+        			}
+        		}
+        		return result;
+        	} else
+        	{
+        			log.error("Couldn't locate CollectionObject [" + catalogNumber + "]");
+        			return result;
+        	}
+        } finally 
+        {
+        	session.close();
+        }
+    }
+    
+    /**
+     * @param catalogNumber
+     * @return FullTaxonName + Author for type determinations for catalognumber.
+     * 
+     * 
+     * NOTE: for testing. Not yet suitable for multi-collection dbs.
+     * 
+     */
+    public String getTypeTaxon(final String catalogNumber)
+    {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        //System.out.println(colEvId);
+        
+        try
+        {
+        	String result = "";
+        	CollectionObject co = session.getData(CollectionObject.class, "catalogNumber", catalogNumber, DataProviderSessionIFace.CompareType.Equals);
+        	if (co != null)
+        	{
+        	
+        		List<Determination> list = session.getDataList(Determination.class, "collectionObjectId", co.getId(), DataProviderSessionIFace.CompareType.Equals);
+        
+        		if (list.size() > 0)
+        		{
+        			Determination d = list.get(0);
+        			if (d.getTypeStatusName() != null)
+        			{
+        				Taxon t = null;
+        				if (d.getTaxon() != null)
+        				{
+        					t = session.getData(Taxon.class, "taxonId", d.getTaxon().getId(), DataProviderSessionIFace.CompareType.Equals);
+        				}
+        				if (t != null)
+        				{	
+        					if (!result.equals(""))
+        					{
+        						result += ", ";
+        					}
+        					result += t.getFullName() + " " + t.getAuthor();
+        				} else
+        				{
+                			log.error("Couldn't locate taxon [" + d.getTaxon() + "]");
+        				}
+        			}
+        		}
+        		return result;
+        	} else
+        	{
+        			log.error("Couldn't locate CollectionObject [" + catalogNumber + "]");
+        			return result;
+        	}
+        } finally 
+        {
+        	session.close();
+        }
+    }
+    
     /**
      * Builds the locality string.
      * @param geoName - the geography place name (country, state)
