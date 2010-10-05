@@ -110,7 +110,7 @@
 	        <id>3</id>
 	        <id>10</id>
 	      </tables>
-          <![CDATA[SELECT g.Name AS Country, (select count(CollectionObjectID) from collectionobject co inner join collectingevent ce on ce.CollectingEventID = co.CollectingEventID inner join locality l on l.Localityid = ce.Localityid inner join geography g2 on g2.GeographyID = l.GeographyID where g2.NodeNumber between g.NodeNumber and g.HighestChildNodeNumber and co.CollectionMemberID = COLMEMID) AS SpecimenCount FROM geography g where g.rankid = 200 ORDER BY SpecimanCount DESC]]>
+          <![CDATA[SELECT g.Name AS Country, (select count(CollectionObjectID) from collectionobject co inner join collectingevent ce on ce.CollectingEventID = co.CollectingEventID inner join locality l on l.Localityid = ce.Localityid inner join geography g2 on g2.GeographyID = l.GeographyID where g2.NodeNumber between g.NodeNumber and g.HighestChildNodeNumber and co.CollectionMemberID = COLMEMID) AS SpecimenCount FROM geography g where g.rankid = 200 ORDER BY SpecimenCount DESC]]>
       </sql>
       <bar>
         <desc row="1" col="1"/>
@@ -153,7 +153,7 @@
 	        <id>3</id>
 	        <id>10</id>
 	      </tables>
-          <![CDATA[SELECT g.Name AS Country, (select count(CollectionObjectID) from collectionobject co inner join collectingevent ce on ce.CollectingEventID = co.CollectingEventID inner join locality l on l.Localityid = ce.Localityid inner join geography g2 on g2.GeographyID = l.GeographyID where g2.NodeNumber between g.NodeNumber and g.HighestChildNodeNumber and co.CollectionMemberID = COLMEMID) AS SpecimenCount FROM geography g where g.rankid = 100 ORDER BY SpecimanCount DESC]]>
+          <![CDATA[SELECT g.Name AS Country, (select count(CollectionObjectID) from collectionobject co inner join collectingevent ce on ce.CollectingEventID = co.CollectingEventID inner join locality l on l.Localityid = ce.Localityid inner join geography g2 on g2.GeographyID = l.GeographyID where g2.NodeNumber between g.NodeNumber and g.HighestChildNodeNumber and co.CollectionMemberID = COLMEMID) AS SpecimenCount FROM geography g where g.rankid = 100 ORDER BY SpecimenCount DESC]]>
       </sql>
       <bar>
         <desc row="1" col="1"/>
