@@ -904,7 +904,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 WorkbenchTemplate template = (WorkbenchTemplate)obj;
                 if (colInfo == null)
                 {
-                    matchingTemplates.add(template);
+                    template.forceLoad();
+                	matchingTemplates.add(template);
                     
                 } else if (colInfo.size() <= template.getWorkbenchTemplateMappingItems().size())
                 {
@@ -1063,11 +1064,10 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 		}
                 	}
                 	
-                    //loadTemplateFromData(selection);
-                    for (WorkbenchTemplateMappingItem mi : selection.getWorkbenchTemplateMappingItems())
-                    {
-                    	System.out.println(mi.getImportedColName() + " - " + mi.getViewOrder());
-                    }
+//                    for (WorkbenchTemplateMappingItem mi : selection.getWorkbenchTemplateMappingItems())
+//                    {
+//                    	System.out.println(mi.getImportedColName() + " - " + mi.getViewOrder());
+//                    }
                     result.add(true);
                     result.add(selection);
                     result.add(unMappedCols.get(selection));
@@ -3658,12 +3658,12 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      */
     protected void workbenchSelected(final CommandAction cmdAction)
     {
-        if (false)
-        {
-        	Vector<Integer> wbIds = new Vector<Integer>();
-        	wbIds.add(1);
-        	uploadWorkbenches(wbIds);
-        }
+//        if (false)
+//        {
+//        	Vector<Integer> wbIds = new Vector<Integer>();
+//        	wbIds.add(1);
+//        	uploadWorkbenches(wbIds);
+//        }
     	
     	Object cmdData = cmdAction.getData();
         if (cmdData != null && cmdData instanceof CommandAction && cmdData != cmdAction)
@@ -3712,36 +3712,36 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     /**
      * @param workbenchNames
      */
-    public void uploadWorkbenches(List<Integer> workbenchIds)
-    {
-    	for (Integer wbId : workbenchIds)
-    	{
-    		DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();
-            try
-            {
-                Workbench wb = loadWorkbench(wbId, session);  
-        		if (wb != null)
-        		{
-        			System.out.println("loaded " + wb.getName());
-        			WorkbenchPaneSS wbPane = createEditorForWorkbench(wb, null, false, this);
-        			System.out.println("uploading " + wb.getName());
-         			//SubPaneMgr.getInstance().removePane(wbPane);
-        		} else
-        		{
-        			System.out.println("No workbench with id = " + wbId);
-                } 
-            }catch (Exception ex)
-            {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-                    log.error(ex);
-            }
-            finally
-            {
-                session.close();            
-            }
-    	}
-    }
+//    public void uploadWorkbenches(List<Integer> workbenchIds)
+//    {
+//    	for (Integer wbId : workbenchIds)
+//    	{
+//    		DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();
+//            try
+//            {
+//                Workbench wb = loadWorkbench(wbId, session);  
+//        		if (wb != null)
+//        		{
+//        			System.out.println("loaded " + wb.getName());
+//        			WorkbenchPaneSS wbPane = createEditorForWorkbench(wb, null, false, this);
+//        			System.out.println("uploading " + wb.getName());
+//         			//SubPaneMgr.getInstance().removePane(wbPane);
+//        		} else
+//        		{
+//        			System.out.println("No workbench with id = " + wbId);
+//                } 
+//            }catch (Exception ex)
+//            {
+//                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+//                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+//                    log.error(ex);
+//            }
+//            finally
+//            {
+//                session.close();            
+//            }
+//    	}
+//    }
     
     /**
      * Returns the class of the DB field target of this mapping.
