@@ -110,7 +110,7 @@
 	        <id>3</id>
 	        <id>10</id>
 	      </tables>
-          <![CDATA[SELECT g.Name AS Country, count(g.Name) AS SpecimenCount FROM (SELECT CollectionObjectID, CO.CollectionMemberID, CE.LocalityID, LOC.GeographyID, GEO.NodeNumber FROM collectionobject AS CO INNER JOIN collectingevent AS CE on CE.CollectingEventID = CO.CollectingEventID INNER JOIN locality LOC on CE.LocalityID = LOC.LocalityID INNER JOIN geography AS GEO on GEO.GeographyID = LOC.GeographyID WHERE CO.CollectionMemberID = COLMEMID) AS COLGEO INNER JOIN geography AS g ON g.GeographyID = COLGEO.GeographyID WHERE g.RankID = 200 and COLGEO.NodeNumber between g.NodeNumber and g.HighestChildNodeNumber GROUP BY g.Name ORDER BY SpecimenCount DESC]]>
+          <![CDATA[SELECT g.Name AS Country, (select count(CollectionObjectID) from collectionobject co inner join collectingevent ce on ce.CollectingEventID = co.CollectingEventID inner join locality l on l.Localityid = ce.Localityid inner join geography g2 on g2.GeographyID = l.GeographyID where g2.NodeNumber between g.NodeNumber and g.HighestChildNodeNumber and co.CollectionMemberID = COLMEMID) AS SpecimenCount FROM geography g where g.rankid = 200 ORDER BY SpecimanCount DESC]]>
       </sql>
       <bar>
         <desc row="1" col="1"/>
@@ -153,7 +153,7 @@
 	        <id>3</id>
 	        <id>10</id>
 	      </tables>
-          <![CDATA[SELECT g.Name AS Country, count(g.Name) AS SpecimenCount FROM (SELECT CollectionObjectID, CE.LocalityID, LOC.GeographyID, GEO.NodeNumber  FROM collectionobject AS CO INNER JOIN collectingevent AS CE on CE.CollectingEventID = CO.CollectingEventID INNER JOIN locality LOC on CE.LocalityID = LOC.LocalityID INNER JOIN geography AS GEO on GEO.GeographyID = LOC.GeographyID) AS COLGEO, geography AS g WHERE g.rankid = 100 and COLGEO.nodenumber between g.nodenumber and g.HighestChildNodeNumber GROUP BY g.Name ORDER BY SpecimenCount DESC]]>
+          <![CDATA[SELECT g.Name AS Country, (select count(CollectionObjectID) from collectionobject co inner join collectingevent ce on ce.CollectingEventID = co.CollectingEventID inner join locality l on l.Localityid = ce.Localityid inner join geography g2 on g2.GeographyID = l.GeographyID where g2.NodeNumber between g.NodeNumber and g.HighestChildNodeNumber and co.CollectionMemberID = COLMEMID) AS SpecimenCount FROM geography g where g.rankid = 100 ORDER BY SpecimanCount DESC]]>
       </sql>
       <bar>
         <desc row="1" col="1"/>
