@@ -2375,7 +2375,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 	HQLSpecs sql = null;
 
                 	// XXX need to allow modification of SelectDistinct(etc) ???
-                	boolean includeRecordIds = true;
+                	//boolean includeRecordIds = true;
+                	boolean includeRecordIds = !report.getQuery().getSelectDistinct();
 
                 	try
                 	{

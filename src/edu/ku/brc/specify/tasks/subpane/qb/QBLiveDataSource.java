@@ -106,10 +106,14 @@ public class QBLiveDataSource extends QBDataSourceBase
     @Override
     public Object getFieldValue(JRField arg0) throws JRException
     {
-        //XXX - what if user-defined 'resultsetsize' field exists???
+        //XXX - what if user-defined 'resultsetsize' or 'id' fields exist???
         if (arg0.getName().equalsIgnoreCase("resultsetsize"))
         {
         	return String.valueOf(getRowCount()); //currently returned as a string for convenience.
+        }
+        if (arg0.getName().equalsIgnoreCase("ID"))
+        {
+        	return getRecordId();
         }
         int fldIdx = getFldIdx(arg0.getName());
         if (fldIdx < 0)

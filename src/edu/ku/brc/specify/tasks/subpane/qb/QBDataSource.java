@@ -101,10 +101,14 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
     @Override
     public Object getFieldValue(JRField arg0) throws JRException
     {
-        //XXX - what if user-defined 'resultsetsize' field exists???
+        //XXX - what if user-defined 'resultsetsize' or 'id' fields exist???
     	if (arg0.getName().equalsIgnoreCase("resultsetsize"))
         {
         	return String.valueOf(resultSetSize.get());  //currently returned as a string for convenience.
+        }
+        if (arg0.getName().equalsIgnoreCase("ID"))
+        {
+        	return getRecordId();
         }
     	
     	boolean logIt = rows.get() == null || processing.get();
@@ -139,8 +143,9 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
     @SuppressWarnings("unchecked")
     protected Object getFieldValue(final int fldIdx, final String fldName, final Class<?> fldClass)
     {
-         if (fldIdx < 0)
-            return null;
+        if (fldIdx < 0)
+           return null;
+        
         boolean isRawCol = fldName == null; //isRawCol assumes no additional column info - partial date or other stuff.
         int colInfoIdx; 
         if (isRawCol)
