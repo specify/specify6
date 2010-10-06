@@ -408,26 +408,19 @@ public class Scriptlet extends JRDefaultScriptlet
     }
 
     /**
-     * @param catalogNumber
-     * @return string giving type status for determinations for catalogNumber. "" if no type determinations exist.
-     * 
-     * NOTE: for testing. Not yet suitable for multi-collection dbs.
+     * @param collectionObjectId
+     * @return string giving type status for determinations for collectionObjectId. Returns "" if no type determinations exist.
      * 
      */
-    public String getTypeStatus(final String catalogNumber)
+    public String getTypeStatus(final Integer collectionObjectId)
     {
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        //System.out.println(colEvId);
-        
+    	DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+    	String result = "";
         try
         {
-        	String result = "";
-        	CollectionObject co = session.getData(CollectionObject.class, "catalogNumber", catalogNumber, DataProviderSessionIFace.CompareType.Equals);
-        	if (co != null)
-        	{
-        	
-        		List<Determination> list = session.getDataList(Determination.class, "collectionObjectId", co.getId(), DataProviderSessionIFace.CompareType.Equals);
-        
+        	if (collectionObjectId != null)
+        	{        	
+        		List<Determination> list = session.getDataList(Determination.class, "collectionObjectId", collectionObjectId);        
         		if (list.size() > 0)
         		{
         			Determination d = list.get(0);
@@ -440,40 +433,28 @@ public class Scriptlet extends JRDefaultScriptlet
         				result += d.getTypeStatusName();
         			}
         		}
-        		return result;
-        	} else
-        	{
-        			log.error("Couldn't locate CollectionObject [" + catalogNumber + "]");
-        			return result;
-        	}
+        	}         
         } finally 
         {
         	session.close();
         }
+		return result;
     }
     
     /**
-     * @param catalogNumber
-     * @return FullTaxonName + Author for type determinations for catalognumber.
-     * 
-     * 
-     * NOTE: for testing. Not yet suitable for multi-collection dbs.
+     * @param collectionObjectId
+     * @return FullTaxonName + Author for type determinations for collectionObjectId. Return "" if no type determinations.
      * 
      */
-    public String getTypeTaxon(final String catalogNumber)
+    public String getTypeTaxon(final Integer collectionObjectId)
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        //System.out.println(colEvId);
-        
+     	String result = "";
         try
         {
-        	String result = "";
-        	CollectionObject co = session.getData(CollectionObject.class, "catalogNumber", catalogNumber, DataProviderSessionIFace.CompareType.Equals);
-        	if (co != null)
+        	if (collectionObjectId != null)
         	{
-        	
-        		List<Determination> list = session.getDataList(Determination.class, "collectionObjectId", co.getId(), DataProviderSessionIFace.CompareType.Equals);
-        
+        		List<Determination> list = session.getDataList(Determination.class, "collectionObjectId", collectionObjectId);
         		if (list.size() > 0)
         		{
         			Determination d = list.get(0);
@@ -497,16 +478,12 @@ public class Scriptlet extends JRDefaultScriptlet
         				}
         			}
         		}
-        		return result;
-        	} else
-        	{
-        			log.error("Couldn't locate CollectionObject [" + catalogNumber + "]");
-        			return result;
-        	}
-        } finally 
+        	}        
+        	} finally 
         {
         	session.close();
         }
+		return result;
     }
     
     /**
