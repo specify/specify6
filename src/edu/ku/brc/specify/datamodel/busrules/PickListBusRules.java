@@ -31,7 +31,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
@@ -69,11 +68,14 @@ import edu.ku.brc.specify.datamodel.SpViewSetObj;
  */
 public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIFace
 {
-    private static final Logger log  = Logger.getLogger(PickListBusRules.class);
+    //private static final Logger log  = Logger.getLogger(PickListBusRules.class);
     
     protected DBTableInfo        tableInfo = null;
     protected DBFieldInfo        fieldInfo = null;
     
+    /**
+     * 
+     */
     public PickListBusRules()
     {
         // no op
@@ -166,6 +168,8 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
     {
         if (formViewObj != null)
         {
+            formViewObj.getValidator().setHasChanged(true);
+
             final ValSpinner  sizeLimitSp = (ValSpinner)formViewObj.getControlByName("sizeLimit");
             PickListIFace pl = (PickListIFace)formViewObj.getDataObj();
             int min = Math.max(pl.getNumItems(), 0);
@@ -183,11 +187,14 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
      */
     private static void tableSelected(final FormViewObj fvo)
     {
+        fvo.getValidator().setHasChanged(true);
         //ValComboBox typesCBX      = (ValComboBox)fvo.getControlByName("typesCBX");
         ValComboBox formatterCBX  = (ValComboBox)fvo.getControlByName("formatterCBX");
         ValComboBox tablesCBX     = (ValComboBox)fvo.getControlByName("tablesCBX");
         ValComboBox fieldsCBX     = (ValComboBox)fvo.getControlByName("fieldsCBX");
         //ValSpinner  sizeLimitSp   = (ValSpinner)fvo.getControlByName("sizeLimit");
+        
+        tablesCBX.setChanged(true);
 
         //int typeIndex = typesCBX.getComboBox().getSelectedIndex();
         
@@ -333,6 +340,8 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
      */
     private static void typeSelected(final FormViewObj fvo)
     {
+        fvo.getValidator().setHasChanged(true);
+
         ValComboBox formatterCBX  = (ValComboBox)fvo.getControlByName("formatterCBX");
         ValComboBox tablesCBX     = (ValComboBox)fvo.getControlByName("tablesCBX");
         ValComboBox fieldsCBX     = (ValComboBox)fvo.getControlByName("fieldsCBX");
@@ -341,6 +350,8 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
         ValCheckBox readOnlyChk   = (ValCheckBox)fvo.getControlByName("readOnly");
 
         MultiView pickListItemsMV = (MultiView)fvo.getControlByName("pickListItems");
+        
+        typesCBX.setChanged(true);
         
         FormDataObjIFace dataObj = (FormDataObjIFace)fvo.getDataObj();
         boolean        isEditing = dataObj != null && dataObj.getId() != null;
@@ -352,7 +363,7 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
         //log.debug("Type: "+typeIndex);
         switch (typeIndex) 
         {
-            case 0:
+            case 0: // Item
                 tablesCBX.setEnabled(false);
                 fieldsCBX.setEnabled(false);
                 formatterCBX.setEnabled(false);
@@ -366,19 +377,19 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
                 }
                 break;
                 
-            case 1:
+            case 1: // Table
                 tablesCBX.setEnabled(fullEditIsOK);
                 fieldsCBX.setEnabled(false);
                 formatterCBX.setEnabled(true);
                 pickListItemsMV.setVisible(false);
                 readOnlyChk.setEnabled(false);
-                
                 sizeLimitSp.setEnabled(false);
-                //sizeLimitSp.setValue(-1);
+                sizeLimitSp.setValue(-1);
+               
                 fieldsCBX.getComboBox().setSelectedIndex(-1);
                 break;
                 
-            case 2:
+            case 2: // TableField
                 tablesCBX.setEnabled(true);
                 fieldsCBX.setEnabled(true);
                 formatterCBX.setEnabled(true);
@@ -412,6 +423,9 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
             ValComboBox fieldsCBX      = (ValComboBox)formViewObj.getControlByName("fieldsCBX");
             ValSpinner  sizeLimitSp    = (ValSpinner)formViewObj.getControlByName("sizeLimit");
             
+            int fieldsSelectedIndex = -1;
+            int fmtsSelectedIndex   = -1;
+            
             int typeIndex = pickList.getType();
             if (typesCBX != null && typesCBX.getComboBox() != null)
             {
@@ -428,13 +442,14 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
                     String fieldName = pickList.getFieldName();
                     if (StringUtils.isNotEmpty(fieldName))
                     {
-                        fieldsCBX.getComboBox().setSelectedIndex(getIndexInModel(fieldsCBX, fieldName));
+                        fieldsSelectedIndex = getIndexInModel(fieldsCBX, fieldName);
+                        //fieldsCBX.getComboBox().setSelectedIndex();
                     }
                     
                     String formatter = pickList.getFormatter();
                     if (StringUtils.isNotEmpty(formatter))
                     {
-                        formatterCBX.getComboBox().setSelectedIndex(getIndexInModel(formatterCBX, formatter));
+                        fmtsSelectedIndex = getIndexInModel(formatterCBX, formatter);
                     }
                 }
                 
@@ -456,8 +471,43 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
                 
                 typesCBX.setEnabled(!pickList.getIsSystem());
             }
+            
+            fieldsCBX.getComboBox().setSelectedIndex(fieldsSelectedIndex);
+            formatterCBX.getComboBox().setSelectedIndex(fmtsSelectedIndex);
         }
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
+    {
+        PickList pl = (PickList)dataObj;
+        
+        ValComboBox typesCBX      = (ValComboBox)formViewObj.getControlByName("typesCBX");
+        ValComboBox formatterCBX  = (ValComboBox)formViewObj.getControlByName("formatterCBX");
+        ValComboBox tablesCBX     = (ValComboBox)formViewObj.getControlByName("tablesCBX");
+        ValComboBox fieldsCBX     = (ValComboBox)formViewObj.getControlByName("fieldsCBX");
+        ValSpinner  sizeLimitSp   = (ValSpinner)formViewObj.getControlByName("sizeLimit");
+
+        Integer val = (Integer)sizeLimitSp.getValue();
+        pl.setSizeLimit(val);
+        
+        int index = typesCBX.getComboBox().getSelectedIndex();
+        pl.setType((byte)index);
+        
+        DBTableInfo            ti   = (DBTableInfo)tablesCBX.getValue();
+        DBFieldInfo            fi   = (DBFieldInfo)fieldsCBX.getValue();
+        DataObjSwitchFormatter dofw = (DataObjSwitchFormatter)formatterCBX.getValue();
+        
+        pl.setTableName(ti != null ? ti.getName() : null);
+        pl.setFieldName(fi != null ? fi.getName() : null);
+        pl.setFormatter(dofw != null ? dofw.getName() : null);
+        
+        super.beforeSave(dataObj, session);
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#formShutdown()

@@ -29,6 +29,7 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -146,7 +147,14 @@ public class PickListTableAdapter extends PickListDBAdapter
                                     {
                                         dataObj = ((Object[])dataObj)[0];
                                     }
-                                    String title = DataObjFieldFormatMgr.getInstance().format(dataObj, pickList.getFormatter());
+                                    String title;
+                                    if (pickList.getFormatter() != null)
+                                    {
+                                        title = DataObjFieldFormatMgr.getInstance().format(dataObj, pickList.getFormatter());
+                                    } else
+                                    {
+                                        title = ((FormDataObjIFace)dataObj).getIdentityTitle();
+                                    }
                                     items.add(pickList.addItem(title, dataObj));
                                 }
                             }

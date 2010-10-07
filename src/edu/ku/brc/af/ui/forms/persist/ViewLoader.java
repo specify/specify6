@@ -929,7 +929,8 @@ public class ViewLoader
                                         DBFieldInfo fieldInfo = tableinfo.getFieldByName(cellName);
                                         if (fieldInfo != null)
                                         {
-                                            pickListName = fieldInfo.getPickListName();
+                                            fieldInfo.setPickListName(pickListName);
+                                            //pickListName = fieldInfo.getPickListName();
                                         }
                                     }
                                     break;

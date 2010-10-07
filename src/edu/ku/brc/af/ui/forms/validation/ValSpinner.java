@@ -141,6 +141,7 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
                 textField.setBackground(this.isRequired && enabled ? requiredFieldColor.getColor() : bgColor);
             }
         }
+        textField.setEnabled(enabled);
         super.setEnabled(enabled);
     }
     

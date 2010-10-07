@@ -977,7 +977,7 @@ public class DataObjFieldFormatMgr
      */
     public String format(final Object dataObj, final String formatName)
     {
-        if (domFound)
+        if (domFound && StringUtils.isNotEmpty(formatName))
         {
             DataObjSwitchFormatter sf = formatHash.get(formatName);
             if (sf != null)
