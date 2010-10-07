@@ -1255,7 +1255,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                     str.append(")");
                 }
                 String result =  str.toString();
-                if (StringUtils.isNotBlank(result) && isEnforcedCkbx.isSelected() && conditionForSchema)
+                if (StringUtils.isNotBlank(result) && isEnforcedCkbx != null && isEnforcedCkbx.isSelected() && conditionForSchema)
                 {
                 	result = "(" + result + " or " + fieldQRI.getSQLFldSpec(ta, true, schemaItem != null) + " is null)";
                 }
