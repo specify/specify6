@@ -260,6 +260,14 @@ public class SpQuery extends DataModelObjBase implements Cloneable
 
     
     
+    /**
+     * @return selectDistinct if non-null else false.
+     */
+    @Transient
+    public boolean isSelectDistinct()
+    {
+    	return selectDistinct == null ? false : selectDistinct;
+    }
     
     /**
 	 * @return the selectDistinct
