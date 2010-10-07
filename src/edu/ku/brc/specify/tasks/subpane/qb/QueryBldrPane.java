@@ -1102,7 +1102,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 			@Override
 			public void run()
 			{
-				distinctChk.setSelected(query.getSelectDistinct() == null ? false : query.getSelectDistinct());
+				distinctChk.setSelected(query.isSelectDistinct());
 				countOnlyChk.setSelected(query.getCountOnly() == null ? false : query.getCountOnly());
 				countOnly = countOnlyChk.isSelected();
 				searchSynonymyChk.setSelected(query.getSearchSynonymy() == null ? true : query.getSearchSynonymy());
@@ -2376,7 +2376,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
                 	// XXX need to allow modification of SelectDistinct(etc) ???
                 	//boolean includeRecordIds = true;
-                	boolean includeRecordIds = !report.getQuery().getSelectDistinct();
+                	boolean includeRecordIds = !report.getQuery().isSelectDistinct();
 
                 	try
                 	{
@@ -2388,7 +2388,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 	catch (Exception ex)
                 	{
                         String msg = StringUtils.isBlank(ex.getLocalizedMessage()) ? getResourceString("QB_RUN_ERROR") : ex.getLocalizedMessage();
-                    	UIRegistry.getStatusBar().setErrorMessage(msg, ex);
+                    	ex.printStackTrace();
+                        UIRegistry.getStatusBar().setErrorMessage(msg, ex);
                         UIRegistry.writeTimedSimpleGlassPaneMsg(msg, Color.RED);
                 		return;
                 	}

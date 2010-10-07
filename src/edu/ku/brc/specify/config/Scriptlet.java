@@ -420,10 +420,10 @@ public class Scriptlet extends JRDefaultScriptlet
         {
         	if (collectionObjectId != null)
         	{        	
-        		List<Determination> list = session.getDataList(Determination.class, "collectionObjectId", collectionObjectId);        
-        		if (list.size() > 0)
+        		List<Determination> list = session.getDataList(Determination.class, "collectionObject", 
+        				session.get(CollectionObject.class, collectionObjectId));        
+        		for (Determination d : list)
         		{
-        			Determination d = list.get(0);
         			if (d.getTypeStatusName() != null)
         			{
         				if (!result.equals(""))
@@ -454,30 +454,40 @@ public class Scriptlet extends JRDefaultScriptlet
         {
         	if (collectionObjectId != null)
         	{
-        		List<Determination> list = session.getDataList(Determination.class, "collectionObjectId", collectionObjectId);
-        		if (list.size() > 0)
-        		{
-        			Determination d = list.get(0);
-        			if (d.getTypeStatusName() != null)
-        			{
-        				Taxon t = null;
-        				if (d.getTaxon() != null)
-        				{
-        					t = session.getData(Taxon.class, "taxonId", d.getTaxon().getId(), DataProviderSessionIFace.CompareType.Equals);
-        				}
-        				if (t != null)
-        				{	
-        					if (!result.equals(""))
-        					{
-        						result += ", ";
-        					}
-        					result += t.getFullName() + " " + t.getAuthor();
-        				} else
-        				{
-                			log.error("Couldn't locate taxon [" + d.getTaxon() + "]");
-        				}
-        			}
-        		}
+				List<Determination> list = session.getDataList(Determination.class, "collectionObject",
+						session.get(CollectionObject.class, collectionObjectId));
+				for (Determination d : list)
+				{
+					if (d.getTypeStatusName() != null)
+					{
+						Taxon t = null;
+						if (d.getTaxon() != null)
+						{
+							t = session
+									.getData(
+											Taxon.class,
+											"taxonId",
+											d.getTaxon().getId(),
+											DataProviderSessionIFace.CompareType.Equals);
+						}
+						if (t != null)
+						{
+							if (!result.equals(""))
+							{
+								result += ", ";
+							}
+							result += t.getFullName();
+							if  (t.getAuthor() != null)
+							{
+								result += " " + t.getAuthor();
+							}
+						} else
+						{
+							log.error("Couldn't locate taxon [" + d.getTaxon()
+									+ "]");
+						}
+					}
+				}
         	}        
         	} finally 
         {
