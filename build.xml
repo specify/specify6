@@ -86,14 +86,14 @@
         <copy todir="${installer.dir}/jar-src">
             <fileset dir="${class.root}">
                 <include name="**/*.class" />
-                <include name="**/*.properties" />
+                <!-- <include name="**/*.properties" /> -->
                 <include name="**/*.xml" />
                 <include name="**/*.betwixt" />
                 <include name="**/images/**/*.*" />
             </fileset>
         </copy>
     	
-    	<native2ascii src="${class.root}" dest="${installer.dir}/jar-src" includes="**/*.properties"/>
+    	<native2ascii src="${source.root}" dest="${installer.dir}/jar-src" includes="**/*.properties"/>
     	
     	<antcall target="buildinfo"/>
     </target>
