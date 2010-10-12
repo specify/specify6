@@ -118,12 +118,13 @@ public class ConvertVerifier extends AppBase
     public static final long DO_OTHER_IDENT         =  4096; 
     public static final long DO_CO_COLLECTORS       =  8192; 
     public static final long DO_AGENTS              = 16384; 
-    public static final long DO_CO_ALL              = 32767;
+    public static final long DO_LOANS               = 32768; 
+    public static final long DO_CO_ALL              = 65535;
     
     private String[] labels = {"None", "Preparations", "CO Collecting Events", "Localities", "Preparers", 
                                "Catalogers", "Determiners", "Taxon", "Geographies", "Collectors", 
                                "Collecting Events", "Taxon Citations", "Shipments", "Other Ident", "ColObj Collectors", 
-                               "Agents", "All"};
+                               "Agents", "Loans", "All"};
     
     private ToggleButtonChooserPanel<String> chkPanel;
     
@@ -534,6 +535,14 @@ public class ConvertVerifier extends AppBase
             verifyShipments();
         }
         
+        if (isCOOn(DO_LOANS))
+        {
+            tblWriter = tblWriterHash.get(DO_LOANS);
+            verifyLoans();
+            verifyGifts();
+            verifyLoanRetPreps();
+        }
+        
         for (TableWriter tw : tblWriterHash.values())
         {
             tw.endTable();
@@ -564,7 +573,7 @@ public class ConvertVerifier extends AppBase
         // Accessions
         //-----------------------------------------------------------------------------------------------------------
         // For Debug
-        acOptions = DO_AC_ALL;
+        acOptions = 0;//DO_AC_ALL;
         
         HashMap<Long, TableWriter> accTblWriterHash = new HashMap<Long, TableWriter>();
         for (int i=1;i<accLabels.length;i++)
@@ -1525,8 +1534,7 @@ public class ConvertVerifier extends AppBase
                         continue;
                     }
                     
-                    String colName = newRsmd.getColumnName(col);
-                    
+                    //String colName = newRsmd.getColumnName(col);
                     //System.out.println(newObj.getClass().getName()+"  "+oldObj.getClass().getName());
                     
                     if (newObj instanceof java.sql.Date)
@@ -1770,15 +1778,22 @@ public class ConvertVerifier extends AppBase
                     return StatusType.NEW_VAL_NULL;
                 }
                 
-            } else
+            } else if (oldObj != null)
             {
-                if (!clsName.equals("java.sql.Date") || (!(oldObj instanceof String) && ((Number)oldObj).intValue() != 0))
+                if (oldObj instanceof Number && ((Number)oldObj).intValue() == 0)
+                {
+                    return StatusType.COMPARE_OK;
+                    
+                } else if (!clsName.equals("java.sql.Date") || (!(oldObj instanceof String) && ((Number)oldObj).intValue() != 0))
                 {
                     String msg = "New Value was null and shouldn't have been for Key Value New Field ["+newColName+"] ["+oldObj+"]";
                     log.error(msg);
                     tblWriter.logErrors(newColName, msg);
                     return StatusType.NEW_VAL_NULL;
                 }
+            } else
+            {
+                return StatusType.COMPARE_OK;
             }
         }
         
@@ -1967,6 +1982,8 @@ public class ConvertVerifier extends AppBase
         String newStr = newDBRS.getString(startInxNewArg);
         String oldStr = oldDBRS.getString(startInxOldArg);
         
+        if (oldStr == null && newStr == null) return;
+        
         if (oldStr == null && newStr != null)
         {
             String msg = "Old "+colName+" ["+oldStr+"] is NULL   New "+colName+"["+newStr+"] is not";
@@ -1978,9 +1995,62 @@ public class ConvertVerifier extends AppBase
             String msg = "Old "+colName+"["+oldStr+"] is not null   New "+colName+"["+newStr+"] is NULL";
             log.error(oldNewIdStr + " " + msg);
             tblWriter.logErrors(oldNewIdStr, msg);
+            
+        } else if (!oldStr.equals(newStr))
+        {
+            String msg = "Old "+colName+"["+oldStr+"] is not equal   New "+colName+"["+newStr+"]";
+            log.error(oldNewIdStr + " " + msg);
+            tblWriter.logErrors(oldNewIdStr, msg);
         }
     }
 
+    /**
+     * @param oldNewIdStr
+     * @throws SQLException
+     */
+    private void compareBoolean(final String oldNewIdStr, final String colName, final int startInxNewArg, final int startInxOldArg) throws SQLException 
+    {
+        boolean newBool = newDBRS.getBoolean(startInxNewArg);
+        boolean oldBool = oldDBRS.getBoolean(startInxOldArg);
+        
+        if (newBool != oldBool)
+        {
+            String msg = "Old "+colName+"["+oldBool+"] is not null   New "+colName+"["+newBool+"] is NULL";
+            log.error(oldNewIdStr + " " + msg);
+            tblWriter.logErrors(oldNewIdStr, msg);
+        }
+    }
+
+    /**
+     * @param oldNewIdStr
+     * @throws SQLException
+     */
+    private void compareNumber(final String oldNewIdStr, final String colName, final int startInxNewArg, final int startInxOldArg) throws SQLException 
+    {
+        Integer newInt = (Integer)newDBRS.getObject(startInxNewArg);
+        Integer oldInt = (Integer)oldDBRS.getObject(startInxOldArg);
+        
+        if (oldInt == null && newInt == null) return;
+        
+        if (oldInt == null && newInt != null)
+        {
+            String msg = "Old "+colName+" ["+oldInt+"] is NULL New "+colName+"["+newInt+"] is not";
+            log.error(oldNewIdStr + " " + msg);
+            tblWriter.logErrors(oldNewIdStr, msg);
+            
+        } else if (oldInt != null && newInt == null)
+        {
+            String msg = "Old "+colName+"["+oldInt+"] is not null New "+colName+"["+newInt+"] is NULL";
+            log.error(oldNewIdStr + " " + msg);
+            tblWriter.logErrors(oldNewIdStr, msg);
+            
+        } else if (!oldInt.equals(newInt))
+        {
+            String msg = "Old "+colName+"["+oldInt+"] is not equal New "+colName+"["+newInt+"]";
+            log.error(oldNewIdStr + " " + msg);
+            tblWriter.logErrors(oldNewIdStr, msg);
+        }
+    }
     
     /**
      * 
@@ -2420,6 +2490,273 @@ public class ConvertVerifier extends AppBase
 
     }
     
+    /**
+     * 
+     */
+    private void verifyLoans()
+    {
+        
+        newSQL = "SELECT l.LoanNumber, l.LoanDate, l.IsClosed, l.CurrentDueDate, l.OriginalDueDate, l.DateClosed, l.Text1, l.Text2, l.Number1, l.Number2, l.YesNo1, l.YesNo2, " +
+                 "lp.Quantity, lp.DescriptionOfMaterial, lp.OutComments, lp.InComments, lp.QuantityResolved, lp.QuantityReturned, LoanPreparationID " +
+                 "FROM loan l Inner Join loanpreparation lp ON l.LoanID = lp.LoanID WHERE LoanNumber = '%s' ORDER BY LoanPreparationID";
+
+    
+        oldSQL = "SELECT l.LoanNumber, l.LoanDate, l.Closed, l.CurrentDueDate, l.OriginalDueDate, l.DateClosed, l.Text1, l.Text2, l.Number1, l.Number2, l.YesNo1, l.YesNo2, " +
+        	     "lp.Quantity, lp.DescriptionOfMaterial, lp.OutComments, lp.InComments, lp.QuantityResolved, lp.QuantityReturned, lp.LoanPhysicalObjectID " +
+        	     "FROM loan AS l Inner Join loanphysicalobject AS lp ON l.LoanID = lp.LoanID Left Join loanphysicalobject_LoanPhysicalObjectID AS lr ON lp.LoanPhysicalObjectID = lr.OldID " +
+                 "WHERE l.Category = 0 AND LoanNumber = '%s' ORDER BY lr.NewID ASC";
+    
+        String newSQLCnt = "SELECT COUNT(*) FROM loan l Inner Join loanpreparation lp ON l.LoanID = lp.LoanID WHERE LoanNumber = '%s'";
+        String oldSQLCnt = "SELECT COUNT(*) FROM loan AS l Inner Join loanphysicalobject AS lp ON l.LoanID = lp.LoanID WHERE l.Category = 0 AND LoanNumber = '%s'";
+
+        log.info(newSQL);
+        log.info(oldSQL);
+        
+        try
+        {
+            Vector<Object> loanNums = BasicSQLUtils.querySingleCol(oldDBConn, "SELECT LoanNumber FROM loan WHERE Category = 0");
+            
+            for (Object loanNum : loanNums)
+            {
+                int oldCnt = BasicSQLUtils.getCountAsInt(oldDBConn, String.format(oldSQLCnt, loanNum));
+                int newCnt = BasicSQLUtils.getCountAsInt(newDBConn, String.format(newSQLCnt, loanNum));
+                
+                if (oldCnt != newCnt)
+                {
+                    String msg = "For Loan Number["+loanNum+" the number of New LoanPreps["+newCnt+"] doesn't match the old["+oldCnt+"]";
+                    log.error(msg);
+                    tblWriter.logErrors(loanNum.toString(), msg);
+                }
+                
+                getResultSets(String.format(oldSQL, loanNum), String.format(newSQL, loanNum));
+                
+                
+                ResultSetMetaData rmd = newDBRS.getMetaData();
+                while (true)
+                {
+                
+                    boolean hasOldRec = oldDBRS.next();
+                    boolean hasNewRec = newDBRS.next();
+                    
+                    if (!hasOldRec && !hasNewRec)
+                    {
+                        break;
+                    }
+                    
+                    int    newId        = newDBRS.getInt(1);
+                    int    oldId        = oldDBRS.getInt(1);
+                    
+                    String oldNewIdStr = oldId + " / "+newId + " ("+oldDBRS.getInt(19)+" / "+newDBRS.getInt(19)+")";
+                    
+                    compareStrings(oldNewIdStr, rmd.getColumnName(1), 1, 1);
+                    
+                    compareDates(oldNewIdStr, 2, 2);
+                    
+                    compareBoolean(oldNewIdStr, rmd.getColumnName(3), 3, 3);
+                    
+                    compareDates(oldNewIdStr, 4, 4);
+                    compareDates(oldNewIdStr, 5, 5);
+                    compareDates(oldNewIdStr, 6, 6);
+                    
+                    compareStrings(oldNewIdStr, rmd.getColumnName(7), 7, 7);
+                    compareStrings(oldNewIdStr, rmd.getColumnName(8), 8, 8);
+                    
+                    compareNumber(oldNewIdStr,  rmd.getColumnName(9), 9, 9);
+                    compareNumber(oldNewIdStr,  rmd.getColumnName(10), 10, 10);
+                    
+                    compareBoolean(oldNewIdStr, rmd.getColumnName(11), 11, 11);
+                    compareBoolean(oldNewIdStr, rmd.getColumnName(12), 12, 12);
+                    
+                    compareNumber(oldNewIdStr,  rmd.getColumnName(13), 13, 13);
+                    
+                    compareStrings(oldNewIdStr, rmd.getColumnName(14), 14, 14);
+                    compareStrings(oldNewIdStr, rmd.getColumnName(15), 15, 15);
+                    compareStrings(oldNewIdStr, rmd.getColumnName(16), 16, 16);
+                    
+                    compareNumber(oldNewIdStr,  rmd.getColumnName(17), 17, 17);
+                    compareNumber(oldNewIdStr,  rmd.getColumnName(18), 18, 18);
+                }
+                
+                oldDBRS.close();
+                newDBRS.close();
+            }
+
+        } catch (Exception ex)
+        {
+            ex.printStackTrace(); 
+        }
+
+    }
+    
+    
+    /**
+     * 
+     */
+    private void verifyGifts()
+    {
+        
+        newSQL = "SELECT g.GiftNumber, g.GiftDate, g.Remarks, g.Number1, g.Number2, g.Text1, g.Text2, g.YesNo1, g.YesNo2, gp.Quantity, gp.DescriptionOfMaterial, gp.OutComments, gp.InComments " +
+        		 "FROM gift AS g Inner Join giftpreparation AS gp ON g.GiftID = gp.GiftID WHERE g.GiftNumber = '%s' ORDER BY gp.GiftPreparationID";
+    
+        oldSQL = "SELECT g.LoanNumber, g.LoanDate, g.Remarks, g.Number1, g.Number2, g.Text1, g.Text2, g.YesNo1, g.YesNo2, " +
+                 "gp.Quantity, gp.DescriptionOfMaterial, gp.OutComments, gp.InComments " +
+                 "FROM loan AS g Inner Join loanphysicalobject AS gp ON g.LoanID = gp.LoanID Left Join loanphysicalobject_LoanPhysicalObjectID AS lr ON gp.LoanPhysicalObjectID = lr.OldID " +
+                 "WHERE g.Category = 1 AND g.LoanNumber = '%s' ORDER BY lr.NewID ASC";
+    
+        String newSQLCnt = "SELECT COUNT(*) FROM gift AS g Inner Join giftpreparation AS gp ON g.GiftID = gp.GiftID WHERE GiftNumber = '%s'";
+        String oldSQLCnt = "SELECT COUNT(*) FROM loan AS g Inner Join loanphysicalobject AS gp ON g.LoanID = gp.LoanID WHERE g.Category = 1 AND g.LoanNumber = '%s'";
+
+        log.info(newSQL);
+        log.info(oldSQL);
+        
+        try
+        {
+            Vector<Object> loanNums = BasicSQLUtils.querySingleCol(oldDBConn, "SELECT LoanNumber FROM loan WHERE Category = 1"); // Gifts
+            
+            for (Object loanNum : loanNums)
+            {
+                int oldCnt = BasicSQLUtils.getCountAsInt(oldDBConn, String.format(oldSQLCnt, loanNum));
+                int newCnt = BasicSQLUtils.getCountAsInt(newDBConn, String.format(newSQLCnt, loanNum));
+                
+                if (oldCnt != newCnt)
+                {
+                    String msg = "For Loan Number["+loanNum+" the number of New LoanPreps["+newCnt+"] doesn't match the old["+oldCnt+"]";
+                    log.error(msg);
+                    tblWriter.logErrors(loanNum.toString(), msg);
+                }
+                
+                getResultSets(String.format(oldSQL, loanNum), String.format(newSQL, loanNum));
+                
+                
+                ResultSetMetaData rmd = newDBRS.getMetaData();
+                while (true)
+                {
+                
+                    boolean hasOldRec = oldDBRS.next();
+                    boolean hasNewRec = newDBRS.next();
+                    
+                    if (!hasOldRec && !hasNewRec)
+                    {
+                        break;
+                    }
+                    
+                    int    newId        = newDBRS.getInt(1);
+                    int    oldId        = oldDBRS.getInt(1);
+                    
+                    String oldNewIdStr = oldId + " / "+newId;// + " ("+oldDBRS.getInt(19)+" / "+newDBRS.getInt(19)+")";
+                    
+                    int inx = 1;
+                    
+                    compareStrings(oldNewIdStr, rmd.getColumnName(inx), inx, inx); inx++; // Gift Number
+                    
+                    compareDates(oldNewIdStr, inx, inx); inx++;                           // Gift Date
+                    
+                    compareStrings(oldNewIdStr, rmd.getColumnName(inx), inx, inx); inx++;  // Remarks
+                    
+                    compareNumber(oldNewIdStr,  rmd.getColumnName(inx), inx, inx); inx++;  // Number1
+                    compareNumber(oldNewIdStr,  rmd.getColumnName(inx), inx, inx); inx++;  // Number2
+                    
+                    compareStrings(oldNewIdStr, rmd.getColumnName(inx), inx, inx); inx++;  // Test1
+                    compareStrings(oldNewIdStr, rmd.getColumnName(inx), inx, inx); inx++;  // Test2
+                    
+                    compareBoolean(oldNewIdStr, rmd.getColumnName(inx), inx, inx); inx++;  // YesNo1
+                    compareBoolean(oldNewIdStr, rmd.getColumnName(inx), inx, inx); inx++;  // YesNo2
+                 
+                    compareNumber(oldNewIdStr,  rmd.getColumnName(inx), inx, inx); inx++;  // Qty
+                    compareStrings(oldNewIdStr, rmd.getColumnName(inx), inx, inx); inx++;  // DescOfMat
+                    compareStrings(oldNewIdStr, rmd.getColumnName(inx), inx, inx); inx++;  // OutComm
+                    compareStrings(oldNewIdStr, rmd.getColumnName(inx), inx, inx); inx++;  // InComm
+                }
+                
+                oldDBRS.close();
+                newDBRS.close();
+            }
+
+        } catch (Exception ex)
+        {
+            ex.printStackTrace(); 
+        }
+
+    }
+    
+
+    /**
+     * 
+     */
+    private void verifyLoanRetPreps()
+    {
+        
+        newSQL = "SELECT l.LoanNumber, r.ReturnedDate, r.QuantityResolved, r.Remarks " +
+                "FROM loan AS l Inner Join loanpreparation AS lp ON l.LoanID = lp.LoanID " +
+                "LEFT Join loanreturnpreparation AS r ON lp.LoanPreparationID = r.LoanPreparationID " +
+                "WHERE l.LoanNumber = '%s' ORDER BY lp.LoanPreparationID";
+
+        oldSQL = "SELECT l.LoanNumber, r.`Date`, r.Quantity, r.Remarks " +
+        	     "FROM loan AS l Inner Join loanphysicalobject AS lp ON l.LoanID = lp.LoanID " +
+        	     "LEFT Join loanreturnphysicalobject AS r ON lp.LoanPhysicalObjectID = r.LoanPhysicalObjectID Left Join loanphysicalobject_LoanPhysicalObjectID AS lr ON lp.LoanPhysicalObjectID = lr.OldID " +
+                 "WHERE l.Category = 0 AND LoanNumber = '%s' ORDER BY lr.NewID ASC";
+        
+        String newSQLCnt = "SELECT COUNT(ID) FROM (SELECT LoanReturnPreparationID AS ID, LoanNumber FROM loan AS l Inner Join loanpreparation AS lp ON l.LoanID = lp.LoanID Left Join loanreturnpreparation AS r ON lp.LoanPreparationID = r.LoanPreparationID WHERE LoanReturnPreparationID IS NOT NULL AND LoanNumber = '%s') T1";
+        String oldSQLCnt = "SELECT COUNT(ID) FROM (SELECT LoanReturnPhysicalObjectID AS ID, LoanNumber FROM loan AS l Inner Join loanphysicalobject AS lp ON l.LoanID = lp.LoanID Left Join loanreturnphysicalobject AS r ON lp.LoanPhysicalObjectID = r.LoanPhysicalObjectID WHERE LoanReturnPhysicalObjectID IS NOT NULL AND LoanNumber = '%s') T1";
+
+        log.info(newSQL);
+        log.info(oldSQL);
+        
+        try
+        {
+            Vector<Object> loanNums = BasicSQLUtils.querySingleCol(oldDBConn, "SELECT LoanNumber FROM loan WHERE Category = 0");
+            
+            for (Object loanNum : loanNums)
+            {
+                int oldCnt = BasicSQLUtils.getCountAsInt(oldDBConn, String.format(oldSQLCnt, loanNum));
+                int newCnt = BasicSQLUtils.getCountAsInt(newDBConn, String.format(newSQLCnt, loanNum));
+                
+                if (oldCnt != newCnt)
+                {
+                    String msg = "For Loan Number["+loanNum+" the number of New LoanPreps["+newCnt+"] doesn't match the old["+oldCnt+"]";
+                    log.error(msg);
+                    tblWriter.logErrors(loanNum.toString(), msg);
+                }
+                
+                getResultSets(String.format(oldSQL, loanNum), String.format(newSQL, loanNum));
+                
+                
+                ResultSetMetaData rmd = newDBRS.getMetaData();
+                while (true)
+                {
+                
+                    boolean hasOldRec = oldDBRS.next();
+                    boolean hasNewRec = newDBRS.next();
+                    
+                    if (!hasOldRec && !hasNewRec)
+                    {
+                        break;
+                    }
+                    
+                    int    newId        = newDBRS.getInt(1);
+                    int    oldId        = oldDBRS.getInt(1);
+                    
+                    String oldNewIdStr = oldId + " / "+newId;
+                    
+                    int inx = 1;
+                    
+                    compareStrings(oldNewIdStr, rmd.getColumnName(inx), inx, inx); inx++;  // LoanNumber
+                    compareDates(oldNewIdStr, inx, inx); inx++;                            // Gift Date
+                    compareNumber(oldNewIdStr,  rmd.getColumnName(inx), inx, inx); inx++;  // Quantity
+                    compareStrings(oldNewIdStr, rmd.getColumnName(inx), inx, inx); inx++;  // Remarks
+                }
+                
+                oldDBRS.close();
+                newDBRS.close();
+            }
+
+        } catch (Exception ex)
+        {
+            ex.printStackTrace(); 
+        }
+
+    }
+
     /**
      * @param args
      */

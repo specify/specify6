@@ -2190,6 +2190,9 @@ public class BasicSQLUtils
                 }
                 
                 id = rs.getString(1);
+                
+                int x = 0;
+                x++;
 
                 // For each column in the new DB table...
                 for (int i = 0; i < newFieldMetaData.size(); i++)

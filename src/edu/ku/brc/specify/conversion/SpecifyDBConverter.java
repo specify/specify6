@@ -31,7 +31,9 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -150,7 +152,6 @@ public class SpecifyDBConverter extends AppBase
     protected Pair<String, String>              namePairToConvert = null;
     
     protected static ProgressFrame              frame             = null;
-    
     protected Pair<String, String>              itUsrPwd     = new Pair<String, String>(null, null);
     protected Pair<String, String>              masterUsrPwd = new Pair<String, String>("Master", "Master");
     protected String                            hostName     = "localhost";
@@ -190,6 +191,22 @@ public class SpecifyDBConverter extends AppBase
      */
     public static void main(String args[]) throws Exception
     {
+        /*try
+        {
+            List<String>   list = FileUtils.readLines(new File("/Users/rods/drop.sql"));
+            Vector<String> list2 = new Vector<String>();
+            for (String line : list)
+            {
+                list2.add(line+";");
+            }
+            FileUtils.writeLines(new File("/Users/rods/drop2.sql"), list2);
+            return;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }*/
+        
         // Set App Name, MUST be done very first thing!
         UIRegistry.setAppName("Specify");  //$NON-NLS-1$
 
@@ -665,6 +682,14 @@ public class SpecifyDBConverter extends AppBase
             return;
         }
         
+        boolean doFixLoanPreps = false;
+        if (doFixLoanPreps)
+        {
+            fixLoanPreps(oldDBConn, newDBConn);
+            fixGiftPreps(oldDBConn, newDBConn);
+            return;
+        }
+        
         boolean doGetLastEditedByNamesHashSet = true;
         if (doGetLastEditedByNamesHashSet)
         {
@@ -805,8 +830,11 @@ public class SpecifyDBConverter extends AppBase
         int numCESharing = BasicSQLUtils.getCountAsInt(oldDBConn, sql);
 
         String msg = String.format("Will this Collection share Collecting Events?\nThere are %d Collecting Events that are sharing now.\n(Sp5 was %ssharing them.)", numCESharing, isUsingEmbeddedCEsInSp5() ? "NOT " : "");
-        boolean doingOneToOneForColObjToCE = !UIHelper.promptForAction("Share", "Adjust CEs", "Duplicate Collecting Events", msg);
-
+        boolean isSharingCollectingEvents  = UIHelper.promptForAction("Share", "Adjust CEs", "Duplicate Collecting Events", msg);
+        boolean doingOneToOneForColObjToCE = !isSharingCollectingEvents;
+        
+        conversion.setSharingCollectingEvents(isSharingCollectingEvents);
+        
         /*if (false) 
         {
             createTableSummaryPage();
@@ -1559,6 +1587,7 @@ public class SpecifyDBConverter extends AppBase
                 }
                 //checkDisciplines();
 
+                frame.setDesc("Fixing Scope....");
                 TableWriter tblWriter = convLogger.getWriter("ScopeUpdater.html", "Updating Scope Summary");
                 ConvScopeFixer convScopeFixer = new ConvScopeFixer(oldDBConn, newDBConn, dbNameDest, tblWriter);
                 convScopeFixer.doFixTables();
@@ -1583,6 +1612,7 @@ public class SpecifyDBConverter extends AppBase
                 waitTime = System.currentTimeMillis() - stTime;
                 */
                 
+                frame.setDesc("Duplicating CollectingEvents Performing Maintenance...");
                 File ceFile = new File(dbNameDest+".ce_all");
                 if (doingOneToOneForColObjToCE)
                 {
@@ -1608,10 +1638,14 @@ public class SpecifyDBConverter extends AppBase
                 
                 fixHibernateHiLo(newDBConn);
                 
+                frame.setDesc("Discipline Duplicator...");
                 DisciplineDuplicator d = new DisciplineDuplicator(conversion.getOldDBConn(), conversion.getNewDBConn(), tblWriter, frame, conversion);
                 d.doShowFieldsForDiscipline();
+                frame.setDesc("Duplicating Collecting Events...");
                 d.duplicateCollectingEvents();
+                frame.setDesc("Duplicating Localities...");
                 d.duplicateLocalities();
+                frame.setDesc("Duplicating Geography...");
                 d.duplicateGeography();
                 
                 frame.setDesc("Running Table Checker to report on fields with data.");
@@ -1620,6 +1654,7 @@ public class SpecifyDBConverter extends AppBase
                 tblDataChecker.createHTMLReport(tDSTblWriter);
                 //tDSTblWriter.close();
                 
+                frame.setDesc("Updating Version...");
                 updateVersionInfo(newConn);
                 
                 if (dbNameDest.startsWith("kui_fish_"))
@@ -1719,9 +1754,269 @@ public class SpecifyDBConverter extends AppBase
         }
     }
     
+    /**
+     * @param oldDBConn
+     * @param newDBConn
+     */
+    protected void fixLoanPreps(final Connection oldDBConn, 
+                                final Connection newDBConn)
+    {
+        // Category == 0 -> Is a Loan, 1 is a Gift
+        
+        System.out.println("------------------------ Loans ----------------------------");
+        
+        
+        int fixCnt     = 0;
+        int totalCnt   = 0;
+        int skippedCnt = 0;
+        int notFndCnt  = 0;
+        int noMatch    = 0;
+        
+        IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
+        IdTableMapper loanPrepsMapper = IdMapperMgr.getInstance().addTableMapper("loanphysicalobject", "LoanPhysicalObjectID", false);
+        IdTableMapper loansMapper     = IdMapperMgr.getInstance().addTableMapper("loan", "LoanID", false);
+        IdTableMapper prepMapper      = IdMapperMgr.getInstance().addTableMapper("collectionobject", "CollectionObjectID", false);
+
+        Statement         stmt    = null;
+        PreparedStatement newStmt = null;
+        PreparedStatement pStmt   = null;
+        try
+        {
+            pStmt   = newDBConn.prepareStatement("UPDATE loanpreparation SET Quantity=?, QuantityResolved=?, QuantityReturned=?, IsResolved=?, TimestampModified=?, TimestampCreated=?, " +
+                                                 "LoanID=?, DescriptionOfMaterial=?, OutComments=?, InComments=?, PreparationID=?, Version=? " +
+            	                                 "WHERE LoanPreparationID = ?");
+            
+            newStmt = newDBConn.prepareStatement("SELECT LoanPreparationID, TimestampModified, Version FROM loanpreparation WHERE LoanPreparationID = ?");
+            
+            String sql = "SELECT lp.LoanPhysicalObjectID, lp.PhysicalObjectID, lp.LoanID, lp.Quantity, lp.DescriptionOfMaterial, lp.OutComments, lp.InComments, " +
+                         "lp.QuantityResolved, lp.QuantityReturned, lp.TimestampCreated, lp.TimestampModified, lp.LastEditedBy, l.Closed " +
+                         "FROM loanphysicalobject lp INNER JOIN loan l ON l.LoanID = lp.LoanID WHERE l.Category = 0";
+            
+            
+            stmt    = oldDBConn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next())
+            {
+                int       id           = rs.getInt(1);
+                Timestamp oldCreatedTS = rs.getTimestamp(10);
+                
+                //System.out.println(id);
+                Integer newID = loanPrepsMapper.get(id);
+                if (newID != null)
+                {
+                    newStmt.setInt(1, newID);
+                    
+                    ResultSet rs2 = newStmt.executeQuery();
+                    if (rs2.next())
+                    {
+                        Timestamp oldModifiedTS = rs.getTimestamp(11);
+                        if (rs2.getInt(3) == 0) // version
+                        {
+                            Integer prepId       = rs.getInt(2);
+                            Integer loanId       = rs.getInt(3);
+                            Integer newLoanId    = loansMapper.get(loanId);
+                            Integer qty          = rs.getInt(4);
+                            String  descOfMat    = rs.getString(5);
+                            String  outComments  = rs.getString(6);
+                            String  inComments   = rs.getString(7);
+                            Integer qtyRes       = rs.getInt(8);
+                            Integer qtyRet       = rs.getInt(9);
+                            String  lasteditedBy = rs.getString(12);
+                            Boolean isLoanClosed = rs.getBoolean(13);
+                            
+                            isLoanClosed = isLoanClosed == null ? false : isLoanClosed;
+                            
+                            pStmt.setInt(1, qty);
+                            pStmt.setInt(2, qtyRes);
+                            pStmt.setInt(3, qtyRet);
+                            
+                            boolean isResolved = isLoanClosed;
+                            
+                            if(!isLoanClosed) // if Loan is Closed then all are resolved by definition
+                            {
+                                if (qty != null)
+                                {
+                                    if (qtyRes != null && qty.equals(qtyRes))
+                                    {
+                                        isResolved = true;
+                                        
+                                    } else if (qtyRet != null && qty.equals(qtyRet))
+                                    {
+                                        isResolved = true;
+                                    }
+                                }
+                            }
+                            pStmt.setBoolean(4,   isResolved);
+                            pStmt.setTimestamp(5, oldModifiedTS);
+                            pStmt.setTimestamp(6, oldCreatedTS);
+                            
+                            pStmt.setInt(7,     newLoanId);
+                            pStmt.setString(8,  descOfMat);
+                            pStmt.setString(9,  outComments);
+                            pStmt.setString(10, inComments);
+                            pStmt.setInt(11,    prepId != null ? prepMapper.get(prepId) : null);
+                            pStmt.setInt(12,    1); // Version
+                            
+                            pStmt.setInt(13, newID);
+                            
+                            if (pStmt.executeUpdate() != 1)
+                            {
+                                log.error(String.format("*** Error updating OldID %d  newID %d", rs.getInt(1), newID));
+                            } else
+                            {
+                                fixCnt++;
+                            }
+                        } else
+                        {
+                            noMatch++;
+                        }
+                    } else
+                    {
+                        notFndCnt++;
+                    }
+                    rs2.close();
+                } else
+                {
+                    //log.error(String.format("*** Error not new Id for OldID %d", rs.getInt(1)));
+                    skippedCnt++;
+                }
+                totalCnt++;
+            }
+            rs.close();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            try
+            {
+                if (stmt != null) stmt.close();
+                if (newStmt != null) newStmt.close();
+                if (pStmt != null) pStmt.close();
+                
+            } catch (Exception ex) {}
+        }
+        
+        System.out.println(String.format("Total: %d  Fixed: %d  Skipped: %d  NotFnd: %d  noMatch: %d", totalCnt, fixCnt, skippedCnt, notFndCnt, noMatch));
+    }
+    
+    /**
+     * @param oldDBConn
+     * @param newDBConn
+     */
+    protected void fixGiftPreps(final Connection oldDBConn, 
+                                final Connection newDBConn)
+    {
+        // Category == 0 -> Is a Loan, 1 is a Gift
+        
+        System.out.println("------------------------ Gifts ----------------------------");
+        
+        
+        int fixCnt     = 0;
+        int totalCnt   = 0;
+        int skippedCnt = 0;
+        int notFndCnt  = 0;
+        
+        IdMapperMgr.getInstance().setDBs(oldDBConn, newDBConn);
+        IdTableMapper colObjMapper = IdMapperMgr.getInstance().addTableMapper("collectionobject", "CollectionObjectID", false);
+        IdTableMapper giftMapper      = new IdTableMapper("gift", "GiftID", false, false);
+
+        Statement         stmt     = null;
+        PreparedStatement newStmt  = null;
+        PreparedStatement pStmt    = null;
+        try
+        {
+            pStmt   = newDBConn.prepareStatement("UPDATE giftpreparation SET Quantity=?, TimestampModified=?, TimestampCreated=?, " +
+                                                 "GiftID=?, DescriptionOfMaterial=?, OutComments=?, InComments=?, PreparationID=?, Version=? " +
+                                                 "WHERE GiftPreparationID = ?");
+            
+            newStmt = newDBConn.prepareStatement("SELECT GiftPreparationID FROM giftpreparation WHERE GiftID = ? AND PreparationID = ?");
+            
+            
+            String sql = "SELECT lp.LoanPhysicalObjectID, lp.PhysicalObjectID, lp.LoanID, lp.Quantity, lp.DescriptionOfMaterial, lp.OutComments, lp.InComments, " +
+                         "lp.QuantityResolved, lp.QuantityReturned, lp.TimestampCreated, lp.TimestampModified, lp.LastEditedBy, l.Closed " +
+                         "FROM loanphysicalobject lp INNER JOIN loan l ON l.LoanID = lp.LoanID WHERE l.Category = 1";
+            
+            
+            stmt    = oldDBConn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next())
+            {
+                int       loanId       = rs.getInt(5);
+                int       oldPrepId    = rs.getInt(6);
+                Integer   newPrepId    = colObjMapper.get(oldPrepId);
+                
+                //System.out.println(id);
+                Integer giftID = giftMapper.get(loanId);
+                if (giftID != null)
+                {
+                    String s = String.format("SELECT COUNT(*) FROM giftpreparation WHERE GiftID = %d AND PreparationID = %d", giftID, newPrepId);
+                    //System.out.println(s);
+                    int cnt = BasicSQLUtils.getCountAsInt(s);
+                    if (cnt == 1)
+                    {
+                        newStmt.setInt(1, giftID);
+                        newStmt.setInt(2, newPrepId);
+                    } else
+                    {
+                        log.error(String.format("*** Error get unique GiftPrep GiftID = %d AND PrepId = %d  %s", giftID, newPrepId, s)+"  "+rs.getTimestamp(2));
+                    }
+                    
+                    ResultSet rs2 = newStmt.executeQuery();
+                    if (rs2.next())
+                    {
+                        pStmt.setInt(1,       rs.getInt(4));
+                        pStmt.setTimestamp(2, rs.getTimestamp(2));
+                        pStmt.setInt(3,       rs2.getInt(1));
+                        
+                        if (pStmt.executeUpdate() != 1)
+                        {
+                            log.error(String.format("*** Error updating OldID %d  newID %d", rs.getInt(1), giftID));
+                        } else
+                        {
+                            fixCnt++;
+                        }
+                        
+                    } else
+                    {
+                        notFndCnt++;
+                    }
+                    rs2.close();
+                } else
+                {
+                    //log.error(String.format("*** Error not new Id for OldID %d", rs.getInt(1)));
+                    skippedCnt++;
+                }
+                totalCnt++;
+            }
+            rs.close();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            try
+            {
+                if (stmt != null) stmt.close();
+                if (newStmt != null) newStmt.close();
+                if (pStmt != null) pStmt.close();
+                
+            } catch (Exception ex) {}
+        }
+        
+        System.out.println(String.format("Total: %d  Fixed: %d  Skipped: %d  NotFnd: %d", totalCnt, fixCnt, skippedCnt, notFndCnt));
+    }
+    
+
+    
+    /**
+     * 
+     */
     protected void checkDisciplines()
     {
-        System.out.println("Checking kDisciplines....");
+        System.out.println("Checking Disciplines....");
         int count = 0;
         for (Object obj : BasicSQLUtils.querySingleCol("SELECT TaxonTreeDefID FROM discipline"))
         {
