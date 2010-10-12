@@ -984,6 +984,19 @@ public class UploadTable implements Comparable<UploadTable>
         currentRecords.set(index, rec);
     }
 
+    public void loadRecord(DataModelObjBase rec)
+    {
+    	setCurrentRecord(rec, 0);
+    	for (Vector<ParentTableEntry> ptes : parentTables)
+    	{
+    		for (ParentTableEntry pte : ptes)
+    		{
+    			System.out.println("NOT loading " + pte.getImportTable());
+    		}
+    	}
+    }
+    
+    
     /**
      * @return A new record of type tlbClass.
      * @throws InstantiationException
@@ -3604,9 +3617,7 @@ public class UploadTable implements Comparable<UploadTable>
     protected String getRecordSetName()
     {
         int maxNameLength = DBTableIdMgr.getInstance().getInfoByTableName("recordset").getFieldByColumnName("name").getLength();
-        String tblName = DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTitle();
-        String uploadName = uploader.getIdentifier();
-        String rsName = tblName + "_" + uploadName;
+        String rsName = getFullRecordSetName();
         if (rsName.length() > maxNameLength)
         {
             //add as many pieces of the upload time as will fit...
@@ -3614,7 +3625,7 @@ public class UploadTable implements Comparable<UploadTable>
             String[] chunks = {"_" + String.valueOf(now.get(Calendar.YEAR)), "-" + String.valueOf(now.get(Calendar.MONTH) + 1),
                     "-" + String.valueOf(now.get(Calendar.DAY_OF_MONTH)), "_" + String.valueOf(now.get(Calendar.HOUR_OF_DAY)),
                     ":" + String.valueOf(now.get(Calendar.SECOND))}; 
-            rsName = tblName;
+            rsName = getShortRecordSetName();
             int c = 0;
             while (c < chunks.length && (rsName + chunks[c]).length() <= maxNameLength)
             {
@@ -3622,6 +3633,24 @@ public class UploadTable implements Comparable<UploadTable>
             }
         }
         return rsName;
+    }
+
+    /**
+     * @return
+     */
+    protected String getFullRecordSetName()
+    {
+        String tblName = DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTitle();
+        String uploadName = uploader.getIdentifier();
+        return tblName + "_" + uploadName;
+    }
+    
+    /**
+     * @return
+     */
+    protected String getShortRecordSetName()
+    {
+    	return DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTitle();
     }
 
     /**

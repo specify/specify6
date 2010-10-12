@@ -485,12 +485,12 @@ public class UploadTableTree extends UploadTable
             return -1;
         }
     }
-
+    
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#getRecordSetName()
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#getFullRecordSetName()
      */
     @Override
-    protected String getRecordSetName() 
+    protected String getFullRecordSetName()
     {
         try
         {
@@ -499,6 +499,22 @@ public class UploadTableTree extends UploadTable
         catch (UploaderException ux)
         {
             return tblClass.getSimpleName() + "_" + uploader.getIdentifier();
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#getShortRecordSetName()
+     */
+    @Override
+    protected String getShortRecordSetName()
+    {
+        try
+        {
+            return getTreeDefItem().getName();
+        }
+        catch (UploaderException ux)
+        {
+            return tblClass.getSimpleName();
         }
     }
     
