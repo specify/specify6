@@ -1119,6 +1119,18 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         obj.timestampCreated     = new Timestamp(System.currentTimeMillis());
         obj.timestampModified    = timestampCreated;
         
+        initializeSets(obj);
+        
+        cloneSets(this, obj);
+        
+        return obj;
+    }
+    
+    /**
+     * @param obj
+     */
+    public static void initializeSets(final Agent obj)
+    {
         obj.orgMembers                = new HashSet<Agent>();
         obj.groups                    = new HashSet<GroupPerson>();
         obj.members                   = new HashSet<GroupPerson>();
@@ -1130,10 +1142,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         obj.variants                  = new HashSet<AgentVariant>();
         obj.agentGeographies          = new HashSet<AgentGeography>();
         obj.agentSpecialties          = new HashSet<AgentSpecialty>();
-        
-        cloneSets(this, obj);
-        
-        return obj;
     }
     
     /**

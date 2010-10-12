@@ -245,7 +245,7 @@ public class CustomStatQueries implements CustomQueryIFace
         endDate.set(Calendar.DAY_OF_MONTH, today.get(Calendar.DAY_OF_MONTH));
         
         endDate.add(Calendar.MONTH, 6);
-        System.out.println(endDate);
+        //System.out.println(endDate);
         
         Criteria criteria = session.createCriteria(Loan.class);
         criteria.add(Restrictions.isNotNull("currentDueDate"));

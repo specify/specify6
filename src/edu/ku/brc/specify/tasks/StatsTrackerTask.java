@@ -244,12 +244,15 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
         }
         
         // Gather Collection Counts;
-        Integer estSize = collection.getEstimatedSize();
-        String  estSizeStr = estSize != null ? Integer.toString(estSize) : ""; 
-        stats.add(new NameValuePair("Collection_estsize",  estSizeStr)); //$NON-NLS-1$
-        stats.add(new NameValuePair("Collection_number",  fixParam(collection.getRegNumber()))); //$NON-NLS-1$
-        stats.add(new NameValuePair("Collection_website", fixParam(collection.getWebSiteURI()))); //$NON-NLS-1$
-        stats.add(new NameValuePair("Collection_portal",  fixParam(collection.getWebPortalURI()))); //$NON-NLS-1$
+        if (collection != null)
+        {
+            Integer estSize = collection.getEstimatedSize();
+            String  estSizeStr = estSize != null ? Integer.toString(estSize) : ""; 
+            stats.add(new NameValuePair("Collection_estsize",  estSizeStr)); //$NON-NLS-1$
+            stats.add(new NameValuePair("Collection_number",  fixParam(collection.getRegNumber()))); //$NON-NLS-1$
+            stats.add(new NameValuePair("Collection_website", fixParam(collection.getWebSiteURI()))); //$NON-NLS-1$
+            stats.add(new NameValuePair("Collection_portal",  fixParam(collection.getWebPortalURI()))); //$NON-NLS-1$
+        }
 
         return stats;
     }

@@ -647,6 +647,8 @@ public class BuildSampleDatabase
                 Agent cloneableAgent = (Agent)agentList.get(0);
                 
                 newUserAgent = (Agent)cloneableAgent.clone();
+                Agent.initializeSets(newUserAgent);
+                
                 specifyAdminUser.getAgents().add(newUserAgent);
                 newUserAgent.setSpecifyUser(specifyAdminUser);
                 
