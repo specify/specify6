@@ -117,7 +117,7 @@ public class DatamodelGenerator
             }
             
             schemaLocalizer = new SchemaLocalizerXMLHelper(SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
-            includeDesc = schemaLocalizer.load();
+            includeDesc = schemaLocalizer.load(true);
             
             //descTableList = schemaLocalizer.getSpLocaleContainers();
         }

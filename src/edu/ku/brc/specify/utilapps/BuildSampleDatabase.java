@@ -8169,9 +8169,16 @@ public class BuildSampleDatabase
             str.setCountry(nm.getCountry());
             str.setVariant(nm.getVariant());
             
-            if (dbBase != null && dbBase.getId() == null)
+            if (dbBase != null && str.getId() == null)
             {   
                 dbBase.getNamesSet().add(str);
+                if (dbBase instanceof SpLocaleContainer)
+                {
+                    str.setContainerName((SpLocaleContainer)dbBase);
+                } else
+                {
+                    str.setItemName((SpLocaleContainerItem)dbBase);
+                }
             }
         }
         
@@ -8196,9 +8203,16 @@ public class BuildSampleDatabase
             str.setCountry(desc.getCountry());
             str.setVariant(desc.getVariant());
             
-            if (dbBase != null && dbBase.getId() == null)
+            if (dbBase != null && str.getId() == null)
             {
                 dbBase.getDescsSet().add(str);
+                if (dbBase instanceof SpLocaleContainer)
+                {
+                    str.setContainerDesc((SpLocaleContainer)dbBase);
+                } else
+                {
+                    str.setItemDesc((SpLocaleContainerItem)dbBase);
+                }
             }
         }
     }
@@ -8351,8 +8365,8 @@ public class BuildSampleDatabase
                     try
                     {
                         if (!isImport) session.beginTransaction();
-                        setItemStrs(dbItem.getNames(), item.getNames(), session);
-                        setItemStrs(dbItem.getDescs(), item.getDescs(), session);
+                        setItemStrs(dbItem, true,  dbItem.getNames(), item.getNames(), session);
+                        setItemStrs(dbItem, false, dbItem.getDescs(), item.getDescs(), session);
                         session.saveOrUpdate(dbItem);
                         if (!isImport) session.commit();
                         
@@ -8382,23 +8396,50 @@ public class BuildSampleDatabase
      * @param session
      * @throws Exception
      */
-    private static void setItemStrs(final Set<SpLocaleItemStr>     dbSet, 
+    private static void setItemStrs(final SpLocaleContainerItem    dbItem,
+                                    final boolean                  isName,
+                                    final Set<SpLocaleItemStr>     dbSet, 
                                     final Set<SpLocaleItemStr>     memSet,
                                     final DataProviderSessionIFace session) throws Exception
     {
         HashMap<String, SpLocaleItemStr> hash = new HashMap<String, SpLocaleItemStr>();
+        for (SpLocaleItemStr dbItemStr : dbSet)
+        {
+            hash.put(mkKey(dbItemStr), dbItemStr);
+        }
+        
         for (SpLocaleItemStr memItem : memSet)
         {
-            hash.put(mkKey(memItem), memItem);
-        }
-        for (SpLocaleItemStr dbItem : dbSet)
-        {
-            SpLocaleItemStr memItem = hash.get(mkKey(dbItem));
-            if (memItem != null)
+            SpLocaleItemStr dbItmStr = hash.get(mkKey(memItem));
+            if (dbItmStr == null)
             {
-                dbItem.setText(memItem.getText() != null ? memItem.getText() : "");
-                session.saveOrUpdate(dbItem);
+                dbItmStr = new SpLocaleItemStr();
+                dbItmStr.initialize();
+                dbSet.add(dbItmStr);
+                if (isName)
+                {
+                    dbItmStr.setItemName(dbItem);
+                } else
+                {
+                    dbItmStr.setItemDesc(dbItem);
+                }
             }
+            
+            String memText   = memItem.getText();
+            String dbText    = dbItmStr.getText();
+            boolean doUpdate = dbItmStr.getId() == null || (memText == null && dbText != null) || (memText != null && dbText == null) || (memText != null && dbText != null && memText.equals(dbText)); 
+            
+            String txt = doUpdate ? memText : dbText;
+            if (txt == null)
+            {
+                txt = "";
+            }
+            dbItmStr.setText(txt);
+            dbItmStr.setLanguage(memItem.getLanguage());
+            dbItmStr.setCountry(memItem.getCountry());
+            dbItmStr.setVariant(memItem.getVariant());
+            
+            if (doUpdate) session.saveOrUpdate(dbItmStr);
         }
     }
     
@@ -8462,7 +8503,7 @@ public class BuildSampleDatabase
         HiddenTableMgr hiddenTableMgr = new HiddenTableMgr();
 
         SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(schemaType, tableMgr);
-        schemaLocalizer.loadWithExternalFile(externalFile);
+        schemaLocalizer.loadWithExternalFile(externalFile, true);
         
         boolean hideGenericFields = true;
         
@@ -8471,6 +8512,7 @@ public class BuildSampleDatabase
         String dispName = discipline.getType().toString();
         
         boolean isUpdate = updateType == UpdateType.eImport || updateType == UpdateType.eMerge;
+
         
         float progressCnt = 0.0f;
         float len = (float)schemaLocalizer.getSpLocaleContainers().size();

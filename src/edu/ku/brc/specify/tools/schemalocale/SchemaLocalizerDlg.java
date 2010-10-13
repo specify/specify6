@@ -162,7 +162,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         //List<SpLocaleContainer> list = session.getDataList(SpLocaleContainer.class);
         
         localizableIOIFace = this;
-        localizableIOIFace.load();
+        localizableIOIFace.load(true);
         
         schemaLocPanel = new SchemaLocalizerPanel(this, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, webLinkMgrCache);
         schemaLocPanel.setLocalizableIO(localizableIOIFace);
@@ -463,10 +463,10 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#load()
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#load(boolean)
      */
     @Override
-    public boolean load()
+    public boolean load(final boolean useCurrentLocaleOnly)
     {
         enabledDlgBtns(true);
         
@@ -1071,5 +1071,24 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         {
             enabledDlgBtns(true);
         }
+    }
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#exportSingleLanguageToDirectory(java.io.File, java.util.Locale)
+     */
+    @Override
+    public boolean exportSingleLanguageToDirectory(File expportFile, Locale locale)
+    {
+        throw new RuntimeException("Not Impl");
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#hasChanged()
+     */
+    @Override
+    public boolean hasChanged()
+    {
+        throw new RuntimeException("Not Impl");
     }
 }

@@ -69,7 +69,7 @@ public class TableTracker
             tableMgr.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml")));
             
             SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(SpLocaleContainer.WORKBENCH_SCHEMA, tableMgr);
-            schemaLocalizer.load();
+            schemaLocalizer.load(true);
             schemaLocalizer.setTitlesIntoSchema();            
         } else
         {

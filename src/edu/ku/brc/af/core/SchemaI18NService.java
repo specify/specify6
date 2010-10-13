@@ -26,7 +26,8 @@ import java.beans.PropertyChangeListener;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collections;
-import java.util.Hashtable;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -37,7 +38,6 @@ import javax.swing.JMenu;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.db.DBTableIdMgr;
-import edu.ku.brc.specify.tools.schemalocale.DisplayLocale;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -53,7 +53,13 @@ public abstract class SchemaI18NService
     
     protected static SchemaI18NService instance        = null;
     protected static Locale            currentLocale;
-    protected static String[]          priorityLocales = {"en", "de", "sv", "pt", "da"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+    protected static String[]          priorityLocales = {"en", "US", null,
+                                                          "da", "DK", null,
+                                                          "de", "DE", null,
+                                                          "pt", "PT", null,
+                                                          "pt", "BR", null,
+                                                          "sv", "SE", null,
+                                                          }; 
     
     
     // Locale Data Members
@@ -122,23 +128,6 @@ public abstract class SchemaI18NService
     
     
     /**
-     * Method for loading the Locale String from a persistent store into the DBTableInfo classes.
-     * @param schemaType the type of schema 'core' or 'workbench'
-     * @param disciplineId the discipline of the schema
-     * @param mgr the DBTableIDMgr to use (could be the main one or the workbench)
-     * @param locale the Locale to load
-     */
-    public abstract void loadWithLocale(final Byte schemaType, 
-                                        final int  disciplineId,
-                                        final DBTableIdMgr mgr, 
-                                        final Locale locale);
-
-    
-    //----------------------------------------------------------------------
-    //-- Non-Static Methods
-    //----------------------------------------------------------------------
-    
-    /**
      * Only Loads the Locales with empty Country and Variant
      */
     public static void initializeLocales()
@@ -151,13 +140,122 @@ public abstract class SchemaI18NService
             {
                 for (Locale locale : Locale.getAvailableLocales())
                 {
-                    if (StringUtils.isEmpty(locale.getCountry()))
+                    if (StringUtils.isNotEmpty(locale.getCountry()))
                     {
                         locs.add(locale);
                     }
                 }
+                Collections.sort(locs, new Comparator<Locale>() {
+                    public int compare(Locale o1, Locale o2)
+                    {
+                        return o1.getDisplayName().compareTo(o2.getDisplayName());
+                    }
+                });
             }
         }
+    }
+    /**
+     * Method for loading the Locale String from a persistent store into the DBTableInfo classes.
+     * @param schemaType the type of schema 'core' or 'workbench'
+     * @param disciplineId the discipline of the schema
+     * @param mgr the DBTableIDMgr to use (could be the main one or the workbench)
+     * @param locale the Locale to load
+     */
+    public abstract void loadWithLocale(final Byte schemaType, 
+                                        final int  disciplineId,
+                                        final DBTableIdMgr mgr, 
+                                        final Locale locale);
+
+    //----------------------------------------------------------------------
+    //-- Non-Static Methods
+    //----------------------------------------------------------------------
+
+    /**
+     * @param lang
+     * @param country
+     * @param variant
+     * @return
+     */
+    public Locale getLocaleByLangCountry(final String lang, 
+                                         final String country,
+                                         final String variant)
+    {
+        if (lang != null)
+        {
+            for (Locale l : locales)
+            {
+                if (l.getLanguage().equals(lang))
+                {
+                    if (country == null && variant == null)
+                    {
+                        return l;
+                    }
+                    
+                    if (l.getCountry() != null && l.getCountry().equals(country))
+                    {
+                        if (variant == null)
+                        {
+                            return l;
+                        }
+                        
+                        if (l.getVariant() != null && l.getVariant().equals(variant))
+                        {
+                            return l;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * @return
+     */
+    public Vector<Locale> getStdLocaleList(final boolean includeSepLocale)
+    {
+        for (Locale l : locales)
+        {
+            System.out.println(String.format("%s - %s, %s, %s", l.getDisplayName(), l.getLanguage(), l.getCountry(), l.getVariant()));
+        }
+        
+        Vector<Locale> freqLocales = new Vector<Locale>();
+        int i = 0;
+        while (i < priorityLocales.length)
+        {
+            String lang = priorityLocales[i++];
+            String ctry = priorityLocales[i++];
+            String vari = priorityLocales[i++];
+            Locale l = getLocaleByLangCountry(lang, ctry, vari);
+            if (l != null)
+            {
+                freqLocales.add(l);
+            }
+        }
+        HashSet<String> freqSet = new HashSet<String>();
+        for (Locale l : freqLocales)
+        {
+            freqSet.add(l.getDisplayName());
+        }
+        Vector<Locale>  stdLocaleList = new Vector<Locale>();
+        for (Locale l : locales)
+        {
+            if (!freqSet.contains(l.getDisplayName()))
+            {
+                stdLocaleList.add(l);
+            }
+        }
+        
+        if (includeSepLocale)
+        {
+            stdLocaleList.insertElementAt(new Locale("-", "-", "-"), 0);
+        }
+        
+        for (i=freqLocales.size()-1;i>-1;i--)
+        {
+            stdLocaleList.insertElementAt(freqLocales.get(i), 0);
+        }
+        return stdLocaleList;
     }
     
     /**
@@ -176,41 +274,17 @@ public abstract class SchemaI18NService
     {
         JMenu menu = new JMenu("Locale"); //$NON-NLS-1$
         
-        Hashtable<String, Boolean> priorityHash = new Hashtable<String, Boolean>();
-        for (String ps : priorityLocales)
+        for (Locale locale : getStdLocaleList(true))
         {
-            priorityHash.put(ps, true);
-        }
-        
-        Vector<DisplayLocale> dispLocales = new Vector<DisplayLocale>();
-        
-        for (Locale locale : locales)
-        {
-            dispLocales.add(new DisplayLocale(locale));
-        }
-        Collections.sort(dispLocales);
-        
-        for (DisplayLocale dspLocale : dispLocales)
-        {
-            Locale locale = dspLocale.getLocale();
-            if (priorityHash.get(locale.getLanguage()) != null)
+            if (!locale.getLanguage().equals("-"))
             {
                 JCheckBoxMenuItem cbmi = new JCheckBoxMenuItem(locale.getDisplayName());
                 localeMenuItems.add(cbmi);
                 menu.add(cbmi);
                 cbmi.addActionListener(al);
-            }
-        }
-        menu.addSeparator();
-        for (DisplayLocale dspLocale : dispLocales)
-        {
-            Locale locale = dspLocale.getLocale();
-            if (priorityHash.get(locale.getLanguage()) == null)
+            } else
             {
-                JCheckBoxMenuItem cbmi = new JCheckBoxMenuItem(locale.getDisplayName());
-                localeMenuItems.add(cbmi);
-                menu.add(cbmi);
-                cbmi.addActionListener(al);
+                menu.addSeparator();
             }
         }
         return menu;
@@ -235,12 +309,13 @@ public abstract class SchemaI18NService
     
     
     /**
-     * Return a lcoale by name.
+     * Return a locale by name.
      * @param displayName the name in the menu's display
      * @return the locale or null
      */
     public Locale getLocaleByName(final String displayName)
     {
+        // Need to use binarySearch
         for (Locale locale : locales)
         {
             if (locale.getDisplayName().equals(displayName))

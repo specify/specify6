@@ -24,17 +24,20 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createPickList;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.Vector;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -90,7 +93,9 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     
     protected Hashtable<LocalizableJListItem, Vector<LocalizableJListItem>> itemJListItemsHash = new Hashtable<LocalizableJListItem, Vector<LocalizableJListItem>>();
     
+    protected boolean                                      hasTableInfoChanged      = false;
     protected boolean                                      changesMadeDuringStartup = false;
+    protected File                                         inputFile                = null;
     
     
     // Used for Caching the lists
@@ -135,40 +140,28 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#load()
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#load(boolean)
      */
     @Override
-    public boolean load()
+    public boolean load(final boolean useCurrentLocaleOnly)
     {
-        return loadWithExternalFile(null);
+        return loadWithExternalFile(null, useCurrentLocaleOnly);
     }
     
     /**
      * @param externalFile
      * @return
      */
-    public boolean loadWithExternalFile(final File externalFile)
+    public boolean loadWithExternalFile(final File externalFile, final boolean useCurrentLocaleOnly)
     {
-        tables = load(null, externalFile);
-        
-        for (DisciplineBasedContainer c : tables)
-        {
-            if (c.getName().equals("accession"))
-            {
-                for (SpLocaleItemStr str : c.getNames())
-                {
-                    System.out.println(str.getText());
-                }
-            }
-                
-        }
+        tables = load(null, externalFile, useCurrentLocaleOnly);
         
         boolean loadedOk = tables != null;
         if (loadedOk && externalFile == null)
         {
             for (DisciplineType disciplineType : DisciplineType.getDisciplineList())
             {
-                Vector<DisciplineBasedContainer> dispContainers = load(disciplineType.getName(), null);
+                Vector<DisciplineBasedContainer> dispContainers = load(disciplineType.getName(), null, useCurrentLocaleOnly);
                 addDisplineBasedContainers(disciplineType.getName(), dispContainers);
             }
         }
@@ -201,13 +194,189 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             }
         }
     }
+    
+    /**
+     * @param language
+     * @param containers
+     */
+    public void addMissingTranslations(final String language, 
+                                       final Vector<DisciplineBasedContainer> containers)
+    {
+        int containerCnt = 0;
+        int itemCnt      = 0;
+        
+        for (DisciplineBasedContainer container : containers)
+        {
+            if (container.getNamesSet().size() == 0)
+            {
+                log.debug("Container: "+container.getName()+" nameSet is empty.");
+                SpLocaleItemStr str = new SpLocaleItemStr();
+                str.initialize();
+                str.setLanguage(language);
+                str.setText(container.getName());
+                str.setContainerDesc(container);
+                container.getNamesSet().add(str);
+                containerCnt++;
+            } else
+            {
+                for (SpLocaleItemStr str : container.getNamesSet())
+                {
+                    if (StringUtils.isEmpty(str.getText()))
+                    {
+                        str.setText(container.getName());
+                        containerCnt++;
+                    }
+                }
+            }
+            if (container.getDescsSet().size() == 0)
+            {
+                log.debug("Container: "+container.getName()+" descSet is empty.");
+                SpLocaleItemStr str = new SpLocaleItemStr();
+                str.initialize();
+                str.setLanguage(language);
+                str.setText(container.getName());
+                str.setContainerDesc(container);
+                container.getDescsSet().add(str);
+                containerCnt++;
+            } else
+            {
+                for (SpLocaleItemStr str : container.getDescsSet())
+                {
+                    if (StringUtils.isEmpty(str.getText()))
+                    {
+                        str.setText(container.getName());
+                        containerCnt++;
+                    }
+                }
+            }
+            
+            for (SpLocaleContainerItem sci : container.getItems())
+            {
+                if (sci.getNamesSet().size() == 0)
+                {
+                    log.debug(container.getName()+" Item: "+sci.getName()+" nameSet is empty.");
+                    SpLocaleItemStr str = new SpLocaleItemStr();
+                    str.initialize();
+                    str.setLanguage(language);
+                    str.setText(sci.getName());
+                    str.setItemDesc(sci);
+                    sci.getNamesSet().add(str);
+                    itemCnt++;
+                } else
+                {
+                    for (SpLocaleItemStr str : sci.getNamesSet())
+                    {
+                        if (StringUtils.isEmpty(str.getText()))
+                        {
+                            str.setText(sci.getName());
+                            itemCnt++;
+                        }
+                    }
+                }
+                if (sci.getDescsSet().size() == 0)
+                {
+                    log.debug(container.getName()+" Item: "+sci.getName()+" descSet is empty.");
+                    SpLocaleItemStr str = new SpLocaleItemStr();
+                    str.initialize();
+                    str.setLanguage(language);
+                    str.setText(sci.getName());
+                    str.setItemDesc(sci);
+                    sci.getDescsSet().add(str);
+                    itemCnt++;
+                } else
+                {
+                    for (SpLocaleItemStr str : sci.getDescsSet())
+                    {
+                        if (StringUtils.isEmpty(str.getText()))
+                        {
+                            str.setText(sci.getName());
+                            itemCnt++;
+                        }
+                    }
+                }
+            }
+        }
+        
+        log.debug(String.format("Added %d container strings, %d item strings.", containerCnt, itemCnt));
+        if (containerCnt > 0 || itemCnt > 0)
+        {
+            changesMadeDuringStartup = true;
+        }
+    }
+    
+    /**
+     * @param language
+     * @param itemsSet
+     */
+    private void stripMergeLocale(final String language, 
+                                  final Set<SpLocaleItemStr> itemsSet)
+    {
+        if (itemsSet.size() == 1)
+        {
+            SpLocaleItemStr item = itemsSet.iterator().next();
+            if (item.getLanguage().equals("en"))
+            {
+                item.setLanguage(language);
+            }
+            
+        } else if (itemsSet.size() == 2)
+        {
+            Iterator<SpLocaleItemStr> iter = itemsSet.iterator();
+            SpLocaleItemStr item1 = iter.next();
+            SpLocaleItemStr item2 = iter.next();
+            if (item1.getLanguage().equals(language))
+            {
+                itemsSet.remove(item2);
+            } else
+            {
+                itemsSet.remove(item1);
+            }
+        } else if (itemsSet.size() > 2)
+        {
+            log.error("The size ["+itemsSet.size()+"] is not on or two!");
+        } else
+        {
+            log.error("The size ["+itemsSet.size()+"] ************** ");
+        }
+    }
+    
+    /**
+     * @param language
+     * @param containers
+     */
+    private void stripToSingleLocale(final String language, 
+                                     final Vector<DisciplineBasedContainer> containers)
+    {
+        for (DisciplineBasedContainer container : containers)
+        {
+            stripMergeLocale(language, container.getNamesSet());
+            stripMergeLocale(language, container.getDescsSet());
+            
+            for (SpLocaleContainerItem sci : container.getItems())
+            {
+                stripMergeLocale(language, sci.getNamesSet());
+                stripMergeLocale(language, sci.getDescsSet());
+            }
+            for (LocalizableItemIFace sci : container.getContainerItems())
+            {
+                System.out.println(sci.getName());
+                //stripMergeLocale(language, sci.get);
+                //stripMergeLocale(language, sci.getDescsSet());
+            }
+        }
+    }
+
 
     /**
      * @param discipline
+     * @param extFile
+     * @param useCurrentLocaleOnly
      * @return
      */
     @SuppressWarnings("unchecked")
-    protected Vector<DisciplineBasedContainer> load(final String discipline, final File extFile)
+    protected Vector<DisciplineBasedContainer> load(final String  discipline, 
+                                                    final File    extFile, 
+                                                    final boolean useCurrentLocaleOnly)
     {
         Vector<DisciplineBasedContainer> containers = null;
         
@@ -220,12 +389,25 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             File   file     = extFile != null ? extFile : XMLHelper.getConfigDir(fullPath);
             if (file.exists())
             {
-                containers = (Vector<DisciplineBasedContainer>)xstream.fromXML(new FileReader(file));
+                if (discipline == null)
+                {
+                    inputFile = file;
+                }
+
+                InputStreamReader inpStrmReader = new InputStreamReader(new FileInputStream(file), "UTF8"); 
+                containers = (Vector<DisciplineBasedContainer>)xstream.fromXML(inpStrmReader);
                 
                 if (discipline != null)
                 {
                     return containers;
                 }
+            }
+            
+            if (useCurrentLocaleOnly && containers != null && containers.size() > 0)
+            {
+                String language = Locale.getDefault().getLanguage();
+                addMissingTranslations(language, containers);
+                stripToSingleLocale(language, containers);
             }
             
              // remove non-english locales
@@ -807,13 +989,16 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     /**
      * Saves the base file and all the disciplines to a directory.
      * @param basePath the base path to the directory (must end with '/')
-     * @return whether evrything was saved.
+     * @return whether everything was saved.
      */
     public boolean save(final String basePath)
     {
         boolean savedOk = save(basePath, null, tables);
         if (savedOk)
         {
+            changesMadeDuringStartup = false;
+            hasTableInfoChanged      = false;
+            
             for (DisciplineType disciplineType : DisciplineType.getDisciplineList())
             {
                 save(basePath, disciplineType.getName(), null);
@@ -869,14 +1054,18 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             //escapeForXML();
             if (containers.size() > 0)
             {
-            
+       
+                //addMissingTranslations(Locale.getDefault().getLanguage(), containers);
+                
                 log.info("Writing descriptions to file: " + outFile.getAbsolutePath());
                 
                 XStream xstream = new XStream();
                 
                 configXStream(xstream);
                 
-                FileUtils.writeStringToFile(outFile, xstream.toXML(containers));
+                OutputStreamWriter outputStrmWriter = new OutputStreamWriter(new FileOutputStream(outFile), "UTF8"); 
+                xstream.toXML(containers, outputStrmWriter);
+                //FileUtils.writeStringToFile(outFile, xstream.toXML(containers));
                 
             } /*else
             {
@@ -1093,7 +1282,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     @Override
     public void containerChanged(LocalizableContainerIFace container)
     {
-        // no op - doesn't matter
+        hasTableInfoChanged = true;
     }
 
     /**
@@ -1271,9 +1460,33 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#export(java.io.File)
      */
     @Override
-    public boolean exportToDirectory(final File expportDirectory)
+    public boolean exportToDirectory(final File exportDirectory)
     {
-        return save(expportDirectory.getAbsolutePath() + File.separator);
+        return save(exportDirectory.getAbsolutePath() + File.separator);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#exportSingleLanguageToDirectory(java.io.File, java.util.Locale)
+     */
+    @Override
+    public boolean exportSingleLanguageToDirectory(final File exportDirectory, final Locale locale)
+    {
+        boolean isOK = false;
+        if (inputFile != null)
+        {
+            Locale cachedLocale = Locale.getDefault();
+            try
+            {
+                Locale.setDefault(locale);
+                Vector<DisciplineBasedContainer> tmpTables = load(null, inputFile, true);
+                isOK = saveContainers(exportDirectory, tmpTables);
+                
+            } finally
+            {
+                Locale.setDefault(cachedLocale);
+            }
+        }
+        return isOK;
     }
     
     /* (non-Javadoc)
@@ -1342,6 +1555,15 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     public boolean shouldIncludeAppTables()
     {
         return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#hasChanged()
+     */
+    @Override
+    public boolean hasChanged()
+    {
+        return changesMadeDuringStartup || hasTableInfoChanged;
     }
 
     /**

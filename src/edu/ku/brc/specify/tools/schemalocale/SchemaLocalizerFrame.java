@@ -23,7 +23,10 @@ import static edu.ku.brc.ui.UIRegistry.getFormattedResStr;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FileDialog;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -31,10 +34,13 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -45,6 +51,8 @@ import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -52,6 +60,9 @@ import org.apache.log4j.Logger;
 import com.apple.eawt.Application;
 import com.apple.eawt.ApplicationAdapter;
 import com.apple.eawt.ApplicationEvent;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 import com.jgoodies.looks.plastic.theme.SkyKrupp;
@@ -73,6 +84,7 @@ import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
@@ -142,8 +154,11 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
      */
     protected void buildUI()
     {
-        localizableIO = new SchemaLocalizerXMLHelper(schemaType, tableMgr);
-        localizableIO.load();
+        SchemaLocalizerXMLHelper slxh = new SchemaLocalizerXMLHelper(schemaType, tableMgr);
+        localizableIO = slxh;
+        localizableIO.load(false);
+        
+        //stripToSingleLocale("pt", slxh);
         
         LocalizableStrFactory localizableStrFactory = new LocalizableStrFactory() {
             public LocalizableStrIFace create()
@@ -198,6 +213,16 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
             public void actionPerformed(ActionEvent e)
             {
                 export();
+            }
+        });
+        
+        title = "SchemaLocalizerFrame.ExportLOCALE"; //$NON-NLS-1$
+        mneu = "SchemaLocalizerFrame.ExportLOCALEMnu"; //$NON-NLS-1$
+        UIHelper.createLocalizedMenuItem(fileMenu, title, mneu,  "", true, new ActionListener() //$NON-NLS-1$
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                exportSingleLocale();
             }
         });
         
@@ -378,7 +403,92 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         }
     }
     
-    
+    /**
+     * Export data 
+     */
+    protected void exportSingleLocale()
+    {
+        statusBar.setText(getResourceString("SchemaLocalizerFrame.EXPORTING")); //$NON-NLS-1$
+        statusBar.paintImmediately(statusBar.getBounds());
+        
+        schemaLocPanel.getAllDataFromUI();
+        
+        if (localizableIO.hasChanged())
+        {
+            if (UIRegistry.askYesNoLocalized("SAVE", "CANCEL", UIRegistry.getResourceString("SchemaLocalizerFrame.NEEDS_SAVING"), "SAVE") == JOptionPane.YES_NO_OPTION)
+            {
+                localizableIO.save();
+            } else
+            {
+                return;
+            }
+        }
+        
+        Vector<Locale> stdLocales = SchemaI18NService.getInstance().getStdLocaleList(false);      
+        final JList list = new JList(stdLocales);
+        list.setCellRenderer(new DefaultListCellRenderer()
+        {
+            @Override
+            public Component getListCellRendererComponent(JList list,
+                                                          Object value,
+                                                          int index,
+                                                          boolean isSelected,
+                                                          boolean cellHasFocus)
+            {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value != null)
+                {
+                    setText(((Locale)value).getDisplayName());
+                }
+                return this;
+            }
+        });
+        
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"));
+        pb.add(UIHelper.createScrollPane(list), (new CellConstraints()).xy(1, 1));
+        pb.setDefaultDialogBorder();
+        
+        final CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString("SchemaLocalizerFrame.CHOOSE_LOCALE"), true, pb.getPanel());
+        list.addListSelectionListener(new ListSelectionListener()
+        {
+            @Override
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (!e.getValueIsAdjusting())
+                {
+                    dlg.getOkBtn().setEnabled(list.getSelectedValue() != null);
+                }
+            }
+        });
+        dlg.createUI();
+        dlg.getOkBtn().setEnabled(false);
+        
+        UIHelper.centerAndShow(dlg);
+        if (!dlg.isCancelled())
+        {
+            Locale locale = (Locale)list.getSelectedValue();
+            if (locale != null)
+            {
+                FileDialog fileDlg = new FileDialog((Frame)UIRegistry.getTopWindow(), getResourceString("SchemaLocalizerFrame.SVFILENAME"), FileDialog.SAVE);
+                fileDlg.setVisible(true);
+                String fileName = fileDlg.getFile();
+                if (StringUtils.isNotEmpty(fileName))
+                {
+                    File outFile = new File(fileDlg.getDirectory() + File.separator + fileName);
+                    boolean savedOK = localizableIO.exportSingleLanguageToDirectory(outFile, locale);
+                    String msg;
+                    if (savedOK)
+                    {
+                        msg = UIRegistry.getLocalizedMessage("SchemaLocalizerFrame.EXPORTEDTO", locale.getDisplayName(), outFile.getAbsolutePath());
+                    } else
+                    {
+                        msg = UIRegistry.getLocalizedMessage("SchemaLocalizerFrame.EXPORTING_ERR", outFile.getAbsolutePath());
+                    }
+                    UIRegistry.showError(msg);
+                }
+            }
+        }
+    }
     
     /**
      * 

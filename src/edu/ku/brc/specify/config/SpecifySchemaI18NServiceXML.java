@@ -103,7 +103,7 @@ public class SpecifySchemaI18NServiceXML extends SchemaI18NService
                                final Locale       locale)
     {
         schemaIO = new SchemaLocalizerXMLHelper(schemaType, tableMgr);
-        schemaIO.load();
+        schemaIO.load(true);
         
         Vector<DisciplineBasedContainer> containers = schemaIO.getSpLocaleContainers();
         

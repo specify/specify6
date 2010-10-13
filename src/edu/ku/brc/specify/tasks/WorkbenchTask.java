@@ -390,7 +390,7 @@ public class WorkbenchTask extends BaseTask
             databasechema = new SoftReference<DBTableIdMgr>(schema);
             
             SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(SpLocaleContainer.WORKBENCH_SCHEMA, schema);
-            schemaLocalizer.load();
+            schemaLocalizer.load(true);
             schemaLocalizer.setTitlesIntoSchema();
             
             DBTableIdMgr mgr = databasechema.get();

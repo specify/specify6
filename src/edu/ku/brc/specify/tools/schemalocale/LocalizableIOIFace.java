@@ -39,9 +39,10 @@ import edu.ku.brc.specify.datamodel.PickList;
 public interface LocalizableIOIFace
 {
     /**
+     * @param useCurrentLocaleOnly
      * @return
      */
-    public abstract boolean load();
+    public abstract boolean load(boolean useCurrentLocaleOnly);
     
     /**
      * @return
@@ -108,6 +109,13 @@ public interface LocalizableIOIFace
     public abstract boolean exportToDirectory(File expportFile);
     
     /**
+     * @param expportFile
+     * @param locale
+     * @return
+     */
+    public abstract boolean exportSingleLanguageToDirectory(File expportFile, Locale locale);
+    
+    /**
      * @return
      */
     public abstract boolean createResourceFiles();
@@ -130,4 +138,9 @@ public interface LocalizableIOIFace
      * @return whether the application tables should be included to be configured.
      */
     public abstract boolean shouldIncludeAppTables();
+    
+    /**
+     * @return whether any data has changed.
+     */
+    public abstract boolean hasChanged();
 }

@@ -275,7 +275,7 @@ public class SchemaToolsDlg extends CustomDialog
         if (StringUtils.isNotEmpty(fileName))
         {
             final File            file      = new File(fileDlg.getDirectory() + File.separator + fileName);
-            final SimpleGlassPane glassPane = new SimpleGlassPane("Importing Schema...", 18);
+            final SimpleGlassPane glassPane = new SimpleGlassPane(getResourceString("SL_IMPORT_SCHEMA"), 18);
             glassPane.setBarHeight(12);
             glassPane.setFillColor(new Color(0, 0, 0, 85));
             

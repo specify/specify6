@@ -398,10 +398,10 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#load()
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#load(boolean)
      */
     @Override
-    public boolean load()
+    public boolean load(final boolean useCurrentLocaleOnly)
     {
         return false;
     }
@@ -482,5 +482,23 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
         getPickLists(pickLists, null);
         getPickLists(pickLists, disciplineName);
         return pickLists;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#exportSingleLanguageToDirectory(java.io.File, java.util.Locale)
+     */
+    @Override
+    public boolean exportSingleLanguageToDirectory(File expportFile, Locale locale)
+    {
+        throw new RuntimeException("Not Impl");
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#hasChanged()
+     */
+    @Override
+    public boolean hasChanged()
+    {
+        throw new RuntimeException("Not Impl");
     }
 }
