@@ -105,8 +105,6 @@ public class DeterminationBusRules extends BaseBusRules
     @Override
     public void afterFillForm(final Object dataObj)
     {
-
-        
         isBlockingChange = false;
         
         determination = null;
@@ -115,13 +113,6 @@ public class DeterminationBusRules extends BaseBusRules
         {
             determination = (Determination)formViewObj.getDataObj();
             
-            System.out.println("Before in Fill --------------------------------------------");
-            for (Determination d : determination.getCollectionObject().getDeterminations())
-            {
-                System.out.println(d.hashCode()+"  "+d.getTypeStatusName()+"  "+d.getIsCurrent());
-            }
-            System.out.println("--------------------------------------------\n");
-
             //if determination exists and is new (no key) then set current true if CO has no other dets
             Component currentComp = formViewObj.getControlByName("isCurrent");
             if (determination != null && currentComp != null)
@@ -246,16 +237,6 @@ public class DeterminationBusRules extends BaseBusRules
                     @Override
                     public void stateChanged(ChangeEvent e)
                     {
-                        System.out.println("Before --------------------------- "+isBlockingChange+" ------------------");
-                        if (determination != null && determination.getCollectionObject() != null)
-                        {
-                            for (Determination d : determination.getCollectionObject().getDeterminations())
-                            {
-                                System.out.println(d.hashCode()+"  "+d.getTypeStatusName()+"  "+d.getIsCurrent());
-                            }
-                        }
-                        System.out.println("------------------------------------------------------");
-                        
                         if (!isBlockingChange)
                         {
                             determination = (Determination)formViewObj.getDataObj();
@@ -270,16 +251,6 @@ public class DeterminationBusRules extends BaseBusRules
                                 }
                             }
                         }
-                        
-                        System.out.println("After --------------------------- "+isBlockingChange+" ------------------");
-                        if (determination != null && determination.getCollectionObject() != null)
-                        {
-                            for (Determination d : determination.getCollectionObject().getDeterminations())
-                            {
-                                System.out.println(d.hashCode()+"  "+d.getTypeStatusName()+"  "+d.getIsCurrent());
-                            }
-                        }
-                        System.out.println("------------------------------------------------------\n");
                     }
                 };
             
