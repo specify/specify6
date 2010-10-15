@@ -184,6 +184,15 @@ public class BaseBusRules implements BusinessRulesIFace
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BusinessRulesIFace#afterCreateNewObj(java.lang.Object)
+     */
+    @Override
+    public void afterCreateNewObj(Object newDataObj)
+    {
+        // no op
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BusinessRulesIFace#createNewObj(boolean, java.lang.Object)
      */
     @Override

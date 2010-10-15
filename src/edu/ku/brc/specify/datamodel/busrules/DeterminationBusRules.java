@@ -28,6 +28,8 @@ import java.util.Set;
 
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -80,9 +82,13 @@ public class DeterminationBusRules extends BaseBusRules
     
     protected Determination  determination         = null;
 
-    protected KeyListener    nameChangeKL         = null;
+    protected KeyListener    nameChangeKL          = null;
     protected boolean        ignoreSelection       = false;
     protected boolean        checkedBlankUsageItem = false;
+    protected boolean        isNewObject           = false;
+    protected boolean        isBlockingChange      = false;
+    
+    protected ChangeListener chkbxCL               = null;
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BaseBusRules#beforeFormFill()
@@ -99,39 +105,52 @@ public class DeterminationBusRules extends BaseBusRules
     @Override
     public void afterFillForm(final Object dataObj)
     {
+
+        
+        isBlockingChange = false;
+        
         determination = null;
         
         if (formViewObj.getDataObj() instanceof Determination)
         {
             determination = (Determination)formViewObj.getDataObj();
+            
+            System.out.println("Before in Fill --------------------------------------------");
+            for (Determination d : determination.getCollectionObject().getDeterminations())
+            {
+                System.out.println(d.hashCode()+"  "+d.getTypeStatusName()+"  "+d.getIsCurrent());
+            }
+            System.out.println("--------------------------------------------\n");
 
             //if determination exists and is new (no key) then set current true if CO has no other dets
             Component currentComp = formViewObj.getControlByName("isCurrent");
             if (determination != null && currentComp != null)
             {
-                if (determination.getDeterminationId() == null)
+                if (isNewObject)
                 {
                     if (determination.getCollectionObject() != null) //It should never be non null, but, currently, it does happen.
                     {
                 		if (currentComp instanceof ValCheckBox)
                 		{
-                		    // Do this instead of setSelected because
-                		    // this activates the DataChangeListener
-                			((ValCheckBox)currentComp).doClick();
-                			
-                			// Well, if it is already checked then we just checked it to the 'off' state,
-                			// so we need to re-check it so it is in the "checked state"
-                			// Note: As stated in the comment above the 'doClick' the easiest way to activate
-                			// all the change listeners is by simulating a mouse click.
-                			// Also keep in mind that the change listener is listening for ActionEvents for the
-                			// checkbox instead of ChangeEvents (ChangeEvents cause to many problems).
-                			if (!((ValCheckBox)currentComp).isSelected())
-                			{
-                			    ((ValCheckBox)currentComp).doClick(); 
-                			}
-                			
-                			if (formViewObj.isCreatingNewObject())
-                			{
+                            if (formViewObj.isCreatingNewObject())
+                            {
+                    		    // Do this instead of setSelected because
+                    		    // this activates the DataChangeListener
+                    		    isBlockingChange = true;
+                    			((ValCheckBox)currentComp).doClick();
+                    			isBlockingChange = false;
+                    			
+                    			// Well, if it is already checked then we just checked it to the 'off' state,
+                    			// so we need to re-check it so it is in the "checked state"
+                    			// Note: As stated in the comment above the 'doClick' the easiest way to activate
+                    			// all the change listeners is by simulating a mouse click.
+                    			// Also keep in mind that the change listener is listening for ActionEvents for the
+                    			// checkbox instead of ChangeEvents (ChangeEvents cause to many problems).
+                    			if (!((ValCheckBox)currentComp).isSelected())
+                    			{
+                    			    ((ValCheckBox)currentComp).doClick(); 
+                    			}
+                			    
                     			Set<Determination> detSet = determination.getCollectionObject().getDeterminations();
                                 for (Determination d : detSet)
                                 {
@@ -219,7 +238,63 @@ public class DeterminationBusRules extends BaseBusRules
                     altNameComp.setEnabled(determination.getTaxon() == null);
                 }
             }
+            
+            if (chkbxCL == null)
+            {
+                chkbxCL = new ChangeListener()
+                {
+                    @Override
+                    public void stateChanged(ChangeEvent e)
+                    {
+                        System.out.println("Before --------------------------- "+isBlockingChange+" ------------------");
+                        if (determination != null && determination.getCollectionObject() != null)
+                        {
+                            for (Determination d : determination.getCollectionObject().getDeterminations())
+                            {
+                                System.out.println(d.hashCode()+"  "+d.getTypeStatusName()+"  "+d.getIsCurrent());
+                            }
+                        }
+                        System.out.println("------------------------------------------------------");
+                        
+                        if (!isBlockingChange)
+                        {
+                            determination = (Determination)formViewObj.getDataObj();
+                            if (determination.getIsCurrent())
+                            {
+                                for (Determination d : determination.getCollectionObject().getDeterminations())
+                                {
+                                    if (d != determination)
+                                    {
+                                        d.setIsCurrent(false);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        System.out.println("After --------------------------- "+isBlockingChange+" ------------------");
+                        if (determination != null && determination.getCollectionObject() != null)
+                        {
+                            for (Determination d : determination.getCollectionObject().getDeterminations())
+                            {
+                                System.out.println(d.hashCode()+"  "+d.getTypeStatusName()+"  "+d.getIsCurrent());
+                            }
+                        }
+                        System.out.println("------------------------------------------------------\n");
+                    }
+                };
+            
+                ValCheckBox currChkbx = (ValCheckBox)currentComp;
+                currChkbx.addChangeListener(chkbxCL);
+            }
+            
+            System.out.println("After in Fill --------------------------------------------");
+            for (Determination d : determination.getCollectionObject().getDeterminations())
+            {
+                System.out.println(d.hashCode()+"  "+d.getTypeStatusName()+"  "+d.getIsCurrent());
+            }
+            System.out.println("--------------------------------------------\n");
         }
+        isNewObject = false;
     }
     
     /**
@@ -270,11 +345,32 @@ public class DeterminationBusRules extends BaseBusRules
     }
     
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterCreateNewObj(java.lang.Object)
+     */
+    @Override
+    public void afterCreateNewObj(Object newDataObj)
+    {
+        isNewObject = true;
+        /*Determination    deter  = (Determination)newDataObj;
+        CollectionObject colObj = deter.getCollectionObject();
+        if (colObj != null && deter.isCurrentDet())
+        {
+            for (Determination det : colObj.getDeterminations())
+            {
+                if (det != deter && det.isCurrentDet())
+                {
+                    det.setIsCurrent(false);
+                }
+            }
+        }*/
+    }
+
     /**
      * Checks to make sure there is a single 'current' determination.
      * @param colObj the Collection Object
      * @param deter the determination for the CO
-     * @return true is ok
+     * @return false if there is more than one determination set to current
      */
     protected boolean checkDeterminationStatus(final CollectionObject colObj, final Determination deter)
     {
@@ -363,7 +459,10 @@ public class DeterminationBusRules extends BaseBusRules
     @Override
     public void formShutdown()
     {
+        super.formShutdown();
+        
         determination = null;
+        chkbxCL       = null;
     }
 
     /* (non-Javadoc)

@@ -2075,8 +2075,13 @@ public class FormViewObj implements Viewable,
         
         if (businessRules != null)
         {
-            //businessRules.addChildrenToNewDataObjects(obj);
+            businessRules.afterCreateNewObj(obj);
         }
+        
+        //if (businessRules != null)
+        //{
+            //businessRules.addChildrenToNewDataObjects(obj);
+        //}
         
         if (carryFwdDataObj == null && oldDataObj != null)
         {
@@ -4033,6 +4038,7 @@ public class FormViewObj implements Viewable,
         try
         {
             dObj = tmpSession.get(tableInfo.getClassObj(), recordSetItemList.get(index).getRecordId());
+            ((FormDataObjIFace)dObj).forceLoad();
             
         } catch (org.hibernate.ObjectNotFoundException hex)
         {

@@ -512,6 +512,17 @@ public class Gift extends DisciplineMember implements java.io.Serializable, Prep
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+     */
+    @Override
+    public void forceLoad()
+    {
+        getGiftAgents().size();
+        getShipments().size();
+        getGiftPreparations().size();
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
