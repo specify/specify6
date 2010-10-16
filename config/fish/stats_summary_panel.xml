@@ -63,7 +63,7 @@
         <item title="ITMS_LOAN">
             <sql>
                 <tables><id>52</id><id>54</id></tables>            
-                <statement><![CDATA[SELECT count(LoanPreparationID) AS ItemsOnLoanCount FROM loanpreparation as lpo inner join loan on loan.loanid = lpo.loanid WHERE loan.DisciplineID = DSPLNID AND quantityresolved < quantity and (IsClosed = false or IsClosed is null)]]></statement>
+                <statement><![CDATA[SELECT count(LoanPreparationID) AS ItemsOnLoanCount FROM loanpreparation as lpo inner join loan on loan.loanid = lpo.loanid WHERE loan.DisciplineID = DSPLNID AND (IsClosed = false or IsClosed is null)]]></statement>
             </sql>
         </item>
         <item title="OVRDUE_LOANS">

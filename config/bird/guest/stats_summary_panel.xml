@@ -63,14 +63,11 @@
         <item title="ITMS_LOAN">
             <sql>
                 <tables><id>52</id><id>54</id></tables>            
-                <statement><![CDATA[SELECT count(LoanPreparationID) AS ItemsOnLoanCount FROM loanpreparation as lpo inner join loan on loan.loanid = lpo.loanid WHERE loan.DisciplineID = DSPLNID AND quantityresolved < quantity and (IsClosed = false or IsClosed is null)]]></statement>
+                <statement><![CDATA[SELECT count(LoanPreparationID) AS ItemsOnLoanCount FROM loanpreparation as lpo inner join loan on loan.loanid = lpo.loanid WHERE loan.DisciplineID = DSPLNID AND (IsClosed = false or IsClosed is null)]]></statement>
             </sql>
         </item>
         <item title="OVRDUE_LOANS">
-            <sql>
-                <tables><id>52</id></tables>            
-                <statement><![CDATA[SELECT count(LoanID) as OpenLoanCount FROM loan WHERE loanid in (SELECT loanid FROM loan WHERE loan.DisciplineID = DSPLNID AND (not (currentduedate is null)) and (IsClosed = false or IsClosed is null) and datediff(CURDATE(), currentduedate) > 0)]]></statement>
-            </sql>
+            <sql type="custom" name="OverdueLoans"/>
             <link>OverdueLoansList</link>
         </item>
         <item title="OPEN_LOANS">
