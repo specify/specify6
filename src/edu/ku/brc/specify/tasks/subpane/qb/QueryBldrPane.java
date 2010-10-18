@@ -111,8 +111,6 @@ import edu.ku.brc.af.core.db.DBRelationshipInfo.RelationshipType;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
-import edu.ku.brc.af.ui.db.PickListDBAdapterFactory;
-import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo.ColInfo;
 import edu.ku.brc.af.ui.forms.formatters.DataObjDataField;
 import edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace;
@@ -147,7 +145,6 @@ import edu.ku.brc.specify.tasks.subpane.JasperCompilerRunnable;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
 import edu.ku.brc.specify.tools.export.ConceptMapUtils;
 import edu.ku.brc.specify.tools.export.MappedFieldInfo;
-import edu.ku.brc.specify.ui.db.PickListTableAdapter;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
@@ -1414,7 +1411,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     {
                         criteriaStr.append(" AND ");
                     }
-                    if (isSynSearchable(qfi.getFieldQRI()) && hqlHasSynJoins)
+                    if (hqlHasSynJoins && isSynSearchable(qfi.getFieldQRI()))
                     {
                         criteria = adjustForSynSearch(tableAbbreviator.getAbbreviation(qfi.getFieldQRI().getTable().getTableTree()), criteria, qfi.isNegated());
                     }
@@ -1878,6 +1875,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         
         if (treeDef.isSynonymySupported())
         {
+        	System.out.println(fld.getFieldName() + "  --  " + fld.getClass().getSimpleName());
         	return fld.getFieldName().equalsIgnoreCase("name") || fld.getFieldName().equalsIgnoreCase("fullname") || fld instanceof TreeLevelQRI;
         }
         return false;
@@ -1926,19 +1924,18 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     sqlStr.append(' ');
                     sqlStr.append(alias);
                     sqlStr.append(' ');
-                    //XXX It would be good to have a way of knowing if synonymy is actually supported for a tree or treeable class.
                     if (searchSynonymy && Treeable.class.isAssignableFrom(((TableQRI )qri).getTableInfo().getClassObj()))
                     {
                         //check to see if Name is inUse and if so, add joins for accepted taxa
                         TableQRI tqri = (TableQRI )qri;
                         boolean addSynJoin = false;
-                        for (int t = 0; t < tqri.getFields(); t++)
+                        for (QueryFieldPanel qfp : fieldPanels)
                         {
-                            if (isSynSearchable(tqri.getField(t)) && tqri.getField(t).isInUse() && fieldHasCriteria(tqri.getField(t), fieldPanels))
-                            {
-                                addSynJoin = true;
-                                break;
-                            }
+                        	if (isSynSearchable(qfp.getFieldQRI()) && qfp.hasCriteria())
+                        	{
+                        		addSynJoin = true;
+                        		break;
+                        	}
                         }
                         if (addSynJoin)
                         {
