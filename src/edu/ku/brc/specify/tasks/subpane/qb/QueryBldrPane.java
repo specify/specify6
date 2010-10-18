@@ -111,6 +111,8 @@ import edu.ku.brc.af.core.db.DBRelationshipInfo.RelationshipType;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
+import edu.ku.brc.af.ui.db.PickListDBAdapterFactory;
+import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo.ColInfo;
 import edu.ku.brc.af.ui.forms.formatters.DataObjDataField;
 import edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace;
@@ -122,6 +124,7 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.SpExportSchema;
@@ -132,6 +135,7 @@ import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
@@ -143,6 +147,7 @@ import edu.ku.brc.specify.tasks.subpane.JasperCompilerRunnable;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
 import edu.ku.brc.specify.tools.export.ConceptMapUtils;
 import edu.ku.brc.specify.tools.export.MappedFieldInfo;
+import edu.ku.brc.specify.ui.db.PickListTableAdapter;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
@@ -1411,7 +1416,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     }
                     if (isSynSearchable(qfi.getFieldQRI()) && hqlHasSynJoins)
                     {
-                        criteria = adjustForSynSearch(tableAbbreviator.getAbbreviation(qfi.getFieldQRI().getTable().getTableTree()), criteria);
+                        criteria = adjustForSynSearch(tableAbbreviator.getAbbreviation(qfi.getFieldQRI().getTable().getTableTree()), criteria, qfi.isNegated());
                     }
                     criteriaStr.append(criteria);
                 }
@@ -1693,15 +1698,33 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param criteria
      * @return supplied criteria parameter with adjustments to enable synonymy searching.
      */
-    protected static String adjustForSynSearch(final String tblAlias, final String criteria)
+    protected static String adjustForSynSearch(final String tblAlias, final String criteria, final boolean isNegated)
     {
         String result = "(" + criteria;
         String chunk = criteria.replace(tblAlias + ".", getAcceptedChildrenAlias(tblAlias) + ".");
-        result += " OR " + chunk;
+        if (isNegated)
+        {
+        	result += " AND " + chunk;
+        } else
+        {
+        	result += " OR " + chunk;
+        }
         chunk = criteria.replace(tblAlias + ".", getAcceptedParentAlias(tblAlias) + ".");
-        result += " OR " + chunk;
+        if (isNegated)
+        {
+        	result += " AND " + chunk;
+        } else
+        {
+        	result += " OR " + chunk;
+        }
         chunk = criteria.replace(tblAlias + ".", getAcceptedParentChildrenAlias(tblAlias) + ".");
-        result += " OR " + chunk + ") ";
+        if (isNegated)
+        {
+        	result += " AND " + chunk + ") ";
+        } else
+        {
+        	result += " OR " + chunk + ") ";
+        }
         
         return result;
     }
@@ -1848,7 +1871,16 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             return false;
         }
         
-        return fld.getFieldName().equalsIgnoreCase("name") || fld.getFieldName().equalsIgnoreCase("fullname") || fld instanceof TreeLevelQRI;
+        SpecifyAppContextMgr spMgr = (SpecifyAppContextMgr )AppContextMgr.getInstance();
+        
+        @SuppressWarnings("unchecked")
+        TreeDefIface<?, ?, ?> treeDef = spMgr.getTreeDefForClass((Class<? extends Treeable<?,?,?>> )fld.getTableInfo().getClassObj());        
+        
+        if (treeDef.isSynonymySupported())
+        {
+        	return fld.getFieldName().equalsIgnoreCase("name") || fld.getFieldName().equalsIgnoreCase("fullname") || fld instanceof TreeLevelQRI;
+        }
+        return false;
     }
     
     /**
@@ -3463,6 +3495,27 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     
     /**
      * @param qri
+     * @return
+     */
+    protected static boolean isTablePickList(final TableQRI qri)
+    {
+    	//PickListDBAdapterIFace pl = PickListDBAdapterFactory.getInstance().create(qri.getTableInfo().getName(), false);
+    	//return (pl instanceof PickListTableAdapter);
+    	
+    	return false;
+    	//return qri.getTableInfo().getName().equals("preptype");
+    }
+    
+    /**
+     * @param qri
+     * @return
+     */
+    protected static FieldQRI buildFieldQRIForTablePickList(final TableQRI qri)
+    {
+    	return null;
+    }
+    /**
+     * @param qri
      * @return qri if it is already a FieldQRI, else constructs a RelQRI and returns it.
      */
     protected static FieldQRI buildFieldQRI(final BaseQRI qri) 
@@ -3470,12 +3523,20 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         if (qri instanceof FieldQRI) { return (FieldQRI) qri; }
         if (qri instanceof TableQRI)
         {
-            DBRelationshipInfo relInfo = ((TableQRI)qri).getRelationship();
-            if (relInfo != null)
+            if (isTablePickList((TableQRI )qri))
             {
-                return new RelQRI((TableQRI) qri, relInfo);
+            	System.out.println(((TableQRI )qri).getTableInfo().getName() + " is a table picklist.");
+            	return buildFieldQRIForTablePickList((TableQRI )qri);
+            	
+            } else
+            {
+            	DBRelationshipInfo relInfo = ((TableQRI)qri).getRelationship();
+            	if (relInfo != null)
+            	{
+            		return new RelQRI((TableQRI) qri, relInfo);
+            	}
+            	throw new RuntimeException(QueryBldrPane.class.getName() + ": unable to determine relationship.");
             }
-            throw new RuntimeException(QueryBldrPane.class.getName() + ": unable to determine relationship.");
         }
         return null;
     }

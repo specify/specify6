@@ -36,7 +36,9 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.SpQueryField;
+import edu.ku.brc.specify.ui.db.PickListTableAdapter;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -46,6 +48,7 @@ import edu.ku.brc.ui.UIHelper;
  *
  *
  */
+@SuppressWarnings("serial")
 public class PickListCriteriaCombo extends JComboBox
 {
     protected static final Logger log = Logger.getLogger(QueryFieldPanel.class);
@@ -167,7 +170,7 @@ public class PickListCriteriaCombo extends JComboBox
         StringBuilder sb = new StringBuilder();
         for (PickListItemIFace sel : sels)
         {
-            String s = getValues ? sel.getValue() : sel.getTitle();
+            String s = getValues ? (items instanceof PickListTableAdapter ? ((DataModelObjBase )sel.getValueObject()).getId().toString() : sel.getValue()) : sel.getTitle();
             if (sb.length() != 0)
             {
                 sb.append(", ");

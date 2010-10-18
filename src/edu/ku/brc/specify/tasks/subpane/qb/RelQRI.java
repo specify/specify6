@@ -173,7 +173,7 @@ public class RelQRI extends FieldQRI
         
         //If the formatter only uses one field, just retrieve that field with hql.
         //XXX Formatter.getSingleField() checks for OneToOne rels
-        if (relationshipInfo.getType() == RelationshipType.ManyToOne)
+        if (relationshipInfo.getType() == RelationshipType.ManyToOne && !forWhereClause)
         {
             DataObjDataFieldFormatIFace formatter = getDataObjFormatter();
             if (formatter != null)

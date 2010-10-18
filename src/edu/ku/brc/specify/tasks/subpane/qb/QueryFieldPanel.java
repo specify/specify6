@@ -89,6 +89,7 @@ import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpQueryField.OperatorType;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.ui.db.PickListDBAdapterFactory;
+import edu.ku.brc.specify.ui.db.PickListTableAdapter;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MultiStateIconButon;
 import edu.ku.brc.ui.RolloverCommand;
@@ -323,7 +324,17 @@ public class QueryFieldPanel extends JPanel implements ActionListener
     
     protected PickListDBAdapterIFace buildPickList()
     {
-        if (fieldQRI != null && fieldQRI.getTableInfo() != null && fieldQRI.getFieldInfo() != null) 
+        if (fieldQRI instanceof RelQRI)
+        {
+        	PickListDBAdapterIFace pl = PickListDBAdapterFactory.getInstance().create(fieldQRI.getTableInfo().getName(), false);
+        	if (pl instanceof PickListTableAdapter)
+        	{
+        		return pl;
+        	}
+        	return null;
+
+        }
+    	if (fieldQRI != null && fieldQRI.getTableInfo() != null && fieldQRI.getFieldInfo() != null) 
         {
             //XXX unfortunately this doesn't work because currently picklist defs are only setup via form view defs
             if (StringUtils.isNotEmpty(fieldQRI.getFieldInfo().getPickListName()))
@@ -1041,6 +1052,15 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         }
         return result;
     }
+    
+    /**
+     * @return
+     */
+    public boolean isNegated()
+    {
+    	return isNotCheckbox != null && isNotCheckbox.isSelected();
+    }
+    
     /**
      * @return
      */
@@ -1084,7 +1104,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 }
                 else if (fieldQRI.getDataClass().equals(String.class))
                 {
-                    criteriaFormula = concatCriteria(criteriaStrs, operStr, true);
+                    criteriaFormula = concatCriteria(criteriaStrs, operStr, !(pickList instanceof PickListTableAdapter));
                 }
                 else if (fieldQRI.getDataClass().equals(Calendar.class) || fieldQRI.getDataClass().equals(java.sql.Timestamp.class))
                 {
@@ -1685,9 +1705,9 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         {
 			// for now
 			boolean isRel = fieldQRI != null && fieldQRI instanceof RelQRI;
-			isNotCheckbox.setVisible(!isRel);
-			operatorCBX.setVisible(!isRel);
-			criteria.setVisible(!isRel && !isBool);
+			isNotCheckbox.setVisible(!isRel || pickList != null);
+			operatorCBX.setVisible(!isRel || pickList != null);
+			criteria.setVisible((!isRel && !isBool) || pickList != null);
 			if (!isRel)
 			{
 				this.sortCheckbox.setVisible(true);
