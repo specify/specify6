@@ -312,6 +312,15 @@ public class TaxonLabelFormatting extends UIPluginBase
         }
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getFieldNames()
+     */
+    @Override
+    public String[] getFieldNames()
+    {
+        return new String[] { "name" };
+    } 
+    
     /**
      * Walks up the Taxon tree to find a specifically ranked parent
      * @param tx the current node

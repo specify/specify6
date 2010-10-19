@@ -357,6 +357,16 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
         return dataObj;
     }
     
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getFieldNames()
+     */
+    @Override
+    public String[] getFieldNames()
+    {
+        return new String[] {dateFieldName, dateTypeName};
+    }
+    
     /* (non-Javadoc)
      * @see javax.swing.JComponent#setEnabled(boolean)
      */
@@ -409,6 +419,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
      */
     public void setValue(final Object value, final String defaultValue)
     {
+        System.err.println(value+"  "+defaultValue);
         if (value != null)
         {
             if (value != null && !(value instanceof String))

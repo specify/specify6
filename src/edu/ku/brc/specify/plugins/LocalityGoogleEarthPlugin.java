@@ -228,6 +228,15 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getFieldNames()
+     */
+    @Override
+    public String[] getFieldNames()
+    {
+        return new String[] {"localityName", "latitude1", "longitude1", "geography"};
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
      */
     @Override

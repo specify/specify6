@@ -881,6 +881,16 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
         return fieldNames;
     }
     
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getFieldNames()
+     */
+    @Override
+    public String[] getFieldNames()
+    {
+        return fieldNames;
+    }
+    
     //--------------------------------------------------------
     // UIValidatable Interface
     //--------------------------------------------------------

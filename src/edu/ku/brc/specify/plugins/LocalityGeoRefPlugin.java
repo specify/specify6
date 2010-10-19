@@ -226,6 +226,16 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
         throw new NotImplementedException("isNotEmpty not implement!");
     }
 
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getFieldNames()
+     */
+    @Override
+    public String[] getFieldNames()
+    {
+        return new String[] {"localityName", "geography"};
+    }
+    
     /**
      * 
      */

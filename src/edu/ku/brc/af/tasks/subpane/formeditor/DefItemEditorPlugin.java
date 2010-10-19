@@ -238,4 +238,13 @@ public class DefItemEditorPlugin extends JPanel implements GetSetValueIFace, UIP
     public void setParent(FormViewObj parent)
     {
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getFieldNames()
+     */
+    @Override
+    public String[] getFieldNames()
+    {
+        return null;
+    }
 }

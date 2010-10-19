@@ -301,6 +301,16 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
         return this;
     }
     
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getFieldNames()
+     */
+    @Override
+    public String[] getFieldNames()
+    {
+        return new String[] {"taxon"};
+    }
+    
     //--------------------------------------------------------
     //-- GetSetValueIFace
     //--------------------------------------------------------

@@ -268,6 +268,15 @@ public class HostTaxonPlugin extends UIPluginBase
             });
         }
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getFieldNames()
+     */
+    @Override
+    public String[] getFieldNames()
+    {
+        return new String[] {"hostTaxon"};
+    }
     
     /**
      * 

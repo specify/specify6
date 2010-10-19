@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -238,6 +237,16 @@ public class CollectionRelPlugin extends UIPluginBase
             
             cbx.setValue(otherSide, null);
         }
+    }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getFieldNames()
+     */
+    @Override
+    public String[] getFieldNames()
+    {
+        return new String[] {"catalogNumber", "rightSide", "leftSide"};
     }
     
 }

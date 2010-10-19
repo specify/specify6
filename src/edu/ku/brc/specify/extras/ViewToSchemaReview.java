@@ -25,15 +25,19 @@ import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -51,15 +55,19 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.SearchBox;
 import edu.ku.brc.af.ui.db.JAutoCompTextField;
+import edu.ku.brc.af.ui.forms.UIPluginable;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
+import edu.ku.brc.af.ui.forms.persist.FormCellFieldIFace;
 import edu.ku.brc.af.ui.forms.persist.FormCellIFace;
 import edu.ku.brc.af.ui.forms.persist.FormCellPanelIFace;
+import edu.ku.brc.af.ui.forms.persist.FormDevHelper;
 import edu.ku.brc.af.ui.forms.persist.FormRow;
 import edu.ku.brc.af.ui.forms.persist.FormRowIFace;
 import edu.ku.brc.af.ui.forms.persist.FormViewDef;
@@ -77,6 +85,7 @@ import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentUtils;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rod
@@ -93,6 +102,10 @@ public class ViewToSchemaReview
     protected TableRowSorter<TableModel> sorter        = null;
     protected JAutoCompTextField         searchTF      = null;
     protected ViewModel                  viewModel;
+    
+    protected JComboBox                  filterCBX     = null;
+    protected boolean                    blockCBXUpdate = false;
+    
     /**
      * 
      */
@@ -144,7 +157,14 @@ public class ViewToSchemaReview
                                                 System.err.println("Form Field["+fieldName+"] not in table.");
                                             }
                                         }
-                                    }
+                                    } /*else if (cell instanceof FormCellFieldIFace)
+                                    {
+                                        FormCellFieldIFace fcf = (FormCellFieldIFace)cell;
+                                        if (fcf.getUiType() == FormCellFieldIFace.FieldType.plugin)
+                                        {
+                                            System.out.println(fcf);
+                                        }
+                                    }*/
                                 }
                             }
                         }
@@ -170,9 +190,9 @@ public class ViewToSchemaReview
                                final Integer index)
     {
         Object[] row = new Object[7];
-        row[0] = tblName;
+        row[0] = new TableInfo(tblName, modelList.size());
         row[1] = fldName;
-        row[2] = fldTitle;
+        row[2] = new Pair<String, Integer>(fldTitle, modelList.size());
         row[3] = isOnForm;
         row[4] = isHidden;
         row[5] = isHidden;
@@ -181,12 +201,41 @@ public class ViewToSchemaReview
     }
     
     /**
+     * @param fcf
+     */
+    protected void checkPluginForNames(final FormCellFieldIFace cellField, 
+                                       final String pluginName, 
+                                       final HashSet<String> fieldsHash)
+    {
+        Class<?> pluginClass = TaskMgr.getUIPluginClassForName(pluginName);
+        if (pluginClass != null && UIPluginable.class.isAssignableFrom(pluginClass))
+        {
+            try
+            {
+                // instantiate the plugin object
+                UIPluginable uiPlugin = pluginClass.asSubclass(UIPluginable.class).newInstance();
+                if (uiPlugin != null)
+                {
+                    for (String fieldName : uiPlugin.getFieldNames())
+                    {
+                        fieldsHash.add(fieldName);
+                    }
+                }
+            } catch (Exception ex)
+            {
+               ex.printStackTrace();
+               FormDevHelper.appendFormDevError(ex);
+            }
+        }
+    }
+    
+    /**
      * 
      */
     public void checkSchemaAndViews()
     {
         
-        Hashtable<String, Hashtable<String, Boolean>> viewFieldHash = new Hashtable<String, Hashtable<String, Boolean>>();
+        Hashtable<String, HashSet<String>> viewFieldHash = new Hashtable<String, HashSet<String>>();
         
         SpecifyAppContextMgr sacm = (SpecifyAppContextMgr)AppContextMgr.getInstance();
         
@@ -201,10 +250,10 @@ public class ViewToSchemaReview
                     DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(vd.getClassName());
                     if (ti != null)
                     {
-                        Hashtable<String, Boolean> tiHash = viewFieldHash.get(ti.getName());
+                        HashSet<String> tiHash = viewFieldHash.get(ti.getName());
                         if (tiHash == null)
                         {
-                            tiHash = new Hashtable<String, Boolean>();
+                            tiHash = new HashSet<String>();
                             viewFieldHash.put(ti.getName(),  tiHash);
                         }
                         
@@ -218,7 +267,7 @@ public class ViewToSchemaReview
                                     FormCellPanelIFace panelCell = (FormCellPanelIFace)cell;
                                     for (String fieldName : panelCell.getFieldNames())
                                     {
-                                        tiHash.put(fieldName, true);
+                                        tiHash.add(fieldName);
                                     }
                                     
                                 } else if (cell.getType() == FormCellIFace.CellType.field ||
@@ -231,7 +280,7 @@ public class ViewToSchemaReview
                                         if (fi != null)
                                         {
                                             //System.err.println("Form Field["+fieldName+"] is in schema.");
-                                            tiHash.put(fieldName, true);
+                                            tiHash.add(fieldName);
                                         } else
                                         {
                                             DBRelationshipInfo ri = ti.getRelationshipByName(fieldName);
@@ -240,10 +289,21 @@ public class ViewToSchemaReview
                                                 //System.err.println("Form Field["+fieldName+"] not in table.");
                                             } else
                                             {
-                                                tiHash.put(fieldName, true);
+                                                tiHash.add(fieldName);
                                             }
                                         }
-                                    }
+                                    } else if (cell instanceof FormCellFieldIFace)
+                                    {
+                                        FormCellFieldIFace fcf = (FormCellFieldIFace)cell;
+                                        if (fcf.getUiType() == FormCellFieldIFace.FieldType.plugin)
+                                        {
+                                            String pluginName = fcf.getProperty("name");
+                                            if (StringUtils.isNotEmpty(pluginName))
+                                            {
+                                                checkPluginForNames(fcf, pluginName, tiHash);
+                                            }
+                                        }
+                                    }   
                                 }
                             }
                         }
@@ -256,7 +316,7 @@ public class ViewToSchemaReview
         {
             int cnt = 0;
             
-            Hashtable<String, Boolean> tiHash = viewFieldHash.get(ti.getName());
+            HashSet<String> tiHash = viewFieldHash.get(ti.getName());
             if (tiHash != null)
             {
                 tblTitle2Name.put(ti.getTitle(), ti.getName());
@@ -264,13 +324,13 @@ public class ViewToSchemaReview
                 //System.err.println(ti.getName() + " ----------------------");
                 for (DBFieldInfo fi : ti.getFields())
                 {
-                    Boolean isInForm = tiHash.get(fi.getName()) != null;
+                    Boolean isInForm = tiHash.contains(fi.getName());
                     modelList.add(createRow(ti.getTitle(), fi.getName(), fi.getTitle(), isInForm, fi.isHidden(), cnt++));
                 }
                 
                 for (DBRelationshipInfo ri : ti.getRelationships())
                 {
-                    Boolean isInForm = tiHash.get(ri.getName()) != null;
+                    Boolean isInForm = tiHash.contains(ri.getName());
                     modelList.add(createRow(ti.getTitle(), ri.getName(), ri.getTitle(), isInForm, ri.isHidden(), cnt++));
                 }
             }
@@ -285,14 +345,21 @@ public class ViewToSchemaReview
         table.setRowSorter(sorter);
         
         CellConstraints cc        = new CellConstraints();
-        PanelBuilder    pb        = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,4px,f:p:g,2px,p:g"));
+        PanelBuilder    pb        = new PanelBuilder(new FormLayout("f:p:g", "p,4px,f:p:g,2px,p:g"));
         SearchBox       searchBox = new SearchBox(searchTF, null);
         
-        JLabel          legend = UIHelper.createLabel("<HTML><li>Red - Not on form and not hidden</li><li>Magenta - On the form , but is hidden</li><li>Black - Correct</li>");
-        pb.add(UIHelper.createI18NFormLabel("SEARCH"), cc.xy(1, 1));
-        pb.add(searchBox,                              cc.xy(3, 1));
-        pb.add(UIHelper.createScrollPane(table),       cc.xyw(1, 3, 4));
-        pb.add(legend,                                 cc.xyw(1, 5, 4));
+        filterCBX = UIHelper.createComboBox(new String[] {"None", "Not On Form, Not Hidden", "On Form, Hidden"});
+        
+        PanelBuilder    searchPB  = new PanelBuilder(new FormLayout("p,2px,p, f:p:g, p,2px,p", "p"));
+        searchPB.add(UIHelper.createI18NFormLabel("SEARCH"), cc.xy(1, 1));
+        searchPB.add(searchBox,                              cc.xy(3, 1));
+        searchPB.add(UIHelper.createI18NFormLabel("Filter"), cc.xy(5, 1));
+        searchPB.add(filterCBX,                              cc.xy(7, 1));
+        
+        JLabel legend = UIHelper.createLabel("<HTML><li>Red - Not on form and not hidden</li><li>Magenta - On the form , but is hidden</li><li>Black - Correct</li>");
+        pb.add(searchPB.getPanel(),               cc.xy(1, 1));
+        pb.add(UIHelper.createScrollPane(table),  cc.xy(1, 3));
+        pb.add(legend,                            cc.xy(1, 5));
         pb.setDefaultDialogBorder();
         
         sorter.setRowFilter(null);
@@ -309,12 +376,41 @@ public class ViewToSchemaReview
                     @Override
                     public void run()
                     {
+                        if (filterCBX.getSelectedIndex() > 0)
+                        {
+                            blockCBXUpdate = true;
+                            filterCBX.setSelectedIndex(-1);
+                            blockCBXUpdate = false;
+                        }
                         String text = searchTF.getText();
                         sorter.setRowFilter(text.isEmpty() ? null : RowFilter.regexFilter("^(?i)" + text, 0, 1));
                     }
-                    
                 });
-                
+            }
+        });
+        
+        filterCBX.addActionListener(new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        if (!blockCBXUpdate)
+                        {
+                            RowFilter<TableModel, Integer> filter = null;
+                            int inx = filterCBX.getSelectedIndex();
+                            if (inx > 0)
+                            {
+                                filter = filterCBX.getSelectedIndex() == 1 ? new NotOnFormNotHiddenRowFilter() : new OnFormIsHiddenRowFilter();
+                            }
+                            sorter.setRowFilter(filter);
+                        }
+                    }
+                });
             }
         });
         
@@ -323,6 +419,7 @@ public class ViewToSchemaReview
         table.getColumnModel().getColumn(0).setCellRenderer(new TitleCellFadeRenderer());
         table.getColumnModel().getColumn(3).setCellRenderer(new BiColorTableCellRenderer(true));
         table.getColumnModel().getColumn(2).setCellRenderer(new BiColorTableCellRenderer(false) {
+            @SuppressWarnings("unchecked")
             @Override
             public Component getTableCellRendererComponent(JTable tableArg,
                                                            Object value,
@@ -332,11 +429,34 @@ public class ViewToSchemaReview
                                                            int column)
             {
                 JLabel lbl = (JLabel)super.getTableCellRendererComponent(tableArg, value, isSelected, hasFocus, row, column);
-                Object[] rowData = modelList.get(row);
-                if (column == 2)
+                
+                
+                /*if (sorter.getRowFilter() != null)
                 {
-                    boolean isOnForm = (Boolean)rowData[3];
-                    boolean isHidden = (Boolean)rowData[4];
+                    System.out.println(" getRowCount:"+sorter.getModel().getRowCount());
+                    Pair<String, Integer> col1Pair = (Pair<String, Integer>)sorter.getModel().getValueAt(row, 0);
+                    rowData = modelList.get(col1Pair.second);
+                    
+                } else
+                {
+                    rowData = modelList.get(row);
+                }*/
+                
+                //System.out.println(" R2:"+row+"  "+rowData[0]+"/"+rowData[1]+" - "+rowData[3]+"|"+rowData[4]);
+                if (value instanceof TableInfo)
+                {
+                    TableInfo pair    = (TableInfo)value;
+                    Object[]  rowData = modelList.get(pair.getSecond());
+                    lbl.setText(rowData[0].toString());
+                    
+                } else if (value instanceof Pair<?,?>)
+                {
+                    Pair<String, Integer> pair = (Pair<String, Integer>)value;
+                    Object[] rowData = modelList.get(pair.getSecond());
+                    
+                    boolean isOnForm = rowData[3] instanceof Boolean ? (Boolean)rowData[3] : ((String)rowData[3]).equals("Yes");
+                    boolean isHidden = rowData[4] instanceof Boolean ? (Boolean)rowData[4] : ((String)rowData[4]).equals("true");
+                    
                     if (!isOnForm && !isHidden)
                     {
                         lbl.setForeground(Color.RED);
@@ -348,6 +468,10 @@ public class ViewToSchemaReview
                     {
                         lbl.setForeground(Color.BLACK);
                     }
+                    lbl.setText(pair.getFirst());
+                } else
+                {
+                    lbl.setText(value.toString());
                 }
                 return lbl;
             }
@@ -574,9 +698,44 @@ public class ViewToSchemaReview
         {
             ex.printStackTrace();
         }
+    }
+    
+    //---------------------------------------------------------------------------------------------------------
+    //
+    //---------------------------------------------------------------------------------------------------------
+    class TableInfo extends Pair<String, Integer>
+    {
+        /**
+         * 
+         */
+        public TableInfo()
+        {
+            super();
+        }
+
+        /**
+         * @param first
+         * @param second
+         */
+        public TableInfo(String first, Integer second)
+        {
+            super(first, second);
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.util.Pair#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return first;
+        }
         
     }
     
+    //---------------------------------------------------------------------------------------------------------
+    //
+    //---------------------------------------------------------------------------------------------------------
     class ViewModel extends AbstractTableModel
     {
         protected String[] header = {"Table", "Field Name", "Field Title", "Is On Form", "Is Hidden"};
@@ -641,9 +800,12 @@ public class ViewToSchemaReview
         public Object getValueAt(int rowIndex, int columnIndex)
         {
             Object[] row = modelList.get(rowIndex);
+            
+            //System.out.println(columnIndex+" G:"+rowIndex+"  "+row[0]+"/"+row[1]+" - "+row[3]+"|"+row[4]);
+            
             if (columnIndex == 2)
             {
-                return row[2] + (row[4].equals(row[5]) ? "" : " *");
+                return row[2];
                 
             } else if (columnIndex == 3)
             {
@@ -672,6 +834,47 @@ public class ViewToSchemaReview
         
     }
 
+    class OnFormIsHiddenRowFilter extends RowFilter<TableModel, Integer>
+    {
+        /* (non-Javadoc)
+         * @see javax.swing.RowFilter#include(javax.swing.RowFilter.Entry)
+         */
+        @Override
+        public boolean include(Entry<? extends TableModel, ? extends Integer> entry)
+        {
+            Integer id = entry.getIdentifier();
+            Object[] rowData = modelList.get(id);
+            boolean isOnForm = (Boolean)rowData[3];
+            boolean isHidden = (Boolean)rowData[4];
+            
+            //System.out.println(id+"  "+entry.getStringValue(0)+"/"+entry.getStringValue(1)+" - "+(isOnForm && isHidden));
+            return isOnForm && isHidden;
+        }
+        
+    }
+    
+    class NotOnFormNotHiddenRowFilter extends RowFilter<TableModel, Integer>
+    {
+        /* (non-Javadoc)
+         * @see javax.swing.RowFilter#include(javax.swing.RowFilter.Entry)
+         */
+        @Override
+        public boolean include(Entry<? extends TableModel, ? extends Integer> entry)
+        {
+            Integer id = entry.getIdentifier();
+            Object[] rowData = modelList.get(id);
+            boolean isOnForm = (Boolean)rowData[3];
+            boolean isHidden = (Boolean)rowData[4];
+            
+            //System.out.println(id+"  "+entry.getStringValue(0)+"/"+entry.getStringValue(1)+" - "+(!isOnForm && !isHidden));
+            return !isOnForm && !isHidden;
+        }
+        
+    }
+    
+    //---------------------------------------------------------------------------------------------------------
+    //
+    //---------------------------------------------------------------------------------------------------------
     class TitleCellFadeRenderer extends BiColorTableCellRenderer
     {
         /* (non-Javadoc)
@@ -686,17 +889,40 @@ public class ViewToSchemaReview
                                                        int column)
         {
             JLabel lbl = (JLabel)super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            Object[] rowData = modelList.get(row);
-            if (row > 0)
-            {
-                Object[] prevRowData = modelList.get(row-1);
-                lbl.setForeground(prevRowData[0].equals(rowData[0]) ? Color.LIGHT_GRAY : Color.BLACK);
-            } else
-            {
-                lbl.setForeground(Color.BLACK);
-            }
+            //Object[] rowData = modelList.get(row);
+            //System.out.println(" R:"+row+"  "+rowData[0]+"/"+rowData[1]+" - "+rowData[3]+"|"+rowData[4]);
             
-            lbl.setText(rowData[0].toString());
+            if (value instanceof TableInfo)
+            {
+                TableInfo pair          = (TableInfo)value;
+                Integer   inx           = pair.getSecond();
+                Object[]  rowData       = modelList.get(inx);
+                String    tableName     = ((TableInfo)rowData[0]).first;
+                
+                if (inx > 0 && sorter.getRowFilter() == null)
+                {
+                    String prevTableName = ((TableInfo)modelList.get(inx-1)[0]).first;
+                    lbl.setForeground(prevTableName.equals(tableName) ? Color.LIGHT_GRAY : Color.BLACK);
+                } else
+                {
+                    lbl.setForeground(Color.BLACK);    
+                }
+                lbl.setText(tableName);
+            } else 
+            {
+                Object[] rowData = modelList.get(row);
+                if (row > 0)
+                {
+                    
+                    Object[] prevRowData = modelList.get(row-1);
+                    lbl.setForeground(prevRowData[0].equals(rowData[0]) ? Color.LIGHT_GRAY : Color.BLACK);
+                } else
+                {
+                    lbl.setForeground(Color.BLACK);
+                }
+                
+                lbl.setText(rowData[0].toString());
+            }
             return lbl;
         }
         

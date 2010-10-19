@@ -36,6 +36,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
@@ -691,6 +692,31 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getFieldNames()
+     */
+    @Override
+    public String[] getFieldNames()
+    {
+        ArrayList<String> names = new ArrayList<String>();
+        if (webLinkDef != null)
+        {
+            for (WebLinkDefArg arg : webLinkDef.getArgs())
+            {
+                if (!arg.isPrompt())
+                {
+                    names.add(arg.getName());
+                }
+            }
+        }
+        String[] nms = new String[names.size()];
+        for (int i=0;i<nms.length;i++)
+        {
+            nms[i] = names.get(i);
+        }
+        return nms;
+    }
+    
     //--------------------------------------------------------
     // DataChangedListener Interface
     //--------------------------------------------------------

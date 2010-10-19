@@ -104,4 +104,13 @@ public interface UIPluginable
      */
     public abstract String getTitle();
     
+    
+    /**
+     * @return the names that the plugin uses when 'this' is passed in, but it
+     * should always return any and all field names that are needed by the plugin.
+     * The names are the java field names that are used in the forms, not the column
+     * names used in the database.
+     */
+    public abstract String[] getFieldNames();
+    
 }
