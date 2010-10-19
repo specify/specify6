@@ -113,6 +113,8 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
         SpecifyAppPrefs.setSkipRemotePrefs(true);
         SpecifyAppPrefs.initialPrefs();
         
+        Specify.adjustLocaleFromPrefs();
+        
         ImageIcon helpIcon = IconManager.getIcon(SpecifyDBSetupWizard.getIconName(), IconSize.Std16); //$NON-NLS-1$
         HelpMgr.initializeHelp("SpecifyHelp", helpIcon.getImage()); //$NON-NLS-1$
         
