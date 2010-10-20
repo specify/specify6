@@ -24,7 +24,7 @@ package edu.ku.brc.specify.tasks.subpane.qb;
  * 
  * @author rod
  *
- * @code_status Alpha
+ * @code_status alpha
  *
  * Oct 18, 2007
  *
@@ -135,6 +135,7 @@ public class BaseQRI implements QryListRendererIFace, Comparable<QryListRenderer
     	if (obj == null)
     	{
     		return false;
+    		
     	}
         return this.getClass().equals(obj.getClass()) && this.tableTree != null
             && ((BaseQRI)obj).tableTree != null && this.tableTree.equals(((BaseQRI)obj).tableTree);
