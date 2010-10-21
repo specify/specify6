@@ -1157,6 +1157,7 @@ public class SpecifyDBConverter extends AppBase
                 {
                     BasicSQLUtils.setTblWriter(taxonTblWriter);
                     taxonHelper.doConvert();
+                    //taxonHelper.convertTaxonCitationToTaxonImage();
                     BasicSQLUtils.setTblWriter(null);
                 }
                 frame.incOverall();

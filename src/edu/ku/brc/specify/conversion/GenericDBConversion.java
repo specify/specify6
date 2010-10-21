@@ -376,7 +376,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                                                  colInfo.getCatSeriesName());
                 colInfo.setDisciplineTypeObj(dType);
                 
-                if (dType.isPaleo())
+                if (dType != null && dType.isPaleo())
                 {
                     Vector<CollectionInfo> ciList = paleoColInfoHash.get(colInfo.getTaxonNameId());
                     if (ciList == null)

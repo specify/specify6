@@ -1078,7 +1078,90 @@ public class ConvertTaxonHelper
         return dataForColInfo;
     }
 
-    
+    /**
+     * 
+     */
+    public void convertTaxonCitationToTaxonImage()
+    {
+        String sql      = "SELECT tn.TaxonNameID, c.Text1 ";
+        String fromStr  = " FROM taxonname AS tn Inner Join taxoncitation AS c ON tn.TaxonNameID = c.TaxonNameID";
+        String whereStr = " WHERE c.Text1 IS NOT NULL";
+        
+        String updateStr = "UPDATE taxon SET GUID=? WHERE TaxonID = ?";
+
+        int numTaxCit = BasicSQLUtils.getCountAsInt(oldDBConn, "SELECT COUNT(*) " + fromStr + whereStr);
+        if (numTaxCit > 0)
+        {
+            if (frame != null)
+            {
+                frame.setDesc(String.format("Fixing Taxon Citations", numTaxCit));
+                frame.setProcess(0, numTaxCit);
+            }
+            
+            // process stranded rows
+            String sqlStr = sql + fromStr + whereStr;
+            log.debug(sqlStr);
+            
+            Statement         stmt  = null;
+            PreparedStatement pStmt = null;
+            try
+            {
+                stmt  = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                pStmt = newDBConn.prepareStatement(updateStr);
+                
+                int       cnt  = 0;
+                ResultSet rs   = stmt.executeQuery(sqlStr);
+                while (rs.next())
+                {
+                    int     oldTaxonId = rs.getInt(1);
+                    Integer newTaxonID = txMapper.get(oldTaxonId);
+                    if (newTaxonID != null)
+                    {
+                        String imgURL  = rs.getString(2);
+                        
+                        pStmt.setString(1, imgURL);
+                        pStmt.setInt(2, newTaxonID);
+                        
+                        if (pStmt.executeUpdate() != 1)
+                        {
+                            String msg = String.format("Unable to update new taxonID %d with image url[%s].", newTaxonID, imgURL);
+                            log.error(msg);
+                            tblWriter.logError(msg);
+                        }
+                                               
+                        cnt++;
+                        if (frame != null)
+                        {
+                            frame.setProcess(cnt);
+                        }
+                        
+                    } else
+                    {
+                        String msg = String.format("Unable to map old id [%d] to new taxonID.", oldTaxonId);
+                        log.error(msg);
+                        tblWriter.logError(msg);
+                    }
+                }
+                rs.close();
+                
+                if (frame != null)
+                {
+                    frame.setProcess(numTaxCit);
+                }
+
+            } catch (SQLException ex)
+            {
+                ex.printStackTrace();
+            } finally
+            {
+                try
+                {
+                    if (stmt != null) stmt.close();
+                    if (pStmt != null) pStmt.close();
+                } catch (Exception ex) {}
+            }
+        }
+    }
 
     /**
      * 
