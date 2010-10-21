@@ -1521,15 +1521,16 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 	public boolean afterSaveCommit(Object dataObj,
 			DataProviderSessionIFace session)
 	{
+		boolean result = false;
 		if (!super.afterSaveCommit(dataObj, session))
 		{
-			return false;
+			result = false;
 		}
 		if (BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS && viewable != null)
 		{
 			freeLocks();
 		}
-		return true;
+		return result;
 	}
 
 	
