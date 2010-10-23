@@ -4,6 +4,7 @@
 package edu.ku.brc.specify.ui.treetables;
 
 import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
@@ -14,13 +15,19 @@ import java.awt.event.ActionListener;
 import java.util.Vector;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.ui.treetables.TreeTableViewer.NODE_DROPTYPE;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author Administrator
@@ -38,6 +45,9 @@ public class DropDialog extends CustomDialog
     public static final int MOVEMERGE = SYNMERGE;
     public static final int MERGE = MERGE_BTN | CANCEL_BTN | HELP_BTN;
     public static final int MOVE = SYN;
+	private static final int synOption = 0;
+	private static final int moveOption = 1;
+	private static final int mergeOption = 2;
     
     
     protected JButton           mergeBtn         = null;
@@ -58,63 +68,236 @@ public class DropDialog extends CustomDialog
      * @param contentPanel
      * @throws HeadlessException
      */
-    public DropDialog(final Frame frame, final String title, final boolean isMoveOK,
-			final boolean isSynOK, final boolean isMergeOK,
-			final Component contentPanel) throws HeadlessException
+    public DropDialog(final Frame frame, final boolean isMoveOK,
+			final boolean isSynOK, final boolean isMergeOK, final String droppedFullName,
+			final String droppedOnFullName, final String synDescKey, final String moveDescKey, final String mergeDescKey) throws HeadlessException
 	{
-		super(frame, title, true, OKCANCEL, contentPanel);
+		super(frame, UIRegistry.getResourceString("DropDlg.DlgTitle"), true, OKCANCEL, buildContentPanel(isMoveOK, isSynOK, isMergeOK, droppedFullName, droppedOnFullName,
+				synDescKey, moveDescKey, mergeDescKey));
 		this.isMoveOK = isMoveOK;
 		this.isSynOK = isSynOK;
 		this.isMergeOK = isMergeOK;
 		setup();
 	}
     
-    protected void setup()
+    /**
+     * @param option
+     * @return
+     */
+    protected static String getOptionText(int option, String droppedName, String droppedOnName)
+    {
+    	if (option == moveOption)
+    	{
+    		return "<html><b>" + UIRegistry.getResourceString("TreeTableView.MOVE_NODE") + "</b>: " +
+    			String.format(UIRegistry.getResourceString("DropDlg.MOVE_NODE_TEXT"), droppedName, droppedOnName)
+    			+ "</html>";
+    	}
+    	if (option == synOption)
+    	{
+    		return "<html><b>" + UIRegistry.getResourceString("TreeTableView.SYNONIMIZE_NODE") + "</b>: " +
+				String.format(UIRegistry.getResourceString("DropDlg.SYN_NODE_TEXT"), droppedOnName, droppedName)
+				+ "</html>";
+    	}
+    	if (option == mergeOption)
+    	{
+    		return "<html><b>" + UIRegistry.getResourceString("DropDlg.Merge") + "</b>: " +
+				String.format(UIRegistry.getResourceString("DropDlg.MERGE_NODE_TEXT"), droppedName, droppedOnName)
+    			+ "</html>";
+    	}
+    	return "";
+    }
+    
+    /**
+     * @param option
+     * @return
+     */
+    protected static String getOptionInfo(int option, String droppedName, String droppedOnName,
+    		final String synDescKey, final String moveDescKey, final String mergeDescKey)
+    {
+    	if (option == moveOption)
+    	{
+            return String.format(getResourceString(moveDescKey),
+           		 droppedName, droppedOnName);			
+    	}
+    	if (option == synOption)
+    	{
+    		return String.format(getResourceString(synDescKey),
+    				droppedName, droppedOnName, droppedOnName, droppedName);
+    		//return "syn it and all that that implies";
+    	}
+    	if (option == mergeOption)
+    	{
+          return String.format(getResourceString(mergeDescKey),
+        		 droppedName, droppedOnName);			
+    	}
+    	return "";
+    }
+   
+    /**
+     * @param option
+     * @return
+     */
+    protected static String getOptionInfoTT(int option)
+    {
+    	if (option == moveOption)
+    	{
+    		return UIRegistry.getResourceString("DropDlg.MoreInfoOn") + " " + UIRegistry.getResourceString("TreeTableView.MOVE_NODE");
+    	}
+    	if (option == synOption)
+    	{
+    		return UIRegistry.getResourceString("DropDlg.MoreInfoOn") + " " + UIRegistry.getResourceString("TreeTableView.SYNONIMIZE_NODE");
+    	}
+    	if (option == mergeOption)
+    	{
+    		return UIRegistry.getResourceString("DropDlg.MoreInfoOn") + " " + UIRegistry.getResourceString("DropDlg.Merge");
+    	}
+    	return "";
+    }
+
+    /**
+     * @param isMoveOK
+     * @param isSynOK
+     * @param isMergeOK
+     * @return
+     */
+    protected static int computeWhichBtns(final boolean isMoveOK, final boolean isSynOK, final boolean isMergeOK)
     {
         if (isMoveOK && isSynOK && isMergeOK)
         {
-        	whichBtns = SYNMOVEMERGE;
-        	setOkLabel(getResourceString("TreeTableView.SYNONIMIZE_NODE"));
-        	setApplyLabel(getResourceString("TreeTableView.MOVE_NODE"));
-        	okAction = NODE_DROPTYPE.SYNONIMIZE_NODE;
-        	applyAction = NODE_DROPTYPE.MOVE_NODE;
-       }
-        else if (isMoveOK && isMergeOK)
-        {
-        	whichBtns = MOVEMERGE;
-        	setOkLabel(getResourceString("TreeTableView.MOVE_NODE"));
-        	okAction = NODE_DROPTYPE.MOVE_NODE;
+        	return SYNMOVEMERGE;
         }
-        else if (isMoveOK && isSynOK)
+        if (isMoveOK && isMergeOK)
         {
-        	whichBtns = SYNMOVE;
-        	setOkLabel(getResourceString("TreeTableView.SYNONIMIZE_NODE"));
-        	setApplyLabel(getResourceString("TreeTableView.MOVE_NODE"));
-        	okAction = NODE_DROPTYPE.SYNONIMIZE_NODE;
-        	applyAction = NODE_DROPTYPE.MOVE_NODE;
+        	return  MOVEMERGE;
         }
-        else if (isMoveOK)
+        if (isMoveOK && isSynOK)
         {
-        	whichBtns = MOVE;
-        	setOkLabel(getResourceString("TreeTableView.MOVE_NODE"));
-        	okAction = NODE_DROPTYPE.MOVE_NODE;
+        	return SYNMOVE;
         }
-        else if (isSynOK && isMergeOK)
+        if (isMoveOK)
         {
-        	whichBtns = SYNMERGE;
-        	setOkLabel(getResourceString("TreeTableView.SYNONIMIZE_NODE"));
-        	okAction = NODE_DROPTYPE.SYNONIMIZE_NODE;
+        	return MOVE;
         }
-        else if (isSynOK)
+        if (isSynOK && isMergeOK)
         {
-        	whichBtns = SYN;
-        	setOkLabel(getResourceString("TreeTableView.SYNONIMIZE_NODE"));
-        	okAction = NODE_DROPTYPE.SYNONIMIZE_NODE;
+        	return SYNMERGE;
         }
-        else if (isMergeOK)
+        if (isSynOK)
         {
-        	whichBtns = MERGE;
-        }        
+        	return SYN;
+        }
+        if (isMergeOK)
+        {
+        	return  MERGE;
+        }      
+        return 0;
+    }
+
+    /**
+     * @param isMoveOK
+     * @param isSynOK
+     * @param isMergeOK
+     * @return
+     */
+    protected static Component buildContentPanel(final boolean isMoveOK, final boolean isSynOK, 
+    		final boolean isMergeOK, final String droppedFullName, final String droppedOnFullName,
+    		final String synDescKey, final String moveDescKey, final String mergeDescKey)
+    {
+    	int numOptions = 0;
+        boolean options[] = {isSynOK, isMoveOK, isMergeOK};
+        String rowLayout = "5dlu";
+        for (int o = 0; o < options.length; o++)
+        {
+        	if (options[o])
+        	{
+        		numOptions++;
+        		rowLayout += ", 5dlu, f:p";
+        	}
+        }
+        rowLayout += ", 7dlu";
+        
+        CellConstraints cc = new CellConstraints();
+        
+        
+        String colLayout = "5dlu, f:p:g, 2dlu, f:p, 5dlu";
+        PanelBuilder    pb = new PanelBuilder(new FormLayout(colLayout, rowLayout));
+        int row = 0;
+        for (int opt = 0; opt < options.length; opt++)
+        {
+        	if (options[opt])
+        	{
+        		JLabel actLbl = createLabel(getOptionText(opt, droppedFullName, droppedOnFullName));
+        		final int optNo = opt;
+        		ActionListener al = new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						UIRegistry.displayInfoMsgDlgLocalized("<html>" + getOptionInfo(optNo, droppedFullName, droppedOnFullName,
+								moveDescKey, synDescKey, mergeDescKey) + "</html>");
+						
+					}
+        			
+        		};
+        		JButton actInfoBtn = UIHelper.createIconBtn("InfoIcon", IconSize.Std16, getOptionInfoTT(opt), al);
+        		actInfoBtn.setEnabled(true);
+//        		actInfoBtn.addActionListener(new ActionListener() {
+//
+//					@Override
+//					public void actionPerformed(ActionEvent arg0) {
+////						UIRegistry.showLocalizedMsg(getOptionInfo(optNo, droppedFullName, droppedOnFullName,
+////								moveDescKey, synDescKey, mergeDescKey));
+//						UIRegistry.displayInfoMsgDlgLocalized("<html>" + getOptionInfo(optNo, droppedFullName, droppedOnFullName,
+//								moveDescKey, synDescKey, mergeDescKey) + "</html>");
+//						
+//					}
+//        			
+//        		});
+        		pb.add(actLbl, cc.xy(2, 1+(row + 1)*2));
+        		pb.add(actInfoBtn, cc.xy(4, 1+(row + 1)*2));
+        		row++;
+        	}
+        }
+    	return pb.getPanel();
+    }
+    
+    /**
+     * 
+     */
+    protected void setup()
+    {
+		whichBtns = computeWhichBtns(isMoveOK, isSynOK, isMergeOK);
+		if (whichBtns == SYNMOVEMERGE) 
+		{
+			setOkLabel(getResourceString("TreeTableView.SYNONIMIZE_NODE"));
+			setApplyLabel(getResourceString("TreeTableView.MOVE_NODE"));
+			okAction = NODE_DROPTYPE.SYNONIMIZE_NODE;
+			applyAction = NODE_DROPTYPE.MOVE_NODE;
+		} else if (whichBtns == MOVEMERGE) 
+		{
+			setOkLabel(getResourceString("TreeTableView.MOVE_NODE"));
+			okAction = NODE_DROPTYPE.MOVE_NODE;
+		} else if (whichBtns == SYNMOVE) 
+		{
+			setOkLabel(getResourceString("TreeTableView.SYNONIMIZE_NODE"));
+			setApplyLabel(getResourceString("TreeTableView.MOVE_NODE"));
+			okAction = NODE_DROPTYPE.SYNONIMIZE_NODE;
+			applyAction = NODE_DROPTYPE.MOVE_NODE;
+		} else if (whichBtns == MOVE && isMoveOK) 
+		{
+			setOkLabel(getResourceString("TreeTableView.MOVE_NODE"));
+			okAction = NODE_DROPTYPE.MOVE_NODE;
+		} else if (whichBtns == SYNMERGE) 
+		{
+			setOkLabel(getResourceString("TreeTableView.SYNONIMIZE_NODE"));
+			okAction = NODE_DROPTYPE.SYNONIMIZE_NODE;
+		} else if (whichBtns == SYN && isSynOK) 
+		{
+			setOkLabel(getResourceString("TreeTableView.SYNONIMIZE_NODE"));
+			okAction = NODE_DROPTYPE.SYNONIMIZE_NODE;
+		} else if (whichBtns == MERGE) 
+		{
+			// nothing to do?
+		}
     }
 
     /* (non-Javadoc)

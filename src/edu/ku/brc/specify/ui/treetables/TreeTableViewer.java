@@ -101,6 +101,7 @@ import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -2291,7 +2292,16 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     	}
     	return "TreeTableViewer.SynonymizeText";
     }
-    
+  
+    protected String getMergeTextKey()
+    {
+    	if (treeDef.getNodeClass().equals(Taxon.class))
+    	{
+    		return "TreeTableViewer.MergeTextTaxon";
+    	}
+    	return "TreeTableViewer.MergeText";
+    }
+
     protected String getMoveTextKey()
     {
     	if (treeDef.getNodeClass().equals(Taxon.class))
@@ -2300,6 +2310,134 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     	}
     	return "TreeTableViewer.MoveText";
     }
+//    /**
+//     * @param draggedRecord
+//     * @param droppedRecord
+//     * @return
+//     */
+//    private NODE_DROPTYPE askForDropAction(final T        draggedRecord,
+//                                           final T        droppedOnRecord,
+//                                           final TreeNode droppedOnNode, 
+//                                           final TreeNode draggedNode)
+//    {
+//        boolean isSynonymizeOK = treeDef.isSynonymySupported() && isSynonymizeOK(droppedOnNode, draggedNode, treeDef.getSynonymizedLevel());
+//        boolean isMoveOK      = isMoveOK(droppedOnNode, draggedNode);
+//        boolean isMergeOK     = isMergeOK(droppedOnNode, draggedNode);
+//        
+//        if (treeDef.getSynonymizedLevel() == -1)
+//        {
+//            return NODE_DROPTYPE.MOVE_NODE;
+//        }
+//        
+//        if (false)
+//        {
+//            int numOptions = 1 + (isSynonymizeOK ? 1 : 0) + (isMoveOK ? 1 : 0);
+//            
+//            Object[] options = new Object[numOptions];
+//            numOptions = 0;
+//            
+//            int dlgOption = JOptionPane.CANCEL_OPTION;
+//            if (isSynonymizeOK)
+//            {
+//                options[numOptions++] = getResourceString("TreeTableView.SYNONIMIZE_NODE");
+//                dlgOption = JOptionPane.OK_CANCEL_OPTION;
+//            }
+//            
+//            if (isMoveOK)
+//            {
+//                options[numOptions++] = getResourceString("TreeTableView.MOVE_NODE");
+//                dlgOption = JOptionPane.YES_NO_CANCEL_OPTION;
+//            }
+//            
+//            options[numOptions++] = getResourceString("CANCEL");
+//            
+//            String msg = UIRegistry.getLocalizedMessage("TreeTableView.NODE_MSG", draggedRecord.getFullName(), droppedOnRecord.getFullName());
+//            int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+//                                                         msg, 
+//                                                         getResourceString("TreeTableView.NODE_ACTION_TITLE"), 
+//                                                         dlgOption,
+//                                                         JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+//            
+//            if (userChoice == JOptionPane.YES_OPTION || userChoice == JOptionPane.OK_OPTION)
+//            {
+//                return NODE_DROPTYPE.SYNONIMIZE_NODE;
+//                
+//            } else if (userChoice == JOptionPane.NO_OPTION)
+//            {
+//                return NODE_DROPTYPE.MOVE_NODE;
+//            }
+//        } else
+//        {
+//        	int numOptions = 2 + (isSynonymizeOK ? 1 : 0) + (isMoveOK ? 1 : 0) + (isMergeOK ? 1 : 0);
+//            
+//            CellConstraints cc = new CellConstraints();
+//            
+//            String rowLayout = numOptions == 4 ? "f:p:g, 10dlu, f:p:g, f:p:g" : "f:p:g, f:p:g";
+//            PanelBuilder    pb = new PanelBuilder(new FormLayout("r:p, 2dlu, f:p:g", rowLayout));
+//            
+//            String actionStr = isSynonymizeOK ? getResourceString("TreeTableView.SYNONIMIZE_NODE")
+//            		: getResourceString("TreeTableView.MOVE_NODE");
+//            String descStr = isSynonymizeOK ?
+//            		String.format(getResourceString(getSynonymizeTextKey()),
+//                    		draggedRecord.getFullName(), droppedOnRecord.getFullName(), 
+//                    		droppedOnRecord.getFullName(), draggedRecord.getFullName()) :
+//                    String.format(getResourceString(getMoveTextKey()),
+//                       		draggedRecord.getFullName(), droppedOnNode.getFullName());			
+//            JLabel actionLbl = createLabel("<html><b>" + actionStr + ":</b></html>");
+//            actionLbl.setVerticalAlignment(SwingConstants.BOTTOM);
+//            actionLbl.setVerticalTextPosition(SwingConstants.BOTTOM);
+//            pb.add(actionLbl, cc.xy(1, 1));
+//            JTextArea tab = createTextArea();
+//            tab.setEditable(false);
+//            tab.setLineWrap(true);
+//            tab.setWrapStyleWord(true);
+//            int big = treeDef.getNodeClass().equals(Taxon.class) ? (numOptions > 3 ? 11 : 16) : 2;
+//            int small = treeDef.getNodeClass().equals(Taxon.class) ? 5 : 2;
+//            tab.setRows(numOptions > 3 ? small : isMoveOK ? big : small);
+//            tab.setText(descStr);
+//        	pb.add(tab, cc.xy(3, 1));
+//            if (numOptions == 4)
+//            {
+//            	JLabel lbl = createLabel("<html><b>" + getResourceString("TreeTableView.MOVE_NODE") + ":</b></html>");
+//            	lbl.setVerticalAlignment(SwingConstants.BOTTOM);
+//            	lbl.setVerticalTextPosition(SwingConstants.BOTTOM);
+//            	pb.add(lbl, cc.xy(1, 3));
+//            	JTextArea tac = createTextArea();
+//            	tac.setEditable(false);
+//            	tac.setLineWrap(true);
+//            	tac.setWrapStyleWord(true);
+//            	tac.setRows(big);
+//            	tac.setText(String.format(getResourceString(getMoveTextKey()),
+//            		draggedRecord.getFullName(), droppedOnNode.getFullName()));
+//            	pb.add(tac, cc.xy(3, 3));
+//            }
+//            pb.setDefaultDialogBorder();
+//            DropDialog dlg = new DropDialog((Frame)UIRegistry.getTopWindow(), 
+//                                                getResourceString("TreeTableView.NODE_ACTION_TITLE"),
+//                                                isMoveOK, isSynonymizeOK, isMergeOK,
+//                                                pb.getPanel());
+//            dlg.setHelpContext("SYNONIMIZE_NODE");
+//            dlg.createUI();
+//            if (treeDef.getNodeClass().equals(Taxon.class))
+//            {
+//            	//Goofy attempt to adapt dialog size to changes in Font preference...
+//            	Dimension ps = dlg.getPreferredSize();
+//            	double newWidth = actionLbl.getWidth()*10 < ps.getWidth() ? ps.getWidth() : actionLbl.getWidth()*10;
+//            	ps.setSize(newWidth, ps.getHeight());
+//            	dlg.setSize(ps);
+//            }
+//            UIHelper.centerAndShow(dlg);
+//            
+//            if (!dlg.isCancelled() && dlg.getBtnPressed() != CustomDialog.HELP_BTN)
+//            {
+//            	return dlg.getAction();
+//            }
+//        }
+//        
+//        return NODE_DROPTYPE.CANCEL_DROP;
+//    }
+
+
     /**
      * @param draggedRecord
      * @param droppedRecord
@@ -2314,115 +2452,68 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         boolean isMoveOK      = isMoveOK(droppedOnNode, draggedNode);
         boolean isMergeOK     = isMergeOK(droppedOnNode, draggedNode);
         
-        if (treeDef.getSynonymizedLevel() == -1)
-        {
-            return NODE_DROPTYPE.MOVE_NODE;
-        }
-        
-        if (false)
-        {
-            int numOptions = 1 + (isSynonymizeOK ? 1 : 0) + (isMoveOK ? 1 : 0);
-            
-            Object[] options = new Object[numOptions];
-            numOptions = 0;
-            
-            int dlgOption = JOptionPane.CANCEL_OPTION;
-            if (isSynonymizeOK)
-            {
-                options[numOptions++] = getResourceString("TreeTableView.SYNONIMIZE_NODE");
-                dlgOption = JOptionPane.OK_CANCEL_OPTION;
-            }
-            
-            if (isMoveOK)
-            {
-                options[numOptions++] = getResourceString("TreeTableView.MOVE_NODE");
-                dlgOption = JOptionPane.YES_NO_CANCEL_OPTION;
-            }
-            
-            options[numOptions++] = getResourceString("CANCEL");
-            
-            String msg = UIRegistry.getLocalizedMessage("TreeTableView.NODE_MSG", draggedRecord.getFullName(), droppedOnRecord.getFullName());
-            int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                                                         msg, 
-                                                         getResourceString("TreeTableView.NODE_ACTION_TITLE"), 
-                                                         dlgOption,
-                                                         JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-            
-            if (userChoice == JOptionPane.YES_OPTION || userChoice == JOptionPane.OK_OPTION)
-            {
-                return NODE_DROPTYPE.SYNONIMIZE_NODE;
-                
-            } else if (userChoice == JOptionPane.NO_OPTION)
-            {
-                return NODE_DROPTYPE.MOVE_NODE;
-            }
-        } else
-        {
-        	int numOptions = 2 + (isSynonymizeOK ? 1 : 0) + (isMoveOK ? 1 : 0) + (isMergeOK ? 1 : 0);
-            
-            CellConstraints cc = new CellConstraints();
-            
-            String rowLayout = numOptions == 4 ? "f:p:g, 10dlu, f:p:g, f:p:g" : "f:p:g, f:p:g";
-            PanelBuilder    pb = new PanelBuilder(new FormLayout("r:p, 2dlu, f:p:g", rowLayout));
-            
-            String actionStr = isSynonymizeOK ? getResourceString("TreeTableView.SYNONIMIZE_NODE")
-            		: getResourceString("TreeTableView.MOVE_NODE");
-            String descStr = isSynonymizeOK ?
-            		String.format(getResourceString(getSynonymizeTextKey()),
-                    		draggedRecord.getFullName(), droppedOnRecord.getFullName(), 
-                    		droppedOnRecord.getFullName(), draggedRecord.getFullName()) :
-                    String.format(getResourceString(getMoveTextKey()),
-                       		draggedRecord.getFullName(), droppedOnNode.getFullName());			
-            JLabel actionLbl = createLabel("<html><b>" + actionStr + ":</b></html>");
-            actionLbl.setVerticalAlignment(SwingConstants.BOTTOM);
-            actionLbl.setVerticalTextPosition(SwingConstants.BOTTOM);
-            pb.add(actionLbl, cc.xy(1, 1));
-            JTextArea tab = createTextArea();
-            tab.setEditable(false);
-            tab.setLineWrap(true);
-            tab.setWrapStyleWord(true);
-            int big = treeDef.getNodeClass().equals(Taxon.class) ? (numOptions > 3 ? 11 : 16) : 2;
-            int small = treeDef.getNodeClass().equals(Taxon.class) ? 5 : 2;
-            tab.setRows(numOptions > 3 ? small : isMoveOK ? big : small);
-            tab.setText(descStr);
-        	pb.add(tab, cc.xy(3, 1));
-            if (numOptions == 4)
-            {
-            	JLabel lbl = createLabel("<html><b>" + getResourceString("TreeTableView.MOVE_NODE") + ":</b></html>");
-            	lbl.setVerticalAlignment(SwingConstants.BOTTOM);
-            	lbl.setVerticalTextPosition(SwingConstants.BOTTOM);
-            	pb.add(lbl, cc.xy(1, 3));
-            	JTextArea tac = createTextArea();
-            	tac.setEditable(false);
-            	tac.setLineWrap(true);
-            	tac.setWrapStyleWord(true);
-            	tac.setRows(big);
-            	tac.setText(String.format(getResourceString(getMoveTextKey()),
-            		draggedRecord.getFullName(), droppedOnNode.getFullName()));
-            	pb.add(tac, cc.xy(3, 3));
-            }
-            pb.setDefaultDialogBorder();
+//        if (treeDef.getSynonymizedLevel() == -1)
+//        {
+//            return NODE_DROPTYPE.MOVE_NODE;
+//        }
+                    
+//            String actionStr = isSynonymizeOK ? getResourceString("TreeTableView.SYNONIMIZE_NODE")
+//            		: getResourceString("TreeTableView.MOVE_NODE");
+//            String descStr = isSynonymizeOK ?
+//            		String.format(getResourceString(getSynonymizeTextKey()),
+//                    		draggedRecord.getFullName(), droppedOnRecord.getFullName(), 
+//                    		droppedOnRecord.getFullName(), draggedRecord.getFullName()) :
+//                    String.format(getResourceString(getMoveTextKey()),
+//                       		draggedRecord.getFullName(), droppedOnNode.getFullName());			
+//            JLabel actionLbl = createLabel("<html><b>" + actionStr + ":</b></html>");
+//            actionLbl.setVerticalAlignment(SwingConstants.BOTTOM);
+//            actionLbl.setVerticalTextPosition(SwingConstants.BOTTOM);
+//            pb.add(actionLbl, cc.xy(1, 1));
+//            JTextArea tab = createTextArea();
+//            tab.setEditable(false);
+//            tab.setLineWrap(true);
+//            tab.setWrapStyleWord(true);
+//            int big = treeDef.getNodeClass().equals(Taxon.class) ? (numOptions > 3 ? 11 : 16) : 2;
+//            int small = treeDef.getNodeClass().equals(Taxon.class) ? 5 : 2;
+//            tab.setRows(numOptions > 3 ? small : isMoveOK ? big : small);
+//            tab.setText(descStr);
+//        	pb.add(tab, cc.xy(3, 1));
+//            if (numOptions == 4)
+//            {
+//            	JLabel lbl = createLabel("<html><b>" + getResourceString("TreeTableView.MOVE_NODE") + ":</b></html>");
+//            	lbl.setVerticalAlignment(SwingConstants.BOTTOM);
+//            	lbl.setVerticalTextPosition(SwingConstants.BOTTOM);
+//            	pb.add(lbl, cc.xy(1, 3));
+//            	JTextArea tac = createTextArea();
+//            	tac.setEditable(false);
+//            	tac.setLineWrap(true);
+//            	tac.setWrapStyleWord(true);
+//            	tac.setRows(big);
+//            	tac.setText(String.format(getResourceString(getMoveTextKey()),
+//            		draggedRecord.getFullName(), droppedOnNode.getFullName()));
+//            	pb.add(tac, cc.xy(3, 3));
+//            }
+//            pb.setDefaultDialogBorder();
             DropDialog dlg = new DropDialog((Frame)UIRegistry.getTopWindow(), 
-                                                getResourceString("TreeTableView.NODE_ACTION_TITLE"),
-                                                isMoveOK, isSynonymizeOK, isMergeOK,
-                                                pb.getPanel());
+                                                isMoveOK, isSynonymizeOK, isMergeOK, draggedRecord.getFullName(),
+                                                droppedOnNode.getFullName(), getMoveTextKey(), getSynonymizeTextKey(), getMergeTextKey());
             dlg.setHelpContext("SYNONIMIZE_NODE");
             dlg.createUI();
-            if (treeDef.getNodeClass().equals(Taxon.class))
-            {
-            	//Goofy attempt to adapt dialog size to changes in Font preference...
-            	Dimension ps = dlg.getPreferredSize();
-            	double newWidth = actionLbl.getWidth()*10 < ps.getWidth() ? ps.getWidth() : actionLbl.getWidth()*10;
-            	ps.setSize(newWidth, ps.getHeight());
-            	dlg.setSize(ps);
-            }
+//            if (treeDef.getNodeClass().equals(Taxon.class))
+//            {
+//            	//Goofy attempt to adapt dialog size to changes in Font preference...
+//            	Dimension ps = dlg.getPreferredSize();
+//            	double newWidth = actionLbl.getWidth()*10 < ps.getWidth() ? ps.getWidth() : actionLbl.getWidth()*10;
+//            	ps.setSize(newWidth, ps.getHeight());
+//            	dlg.setSize(ps);
+//            }
             UIHelper.centerAndShow(dlg);
             
             if (!dlg.isCancelled() && dlg.getBtnPressed() != CustomDialog.HELP_BTN)
             {
             	return dlg.getAction();
             }
-        }
+        //}
         
         return NODE_DROPTYPE.CANCEL_DROP;
     }
@@ -3056,6 +3147,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	private boolean isMergeOK(final TreeNode droppedOnNode, 
 	                              final TreeNode draggedNode)
 	{
+		//return !(treeDef instanceof TaxonTreeDef);
 		return false;
 		
 		//rank - is higher into lower feasible? Do isEnforced rules need all the time anyway??
