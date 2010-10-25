@@ -648,7 +648,9 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                         formatSwitcherCombo.addItem(SL_WEBLINK);
                         formatSwitcherCombo.addItem(SL_PICKLIST);
                     }
-                } else if (fi.getDataClass() == Byte.class)
+                } else if (fi.getDataClass() == Byte.class || 
+                           fi.getDataClass() == Short.class || 
+                           fi.getDataClass() == Integer.class)
                 {
                     formatSwitcherCombo.addItem(SL_PICKLIST);  
                 }
