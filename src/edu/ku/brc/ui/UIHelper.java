@@ -2854,21 +2854,42 @@ public final class UIHelper
     }
     
     /**
+     * @param root
+     * @param nodeName
+     * @return
+     */
+    private static String getSysVersion(Element root, final String nodeName)
+    {
+        for (Object obj : root.selectNodes("/config/variables/" + nodeName)) //$NON-NLS-1$
+        {
+            Element varObj = (Element)obj;
+            String name = XMLHelper.getAttr(varObj, "name", null); //$NON-NLS-1$
+            if (name.equals("sys.version"))
+            {
+                return XMLHelper.getAttr(varObj, "value", null); //$NON-NLS-1$
+            }
+        }
+        return null;
+    }
+    
+    /**
      * @return the version string from install4j
      */
     public static String getInstall4JInstallString()
     {
+        
         Element root = XMLHelper.readDOMFromConfigDir(".." + File.separator + ".install4j" + File.separator + "i4jparams.conf");
         if (root != null)
         {
-            for (Object obj : root.selectNodes("/config/variables/variable")) //$NON-NLS-1$
+            String sysVersion = getSysVersion(root, "variable"); // Install4j Version 4
+            if (StringUtils.isNotEmpty(sysVersion))
             {
-                Element varObj = (Element)obj;
-                String name = XMLHelper.getAttr(varObj, "name", null); //$NON-NLS-1$
-                if (name.equals("sys.version"))
-                {
-                    return XMLHelper.getAttr(varObj, "value", null); //$NON-NLS-1$
-                }
+                return sysVersion;
+            }
+            sysVersion = getSysVersion(root, "compilerVariables"); // Install4j Version 5
+            if (StringUtils.isNotEmpty(sysVersion))
+            {
+                return sysVersion;
             }
         }
         
