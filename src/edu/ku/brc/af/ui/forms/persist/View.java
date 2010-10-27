@@ -30,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * A view is a virtual object that may contain one or more "alternate" views. Typically, there is a 
@@ -201,17 +202,36 @@ public class View implements ViewIFace
             return defAltView;
         }
         
+        StringBuilder sb = new StringBuilder();
+        
         // OK, so we need to use the AltViewIFace that is the opposite of the 
         // of the default AltViewIFace's edit mode.
         for (AltViewIFace av : altViews)
         {
-            if (!av.isDefault() && av.getViewDefName().equals(defAltView.getViewDefName()))
+            if (av.getViewDefName() != null)
             {
-                return av;
+                if (defAltView.getViewDefName() != null)
+                {
+                    if (!av.isDefault() && av.getViewDefName().equals(defAltView.getViewDefName()))
+                    {
+                        return av;
+                    }
+                } else
+                {
+                    sb.append(String.format("The defAltView's ViewDefName is NULL for Alt View '%s' for creationMode: '%s'\n", defAltView.getName(), creationMode.toString()));
+                }
+            } else
+            {
+                sb.append(String.format("The ViewDefName is NULL for Alt View '%s' for creationMode: '%s'\n", av.getName(), creationMode.toString()));
             }
         }
+        
+        if (sb.length() > 0)
+        {
+            UIRegistry.showError(sb.toString());
+        }
+        
         return defAltView;
-        //throw new RuntimeException("No default AltViewIFace in View["+name+"] with the right mode.");
     }
 
     /* (non-Javadoc)
