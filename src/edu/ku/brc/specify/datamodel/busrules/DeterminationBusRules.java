@@ -240,7 +240,8 @@ public class DeterminationBusRules extends BaseBusRules
                         if (!isBlockingChange)
                         {
                             determination = (Determination)formViewObj.getDataObj();
-                            if (determination.getIsCurrent())
+                            if (determination != null && 
+                                determination.getIsCurrent())
                             {
                                 for (Determination d : determination.getCollectionObject().getDeterminations())
                                 {
@@ -257,13 +258,6 @@ public class DeterminationBusRules extends BaseBusRules
                 ValCheckBox currChkbx = (ValCheckBox)currentComp;
                 currChkbx.addChangeListener(chkbxCL);
             }
-            
-            System.out.println("After in Fill --------------------------------------------");
-            for (Determination d : determination.getCollectionObject().getDeterminations())
-            {
-                System.out.println(d.hashCode()+"  "+d.getTypeStatusName()+"  "+d.getIsCurrent());
-            }
-            System.out.println("--------------------------------------------\n");
         }
         isNewObject = false;
     }

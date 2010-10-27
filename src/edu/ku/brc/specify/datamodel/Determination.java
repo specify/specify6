@@ -182,7 +182,7 @@ public class Determination extends CollectionMember implements java.io.Serializa
     @Column(name="IsCurrent",unique=false,nullable=false,updatable=true,insertable=true)
     public Boolean getIsCurrent() 
     {
-        return this.isCurrent;
+        return this.isCurrent != null ? this.isCurrent : false;
     }
     
     /**
