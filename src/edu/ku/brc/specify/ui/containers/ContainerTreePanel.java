@@ -44,8 +44,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Stack;
+import java.util.Vector;
 
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
@@ -330,7 +332,7 @@ public class ContainerTreePanel extends JPanel
                                     
                                 } else 
                                 {
-                                    editColObj();
+                                    editContainer();
                                 }
                                 
                             } else if (isViewMode)
@@ -606,7 +608,9 @@ public class ContainerTreePanel extends JPanel
             container.forceLoad();
             
             int cnt = parentNode.getChildCount();
-            for (CollectionObject co : container.getCollectionObjectKids())
+            Vector<CollectionObject> coKids = new Vector<CollectionObject>(container.getCollectionObjectKids());
+            Collections.sort(coKids);
+            for (CollectionObject co : coKids)
             {
                 cnt = parentNode.getChildCount();
                 DefaultMutableTreeNode node = new DefaultMutableTreeNode();
@@ -616,8 +620,9 @@ public class ContainerTreePanel extends JPanel
                 loadContainerTree(node, null, co);
             }
             
-            
-            for (Container cn : container.getChildrenList())
+            Vector<Container> cnKids = new Vector<Container>(container.getChildrenList());
+            Collections.sort(cnKids);
+            for (Container cn : cnKids)
             {
                 cnt = parentNode.getChildCount();
                 DefaultMutableTreeNode node = new DefaultMutableTreeNode();

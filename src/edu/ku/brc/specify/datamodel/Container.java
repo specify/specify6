@@ -50,7 +50,8 @@ import org.hibernate.annotations.Index;
     {   @Index (name="ContainerNameIDX", columnNames={"Name"}),
         @Index (name="ContainerMemIDX", columnNames={"CollectionMemberID"})
     })
-public class Container extends CollectionMember implements java.io.Serializable 
+public class Container extends CollectionMember implements java.io.Serializable,
+                                                           Comparable<Container>
 {
 
      // Fields
@@ -342,6 +343,17 @@ public class Container extends CollectionMember implements java.io.Serializable
     public String toString()
     {
         return StringUtils.isNotEmpty(name) ? name : "N/A";
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(Container o)
+    {
+        if (name == null || o.name == null) return 0;
+        
+        return name.compareTo(o.name);
     }
 
     /**
