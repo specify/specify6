@@ -334,9 +334,12 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         {
             tableDisplayItems = new Vector<LocalizableJListItem>();
             
+            int dispId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
+            String sql = String.format("SELECT SpLocaleContainerID, Name FROM splocalecontainer WHERE DisciplineID = %d AND SchemaType = %d ORDER BY Name", dispId, schemaType);
+            
             connection = DBConnection.getInstance().createConnection();
             stmt       = connection.createStatement();
-            rs         = stmt.executeQuery("select SpLocaleContainerID, Name from splocalecontainer WHERE DisciplineID = "+AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId()+" order by name");
+            rs         = stmt.executeQuery(sql);
             
             while (rs.next())
             {
@@ -362,9 +365,9 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerDlg.class, ex);
-            ex.printStackTrace();
             
         } finally
         {
@@ -384,9 +387,9 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 }
             } catch (Exception e)
             {
+                e.printStackTrace();
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerDlg.class, e);
-                e.printStackTrace();
             }
         }
         return tableDisplayItems;
@@ -487,8 +490,8 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         {
             session = sessionArg != null ? sessionArg : DataProviderFactory.getInstance().createSession();
             
-            String sql = "FROM SpLocaleContainer WHERE disciplineId = "+
-            AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId() + " AND spLocaleContainerId = " + containerId;
+            int    dispId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
+            String sql    = String.format("FROM SpLocaleContainer WHERE disciplineId = %d AND spLocaleContainerId = %d", dispId, containerId);
             container = (SpLocaleContainer)session.getData(sql);
             tables.add(container);
             tableHash.put(container.getId(), container);
@@ -505,9 +508,9 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             
         } catch (Exception e)
         {
+            e.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerDlg.class, e);
-            e.printStackTrace();
             
         } finally
         {
@@ -799,65 +802,22 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         Session session = HibernateUtil.getNewSession();
         try
         {
-            Query   query = session.createQuery("SELECT DISTINCT nms.language FROM SpLocaleContainer as ctn INNER JOIN ctn.items as itm INNER JOIN itm.names nms WHERE nms.language = '"+locale.getLanguage()+"' AND ctn.schemaType = "+ schemaTypeArg);
+            String sql = String.format("SELECT DISTINCT nms.language FROM SpLocaleContainer as ctn INNER JOIN ctn.items as itm INNER JOIN itm.names nms WHERE nms.language = '%s' AND ctn.schemaType = %d",
+                                       locale.getLanguage(), schemaTypeArg);
+            Query   query = session.createQuery(sql);
             List<?> list  = query.list();
             return list.size() > 0;
             
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerDlg.class, ex);
-            ex.printStackTrace();
+            
         } finally
         {
             session.close();
         }
-
- 
-        /*
-        Connection connection = null;
-        Statement stmt        = null;
-        ResultSet rs          = null;
-        try
-        {
-            tableDisplayItems = new Vector<LocalizableJListItem>();
-            
-            connection = DBConnection.getInstance().createConnection();
-            stmt       = connection.createStatement();
-            rs         = stmt.executeQuery("select Language from splocaleitemstr where Country = '"+locale.getLanguage()+"'");
-            
-            return rs.first();
-            
-        } catch (Exception ex)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerDlg.class, ex);
-            ex.printStackTrace();
-            
-        } finally
-        {
-            try
-            {
-                if (rs != null)
-                {
-                    rs.close();
-                }
-                if (stmt != null)
-                {
-                    stmt.close();
-                }
-                if (connection != null)
-                {
-                    connection.close();
-                }
-            } catch (Exception e)
-            {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerDlg.class, e);
-                e.printStackTrace();
-            }
-        }
-*/
         return false;
     }
 

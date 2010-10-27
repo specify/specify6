@@ -392,9 +392,9 @@ public class SchemaToolsDlg extends CustomDialog
                     {
                         session = DataProviderFactory.getInstance().createSession();
                         
-                        String sql = "FROM SpLocaleContainer WHERE disciplineId = "+ AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
+                        int    dispId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
+                        String sql    = String.format("FROM SpLocaleContainer WHERE disciplineId = %d AND schemaType = %d", dispId, schemaType);
                         List<SpLocaleContainer> spContainers = (List<SpLocaleContainer>)session.getDataList(sql);
-
                         try
                         {
                             FileWriter fw   = new FileWriter(outFile);

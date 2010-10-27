@@ -1224,6 +1224,12 @@ public class BuildSampleDatabase
                                catNumScheme.getFormatName(),
                                accNumScheme != null ? accNumScheme.getFormatName() : null);
         
+        DBTableIdMgr wbTableMgr = new DBTableIdMgr(false);
+        wbTableMgr.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml"))); //$NON-NLS-1$
+        
+        //DataProviderSessionIFace hSession = new HibernateDataProviderSession(session);
+        loadSchemaLocalization(discipline, SpLocaleContainer.WORKBENCH_SCHEMA, wbTableMgr, null, null, UpdateType.eBuildNew, null);//hSession);
+        
         frame.setProcess(++createStep);
         
         persist(discipline);
@@ -8293,14 +8299,14 @@ public class BuildSampleDatabase
         
         for (SpLocaleContainerItem item : memoryContainer.getItems())
         {
-            //if (isColObj) System.err.println(item.getName());
+            if (isColObj) System.err.println(item.getName());
             String itemSQL     = null;
             boolean okToCreate = true;
             if (isImport || isMerge)
             {
                 String sql = String.format(" FROM splocalecontainer c INNER JOIN splocalecontaineritem ci ON c.SpLocaleContainerID = ci.SpLocaleContainerID WHERE ci.Name = '%s' AND c.DisciplineID = %d AND c.SpLocaleContainerID = %d", item.getName(), disciplineId, newContainer.getId());
                 String fullSQL = "SELECT COUNT(*)" + sql;
-                //if (isColObj) log.debug(fullSQL);
+                if (isColObj) log.debug(fullSQL);
                 int cnt = BasicSQLUtils.getCountAsInt(fullSQL);
                 if (cnt > 0)
                 {
@@ -8308,14 +8314,14 @@ public class BuildSampleDatabase
                     if (cnt == 1)
                     {
                         itemSQL = "SELECT ci.SpLocaleContainerItemID" + sql;
-                        //if (isColObj) log.debug(itemSQL);
+                        if (isColObj) log.debug(itemSQL);
                     }
                 }
             }
             
             if (okToCreate)
             {
-                //log.debug("Adding Item: "+item.getName());
+                log.debug("Adding Item: "+item.getName());
                 SpLocaleContainerItem newItem = new SpLocaleContainerItem();
                 newItem.initialize();
                 
@@ -8427,7 +8433,7 @@ public class BuildSampleDatabase
             
             String memText   = memItem.getText();
             String dbText    = dbItmStr.getText();
-            boolean doUpdate = dbItmStr.getId() == null || (memText == null && dbText != null) || (memText != null && dbText == null) || (memText != null && dbText != null && memText.equals(dbText)); 
+            boolean doUpdate = dbItmStr.getId() == null || (memText == null && dbText != null) || (memText != null && dbText == null) || (memText != null && dbText != null && !memText.equals(dbText)); 
             
             String txt = doUpdate ? memText : dbText;
             if (txt == null)
@@ -8512,7 +8518,6 @@ public class BuildSampleDatabase
         String dispName = discipline.getType().toString();
         
         boolean isUpdate = updateType == UpdateType.eImport || updateType == UpdateType.eMerge;
-
         
         float progressCnt = 0.0f;
         float len = (float)schemaLocalizer.getSpLocaleContainers().size();
@@ -8528,7 +8533,7 @@ public class BuildSampleDatabase
             boolean okToCreate = true;
             if (isUpdate)
             {
-                String sql     = String.format(" FROM splocalecontainer WHERE Name = '%s' AND DisciplineID = %d", table.getName(), discipline.getId());
+                String sql     = String.format(" FROM splocalecontainer WHERE Name = '%s' AND SchemaType = %d AND DisciplineID = %d", table.getName(), schemaType, discipline.getId());
                 String fullSQL = "SELECT COUNT(*)"+sql;
                 //log.debug(fullSQL);
                 int cnt = BasicSQLUtils.getCountAsInt(fullSQL);

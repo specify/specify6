@@ -29,6 +29,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -58,6 +59,7 @@ import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
+import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
@@ -83,6 +85,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.SpecifyUserTypes.UserType;
 import edu.ku.brc.specify.config.ResourceImportExportDlg;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
@@ -97,6 +100,8 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.busrules.PickListBusRules;
 import edu.ku.brc.specify.tools.schemalocale.PickListEditorDlg;
 import edu.ku.brc.specify.tools.schemalocale.SchemaToolsDlg;
+import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
+import edu.ku.brc.specify.utilapps.BuildSampleDatabase.UpdateType;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -1024,28 +1029,6 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         JMenuItem mi;
         String    menuDesc = getResourceString(TREES_MENU);
         
-//      Implementing wb schema config in next release  
-//        if (!AppContextMgr.isSecurityOn() || 
-//            (secMgr.getPermission(WBSCHEMACONFIG_SECURITY) != null && 
-//             secMgr.getPermission(WBSCHEMACONFIG_SECURITY).canAdd()))
-//        {
-//            titleArg = getI18NKey("WBSCHEMA_CONFIG_MENU"); //$NON-NLS-1$
-//            mneu     = getI18NKey("WBSCHEMA_CONFIG_MNU");  //$NON-NLS-1$
-//            mi       = UIHelper.createLocalizedMenuItem(titleArg, mneu, titleArg, true, null); 
-//            mi.addActionListener(new ActionListener()
-//                    {
-//                        public void actionPerformed(ActionEvent ae)
-//                        {
-//                            DBTableIdMgr schema = new DBTableIdMgr(false);
-//                            schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml"))); //$NON-NLS-1$
-//                            doSchemaConfig(SpLocaleContainer.WORKBENCH_SCHEMA, schema);
-//                        }
-//                    });
-//            mid = new MenuItemDesc(mi, SYSTEM_MENU);
-//            mid.setPosition(MenuItemDesc.Position.After, menuDesc);
-//            menuItems.add(mid);
-//        }
-        
         if (!AppContextMgr.isSecurityOn()
 				|| SpecifyUser.isCurrentUserType(UserType.Manager))
 		{
@@ -1120,8 +1103,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
              secMgr.getPermission(securityName).canAdd()))
         {
             titleArg = getI18NKey("SCHEMA_CONFIG_MENU"); //$NON-NLS-1$
-            mneu = getI18NKey("SCHEMA_CONFIG_MNU");  //$NON-NLS-1$
-            mi = UIHelper.createLocalizedMenuItem(titleArg, mneu, titleArg, true, null);
+            mneu     = getI18NKey("SCHEMA_CONFIG_MNU");  //$NON-NLS-1$
+            mi       = UIHelper.createLocalizedMenuItem(titleArg, mneu, titleArg, true, null);
             mi.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
@@ -1156,6 +1139,26 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             }
         }
         
+        
+        if (!AppContextMgr.isSecurityOn() || 
+            (secMgr.getPermission(WBSCHEMACONFIG_SECURITY) != null && 
+             secMgr.getPermission(WBSCHEMACONFIG_SECURITY).canAdd()))
+        {
+            titleArg = getI18NKey("WBSCHEMA_CONFIG_MENU"); //$NON-NLS-1$
+            mneu     = getI18NKey("WBSCHEMA_CONFIG_MNU");  //$NON-NLS-1$
+            mi       = UIHelper.createLocalizedMenuItem(titleArg, mneu, titleArg, true, null); 
+            mi.addActionListener(new ActionListener()
+                    {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            doWorkBenchSchemaConfig();
+                        }
+                    });
+            mid = new MenuItemDesc(mi, SYSTEM_MENU);
+            mid.setPosition(MenuItemDesc.Position.After, menuDesc);
+            menuItems.add(mid);
+        }
+        
         if (!AppContextMgr.isSecurityOn() || 
              (getPermissions() != null && getPermissions().canAdd()))
         {
@@ -1175,6 +1178,82 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         }
         return menuItems;
     }
+    
+    /**
+     * 
+     */
+    private void doWorkBenchSchemaConfig()
+    {
+        final DBTableIdMgr tableMgr = new DBTableIdMgr(false);
+        tableMgr.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml"))); //$NON-NLS-1$
+        
+        final Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        String           sql        = String.format("SELECT COUNT(*) FROM splocalecontainer WHERE DisciplineID = %d AND SchemaType = %d", discipline.getId(), SpLocaleContainer.WORKBENCH_SCHEMA);
+        int containerCnt = BasicSQLUtils.getCountAsInt(sql);
+        if (containerCnt == 0)
+        {
+            UIRegistry.getStatusBar().setIndeterminate(SYSTEMSETUPTASK, true);
+            final SwingWorker worker = new SwingWorker()
+            {
+                private boolean isOK = false;
+                
+                public Object construct()
+                {
+                    DataProviderSessionIFace session = null;
+                    try
+                    {
+                        session = DataProviderFactory.getInstance().createSession();
+                        session.beginTransaction();
+                        Discipline          disp = session.get(Discipline.class, discipline.getId());
+                        BuildSampleDatabase bsd  = new BuildSampleDatabase();
+                        bsd.loadSchemaLocalization(disp, SpLocaleContainer.WORKBENCH_SCHEMA, tableMgr, null, null, UpdateType.eBuildNew, session);
+                        session.commit();
+                        isOK = true;
+                        
+                    } catch (Exception ex)
+                    {
+                        try
+                        {
+                            session.rollback();
+                        } catch (Exception ex1) {}
+                        
+                        log.error(ex);
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SystemSetupTask.class, ex);
+                        
+                    } finally
+                    {
+                        if (session != null)
+                        {
+                            session.close();
+                        }
+                    }
+                    return null;
+                }
+
+                //Runs on the event-dispatching thread.
+                public void finished()
+                {
+                    UIRegistry.getStatusBar().setProgressDone(SYSTEMSETUPTASK);
+                    
+                    if (isOK)
+                    {
+                        SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.WORKBENCH_SCHEMA, discipline.getId(), tableMgr, SchemaI18NService.getCurrentLocale());
+                        doSchemaConfig(SpLocaleContainer.WORKBENCH_SCHEMA, tableMgr);
+                    }
+                }
+            };
+            worker.start();
+
+        } else
+        {
+            SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.WORKBENCH_SCHEMA, discipline.getId(), tableMgr, SchemaI18NService.getCurrentLocale());
+            doSchemaConfig(SpLocaleContainer.WORKBENCH_SCHEMA, tableMgr);
+        }
+        
+        
+    }
+    
     
     /**
      * @param cls

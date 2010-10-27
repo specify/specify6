@@ -59,8 +59,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
                                final Locale       locale)
     {
         // First do Just Hidden in case a table is missing a title or desc
-        String sql = "SELECT Name, IsHidden FROM  splocalecontainer WHERE " +
-                     "SchemaType = " + schemaType +" AND DisciplineID = " + disciplineId;
+        String sql = String.format("SELECT Name, IsHidden FROM  splocalecontainer WHERE SchemaType = %d AND DisciplineID = %d", schemaType, disciplineId);
 
         Vector<Object[]> rows = BasicSQLUtils.query(sql);
 
