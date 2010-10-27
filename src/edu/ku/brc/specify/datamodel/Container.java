@@ -21,6 +21,7 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,6 +34,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
@@ -59,12 +61,15 @@ public class Container extends CollectionMember implements java.io.Serializable
      protected String                description;
      protected Integer               number;
      protected Set<CollectionObject> collectionObjects;
-     protected Set<CollectionObject> collectionObjectOwners;
+     protected Set<CollectionObject> collectionObjectKids;
      protected Storage               storage;
 
      // Tree
      protected Container             parent;
      protected Set<Container>        children;
+     
+     // Transient
+     protected Vector<Container>     childrenList = null;
 
     // Constructors
 
@@ -92,7 +97,7 @@ public class Container extends CollectionMember implements java.io.Serializable
         number                 = null;
         parent                 = null;
         collectionObjects      = new HashSet<CollectionObject>();
-        collectionObjectOwners = new HashSet<CollectionObject>();
+        collectionObjectKids = new HashSet<CollectionObject>();
         storage                = null;
         children               = new HashSet<Container>();
     }
@@ -192,6 +197,16 @@ public class Container extends CollectionMember implements java.io.Serializable
     {
         this.number = number;
     }
+    
+    /**
+     * @return
+     */
+    @Transient
+    public CollectionObject getCollectionObject()
+    {
+        Set<CollectionObject> colObjsSet = getCollectionObjects();
+        return colObjsSet != null && colObjsSet.size() > 0 ? colObjsSet.iterator().next() : null;
+    }
 
     /**
      *
@@ -210,14 +225,28 @@ public class Container extends CollectionMember implements java.io.Serializable
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "containerOwner")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<CollectionObject> getCollectionObjectOwners() 
+    public Set<CollectionObject> getCollectionObjectKids() 
     {
-        return this.collectionObjectOwners;
+        return this.collectionObjectKids;
     }
 
-    public void setCollectionObjectOwners(Set<CollectionObject> collectionObjectOwners) 
+    public void setCollectionObjectKids(Set<CollectionObject> collectionObjectKids) 
     {
-        this.collectionObjectOwners = collectionObjectOwners;
+        this.collectionObjectKids = collectionObjectKids;
+    }
+    
+    /**
+     * @return the childrenList
+     */
+    @Transient
+    public Vector<Container> getChildrenList()
+    {
+        if (childrenList == null)
+        {
+            childrenList = new Vector<Container>();
+            childrenList.addAll(children);
+        }
+        return childrenList;
     }
 
     /**
@@ -283,7 +312,18 @@ public class Container extends CollectionMember implements java.io.Serializable
         this.children = children;
     }
     
+    
     // Add Methods
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+     */
+    @Override
+    public void forceLoad()
+    {
+        getCollectionObjects().size();
+        getCollectionObjectKids().size();
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
@@ -295,6 +335,15 @@ public class Container extends CollectionMember implements java.io.Serializable
         return getClassTableId();
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return StringUtils.isNotEmpty(name) ? name : "N/A";
+    }
+
     /**
      * @return the Table ID for the class.
      */

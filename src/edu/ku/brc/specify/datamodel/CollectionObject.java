@@ -1018,7 +1018,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         return this.container;
     }
 
-    public void setContainer(Container container) {
+    public void setContainer(final Container container) {
         this.container = container;
     }
     
@@ -1031,7 +1031,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         return this.containerOwner;
     }
 
-    public void setContainerOwner(Container containerOwner) {
+    public void setContainerOwner(final Container containerOwner) {
         this.containerOwner = containerOwner;
     }
 
@@ -1128,6 +1128,15 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         return fieldNumber != null ? fieldNumber : super.getIdentityTitle();
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return getIdentityTitle();
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
      */

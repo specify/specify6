@@ -272,6 +272,39 @@
             </altviews>
         </view>
         
+        <view name="Container"
+            class="edu.ku.brc.specify.datamodel.Container"  
+             isinternal="false"
+            resourcelabels="false">
+            <desc><![CDATA[Conservation Description.]]></desc>
+            <altviews>
+                <altview name="Container View" viewdef="Container" mode="view" default="true"/>
+                <altview name="Container Edit" viewdef="Container" mode="edit" />
+            </altviews>
+        </view>
+        
+        <view name="ContainerBrief"
+            class="edu.ku.brc.specify.datamodel.Container"  
+             isinternal="false"
+            resourcelabels="false">
+            <desc><![CDATA[Conservation Description.]]></desc>
+            <altviews>
+                <altview name="ContainerBrief View" viewdef="ContainerBrief" mode="view" default="true"/>
+                <altview name="ContainerBrief Edit" viewdef="ContainerBrief" mode="edit" />
+            </altviews>
+        </view>
+        
+        <view name="ContainerCO"
+            class="edu.ku.brc.specify.datamodel.Container"  
+             isinternal="true"
+            resourcelabels="false">
+            <desc><![CDATA[Conservation Description.]]></desc>
+            <altviews>
+                <altview name="ContainerCO View" viewdef="ContainerCO" mode="view" default="true"/>
+                <altview name="ContainerCO Edit" viewdef="ContainerCO" mode="edit" />
+            </altviews>
+        </view>
+        
         <view name="Deaccession"
               class="edu.ku.brc.specify.datamodel.Deaccession"
               resourcelabels="false">
@@ -1731,6 +1764,107 @@
         <viewdef
             type="form"
             name="ConservDescriptionSub"
+            class="edu.ku.brc.specify.datamodel.ConservDescription"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Conservation Description]]></desc>
+            <enableRules/>
+            
+            <columnDef>125px,2px,p,2px,100px,2px,p,2px,100px,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            <rows>
+                
+                <row> 
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="shortDesc" uitype="text" colspan="9"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="objLength" uitype="text"/>                   
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="height" uitype="text"/>
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" name="width" uitype="text"/>                  
+                </row>
+                <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="backgroundInfo" uitype="textareabrief" rows="2" colspan="10"/>
+                </row>          
+                <row> 
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" name="description" uitype="textareabrief" rows="2" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="subview" id="13" name="conservDescriptionAttachments" viewname="ObjectAttachment" initialize="btn=true;icon=ConservDescriptionAttachment;addsearch=true"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="Container"
+            class="edu.ku.brc.specify.datamodel.Container"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Container Description]]></desc>
+            <enableRules/>
+            
+            <columnDef>125px,2px,p,8px,p,2px,p,f:p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            <rows>
+                
+                <row> 
+                    <cell type="label" labelfor="nm"/>
+                    <cell type="field" id="nm" name="name" uitype="text" />
+                </row>
+                <row> 
+                    <cell type="label" labelfor="typ"/>
+                    <cell type="field" id="typ" name="type" uitype="combobox" />
+                </row>
+                <row>
+                    <cell type="label" labelfor="desc"/>
+                    <cell type="field" id="desc" name="description" uitype="textareabrief" rows="2" colspan="6"/>                   
+                </row>
+                <row>
+                    <cell type="field" id="cop" uitype="plugin" name="this" initialize="name=ContainerList;"  colspan="8"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="ContainerBrief"
+            class="edu.ku.brc.specify.datamodel.Container"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Container Description]]></desc>
+            <enableRules/>
+            
+            <columnDef>125px,2px,p,8px,p,2px,p,f:p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            <rows>
+                
+                <row> 
+                    <cell type="label" labelfor="nm"/>
+                    <cell type="field" id="nm" name="name" uitype="text" />
+                </row>
+                <row> 
+                    <cell type="label" labelfor="typ"/>
+                    <cell type="field" id="typ" name="type" uitype="combobox" />
+                </row>
+                <row>
+                    <cell type="label" labelfor="desc"/>
+                    <cell type="field" id="desc" name="description" uitype="textareabrief" rows="2" colspan="6"/>                   
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="ContainerCO"
             class="edu.ku.brc.specify.datamodel.ConservDescription"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">

@@ -3448,6 +3448,31 @@ public class FormViewObj implements Viewable,
             focusable.requestFocus();
         }
     }
+    
+    /**
+     * This method is called by the add button to create a new object in the form.
+     */
+    public void createNewObjectByAdding()
+    {
+        UIValidator.setIgnoreAllValidation(this, true);
+        createNewDataObject(false);
+        if (formValidator != null)
+        {
+            formValidator.processFormRules();
+            // 4/6/09 rods - Bug 6886 The first and prev btns were getting enabled and shouldn't been. 
+            if (rsController != null)
+            {
+                rsController.setUIEnabled(false);
+                if (rsController.getRecDisp() != null)
+                {
+                    rsController.getRecDisp().setEnabled(true);
+                }
+            }
+        }
+        
+        UIValidator.setIgnoreAllValidation(this, false);
+        //focusFirstFormControl(); 
+    }
 
     /**
      * Adds the the ActionListener to the btns.
@@ -3459,24 +3484,7 @@ public class FormViewObj implements Viewable,
             addBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae)
                 {
-                    UIValidator.setIgnoreAllValidation(this, true);
-                    createNewDataObject(false);
-                    if (formValidator != null)
-                    {
-                        formValidator.processFormRules();
-                        // 4/6/09 rods - Bug 6886 The first and prev btns were getting enabled and shouldn't been. 
-                        if (rsController != null)
-                        {
-                            rsController.setUIEnabled(false);
-                            if (rsController.getRecDisp() != null)
-                            {
-                                rsController.getRecDisp().setEnabled(true);
-                            }
-                        }
-                    }
-                    
-                    UIValidator.setIgnoreAllValidation(this, false);
-                    //focusFirstFormControl();
+                    createNewObjectByAdding();
                 }
             });
         }

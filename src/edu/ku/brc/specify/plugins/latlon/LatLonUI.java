@@ -304,9 +304,9 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
                 
             } catch (Exception e)
             {
+                e.printStackTrace();
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LatLonUI.class, e);
-                e.printStackTrace();
             }
         }
         

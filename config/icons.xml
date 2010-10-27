@@ -85,6 +85,8 @@
     <icon name="Configure"     file="Configure20x20.png" sizes="NonStd"/>
     <icon name="AddRec"        file="AddNewRecord20x20.png" sizes="NonStd"/>
     <icon name="DelRec"        file="RemoveRecord20x20.png" sizes="NonStd"/>
+    <icon name="AddRecord"     file="AddNewRecord32x32.png" sizes="all"/>
+    <icon name="DelRecord"     file="RemoveRecord16x16.png" sizes="16"/>
     <icon name="Spreadsheet20" file="Grid20x20.png" sizes="NonStd"/>
     <icon name="Spreadsheet16" file="Grid16x16.png" sizes="16"/>
     <icon name="Spreadsheet"   file="Grid32x32.png" sizes="all"/>
@@ -261,8 +263,13 @@
     <icon name="Login"                 file="login.png" sizes="all"/>
     <icon name="MySQL"                 file="mysql_logo.png" sizes="all"/>
     
+    <!-- For Containers -->
+    <icon name="Folder"                file="folder32x32.png" sizes="all"/>
+    <icon name="Sheet"                 file="sheet32x32.png" sizes="all"/>
+    <icon name="PlantSpecimen"         file="plantspec32x32.png" sizes="all"/>
+    
     <!-- ImportFileSlicer -->
-    <icon name="Splicer"              file="data_split.png" sizes="all"/>
+    <icon name="Splicer"               file="data_split.png" sizes="all"/>
     
     
 </icons>

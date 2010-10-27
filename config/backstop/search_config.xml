@@ -2,7 +2,7 @@
 <!-- 
 
   Last Id for ExpressSearch 54
-  Last Id for Other Search  127
+  Last Id for Other Search  129
 
  -->
 <searches>
@@ -16,7 +16,6 @@
                 <join tableid="5" primary="true">agent.AgentID</join>
                 <join tableid="1">collectionobject.CollectionObjectID</join>
                 <join tableid="9">determination.DeterminerID</join>
-                <!--<join tableid="9">determination.DeterminationStatusID</join>-->
                 <join tableid="4">taxon.TaxonID</join>
             </joins>
             <detailView icon="Agent">
@@ -103,7 +102,7 @@
  From collectionobject 
  Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID
  Inner Join taxon ON taxon.TaxonID = determination.TaxonID
- WHERE collectionobject.CollectionMemberID = COLMEMID AND %s order by CatalogNumber asc]]>
+ WHERE collectionobject.CollectionMemberID = COLMEMID fAND %s order by CatalogNumber asc]]>
                 </sql>
                 <captions>
                     <caption tableid="1" col="collectionobject.CollectionObjectID" visible="false"/>
@@ -1203,8 +1202,80 @@ repositoryagreement.RepositoryAgreementNumber,
             </detailView>
         </table>
         
+        <table id="55" tableid="31" indexed="false" name="ColObjToContainer" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="1">co.CollectionObjectID</join>
+                <join tableid="31" primary="true">cn.ContainerID</join>
+            </joins>
+            <detailView icon="Container">
+                <sql>
+                    <![CDATA[
+SELECT cn.ContainerID, 
+ cn.Type, 
+ cn.Name, 
+ co.CatalogNumber,
+  %s
+ FROM collectionobject co INNER JOIN container cn ON co.ContainerID = cn.ContainerID
+ WHERE co.CollectionMemberID = COLMEMID AND %s]]>
+                </sql>
+                <captions>
+                    <caption tableid="31" col="cn.ContainerID" visible="false"/>
+                    <caption tableid="31" col="cn.Type"/>
+                    <caption tableid="31" col="cn.Name"/>
+                    <caption tableid="1" col="co.CatalogNumber" formatter="CatalogNumber" key="CatalogNumber"/>
+                </captions>
+            </detailView>
+        </table>
+
+        <table id="56" tableid="1" indexed="false" name="ContainerToKids" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="1" primary="true">co.CollectionObjectID</join>
+                <join tableid="1">co.ContainerOwnerID</join>
+                <join tableid="31">cn.ContainerID</join>
+            </joins>
+            <detailView icon="CollectionObject">
+                <sql>
+                    <![CDATA[
+SELECT co.CollectionObjectID,
+ co.CatalogNumber, 
+ co.CatalogedDate,
+  cn.Name,
+  %s
+ FROM collectionobject co INNER JOIN container cn ON co.ContainerOwnerID = cn.ContainerID
+ WHERE cn.CollectionMemberID = COLMEMID AND %s]]>
+                </sql>
+                <captions>
+                    <caption tableid="1" col="co.CollectionObjectID" visible="false"/>
+                    <caption tableid="1" col="co.CatalogNumber" formatter="CatalogNumber" />
+                    <caption tableid="1" col="co.CatalogedDate"/>
+                    <caption tableid="31" col="cn.Name" key="Name"/>
+                </captions>
+            </detailView>
+        </table>
         
-        
+        <table id="57" tableid="31" indexed="false" name="ContainerToContainerKids" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="31" primary="true">cn.ContainerID</join>
+                <join tableid="31">cn.ParentID</join>
+                <join tableid="31">p.ContainerID</join>
+            </joins>
+            <detailView icon="Container">
+                <sql>
+                    <![CDATA[
+SELECT cn.ContainerID,
+ cn.Name,
+ p.Name, 
+  %s
+ FROM container p INNER JOIN container cn ON p.ContainerID = cn.ParentID
+ WHERE cn.CollectionMemberID = COLMEMID AND %s]]>
+                </sql>
+                <captions>
+                    <caption tableid="31" col="cn.ContainerID" visible="false"/>
+                    <caption tableid="31" col="cn.Name"/>
+                    <caption tableid="31" col="p.Name"  key="Name"/>
+                </captions>
+            </detailView>
+        </table>
         
         <!-- ============================ -->
         <!--  Attachment Related Searches -->
@@ -2037,5 +2108,19 @@ repositoryagreement.RepositoryAgreementNumber,
                 </captions>
             </detailView>
         </table>
+        
+        <table id="129" tableid="1" name="ContainerSearch" priority="1" color="30, 144, 255">
+            <detailView icon="Container">
+                <sql>
+                    <![CDATA[SELECT ContainerID, Name FROM container WHERE CollectionMemberID = COLMEMID AND (%s)]]>
+                </sql>
+                <captions>
+                    <caption tableid="31" col="ContainerID" visible="false"/>
+                    <caption tableid="31" col="Name"/>
+                </captions>
+            </detailView>
+        </table>
+        
+        
     </generic>
 </searches>

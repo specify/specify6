@@ -114,28 +114,36 @@ public class EditDeleteAddPanel extends JPanel
             addBtn = UIHelper.createIconBtn("PlusSign", addTTKey, addAL);
         }
         
-        int numBtns = (addAL != null ? 1 : 0) + (delAL != null ? 1 : 0) + (editAL != null ? 1 : 0);
+        return doBuildLayout();
+    }
+    
+    /**
+     * @return
+     */
+    protected PanelBuilder doBuildLayout()
+    {
+        int numBtns = (addBtn != null ? 1 : 0) + (delBtn != null ? 1 : 0) + (editBtn != null ? 1 : 0);
         
         CellConstraints cc = new CellConstraints();
         
         PanelBuilder btnPb = new PanelBuilder(createFormLayout(numBtns), this);
         int x = getStartingIndex();
-        if (editAL != null)
+        if (editBtn != null)
         {
             btnPb.add(editBtn, cc.xy(x,1));
             x += 2;
         }
-        if (delAL != null)
+        if (delBtn != null)
         {
             btnPb.add(delBtn, cc.xy(x,1));
             x += 2;
         }
-        if (addAL != null)
+        if (addBtn != null)
         {
             btnPb.add(addBtn, cc.xy(x,1));
             x += 2;
         }
-        return btnPb;
+        return btnPb; 
     }
     
     /**

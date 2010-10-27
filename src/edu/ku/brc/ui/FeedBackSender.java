@@ -147,6 +147,10 @@ public abstract class FeedBackSender
                 }
     
             }
+            catch (java.net.UnknownHostException uex)
+            {
+                log.error(uex.getMessage());
+            }
             catch (Exception e)
             {
                 e.printStackTrace();

@@ -114,6 +114,18 @@
         </view>
         
         <view 
+            name="ContainerSearch"
+            class="edu.ku.brc.specify.datamodel.Container"
+            usedefbusrule="false"
+            resourcelabels="false">
+            <desc><![CDATA[The Container Search Form]]></desc>
+            <altviews>
+                <altview name="ContainerSearch" viewdef="ContainerSearch" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
+        
+        <view 
             name="DivisionSearch"
             class="edu.ku.brc.specify.datamodel.Division"
             usedefbusrule="false"
@@ -497,6 +509,29 @@ Good: <cell type="field" name="FieldNum" ...>
                 
             </rows>
         </viewdef> 
+        
+        <viewdef type="form"
+            name="ContainerSearch"
+            class="edu.ku.brc.specify.datamodel.Container"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The Container Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p,3dlu,p,3dlu,p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="Container" colspan="7"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" />
+                    <cell type="field" id="1" name="Name" uitype="text" initialize="ispartial=true"/>
+                </row>
+            </rows>
+        </viewdef>        
         
         <viewdef type="form"
             name="DivisionSearch"

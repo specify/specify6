@@ -65,7 +65,9 @@
         <plugin name="LocalityWorldWind"    class="edu.ku.brc.specify.plugins.LocalityWorldWindPlugin"/>
 		<plugin name="LocalityGeoRef"       class="edu.ku.brc.specify.plugins.LocalityGeoRefPlugin"/>
 		<plugin name="FishBase"             class="edu.ku.brc.specify.plugins.FishBase"/>
-		<plugin name="LatLonUI"     		class="edu.ku.brc.specify.plugins.latlon.LatLonUI"/>
+        <plugin name="LatLonUI"             class="edu.ku.brc.specify.plugins.latlon.LatLonUI"/>
+        <plugin name="ContainerList"        class="edu.ku.brc.specify.plugins.ContainerListPlugin"/>
+		
 		
 		<!-- 
 		<plugin name="MorphBankPanel"       class="edu.ku.brc.specify.plugins.morphbank.MorphBankPanel"/>

@@ -94,6 +94,14 @@
       <picklistitem title="Receiver" value="receiver"/>
     </items>
   </picklist>
+  <picklist name="ContainerType" issystem="true" type="0" readonly="true" sizelimit="5">
+    <items>
+      <picklistitem title="None" value="0"/>
+      <picklistitem title="Folder" value="1"/>
+      <picklistitem title="Sheet" value="2"/>
+      <picklistitem title="Specimen" value="3"/>
+    </items>
+  </picklist>
  <!-- <picklist name="DeaccessionRole" issystem="true" type="0" readonly="true" sizelimit="5">
     <items>
       <picklistitem title="Collector" value="collector"/>

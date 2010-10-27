@@ -2237,7 +2237,7 @@
             class="edu.ku.brc.specify.datamodel.AttachmentImageAttribute"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj"
-            useresourcelabels="true">
+            useresourcelabels="false">
             
             <desc><![CDATA[The Attachment Image Attribute form.]]></desc>
             

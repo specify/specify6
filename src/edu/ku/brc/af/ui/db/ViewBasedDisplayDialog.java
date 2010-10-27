@@ -23,6 +23,8 @@ import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.Frame;
 
+import javax.swing.JScrollPane;
+
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
@@ -32,6 +34,7 @@ import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -232,7 +235,8 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
         contentPanel = viewBasedPanel;
         viewBasedPanel.setOkCancelBtns(okBtn, cancelBtn);
         
-        mainPanel.add(viewBasedPanel, BorderLayout.CENTER);
+        JScrollPane scrollPane = UIHelper.createScrollPane(viewBasedPanel, true);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
         
         pack();
         
