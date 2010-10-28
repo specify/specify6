@@ -72,6 +72,22 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbench;
 import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbenchDataItem;
 import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbenchMappingItem;
 import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbenchTemplate;
+import static edu.ku.brc.ui.UIRegistry.getAppDataDir;
+import static edu.ku.brc.ui.UIRegistry.getAppDataSubDir;
+import static edu.ku.brc.ui.UIRegistry.getAppName;
+import static edu.ku.brc.ui.UIRegistry.getDefaultEmbeddedDBPath;
+import static edu.ku.brc.ui.UIRegistry.getDefaultMobileEmbeddedDBPath;
+import static edu.ku.brc.ui.UIRegistry.getDefaultWorkingPath;
+import static edu.ku.brc.ui.UIRegistry.getEmbeddedDBPath;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getStatusBar;
+import static edu.ku.brc.ui.UIRegistry.getTopWindow;
+import static edu.ku.brc.ui.UIRegistry.setAppName;
+import static edu.ku.brc.ui.UIRegistry.setBaseAppDataDir;
+import static edu.ku.brc.ui.UIRegistry.setDefaultWorkingPath;
+import static edu.ku.brc.ui.UIRegistry.setEmbeddedDBPath;
+import static edu.ku.brc.ui.UIRegistry.setResourceLocale;
+import static edu.ku.brc.ui.UIRegistry.showError;
 
 import java.awt.Dimension;
 import java.io.File;
@@ -246,7 +262,6 @@ import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
@@ -459,7 +474,7 @@ public class BuildSampleDatabase
             Locale prefLocale = new Locale(language, country, variant);
             
             Locale.setDefault(prefLocale);
-            UIRegistry.setResourceLocale(prefLocale);
+            setResourceLocale(prefLocale);
         }
         
         try
@@ -469,7 +484,7 @@ public class BuildSampleDatabase
         } catch (MissingResourceException ex)
         {
             Locale.setDefault(Locale.ENGLISH);
-            UIRegistry.setResourceLocale(Locale.ENGLISH);
+            setResourceLocale(Locale.ENGLISH);
         }
         
     }
@@ -893,8 +908,8 @@ public class BuildSampleDatabase
             // setup the root Geography record (planet Earth)
             LithoStrat earthNode = new LithoStrat();
             earthNode.initialize();
-            earthNode.setName("Earth");
-            earthNode.setFullName("Earth");
+            earthNode.setName(getResourceString("Earth"));
+            earthNode.setFullName(earthNode.getName());
             earthNode.setNodeNumber(1);
             earthNode.setHighestChildNodeNumber(1);
             earthNode.setRankId(0);
@@ -932,7 +947,7 @@ public class BuildSampleDatabase
             ttdi.initialize();
             ttdi.setTreeDef(taxonTreeDef);
             taxonTreeDef.getTreeDefItems().add(ttdi);
-            ttdi.setName("Root");
+            ttdi.setName(getResourceString("Root"));
             ttdi.setRankId(0);
             ttdi.setParent(null);
             ttdi.setFullNameSeparator(null);
@@ -944,7 +959,7 @@ public class BuildSampleDatabase
             tx.setDefinition(taxonTreeDef);
             tx.setDefinitionItem(ttdi);
             ttdi.getTreeEntries().add(tx);
-            tx.setName("Life"); // I18N
+            tx.setName(getResourceString("Life"));
             tx.setFullName(tx.getName());
             tx.setNodeNumber(1);
             tx.setHighestChildNodeNumber(1);
@@ -1349,7 +1364,7 @@ public class BuildSampleDatabase
                             }
                         } else 
                         {
-                            //UIRegistry.showLocalizedError("The wizard was unable to find '%s' as a standard Taxonomy level.", colName);
+                            //showLocalizedError("The wizard was unable to find '%s' as a standard Taxonomy level.", colName);
                             log.debug(String.format("The wizard was unable to find '%s' as a standard Taxonomy level.", colName));
                         }
                     } else
@@ -1396,8 +1411,8 @@ public class BuildSampleDatabase
                         tx.setDefinition(taxonTreeDef);
                         tx.setDefinitionItem(ttdi);
                         ttdi.getTreeEntries().add(tx);
-                        tx.setName("Life"); // I18N
-                        tx.setFullName("Life"); //I18N
+                        tx.setName(getResourceString("Life"));
+                        tx.setFullName(tx.getName());
                         tx.setNodeNumber(1);
                         tx.setHighestChildNodeNumber(1);
                         
@@ -1462,8 +1477,8 @@ public class BuildSampleDatabase
                         stg.setDefinition(storageTreeDef);
                         stg.setDefinitionItem(stdi);
                         stdi.getTreeEntries().add(stg);
-                        stg.setName("Site");
-                        stg.setFullName("Site");
+                        stg.setName(getResourceString("Site"));
+                        stg.setFullName(stg.getName());
                         stg.setNodeNumber(1);
                         stg.setHighestChildNodeNumber(1);
                     }
@@ -3653,8 +3668,8 @@ public class BuildSampleDatabase
         // setup the root Geography record (planet Earth)
         LithoStrat earth = new LithoStrat();
         earth.initialize();
-        earth.setName("Earth");
-        earth.setFullName("Earth");
+        earth.setName(getResourceString("Earth"));
+        earth.setFullName(earth.getName());
         earth.setNodeNumber(1);
         earth.setHighestChildNodeNumber(1);
         earth.setRankId(0);
@@ -3829,8 +3844,8 @@ public class BuildSampleDatabase
         // setup the root Geography record (planet Earth)
         Geography earth = new Geography();
         earth.initialize();
-        earth.setName("Earth");
-        earth.setFullName("Earth");
+        earth.setName(getResourceString("Earth"));
+        earth.setFullName(earth.getName());
         earth.setNodeNumber(1);
         earth.setHighestChildNodeNumber(1);
         earth.setRankId(0);
@@ -4890,8 +4905,8 @@ public class BuildSampleDatabase
         storage.initialize();
         
         storage.setRankId(0);
-        storage.setName("Storage Root");
-        storage.setFullName("Storage Root");
+        storage.setName(getResourceString("Root"));
+        storage.setFullName(storage.getName());
         storage.setNodeNumber(1);
         storage.setHighestChildNodeNumber(1);
         storage.setDefinition(treeDef);
@@ -5001,8 +5016,8 @@ public class BuildSampleDatabase
         taxon.initialize();
         
         taxon.setRankId(0);
-        taxon.setName("Taxonomy Root");
-        taxon.setFullName("Taxonomy Root");
+        taxon.setName(getResourceString("Root"));
+        taxon.setFullName(taxon.getName());
         taxon.setNodeNumber(1);
         taxon.setHighestChildNodeNumber(1);
         taxon.setDefinition(treeDef);
@@ -6211,7 +6226,7 @@ public class BuildSampleDatabase
             WorkbenchRowImage wbRowImage = null;
             
             
-            File f = new File(UIRegistry.getDefaultWorkingPath() +File.separator + "demo_files" + File.separator + "card" + i + (i == 2 ? ".png" : ".jpg"));
+            File f = new File(getDefaultWorkingPath() +File.separator + "demo_files" + File.separator + "card" + i + (i == 2 ? ".png" : ".jpg"));
             if (f.exists())
             {
                 try
@@ -6224,8 +6239,8 @@ public class BuildSampleDatabase
                 }
                 catch (IOException e)
                 {
-                    String msg = UIRegistry.getResourceString("WB_IMG_ERR_LOAD");
-                    UIRegistry.getStatusBar().setErrorMessage(msg, e);
+                    String msg = getResourceString("WB_IMG_ERR_LOAD");
+                    getStatusBar().setErrorMessage(msg, e);
                     log.error(msg, e);
                 }
             }
@@ -6335,7 +6350,7 @@ public class BuildSampleDatabase
             log.info("Creating attachments and attachment metadata");
             try
             {
-                String attachmentFilesLoc = UIRegistry.getDefaultWorkingPath() + File.separator + "demo_files" + File.separator;
+                String attachmentFilesLoc = getDefaultWorkingPath() + File.separator + "demo_files" + File.separator;
 
 //                String bigEyeFilePath = attachmentFilesLoc + "bigeye.jpg";
 //                Attachment bigEye = createAttachment(bigEyeFilePath, "image/jpeg", 0);
@@ -6597,41 +6612,41 @@ public class BuildSampleDatabase
 
         LithoStratTreeDefItem planet = new LithoStratTreeDefItem();
         planet.initialize();
-        planet.setName("Surface");
+        planet.setName(getResourceString("Surface"));
         planet.setRankId(0);
         planet.setIsEnforced(true);
         planet.setFullNameSeparator(", ");
 
         LithoStratTreeDefItem superLitho = new LithoStratTreeDefItem();
         superLitho.initialize();
-        superLitho.setName("SuperLitho");
+        superLitho.setName(getResourceString("SuperLitho"));
         superLitho.setRankId(100);
         superLitho.setFullNameSeparator(", ");
 
         LithoStratTreeDefItem group = new LithoStratTreeDefItem();
         group.initialize();
-        group.setName("Group");
+        group.setName(getResourceString("Group"));
         group.setRankId(200);
         group.setIsInFullName(true);
         group.setFullNameSeparator(", ");
 
         LithoStratTreeDefItem formation = new LithoStratTreeDefItem();
         formation.initialize();
-        formation.setName("Formation");
+        formation.setName(getResourceString("Formation"));
         formation.setRankId(300);
         formation.setIsInFullName(true);
         formation.setFullNameSeparator(", ");
 
         LithoStratTreeDefItem member = new LithoStratTreeDefItem();
         member.initialize();
-        member.setName("Member");
+        member.setName(getResourceString("Member"));
         member.setRankId(400);
         member.setIsInFullName(true);
         member.setFullNameSeparator(", ");
 
         LithoStratTreeDefItem bed = new LithoStratTreeDefItem();
         bed.initialize();
-        bed.setName("Bed");
+        bed.setName(getResourceString("Bed"));
         bed.setRankId(500);
         bed.setIsInFullName(true);
         bed.setFullNameSeparator(", ");
@@ -6671,8 +6686,8 @@ public class BuildSampleDatabase
             
             LithoStrat earth = new LithoStrat();
             earth.initialize();
-            earth.setName("Earth");
-            earth.setFullName("Earth");
+            earth.setName(getResourceString("Earth"));
+            earth.setFullName(earth.getName());
             earth.setDefinition(def);
             earth.setDefinitionItem(planet);
             earth.setNodeNumber(1);
@@ -7217,7 +7232,7 @@ public class BuildSampleDatabase
                 
             } catch (Exception ex)
             {
-                UIRegistry.showError(ex.toString());
+                showError(ex.toString());
                 ex.printStackTrace();
                 throw new RuntimeException(ex);
             }
@@ -7282,7 +7297,7 @@ public class BuildSampleDatabase
             rollbackTx();
             
             trans = null;
-            UIRegistry.showError(ex.toString());
+            showError(ex.toString());
             ex.printStackTrace();
             throw new RuntimeException(ex);
         }
@@ -7373,7 +7388,7 @@ public class BuildSampleDatabase
     {
         boolean doEmptyBuild   = false;
         
-        UIRegistry.setEmbeddedDBPath(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
+        setEmbeddedDBPath(getDefaultEmbeddedDBPath()); // on the local machine
         
         if (args != null && args.length > 0)
         {
@@ -7387,32 +7402,32 @@ public class BuildSampleDatabase
                     
                     if (option.equals("-Dappdir"))
                     {
-                        UIRegistry.setDefaultWorkingPath(value);
+                        setDefaultWorkingPath(value);
                         
                     } else if (option.equals("-Dappdatadir"))
                     {
-                        UIRegistry.setBaseAppDataDir(value);
+                        setBaseAppDataDir(value);
                         
                     } else if (option.equals("-Dembeddeddbdir"))
                     {
-                        UIRegistry.setEmbeddedDBPath(value);
+                        setEmbeddedDBPath(value);
                         
                     } else if (option.equals("-Dmobile"))
                     {
-                        UIRegistry.setEmbeddedDBPath(UIRegistry.getDefaultMobileEmbeddedDBPath());
+                        setEmbeddedDBPath(getDefaultMobileEmbeddedDBPath());
                     }
                 }
             }
         }
         
-        if (StringUtils.isEmpty(UIRegistry.getAppName()))
+        if (StringUtils.isEmpty(getAppName()))
         {
-            UIRegistry.setAppName("Specify");
+            setAppName("Specify");
         }
         
         if (hideFrame)
         {
-            System.out.println("Embedded DB Path [ "+UIRegistry.getEmbeddedDBPath()+" ]");
+            System.out.println("Embedded DB Path [ "+getEmbeddedDBPath()+" ]");
         }
         
         // Then set this
@@ -7429,7 +7444,7 @@ public class BuildSampleDatabase
 
         AppPrefsCache.setUseLocalOnly(true);
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        localPrefs.setDirPath(UIRegistry.getAppDataDir());
+        localPrefs.setDirPath(getAppDataDir());
         localPrefs.load();
         
         backstopPrefs = getInitializePrefs(null);
@@ -7701,7 +7716,7 @@ public class BuildSampleDatabase
             thumb.setMaxHeight(128);
             thumb.setMaxWidth(128);
 
-            File attLoc = UIRegistry.getAppDataSubDir("AttachmentStorage", true);
+            File attLoc = getAppDataSubDir("AttachmentStorage", true);
             FileUtils.cleanDirectory(attLoc);
             AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(attLoc);
             AttachmentUtils.setAttachmentManager(attachMgr);
@@ -7823,7 +7838,7 @@ public class BuildSampleDatabase
         if (driverInfo == null)
         {
             String msg = "Couldn't find driver by name ["+driverInfo+"] in driver list.";
-            UIRegistry.showError(msg);
+            showError(msg);
             throw new RuntimeException(msg);
         }
         
@@ -7891,7 +7906,7 @@ public class BuildSampleDatabase
                     frame.setDesc("Cleaning Attachment Cache...");
                     frame.setOverall(steps++);
                     
-                    File attLoc = UIRegistry.getAppDataSubDir("AttachmentStorage", true);
+                    File attLoc = getAppDataSubDir("AttachmentStorage", true);
                     try {
                         FileUtils.cleanDirectory(attLoc);
                     }
@@ -7899,7 +7914,7 @@ public class BuildSampleDatabase
                     {
                         String msg = "failed to connect to directory location to delete directory: " + attLoc;
                         log.warn(msg);
-                        UIRegistry.showError(msg);
+                        showError(msg);
                     }
                     AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(attLoc);
                     
@@ -7947,13 +7962,13 @@ public class BuildSampleDatabase
                     {
                         rollbackTx();
                         log.error("Failed to persist DB objects", e);
-                        UIRegistry.showError("Failed to persist DB objects");
+                        showError("Failed to persist DB objects");
                         return;
                     }
                     catch(Exception e2)
                     {
                         log.error("Failed to persist DB objects.  Rollback failed.  DB may be in inconsistent state.", e2);
-                        UIRegistry.showError("Failed to persist DB objects. Rollback failed.");
+                        showError("Failed to persist DB objects. Rollback failed.");
                         return;
                     }
                 }
@@ -7962,7 +7977,7 @@ public class BuildSampleDatabase
         else
         {
             log.error("Login failed");
-            UIRegistry.showError("Login failed");
+            showError("Login failed");
             return;
         }
         
@@ -7983,7 +7998,7 @@ public class BuildSampleDatabase
             AppPreferences.getLocalPrefs().putInt(schemaKey, schemaFileSize);
         }
         
-        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+        JOptionPane.showMessageDialog(getTopWindow(), 
                 "The build completed successfully.", 
                 "Complete", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -8019,7 +8034,7 @@ public class BuildSampleDatabase
         Properties properties = new Properties();
         try
         {
-            String base = UIRegistry.getDefaultWorkingPath();
+            String base = getDefaultWorkingPath();
             File initFile = new File(base + File.separator + (databaseName != null ? (databaseName + "_") : "") + "init.prefs");
             if (initFile.exists())
             {
@@ -8658,13 +8673,13 @@ public class BuildSampleDatabase
                                         setFieldVisible(tbl.getName(), fld.getName(), discipline);
                                     } else
                                     {
-                                        UIRegistry.showError("show_list.xml in ["+disciplineDirName+"] for table name ["+tName+"] has bad field name["+fName+"]");
+                                        showError("show_list.xml in ["+disciplineDirName+"] for table name ["+tName+"] has bad field name["+fName+"]");
                                     }
                                 }
                             }
                         } else
                         {
-                            UIRegistry.showError("show_list.xml in ["+disciplineDirName+"] has bad table name ["+tName+"]");
+                            showError("show_list.xml in ["+disciplineDirName+"] has bad table name ["+tName+"]");
                         }
                     }
                 }   
@@ -8738,7 +8753,7 @@ public class BuildSampleDatabase
         } catch (MissingResourceException ex)
         {
             Locale.setDefault(Locale.ENGLISH);
-            UIRegistry.setResourceLocale(Locale.ENGLISH);
+            setResourceLocale(Locale.ENGLISH);
         }
         
         new HiddenTableMgr();
@@ -8755,9 +8770,9 @@ public class BuildSampleDatabase
             e.printStackTrace();
         }
         
-        if (StringUtils.isEmpty(UIRegistry.getAppName()))
+        if (StringUtils.isEmpty(getAppName()))
         {
-            UIRegistry.setAppName("Specify");
+            setAppName("Specify");
         }
         
         SwingUtilities.invokeLater(new Runnable()
@@ -9413,8 +9428,8 @@ public class BuildSampleDatabase
         // setup the root ChronoStrat record (planet Earth)
         GeologicTimePeriod rootNode = new GeologicTimePeriod();
         rootNode.initialize();
-        rootNode.setName("Root");
-        rootNode.setFullName("Root");
+        rootNode.setName(getResourceString("Root"));
+        rootNode.setFullName(rootNode.getName());
         rootNode.setRankId(0);
         rootNode.setDefinition(treeDef);
         rootNode.setDefinitionItem(root);
