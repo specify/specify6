@@ -166,6 +166,7 @@ public class SystemPrefs extends GenericPrefsPanel
                 
                 Locale prefLocale = new Locale(language, country, variant);
                 
+                int justLangIndex = -1;
                 Locale cachedLocale = Locale.getDefault();
                 for (Locale l : locales)
                 {
@@ -173,8 +174,16 @@ public class SystemPrefs extends GenericPrefsPanel
                     {
                         Locale.setDefault(l);
                         ResourceBundle rb = ResourceBundle.getBundle("resources", l);
-                        if (rb.getKeys().hasMoreElements())
+                        
+                        boolean isOK = (l.getLanguage().equals("en") && StringUtils.isEmpty(l.getCountry())) ||
+                                       (l.getLanguage().equals("pt") && l.getCountry().equals("PT"));
+
+                        if (isOK && rb.getKeys().hasMoreElements())
                         {
+                            if (l.getLanguage().equals(prefLocale.getLanguage()))
+                            {
+                                justLangIndex = i;
+                            }
                             if (l.equals(prefLocale))
                             {
                                 inx = i;
@@ -186,6 +195,11 @@ public class SystemPrefs extends GenericPrefsPanel
                     } catch (MissingResourceException ex)
                     {
                     }
+                }
+                
+                if (inx == -1 && justLangIndex > -1)
+                {
+                    inx = justLangIndex;
                 }
                 Locale.setDefault(cachedLocale);
                 
