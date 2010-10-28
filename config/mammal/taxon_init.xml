@@ -1,36 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tree>
-
 	<treedef>
-		<level name="Life" enforced="true" infullname="false" rank="0"/>
-		<level name="Kingdom" enforced="true" infullname="false" rank="10"/>
-		<level name="Phylum" enforced="true" infullname="false" rank="30"/>
-		<level name="Class" enforced="true" infullname="false" rank="60"/>
-		<level name="Order" enforced="true" infullname="false" rank="100"/>
-		<level name="Family" enforced="true" infullname="false" rank="140"/>
-		<level name="Genus"  enforced="true" infullname="true" rank="180"/>
-		<level name="Species" enforced="true" infullname="true" rank="220"/>
-		<level name="Subspecies" enforced="false" infullname="true" rank="230" /> 
+        <level name="Life" enforced="true" infullname="false" rank="0">
+              <locale lang="pt" country="" var="" text="Vida"/>
+        </level>
+        <level name="Kingdom" enforced="true" infullname="false" rank="10">
+              <locale lang="pt" country="" var="" text="Reino"/>
+        </level>
+        <level name="Phylum" enforced="true" infullname="false" rank="30">
+              <locale lang="pt" country="" var="" text="Filo"/>
+        </level>
+        <level name="Class" enforced="true" infullname="false" rank="60">
+              <locale lang="pt" country="" var="" text="Classe"/>
+        </level>
+        <level name="Order" enforced="true" infullname="false" rank="100">
+              <locale lang="pt" country="" var="" text="Ordem"/>
+        </level>
+        <level name="Family" enforced="true" infullname="false" rank="140">
+              <locale lang="pt" country="" var="" text="Família"/>
+        </level>
+        <level name="Genus"  enforced="true" infullname="true" rank="180">
+              <locale lang="pt" country="" var="" text="Género"/>
+        </level>
+        <level name="Species" enforced="true" infullname="true" rank="220">
+              <locale lang="pt" country="" var="" text="Espécie"/>
+        </level>
+        <level name="Subspecies" enforced="false" infullname="true" rank="230">
+              <locale lang="pt" country="" var="" text="Subespécie"/>
+        </level>
     </treedef>
 	
-	<nodes>
-		<node name="Animalia" rank="10">
-			<node name="Chordata" rank="30">
-				<node name="Mammalia" rank="60">
-					<node name="Cingulata" rank="100">
-						<node name="Glyptodontidae" rank="140">
-							<node name="Doedicurus" rank="180">
-								<node name="clavicaudatus" rank="220"/>
-							</node>
-						</node>
-						<node name="Dasypodinae" rank="140">
-							<node name="Dasypus" common="" rank="180">
-								<node name="pilosus" rank="220"/>
-							</node>
-						</node>
-					</node>
-				</node>
-			</node>
-		</node>
-    </nodes> 
+	<nodes/>
 </tree>

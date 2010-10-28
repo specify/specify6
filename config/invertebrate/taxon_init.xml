@@ -2,40 +2,55 @@
 <tree>
 
 	<treedef>
-        <level name="Life" enforced="true" infullname="false" rank="0"/>
-        <level name="Kingdom" enforced="true" infullname="false" rank="10"/>
-        <level name="Phylum" enforced="true" infullname="false" rank="30"/>
-        <level name="Class" enforced="true" infullname="false" rank="60"/>
-        <level name="Subclass" enforced="false" infullname="false" rank="70"/>
-        <level name="Superorder" enforced="false" infullname="false" rank="90"/>
-        <level name="Order" enforced="true" infullname="false" rank="100"/>
-        <level name="Suborder" enforced="false" infullname="false" rank="110" />        
-        <level name="Family" enforced="true" infullname="false" rank="140"/>
-        <level name="Subfamily" enforced="false" infullname="false" rank="150"/>
-        <level name="Genus"  enforced="true" infullname="true" rank="180"/>
-        <level name="Subgenus" enforced="false" infullname="false" rank="190"/>
-        <level name="Species" enforced="true" infullname="true" rank="220"/>
-        <level name="Subspecies" enforced="false" infullname="true" rank="230" />	
+        <level name="Life" enforced="true" infullname="false" rank="0">
+              <locale lang="pt" country="" var="" text="Vida"/>
+        </level>
+        <level name="Kingdom" enforced="true" infullname="false" rank="10">
+              <locale lang="pt" country="" var="" text="Reino"/>
+        </level>
+        <level name="Phylum" enforced="true" infullname="false" rank="30">
+              <locale lang="pt" country="" var="" text="Filo"/>
+        </level>
+        <level name="Class" enforced="true" infullname="false" rank="60">
+              <locale lang="pt" country="" var="" text="Classe"/>
+        </level>
+        <level name="Subclass" enforced="false" infullname="false" rank="70">
+              <locale lang="pt" country="" var="" text="Subclasse"/>
+        </level>
+        <level name="Superorder" enforced="false" infullname="false" rank="90">
+              <locale lang="pt" country="" var="" text="Superordem"/>
+        </level>
+        <level name="Order" enforced="true" infullname="false" rank="100">
+              <locale lang="pt" country="" var="" text="Ordem"/>
+        </level>
+        <level name="Suborder" enforced="false" infullname="false" rank="110">
+              <locale lang="pt" country="" var="" text="Subordem"/>
+        </level>
+        <level name="Family" enforced="true" infullname="false" rank="140">
+              <locale lang="pt" country="" var="" text="Família"/>
+        </level>
+        <level name="Subfamily" enforced="false" infullname="false" rank="150">
+              <locale lang="pt" country="" var="" text="Subamília"/>
+        </level> 
+        <level name="Tribe" enforced="false" infullname="false" rank="160">
+              <locale lang="pt" country="" var="" text="Tribo"/>
+        </level>
+        <level name="Subtribe" enforced="false" infullname="false" rank="170">
+              <locale lang="pt" country="" var="" text="Subtribo"/>
+        </level>
+        <level name="Genus"  enforced="true" infullname="true" rank="180">
+              <locale lang="pt" country="" var="" text="Género"/>
+        </level>
+        <level name="Subgenus" enforced="false" infullname="false" rank="190">
+              <locale lang="pt" country="" var="" text="Subgénero"/>
+        </level>
+        <level name="Species" enforced="true" infullname="true" rank="220">
+              <locale lang="pt" country="" var="" text="Espécie"/>
+        </level>
+        <level name="Subspecies" enforced="false" infullname="true" rank="230">
+              <locale lang="pt" country="" var="" text="Subespécie"/>
+        </level>	
     </treedef>
 	
-	<nodes>
-		<node name="Animalia" rank="10">
-			<node name="Chordata" rank="30">
-				<node name="Actinopterygii" rank="60">
-					<node name="Perciformes" rank="100">
-						<node name="Percidae" rank="140">
-							<node name="Ammocrypta" common="sand darters" rank="180">
-								<node name="beanii" common="naked sand darter" rank="220"/>
-							</node>
-						</node>
-						<node name="Carangidae" rank="140">
-							<node name="Caranx" common="" rank="180">
-								<node name="bartholomaei" common="yellow jack" rank="220"/>
-							</node>
-						</node>
-					</node>
-				</node>
-			</node>
-		</node>
-    </nodes> 
+	<nodes/>
 </tree>

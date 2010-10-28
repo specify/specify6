@@ -1,39 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tree>
-
-	<treedef>
-		<level name="Life" enforced="false" infullname="false" rank="0"/>
-		<level name="Kingdom" enforced="true" infullname="false" rank="10"/>
-		<level name="Phylum" enforced="true" infullname="false" rank="30"/>
-		<level name="Subphylum" enforced="false" infullname="false" rank="40" /> 		
-		<level name="Class" enforced="true" infullname="false" rank="60"/>
-		<level name="Order" enforced="true" infullname="false" rank="100"/>
-		<level name="Family" enforced="true" infullname="false" rank="140"/>
-		<level name="Subfamily" enforced="false" infullname="false" rank="150" /> 
-		<level name="Genus"  enforced="true" infullname="true" rank="180"/>
-		<level name="Species" enforced="true" infullname="true" rank="220"/>
-		<level name="Subspecies" enforced="false" infullname="true" rank="230" /> 
-		
+    <treedef>
+        <level name="Life" enforced="true" infullname="false" rank="0">
+              <locale lang="pt" country="" var="" text="Vida"/>
+        </level>
+        <level name="Kingdom" enforced="true" infullname="false" rank="10">
+              <locale lang="pt" country="" var="" text="Reino"/>
+        </level>
+        <level name="Phylum" enforced="true" infullname="false" rank="30">
+              <locale lang="pt" country="" var="" text="Filo"/>
+        </level>
+        <level name="Subphylum" enforced="true" infullname="false" rank="40">
+              <locale lang="pt" country="" var="" text="Subfilo"/>
+        </level>
+        <level name="Class" enforced="true" infullname="false" rank="60">
+              <locale lang="pt" country="" var="" text="Classe"/>
+        </level>
+        <level name="Order" enforced="true" infullname="false" rank="100">
+              <locale lang="pt" country="" var="" text="Ordem"/>
+        </level>
+        <level name="Family" enforced="true" infullname="false" rank="140">
+              <locale lang="pt" country="" var="" text="Família"/>
+        </level>
+        <level name="Subfamily" enforced="false" infullname="false" rank="150">
+              <locale lang="pt" country="" var="" text="Subfamília"/>
+        </level>
+        <level name="Genus"  enforced="true" infullname="true" rank="180">
+              <locale lang="pt" country="" var="" text="Género"/>
+        </level>
+        <level name="Species" enforced="true" infullname="true" rank="220">
+              <locale lang="pt" country="" var="" text="Espécie"/>
+        </level>
+        <level name="Subspecies" enforced="false" infullname="true" rank="230">
+              <locale lang="pt" country="" var="" text="Subespécie"/>
+        </level>
     </treedef>
 	
-	<nodes>
-		<node name="Animalia" rank="10">
-			<node name="Chordata" rank="30">
-				<node name="Aves" rank="60">
-					<node name="Galliformes" rank="100">
-						<node name="Megapodiidae" rank="140">
-							<node name="Leipoa" rank="180">
-								<node name="ocellata" rank="220"/>
-							</node>
-						</node>
-						<node name="Numididae" rank="140">
-							<node name="Agelastes" common="" rank="180">
-								<node name="meleagrides" rank="220"/>
-							</node>
-						</node>
-					</node>
-				</node>
-			</node>
-		</node>
-    </nodes> 
+	<nodes/>
 </tree>
