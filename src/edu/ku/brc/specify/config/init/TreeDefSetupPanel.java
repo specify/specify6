@@ -37,6 +37,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -54,6 +55,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -61,6 +63,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.thoughtworks.xstream.XStream;
 
+import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.DisciplineType.STD_DISCIPLINES;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
@@ -246,6 +249,8 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
             fileName = "common" + File.separator + "storage_init.xml";
         }
         
+        Locale currLocale = SchemaI18NService.getCurrentLocale();
+        
         File file = getConfigDir(fileName);
         if (file.exists())
         {
@@ -259,6 +264,30 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
                     int     rank         = getAttr(level, "rank", -1);
                     boolean enforced     = getAttr(level, "enforced", false);
                     boolean isInFullName = getAttr(level, "infullname", false);
+                    
+                    String text = null;
+                    for (Object localeObj : level.selectNodes("locale"))
+                    {
+                        Element locale  = (Element)localeObj;
+                        String  lang    = getAttr(locale, "lang", null);
+                        String  country = getAttr(locale, "country", null);
+                        String  var     = getAttr(locale, "var", null);
+                        
+                        if (StringUtils.isNotEmpty(lang) && StringUtils.isNotEmpty(currLocale.getLanguage()) && lang.equals(currLocale.getLanguage()))
+                        {
+                            text = getAttr(locale, "text", null);
+                            if (StringUtils.isNotEmpty(country) && StringUtils.isNotEmpty(currLocale.getCountry()) && country.equals(currLocale.getCountry()))
+                            {
+                                text = getAttr(locale, "text", null);
+                                if (StringUtils.isNotEmpty(var) && StringUtils.isNotEmpty(currLocale.getVariant()) && var.equals(currLocale.getVariant()))
+                                {
+                                    text = getAttr(locale, "text", null);
+                                }
+                            }
+                        }
+                    }
+                    name = StringUtils.isNotEmpty(text) ? text : name;
+                    
                     if (rank > -1)
                     {
                         boolean required = false;
