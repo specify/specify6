@@ -2766,8 +2766,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         String language = AppPreferences.getLocalPrefs().get("locale.lang", null); //$NON-NLS-1$
         if (language != null)
         {
-            String country  = AppPreferences.getLocalPrefs().get("locale.country", null); //$NON-NLS-1$
-            String variant  = AppPreferences.getLocalPrefs().get("locale.var",     null); //$NON-NLS-1$
+            String country  = AppPreferences.getLocalPrefs().get("locale.country", ""); //$NON-NLS-1$
+            String variant  = AppPreferences.getLocalPrefs().get("locale.var",     ""); //$NON-NLS-1$
             
             Locale prefLocale = new Locale(language, country, variant);
             
