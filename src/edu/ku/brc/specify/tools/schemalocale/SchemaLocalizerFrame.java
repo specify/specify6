@@ -615,6 +615,9 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                     e.printStackTrace();
                 }
                 
+                AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+                localPrefs.setDirPath(UIRegistry.getAppDataDir());
+                
                 System.setProperty(AppContextMgr.factoryName,          "edu.ku.brc.specify.config.SpecifyAppContextMgr");      // Needed by AppContextMgr //$NON-NLS-1$
                 System.setProperty(SchemaI18NService.factoryName,      "edu.ku.brc.specify.config.SpecifySchemaI18NService");  // Needed for Localization and Schema //$NON-NLS-1$
                 System.setProperty(UIFieldFormatterMgr.factoryName,    "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");    // Needed for CatalogNumbering //$NON-NLS-1$
