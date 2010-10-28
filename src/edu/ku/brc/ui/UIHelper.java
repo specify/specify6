@@ -2860,7 +2860,7 @@ public final class UIHelper
      */
     private static String getSysVersion(Element root, final String nodeName)
     {
-        for (Object obj : root.selectNodes("/config/variables/" + nodeName)) //$NON-NLS-1$
+        for (Object obj : root.selectNodes("/config/" + nodeName)) //$NON-NLS-1$
         {
             Element varObj = (Element)obj;
             String name = XMLHelper.getAttr(varObj, "name", null); //$NON-NLS-1$
@@ -2881,12 +2881,12 @@ public final class UIHelper
         Element root = XMLHelper.readDOMFromConfigDir(".." + File.separator + ".install4j" + File.separator + "i4jparams.conf");
         if (root != null)
         {
-            String sysVersion = getSysVersion(root, "variable"); // Install4j Version 4
+            String sysVersion = getSysVersion(root, "variables/variable"); // Install4j Version 4
             if (StringUtils.isNotEmpty(sysVersion))
             {
                 return sysVersion;
             }
-            sysVersion = getSysVersion(root, "compilerVariables"); // Install4j Version 5
+            sysVersion = getSysVersion(root, "compilerVariables/variable"); // Install4j Version 5
             if (StringUtils.isNotEmpty(sysVersion))
             {
                 return sysVersion;

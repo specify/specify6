@@ -264,6 +264,7 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
                     int     rank         = getAttr(level, "rank", -1);
                     boolean enforced     = getAttr(level, "enforced", false);
                     boolean isInFullName = getAttr(level, "infullname", false);
+
                     String  title        = name;
                     
                     String text = null;
@@ -409,7 +410,7 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
             {
                 subbdlr.setLength(0);
                 subbdlr.append("<i>");
-                subbdlr.append(row.getDefName());
+                subbdlr.append(row.getTitle());
                 subbdlr.append("</i>");
                 subbdlr.append(row.getSeparator());
                 lastSep = row.getSeparator();
