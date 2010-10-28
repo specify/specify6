@@ -264,6 +264,7 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
                     int     rank         = getAttr(level, "rank", -1);
                     boolean enforced     = getAttr(level, "enforced", false);
                     boolean isInFullName = getAttr(level, "infullname", false);
+                    String  title        = name;
                     
                     String text = null;
                     for (Object localeObj : level.selectNodes("locale"))
@@ -275,18 +276,17 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
                         
                         if (StringUtils.isNotEmpty(lang) && StringUtils.isNotEmpty(currLocale.getLanguage()) && lang.equals(currLocale.getLanguage()))
                         {
-                            text = getAttr(locale, "text", null);
+                            title = getAttr(locale, "text", null);
                             if (StringUtils.isNotEmpty(country) && StringUtils.isNotEmpty(currLocale.getCountry()) && country.equals(currLocale.getCountry()))
                             {
-                                text = getAttr(locale, "text", null);
+                                title = getAttr(locale, "text", null);
                                 if (StringUtils.isNotEmpty(var) && StringUtils.isNotEmpty(currLocale.getVariant()) && var.equals(currLocale.getVariant()))
                                 {
-                                    text = getAttr(locale, "text", null);
+                                    title = getAttr(locale, "text", null);
                                 }
                             }
                         }
                     }
-                    name = StringUtils.isNotEmpty(text) ? text : name;
                     
                     if (rank > -1)
                     {
@@ -303,7 +303,7 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
                             required = rank == 0;
                         }
                         String sep = classType == TaxonTreeDef.class ? " " : ", ";
-                        treeDefList.add(new TreeDefRow(name, rank, required, enforced, required && isInFullName, required || rank == 0, sep));
+                        treeDefList.add(new TreeDefRow(name, title, rank, required, enforced, required && isInFullName, required || rank == 0, sep));
                     }
                 }
                 
@@ -510,7 +510,7 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
             switch (column)
             {
                 case 0: 
-                    return trd.getDefName();
+                    return trd.getTitle();
                     
                 case 1: 
                     return trd.isIncluded();

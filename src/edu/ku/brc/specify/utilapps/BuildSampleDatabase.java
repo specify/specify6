@@ -1283,6 +1283,7 @@ public class BuildSampleDatabase
                 gtdi.setTreeDef(geoTreeDef);
                 geoTreeDef.getTreeDefItems().add(gtdi);
                 gtdi.setName(row.getDefName());
+                gtdi.setTitle(row.getTitle());
                 gtdi.setRankId(row.getRank());
                 gtdi.setParent(parent);
                 gtdi.setFullNameSeparator(row.getSeparator());
@@ -1351,13 +1352,14 @@ public class BuildSampleDatabase
                                 if (i < treeDefList.size() && entry.getRank() < treeDefList.get(i).getRank())
                                 {
                                     log.debug(String.format("Adding '%s' as rank %d.", colName, entry.getRank()));
-                                    TreeDefRow newRow = new TreeDefRow(entry.getTitle(), 
-                                                                        entry.getRank(),
-                                                                        true,   // included
-                                                                        false,  // enforced
-                                                                        false,  // is in Full Name 
-                                                                        false,  // is required 
-                                                                        ",");
+                                    TreeDefRow newRow = new TreeDefRow(entry.getName(), 
+                                                                       entry.getTitle(), 
+                                                                       entry.getRank(),
+                                                                       true,   // included
+                                                                       false,  // enforced
+                                                                       false,  // is in Full Name 
+                                                                       false,  // is required 
+                                                                       ",");
                                     treeDefList.insertElementAt(newRow, i);
                                     break;
                                 }
@@ -1375,7 +1377,7 @@ public class BuildSampleDatabase
                 
                 for (TreeDefRow row : treeDefList)
                 {
-                    log.debug(row.getDefName()+"  "+ row.getRank());
+                    log.debug(row.getDefName()+"  "+ row.getTitle()+"  "+ row.getRank());
                 }
             }
             
@@ -1394,6 +1396,7 @@ public class BuildSampleDatabase
                     ttdi.setTreeDef(taxonTreeDef);
                     taxonTreeDef.getTreeDefItems().add(ttdi);
                     ttdi.setName(row.getDefName());
+                    ttdi.setTitle(row.getTitle());
                     ttdi.setRankId(row.getRank());
                     ttdi.setParent(parent);
                     ttdi.setFullNameSeparator(row.getSeparator());
@@ -1462,6 +1465,7 @@ public class BuildSampleDatabase
                     stdi.setTreeDef(storageTreeDef);
                     storageTreeDef.getTreeDefItems().add(stdi);
                     stdi.setName(row.getDefName());
+                    stdi.setTitle(row.getTitle());
                     stdi.setRankId(row.getRank());
                     stdi.setParent(parent);
                     stdi.setFullNameSeparator(row.getSeparator());

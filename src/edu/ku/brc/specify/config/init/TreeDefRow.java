@@ -32,6 +32,7 @@ import com.thoughtworks.xstream.XStream;
 public class TreeDefRow 
 {
     protected String  defName;
+    protected String  title;
     protected int     rank;
     protected boolean isIncluded;
     protected boolean isEnforced;
@@ -45,8 +46,9 @@ public class TreeDefRow
      * @param isEnforced
      * @param isInFullName
      */
-    public TreeDefRow(String defName, 
-                      int rank, 
+    public TreeDefRow(String  defName, 
+                      String  title,
+                      int     rank, 
                       boolean isIncluded, 
                       boolean isEnforced, 
                       boolean isInFullName, 
@@ -54,13 +56,14 @@ public class TreeDefRow
                       String separator)
     {
         super();
-        this.defName = defName;
-        this.rank = rank;
+        this.defName    = defName;
+        this.title      = title;
+        this.rank       = rank;
         this.isIncluded = isIncluded;
         this.isEnforced = isEnforced;
         this.isInFullName = isInFullName;
-        this.isRequired = isRequired;
-        this.separator = separator;
+        this.isRequired   = isRequired;
+        this.separator   = separator;
     }
     /**
      * @return the defName
@@ -141,6 +144,21 @@ public class TreeDefRow
     {
         this.isIncluded = isIncluded;
     }
+    
+    /**
+     * @return the title
+     */
+    public String getTitle()
+    {
+        return title;
+    }
+    /**
+     * @param title the title to set
+     */
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
     /**
      * Configures the XStream for I/O.
      * @param xstream the stream
@@ -154,5 +172,6 @@ public class TreeDefRow
         xstream.useAttributeFor(TreeDefRow.class, "isInFullName");
         xstream.useAttributeFor(TreeDefRow.class, "isRequired");
         xstream.useAttributeFor(TreeDefRow.class, "separator");
+        xstream.useAttributeFor(TreeDefRow.class, "title");
     }
 }
