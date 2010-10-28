@@ -5,7 +5,7 @@
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="./localization_en.utf8" />
       <additionalLanguages>
-        <language id="pt_BR" customLocalizationFile="./localization_pt_BR.utf8" />
+        <!-- <language id="pt_BR" customLocalizationFile="./localization_pt_BR.utf8" /> -->
         <language id="pt" customLocalizationFile="./localization_pt.utf8" />
       </additionalLanguages>
     </languages>
@@ -1818,6 +1818,7 @@ if (wizardContext != null) {
     </unixInstaller>
   </mediaSets>
   <buildIds buildAll="false">
+    <mediaSet refId="176" />
     <mediaSet refId="179" />
   </buildIds>
   <buildOptions verbose="false" faster="false" debug="false" />
