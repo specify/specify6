@@ -920,7 +920,7 @@ public class BuildSampleDatabase
             
             commitTx();
             
-            convertChronoStratFromXLS(gtpTreeDef); // does commits
+            convertChronoStratFromXLS(gtpTreeDef, userAgent); // does commits
         }
         
         frame.incOverall();
@@ -9389,7 +9389,8 @@ public class BuildSampleDatabase
      * @param treeDef
      * @return
      */
-    public GeologicTimePeriod convertChronoStratFromXLS(final GeologicTimePeriodTreeDef treeDef)
+    public GeologicTimePeriod convertChronoStratFromXLS(final GeologicTimePeriodTreeDef treeDef, 
+                                                        final Agent userAgent)
     {
         startTx();
 
@@ -9437,6 +9438,7 @@ public class BuildSampleDatabase
         rootNode.setRankId(0);
         rootNode.setDefinition(treeDef);
         rootNode.setDefinitionItem(root);
+        rootNode.setCreatedByAgent(userAgent);
 
         int counter = 0;
         
@@ -9497,7 +9499,7 @@ public class BuildSampleDatabase
                 }
                 //System.out.println();
                 @SuppressWarnings("unused")
-                GeologicTimePeriod newGeo = convertChronoStratRecord(cells[0], cells[1], cells[2], cells[3], rootNode);
+                GeologicTimePeriod newGeo = convertChronoStratRecord(cells[0], cells[1], cells[2], cells[3], rootNode, userAgent);
     
                 counter++;
             }
@@ -9540,7 +9542,8 @@ public class BuildSampleDatabase
                                                           final String    country,
                                                           final String    state,
                                                           final String    county,
-                                                          final GeologicTimePeriod geoRoot)
+                                                          final GeologicTimePeriod geoRoot, 
+                                                          final Agent userAgent)
     {
         String levelNames[] = { continent, country, state, county };
         int levelsToBuild = 0;
@@ -9564,7 +9567,7 @@ public class BuildSampleDatabase
         GeologicTimePeriod prevLevelGeo = geoRoot;
         for (int i = 0; i < levelsToBuild; ++i)
         {
-            GeologicTimePeriod newLevelGeo = buildChronoStratLevel(levelNames[i], prevLevelGeo);
+            GeologicTimePeriod newLevelGeo = buildChronoStratLevel(levelNames[i], prevLevelGeo, userAgent);
             prevLevelGeo = newLevelGeo;
         }
 
@@ -9577,7 +9580,8 @@ public class BuildSampleDatabase
      * @return
      */
     protected GeologicTimePeriod buildChronoStratLevel(final String    nameArg,
-                                                       final GeologicTimePeriod parentArg)
+                                                       final GeologicTimePeriod parentArg, 
+                                                       final Agent userAgent)
     {
         String name = nameArg;
         if (name == null)
@@ -9605,6 +9609,8 @@ public class BuildSampleDatabase
         newGeo.setParent(parentArg);
         parentArg.addChild(newGeo);
         newGeo.setDefinition(parentArg.getDefinition());
+        newGeo.setCreatedByAgent(userAgent);
+        
         int newGeoRank = parentArg.getRankId() + 100;
         
         GeologicTimePeriodTreeDefItem defItem = parentArg.getDefinition().getDefItemByRank(newGeoRank);
