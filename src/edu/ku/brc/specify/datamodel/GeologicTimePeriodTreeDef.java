@@ -192,8 +192,10 @@ public class GeologicTimePeriodTreeDef extends BaseTreeDef<GeologicTimePeriod, G
 	/**
 	 * 
 	 */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "definition")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK, CascadeType.MERGE })
+    //@OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "definition")
+    //@Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK, CascadeType.MERGE })
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "definition") //$NON-NLS-1$
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
 	public Set<GeologicTimePeriod> getTreeEntries()
 	{
 		return this.treeEntries;
