@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.toycode;
 
+import java.util.List;
+
 import com.thoughtworks.xstream.XStream;
 
 
@@ -43,7 +45,7 @@ public class UpdateEntry
     protected String bundledJre;
     protected String archive     = "false";
     
-    protected String comment = "";
+    protected List<String> comment;
     
     /**
      * 
@@ -192,7 +194,8 @@ public class UpdateEntry
         xstream.useAttributeFor(UpdateEntry.class, "fileSize");
         xstream.useAttributeFor(UpdateEntry.class, "bundledJre");
         xstream.useAttributeFor(UpdateEntry.class, "archive");
+        
+        xstream.addImplicitCollection(UpdateEntry.class, "comment");
     }
-    
-    
+
 }
