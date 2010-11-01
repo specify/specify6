@@ -17,6 +17,7 @@ import java.util.Vector;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
@@ -25,9 +26,9 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.ui.treetables.TreeTableViewer.NODE_DROPTYPE;
 import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.IconManager.IconSize;
 
 /**
  * @author Administrator
@@ -232,26 +233,26 @@ public class DropDialog extends CustomDialog
 
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-						UIRegistry.displayInfoMsgDlgLocalized("<html>" + getOptionInfo(optNo, droppedFullName, droppedOnFullName,
-								moveDescKey, synDescKey, mergeDescKey) + "</html>");
+//						UIRegistry.displayInfoMsgDlgLocalized("<html>" + getOptionInfo(optNo, droppedFullName, droppedOnFullName,
+//								moveDescKey, synDescKey, mergeDescKey) + "</html>");
+						JTextArea ta = new JTextArea(getOptionInfo(optNo, droppedFullName, droppedOnFullName, moveDescKey, synDescKey, mergeDescKey));
+						ta.setLineWrap(true);
+						ta.setWrapStyleWord(true);
+						CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), UIRegistry.getResourceString("DropDlg.TreeActionDetailTitle"), true, 
+								CustomDialog.OK_BTN, ta, CustomDialog.OK_BTN);
+						cd.createUI();
 						
+						//the following size adjustments are a workaround for problems with height of cd defaulting to 9000.
+						//they work on linux. other os's may have not work so well.
+						//probably should add a scroller.
+						cd.setSize(cd.getWidth()*5, cd.getHeight());
+						cd.setSize(cd.getWidth(), cd.getWidth()/2);
+						UIHelper.centerAndShow(cd);
 					}
         			
         		};
         		JButton actInfoBtn = UIHelper.createIconBtn("InfoIcon", IconSize.Std16, getOptionInfoTT(opt), al);
         		actInfoBtn.setEnabled(true);
-//        		actInfoBtn.addActionListener(new ActionListener() {
-//
-//					@Override
-//					public void actionPerformed(ActionEvent arg0) {
-////						UIRegistry.showLocalizedMsg(getOptionInfo(optNo, droppedFullName, droppedOnFullName,
-////								moveDescKey, synDescKey, mergeDescKey));
-//						UIRegistry.displayInfoMsgDlgLocalized("<html>" + getOptionInfo(optNo, droppedFullName, droppedOnFullName,
-//								moveDescKey, synDescKey, mergeDescKey) + "</html>");
-//						
-//					}
-//        			
-//        		});
         		pb.add(actLbl, cc.xy(2, 1+(row + 1)*2));
         		pb.add(actInfoBtn, cc.xy(4, 1+(row + 1)*2));
         		row++;

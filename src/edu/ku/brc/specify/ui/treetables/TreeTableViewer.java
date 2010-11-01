@@ -20,7 +20,6 @@
 package edu.ku.brc.specify.ui.treetables;
 
 import static edu.ku.brc.ui.UIHelper.createLabel;
-import static edu.ku.brc.ui.UIHelper.createTextArea;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -61,12 +60,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
@@ -74,10 +71,6 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.record.formula.functions.T;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.core.SubPaneMgr;
@@ -3057,6 +3050,25 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 				@Override
 				protected Object doInBackground() throws Exception
 				{
+					SwingUtilities.invokeLater(new Runnable() {
+
+						/*
+						 * (non-Javadoc)
+						 * 
+						 * @see java.lang.Runnable#run()
+						 */
+						@Override
+						public void run()
+						{
+							UIRegistry
+									.writeGlassPaneMsg(
+											UIRegistry.getResourceString("TreeTableViewer.Merging"),
+											24);
+							hideChildren(oldParentNode);
+							hideChildren(droppedOnNode);
+						}
+
+					});
 			        try
 			        {
 			        	merger.mergeTrees(draggedNode.getId(), droppedOnNode.getId());
@@ -3069,9 +3081,21 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 
 				@Override
 				protected void done() {
+					SwingUtilities.invokeLater(new Runnable() {
+
+						/* (non-Javadoc)
+						 * @see java.lang.Runnable#run()
+						 */
+						@Override
+						public void run()
+						{
+							UIRegistry.clearGlassPaneMsg();
+						}
+						
+					});
 					try
 					{
-						treeDef.updateAllNodes(null, false, true);
+						treeDef.updateAllNodes(null, true, true);
 					} catch (Exception ex)
 					{
 						edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
@@ -3147,8 +3171,17 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	private boolean isMergeOK(final TreeNode droppedOnNode, 
 	                              final TreeNode draggedNode)
 	{
-		//return !(treeDef instanceof TaxonTreeDef);
-		return false;
+		if (treeDef instanceof TaxonTreeDef)
+		{
+			return false;
+		}
+		
+		//This is not strictly necessary, and 'cross-rank' merging could be useful for getting rid of unwanted 'sub' levels (subfamily, etc)
+		//But allowing cross-rank merges would require checking children to be sure parenting rules are not violated.
+		boolean ranksOK = droppedOnNode.getRank() == draggedNode.getRank();
+		return ranksOK;
+		
+		//return false;
 		
 		//rank - is higher into lower feasible? Do isEnforced rules need all the time anyway??
 		//accepted status ??? 
