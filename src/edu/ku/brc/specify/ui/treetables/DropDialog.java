@@ -273,7 +273,7 @@ public class DropDialog extends CustomDialog
 			setApplyLabel(getResourceString("TreeTableView.MOVE_NODE"));
 			okAction = NODE_DROPTYPE.SYNONIMIZE_NODE;
 			applyAction = NODE_DROPTYPE.MOVE_NODE;
-		} else if (whichBtns == MOVEMERGE) 
+		} else if (whichBtns == MOVEMERGE  && !isSynOK) 
 		{
 			setOkLabel(getResourceString("TreeTableView.MOVE_NODE"));
 			okAction = NODE_DROPTYPE.MOVE_NODE;

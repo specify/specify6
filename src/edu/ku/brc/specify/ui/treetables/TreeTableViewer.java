@@ -3171,10 +3171,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	private boolean isMergeOK(final TreeNode droppedOnNode, 
 	                              final TreeNode draggedNode)
 	{
-		if (treeDef instanceof TaxonTreeDef)
-		{
-			return false;
-		}
+//		if (treeDef instanceof TaxonTreeDef)
+//		{
+//			return false;
+//		}
 		
 		//This is not strictly necessary, and 'cross-rank' merging could be useful for getting rid of unwanted 'sub' levels (subfamily, etc)
 		//But allowing cross-rank merges would require checking children to be sure parenting rules are not violated.
