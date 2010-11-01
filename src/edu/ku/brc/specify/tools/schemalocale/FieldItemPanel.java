@@ -1153,7 +1153,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
     }
     
     /**
-     * 
+     * Gets all the Data from the form.
      */
     public boolean getAllDataFromUI()
     {
@@ -1226,11 +1226,15 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                     UIRegistry.showLocalizedMsg("SL_WARN_PL_CREATION");
                 }
                 
-            } else if (formatCombo != null)
+            }
+            
+            if (formatCombo != null)
             {
                 getFormatterFromUI(prevField);
                     
-            } else if (webLinkCombo != null && webLinkCombo.getSelectedIndex() > 0)
+            }
+            
+            if (webLinkCombo != null && webLinkCombo.getSelectedIndex() > 0)
             {
                 WebLinkDef wld = (WebLinkDef)webLinkCombo.getSelectedItem();
                 prevField.setWebLinkName(wld.getName());
