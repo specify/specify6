@@ -19,8 +19,6 @@
 */
 package edu.ku.brc.specify.utilapps;
 
-import static edu.ku.brc.helpers.XMLHelper.getAttr;
-
 import java.io.File;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
@@ -28,6 +26,9 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -36,14 +37,19 @@ import javax.swing.UIManager;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.dom4j.Element;
 
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
+import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBRelationshipInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.tools.datamodelgenerator.DatamodelGenerator;
+import edu.ku.brc.specify.datamodel.SpLocaleContainer;
+import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.DatamodelHelper;
 
 /**
@@ -56,8 +62,9 @@ import edu.ku.brc.util.DatamodelHelper;
  */
 public class CreateTextSchema
 {
-    protected static String specifyDescFileName  = "specify_desc_datamodel.xml";
-    protected static String schemaOutputHTMLName = "SpecifySchema.html";
+    private static Locale currLang  = new Locale("en");
+    
+    protected static String schemaOutputHTMLName = "SpecifySchema%s.html";
     protected static String NBSP                 = "&nbsp;";
     protected static String VERSION              =  "<!-- Version -->";
     
@@ -75,25 +82,32 @@ public class CreateTextSchema
         
     }
     
-    protected void processRel(final Element field, final boolean includeIndexCol)
+    /**
+     * @param field
+     * @param includeIndexCol
+     */
+    protected void processRel(final DBRelationshipInfo field, final boolean includeIndexCol)
     {
-        Element descE    = (Element)field.selectSingleNode("nameDesc");
-        String nameDesc  = descE != null ? descE.getStringValue() : "XXX";
-        String type      = getAttr(field, "type", NBSP);
-        String classname = getAttr(field, "classname", "&nbsp;&nbsp;");
-        if (classname.indexOf(".") > -1)
+        String  clsName = field.getClassName();
+        int     inx     = clsName.lastIndexOf('.');
+        clsName = inx > -1 ? clsName.substring(inx+1) : clsName;
+        clsName = clsName.toLowerCase();
+        
+        DBTableInfo toTable = DBTableIdMgr.getInstance().getInfoByTableName(clsName);
+        if (toTable != null)
         {
-            classname = StringUtils.substringAfterLast(classname, ".");
+            clsName = toTable.getTitle();
         }
+                
         po.write("<tr>\n");
         po.write("<td align=\"center\" colspan=\"2\">\n");
-        po.write(type);
+        po.write(field.getType().toString());
         po.write("</td>\n");
         po.write("<td align=\"center\" colspan=\""+(includeIndexCol ? 2 : 1)+"\">\n");
-        po.write(nameDesc);
+        po.write(field.getTitle());
         po.write("</td>\n");
         po.write("<td align=\"center\" colspan=\"1\">\n");
-        po.write(classname);
+        po.write(clsName);
         po.write("</td>\n");
         po.write("</tr>\n");
     }
@@ -102,53 +116,36 @@ public class CreateTextSchema
      * @param field
      * @param isID
      */
-    protected void processField(final Element field, final boolean isID, final boolean includeIndexCol)
+    protected void processField(final DBFieldInfo field, final boolean isID, final boolean includeIndexCol)
     {
-        String column = getAttr(field, "column", NBSP);
-        //String name = getAttr(field, "name", NBSP);
-        String type = getAttr(field, "type", NBSP);
-        String length = getAttr(field, "length", "&nbsp;&nbsp;");
-        //String updatable = getAttr(field, "updatable", NBSP);
-        //String required = getAttr(field, "required", NBSP);
-        //String unique = getAttr(field, "unique", NBSP);
-        //String indexed = getAttr(field, "indexed", NBSP);
-        String indexName = getAttr(field, "indexName", NBSP);
-        
-        Element descE   = (Element)field.selectSingleNode("desc");
-        String desc     = descE != null ? descE.getStringValue() : NBSP;
-        
-        descE   = (Element)field.selectSingleNode("nameDesc");
-        String nameDesc     = descE != null ? descE.getStringValue() : column;
-        
-        if (type.indexOf(".") > -1)
-        {
-            type = StringUtils.substringAfterLast(type, ".");
-        }
-
-        /*
-         * column="Text3" name="text3" type="java.lang.String" length="300" updatable="true" required="false" unique="false" indexed="false"
-         */
+        String  type = field.getType();
+        int     inx  = type.lastIndexOf('.');
+        type = inx > -1 ? type.substring(inx+1) : type;
         
         po.write("<tr>\n");
         po.write("<td align=\"center\">\n");
-        po.write(nameDesc);
+        po.write(field.getTitle());
         
         po.write("</td>\n");
         po.write("<td align=\"center\">\n");
         po.write(type.equals("text") ? "Memo" : type);
         po.write("</td>\n");
         po.write("        <td align=\"center\">\n");
-        po.write(length);
+        po.write(field.getLength() > -1 ? Integer.toString(field.getLength()) : NBSP);
         po.write("        </td>\n");
         
         if (includeIndexCol)
         {
             po.write("        <td align=\"center\">\n");
-            po.write(isID ? nameDesc : indexName);
+            po.write(isID ? field.getTitle() : field.getName());
             po.write("        </td>\n");
         }
+        if (field.getDescription() != null && field.getDescription().equals(field.getName()))
+        {
+            field.setDescription(null);
+        }
         po.write("<td align=\"left\">\n");
-        po.write(isID ? "Primary Key" : desc);
+        po.write(isID ? UIRegistry.getResourceString("PrimaryKey") : getStr(field.getDescription()));
         po.write("</td>\n");
         po.write("</tr>\n");
 
@@ -157,26 +154,24 @@ public class CreateTextSchema
     /**
      * @param tables
      */
-    protected void makeIndex(final Vector<DOMNode> tables)
+    protected void makeIndex(final Vector<DBTableInfo> tables)
     {
-        for (DOMNode tn : tables)
+        for (DBTableInfo tn : tables)
         {
-            String tableName = getAttr(tn.node, "table", "");
-            String nameDesc = ((Element)tn.node.selectSingleNode("nameDesc")).getStringValue();
-            po.write("<LI> <a href=\"#"+tableName+"\">"+nameDesc+"</a></LI>\n");
+            DBTableInfo tblInfo   = DBTableIdMgr.getInstance().getInfoByTableName(tn.getName());
+            po.write("<LI> <a href=\"#"+tn.getName()+"\">"+tblInfo.getTitle()+"</a></LI>\n");
         }
     }
     
     /**
      * @param tables
      */
-    protected void makeTableDesc(final Vector<DOMNode> tables)
+    protected void makeTableDesc(final Vector<DBTableInfo> tables)
     {
-        for (DOMNode tn : tables)
+        for (DBTableInfo tn : tables)
         {
-            String tableName = getAttr(tn.node, "table", "");
-            String nameDesc = ((Element)tn.node.selectSingleNode("nameDesc")).getStringValue();
-            po.write("<LI> <a href=\"#"+tableName+"\">"+nameDesc+"</a></LI>\n");
+            DBTableInfo tblInfo   = DBTableIdMgr.getInstance().getInfoByTableName(tn.getName());
+            po.write("<LI> <a href=\"#"+tn.getName()+"\">"+tblInfo.getTitle()+"</a></LI>\n");
         }
     }
     
@@ -184,104 +179,88 @@ public class CreateTextSchema
      * @param tables
      */
     @SuppressWarnings("unchecked")
-    protected void makeTableIndexes(final Vector<DOMNode> tables)
+    protected void makeTableIndexes(final Vector<DBTableInfo> tables)
     {
         
         po.write("    <tr>\n");
-        po.write("        <td class=\"hd\" colspan=\"1\">Index Name</td>\n");
-        po.write("        <td class=\"hd\" colspan=\"1\">Column Name</td>\n");
-        po.write("        <td class=\"hd\" colspan=\"1\">Table</td>\n");
+        po.write("        <td class=\"hd\" colspan=\"1\">"+UIRegistry.getResourceString("IndexName")+"</td>\n");
+        po.write("        <td class=\"hd\" colspan=\"1\">"+UIRegistry.getResourceString("ColumnName")+"</td>\n");
+        po.write("        <td class=\"hd\" colspan=\"1\">"+UIRegistry.getResourceString("Table")+"</td>\n");
         po.write("    </tr>\n");
         
-        for (DOMNode tn : tables)
+        for (DBTableInfo tn : tables)
         {
-            String nameDesc = ((Element)tn.node.selectSingleNode("nameDesc")).getStringValue();
-            String tableName = getAttr(tn.node, "table", "");
-            System.out.println("Indexing "+tableName);
+            System.out.println("Indexing "+tn.getName());
             
             Hashtable<String, String> colToTitle = new Hashtable<String, String>();
-            for (Element field : (List<Element>)tn.node.selectNodes("field"))
+            for (DBFieldInfo fi : tn.getFields())
             {
-                String column = getAttr(field, "column", NBSP);
-                Element descE   = (Element)field.selectSingleNode("nameDesc");
-                colToTitle.put(column, descE != null ? descE.getStringValue() : column);
+                colToTitle.put(fi.getColumn(), StringUtils.isNotEmpty(fi.getTitle()) ? fi.getTitle() : fi.getColumn());
             }
 
-            Vector<DOMNode> tableIndexes = new Vector<DOMNode>();
-            for (Element field : (List<Element>)tn.node.selectNodes("tableindex"))
+            if (tn.getTableIndexMap() != null)
             {
-                DOMNode fn = new DOMNode();
-                fn.node     = field;
-                fn.domName = getAttr(tn.node, "columnNames", "");
-                tableIndexes.add(fn);
-            }
-            Collections.sort(tableIndexes);
-
-            //String prevTbl = "";
-            for (DOMNode fn : tableIndexes)
-            {
-                String columnNames = getAttr(fn.node, "columnNames", "");
-                
-                String title = colToTitle.get(columnNames);
-                if (StringUtils.isNotEmpty(title))
+                Vector<String> keys = new Vector<String>(tn.getTableIndexMap().keySet());
+                Collections.sort(keys);
+                for (String key : keys)
                 {
-                    title = columnNames;
+                    String title = colToTitle.get(key);
+                    if (StringUtils.isNotEmpty(title))
+                    {
+                        title = key;
+                    }
+                    
+                    po.write("<tr>\n");
+                    po.write("<td align=\"center\">");
+                    po.write(tn.getTableIndexMap().get(key));
+                    po.write("</td>\n");
+                    po.write("<td align=\"center\">");
+                    po.write(key);
+                    po.write("</td>\n");
+                    po.write("<td align=\"center\">");
+                    //if (!tableName.equals(prevTbl))
+                    //{
+                        po.write("    <a href=\"#"+tn.getName()+"\">");
+                        po.write(tn.getTitle());
+                        po.write("</a>");
+                        //prevTbl = tableName;
+                    //} else
+                    //{
+                    //    po.write(NBSP);
+                    //}
+                    po.write("</td>\n");
+                    po.write("</tr>\n");
                 }
-                
-                String indexName = getAttr(fn.node, "indexName", "");
-                
-                po.write("<tr>\n");
-                po.write("<td align=\"center\">");
-                po.write(indexName);
-                po.write("</td>\n");
-                po.write("<td align=\"center\">");
-                po.write(columnNames);
-                po.write("</td>\n");
-                po.write("<td align=\"center\">");
-                //if (!tableName.equals(prevTbl))
-                //{
-                    po.write("    <a href=\"#"+tableName+"\">");
-                    po.write(nameDesc);
-                    po.write("</a>");
-                    //prevTbl = tableName;
-                //} else
-                //{
-                //    po.write(NBSP);
-                //}
-                po.write("</td>\n");
-                po.write("</tr>\n");
             }
-            
         }
+    }
+    
+    private String getStr(final String str)
+    {
+        return StringUtils.isNotEmpty(str) ? str : NBSP;
     }
     
     /**
      * @param tables
      */
-    protected void processDescs(final Vector<DOMNode> tables)
+    protected void processDescs(final Vector<DBTableInfo> tables)
     {
         
         po.write("    <tr>\n");
-        po.write("        <td class=\"hd\" colspan=\"1\">Table</td>\n");
-        po.write("        <td class=\"hd\" colspan=\"1\">Description</td>\n");
+        po.write("        <td class=\"hd\" colspan=\"1\">"+UIRegistry.getResourceString("Table")+"</td>\n");
+        po.write("        <td class=\"hd\" colspan=\"1\">"+UIRegistry.getResourceString("Description")+"</td>\n");
         po.write("    </tr>\n");
         
-        for (DOMNode tn : tables)
+        for (DBTableInfo tn : tables)
         {
-            String tableName = getAttr(tn.node, "table", "");
-            
-            Element descE    = (Element)tn.node.selectSingleNode("desc");
-            String  desc     = descE != null ? descE.getStringValue() : NBSP;
-            String  nameDesc = ((Element)tn.node.selectSingleNode("nameDesc")).getStringValue();
-            
             po.write("<tr>\n");
             po.write("<td nowrap=\"true\" align=\"left\">");
-            po.write("    <a href=\"#"+tableName+"\">");
-            po.write(nameDesc);
+            po.write("    <a href=\"#"+tn.getName()+"\">");
+            po.write(tn.getTitle());
             po.write("</a>");
             po.write("</td>\n");
             po.write("<td align=\"left\">");
-            po.write(desc);
+            po.write(getStr(tn.getDescription()));
             po.write("</td>\n");
             po.write("</tr>\n");
 
@@ -293,91 +272,77 @@ public class CreateTextSchema
      * @param tables
      */
     @SuppressWarnings({ "unchecked" })
-    protected void processTables(final Vector<DOMNode> tables, final boolean includeIndexCol)
+    protected void processTables(final Vector<DBTableInfo> tables, final boolean includeIndexCol)
     {
-        for (DOMNode tn : tables)
+        for (DBTableInfo tn : tables)
         {
-            //String classname = getAttr(tn.node, "classname", "");
-            String tableName = getAttr(tn.node, "table", "");
+            System.out.println("Processing "+tn.getName());
             
-            System.out.println("Processing "+tableName);
-            
-            Element descE    = (Element)tn.node.selectSingleNode("desc");
-            String  desc     = descE != null ? descE.getStringValue() : "";
-            String  nameDesc = ((Element)tn.node.selectSingleNode("nameDesc")).getStringValue();
-            
-            
-            po.write("<a name=\""+tableName+"\"></a>\n");
+            po.write("<a name=\""+tn.getName()+"\"></a>\n");
             po.write("<table class=\"tbl\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\"\n");
             po.write("    width=\"75%\">\n");
     
             po.write("    <tr>\n");
             po.write("        <td colspan=\"5\" class=\"hdbig\">\n");
-            po.write("            "+nameDesc+"\n");
+            po.write("            "+tn.getTitle()+"\n");
     
-            if (StringUtils.isNotEmpty(desc))
+            if (StringUtils.isNotEmpty(tn.getDescription()))
             {
                 po.write("            <br />\n");
                 po.write("            <div class=\"desc\">\n");
-                po.write("                "+desc+"\n");
+                po.write("                "+tn.getDescription()+"\n");
                 po.write("            </div>\n");
             }
             po.write("        </td>\n");
             po.write("    </tr>\n");
             po.write("    <tr>\n");
-            po.write("        <td class=\"hd\">Field</td>\n");
-            po.write("        <td class=\"hd\">Type</td>\n");
-            po.write("        <td class=\"hd\">Length</td>\n");
+            po.write("        <td class=\"hd\">"+UIRegistry.getResourceString("Field")+"</td>\n");
+            po.write("        <td class=\"hd\">"+UIRegistry.getResourceString("Type")+"</td>\n");
+            po.write("        <td class=\"hd\">"+UIRegistry.getResourceString("Length")+"</td>\n");
             
             if (includeIndexCol)
             {
-                po.write("        <td class=\"hd\">Index Name</td>\n");
+                po.write("        <td class=\"hd\">"+UIRegistry.getResourceString("IndexName")+"</td>\n");
             }
-            po.write("        <td class=\"hd\">Description</td>\n");
+            po.write("        <td class=\"hd\">"+UIRegistry.getResourceString("Descriptions")+"</td>\n");
             po.write("    </tr>\n");
     
-            processField((Element)tn.node.selectObject("id"), true, includeIndexCol);
+            //DBFieldInfo primaryIndexField = tn.getFieldByColumnName(tn.getIdColumnName());
+            DBFieldInfo primaryField = new DBFieldInfo(tn, tn.getIdColumnName(), tn.getIdColumnName(), tn.getIdType(), -1, true, false, true, true, false, null);
+            processField(primaryField, true, includeIndexCol);
     
-            Vector<DOMNode> fields = new Vector<DOMNode>();
-            for (Element field : (List<Element>)tn.node.selectNodes("field"))
+            for (DBFieldInfo fn : tn.getFields())
             {
-                DOMNode fn = new DOMNode();
-                fn.node = field;
-                fn.domName = ((Element)field.selectSingleNode("nameDesc")).getStringValue();
-                fields.add(fn);
-            }
-            Collections.sort(fields);
-            for (DOMNode fn : fields)
-            {
-                processField(fn.node, false, includeIndexCol);
+                processField(fn, false, includeIndexCol);
             }
             po.write("    <tr>\n");
-            po.write("        <td colspan=\"5\" class=\"subhead\">Relationships</td>\n");
+            po.write("        <td colspan=\"5\" class=\"subhead\">"+UIRegistry.getResourceString("Relationships")+"</td>\n");
             po.write("    </tr>\n");
             po.write("    <tr>\n");
-            po.write("        <td class=\"hd\" colspan=\"2\">Type</td>\n");
-            po.write("        <td class=\"hd\" colspan=\""+(includeIndexCol ? 2 : 1)+"\">Name</td>\n");
-            po.write("        <td class=\"hd\" colspan=\"1\">To Table</td>\n");
+            po.write("        <td class=\"hd\" colspan=\"2\">"+UIRegistry.getResourceString("Type")+"</td>\n");
+            po.write("        <td class=\"hd\" colspan=\""+(includeIndexCol ? 2 : 1)+"\">"+UIRegistry.getResourceString("Name")+"</td>\n");
+            po.write("        <td class=\"hd\" colspan=\"1\">"+UIRegistry.getResourceString("ToTable")+"</td>\n");
             po.write("    </tr>\n");
     
-            Vector<DOMNode> rels = new Vector<DOMNode>();
-            for (Element rel : (List<Element>)tn.node.selectNodes("relationship"))
+            for (DBRelationshipInfo rn : tn.getRelationships())
             {
-                DOMNode rn = new DOMNode();
-                rn.node = rel;
-                rn.domName = ((Element)rel.selectSingleNode("nameDesc")).getStringValue();
-                rels.add(rn);
-            }
-            Collections.sort(rels);
-            for (DOMNode rn : rels)
-            {
-                processRel(rn.node, includeIndexCol);
+                processRel(rn, includeIndexCol);
             }
     
             po.write("</table>\n");
             po.write("<br />\n");
             po.write("<br />\n");
         }
+    }
+    
+    private String adjustFileNameForLocale(final String fileName)
+    {
+        if (currLang.getLanguage().equals("en"))
+        {
+            return String.format(fileName, "");
+        } 
+        
+        return String.format(fileName, "_" + currLang.getLanguage());
     }
     
     /**
@@ -388,28 +353,23 @@ public class CreateTextSchema
     {
         try
         {
-            File oFile = new File(schemaOutputHTMLName);
+            File oFile = new File(adjustFileNameForLocale(schemaOutputHTMLName));
             po = new PrintWriter(oFile);
             
             System.out.println("Opening "+XMLHelper.getConfigDirPath(DatamodelHelper.getOutputFileName()));
             System.out.println("Writing "+oFile.getAbsolutePath());
             
-            Element root = XMLHelper.readDOMFromConfigDir(DatamodelHelper.getOutputFileName());
-            if (root == null)
-            {
-                System.err.println("File ["+XMLHelper.getConfigDirPath(DatamodelHelper.getOutputFileName())+"] couldn't be read.");
-            }
-            Vector<DOMNode> tables = new Vector<DOMNode>();
-            for (Element table : (List<Element>)root.selectNodes("/database/table"))
-            {
-                DOMNode tn = new DOMNode();
-                tn.node = table;
-                tn.domName = ((Element)table.selectSingleNode("nameDesc")).getStringValue();
-                tables.add(tn);
-            }
+            
+            Vector<DBTableInfo> tables = DBTableIdMgr.getInstance().getTables();
             Collections.sort(tables);
             
-            List<String> lines = FileUtils.readLines(new File(basePath+"SpecifySchemaTemplate.html"));
+            SchemaLocalizerXMLHelper schemaXMLHelper = new SchemaLocalizerXMLHelper(SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
+            schemaXMLHelper.load(true);
+            schemaXMLHelper.setTitlesIntoSchema();
+            
+            //SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineId, DBTableIdMgr.getInstance(), Locale.getDefault());
+            
+            List<String> lines = FileUtils.readLines(new File(basePath+ adjustFileNameForLocale("SpecifySchemaTemplate%s.html")));
             for (String line : lines)
             {
                 if (StringUtils.contains(line, "<!-- Table Defs -->"))
@@ -445,6 +405,8 @@ public class CreateTextSchema
             po.flush();
             po.close();
             
+            System.out.println(oFile.getAbsolutePath());
+            
         } catch (Exception ex)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
@@ -459,9 +421,6 @@ public class CreateTextSchema
      */
     public static void main(String[] args)
     {
-        DatamodelGenerator datamodelWriter = new DatamodelGenerator(true);
-        datamodelWriter.process(specifyDescFileName);
-        
         SwingUtilities.invokeLater(new Runnable() {
             @SuppressWarnings("synthetic-access") //$NON-NLS-1$
           public void run()
@@ -485,33 +444,26 @@ public class CreateTextSchema
                 
                 String schemaVersion = JOptionPane.showInputDialog("Enter Schema Version:"); 
                 
+                Locale.setDefault(currLang);
+                
+                try
+                {
+                    ResourceBundle.getBundle("resources", Locale.getDefault()); //$NON-NLS-1$
+                    
+                } catch (MissingResourceException ex)
+                {
+                    Locale.setDefault(Locale.ENGLISH);
+                    UIRegistry.setResourceLocale(Locale.ENGLISH);
+                }
+                
                 CreateTextSchema cts = new CreateTextSchema();
                 cts.process(schemaVersion);
                 
-                File file = XMLHelper.getConfigDir(specifyDescFileName);
-                file.delete();
+                //File file = XMLHelper.getConfigDir(specifyDescFileName);
+                //file.delete();
     
                 JOptionPane.showMessageDialog(null, "Done");
           }
         });
     }
-    
-    //------------------------------------------------------------------
-    //
-    //------------------------------------------------------------------
-    private class DOMNode implements Comparable<DOMNode>
-    {
-        public Element node;
-        public String  domName;
-        
-        /* (non-Javadoc)
-         * @see java.lang.Comparable#compareTo(java.lang.Object)
-         */
-        public int compareTo(DOMNode t)
-        {
-            return domName.compareTo(t.domName);
-        }
-        
-    }
-
 }

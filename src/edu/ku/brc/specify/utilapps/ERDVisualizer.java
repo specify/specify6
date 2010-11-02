@@ -36,6 +36,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -72,6 +73,7 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
+import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -84,6 +86,8 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class ERDVisualizer extends JFrame
 {
+    protected static Locale currLang  = new Locale("en");
+    
     protected static boolean doShadow = true;
     
     protected String contentTag = "<!-- Content -->";
@@ -109,20 +113,24 @@ public class ERDVisualizer extends JFrame
     public ERDVisualizer()
     {
         boolean showTreeHierarchy = false;
-        boolean doGerman          = false;
         
-        if (doGerman)
-        {
-            Locale german = new Locale("de", "", "");
-            Locale.setDefault(german);
-            UIRegistry.setResourceLocale(german);
-        }
+        Locale.setDefault(currLang);
+        UIRegistry.setResourceLocale(currLang);
+        
+        Vector<DBTableInfo> tables = DBTableIdMgr.getInstance().getTables();
+        Collections.sort(tables);
+        
+        SchemaLocalizerXMLHelper schemaXMLHelper = new SchemaLocalizerXMLHelper(SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
+        schemaXMLHelper.load(true);
+        schemaXMLHelper.setTitlesIntoSchema();
         
         ERDTable.setDisplayType(showTreeHierarchy ? ERDTable.DisplayType.Title : ERDTable.DisplayType.All);
         
         tblTracker = new TableTracker();
         
-        final File localSchemaDir = new File("schema");
+        String schemDirName = adjustFileNameForLocale("schema%s");
+        
+        final File localSchemaDir = new File(schemDirName);
         if (!localSchemaDir.exists())
         {
             localSchemaDir.mkdir();
@@ -173,7 +181,7 @@ public class ERDVisualizer extends JFrame
             {
                 if (!f.getName().startsWith("."))
                 {
-                    File dst = new File(UIRegistry.getDefaultWorkingPath() + File.separator + "schema" + File.separator + f.getName());
+                    File dst = new File(UIRegistry.getDefaultWorkingPath() + File.separator + schemDirName + File.separator + f.getName());
                     if (!FilenameUtils.getExtension(f.getName()).toLowerCase().equals("html"))
                     {
                         FileUtils.copyFile(f, dst);
@@ -499,6 +507,17 @@ public class ERDVisualizer extends JFrame
         }
         
         createIndexFile();
+    }
+    
+    
+    private String adjustFileNameForLocale(final String fileName)
+    {
+        if (currLang.getLanguage().equals("en"))
+        {
+            return String.format(fileName, "");
+        } 
+        
+        return String.format(fileName, "_" + currLang.getLanguage());
     }
     
     /**

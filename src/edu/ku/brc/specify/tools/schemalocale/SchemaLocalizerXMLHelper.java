@@ -1586,9 +1586,6 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     /**
      * 
      */
-    /**
-     * 
-     */
     public void setTitlesIntoSchema()
     {
         Locale locale = Locale.getDefault();
@@ -1614,10 +1611,14 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                         {
                             fi.setTitle(itemStr.getText());
                         }
+                        itemStr = getNameForLocale(item.getDescs(), locale);
+                        if (itemStr != null)
+                        {
+                            fi.setDescription(itemStr.getText());
+                        }
                     }
                 }
             }
         }
     }
-
 }

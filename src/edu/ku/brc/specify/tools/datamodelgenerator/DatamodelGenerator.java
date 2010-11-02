@@ -93,7 +93,7 @@ public class DatamodelGenerator
     
     protected boolean      includeDesc       = false;
     protected boolean      doRelsToZeroToOne = true;
-    protected boolean      doGerman          = false;
+    protected boolean      doPT              = true;
     protected boolean      showDescErrors    = false;
     protected boolean      showDebug         = false;
 
@@ -111,9 +111,9 @@ public class DatamodelGenerator
     {
         if (includeDesc)
         {
-            if (doGerman)
+            if (doPT)
             {
-                SchemaI18NService.setCurrentLocale(new Locale("de", "", ""));
+                SchemaI18NService.setCurrentLocale(new Locale("pt", "", ""));
             }
             
             schemaLocalizer = new SchemaLocalizerXMLHelper(SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
