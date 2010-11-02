@@ -143,7 +143,6 @@ import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.ResultSetController;
 import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
-import edu.ku.brc.af.ui.forms.formatters.TypeSearchListEditor;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.forms.validation.TypeSearchForQueryFactory;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
@@ -158,6 +157,7 @@ import edu.ku.brc.dbsupport.QueryExecutor;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.exceptions.ExceptionTracker;
 import edu.ku.brc.helpers.Encryption;
+import edu.ku.brc.helpers.ProxyHelper;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.services.gpx.GPXPanel;
@@ -181,6 +181,7 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
 import edu.ku.brc.specify.datamodel.ConservDescriptionAttachment;
 import edu.ku.brc.specify.datamodel.ConservEventAttachment;
+import edu.ku.brc.specify.datamodel.Container;
 import edu.ku.brc.specify.datamodel.DNASequencingRunAttachment;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -204,7 +205,6 @@ import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.AppBase;
 import edu.ku.brc.specify.ui.HelpMgr;
-import edu.ku.brc.specify.ui.WorldWindSearchPanel;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
@@ -3073,6 +3073,20 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       }
   }
   
+    /**
+     * 
+     */
+    private static void doSetProxySettings()
+    {
+        String proxyHost = AppPreferences.getLocalPrefs().get("PROXY_HOST", null);
+        String proxyPort = AppPreferences.getLocalPrefs().get("PROXY_PORT", null);
+
+        if (StringUtils.isNotEmpty(proxyHost) && StringUtils.isNotEmpty(proxyPort))
+        {
+            ProxyHelper.registerProxy(proxyHost, proxyPort);
+        }
+    }
+  
   /**
    *
    */
@@ -3123,6 +3137,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                   // Load Local Prefs
                   AppPreferences localPrefs = AppPreferences.getLocalPrefs();
                   localPrefs.setDirPath(UIRegistry.getAppDataDir());
+                  
+                  doSetProxySettings();
                   
                   checkDebugLoggerSettings();
                   
