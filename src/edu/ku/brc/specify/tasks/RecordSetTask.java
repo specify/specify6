@@ -1426,7 +1426,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                 return dlg.getRecordSets().get(0);
             }*/
             // else
-            dlg.setVisible(true); // modal (waits for answer here)
+            UIHelper.centerAndShow(dlg);  // modal (waits for answer here)
             return dlg.isCancelled() ? null : dlg.getSelectedRecordSet();
         }
         

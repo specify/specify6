@@ -69,7 +69,7 @@ public class DateWrapper
      */
     public String format(final Date date)
     {
-        return simpleDateFormat.format(date);
+        return date != null ? simpleDateFormat.format(date) : "";
     }
     
     /**
@@ -79,7 +79,7 @@ public class DateWrapper
      */
     public String format(final Calendar date)
     {
-        return simpleDateFormat.format(date.getTime());
+        return date != null ? simpleDateFormat.format(date.getTime()) : "";
     }
     
 }

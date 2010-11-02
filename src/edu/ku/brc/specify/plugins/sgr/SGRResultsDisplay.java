@@ -289,7 +289,7 @@ public class SGRResultsDisplay extends BaseResultsDisplay
                     }
                 }
                 cmpRow[cmpRow.length-1] = (int)((double)rowScore / 60.0 * 100.0);
-                System.err.println(cmpRow[cmpRow.length-1]);
+                //System.err.println(cmpRow[cmpRow.length-1]);
             }
         };
         model.setFirstColBool(false);

@@ -877,6 +877,7 @@ public class InteractionsTask extends BaseTask
         }
         return rsList;
     }
+    
     /**
      * @param existingLoan
      * @param infoRequest

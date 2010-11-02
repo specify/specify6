@@ -419,7 +419,6 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
      */
     public void setValue(final Object value, final String defaultValue)
     {
-        System.err.println(value+"  "+defaultValue);
         if (value != null)
         {
             if (value != null && !(value instanceof String))

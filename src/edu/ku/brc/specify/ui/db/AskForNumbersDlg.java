@@ -19,19 +19,20 @@
 */
 package edu.ku.brc.specify.ui.db;
 
-import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.HeadlessException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -53,6 +54,7 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -64,18 +66,24 @@ import edu.ku.brc.ui.UIRegistry;
  * Apr 10, 2008
  *
  */
-public class AskForNumbersDlg extends CustomDialog
+public class AskForNumbersDlg extends CustomDialog implements ChangeListener
 {
     private static final Logger log = Logger.getLogger(AskForNumbersDlg.class);
     
-    protected Vector<Integer> numbersList = new Vector<Integer>();
     protected Class<? extends FormDataObjIFace> dataClass;
-    protected String          labelKey;
-    protected String          fieldName;
-    protected JTextArea       textArea;
-    protected JTextArea       status;
-    protected JScrollPane     statusSP;
-    protected StringBuilder   errorList = new StringBuilder();
+    protected Vector<String>      numbersList   = new Vector<String>();
+    protected Vector<Integer>     colObjIds     = new Vector<Integer>();
+    protected String              labelKey;
+    protected String              fieldName;
+    protected JTextArea           textArea;
+    
+    protected NumberEditorPanel   errorPanel;
+    protected NumberEditorPanel   missingPanel;
+    
+    protected ArrayList<String>   numErrorList   = new ArrayList<String>();
+    protected ArrayList<String>   numMissingList = new ArrayList<String>();
+    
+    protected PanelBuilder        pb;
     
     
     /**
@@ -107,23 +115,31 @@ public class AskForNumbersDlg extends CustomDialog
     {
         super.createUI();
         
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,4px,f:p:g"));
+        textArea     = UIHelper.createTextArea(5, 30);
+        errorPanel   = new NumberEditorPanel(textArea, this, "AFN_NUMFMT_ERROR");
+        missingPanel = new NumberEditorPanel(textArea, this, "AFN_NOTFND_ERROR");
+        
         CellConstraints cc = new CellConstraints();
         
-        textArea = UIHelper.createTextArea(5, 30);
-        status   = UIHelper.createTextArea(3, 30);
-        status.setEditable(false);
-        
-        pb.add(UIHelper.createI18NLabel(labelKey, SwingConstants.RIGHT), cc.xy(1,1));
-        pb.add(UIHelper.createScrollPane(textArea), cc.xy(3,1));
-        
-        statusSP = new JScrollPane(status, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        pb.add(statusSP, cc.xy(3,3));
-        statusSP.setVisible(false);
+        pb = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p,4px,f:p:g,4px,f:p:g"));
+        pb.addSeparator(UIRegistry.getResourceString(labelKey), cc.xy(1,1));
+        pb.add(UIHelper.createScrollPane(textArea),             cc.xy(1,3));
         
         contentPanel = pb.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);
         mainPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        
+        textArea.getDocument().addDocumentListener(new DocumentAdaptor()
+        {
+            @Override
+            protected void changed(DocumentEvent e)
+            {
+                checkStatus();
+            }
+        });
+        
+        getOkBtn().setEnabled(false);
+        
         pack();
     }
     
@@ -132,9 +148,13 @@ public class AskForNumbersDlg extends CustomDialog
      */
     protected boolean processNumbers()
     {
-        status.setText("");
+        colObjIds.clear();
         numbersList.clear();
-        errorList.setLength(0);
+        
+        numErrorList.clear();
+        numMissingList.clear();
+        errorPanel.setNumbers(null);
+        missingPanel.setNumbers(null);
         
         DBTableInfo           ti        = DBTableIdMgr.getInstance().getByClassName(dataClass.getName());
         DBFieldInfo           fi        = ti.getFieldByName(fieldName);
@@ -143,48 +163,100 @@ public class AskForNumbersDlg extends CustomDialog
         boolean isOK = true;
         
         String catNumbersStr = textArea.getText().trim();
-        if (StringUtils.isNotEmpty(catNumbersStr))
+        if (StringUtils.isNotEmpty(catNumbersStr) && formatter != null)
         {
             DataProviderSessionIFace session = null;
             try
             {
                 session = DataProviderFactory.getInstance().createSession();
                 
-                for (String catNumStr : StringUtils.split(catNumbersStr, ','))
+                String[] toks = StringUtils.split(catNumbersStr, ',');
+                for (String catNumStr : toks)
                 {
-                    String catNum      = catNumStr.trim();
-                    String catNumForDB = catNum;
-                    if (formatter != null)
+                    String numToken = catNumStr.trim();
+                    if (StringUtils.contains(numToken, '-'))
                     {
-                        try
+                        String   catNum    = null;
+                        String   endCatNum = null;
+                        String[] tokens    =  StringUtils.split(numToken, '-');
+                        if (tokens.length == 2)
                         {
-                            catNumForDB = (String)formatter.formatFromUI(catNum);
+                            try
+                            {
+                                if (formatter.isNumeric())
+                                {
+                                    if (!StringUtils.isNumeric(catNum) || !StringUtils.isNumeric(endCatNum))
+                                    {
+                                        numErrorList.add(catNumStr.trim());
+                                        isOK = false;
+                                        continue;
+                                    }
+                                }
+                                catNum    = (String)formatter.formatFromUI(tokens[0].trim());
+                                endCatNum = (String)formatter.formatFromUI(tokens[1].trim());
+                                
+                            } catch (java.lang.NumberFormatException ex)
+                            {
+                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AskForNumbersDlg.class, ex);
+                                numErrorList.add(numToken);
+                                isOK = false;
+                            }
                             
-                        } catch (java.lang.NumberFormatException ex)
+                            String sql = String.format("SELECT id FROM %s WHERE %s >= '%s' AND %s <= '%s' AND CollectionMemberID = COLLID", 
+                                                        ti.getClassName(), fieldName, catNum, fieldName, endCatNum);
+                            sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
+                            List<?> list = session.getDataList(sql);
+                            for (Object obj : list)
+                            {
+                                colObjIds.add((Integer)obj);
+                            }
+                            numbersList.add(numToken);
+                            
+                        } else
                         {
-                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AskForNumbersDlg.class, ex);
-                            errorList.append(getLocalizedMessage("AFN_NUMFMT_ERROR", catNum));
-                            errorList.append("\n");
+                            numErrorList.add(numToken);
                             isOK = false;
                         }
+                        continue;
                     }
                     
+                    String catNumForDB = numToken;
+                    try
+                    {
+                        if (formatter.isNumeric())
+                        {
+                            if (!StringUtils.isNumeric(numToken))
+                            {
+                                numErrorList.add(numToken);
+                                isOK = false;
+                                continue;
+                            }
+                        }
+                        catNumForDB = (String)formatter.formatFromUI(numToken);
+                        
+                    } catch (java.lang.NumberFormatException ex)
+                    {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AskForNumbersDlg.class, ex);
+                        numErrorList.add(numToken);
+                        isOK = false;
+                    }
+                
                     if (StringUtils.isNotEmpty(catNumForDB))
                     {
-                        String sql = QueryAdjusterForDomain.getInstance().adjustSQL("SELECT id FROM "+ti.getClassName()+" WHERE "+fieldName+" = '"+catNumForDB+"' AND CollectionMemberID = COLLID");
+                        String sql = String.format("SELECT id FROM %s WHERE %s = '%s' AND CollectionMemberID = COLLID", ti.getClassName(), fieldName, catNumForDB);
+                        sql        = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
                         //log.debug(sql);
                         Integer colObjId = (Integer)session.getData(sql);
                         
                         if (colObjId != null)
                         {
-                            numbersList.add(colObjId);
+                            colObjIds.add(colObjId);
+                            numbersList.add(numToken);
                         } else
                         {
-                            statusSP.setVisible(true);
-                            pack();
-                            errorList.append(getLocalizedMessage("AFN_NOTFND_ERROR", fi.getTitle(), catNum));
-                            errorList.append("\n");
+                            numMissingList.add(numToken);
                             isOK = false;
                         }
                     }
@@ -205,9 +277,56 @@ public class AskForNumbersDlg extends CustomDialog
                 }
             }
         }
+        
+        buildNumberList(numbersList, textArea);
+        
+        pb.getPanel().removeAll();
+        
+        CellConstraints cc = new CellConstraints();
+        pb.addSeparator(UIRegistry.getResourceString(labelKey), cc.xy(1,1));
+        pb.add(UIHelper.createScrollPane(textArea),             cc.xy(1,3));
+
+        int y = 5;
+        if (numErrorList.size() > 0)
+        {
+            errorPanel.setNumbers(numErrorList);
+            pb.add(UIHelper.createScrollPane(errorPanel), cc.xy(1,y));
+            y += 2;
+        }
+        
+        if (numMissingList.size() > 0)
+        {
+            missingPanel.setNumbers(numMissingList);
+            pb.add(UIHelper.createScrollPane(missingPanel), cc.xy(1,y));
+            y += 2;
+        }
+        
+        
+        if (!isOK)
+        {
+            pack();
+        }
         return isOK;
     }
-
+    
+    /**
+     * @param list
+     * @param ta
+     */
+    protected static void buildNumberList(final List<String> list, final JTextArea ta)
+    {
+        StringBuilder sb = new StringBuilder();
+        if (list != null && list.size() > 0)
+        {
+            for (String num : list)
+            {
+                if (sb.length() > 0) sb.append(", ");
+                sb.append(num);
+            }
+        }
+        ta.setText(sb.toString());
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CustomDialog#okButtonPressed()
      */
@@ -217,10 +336,8 @@ public class AskForNumbersDlg extends CustomDialog
         if (processNumbers())
         {
             super.okButtonPressed();
-        } else
-        {
-            status.setText(errorList.toString());
         }
+        checkStatus();
     }
 
     /**
@@ -228,7 +345,7 @@ public class AskForNumbersDlg extends CustomDialog
      */
     public Vector<Integer> getNumbersList()
     {
-        return numbersList;
+        return colObjIds;
     }
     
     /**
@@ -236,18 +353,35 @@ public class AskForNumbersDlg extends CustomDialog
      */
     public RecordSetIFace getRecordSet()
     {
-        if (numbersList.size() > 0)
+        if (colObjIds.size() > 0)
         {
             RecordSet rs = new RecordSet();
             rs.initialize();
             rs.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
             rs.setDbTableId(DBTableIdMgr.getInstance().getByClassName(dataClass.getName()).getTableId());
-            for (Integer id : numbersList)
+            for (Integer id : colObjIds)
             {
                 rs.addItem(id);
             }
             return rs;
         }
         return null;
+    }
+    
+    /**
+     * 
+     */
+    private void checkStatus()
+    {
+        getOkBtn().setEnabled(textArea.getText().length() > 0 && errorPanel.isOK() && missingPanel.isOK());
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
+     */
+    @Override
+    public void stateChanged(ChangeEvent e)
+    {
+       checkStatus();
     }
 }

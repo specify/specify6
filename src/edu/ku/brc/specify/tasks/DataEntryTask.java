@@ -39,6 +39,7 @@ import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
+import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
@@ -50,6 +51,7 @@ import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
+import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.NavBoxButton;
@@ -92,15 +94,18 @@ import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.SCOPE;
 import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
+import edu.ku.brc.specify.ui.BatchReidentifyPanel;
 import edu.ku.brc.specify.ui.DBObjDialogFactory.FormLockStatus;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DataFlavorTableExt;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.GhostActionable;
@@ -1111,6 +1116,55 @@ public class DataEntryTask extends BaseTask
         toolbarItems.add(new ToolBarItemDesc(btn));
 
         return toolbarItems;
+    }
+    
+    /*
+     *  (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.Taskable#getMenuItems()
+     */
+    @Override
+    public List<MenuItemDesc> getMenuItems()
+    {
+        String menuDesc = "Specify.DATA_MENU";
+        
+        menuItems = new Vector<MenuItemDesc>();
+        
+        if (permissions == null || permissions.canModify())
+        {
+            String    menuTitle = "DET_BTCH_REIDENT_MENU"; //$NON-NLS-1$
+            String    mneu      = "DET_BTCH_REIDENT_MNEU"; //$NON-NLS-1$
+            String    desc      = "DET_BTCH_REIDENT_DESC"; //$NON-NLS-1$
+            JMenuItem mi        = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null);
+            mi.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    doBatchReidentify();
+                }
+            });
+            MenuItemDesc rsMI = new MenuItemDesc(mi, menuDesc);
+            rsMI.setPosition(MenuItemDesc.Position.After);
+            menuItems.add(rsMI);
+        }
+        
+        return menuItems;
+    }
+    
+    /**
+     * 
+     */
+    protected void doBatchReidentify()
+    {
+        final BatchReidentifyPanel panel = new BatchReidentifyPanel();
+        if (panel.askForColObjs())
+        {
+            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), getResourceString("DET_BTCH_REIDENT_MENU"), true, panel);
+            UIHelper.centerAndShow(dlg);
+            if (!dlg.isCancelled())
+            {
+                panel.doReIdentify();
+            }
+        }
     }
 
     /**

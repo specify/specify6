@@ -26,12 +26,15 @@ import static edu.ku.brc.ui.UIRegistry.showLocalizedMsg;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -60,8 +63,12 @@ import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.Project;
+import edu.ku.brc.specify.plugins.SeriesProcCatNumPlugin;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.dnd.SimpleGlassPane;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rods
@@ -73,6 +80,8 @@ import edu.ku.brc.ui.CommandDispatcher;
  */
 public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
 {
+    private static final String CATNUMNAME = "catalogNumber";
+    
     //private static final Logger  log = Logger.getLogger(CollectionObjectBusRules.class);
     
     private CollectingEvent  cachedColEve     = null;
@@ -282,7 +291,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         if (status == STATUS.OK && colObj.getId() == null)
         {
             DBTableInfo tblInfo   = DBTableIdMgr.getInstance().getInfoById(1); // don't need to check for null
-            DBFieldInfo fieldInfo = tblInfo.getFieldByName("catalogNumber");
+            DBFieldInfo fieldInfo = tblInfo.getFieldByName(CATNUMNAME);
             UIFieldFormatterIFace fmt = fieldInfo.getFormatter();
             if ((fmt != null && fmt.getAutoNumber() == null) || !formViewObj.isAutoNumberOn())
             {
@@ -471,9 +480,113 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 CommandDispatcher.dispatch(cmdAction);
             }
         }
+        
+        doSeriesProcessing();
 
         return super.afterSaveCommit(dataObj, session);
     }
+    
+    /**
+     * 
+     */
+    private void doSeriesProcessing()
+    {
+        Component catNumComp = formViewObj.getControlByName(CATNUMNAME);
+        if (catNumComp instanceof SeriesProcCatNumPlugin)
+        {
+            SeriesProcCatNumPlugin spCatNumPlugin = (SeriesProcCatNumPlugin)catNumComp;
+            if (spCatNumPlugin.isExpanded())
+            {
+                DBTableInfo tblInfo       = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()); // don't need to check for null
+                DBFieldInfo fieldInfo     = tblInfo.getFieldByName(CATNUMNAME);
+                UIFieldFormatterIFace fmt = fieldInfo.getFormatter();
+                if (fmt != null && fmt.getAutoNumber() != null && !formViewObj.isAutoNumberOn())
+                {
+                    
+                    doCreateBatchOfColObj(spCatNumPlugin.getStartAndEndCatNumbers());
+                    spCatNumPlugin.clearEndTextField();
+                }
+            }
+        }
+    }
+    
+    
+    /**
+     * 
+     */
+    public void doCreateBatchOfColObj(final Pair<String, String> catNumPair)
+    {
+        final String GLASSKEY = "DOBATCHCREATE";
+        
+        final int totalItems = 10;
+        
+        SwingWorker<Integer, Integer> worker = new SwingWorker<Integer, Integer>()
+        {
+            @Override
+            protected Integer doInBackground() throws Exception
+            {
+                int cnt = 0;
+                try
+                {
+                    for (int i=0;i<10;i++)
+                    {
+                        DataProviderSessionIFace session = null;
+                        try
+                        {
+                            session = DataProviderFactory.getInstance().createSession();
+                            Thread.sleep(300);
+                            
+                        } catch (Exception ex)
+                        {
+                            ex.printStackTrace();
+
+                        } finally 
+                        {
+                            if (session != null) session.close();
+                        }
+                        cnt++;
+                        firePropertyChange(GLASSKEY, 0, cnt);
+                    }
+                    firePropertyChange(GLASSKEY, 0, totalItems);
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    //UIRegistry.showLocalizedError("MySQLBackupService.EXCP_BK");
+                    
+                } finally
+                {
+                    
+                }
+                
+                return null;
+            }
+
+            @Override
+            protected void done()
+            {
+                super.done();
+                
+                UIRegistry.clearSimpleGlassPaneMsg();
+            }
+        };
+        
+        final SimpleGlassPane gp = UIRegistry.writeSimpleGlassPaneMsg(UIRegistry.getResourceString("CollectionObjectBusRules.SAVING_BATCH"), 24);
+        gp.setProgress(0);
+        worker.addPropertyChangeListener(
+                new PropertyChangeListener() {
+                    public  void propertyChange(final PropertyChangeEvent evt) {
+                        if (GLASSKEY.equals(evt.getPropertyName())) 
+                        {
+                            double value   = (double)((Integer)evt.getNewValue()).intValue();
+                            int    percent = (int)(value / ((double)totalItems) * 100.0);
+                            gp.setProgress(percent);
+                        }
+                    }
+                });
+        worker.execute();
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace)
@@ -599,7 +712,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             return STATUS.Error;
         }
         
-        STATUS duplicateNumberStatus = isCheckDuplicateNumberOK("catalogNumber", 
+        STATUS duplicateNumberStatus = isCheckDuplicateNumberOK(CATNUMNAME, 
                                                                 (FormDataObjIFace)dataObj, 
                                                                 CollectionObject.class, 
                                                                 "collectionObjectId");

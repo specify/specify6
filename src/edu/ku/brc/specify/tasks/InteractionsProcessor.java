@@ -25,19 +25,14 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Vector;
-
-import javax.swing.JOptionPane;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
-import edu.ku.brc.af.tasks.BaseTask.ASK_TYPE;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -45,7 +40,6 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.PreparationsProviderIFace;
 import edu.ku.brc.specify.ui.ColObjInfo;
@@ -83,46 +77,6 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
         this.task    = task;
         this.isLoan  = isLoan;
         this.tableId = tableId;
-    }
-    
-    
-    /**
-     * Asks where the source of the Loan Preps should come from.
-     * @return the source enum
-     */
-    protected ASK_TYPE askSourceOfPreps(final boolean hasInfoReqs, final boolean hasColObjRS)
-    {
-        String label;
-        if (hasInfoReqs && hasColObjRS)
-        {
-            label = getResourceString("NEW_INTER_USE_RS_IR");
-            
-        } else if (hasInfoReqs)
-        {
-            label = getResourceString("NEW_INTER_USE_IR");
-        } else
-        {
-            label = getResourceString("NEW_INTER_USE_RS");
-        }
-        
-        Object[] options = { 
-                label, 
-                getResourceString("NEW_INTER_ENTER_CATNUM") 
-              };
-        int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                                                     getResourceString("NEW_INTER_CHOOSE_RSOPT"), 
-                                                     getResourceString("NEW_INTER_CHOOSE_RSOPT_TITLE"), 
-                                                     JOptionPane.YES_NO_CANCEL_OPTION,
-                                                     JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-        if (userChoice == JOptionPane.NO_OPTION)
-        {
-            return ASK_TYPE.EnterCats;
-            
-        } else if (userChoice == JOptionPane.YES_OPTION)
-        {
-            return ASK_TYPE.ChooseRS;
-        }
-        return ASK_TYPE.Cancel;
     }
     
     /**
@@ -176,36 +130,8 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
         RecordSetIFace recordSet = recordSetArg;
         if (infoRequest == null && recordSet == null)
         {
-            // Get a List of InfoRequest RecordSets
-            Vector<RecordSetIFace> rsList       = task.getInfoReqRecordSetsFromSideBar();
-            RecordSetTask          rsTask       = (RecordSetTask)TaskMgr.getTask(RecordSetTask.RECORD_SET);
-            List<RecordSetIFace>   colObjRSList = rsTask.getRecordSets(CollectionObject.getClassTableId());
-            
-            // If the List is empty then
-            if (rsList.size() == 0 && colObjRSList.size() == 0)
-            {
-                recordSet = task.askForCatNumbersRecordSet();
-                
-            } else 
-            {
-                ASK_TYPE rv = askSourceOfPreps(rsList.size() > 0, colObjRSList.size() > 0);
-                if (rv == ASK_TYPE.ChooseRS)
-                {
-                    recordSet = RecordSetTask.askForRecordSet(CollectionObject.getClassTableId(), rsList);
-                    
-                } else if (rv == ASK_TYPE.EnterCats)
-                {
-                    recordSet = task.askForCatNumbersRecordSet();
-                    
-                } else if (rv == ASK_TYPE.Cancel)
-                {
-                    if (viewable != null)
-                    {
-                        viewable.setNewObject(null);
-                    }
-                    return;
-                }
-            }
+            ColObjSourceHelper colObjSrcHelper = new ColObjSourceHelper(ColObjSourceHelper.TypeOfRS.eColObjWithPreps);
+            recordSet = colObjSrcHelper.getRecordSet(task.getInfoReqRecordSetsFromSideBar());
         }
         
         if (recordSet == null)
@@ -213,8 +139,6 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
             return;
         }
         
-        DBTableIdMgr.getInstance().getInClause(recordSet);
-
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
         
         DataProviderFactory.getInstance().evict(tableInfo.getClassObj()); // XXX Not sure if this is really needed

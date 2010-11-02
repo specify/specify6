@@ -111,6 +111,7 @@ import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.af.ui.forms.validation.ValFormattedTextField;
+import edu.ku.brc.af.ui.forms.validation.ValFormattedTextFieldIFace;
 import edu.ku.brc.af.ui.forms.validation.ValFormattedTextFieldSingle;
 import edu.ku.brc.af.ui.forms.validation.ValListBox;
 import edu.ku.brc.af.ui.forms.validation.ValPasswordField;
@@ -123,6 +124,7 @@ import edu.ku.brc.af.ui.forms.validation.ValTristateCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValidatedJPanel;
 import edu.ku.brc.af.ui.weblink.WebLinkButton;
 import edu.ku.brc.exceptions.ConfigurationException;
+import edu.ku.brc.specify.plugins.SeriesProcCatNumPlugin;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.CommandAction;
@@ -815,9 +817,9 @@ public class ViewFactory
         textField.setEditable(false);
         //textField.setFocusable(false); // rods - commented out because it makes it so you can't select and copy
         
+        textField.setOpaque(!isTransparent);
         if (isTransparent)
         {
-            textField.setOpaque(false);
             textField.setBackground(null);
             
         } else if (viewFieldColor != null)
@@ -1457,8 +1459,19 @@ public class ViewFactory
                         tableClass = Class.forName(formViewDef.getClassName());
                     } catch (Exception ex){}
                     
-                    bi.compToAdd = createFormattedTextField(validator, cellField, tableClass, fieldInfo != null ? fieldInfo.getLength() : 0, uiFormatName, 
-                                                            mode == AltViewIFace.CreationMode.VIEW, isReq, cellField.getPropertyAsBoolean("alledit", false));
+                    JComponent tfStart = createFormattedTextField(validator, cellField, tableClass, fieldInfo != null ? fieldInfo.getLength() : 0, uiFormatName, 
+                                             mode == AltViewIFace.CreationMode.VIEW, isReq, cellField.getPropertyAsBoolean("alledit", false));
+                    bi.compToAdd = tfStart;
+                    if (cellField.getPropertyAsBoolean("series", false))
+                    {
+                        JComponent tfEnd = createFormattedTextField(validator, cellField, tableClass, fieldInfo != null ? fieldInfo.getLength() : 0, uiFormatName, 
+                                               mode == AltViewIFace.CreationMode.VIEW, isReq, cellField.getPropertyAsBoolean("alledit", false));
+                        
+                        
+                        SeriesProcCatNumPlugin plugin = new SeriesProcCatNumPlugin((ValFormattedTextFieldIFace)tfStart, 
+                                                                                   (ValFormattedTextFieldIFace)tfEnd);
+                        bi.compToAdd = plugin;
+                    }
                     bi.doAddToValidator = validator == null; // might already added to validator
                     break;
                 }   

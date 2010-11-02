@@ -617,7 +617,7 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
             {
                 ImageIcon testIcon = new ImageIcon(bytes);
                 
-                System.err.println(testIcon.getIconHeight()+"  "+testIcon.getIconWidth());
+                //System.err.println(testIcon.getIconHeight()+"  "+testIcon.getIconWidth());
                 
                 // this image file is corrupted or a format that we cannot display
                 return testIcon.getIconHeight() > 0 && testIcon.getIconWidth() > 0;

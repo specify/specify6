@@ -119,7 +119,9 @@ public class DeterminationBusRules extends BaseBusRules
             {
                 if (isNewObject)
                 {
-                    if (determination.getCollectionObject() != null) //It should never be non null, but, currently, it does happen.
+                    // It should never be null, but, currently, it does happen.
+                    // Also, now with Batch ReIdentify is will always be NULL
+                    if (determination.getCollectionObject() != null) 
                     {
                 		if (currentComp instanceof ValCheckBox)
                 		{
@@ -241,7 +243,8 @@ public class DeterminationBusRules extends BaseBusRules
                         {
                             determination = (Determination)formViewObj.getDataObj();
                             if (determination != null && 
-                                determination.getIsCurrent())
+                                determination.getIsCurrent() &&
+                                determination.getCollectionObject() != null) // For Batch ReIdentify the CO can be NULL
                             {
                                 for (Determination d : determination.getCollectionObject().getDeterminations())
                                 {

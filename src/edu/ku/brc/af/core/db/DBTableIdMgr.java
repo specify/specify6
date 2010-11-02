@@ -346,6 +346,26 @@ public class DBTableIdMgr
     }
     
     /**
+     * Gets the localized title for a field in a table. 
+     * @param tableId the table id
+     * @param fieldName POJO field name, NOT column name
+     * @return the localized title for a table by id, returns "" if in error
+     */
+    public String getTitleForField(final int tableId, final String fieldName)
+    {
+        DBTableInfo ti = getInfoById(tableId);
+        if (ti != null)
+        {
+            DBFieldInfo fi = ti.getFieldByName(fieldName);
+            if (fi != null)
+            {
+                return fi.getTitle();
+            }
+        }
+        return "";
+    }
+    
+    /**
      * Returns the full collection of Tables. 
      * @return a collection of DBTableInfo objects
      */

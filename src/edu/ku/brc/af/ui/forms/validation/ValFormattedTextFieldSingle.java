@@ -62,7 +62,6 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DocumentAdaptor;
-import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -79,10 +78,8 @@ import edu.ku.brc.ui.UIRegistry;
  *
  */
 @SuppressWarnings("serial")
-public class ValFormattedTextFieldSingle extends JTextField implements UIValidatable,
-                                                                       GetSetValueIFace,
-                                                                       UIRegistry.UndoableTextIFace,
-                                                                       AutoNumberableIFace
+public class ValFormattedTextFieldSingle extends JTextField implements ValFormattedTextFieldIFace,
+                                                                       UIRegistry.UndoableTextIFace
 {
     private static final Logger log  = Logger.getLogger(ValFormattedTextFieldSingle.class);
 
@@ -123,8 +120,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
 
     
     /**
-     * Constructor
-     * @param dataObjFormatterName the formatters name
+     * Constructor.
      */
     protected ValFormattedTextFieldSingle()
     {
