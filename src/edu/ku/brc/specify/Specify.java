@@ -157,7 +157,6 @@ import edu.ku.brc.dbsupport.QueryExecutor;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.exceptions.ExceptionTracker;
 import edu.ku.brc.helpers.Encryption;
-import edu.ku.brc.helpers.ProxyHelper;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.services.gpx.GPXPanel;
@@ -3083,7 +3082,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 
         if (StringUtils.isNotEmpty(proxyHost) && StringUtils.isNotEmpty(proxyPort))
         {
-            ProxyHelper.registerProxy(proxyHost, proxyPort);
+            //ProxyHelper.registerProxy(proxyHost, proxyPort);
         }
     }
   
