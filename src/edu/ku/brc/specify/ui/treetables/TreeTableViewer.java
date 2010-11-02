@@ -3179,7 +3179,18 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		//This is not strictly necessary, and 'cross-rank' merging could be useful for getting rid of unwanted 'sub' levels (subfamily, etc)
 		//But allowing cross-rank merges would require checking children to be sure parenting rules are not violated.
 		boolean ranksOK = droppedOnNode.getRank() == draggedNode.getRank();
-		return ranksOK;
+		
+		//if a node with no children is dropped on a synonym then 
+		//any records linked to the the dropped node will be reassigned to
+		//the drop node.
+		//boolean synOK = droppedOnNode.getAcceptedParentId() == null 
+		//	||  !draggedNode.isHasChildren();
+		//BUT, for the taxon tree more work would be required (probably) to
+		//update Determination.PreferredTaxonID so preventing drops on synonyms for
+		//now
+		boolean synOK = droppedOnNode.getAcceptedParentId() == null;
+		
+		return ranksOK && synOK;
 		
 		//return false;
 		
