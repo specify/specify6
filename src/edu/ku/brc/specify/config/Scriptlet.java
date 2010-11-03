@@ -388,6 +388,24 @@ public class Scriptlet extends JRDefaultScriptlet
     }
 
     /**
+     * @param text
+     * @return text with characters such as '&' replaced by their html codes.
+     * 
+     * Currently only replaces '&'.
+     * 
+     */
+    public String escapeForHtml(final String text)
+    {
+    	String[] subs = {"&", "&amp"};
+    	String result = text;
+    	for (int s = 0; s < subs.length; s+=2)
+    	{
+    		result = result.replaceAll(subs[s], subs[s+1]);
+    	}
+    	return result;
+    }
+    
+    /**
      * Builds the shipped to agent's name string.
      * @param firstName
      * @param lastName
