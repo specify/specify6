@@ -27,9 +27,12 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.Date;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.GregorianCalendar;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -45,6 +48,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.prefs.AppPrefsCache;
@@ -65,6 +69,7 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.tasks.ColObjSourceHelper;
 import edu.ku.brc.ui.CustomDialog;
@@ -86,8 +91,8 @@ import edu.ku.brc.ui.dnd.SimpleGlassPane;
 public class BatchReidentifyPanel extends JPanel
 {
     private static final String LOOKUP_SQL = "SELECT co.CollectionObjectID, co.CatalogNumber, d.DeterminedDate,  d.TypeStatusName, t.FullName, d.DeterminationID " +
-    	                                     "FROM collectionobject co INNER JOIN determination d ON co.CollectionObjectID = d.CollectionObjectID " +
-    	                                     "INNER JOIN taxon t ON d.TaxonID = t.TaxonID WHERE co.CollectionObjectID %s ORDER BY co.CatalogNumber";
+    	                                     "FROM collectionobject co LEFT JOIN determination d ON co.CollectionObjectID = d.CollectionObjectID " +
+    	                                     "LEFT JOIN taxon t ON d.TaxonID = t.TaxonID WHERE co.CollectionObjectID %s AND d.IsCurrent ORDER BY co.CatalogNumber";
     
     protected static DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
 
@@ -98,7 +103,7 @@ public class BatchReidentifyPanel extends JPanel
     private Vector<ColObjTaxa>    items      = new Vector<ColObjTaxa>();
     private EditDeleteAddPanel    edaPanel;
     private UIFieldFormatterIFace fmtr      = DBTableIdMgr.getFieldFormatterFor(CollectionObject.class, "catalogNumber");
-    
+    private ViewBasedDisplayPanel vbPanel;
     /**
      * 
      */
@@ -156,7 +161,7 @@ public class BatchReidentifyPanel extends JPanel
         CellConstraints cc = new CellConstraints();
         PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p,8px,p,4px,f:350px:g,2px,p"), this);
         
-        ViewBasedDisplayPanel vbPanel = new ViewBasedDisplayPanel(null, "Determination", Determination.class.getName(), true, MultiView.HIDE_SAVE_BTN);
+        vbPanel = new ViewBasedDisplayPanel(null, "Determination", Determination.class.getName(), true, MultiView.HIDE_SAVE_BTN);
         pb.add(vbPanel, cc.xy(1, 1));
         
         pb.addSeparator(DBTableIdMgr.getInstance().getTitleForId(CollectionObject.getClassTableId()), cc.xy(1,3));
@@ -388,26 +393,113 @@ public class BatchReidentifyPanel extends JPanel
     {
         final String GLASSKEY = "REIDENTIFY";
         
+        vbPanel.getMultiView().getDataFromUI();
+        
         SwingWorker<Integer, Integer> worker = new SwingWorker<Integer, Integer>()
         {
-            @Override
+           final Vector<Integer> errors = new Vector<Integer>();
+           
+           /**
+         * @return
+         */
+        protected RecordSetIFace getErrorRecordSet()
+           {
+        	   RecordSet result = new RecordSet();
+        	   result.initialize();
+        	   result.setDbTableId(CollectionObject.getClassTableId());
+               result.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
+        	   for (Integer id : errors)
+        	   {
+        		   result.addItem(id);
+        	   }
+               int maxNameLength = DBTableIdMgr.getInstance().getInfoByTableName("recordset").getFieldByColumnName("name").getLength();
+               String rsName = UIRegistry.getResourceString("DET_BTCH_.ErrRSNameBase");
+               //add as many pieces of the upload time as will fit...
+               Calendar now = new GregorianCalendar();
+               String[] chunks = {"_" + String.valueOf(now.get(Calendar.YEAR)), "-" + String.valueOf(now.get(Calendar.MONTH) + 1),
+                           "-" + String.valueOf(now.get(Calendar.DAY_OF_MONTH)), "_" + String.valueOf(now.get(Calendar.HOUR_OF_DAY)),
+                           ":" + String.valueOf(now.get(Calendar.SECOND))}; 
+               int c = 0;
+               while (c < chunks.length && (rsName + chunks[c]).length() <= maxNameLength)
+               {
+                   rsName += chunks[c++];
+               }
+        	   result.setName(rsName);
+        	   return result;
+           }
+           
+           @Override
             protected Integer doInBackground() throws Exception
             {
                 int cnt = 0;
                 try
                 {
+                    boolean continueSelected = false;
                     for (ColObjTaxa cot : items)
                     {
                         DataProviderSessionIFace session = null;
+                        boolean tranOpen = false;
                         try
                         {
                             session = DataProviderFactory.getInstance().createSession();
                             CollectionObject co = session.get(CollectionObject.class, cot.getColObjId());
-                            Thread.sleep(300);
-                            
+                            System.out.println(co.getCatalogNumber() + " - " + determination.getTaxon());
+                            Determination newDet = (Determination )determination.clone();
+                            for (Determination d : co.getDeterminations())
+                            {
+                            	if (d.getIsCurrent())
+                            	{
+                            		//if (!addNewDeterminations)
+                            		//{
+                            		//
+                            		// remove d...?
+                            		//
+                            		//} else
+                            		{
+                            			d.setIsCurrent(false);
+                            		}
+                            	}
+                            }
+                            newDet.setCollectionObject(co);
+                            co.getDeterminations().add(newDet);
+                            //It looks like it is ok to skip business rule processing...
+                            session.beginTransaction();
+                            tranOpen = true;
+                            session.saveOrUpdate(co);
+                            session.commit();
+                            tranOpen = false;
+                            //throw new Exception("Intentionally generated sample catastrophe");                            
                         } catch (Exception ex)
                         {
-                            ex.printStackTrace();
+                            if (tranOpen)
+                            {
+                            	session.rollback();
+                            	tranOpen = false;
+                            }
+                        	
+                            if (!continueSelected)
+                            {
+                            	UsageTracker.incrHandledUsageCount();
+                            	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BatchReidentifyPanel.class, ex);
+                            	ex.printStackTrace();
+                            	continueSelected = UIRegistry.displayConfirmLocalized("DET_BTCH_.ErrActionTitle",
+                            		"DET_BTCH_.ErrActionMsg", "Continue", "Cancel", JOptionPane.WARNING_MESSAGE);
+                            	if (!continueSelected)
+                            	{
+                            		//UIRegistry.showLocalizedError("DET_BTCH_.ItemsProcessed", cnt);
+                            		for (int r = cnt; r < items.size(); r++)
+                            		{
+                            			errors.add(items.get(r).getColObjId());
+                            		}
+                            		break;
+                            	}
+                            }
+                            if (continueSelected)
+                            {
+                            	errors.add(items.get(cnt).getColObjId());
+                            }
+                            
+                            
                         } finally 
                         {
                             if (session != null) session.close();
@@ -436,9 +528,35 @@ public class BatchReidentifyPanel extends JPanel
                 super.done();
                 
                 UIRegistry.clearSimpleGlassPaneMsg();
+                
+                if (errors.size() > 0)
+                {
+                	RecordSetIFace errs = getErrorRecordSet();
+                	DataProviderSessionIFace session = null;
+                	try
+                	{
+                		session = DataProviderFactory.getInstance().createSession();
+                		session.beginTransaction();
+                		session.save(errs);
+                		session.commit();
+                	} catch (Exception ex)
+                	{
+                		UsageTracker.incrHandledUsageCount();
+                		edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BatchReidentifyPanel.class, ex);
+                		ex.printStackTrace();
+                	} finally
+                	{
+                		session.close();
+                	}
+                	UIRegistry.displayInfoMsgDlgLocalized("DET_BTCH_.ErrRSSaved", errs.getName());
+                }
+                else
+                {
+                	UIRegistry.displayInfoMsgDlgLocalized("DET_BTCH_.Success");
+                }
             }
         };
-        
+         
         final SimpleGlassPane gp = UIRegistry.writeSimpleGlassPaneMsg(UIRegistry.getResourceString("DET_BTCH_REIDENT_MENU"), 24);
         gp.setProgress(0);
         worker.addPropertyChangeListener(
@@ -454,6 +572,8 @@ public class BatchReidentifyPanel extends JPanel
                 });
         worker.execute();
     }
+    
+    
     
     //-------------------------------------------------------------------------------
     //
