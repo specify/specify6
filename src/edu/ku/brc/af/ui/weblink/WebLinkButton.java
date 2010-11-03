@@ -169,7 +169,10 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
         if (!isTableSpecific && !usingThisData)
         {
             textField = new ValTextField(10);
-            pb.add(textField, cc.xy(3,1));
+            if (!isViewModeArg)
+            {
+                pb.add(textField, cc.xy(3,1));
+            }
             
             textField.setRequired(isRequired);
             
@@ -498,7 +501,8 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
     {
         super.setEnabled(enabled);
         
-        boolean enbl = (webLinkDef != null || StringUtils.isNotEmpty(urlStr)) && enabled;
+        String urlToLaunch = buildURL(false);
+        boolean enbl = (webLinkDef != null || StringUtils.isNotEmpty(urlToLaunch)) && enabled;
         
         launchBtn.setEnabled(enbl);
         if (editBtn != null)
@@ -567,18 +571,19 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
             if (value instanceof WebLinkDataProviderIFace)
             {
                 provider = (WebLinkDataProviderIFace)value;
+                
+            } else if (dataObj instanceof String && textField != null)
+            {
+                textField.setText((String)dataObj);
+                this.setEnabled(true);
             }
+            
             String url = buildURL(true);
             if (StringUtils.isNotEmpty(url))
             {
                 setToolTips();
             }
             setEnabled(isEnabled());
-        }
-        
-        if (dataObj instanceof String && textField != null)
-        {
-            textField.setText((String)dataObj);
         }
     }
 
