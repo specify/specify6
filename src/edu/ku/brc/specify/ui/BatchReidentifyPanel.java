@@ -443,7 +443,7 @@ public class BatchReidentifyPanel extends JPanel
                         {
                             session = DataProviderFactory.getInstance().createSession();
                             CollectionObject co = session.get(CollectionObject.class, cot.getColObjId());
-                            System.out.println(co.getCatalogNumber() + " - " + determination.getTaxon());
+                            //System.out.println(co.getCatalogNumber() + " - " + determination.getTaxon());
                             Determination newDet = (Determination )determination.clone();
                             for (Determination d : co.getDeterminations())
                             {
