@@ -319,7 +319,6 @@ public class SpPermission /*extends DataModelObjBase*/implements java.io.Seriali
 	 */
 	public boolean hasSameFlags(boolean canView, boolean canAdd, boolean canModify, boolean canDelete)
 	{
-	    System.err.println(name + " - "+actions);
 		return 	(canView   == canView())   &&
 				(canAdd    == canAdd())    &&
 				(canModify == canModify()) &&

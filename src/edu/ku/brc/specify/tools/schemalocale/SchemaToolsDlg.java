@@ -65,6 +65,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
+import static edu.ku.brc.specify.utilapps.BuildSampleDatabase.UpdateType;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
@@ -82,10 +83,11 @@ import edu.ku.brc.ui.dnd.SimpleGlassPane;
  */
 public class SchemaToolsDlg extends CustomDialog
 {
-    protected JButton      editSchemaBtn      = createI18NButton("SL_EDIT_SCHEMA");
-    protected JButton      removeLocaleBtn    = createI18NButton("SL_REMOVE_SCHEMA_LOC");
-    protected JButton      exportSchemaLocBtn = createI18NButton("SL_EXPORT_SCHEMA_LOC");
-    protected JButton      importSchemaLocBtn = createI18NButton("SL_IMPORT_SCHEMA_LOC");
+    protected JButton      editSchemaBtn        = createI18NButton("SL_EDIT_SCHEMA");
+    protected JButton      removeLocaleBtn      = createI18NButton("SL_REMOVE_SCHEMA_LOC");
+    protected JButton      exportSchemaLocBtn   = createI18NButton("SL_EXPORT_SCHEMA_LOC");
+    protected JButton      importSchemaLocBtn   = createI18NButton("SL_IMPORT_SCHEMA_LOC");
+    protected JButton      localizeSchemaLocBtn = createI18NButton("SL_L10N_SCHEMA_LOC");
     protected JList        localeList;
     protected Byte         schemaType;
     protected DBTableIdMgr tableMgr;
@@ -129,15 +131,16 @@ public class SchemaToolsDlg extends CustomDialog
 
         CellConstraints cc = new CellConstraints();
         
-        PanelBuilder builder   = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,2px,p,16px,p,4px,p,8px,p,10px"));
+        PanelBuilder builder   = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,2px,p,16px,p,4px,p,8px,p,8px,p,10px"));
         builder.addSeparator(getResourceString("SL_LOCALES_IN_USE"), cc.xywh(1, 1, 3, 1));
         builder.add(sp, cc.xywh(1,3,3,1));
         
         builder.addSeparator(getResourceString("SL_TASKS"), cc.xywh(1, 5, 3, 1));
-        builder.add(editSchemaBtn,      cc.xy(1,7));
-        builder.add(removeLocaleBtn,    cc.xy(3,7));
-        builder.add(exportSchemaLocBtn, cc.xy(1,9));
-        builder.add(importSchemaLocBtn, cc.xy(3,9));
+        builder.add(editSchemaBtn,        cc.xy(1,7));
+        builder.add(removeLocaleBtn,      cc.xy(3,7));
+        builder.add(exportSchemaLocBtn,   cc.xy(1,9));
+        builder.add(importSchemaLocBtn,   cc.xy(3,9));
+        builder.add(localizeSchemaLocBtn, cc.xy(3,11));
         
         builder.setDefaultDialogBorder();
         
@@ -190,7 +193,15 @@ public class SchemaToolsDlg extends CustomDialog
 
             public void actionPerformed(ActionEvent arg0)
             {
-                importSchema();
+                importSchema(false);
+            }
+        });
+        
+        localizeSchemaLocBtn.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent arg0)
+            {
+                importSchema(true);
             }
         });
         
@@ -266,7 +277,7 @@ public class SchemaToolsDlg extends CustomDialog
     /**
      * 
      */
-    private void importSchema()
+    private void importSchema(final boolean doLocalization)
     {
         FileDialog fileDlg = new FileDialog((Dialog)null);
         fileDlg.setVisible(true);
@@ -274,8 +285,10 @@ public class SchemaToolsDlg extends CustomDialog
         String fileName = fileDlg.getFile();
         if (StringUtils.isNotEmpty(fileName))
         {
+            String title = getResourceString(doLocalization ? "SL_L10N_SCHEMA" : "SL_IMPORT_SCHEMA");
+            
             final File            file      = new File(fileDlg.getDirectory() + File.separator + fileName);
-            final SimpleGlassPane glassPane = new SimpleGlassPane(getResourceString("SL_IMPORT_SCHEMA"), 18);
+            final SimpleGlassPane glassPane = new SimpleGlassPane(title, 18);
             glassPane.setBarHeight(12);
             glassPane.setFillColor(new Color(0, 0, 0, 85));
             
@@ -296,12 +309,15 @@ public class SchemaToolsDlg extends CustomDialog
                         localSession.beginTransaction();
                         
                         BuildSampleDatabase bsd = new BuildSampleDatabase();
-                        bsd.loadSchemaLocalization(AppContextMgr.getInstance().getClassObject(Discipline.class), 
+                        
+                        Discipline discipline = localSession.get(Discipline.class, AppContextMgr.getInstance().getClassObject(Discipline.class).getId());
+                        
+                        bsd.loadSchemaLocalization(discipline, 
                                                     SpLocaleContainer.CORE_SCHEMA, 
                                                     DBTableIdMgr.getInstance(),
                                                     null, //catFmtName,
                                                     null, //accFmtName,
-                                                    BuildSampleDatabase.UpdateType.eImport, // isDoingUpdate
+                                                    doLocalization ? UpdateType.eLocalize : UpdateType.eImport, // isDoingUpdate
                                                     file, // external file
                                                     glassPane,
                                                     localSession);
@@ -374,7 +390,7 @@ public class SchemaToolsDlg extends CustomDialog
             final File    outFile = new File(dlg.getDirectory() + File.separator + fileName);
             //final File    outFile = new File("xxx.xml");
         
-            final SimpleGlassPane glassPane = new SimpleGlassPane("Exporting Schema...", 18);
+            final SimpleGlassPane glassPane = new SimpleGlassPane(getResourceString("SL_EXPORT_SCHEMA"), 18);
             glassPane.setBarHeight(12);
             glassPane.setFillColor(new Color(0, 0, 0, 85));
             

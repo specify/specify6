@@ -278,7 +278,7 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
 public class BuildSampleDatabase
 {
     private static final Logger  log      = Logger.getLogger(BuildSampleDatabase.class);
-    public enum UpdateType {eBuildNew, eImport, eMerge}
+    public enum UpdateType {eBuildNew, eImport, eMerge, eLocalize}
     
     //                                                  0                   1                  2                 3                   4                     5                   6                   7                     8
     private static String[] TaxonIndexNames = {"family common name", "species author", "species source", "species lsid", "species common name", "subspecies author", "subspecies source", "subspecies lsid", "subspecies common name"};
@@ -8262,6 +8262,7 @@ public class BuildSampleDatabase
         boolean isFish            = disciplineName.equals("fish");
         boolean isImport          = updateType == UpdateType.eImport;
         boolean isMerge           = updateType == UpdateType.eMerge;
+        boolean isLocalize        = updateType == UpdateType.eLocalize;
 
         if (newContainer.getId() == null)
         {
@@ -8321,7 +8322,7 @@ public class BuildSampleDatabase
             if (isColObj) System.err.println(item.getName());
             String itemSQL     = null;
             boolean okToCreate = true;
-            if (isImport || isMerge)
+            if (isImport || isMerge || isLocalize)
             {
                 String sql = String.format(" FROM splocalecontainer c INNER JOIN splocalecontaineritem ci ON c.SpLocaleContainerID = ci.SpLocaleContainerID WHERE ci.Name = '%s' AND c.DisciplineID = %d AND c.SpLocaleContainerID = %d", item.getName(), disciplineId, newContainer.getId());
                 String fullSQL = "SELECT COUNT(*)" + sql;
@@ -8351,17 +8352,21 @@ public class BuildSampleDatabase
             
                 loadLocalization(memoryContainer.getName(), item, newItem, dispItem, hideGenericFields, isFish);
             
-                if (isColObj && catFmtName != null && item.getName().equals("catalogNumber"))
+                if (!isLocalize)
                 {
-                    newItem.setFormat(catFmtName);
-                    newItem.setIsUIFormatter(true);
+                    if (isColObj && catFmtName != null && item.getName().equals("catalogNumber"))
+                    {
+                        newItem.setFormat(catFmtName);
+                        newItem.setIsUIFormatter(true);
+                    }
+                    
+                    if (isAccession && accFmtName != null && item.getName().equals("accessionNumber"))
+                    {
+                        newItem.setFormat(accFmtName);
+                        newItem.setIsUIFormatter(true);
+                    }
                 }
                 
-                if (isAccession && accFmtName != null && item.getName().equals("accessionNumber"))
-                {
-                    newItem.setFormat(accFmtName);
-                    newItem.setIsUIFormatter(true);
-                }
                 if (session != null)
                 {
                     try
@@ -8379,13 +8384,16 @@ public class BuildSampleDatabase
                 {
                     SpLocaleContainerItem dbItem = session.get(SpLocaleContainerItem.class, id);
                     
-                    //dbItem.setType(item.getType());
-                    dbItem.setFormat(item.getFormat());
-                    dbItem.setIsUIFormatter(item.getIsUIFormatter());
-                    dbItem.setPickListName(item.getPickListName());
-                    dbItem.setWebLinkName(item.getWebLinkName());
-                    dbItem.setIsHidden(item.getIsHidden());
-                    dbItem.setIsRequired(item.getIsRequired());
+                    if (!isLocalize)
+                    {
+                        //dbItem.setType(item.getType());
+                        dbItem.setFormat(item.getFormat());
+                        dbItem.setIsUIFormatter(item.getIsUIFormatter());
+                        dbItem.setPickListName(item.getPickListName());
+                        dbItem.setWebLinkName(item.getWebLinkName());
+                        dbItem.setIsHidden(item.getIsHidden());
+                        dbItem.setIsRequired(item.getIsRequired());
+                    }
                     
                     try
                     {

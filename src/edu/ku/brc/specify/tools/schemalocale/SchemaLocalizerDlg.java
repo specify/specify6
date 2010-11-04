@@ -44,6 +44,7 @@ import org.hibernate.Session;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
@@ -769,7 +770,12 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         Session session = HibernateUtil.getNewSession();
         try
         {
-            String sql = "SELECT DISTINCT nms.language FROM SpLocaleContainer as ctn INNER JOIN ctn.items as itm INNER JOIN itm.names nms WHERE nms.language <> NULL AND ctn.schemaType = "+ schemaType;
+            String sql = "SELECT DISTINCT nms.language FROM SpLocaleContainer as ctn " +
+            	         "INNER JOIN ctn.items as itm " +
+            	         "INNER JOIN itm.names nms " +
+            	         "INNER JOIN ctn.discipline as d " +
+            	         "WHERE d.userGroupScopeId = DSPLNID AND nms.language IS NOT NULL AND ctn.schemaType = "+ schemaType;
+            sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
             log.debug(sql);
             Query   query = session.createQuery(sql);
             List<?> list  = query.list();
@@ -802,7 +808,11 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         Session session = HibernateUtil.getNewSession();
         try
         {
-            String sql = String.format("SELECT DISTINCT nms.language FROM SpLocaleContainer as ctn INNER JOIN ctn.items as itm INNER JOIN itm.names nms WHERE nms.language = '%s' AND ctn.schemaType = %d",
+            String sql = String.format("SELECT DISTINCT nms.language FROM SpLocaleContainer as ctn " +
+                                       "INNER JOIN ctn.items as itm " +
+                                       "INNER JOIN itm.names nms " +
+                                       "INNER JOIN ctn.discipline as d " +
+                                       "WHERE  d.userGroupScopeId = DSPLNID AND nms.language = '%s' AND ctn.schemaType = %d",
                                        locale.getLanguage(), schemaTypeArg);
             Query   query = session.createQuery(sql);
             List<?> list  = query.list();

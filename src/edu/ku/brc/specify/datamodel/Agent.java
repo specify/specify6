@@ -1164,7 +1164,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         
         boolean notFndErr = false;
         userAgent = null;
-        System.err.println(sql);
         
         Integer agentId = BasicSQLUtils.getCount(sql); // gets the AgentId
         if (agentId != null)

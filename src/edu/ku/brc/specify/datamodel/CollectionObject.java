@@ -1199,6 +1199,12 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         {
             collection.getId();
         }
+        
+        CollectingEvent ce = getCollectingEvent();
+        if (ce != null && AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
+        {
+            ce.forceLoad();
+        }
     }
     
     /* (non-Javadoc)
