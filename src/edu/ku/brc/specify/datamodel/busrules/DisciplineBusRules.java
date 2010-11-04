@@ -191,14 +191,19 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
     @Override
     public boolean isOkToSave(final Object dataObj, final DataProviderSessionIFace session)
     {
+        reasonList.clear();
+        
         if (formViewObj != null)
         {
             Component comp = formViewObj.getControlByName("name");
             if (comp instanceof ValTextField)
             {
+                Discipline discipline = (Discipline)formViewObj.getDataObj();
+                Integer    dspId      = discipline.getId();
+                
                 String name = ((ValTextField)comp).getText();
                 int cnt = getNameCount(name);
-                if (cnt == 0)
+                if (cnt == 0 || (cnt == 1 && dspId != null))
                 {
                     return true;
                 }

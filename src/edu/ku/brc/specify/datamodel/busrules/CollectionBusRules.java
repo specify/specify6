@@ -160,14 +160,19 @@ public class CollectionBusRules extends BaseBusRules
     @Override
     public boolean isOkToSave(final Object dataObj, final DataProviderSessionIFace session)
     {
+        reasonList.clear();
+        
         if (formViewObj != null)
         {
             Component comp = formViewObj.getControlByName("collectionName");
             if (comp instanceof ValTextField)
             {
+                Collection collection = (Collection)formViewObj.getDataObj();
+                Integer    colId      = collection.getId();
+                
                 String name = ((ValTextField)comp).getText();
-                int cnt = getNameCount(name);
-                if (cnt == 0)
+                int    cnt  = getNameCount(name);
+                if (cnt == 0 || (cnt == 1 && colId != null))
                 {
                     return true;
                 }
