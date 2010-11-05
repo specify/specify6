@@ -288,7 +288,7 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, C
                     {
                         inx = locPair.first;
                         String sep = formatStr.substring(prv, inx);
-                        Pair<Integer, String> p = new Pair<Integer, String>(i, sep);
+                        Pair<Integer, String> p = new Pair<Integer, String>(i-1, sep);
                         sepsList.add(p);
                     } else
                     {
