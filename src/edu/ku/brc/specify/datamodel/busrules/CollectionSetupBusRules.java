@@ -181,9 +181,9 @@ public class CollectionSetupBusRules extends BaseBusRules
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     @Override
-    public void beforeDelete(Object dataObj, DataProviderSessionIFace session)
+    public Object beforeDelete(Object dataObj, DataProviderSessionIFace session)
     {
-        super.beforeDelete(dataObj, session);
+        return super.beforeDelete(dataObj, session);
     }
 
     /**

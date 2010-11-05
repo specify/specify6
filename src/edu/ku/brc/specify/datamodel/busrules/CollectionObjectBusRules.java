@@ -661,6 +661,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 if (sessionArg == null && session != null)
                 {
                     session.close();
+                    session = null;
                 }
             }
             

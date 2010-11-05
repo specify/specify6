@@ -201,7 +201,7 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     @Override
-    public void beforeDelete(Object dataObj, DataProviderSessionIFace session)
+    public Object beforeDelete(Object dataObj, DataProviderSessionIFace session)
     {
         super.beforeDelete(dataObj, session);
         
@@ -215,12 +215,14 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
                 owner = session.merge(owner);
                 hashSet.clear();
                 hashSet.addAll(owner.getAttachmentReferences());
+                return owner;
                 
             } catch (Exception ex)
             {
                 ex.printStackTrace();
             }
         }
+        return dataObj;
     }
 
     /* (non-Javadoc)

@@ -99,7 +99,7 @@ public class AccessionAuthorizationBusRules extends BaseBusRules
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     @Override
-    public void beforeDelete(Object dataObj, DataProviderSessionIFace session)
+    public Object beforeDelete(Object dataObj, DataProviderSessionIFace session)
     {
         AccessionAuthorization accAuth = (AccessionAuthorization) dataObj;
         Permit                 permit  = accAuth.getPermit();
@@ -114,6 +114,7 @@ public class AccessionAuthorizationBusRules extends BaseBusRules
             removeById(accAuth.getAccession().getAccessionAuthorizations(), accAuth);
             accAuth.setAccession(null);
         }
+        return dataObj;
     }
 
 }

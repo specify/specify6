@@ -1256,7 +1256,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 
                 if (businessRules != null)
                 {
-                    businessRules.beforeDelete(mergedItem,session);
+                    mergedItem = (I)businessRules.beforeDelete(mergedItem,session);
                     businessRules.beforeSave(parent, session);
                     if (child != null)
                     {

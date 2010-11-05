@@ -206,7 +206,7 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
     public Object processSearchObject(final Object newParentDataObj, 
                                       final Object dataObjectFromSearch)
     {
-        if (newParentDataObj instanceof ObjectAttachmentIFace)
+        if (newParentDataObj instanceof ObjectAttachmentIFace<?>)
         {
             ObjectAttachmentIFace<?> objAtt = (ObjectAttachmentIFace<?>)newParentDataObj;
             objAtt.setAttachment((Attachment)dataObjectFromSearch);

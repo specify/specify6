@@ -203,8 +203,9 @@ public interface BusinessRulesIFace
      * 
      * @param dataObj the object to be deleted
      * @param session the data provider session
+     * @return TODO
      */
-    public abstract void beforeDelete(Object dataObj, DataProviderSessionIFace session);
+    public abstract Object beforeDelete(Object dataObj, DataProviderSessionIFace session);
     
     /**
      * Called BEFORE committing a transaction in which the passed in data object will

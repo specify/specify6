@@ -709,9 +709,11 @@ public class BaseBusRules implements BusinessRulesIFace
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#beforeDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     @Override
-    public void beforeDelete(final Object dataObj, final DataProviderSessionIFace session)
+    public Object beforeDelete(final Object dataObj, final DataProviderSessionIFace session)
     {
         // do nothing
+        return dataObj;
+
     }
 
     /* (non-Javadoc)

@@ -3434,7 +3434,7 @@ public class UploadTable implements Comparable<UploadTable>
                                 opened = true;
                                 if (busRule != null)
                                 {
-                                    busRule.beforeDelete(obj, session);
+                                    obj = (DataModelObjBase)busRule.beforeDelete(obj, session);
                                 }
                                 session.delete(obj);
                                 if (busRule != null)

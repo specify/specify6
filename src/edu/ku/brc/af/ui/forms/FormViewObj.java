@@ -2425,7 +2425,7 @@ public class FormViewObj implements Viewable,
             Object obj2 = localSession.merge(obj);
             if (delBusRules != null)
             {
-                delBusRules.beforeDelete(obj2, localSession);
+                obj2 = delBusRules.beforeDelete(obj2, localSession);
             }
             localSession.delete(obj2);
         }
@@ -3188,14 +3188,15 @@ public class FormViewObj implements Viewable,
                 Integer          objId = fdo.getId();
                 if (objId != null)
                 {
-                    if (attachFailed)
+                    // 11/5/2010 rods - Always close session because the evict below doesn't work
+                    //if (attachFailed)
                     {
                         session.close();
                         session = DataProviderFactory.getInstance().createSession();
                         setSession(session);
                     }
                     
-                    session.evict(dataObj);
+                    //session.evict(dataObj);
                     // Reload the object from the database  to avoid a stale object exception.
                     Object dbDataObj = session.getData(fdo.getDataClass(), "id", objId, DataProviderSessionIFace.CompareType.Equals);
                     if (dbDataObj != null)
@@ -3203,7 +3204,7 @@ public class FormViewObj implements Viewable,
                         session.beginTransaction();
                         if (businessRules != null)
                         {
-                            businessRules.beforeDelete(dbDataObj, session);
+                            //dbDataObj = businessRules.beforeDelete(dbDataObj, session);
                         }
                         
                         session.delete(dbDataObj);

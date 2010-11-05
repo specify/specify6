@@ -20,7 +20,6 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import edu.ku.brc.af.ui.forms.BaseBusRules;
-import edu.ku.brc.af.ui.forms.ResultSetController;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.ui.CommandAction;

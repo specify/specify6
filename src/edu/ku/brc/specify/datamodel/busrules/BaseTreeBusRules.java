@@ -1271,7 +1271,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
      * @see edu.ku.brc.ui.forms.BaseBusRules#beforeDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     @Override
-    public void beforeDelete(Object dataObj, DataProviderSessionIFace session)
+    public Object beforeDelete(Object dataObj, DataProviderSessionIFace session)
     {
         super.beforeDelete(dataObj, session);
         if (dataObj instanceof Treeable<?,?,?>)
@@ -1283,6 +1283,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                 node.setAcceptedParent(null);
             }
         }
+        return dataObj;
     }
 
     

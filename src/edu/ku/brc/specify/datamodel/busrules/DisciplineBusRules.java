@@ -784,7 +784,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     @Override
-    public void beforeDelete(Object dataObj, DataProviderSessionIFace session)
+    public Object beforeDelete(Object dataObj, DataProviderSessionIFace session)
     {
         super.beforeDelete(dataObj, session);
         
@@ -888,6 +888,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         }
 
 */
+        return dataObj;
     }
     
     /*public void disciplinehasBeenAdded(Division division, final Discipline discipline)

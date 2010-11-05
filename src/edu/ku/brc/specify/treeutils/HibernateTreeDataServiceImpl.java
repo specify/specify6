@@ -505,7 +505,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             BusinessRulesIFace busRulesObj = DBTableIdMgr.getInstance().getBusinessRule(node);
             if (busRulesObj != null)
             {
-                busRulesObj.beforeDelete(node, sessionWrapper);
+                node = (T)busRulesObj.beforeDelete(node, sessionWrapper);
             }
             session.delete(node);
             
