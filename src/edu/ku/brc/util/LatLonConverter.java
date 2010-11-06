@@ -26,6 +26,8 @@ import java.text.DecimalFormat;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.ui.UIHelper;
+
 
 /**
  * Helper for methods for convert to and from various different formats to Decimal Degrees.
@@ -825,15 +827,15 @@ public class LatLonConverter
             return null;
         }
         
-        double p0 =  Double.parseDouble(parts[0]);
+        double p0 =  UIHelper.parseDouble(parts[0]);
         boolean neg = false;
         if (p0 < 0)
         {
             p0 = p0*-1;
             neg = true;
         }
-        double p1 =  Double.parseDouble(parts[1]);
-        double p2 =  Double.parseDouble(parts[2]);
+        double p1 =  UIHelper.parseDouble(parts[1]);
+        double p2 =  UIHelper.parseDouble(parts[2]);
 
         BigDecimal val = new BigDecimal(p0 + ((p1 + (p2 / 60.0)) / 60.0));
         if (neg)
@@ -869,14 +871,14 @@ public class LatLonConverter
     {
         String[] parts = StringUtils.split(str, " d°'\"" + DEGREES_SYMBOL);
         
-        double p0 =  Double.parseDouble(parts[0]);
+        double p0 =  UIHelper.parseDouble(parts[0]);
         boolean neg = false;
         if (p0 < 0)
         {
             p0 = p0*-1;
             neg = true;
         }
-        double p1 =  Double.parseDouble(parts[1]);
+        double p1 =  UIHelper.parseDouble(parts[1]);
 
         BigDecimal val = new BigDecimal(p0 + (p1 / 60.0));
 
@@ -989,9 +991,9 @@ public class LatLonConverter
             dir = parts[3].substring(0, 1);
         }
         
-        double p0 =  Double.parseDouble(parts[0]);
-        double p1 =  Double.parseDouble(parts[1]);
-        double p2 =  Double.parseDouble(parts[2]);
+        double p0 =  UIHelper.parseDouble(parts[0]);
+        double p1 =  UIHelper.parseDouble(parts[1]);
+        double p2 =  UIHelper.parseDouble(parts[2]);
 
         BigDecimal val = new BigDecimal(p0 + ((p1 + (p2 / 60.0)) / 60.0));
 
@@ -1024,8 +1026,8 @@ public class LatLonConverter
             dir = parts[2].substring(0, 1);
         }
         
-        double p0 =  Double.parseDouble(parts[0]);
-        double p1 =  Double.parseDouble(parts[1]);
+        double p0 =  UIHelper.parseDouble(parts[0]);
+        double p1 =  UIHelper.parseDouble(parts[1]);
 
         BigDecimal val = new BigDecimal(p0 + (p1 / 60.0));
 
@@ -1058,7 +1060,7 @@ public class LatLonConverter
             dir = parts[1].substring(0, 1);
         }
         
-        double p0  = Double.parseDouble(parts[0]);
+        double p0  = UIHelper.parseDouble(parts[0]);
         
         BigDecimal val = new BigDecimal(p0);
 

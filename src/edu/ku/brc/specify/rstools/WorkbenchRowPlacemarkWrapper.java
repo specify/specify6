@@ -175,8 +175,8 @@ public class WorkbenchRowPlacemarkWrapper implements LatLonPlacemarkIFace
                     String latStr;
                     try
                     {
-                        latStr = converter.convert(StringUtils.stripToNull(valStr), GeoRefFormat.D_PLUS_MINUS.name());
-                        latitude = Double.parseDouble(latStr);
+                        latStr   = converter.convert(StringUtils.stripToNull(valStr), GeoRefFormat.D_PLUS_MINUS.name());
+                        latitude = UIHelper.parseDouble(latStr);
                     }
                     catch (Exception e)
                     {
@@ -194,7 +194,7 @@ public class WorkbenchRowPlacemarkWrapper implements LatLonPlacemarkIFace
                     try
                     {
                         lonStr = converter.convert(StringUtils.stripToNull(valStr), GeoRefFormat.D_PLUS_MINUS.name());
-                        longitude = Double.parseDouble(lonStr);
+                        longitude = UIHelper.parseDouble(lonStr);
                     }
                     catch (Exception e)
                     {

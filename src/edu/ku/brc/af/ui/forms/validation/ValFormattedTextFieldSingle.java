@@ -1106,16 +1106,16 @@ public class ValFormattedTextFieldSingle extends JTextField implements ValFormat
             this.ignoreLenForValidation = ignoreLenForValidation;
         }
 
-        NumberFormat l10nDouble = NumberFormat.getNumberInstance(Locale.getDefault());
-
+        /**
+         * @param string
+         * @return
+         */
         public boolean isNumber(final String string) 
         {
             try
             {
-                return (l10nDouble.parse(string) != null);
-            } catch (ParseException e)
-            {
-            }
+                return (numberFormatter.parse(string) != null);
+            } catch (ParseException e) {}
             return false;
         }
         

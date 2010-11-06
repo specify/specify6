@@ -25,7 +25,9 @@ import static edu.ku.brc.ui.UIRegistry.popResourceBundle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -58,6 +60,7 @@ import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.LatLonConverter;
 
@@ -75,6 +78,8 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
                                                              CommandListener
 {
     protected final String           PREFERENCES = "Preferences";
+    
+    protected NumberFormat           numberFormatter = NumberFormat.getNumberInstance(Locale.getDefault());
     
     protected Locality               locality    = null;
     protected FormViewObj            fvo         = null;    
@@ -367,9 +372,9 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
        {
            GeoCoordDataIFace gcData = items.get(0);
            
-           BigDecimal lat1 = new BigDecimal(Double.parseDouble(gcData.getLatitude()));
-           BigDecimal lon1 = new BigDecimal(Double.parseDouble(gcData.getLongitude()));
-
+           BigDecimal lat1 = UIHelper.parseDoubleToBigDecimal(gcData.getLatitude());
+           BigDecimal lon1 = UIHelper.parseDoubleToBigDecimal(gcData.getLongitude());
+           
            if (llId == null)
            {
                JOptionPane.showMessageDialog(null, "The LatLonUI is missing the 'llid' parameter", "Error", JOptionPane.ERROR_MESSAGE);

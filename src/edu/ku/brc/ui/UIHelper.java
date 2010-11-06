@@ -77,6 +77,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -84,6 +85,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -3815,4 +3817,29 @@ public final class UIHelper
         }
         return null;
     }
+    
+    /**
+     * @param value
+     * @return
+     */
+    public static Double parseDouble(final String value)
+    {
+        NumberFormat numberFormatter = NumberFormat.getNumberInstance(Locale.getDefault());
+        try
+        {
+            return numberFormatter.parse(value).doubleValue();
+        } catch (ParseException e){}
+        return null;
+    }
+    
+    /**
+     * @param value
+     * @return
+     */
+    public static BigDecimal parseDoubleToBigDecimal(final String value)
+    {
+        Double dbl = parseDouble(value);
+        return dbl != null ? new BigDecimal(dbl) : null;
+    }
+
 }
