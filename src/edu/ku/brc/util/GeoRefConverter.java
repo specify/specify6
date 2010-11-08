@@ -20,12 +20,16 @@
 package edu.ku.brc.util;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 
 public class GeoRefConverter implements StringConverter
 {
-    //NOTE: on mac the order of the formats matters. 
+    protected final String decimalSep;
+	
+	//NOTE: on mac the order of the formats matters. 
 	//Some strings will (invalidly - at least according to windows/linux interpretation)
 	//match more than format. 
 	//Currently, For the mac, conversions will only work if formats are defined in the order below. 
@@ -97,7 +101,7 @@ public class GeoRefConverter implements StringConverter
     
     public GeoRefConverter()
     {
-        // nothing to do here
+        decimalSep = Character.toString(new DecimalFormatSymbols(Locale.getDefault()).getDecimalSeparator());
     }
 
     public int getDecimalSize(final String llText)
@@ -131,7 +135,7 @@ public class GeoRefConverter implements StringConverter
     }
 
     /**
-     * @param original
+     * @param deLocalized
      * @param destFormat
      * @param llType
      * @param degFmt
@@ -147,16 +151,17 @@ public class GeoRefConverter implements StringConverter
             return null;
         }
         
+        
         // first we have to 'discover' the original format
         // and convert to decimal degrees
         // then we convert to the requested format
 
-        
+        String deLocalized = original.replace(decimalSep, ".");
         BigDecimal degreesPlusMinus = null;
         GeoRefFormat originalFormat = null;
         for (GeoRefFormat format: GeoRefFormat.values())
         {
-        	if (original.matches(format.regex))
+        	if (deLocalized.matches(format.regex))
             {
                 degreesPlusMinus = format.convertToDecimalDegrees(original);
                 originalFormat = format;
@@ -164,7 +169,7 @@ public class GeoRefConverter implements StringConverter
             }
         }
         
-        int decimalFmtLen = getDecimalSize(original);
+        int decimalFmtLen = getDecimalSize(deLocalized);
         
         
         // if we weren't able to find a matching format, throw an exception
