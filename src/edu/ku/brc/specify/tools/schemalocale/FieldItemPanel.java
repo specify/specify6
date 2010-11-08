@@ -831,8 +831,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         
         cbxModel.addElement(SL_NONE); // Add None
         
-        if (fieldInfo.getType().equals("java.lang.String") ||
-        	UIHelper.isClassNumeric(fieldInfo.getDataClass()))
+        if (fieldInfo.getDataClass() == String.class || UIHelper.isClassNumeric(fieldInfo.getDataClass(), true))
         {
             formatCombo.setEnabled(true);
             formatMoreBtn.setEnabled(true);
@@ -1537,8 +1536,8 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         {
             DBRelationshipInfo.RelationshipType relType = relInfo != null ? relInfo.getType() : null;
             
-            String  typeStr  = fieldInfo != null ? fieldInfo.getType() : null;
-            boolean isTypeOK = typeStr != null && (typeStr.equals("java.lang.String") || typeStr.equals("java.lang.Byte") || typeStr.equals("string"));
+            Class<?> typeCls  = fieldInfo != null ? fieldInfo.getDataClass() : null;
+            boolean  isTypeOK = typeCls != null && (typeCls == String.class || UIHelper.isClassNumeric(typeCls, true));
             
             int selectedIndex = 0;
             DefaultComboBoxModel plCbxModel = (DefaultComboBoxModel)pickListCBX.getModel();

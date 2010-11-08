@@ -804,17 +804,9 @@ public final class UIHelper
      * @param cls
      * @return
      */
-    public static boolean isClassNumeric(final Class<?> cls)
+    public static boolean isClassNumeric(final Class<?> cls, final boolean doScalarOnly)
     {
         if (cls == Integer.class)
-        {
-            return true;
-            
-        } else if (cls == Float.class)
-        {
-            return true;
-            
-        } else if (cls == Double.class)
         {
             return true;
             
@@ -829,11 +821,26 @@ public final class UIHelper
         } else if (cls == Byte.class)
         {
             return true;
+        }
+        
+        if (doScalarOnly)
+        {
+            return false;
+        }
+        
+        if (cls == Float.class)
+        {
+            return true;
+            
+        } else if (cls == Double.class)
+        {
+            return true;
             
         } else if (cls == BigDecimal.class)
         {
             return true;
         }
+        
         return false;
     }
     
