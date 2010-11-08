@@ -275,21 +275,20 @@ public class BatchAttachFiles
 	 * Attaches f to the object with key attachTo
 	 */
 	@SuppressWarnings("unchecked")
-	protected void attachFileTo(File f, Integer attachTo)
+	protected void attachFileTo(final File f, final Integer attachTo)
 	{
 		//System.out.println("Attaching " + f.getName() + " to " + attachTo);
-		System.out.println("attachFileTo Entry: " + Runtime.getRuntime().freeMemory());
-		DataProviderSessionIFace session = DataProviderFactory.getInstance()
-				.createSession();
+		//System.out.println("attachFileTo Entry: " + Runtime.getRuntime().freeMemory());
+		DataProviderSessionIFace localSession = DataProviderFactory.getInstance().createSession();
 		boolean tblTransactionOpen = false;
-		if (session != null)
+		if (localSession != null)
 		{
 			try
 			{
-				AttachmentOwnerIFace<?> rec = getAttachmentOwner(session,
+				AttachmentOwnerIFace<?> rec = getAttachmentOwner(localSession,
 						attachTo);
 				//session.attach(rec);
-				session.beginTransaction();
+				localSession.beginTransaction();
 				tblTransactionOpen = true;
 				
 				Set<ObjectAttachmentIFace<?>> attachees = (Set<ObjectAttachmentIFace<?>>) rec
@@ -322,15 +321,15 @@ public class BatchAttachFiles
 						.getBusinessRule(rec.getClass());
 				if (busRule != null)
 				{
-					busRule.beforeSave(rec, session);
+					busRule.beforeSave(rec, localSession);
 				}
-				session.saveOrUpdate(rec);
+				localSession.saveOrUpdate(rec);
 				
 				if (busRule != null)
 				{
-					if (!busRule.beforeSaveCommit(rec, session))
+					if (!busRule.beforeSaveCommit(rec, localSession))
 					{
-						session.rollback();
+						localSession.rollback();
 						throw new Exception("Business rules processing failed");
 					}
 				}
@@ -338,15 +337,15 @@ public class BatchAttachFiles
 				{
 					AttachmentUtils.getAttachmentManager()
 						.setStorageLocationIntoAttachment(oaif.getAttachment());
-					oaif.getAttachment().storeFile();
+					oaif.getAttachment().storeFile(false); // false means do not display an error dialog
 				}
 
-				session.commit();
+				localSession.commit();
 				//System.out.println("ATTACHED " + f.getName() + " to " + attachTo);
 				tblTransactionOpen = false;
 				if (busRule != null)
 				{
-					busRule.afterSaveCommit(rec, session);
+					busRule.afterSaveCommit(rec, localSession);
 				}
 				
 				//this is necessary to prevent memory leak -- no idea why or how -- but the merge
@@ -363,7 +362,7 @@ public class BatchAttachFiles
 			{
 				if (tblTransactionOpen)
 				{
-					session.rollback();
+					localSession.rollback();
 				}
 				errors.add(new Pair<String, String>(f.getName(), he.getLocalizedMessage()));
 				
@@ -371,13 +370,13 @@ public class BatchAttachFiles
 			{
 				if (tblTransactionOpen)
 				{
-					session.rollback();
+					localSession.rollback();
 				}
 				errors.add(new Pair<String, String>(f.getName(), ex
 						.getLocalizedMessage()));
 			} finally
 			{
-				session.close();
+				localSession.close();
 				//session.clear();
 			}
 		} else
@@ -393,9 +392,9 @@ public class BatchAttachFiles
 	 * @param recId
 	 * @return record with key recId
 	 */
-	protected AttachmentOwnerIFace<?> getAttachmentOwner(DataProviderSessionIFace session, Integer recId)
+	protected AttachmentOwnerIFace<?> getAttachmentOwner(DataProviderSessionIFace sessionArg, Integer recId)
 	{
-		return (AttachmentOwnerIFace<?>)session.get(tblClass, recId);
+		return (AttachmentOwnerIFace<?>)sessionArg.get(tblClass, recId);
 	}
 	
 	/**

@@ -205,10 +205,11 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     public void storeAttachmentFile(final Attachment attachment, final File attachmentFile, final File thumbnail) throws IOException
     {
         // copy the original into the storage system
-        String attachLoc = attachment.getAttachmentLocation();
-        File origFile = new File(baseDirectory + File.separator + ORIGINAL + File.separator + attachLoc);
+        String attachLoc      = attachment.getAttachmentLocation();
+        File   repositoryFile = new File(baseDirectory + File.separator + ORIGINAL + File.separator + attachLoc);
         
-        FileUtils.copyFile(attachmentFile, origFile);
+        // Copy it to the Repository
+        FileUtils.copyFile(attachmentFile, repositoryFile);
         
         // copy the thumbnail, if any, into the storage system
         if (thumbnail != null)

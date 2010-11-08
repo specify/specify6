@@ -183,7 +183,7 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
                     // we need to store it's file into the storage system
                     try
                     {
-                        a.storeFile();
+                        a.storeFile(true); // false means do not display an error dialog
                     }
                     catch (IOException e)
                     {

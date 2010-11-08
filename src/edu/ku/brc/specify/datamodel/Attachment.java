@@ -47,6 +47,7 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
@@ -639,13 +640,13 @@ public class Attachment extends DataModelObjBase implements Serializable
     /**
      * @throws IOException
      */
-    public void storeFile() throws IOException
+    public void storeFile(final boolean doDisplayErrors) throws IOException
     {
         // Copy the attachment file to the file storage system
-        Thumbnailer thumbnailGen = AttachmentUtils.getThumbnailer();
+        Thumbnailer            thumbnailGen  = AttachmentUtils.getThumbnailer();
         AttachmentManagerIface attachmentMgr = AttachmentUtils.getAttachmentManager();
-        File origFile = new File(origFilename);
-        File thumbFile = null;
+        File                   origFile      = new File(origFilename);
+        File                   thumbFile     = null;
         
         try
         {
@@ -657,9 +658,24 @@ public class Attachment extends DataModelObjBase implements Serializable
         {
             thumbFile = null;
         }
-        attachmentMgr.storeAttachmentFile(this, origFile, thumbFile);
         
-        this.storeFile = false;
+        try
+        {
+            attachmentMgr.storeAttachmentFile(this, origFile, thumbFile);
+            
+        } catch (IOException ex)
+        {
+            if (doDisplayErrors)
+            {
+                UIRegistry.showLocalizedError("ATTCH_NOT_SAVED_REPOS", origFilename);
+                return;
+            }
+            throw ex;
+            
+        } finally
+        {
+            this.storeFile = false;
+        }
     }
     
     /**

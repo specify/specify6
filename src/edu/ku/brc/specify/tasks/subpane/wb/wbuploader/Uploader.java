@@ -4358,7 +4358,8 @@ public class Uploader implements ActionListener, KeyListener
 					AttachmentUtils.getAttachmentManager()
 							.setStorageLocationIntoAttachment(
 									att.getAttachment());
-					att.getAttachment().storeFile();
+					
+					att.getAttachment().storeFile(false); // false means do not display an error dialog
 			}
 			session.commit();
 			tblTransactionOpen = false;
