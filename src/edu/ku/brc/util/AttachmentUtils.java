@@ -115,13 +115,18 @@ public class AttachmentUtils
      */
     public static boolean isAttachmentDirMounted(final File attachmentLocation)
     {
+        String fullPath = "";
+        String statsMsg = "The test to write to the AttachmentLocation [%s] %s.";
         try
         {
+            fullPath = attachmentLocation.getCanonicalPath();
+            
             if (attachmentLocation.exists())
             {
                 if (attachmentLocation.isDirectory())
                 {
                     File tmpFile = new File(attachmentLocation.getAbsoluteFile() + File.separator + System.currentTimeMillis() + System.getProperty("user.name"));
+                    log.debug(String.format("Trying to write a file to AttachmentLocation [%s]", tmpFile.getCanonicalPath()));
                     if (tmpFile.createNewFile())
                     {
                         // I don't think I need this anymore
@@ -130,30 +135,35 @@ public class AttachmentUtils
                         fos.close();
                         tmpFile.delete();
                         
+                        log.debug(String.format(statsMsg, fullPath, "succeeded"));
+                        
                         return true;
                         
                     } else
                     {
-                        log.error("The Attachment Location ["+attachmentLocation.getCanonicalPath()+"] atachment file couldn't be created");
+                        log.error(String.format("The Attachment Location [%s] atachment file couldn't be created", fullPath));
                     }
                 } else
                 {
-                    log.error("The Attachment Location ["+attachmentLocation.getCanonicalPath()+"] is not a directory.");
+                    log.error(String.format("The Attachment Location [%s] is not a directory.", fullPath));
                 }
             } else
             {
-                log.error("The Attachment Location ["+attachmentLocation.getCanonicalPath()+"] doesn't exist.");
+                log.error(String.format("The Attachment Location [%s] doesn't exist.", fullPath));
             }
             
         } catch (Exception ex)
         {
             ex.printStackTrace();
         }
+        
+        log.debug(String.format(statsMsg, fullPath, "failed"));
+        
         return false;
     }
     
     /**
-     * @return the actionlister for when things need to be displayed
+     * @return the actionlistener for when things need to be displayed
      */
     public static ActionListener getAttachmentDisplayer()
     {
@@ -162,7 +172,7 @@ public class AttachmentUtils
             public void actionPerformed(ActionEvent e)
             {
                 Object source = e.getSource();
-                if (!(source instanceof Attachment) && !(source instanceof ObjectAttachmentIFace))
+                if (!(source instanceof Attachment) && !(source instanceof ObjectAttachmentIFace<?>))
                 {
                     throw new IllegalArgumentException("Passed object must be an Attachment or ObjectAttachmentIFace");
                 }

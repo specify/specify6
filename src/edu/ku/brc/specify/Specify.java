@@ -421,12 +421,21 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             attachmentLocation = path != null && !UIRegistry.isMobile() ? new File(path) : location;
             if (!AttachmentUtils.isAttachmentDirMounted(attachmentLocation))
             {
+                final File attchLocDir = attachmentLocation;
                 SwingUtilities.invokeLater(new Runnable()
                 {
                     @Override
                     public void run()
                     {
-                        UIRegistry.showLocalizedError("AttachmentUtils.LOC_BAD", location.getAbsolutePath());
+                        String pathStr;
+                        try
+                        {
+                            pathStr = attchLocDir.getCanonicalPath();
+                        } catch (IOException e)
+                        {
+                            pathStr = attchLocDir.getAbsolutePath();
+                        }
+                        UIRegistry.showLocalizedError("AttachmentUtils.LOC_BAD", pathStr);
                     }
                 });
                 
