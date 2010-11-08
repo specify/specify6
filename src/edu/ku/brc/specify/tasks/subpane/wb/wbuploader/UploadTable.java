@@ -95,6 +95,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.DateConverter;
 import edu.ku.brc.util.GeoRefConverter;
@@ -1222,15 +1223,7 @@ public class UploadTable implements Comparable<UploadTable>
                 {
                     if (isLatLongFld(ufld))
                     {
-                    	boolean gotANumber = true;
-                    	try
-                    	{
-                    		new BigDecimal(fldStr);
-                    	}
-                    	catch(NumberFormatException ex)
-                    	{
-                    		gotANumber = false;
-                    	}
+                    	boolean gotANumber = UIHelper.parseDoubleToBigDecimal(fldStr) != null;
                     	if (!gotANumber)
                     	{
                     		try
@@ -1243,7 +1236,7 @@ public class UploadTable implements Comparable<UploadTable>
                     		}
                     	}
                     }
-                    BigDecimal val = new BigDecimal(fldStr);
+                    BigDecimal val = UIHelper.parseDoubleToBigDecimal(fldStr);
                     if (isLatLongFld(ufld))
                     {
                     	Double maxVal =  isLatFld(ufld) ? new Double("90") : new Double("180");

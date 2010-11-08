@@ -48,6 +48,7 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.LatLonConverter.DEGREES_FORMAT;
 import edu.ku.brc.util.LatLonConverter.DIRECTION;
@@ -323,8 +324,8 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
                                                                            DataProviderSessionIFace.CompareType.Equals);
                             if (locality != null)
                             {
-                                BigDecimal lat = new BigDecimal(item.getLatitude());
-                                BigDecimal lon = new BigDecimal(item.getLongitude());
+                                BigDecimal lat = UIHelper.parseDoubleToBigDecimal(item.getLatitude());
+                                BigDecimal lon = UIHelper.parseDoubleToBigDecimal(item.getLongitude());
                                 
                                 locality.setLatitude1(lat);
                                 locality.setLongitude1(lon);

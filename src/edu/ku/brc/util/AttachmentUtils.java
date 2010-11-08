@@ -24,7 +24,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.URI;
 
 import javax.activation.FileTypeMap;
@@ -195,20 +194,26 @@ public class AttachmentUtils
                     original = new File(origFile);
                 }
 
-                try
+                String errMsg = null;
+                if (original != null && original.exists())
                 {
-                    if (original != null && original.exists())
+                    try
                     {
                         Desktop.getDesktop().open(original);
-                    } else
+                        
+                    } catch (java.io.IOException ex)
                     {
-                        UIRegistry.showLocalizedMsg("AttachmentUtils.ANF_TITLE", "AttachmentUtils.ANF", 
-                                attachMgr.getDirectory() != null ? attachMgr.getDirectory().getAbsoluteFile() : "N/A");
+                        errMsg = ex.getMessage();
+                        ex.printStackTrace();
                     }
-                }
-                catch (IOException e1)
+                } else
                 {
-                    e1.printStackTrace();
+                    errMsg = attachMgr.getDirectory() != null ? attachMgr.getDirectory().getAbsolutePath() : "N/A";
+                }
+                
+                if (errMsg != null)
+                {
+                    UIRegistry.showLocalizedMsg("AttachmentUtils.ANF_TITLE", "AttachmentUtils.ANF", errMsg);
                 }
             }
         };

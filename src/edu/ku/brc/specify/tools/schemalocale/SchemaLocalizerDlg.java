@@ -328,6 +328,8 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     @Override
     public Vector<LocalizableJListItem> getContainerDisplayItems()
     {
+        final String ATTACHMENT = "attachment";
+        
         Connection connection = null;
         Statement stmt        = null;
         ResultSet rs          = null;
@@ -344,10 +346,14 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             
             while (rs.next())
             {
-                String tblName = rs.getString(2);
+                String  tblName      = rs.getString(2);
+                boolean isAttachment = (tblName.startsWith(ATTACHMENT) || tblName.endsWith(ATTACHMENT)) && !tblName.equals(ATTACHMENT);
+                
+                System.out.println(tblName+" "+isAttachment);
+                
                 if (shouldIncludeAppTables() || 
                     !(tblName.startsWith("sp") || 
-                            tblName.startsWith("attachment") || 
+                            isAttachment || 
                             tblName.startsWith("autonum") || 
                             tblName.equals("picklist") || 
                             tblName.equals("attributedef") || 
@@ -356,7 +362,6 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                             tblName.startsWith("workbench") || 
                             tblName.endsWith("treedef") || 
                             tblName.endsWith("treedefitem") || 
-                            tblName.endsWith("attachment") || 
                             tblName.endsWith("attr") || 
                             tblName.endsWith("reltype")))
                 {

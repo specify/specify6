@@ -50,6 +50,7 @@ import org.hibernate.annotations.Index;
 
 import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
 import edu.ku.brc.ui.GraphicsUtils;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.GeoRefConverter;
 import edu.ku.brc.util.LatLonConverter;
@@ -797,7 +798,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
                 return null;
             }
             ddString = geoConverter.convert(StringUtils.stripToNull(latEntry), GeoRefFormat.D_PLUS_MINUS.name());
-            BigDecimal bigD = new BigDecimal(ddString);
+            BigDecimal bigD = UIHelper.parseDoubleToBigDecimal(ddString);
             return LatLonConverter.ensureFormattedString(bigD, null, fmt, LatLonConverter.LATLON.Latitude, decimalSize);
         }
         catch (NumberFormatException ex)
@@ -829,7 +830,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
                 return null;
             }
             ddString = geoConverter.convert(StringUtils.stripToNull(longEntry), GeoRefFormat.D_PLUS_MINUS.name());
-            BigDecimal bigD = new BigDecimal(ddString);
+            BigDecimal bigD = UIHelper.parseDoubleToBigDecimal(ddString);
             return LatLonConverter.ensureFormattedString(bigD, null, fmt, LatLonConverter.LATLON.Longitude, decimalSize);
         }
         catch (NumberFormatException ex)

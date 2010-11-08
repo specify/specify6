@@ -30,7 +30,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -85,6 +87,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     
     protected DBTableIdMgr                                 tableMgr;
     
+    protected List<Locale>                                 availLocales = new ArrayList<Locale>();
     protected Vector<DisciplineBasedContainer>             tables     = new Vector<DisciplineBasedContainer>();
     protected Hashtable<String, LocalizableContainerIFace> tableHash  = new Hashtable<String, LocalizableContainerIFace>();
     
@@ -150,11 +153,13 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     
     /**
      * @param externalFile
+     * @param useCurrentLocaleOnly
      * @return
      */
     public boolean loadWithExternalFile(final File externalFile, final boolean useCurrentLocaleOnly)
     {
         tables = load(null, externalFile, useCurrentLocaleOnly);
+        discoverLocalesFromData();
         
         boolean loadedOk = tables != null;
         if (loadedOk && externalFile == null)
@@ -165,6 +170,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 addDisplineBasedContainers(disciplineType.getName(), dispContainers);
             }
         }
+        
         return loadedOk;
     }
     
@@ -195,6 +201,55 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         }
     }
     
+    /**
+     * 
+     */
+    private void discoverLocalesFromData()
+    {
+        HashSet<String> hash = new HashSet<String>();
+        
+        for (DisciplineBasedContainer container : tables)
+        {
+            for (SpLocaleItemStr str : container.getNames())
+            {
+                String language = str.getLanguage();
+                String country  = str.getCountry();
+                String variant  = str.getVariant();
+                
+                String key = String.format("%s_%s_%s", language, country != null ? country : "", variant != null ? variant : "");
+                if (!hash.contains(key))
+                {
+                    Locale locale = null;
+                    if (StringUtils.isNotBlank(language) && StringUtils.isNotBlank(country) && StringUtils.isNotBlank(variant))
+                    {
+                        locale = new Locale(language, country, variant);
+                        
+                    } else if (StringUtils.isNotBlank(language) && StringUtils.isNotBlank(country))
+                    {
+                        locale = new Locale(language, country);
+                        
+                    } else if (StringUtils.isNotBlank(language))
+                    {
+                        locale = new Locale(language);
+                    }
+                    if (locale != null)
+                    {
+                        availLocales.add(locale);
+                        hash.add(key);
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * @return the availLocales
+     */
+    public List<Locale> getAvailLocales()
+    {
+        return availLocales;
+    }
+
     /**
      * @param language
      * @param containers

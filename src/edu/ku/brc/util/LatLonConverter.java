@@ -23,6 +23,8 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -41,6 +43,9 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class LatLonConverter
 {
+    protected static DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(Locale.getDefault());
+    protected static String               decimalSep;
+    
     public final  static char UNICODE_DEGREE = 0x00b0;
     
 	public final static String DEGREES_SYMBOL = "\u00b0";
@@ -87,6 +92,7 @@ public class LatLonConverter
         {
             zeroes.append("00000000");
         }
+        decimalSep = Character.toString(formatSymbols.getDecimalSeparator());
     }
     
     /**
@@ -778,8 +784,8 @@ public class LatLonConverter
         //apparently need to do this on mac
         withoutDegSign =  StringUtils.remove(withoutDegSign, UNICODE_DEGREE);
         
-        String val = StringUtils.replace(StringUtils.replace(withoutDegSign, ".", ""), "-", "");
-        return StringUtils.isNumeric(val) ? new BigDecimal(withoutDegSign) : null;
+        String val = StringUtils.replace(StringUtils.replace(withoutDegSign, decimalSep, ""), "-", "");
+        return StringUtils.isNumeric(val) ? UIHelper.parseDoubleToBigDecimal(withoutDegSign) : null;
     }
     
     /**
@@ -790,13 +796,13 @@ public class LatLonConverter
      */
     public static BigDecimal convertDDDDStrToDDDDBD(final String str, final String direction)
     {
-        String val = StringUtils.replace(StringUtils.replace(str, ".", ""), "-", "");
+        String val = StringUtils.replace(StringUtils.replace(str, decimalSep, ""), "-", "");
         if (!StringUtils.isNumeric(val))
         {
             return null;
         }
         
-        BigDecimal bd = new BigDecimal(str);
+        BigDecimal bd = UIHelper.parseDoubleToBigDecimal(str);
         if (isNegative(direction))
         {
             return bd.multiply(minusOne);
@@ -919,7 +925,7 @@ public class LatLonConverter
         }
         // else
         String newStr = StringUtils.stripEnd(str, "0");
-        if (newStr.endsWith("."))
+        if (newStr.endsWith(decimalSep))
         {
             return newStr + "0";
         }

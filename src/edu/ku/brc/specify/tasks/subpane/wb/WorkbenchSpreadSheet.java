@@ -20,6 +20,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.TableSearcher;
 import edu.ku.brc.ui.TableSearcherCell;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.tmanfe.SearchReplacePanel;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
 import edu.ku.brc.ui.tmanfe.SpreadSheetModel;
@@ -291,7 +292,7 @@ public class WorkbenchSpreadSheet extends SpreadSheet
 			try
 			{
 				llStr0 = geoRefConverter.convert(arg0, GeoRefConverter.GeoRefFormat.D_PLUS_MINUS.name());
-				ll0 = new BigDecimal(llStr0);
+				ll0 = UIHelper.parseDoubleToBigDecimal(llStr0);
 			}
 			catch (Exception ex)
 			{
@@ -300,7 +301,7 @@ public class WorkbenchSpreadSheet extends SpreadSheet
 			try
 			{
 				llStr1 = geoRefConverter.convert(arg1, GeoRefConverter.GeoRefFormat.D_PLUS_MINUS.name());
-				ll1 = new BigDecimal(llStr1);
+				ll1 = UIHelper.parseDoubleToBigDecimal(llStr1);
 			}
 			catch (Exception ex)
 			{

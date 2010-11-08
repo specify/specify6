@@ -33,6 +33,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -87,6 +89,8 @@ import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.ToggleButtonChooserDlg;
+import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.IconManager.IconSize;
@@ -543,6 +547,43 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
     }
     
     /**
+     * 
+     */
+    private void chooseCurrentLocale()
+    {
+        List<Locale> locales = ((SchemaLocalizerXMLHelper)localizableIO).getAvailLocales();
+        Locale locale = null;
+        if (locales.size() == 1)
+        {
+            locale = locales.get(0);
+        } else
+        {
+            ArrayList<DisplayLocale> dspLocales = new ArrayList<DisplayLocale>();
+            for (Locale l : locales)
+            {
+                dspLocales.add(new DisplayLocale(l));
+            }
+            ToggleButtonChooserDlg<DisplayLocale> dlg = new ToggleButtonChooserDlg<DisplayLocale>(null, "Choose", dspLocales, ToggleButtonChooserPanel.Type.RadioButton);
+            dlg.setUseScrollPane(true);
+            UIHelper.centerAndShow(dlg);
+            if (!dlg.isCancelled())
+            {
+                DisplayLocale dl = dlg.getSelectedObject();
+                if (dl != null)
+                {
+                    locale = dl.getLocale();
+                }
+            }
+        }
+
+        if (locale != null)
+        {
+            SchemaI18NService.setCurrentLocale(locale);
+            statusBar.setSectionText(0, SchemaI18NService.getCurrentLocale().getDisplayName());
+        }
+    }
+    
+    /**
      * @param args
      */
     public static void main(String[] args)
@@ -618,6 +659,8 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                 AppPreferences localPrefs = AppPreferences.getLocalPrefs();
                 localPrefs.setDirPath(UIRegistry.getAppDataDir());
                 
+                //Specify.adjustLocaleFromPrefs();
+                
                 System.setProperty(AppContextMgr.factoryName,          "edu.ku.brc.specify.config.SpecifyAppContextMgr");      // Needed by AppContextMgr //$NON-NLS-1$
                 System.setProperty(SchemaI18NService.factoryName,      "edu.ku.brc.specify.config.SpecifySchemaI18NService");  // Needed for Localization and Schema //$NON-NLS-1$
                 System.setProperty(UIFieldFormatterMgr.factoryName,    "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");    // Needed for CatalogNumbering //$NON-NLS-1$
@@ -653,6 +696,16 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                 size.width += 250;
                 sla.setSize(size);
                 UIHelper.centerAndShow(sla);
+                
+                final SchemaLocalizerFrame slaf = sla;
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        slaf.chooseCurrentLocale();
+                    }
+                });
             }
         });
 

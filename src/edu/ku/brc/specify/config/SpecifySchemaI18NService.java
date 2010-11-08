@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.config;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -49,6 +51,9 @@ public class SpecifySchemaI18NService extends SchemaI18NService
 {
     private static final Logger      log      = Logger.getLogger(SpecifySchemaI18NService.class);
     
+    private Byte         schemaType;
+    private int          disciplineId;
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.SchemaI18NService#loadWithLocale(java.lang.Byte, int, edu.ku.brc.dbsupport.DBTableIdMgr, java.util.Locale)
      */
@@ -58,6 +63,9 @@ public class SpecifySchemaI18NService extends SchemaI18NService
                                final DBTableIdMgr mgr, 
                                final Locale       locale)
     {
+        this.disciplineId = disciplineId;
+        this.schemaType   = schemaType;
+        
         // First do Just Hidden in case a table is missing a title or desc
         String sql = String.format("SELECT Name, IsHidden FROM  splocalecontainer WHERE SchemaType = %d AND DisciplineID = %d", schemaType, disciplineId);
 
@@ -237,6 +245,48 @@ public class SpecifySchemaI18NService extends SchemaI18NService
                 log.error("Couldn't find table ["+nm+"]");
             }
         }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.SchemaI18NService#getLocalesFromData()
+     */
+    @Override
+    public List<Locale> getLocalesFromData()
+    {
+        List<Locale> locales = new ArrayList<Locale>();
+        
+        String sql = String.format("SELECT i.Language, i.Country, i.Variant FROM splocalecontainer cn INNER JOIN splocaleitemstr i ON " +
+                                   "cn.SpLocaleContainerID = i.SpLocaleContainerNameID WHERE cn.SchemaType = %d AND cn.DisciplineID = %d",
+                                   schemaType, disciplineId);
+        System.out.println(sql);
+        Vector<Object[]> rows = BasicSQLUtils.query(sql);
+
+        for (Object[] row : rows)
+        {
+            String language = (String)row[0];
+            String country  = (String)row[1];
+            String variant  = (String)row[2];
+            
+            Locale locale = null;
+            
+            if (StringUtils.isNotBlank(language) && StringUtils.isNotBlank(country) && StringUtils.isNotBlank(variant))
+            {
+                locale = new Locale(language, country, variant);
+                
+            } else if (StringUtils.isNotBlank(language) && StringUtils.isNotBlank(country))
+            {
+                locale = new Locale(language, country);
+                
+            } else if (StringUtils.isNotBlank(language))
+            {
+                locale = new Locale(language);
+            }
+            if (locale != null)
+            {
+                locales.add(locale);
+            }
+        }
+        return locales;
     }
     
 }

@@ -28,6 +28,7 @@ import java.security.PrivilegedAction;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -154,6 +155,13 @@ public abstract class SchemaI18NService
             }
         }
     }
+    
+    /**
+     * @return the list of locales that have been localized or at least created and store in
+     * the atabase or XML.
+     */
+    public abstract List<Locale> getLocalesFromData();
+    
     /**
      * Method for loading the Locale String from a persistent store into the DBTableInfo classes.
      * @param schemaType the type of schema 'core' or 'workbench'
@@ -214,10 +222,10 @@ public abstract class SchemaI18NService
      */
     public Vector<Locale> getStdLocaleList(final boolean includeSepLocale)
     {
-        for (Locale l : locales)
+        /*for (Locale l : locales)
         {
             System.out.println(String.format("%s - %s, %s, %s", l.getDisplayName(), l.getLanguage(), l.getCountry(), l.getVariant()));
-        }
+        }*/
         
         Vector<Locale> freqLocales = new Vector<Locale>();
         int i = 0;

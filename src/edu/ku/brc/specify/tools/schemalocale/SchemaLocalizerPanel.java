@@ -112,7 +112,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     protected LocalizableContainerIFace currContainer   = null;
     protected boolean                   includeHiddenUI = true;              // Must be set before creating the panel
     protected boolean                   isDBSchema      = true;
-    protected boolean                   useDisciplines  = true;
+    protected boolean                   useDisciplines  = false;
     
     protected DisciplineBasedPanel      disciplineBasedPanel = null;
 
@@ -1050,45 +1050,29 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         if (currContainer != null)
         {
             tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(currContainer.getName());
-            if (currContainer != null)
+                
+            tblDescText.setText(getDescStrForCurrLocale(currContainer));
+            tblNameText.setText(getNameDescStrForCurrLocale(currContainer));
+            tblHideChk.setSelected(currContainer.getIsHidden());
+            
+            fillDataObjFormatterCombo();
+            fillAggregatorCombo();
+            
+            if (doAutoSpellCheck)
             {
-                
-                if (currContainer != null)
-                {
-                    tblDescText.setText(getDescStrForCurrLocale(currContainer));
-                    tblNameText.setText(getNameDescStrForCurrLocale(currContainer));
-                    tblHideChk.setSelected(currContainer.getIsHidden());
-                    
-                    fillDataObjFormatterCombo();
-                    fillAggregatorCombo();
-                    
-                    if (doAutoSpellCheck)
-                    {
-                        checker.spellCheck(tblNameText);
-                        checker.spellCheck(tblDescText);
-                    }
-                    
-                    
-                    if (disciplineBasedPanel != null && currContainer instanceof DisciplineBasedContainer)
-                    {
-                        disciplineBasedPanel.set((DisciplineBasedContainer)currContainer, jlistItem);
-                    }
-                    fieldPanel.setContainer(currContainer, jlistItem);
-
-                } else
-                {
-                    noTableSelected();
-                }
-
-                prevTable = currContainer;
-                
-            } else
-            {
-                fieldPanel.setContainer(null, null);
-                disciplineBasedPanel.set((DisciplineBasedContainer)null, null);
-                
-                log.error("jlistItem was null in list");
+                checker.spellCheck(tblNameText);
+                checker.spellCheck(tblDescText);
             }
+            
+            
+            if (disciplineBasedPanel != null && currContainer instanceof DisciplineBasedContainer)
+            {
+                disciplineBasedPanel.set((DisciplineBasedContainer)currContainer, jlistItem);
+            }
+            fieldPanel.setContainer(currContainer, jlistItem);
+
+            prevTable = currContainer;
+                
             enableUIControls(currContainer != null);
             
         } else

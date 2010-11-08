@@ -19,18 +19,9 @@
 */
 package edu.ku.brc.specify.tools.schemalocale;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Vector;
-import java.util.zip.ZipInputStream;
 
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
@@ -39,12 +30,9 @@ import javax.swing.JPanel;
 import org.apache.commons.lang.StringUtils;
 
 import com.swabunga.spell.engine.SpellDictionary;
-import com.swabunga.spell.engine.SpellDictionaryHashMap;
 import com.swabunga.spell.swing.JTextComponentSpellChecker;
 
 import edu.ku.brc.af.core.SchemaI18NService;
-import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
 
@@ -110,7 +98,7 @@ public abstract class LocalizerBasePanel extends JPanel
      */
     public void init()
     {
-        if (false) // turn off loading the spellchecker
+        /*if (false) // turn off loading the spellchecker
         {
             SwingWorker workerThread = new SwingWorker()
             {
@@ -179,7 +167,7 @@ public abstract class LocalizerBasePanel extends JPanel
             
             // start the background task
             workerThread.start();
-        }
+        }*/
     }
     
     /**
