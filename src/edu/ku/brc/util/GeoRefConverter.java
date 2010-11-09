@@ -99,11 +99,18 @@ public class GeoRefConverter implements StringConverter
         public abstract BigDecimal convertToDecimalDegrees(String original);
     }
     
+    /**
+     * 
+     */
     public GeoRefConverter()
     {
         decimalSep = Character.toString(new DecimalFormatSymbols(Locale.getDefault()).getDecimalSeparator());
     }
 
+    /**
+     * @param llText
+     * @return
+     */
     public int getDecimalSize(final String llText)
     {
         if (StringUtils.isBlank(llText))
@@ -112,7 +119,7 @@ public class GeoRefConverter implements StringConverter
         }
         
     	int decimalFmtLen = 0;
-        int decIndex = llText.lastIndexOf('.');
+        int decIndex = llText.lastIndexOf(decimalSep);
         if (decIndex > -1 && llText.length() > decIndex)
         {
             int end = llText.length();
@@ -135,7 +142,7 @@ public class GeoRefConverter implements StringConverter
     }
 
     /**
-     * @param deLocalized
+     * @param original
      * @param destFormat
      * @param llType
      * @param degFmt
@@ -169,7 +176,7 @@ public class GeoRefConverter implements StringConverter
             }
         }
         
-        int decimalFmtLen = getDecimalSize(deLocalized);
+        int decimalFmtLen = getDecimalSize(original);
         
         
         // if we weren't able to find a matching format, throw an exception
