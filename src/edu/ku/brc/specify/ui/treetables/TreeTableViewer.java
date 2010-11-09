@@ -3151,11 +3151,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     	    		|| draggedRankId == droppedRankId)
             {
                 boolean descendant = listModel.isDescendantOfNode(droppedOnNode, draggedNode);
-                if (!descendant)
-                {
-                    // check the other way as well
-                    descendant = listModel.isDescendantOfNode(draggedNode, droppedOnNode);
-                }
+//                if (!descendant)
+//                {
+//                    // check the other way as well
+//                    descendant = listModel.isDescendantOfNode(draggedNode, droppedOnNode);
+//                }
                 // log.debug("Synonymization request IS acceptable.");
                 return !descendant;
             }
