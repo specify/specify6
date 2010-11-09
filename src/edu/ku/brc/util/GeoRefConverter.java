@@ -272,12 +272,13 @@ public class GeoRefConverter implements StringConverter
      */
     public LatLonConverter.FORMAT getLatLonFormat(final String entry)
     {
-        if (entry != null)
+    	if (entry != null)
         {
-            for (GeoRefFormat format: GeoRefFormat.values())
+            String delocalized = entry.replace(decimalSep, ".");
+    		for (GeoRefFormat format: GeoRefFormat.values())
             {
                 //System.out.println("matching: " + entry + " with " + format.name());
-            	if (format.matches(entry))
+            	if (format.matches(delocalized))
                 {
                     //System.out.println("matched: " + entry + " with " + format.name());
                     if (format.equals(GeoRefFormat.D_NSEW) || format.equals(GeoRefFormat.D_PLUS_MINUS))
