@@ -57,8 +57,6 @@ public class SpecifySchemaI18NServiceXML extends SchemaI18NService
     private static final Logger        log      = Logger.getLogger(SpecifySchemaI18NServiceXML.class);
     
     protected SchemaLocalizerXMLHelper schemaIO = null;
-    private Byte                       schemaType;
-    private int                        disciplineId;
     
     /**
      * 
@@ -107,9 +105,6 @@ public class SpecifySchemaI18NServiceXML extends SchemaI18NService
                                final DBTableIdMgr tableMgr, 
                                final Locale       locale)
     {
-        this.disciplineId = disciplineId;
-        this.schemaType   = schemaType;
-        
         schemaIO = new SchemaLocalizerXMLHelper(schemaType, tableMgr);
         schemaIO.load(true);
         
@@ -149,10 +144,10 @@ public class SpecifySchemaI18NServiceXML extends SchemaI18NService
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.SchemaI18NService#getLocalesFromData()
+     * @see edu.ku.brc.af.core.SchemaI18NService#getLocalesFromData(java.lang.Byte, int)
      */
     @Override
-    public List<Locale> getLocalesFromData()
+    public List<Locale> getLocalesFromData(final Byte schemaType, final int disciplineId)
     {
         List<Locale> locales = new ArrayList<Locale>();
         
@@ -168,6 +163,7 @@ public class SpecifySchemaI18NServiceXML extends SchemaI18NService
                 String key = String.format("%s_%s_%s", language, country != null ? country : "", variant != null ? variant : "");
                 if (!hash.contains(key))
                 {
+                    hash.add(key);
                     Locale locale = null;
                     if (StringUtils.isNotBlank(language) && StringUtils.isNotBlank(country) && StringUtils.isNotBlank(variant))
                     {

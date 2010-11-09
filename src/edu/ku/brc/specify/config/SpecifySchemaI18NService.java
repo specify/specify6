@@ -51,9 +51,6 @@ public class SpecifySchemaI18NService extends SchemaI18NService
 {
     private static final Logger      log      = Logger.getLogger(SpecifySchemaI18NService.class);
     
-    private Byte         schemaType;
-    private int          disciplineId;
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.SchemaI18NService#loadWithLocale(java.lang.Byte, int, edu.ku.brc.dbsupport.DBTableIdMgr, java.util.Locale)
      */
@@ -63,9 +60,6 @@ public class SpecifySchemaI18NService extends SchemaI18NService
                                final DBTableIdMgr mgr, 
                                final Locale       locale)
     {
-        this.disciplineId = disciplineId;
-        this.schemaType   = schemaType;
-        
         // First do Just Hidden in case a table is missing a title or desc
         String sql = String.format("SELECT Name, IsHidden FROM  splocalecontainer WHERE SchemaType = %d AND DisciplineID = %d", schemaType, disciplineId);
 
@@ -248,20 +242,18 @@ public class SpecifySchemaI18NService extends SchemaI18NService
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.SchemaI18NService#getLocalesFromData()
+     * @see edu.ku.brc.af.core.SchemaI18NService#getLocalesFromData(java.lang.Byte, int)
      */
     @Override
-    public List<Locale> getLocalesFromData()
+    public List<Locale> getLocalesFromData(final Byte schemaType, final int disciplineId)
     {
         List<Locale> locales = new ArrayList<Locale>();
         
         String sql = String.format("SELECT i.Language, i.Country, i.Variant FROM splocalecontainer cn INNER JOIN splocaleitemstr i ON " +
-                                   "cn.SpLocaleContainerID = i.SpLocaleContainerNameID WHERE cn.SchemaType = %d AND cn.DisciplineID = %d",
+                                   "cn.SpLocaleContainerID = i.SpLocaleContainerNameID WHERE cn.SchemaType = %d AND cn.DisciplineID = %d GROUP BY Language, Country, Variant",
                                    schemaType, disciplineId);
         System.out.println(sql);
-        Vector<Object[]> rows = BasicSQLUtils.query(sql);
-
-        for (Object[] row : rows)
+        for (Object[] row : BasicSQLUtils.query(sql))
         {
             String language = (String)row[0];
             String country  = (String)row[1];
@@ -269,15 +261,15 @@ public class SpecifySchemaI18NService extends SchemaI18NService
             
             Locale locale = null;
             
-            if (StringUtils.isNotBlank(language) && StringUtils.isNotBlank(country) && StringUtils.isNotBlank(variant))
+            if (StringUtils.isNotEmpty(language) && StringUtils.isNotEmpty(country) && StringUtils.isNotEmpty(variant))
             {
                 locale = new Locale(language, country, variant);
                 
-            } else if (StringUtils.isNotBlank(language) && StringUtils.isNotBlank(country))
+            } else if (StringUtils.isNotEmpty(language) && StringUtils.isNotEmpty(country))
             {
                 locale = new Locale(language, country);
                 
-            } else if (StringUtils.isNotBlank(language))
+            } else if (StringUtils.isNotEmpty(language))
             {
                 locale = new Locale(language);
             }

@@ -1582,9 +1582,33 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             session = openSession();
             
+            // Now load the Schema, but make sure the Discipline has a localization.
+            // for the current locale.
             int disciplineId = getClassObject(Discipline.class).getDisciplineId();
             if (disciplineId != prevDisciplineId)
             {
+                Locale       engLocale  = null;
+                Locale       fndLocale  = null;
+                Locale       currLocale = SchemaI18NService.getCurrentLocale();
+                List<Locale> locales    = SchemaI18NService.getInstance().getLocalesFromData(SpLocaleContainer.CORE_SCHEMA, disciplineId);
+                for (Locale locale : locales)
+                {
+                    if (locale.equals(currLocale))
+                    {
+                        fndLocale = currLocale;
+                    }
+                    if (locale.getLanguage().equals("en"))
+                    {
+                        engLocale = currLocale;
+                    }
+                }
+                if (fndLocale == null)
+                {
+                    fndLocale = engLocale != null ? engLocale : locales.get(0);
+                    SchemaI18NService.setCurrentLocale(fndLocale);
+                    Locale.setDefault(fndLocale);
+                    UIRegistry.displayErrorDlgLocalized("SpecifyAppContextMgr.NO_LOCALE", discipline.getName(), currLocale.getDisplayName(), fndLocale.getDisplayName());
+                }
                 SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineId, DBTableIdMgr.getInstance(), Locale.getDefault());
             }
             

@@ -158,9 +158,12 @@ public abstract class SchemaI18NService
     
     /**
      * @return the list of locales that have been localized or at least created and store in
-     * the atabase or XML.
+     * the database or XML.
+     * @param schemaType the type (Core or WB)
+     * @param disciplineId the Discipline
+     * @return a list of available already Locales
      */
-    public abstract List<Locale> getLocalesFromData();
+    public abstract List<Locale> getLocalesFromData(Byte schemaType, int disciplineId);
     
     /**
      * Method for loading the Locale String from a persistent store into the DBTableInfo classes.
