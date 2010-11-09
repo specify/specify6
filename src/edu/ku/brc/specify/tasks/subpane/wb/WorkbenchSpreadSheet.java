@@ -83,7 +83,7 @@ public class WorkbenchSpreadSheet extends SpreadSheet
 						
 						boolean result = super.replace(cell, findValue, replaceValue, isMtchCaseOn,
 								isSearchSelection);
-						if (result)
+						if (result && workbenchPaneSS.isDoIncrementalValidation())
 						{
 							replacedRows.add(cell.getRow());
 						}
@@ -96,21 +96,25 @@ public class WorkbenchSpreadSheet extends SpreadSheet
 					@Override
 					public void replacementCleanup()
 					{
-						//This is not good.
-						//I have avoided making WorkbenchPaneSS a table model listener
-						//because lots of unnecessary validation would have been performed.
-						//But this is not so efficient either...
-						int[] rows = new int[replacedRows.size()];
-						for (int r = 0; r < rows.length; r++)
+						if (workbenchPaneSS.isDoIncrementalValidation())
 						{
-							rows[r] = convertRowIndexToModel(replacedRows.get(r));
+							//This is not good.
+							//I have avoided making WorkbenchPaneSS a table model listener
+							//because lots of unnecessary validation would have been performed.
+							//But this is not so efficient either...
+							int[] rows = new int[replacedRows.size()];
+							for (int r = 0; r < rows.length; r++)
+							{
+								rows[r] = convertRowIndexToModel(replacedRows.get(r));
+							}
+							//if (!workbenchPaneSS.validateRows(rows))
+							//{
+							//	model.fireTableDataChanged();
+							//}
 						}
-						if (!workbenchPaneSS.validateRows(rows))
-						{
-							model.fireTableDataChanged();
-						}
+						model.fireTableDataChanged();
 					}
-
+					
 					/* (non-Javadoc)
 					 * @see edu.ku.brc.ui.TableSearcher#reset()
 					 */

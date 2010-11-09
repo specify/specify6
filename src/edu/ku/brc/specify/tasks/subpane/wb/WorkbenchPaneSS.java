@@ -278,7 +278,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected static Uploader       datasetUploader            = null; 
     protected WorkbenchValidator    workbenchValidator         = null;
-    protected boolean 		        doIncrementalValidation    = false;
+    protected boolean 		        doIncrementalValidation    = true;
     //Single thread executor to ensure that rows are not validated concurrently as a result of batch operations
     //protected final ExecutorService validationExecutor		   = Executors.newSingleThreadExecutor(Executors.defaultThreadFactory());
     protected final Queue<ValidationWorker> validationWorkerQueue = new LinkedList<ValidationWorker>();
@@ -501,7 +501,10 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             public void actionPerformed(ActionEvent ae)
             {
-                deleteRows();
+                if (validationWorkerQueue.peek() == null) 
+                {	
+                	deleteRows();
+                }
             }
         });
         
@@ -546,7 +549,10 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 if (workbench.getWorkbenchRows().size() < WorkbenchTask.MAX_ROWS)
                 {
-                    addRowAfter();
+                    if (validationWorkerQueue.peek() == null) 
+                    {	
+                    	addRowAfter();
+                    }
                 }
             }
         });
@@ -2134,6 +2140,11 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
     }
     
+    /**
+     * @param columnIdx
+     * @param rowIndex
+     * @return
+     */
     protected String getLatLonSrc(int columnIdx, int rowIndex)
     {
         WorkbenchTemplateMappingItem map = workbench.getMappingFromColumn((short )columnIdx);
@@ -3200,7 +3211,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         //validationExecutor.shutdownNow();
         if (validationWorkerQueue.peek() != null)
         {
-        	System.out.println("Shutdown: Cancelling validation worker.");
+        	//System.out.println("Shutdown: Cancelling validation worker.");
         	ValidationWorker vw = null;
         	synchronized(validationWorkerQueue)
         	{
@@ -4053,12 +4064,12 @@ public class WorkbenchPaneSS extends BaseSubPane
 			}
 			if (!isCancelled())
 			{
-				System.out.println("done(): remove current validationWorker");
+				//System.out.println("done(): remove current validationWorker");
 				validationWorkerQueue.remove(); //remove this worker
 			
 				if (validationWorkerQueue.peek() != null)
 				{
-					System.out.println("done(): executing next validationWorker");
+					//System.out.println("done(): executing next validationWorker");
 					validationWorkerQueue.peek().execute();
 				}
 			}
@@ -4075,9 +4086,8 @@ public class WorkbenchPaneSS extends BaseSubPane
 			if (isCancelled())
 			{
 				//currently cancellation only occurs during shutdown.
-				System.out.println("done(): Clearing validationWorkerQueue");
+				//System.out.println("done(): Clearing validationWorkerQueue");
 				validationWorkerQueue.clear();
-				return;
 			}
 //			System.out.println("done(): remove current validationWorker");
 //			validationWorkerQueue.remove(); //remove this worker
@@ -4087,13 +4097,39 @@ public class WorkbenchPaneSS extends BaseSubPane
 //				System.out.println("done(): executing next validationWorker");
 //				validationWorkerQueue.peek().execute();
 //			}
-			if (rows == null)
+
+			if (validationWorkerQueue.peek() == null)
 			{
-				model.fireTableRowsUpdated(startRow, endRow); //XXX model vs table rows??
+				SwingUtilities.invokeLater(new Runnable(){
+
+					@Override
+					public void run() {
+						updateBtnUI();
+					}
+	    		
+				});
 			}
-			else
+
+			if (isCancelled())
 			{
-				model.fireDataChanged();
+				return;
+			}
+			
+			boolean savedBlockChanges = blockChanges;
+			try
+			{
+				blockChanges = true;
+				if (rows == null)
+				{
+					model.fireTableRowsUpdated(startRow, endRow); //XXX model vs table rows??
+				}
+				else
+				{
+					model.fireDataChanged();
+				}
+			} finally
+			{
+				blockChanges = savedBlockChanges;
 			}
 		}			
 		
@@ -4154,13 +4190,22 @@ public class WorkbenchPaneSS extends BaseSubPane
 //		});
     	
     	ValidationWorker newWorker = new ValidationWorker(rows, startRow, endRow);
-    	System.out.println("validateRows(): adding worker to queue");
+    	//System.out.println("validateRows(): adding worker to queue");
     	validationWorkerQueue.add(newWorker);
     	if (validationWorkerQueue.peek() == newWorker)
     	{
-    	   	System.out.println("validateRows(): executing new worker");
+    	   	//System.out.println("validateRows(): executing new worker");
     	   	newWorker.execute();
     	}
+    	SwingUtilities.invokeLater(new Runnable(){
+
+			@Override
+			public void run() {
+				addRowsBtn.setEnabled(false);
+				deleteRowsBtn.setEnabled(false);
+			}
+    		
+    	});
     }
     //------------------------------------------------------------
     // Inner Classes
@@ -4728,6 +4773,14 @@ public class WorkbenchPaneSS extends BaseSubPane
     	}
     	return null;
     }
+
+	/**
+	 * @return the doIncrementalValidation
+	 */
+	public boolean isDoIncrementalValidation() 
+	{
+		return doIncrementalValidation;
+	}
 
 }
 

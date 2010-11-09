@@ -147,9 +147,12 @@ public class SearchReplacePanel extends JPanel
         {
             public void valueChanged(ListSelectionEvent e)
             {
-                nextButton.setEnabled(true);
-                previousButton.setEnabled(true);
-                updateStatusLabel(-1, false);
+                if (!e.getValueIsAdjusting())
+                {
+                	nextButton.setEnabled(true);
+                	previousButton.setEnabled(true);
+                	updateStatusLabel(-1, false);
+                }
             }          
         };
         table.getSelectionModel().addListSelectionListener(listSelectionListener);

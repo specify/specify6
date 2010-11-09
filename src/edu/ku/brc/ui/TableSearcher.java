@@ -280,6 +280,7 @@ public class TableSearcher
                 log.info("                col=[" + col + "] ");
             }
             table.setValueAt(newValue, row, col);
+            replacementCount++;
             return true;
         } 
         return false;
