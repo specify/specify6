@@ -151,6 +151,7 @@ import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.db.BackupServiceFactory;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -8307,14 +8308,17 @@ public class BuildSampleDatabase
 
         
         Hashtable<String, SpLocaleContainerItem> dispItemHash = new Hashtable<String, SpLocaleContainerItem>();
-        if (memoryContainer instanceof DisciplineBasedContainer)
+        if (SchemaI18NService.getCurrentLocale().getLanguage().equals("en"))
         {
-            DisciplineBasedContainer dbc = (DisciplineBasedContainer)memoryContainer;
-            
-            Set<SpLocaleContainerItem> itemsSet = dbc.getDisciplineItems(disciplineName);
-            for (SpLocaleContainerItem item : itemsSet)
+            if (memoryContainer instanceof DisciplineBasedContainer)
             {
-                dispItemHash.put(item.getName(), item);
+                DisciplineBasedContainer dbc = (DisciplineBasedContainer)memoryContainer;
+                
+                Set<SpLocaleContainerItem> itemsSet = dbc.getDisciplineItems(disciplineName);
+                for (SpLocaleContainerItem item : itemsSet)
+                {
+                    dispItemHash.put(item.getName(), item);
+                }
             }
         }
         

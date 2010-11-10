@@ -330,7 +330,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 }
                 if (sci.getDescsSet().size() == 0)
                 {
-                    log.debug(container.getName()+" Item: "+sci.getName()+" descSet is empty.");
+                    //log.debug(container.getName()+" Item: "+sci.getName()+" descSet is empty.");
                     SpLocaleItemStr str = new SpLocaleItemStr();
                     str.initialize();
                     str.setLanguage(language);
