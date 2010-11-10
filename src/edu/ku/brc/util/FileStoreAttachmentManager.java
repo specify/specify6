@@ -28,6 +28,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.Attachment;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * An implementation of AttachmentManagerIface that uses the underlying filesystem to
@@ -113,9 +114,10 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.util.AttachmentManagerIface#setStorageLocationIntoAttachment(edu.ku.brc.specify.datamodel.Attachment)
+     * @see edu.ku.brc.util.AttachmentManagerIface#setStorageLocationIntoAttachment(edu.ku.brc.specify.datamodel.Attachment, boolean)
      */
-    public void setStorageLocationIntoAttachment(final Attachment attachment)
+    @Override
+    public boolean setStorageLocationIntoAttachment(final Attachment attachment, final boolean doDisplayErrors)
     {
         String attName    = attachment.getOrigFilename();
         int    lastPeriod = attName.lastIndexOf('.');
@@ -129,10 +131,13 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
             suffix = ".att" + attName.substring(lastPeriod);
         }
         
+        String errMsg          = null;
+        String storageFilename = "";
         try
         {
             if (originalsDir == null || !originalsDir.exists())
             {
+                errMsg = UIRegistry.getLocalizedMessage("ATTCH_STRG_DIR_ERR", (originalsDir != null ? originalsDir.getAbsolutePath() : "(missing dir name)"));
                 log.error("originalsDir doesn't exist["+(originalsDir != null ? originalsDir.getAbsolutePath() : "null")+"]");
             }
             
@@ -142,20 +147,30 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
             {
                 attachment.setAttachmentLocation(storageFile.getName());
                 unfilledFiles.add(attachment.getAttachmentLocation());
-                
-            } else
-            {
-                log.error("storageFile doesn't exist["+(storageFile != null ? storageFile.getAbsolutePath() : "null")+"]");
+                return true;
             }
+            errMsg = UIRegistry.getLocalizedMessage("ATTCH_NOT_SAVED_REPOS", (storageFile != null ? storageFile.getAbsolutePath() : "(missing file name)"));
+            log.error("storageFile doesn't exist["+(storageFile != null ? storageFile.getAbsolutePath() : "null")+"]");
         }
         catch (IOException e)
         {
+            if (doDisplayErrors)
+            {
+                errMsg = UIRegistry.getLocalizedMessage("ATTCH_NOT_SAVED_REPOS", storageFilename);
+                return false;
+            }
+            
+            // This happens when errors are not displayed.
             e.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FileStoreAttachmentManager.class, e);
-            // TODO What should we do in this case?
-
         }
+        
+        if (doDisplayErrors && errMsg != null)
+        {
+            UIRegistry.showError(errMsg);
+        }
+        return false;
     }
 
     /* (non-Javadoc)

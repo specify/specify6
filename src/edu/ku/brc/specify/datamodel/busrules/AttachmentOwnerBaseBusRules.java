@@ -124,7 +124,7 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
                 Attachment a = objAtt.getAttachment();
                 if (a != null && a.getAttachmentLocation() == null)
                 {
-                    AttachmentUtils.getAttachmentManager().setStorageLocationIntoAttachment(a);
+                    AttachmentUtils.getAttachmentManager().setStorageLocationIntoAttachment(a, true);
                     getHashSetForClass(dataObj).add(a.getAttachmentLocation());
                 }
             }

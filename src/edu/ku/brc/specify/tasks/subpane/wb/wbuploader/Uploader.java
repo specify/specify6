@@ -4356,8 +4356,7 @@ public class Uploader implements ActionListener, KeyListener
 			for (ObjectAttachmentIFace<?> att : currentAttachees)
 			{
 					AttachmentUtils.getAttachmentManager()
-							.setStorageLocationIntoAttachment(
-									att.getAttachment());
+							.setStorageLocationIntoAttachment(att.getAttachment(), true);
 					
 					att.getAttachment().storeFile(false); // false means do not display an error dialog
 			}

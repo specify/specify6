@@ -336,7 +336,7 @@ public class BatchAttachFiles
 				if (f.exists())
 				{
 					AttachmentUtils.getAttachmentManager()
-						.setStorageLocationIntoAttachment(oaif.getAttachment());
+						.setStorageLocationIntoAttachment(oaif.getAttachment(), false);
 					oaif.getAttachment().storeFile(false); // false means do not display an error dialog
 				}
 

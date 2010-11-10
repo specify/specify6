@@ -39,8 +39,10 @@ public interface AttachmentManagerIface
      * to provide a storage location that isn't already in use.
      * 
      * @param attachment the Attachment for which a storage location is needed
+     * @param doDisplayErrors false for silent mode, true for popu dialog errors
+     * @return true if successfully set
      */
-    public void setStorageLocationIntoAttachment(Attachment attachment);
+    public boolean setStorageLocationIntoAttachment(Attachment attachment, boolean doDisplayErrors);
     
     /**
      * Get a file handle to the attachment original.

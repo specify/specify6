@@ -6406,7 +6406,7 @@ public class BuildSampleDatabase
                             dataObjects.add(defPhotoIndicator);
                             
                             // store the actual file into the attachment storage system
-                            AttachmentUtils.getAttachmentManager().setStorageLocationIntoAttachment(photoAttachment);
+                            AttachmentUtils.getAttachmentManager().setStorageLocationIntoAttachment(photoAttachment, true);
                             photoAttachment.storeFile(false); // false means do not display an error dialog
                         }
                     }
