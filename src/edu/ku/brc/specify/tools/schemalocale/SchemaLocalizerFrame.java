@@ -480,15 +480,16 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                 {
                     File outFile = new File(fileDlg.getDirectory() + File.separator + fileName);
                     boolean savedOK = localizableIO.exportSingleLanguageToDirectory(outFile, locale);
-                    String msg;
                     if (savedOK)
                     {
-                        msg = UIRegistry.getLocalizedMessage("SchemaLocalizerFrame.EXPORTEDTO", locale.getDisplayName(), outFile.getAbsolutePath());
+                        String msg = UIRegistry.getLocalizedMessage("SchemaLocalizerFrame.EXPORTEDTO", locale.getDisplayName(), outFile.getAbsolutePath());
+                        UIRegistry.displayInfoMsgDlg(msg);
                     } else
                     {
-                        msg = UIRegistry.getLocalizedMessage("SchemaLocalizerFrame.EXPORTING_ERR", outFile.getAbsolutePath());
+                        String msg = UIRegistry.getLocalizedMessage("SchemaLocalizerFrame.EXPORTING_ERR", outFile.getAbsolutePath());
+                        UIRegistry.showError(msg);
                     }
-                    UIRegistry.showError(msg);
+                    
                 }
             }
         }

@@ -169,7 +169,7 @@ public class StatsTask extends BaseTask
     {
         if (starterPane == null)
         {
-            starterPane = new StatsPane(name, this, "StatsSummaryPanel", true, null, null); //$NON-NLS-1$
+            starterPane = new StatsPane(title, this, "StatsSummaryPanel", true, null, null); //$NON-NLS-1$
         }
         return starterPane;
     }
@@ -186,7 +186,7 @@ public class StatsTask extends BaseTask
         JPanel panel = StatsMgr.createStatPane(statName);
         if (panel != null)
         {
-            SimpleDescPane pane = new SimpleDescPane(name, this, panel);
+            SimpleDescPane pane = new SimpleDescPane(title, this, panel);
             addSubPaneToMgr(pane);
         }
     }

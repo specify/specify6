@@ -1234,13 +1234,23 @@ public class UIRegistry
 
     /**
      * Display an Information dialog that gets its string from the resource bundle.
-     * @param msg the message to be displayed
+     * @param key the message to be displayed
      * @param args for formatting msg
      */
     public static void displayInfoMsgDlgLocalized(final String key, Object... args)
     {
          JOptionPane.showMessageDialog(getMostRecentWindow(), String.format(getResourceString(key), args), getResourceString("INFORMATION"), JOptionPane.INFORMATION_MESSAGE);
     }
+    
+    /**
+     * Display an Information dialog that gets its string from the resource bundle.
+     * @param msg the already localized message to be displayed
+     */
+    public static void displayInfoMsgDlg(final String msg)
+    {
+         JOptionPane.showMessageDialog(getMostRecentWindow(), msg, getResourceString("INFORMATION"), JOptionPane.INFORMATION_MESSAGE);
+    }
+
     
     /**
      * Display an Confirmation Dialog where everything comes from the bundle.
