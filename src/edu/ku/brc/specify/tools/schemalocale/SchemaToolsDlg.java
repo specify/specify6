@@ -215,7 +215,9 @@ public class SchemaToolsDlg extends CustomDialog
     {
         
         editSchemaBtn.setEnabled(enable);
-        removeLocaleBtn.setEnabled(localeList.getModel().getSize() > 1);
+        // XXX Fix Me when remove is implemented.
+        //removeLocaleBtn.setEnabled(localeList.getModel().getSize() > 1);
+        removeLocaleBtn.setEnabled(false);
         exportSchemaLocBtn.setEnabled(enable);
     }
 
