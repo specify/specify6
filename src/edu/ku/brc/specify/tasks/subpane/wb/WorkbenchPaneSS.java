@@ -174,6 +174,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTableInvalidValue;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.WorkbenchUploadMapper;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.specify.ui.LengthInputVerifier;
@@ -192,6 +193,7 @@ import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UnhandledExceptionDialog;
 import edu.ku.brc.ui.WorkBenchPluginIFace;
 import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
+import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.ui.tmanfe.SearchReplacePanel;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
 import edu.ku.brc.util.GeoRefConverter;
@@ -214,6 +216,8 @@ public class WorkbenchPaneSS extends BaseSubPane
 {
     private static boolean          debugging = true;
     protected static final Logger     log = Logger.getLogger(WorkbenchPaneSS.class);
+    
+    final public static String wbAutoValidatePrefName = "WB.AutoValidatePref";
     
     private enum PanelType {Spreadsheet, Form}
     
@@ -242,6 +246,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected JButton               convertGeoRefFormatBtn = null;
     protected JButton               exportExcelCsvBtn      = null;
     protected JButton               uploadDatasetBtn       = null;
+    protected JCheckBox				autoValidateChk		   = null;
+    
     protected DropDownButtonStateful ssFormSwitcher        = null;  
     protected List<JButton>         selectionSensitiveButtons  = new Vector<JButton>();
     
@@ -278,7 +284,8 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected static Uploader       datasetUploader            = null; 
     protected WorkbenchValidator    workbenchValidator         = null;
-    protected boolean 		        doIncrementalValidation    = true;
+    protected boolean 		        doIncrementalValidation    = AppPreferences.getLocalPrefs().getBoolean(wbAutoValidatePrefName, true);
+    
     //Single thread executor to ensure that rows are not validated concurrently as a result of batch operations
     //protected final ExecutorService validationExecutor		   = Executors.newSingleThreadExecutor(Executors.defaultThreadFactory());
     protected final Queue<ValidationWorker> validationWorkerQueue = new LinkedList<ValidationWorker>();
@@ -519,6 +526,39 @@ public class WorkbenchPaneSS extends BaseSubPane
             spreadSheet.setDeleteAction(delAction);
         }
         
+        if (isReadOnly)
+        {
+            autoValidateChk = null;
+        }
+        else
+        {
+        	autoValidateChk = UIHelper.createI18NCheckBox("WorkbenchPaneSS.AutoValidateChk");
+            autoValidateChk.setSelected(doIncrementalValidation);
+            autoValidateChk.addActionListener(new ActionListener() {
+            	
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if (autoValidateChk.isSelected())
+					{
+						//System.out.println("turning on auto-validation");
+						doIncrementalValidation = true;
+						if (workbenchValidator == null)
+						{
+							buildValidator();
+						}
+						validateAll(null);
+						AppPreferences.getLocalPrefs().putBoolean(wbAutoValidatePrefName, doIncrementalValidation);
+					} else
+					{
+						//System.out.println("turning off auto-validation");
+						turnOffIncrementalValidation();
+					}
+					
+				}
+            	
+            });
+        }
+
         if (isReadOnly)
         {
             clearCellsBtn = null;
@@ -835,7 +875,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         CellConstraints cc = new CellConstraints();
 
         JComponent[] compsArray = {addRowsBtn, deleteRowsBtn, clearCellsBtn, showMapBtn, exportKmlBtn, 
-                                   geoRefToolBtn, convertGeoRefFormatBtn, exportExcelCsvBtn, uploadDatasetBtn};
+                                   geoRefToolBtn, convertGeoRefFormatBtn, exportExcelCsvBtn, uploadDatasetBtn, autoValidateChk};
         Vector<JComponent> availableComps = new Vector<JComponent>(compsArray.length + workBenchPluginBtns.size());
         for (JComponent c : compsArray)
         {
@@ -1027,7 +1067,6 @@ public class WorkbenchPaneSS extends BaseSubPane
         if (doIncrementalValidation)
         {
         	buildValidator();
-        	validateRows(0, workbench.getWorkbenchRows().size()-1);
         }
     }
     
@@ -3208,21 +3247,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             minMaxWindowListener = null;
         }
         
-        //validationExecutor.shutdownNow();
-        if (validationWorkerQueue.peek() != null)
-        {
-        	//System.out.println("Shutdown: Cancelling validation worker.");
-        	ValidationWorker vw = null;
-        	synchronized(validationWorkerQueue)
-        	{
-        		vw = validationWorkerQueue.peek();
-        		validationWorkerQueue.clear();
-        	}
-        	if (vw != null && !vw.isDone())
-        	{
-        		vw.cancel(true);
-        	}
-        }
+        shutdownValidators();
         
         removeAll();
         if (mainPanel != null)
@@ -3308,6 +3333,29 @@ public class WorkbenchPaneSS extends BaseSubPane
         super.shutdown();
     }
 
+    
+    /**
+     * 
+     */
+    protected void shutdownValidators()
+    {
+        //validationExecutor.shutdownNow();
+        if (validationWorkerQueue.peek() != null)
+        {
+        	//System.out.println("Shutdown: Cancelling validation worker.");
+        	ValidationWorker vw = null;
+        	synchronized(validationWorkerQueue)
+        	{
+        		vw = validationWorkerQueue.peek();
+        		validationWorkerQueue.clear();
+        	}
+        	if (vw != null && !vw.isDone())
+        	{
+        		vw.cancel(true);
+        	}
+        }
+
+    }
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#showingPane(boolean)
      */
@@ -3488,11 +3536,17 @@ public class WorkbenchPaneSS extends BaseSubPane
     		workbenchValidator = new WorkbenchValidator(this);
     	} catch (Exception ex)
     	{
-    		if (ex instanceof WorkbenchValidator.WorkbenchValidatorException)
+    		if (ex instanceof WorkbenchValidator.WorkbenchValidatorException || ex instanceof UploaderException)
     		{
-    			WorkbenchValidator.WorkbenchValidatorException wvEx = 
-    				(WorkbenchValidator.WorkbenchValidatorException )ex;
-    			if (wvEx.getStructureErrors().size() > 0)
+    			WorkbenchValidator.WorkbenchValidatorException wvEx = null;
+    			if (ex instanceof WorkbenchValidator.WorkbenchValidatorException)
+    			{
+    				wvEx = (WorkbenchValidator.WorkbenchValidatorException )ex;
+    			} else if (ex.getCause() instanceof WorkbenchValidator.WorkbenchValidatorException)
+    			{
+    				wvEx = (WorkbenchValidator.WorkbenchValidatorException )ex.getCause();
+    			}
+    			if (wvEx != null && wvEx.getStructureErrors().size() > 0)
     			{
     				showStructureErrors(wvEx.getStructureErrors());
     			}
@@ -3500,7 +3554,34 @@ public class WorkbenchPaneSS extends BaseSubPane
     		else {
     			ex.printStackTrace();
     		}
+    		UIRegistry.showLocalizedError("WorkbenchPaneSS.UnableToAutoValidate");
+    		this.autoValidateChk.setSelected(false);
+    		turnOffIncrementalValidation();
+			doIncrementalValidation = false;
+			workbenchValidator = null;
+			model.fireDataChanged();
+			AppPreferences.getLocalPrefs().putBoolean(wbAutoValidatePrefName, doIncrementalValidation);
     	}
+    }
+    
+    /**
+     * 
+     */
+    protected void turnOffIncrementalValidation()
+    {
+		boolean savedBlockChanges = blockChanges;
+		try
+		{
+			blockChanges = true;
+			shutdownValidators();
+			doIncrementalValidation = false;
+			workbenchValidator = null;
+			model.fireDataChanged();
+			AppPreferences.getLocalPrefs().putBoolean(wbAutoValidatePrefName, doIncrementalValidation);
+		} finally
+		{
+			blockChanges = savedBlockChanges;
+		}
     }
     
     /**
@@ -3900,7 +3981,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
     	if (doIncrementalValidation)
 		{
-			validateRows(null, startRow, endRow);
+			validateRows(null, startRow, endRow, true, null);
 			return true;
 		}
     	return false;
@@ -3917,7 +3998,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
     	if (doIncrementalValidation)
 		{
-			validateRows(rows, -1, -1);
+			validateRows(rows, -1, -1, true, null);
     		return true;
 		}
     	return false;
@@ -3993,20 +4074,26 @@ public class WorkbenchPaneSS extends BaseSubPane
 		private final int[] rows;
 		private final int startRow;
 		private final int endRow;
+		private final boolean useGlassPane;
+		private SimpleGlassPane glassPane;
+		
 		//Vectors are thread safe?? Right??
 		private final Vector<Integer> deletedRows = new Vector<Integer>();
+		
 		
     	/**
 		 * @param rows
 		 * @param startRow
 		 * @param endRow
 		 */
-		public ValidationWorker(int[] rows, int startRow, int endRow)
+		public ValidationWorker(int[] rows, int startRow, int endRow, 
+				boolean useGlassPane)
 		{
 			super();
 			this.rows = rows;
 			this.startRow = startRow;
 			this.endRow = endRow;
+			this.useGlassPane = useGlassPane;
 		}
 
 		/**
@@ -4040,8 +4127,15 @@ public class WorkbenchPaneSS extends BaseSubPane
 		@Override
 		protected Object doInBackground() throws Exception
 		{
+			if (useGlassPane)
+			{
+	            this.glassPane = UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WorkbenchPaneSS.Validating"), new Object[] {workbench.getName()}), 
+	            		WorkbenchTask.GLASSPANE_FONT_SIZE);
+			} 			
 			if (rows != null)
 			{
+				int count = rows.length;
+				int rowCount = 0;
 				for (int row : rows)
 				{
 					int adjustedRow = adjustRow(row);
@@ -4049,9 +4143,18 @@ public class WorkbenchPaneSS extends BaseSubPane
 					{
 						updateRowValidationStatus(adjustedRow, -1);
 					}
+					if (useGlassPane)
+					{
+						//System.out.println((int)( (100.0 * ++rowCount) / count));
+						glassPane.setProgress((int)( (100.0 * ++rowCount) / count));
+					}
 				}
 			} else
 			{
+				int count = endRow - startRow + 1;
+				int rowCount = 0;
+				try 
+				{
 				for (int row = startRow; row <= endRow; row++)
 				{
 					
@@ -4060,6 +4163,16 @@ public class WorkbenchPaneSS extends BaseSubPane
 					{
 						updateRowValidationStatus(adjustedRow, -1);
 					}
+					if (useGlassPane)
+					{
+						int progress = (int)( (100.0 * ++rowCount) / count);
+						System.out.println(progress);
+						glassPane.setProgress(progress);
+					}
+				}
+				} catch (Exception ex)
+				{
+					ex.printStackTrace();
 				}
 			}
 			if (!isCancelled())
@@ -4083,6 +4196,10 @@ public class WorkbenchPaneSS extends BaseSubPane
 		protected void done()
 		{
 			super.done();
+			if (useGlassPane)
+			{
+				UIRegistry.clearSimpleGlassPaneMsg();
+			}
 			if (isCancelled())
 			{
 				//currently cancellation only occurs during shutdown.
@@ -4103,7 +4220,8 @@ public class WorkbenchPaneSS extends BaseSubPane
 				SwingUtilities.invokeLater(new Runnable(){
 
 					@Override
-					public void run() {
+					public void run() 
+					{
 						updateBtnUI();
 					}
 	    		
@@ -4138,74 +4256,56 @@ public class WorkbenchPaneSS extends BaseSubPane
 			deletedRows.add(row);
 		}
     }
+    
+    /**
+     * @param glassPane
+     */
+    public void validateAll(final SimpleGlassPane glassPane)
+    {
+    	//System.out.println("validating all " + spreadSheet.getRowCount() + " rows.");
+    	validateRows(null, 0, spreadSheet.getRowCount()-1, false, glassPane);
+    }
+    
     /**
      * @param rows
      * @param startRow
      * @param endRow
+     * @param isDoInBackground
      */
-    protected void validateRows(final int[] rows, final int startRow, final int endRow)
+    protected void validateRows(final int[] rows, final int startRow, final int endRow, boolean doSecretly, final SimpleGlassPane glassPane)
     {
-//		validationExecutor.execute(new javax.swing.SwingWorker<Object, Object>() {
-//
-//			/*
-//			 * (non-Javadoc)
-//			 * 
-//			 * @see javax.swing.SwingWorker#doInBackground()
-//			 */
-//			@Override
-//			protected Object doInBackground() throws Exception
-//			{
-//				if (rows != null)
-//				{
-//					for (int row : rows)
-//					{
-//						updateRowValidationStatus(row, -1);
-//					}
-//				} else
-//				{
-//					for (int row = startRow; row <= endRow; row++)
-//					{
-//						updateRowValidationStatus(row, -1);
-//					}
-//				}
-//				return null;
-//			}
-//
-//			/* (non-Javadoc)
-//			 * @see javax.swing.SwingWorker#done()
-//			 */
-//			@Override
-//			protected void done()
-//			{
-//				super.done();
-//				if (rows == null)
-//				{
-//					model.fireTableRowsUpdated(startRow, endRow); //XXX model vs table rows??
-//				}
-//				else
-//				{
-//					model.fireDataChanged();
-//				}
-//			}			
-//		});
     	
-    	ValidationWorker newWorker = new ValidationWorker(rows, startRow, endRow);
-    	//System.out.println("validateRows(): adding worker to queue");
-    	validationWorkerQueue.add(newWorker);
-    	if (validationWorkerQueue.peek() == newWorker)
+    	ValidationWorker newWorker = new ValidationWorker(rows, startRow, endRow, !doSecretly);
+//    	if (doSecretly)
     	{
-    	   	//System.out.println("validateRows(): executing new worker");
-    	   	newWorker.execute();
-    	}
-    	SwingUtilities.invokeLater(new Runnable(){
-
-			@Override
-			public void run() {
-				addRowsBtn.setEnabled(false);
-				deleteRowsBtn.setEnabled(false);
-			}
-    		
-    	});
+    		//System.out.println("validateRows(): adding worker to queue");
+    		validationWorkerQueue.add(newWorker);
+    		if (validationWorkerQueue.peek() == newWorker)
+    		{
+    			//System.out.println("validateRows(): executing new worker");
+    			newWorker.execute();
+    		}
+    		SwingUtilities.invokeLater(new Runnable(){
+    			@Override
+    			public void run() {
+    				addRowsBtn.setEnabled(false);
+    				deleteRowsBtn.setEnabled(false);
+    			}
+    		});
+    	} //else
+//    	if (!doSecretly)
+//    	{
+//    		try
+//    		{
+//    			//newWorker.execute();
+//    			newWorker.get();
+//    		} catch (Exception ex)
+//    		{
+//                UsageTracker.incrHandledUsageCount();
+//                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchPaneSS.class, ex);
+//                log.error(ex);
+//    		}
+//    	}
     }
     //------------------------------------------------------------
     // Inner Classes

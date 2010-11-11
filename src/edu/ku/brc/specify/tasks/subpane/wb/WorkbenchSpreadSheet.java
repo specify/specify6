@@ -55,7 +55,30 @@ public class WorkbenchSpreadSheet extends SpreadSheet
     }
     
     
+    
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.tmanfe.SpreadSheet#paste()
+     */
+    @Override
+	public void paste() 
+    {
+		super.paste();
+		if (pastedRows[0] > -1)
+		{
+			int[] rows = new int[pastedRows[1]+1];
+			for (int r = 0; r < rows.length; r++)
+			{
+				rows[r] = convertRowIndexToModel(pastedRows[0] + r);
+			}
+			System.out.println("validating " + rows.length + " rows.");
+			workbenchPaneSS.validateRows(rows);
+		}
+		pastedRows[0] = -1;
+	}
+
+
+
+	/* (non-Javadoc)
 	 * @see edu.ku.brc.ui.tmanfe.SpreadSheet#createSearchReplacePanel()
 	 */
 	@Override
@@ -107,6 +130,7 @@ public class WorkbenchSpreadSheet extends SpreadSheet
 							{
 								rows[r] = convertRowIndexToModel(replacedRows.get(r));
 							}
+							workbenchPaneSS.validateRows(rows);
 							//if (!workbenchPaneSS.validateRows(rows))
 							//{
 							//	model.fireTableDataChanged();

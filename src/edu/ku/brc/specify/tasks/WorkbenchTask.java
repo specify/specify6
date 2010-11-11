@@ -2073,7 +2073,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             final DataProviderSessionIFace finiSession = tmpSession;
             final SwingWorker worker = new SwingWorker()
             {
-                @SuppressWarnings("synthetic-access")
+                WorkbenchPaneSS wbSS = null;
+            	@SuppressWarnings("synthetic-access")
                 @Override
                 public Object construct()
                 {
@@ -2083,103 +2084,19 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                          {
                              finiSession.attach(workbench);
                          }
-                         createEditorForWorkbench(workbench, glassPane, showImageView, thisTask);
-//                         final int rowCount = workbench.getWorkbenchRows().size() + 1;
-//                         /*SwingUtilities.invokeLater(new Runnable() {
-//                             public void run()
-//                             {
-//                                 UIRegistry.getStatusBar().setProgressRange(workbench.getName(), 0, rowCount);
-//                                 UIRegistry.getStatusBar().setIndeterminate(workbench.getName(), false);
-//                             }
-//                         });*/
-//                         
-//                         //force load the workbench here instead of calling workbench.forceLoad() because
-//                         //is so time-consuming and needs progress bar.
-//                         //workbench.getWorkbenchTemplate().forceLoad();
-//                         workbench.getWorkbenchTemplate().checkMappings(getDatabaseSchema());
-//                         //UIRegistry.getStatusBar().incrementValue(workbench.getName());
-//                         int count = 1;
-//                         // Adjust paint increment for number of rows in DataSet
-//                         int mod;
-//                         if (rowCount < 50) mod = 1;
-//                         else if (rowCount < 100) mod = 10;
-//                         else if (rowCount < 500) mod = 20;
-//                         else  if (rowCount < 1000) mod = 40;
-//                         else mod = 50;
-//                         for (WorkbenchRow row : workbench.getWorkbenchRows())
-//                         {
-//                             row.forceLoad();
-//                             //UIRegistry.getStatusBar().incrementValue(workbench.getName());
-//                             
-//                             if (count % mod == 0)
-//                             {
-//                                 glassPane.setProgress((int)( (100.0 * count) / rowCount));
-//                             }
-//                             count++;
-//                         }
-//                         glassPane.setProgress(100);
-//                         
-//                         // do the conversion code right here!
-//                         boolean convertedAnImage = false;
-//                         Set<WorkbenchRow> rows = workbench.getWorkbenchRows();
-//                         if (rows != null)
-//                         {
-//                             for (WorkbenchRow row: rows)
-//                             {
-//                                 // move any single images over to the wb row image table
-//                                 Set<WorkbenchRowImage> rowImages = row.getWorkbenchRowImages();
-//                                 if (rowImages == null)
-//                                 {
-//                                     rowImages = new HashSet<WorkbenchRowImage>();
-//                                     row.setWorkbenchRowImages(rowImages);
-//                                 }
-//                                 if (row.getCardImageFullPath() != null && row.getCardImageData() != null && row.getCardImageData().length > 0)
-//                                 {
-//                                     // create the WorkbenchRowImage record
-//                                     WorkbenchRowImage rowImage = new WorkbenchRowImage();
-//                                     rowImage.initialize();
-//                                     rowImage.setCardImageData(row.getCardImageData());
-//                                     rowImage.setCardImageFullPath(row.getCardImageFullPath());
-//                                     rowImage.setImageOrder(0);
-//                                     
-//                                     // clear the fields holding the single-image data
-//                                     row.setCardImageData(null);
-//                                     row.setCardImageFullPath(null);
-//
-//                                     // connect the image and the row
-//                                     rowImage.setWorkbenchRow(row);
-//                                     rowImages.add(rowImage);
-//                                     
-//                                     convertedAnImage = true;
-//                                 }
-//                             }
-//                         }
-//                         
-////                         WorkbenchPaneSS workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench, showImageView, 
-////                                     AppContextMgr.isSecurityOn() && !getPermissions().canModify());
-//                         WorkbenchPaneSS workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench, showImageView, 
-//                                 !isPermitted());
-//                         addSubPaneToMgr(workbenchPane);
-//                         
-//                         if (convertedAnImage)
-//                         {
-//                             Component topFrame = UIRegistry.getTopWindow();
-//                             String message     = getResourceString("WB_DATASET_IMAGE_CONVERSION_NOTIFICATION");
-//                             String msgTitle    = getResourceString("WB_DATASET_IMAGE_CONVERSION_NOTIFICATION_TITLE");
-//                             JOptionPane.showMessageDialog(topFrame, message, msgTitle, JOptionPane.INFORMATION_MESSAGE);
-//                             workbenchPane.setChanged(true);
-//                         }
-//
-//                         RolloverCommand roc = getNavBtnById(workbenchNavBox, workbench.getWorkbenchId(), "workbench");
-//                         if (roc != null)
-//                         {
-//                             roc.setEnabled(false);
-//                             
-//                         } else
-//                         {
-//                             log.error("Couldn't find RolloverCommand for WorkbenchId ["+workbench.getWorkbenchId()+"]");
-//                         }
-//                         
+                         wbSS = createEditorForWorkbench(workbench, glassPane, showImageView, thisTask);
+                         if (wbSS.isDoIncrementalValidation())
+                         {
+                        	 SwingUtilities.invokeLater(new Runnable() {
+
+								@Override
+								public void run() {
+									UIRegistry.clearSimpleGlassPaneMsg();
+									wbSS.validateAll(null);
+								}
+                        		 
+                        	 });
+                         }
                      } catch (Exception ex)
                      {
                          edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
@@ -2212,7 +2129,10 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 @Override
                 public void finished()
                 {
-                    UIRegistry.clearSimpleGlassPaneMsg();
+                    if (wbSS == null || !wbSS.isDoIncrementalValidation())
+                    {
+                    	UIRegistry.clearSimpleGlassPaneMsg();
+                    }
                     //UIRegistry.getStatusBar().setProgressDone(workbench.getName());
                 }
             };

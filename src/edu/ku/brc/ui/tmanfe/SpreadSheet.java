@@ -129,6 +129,8 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
     
 	protected CellRenderer          customCellRenderer  = new CellRenderer();
 	
+	protected int[] pastedRows			= {-1, -1};  //initial row and number of rows pasted
+	
 	
     // XXX Fix for Mac OS X Java 5 Bug
     protected int prevRowSelInx = -1;
@@ -906,9 +908,12 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         //System.out.println("Trying to Paste");
         int[] rows = getSelectedRows();
         int[] cols = getSelectedColumns();
+        pastedRows[0] = -1;
+        pastedRows[1] = -1;
         if (rows != null && cols != null && rows.length > 0 && cols.length > 0)
         {
             int startRow = rows[0];
+            pastedRows[0] = startRow;
             int startCol = cols[0];
             try
             {
@@ -939,6 +944,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                 			}
                 			//System.out.println("Putting [" + tokens[j] + "] at row=" + startRow + i + "column=" + startCol + j);
                 		}
+                		pastedRows[1] = pastedRows[1] + 1;
                 	}
                 }
             } catch (IllegalStateException ex)
