@@ -1611,6 +1611,28 @@ if (wizardContext != null) {
         <content />
       </installerScript>
     </unixInstaller>
+       <windows name="64_Windows" id="1873" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Beta_64" installDir="Specify" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" downloadURL="" verifyIntegrity="true">
+      <excludedLaunchers />
+      <excludedBeans />
+      <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
+      <exclude>
+        <entry location="wwlib/libjogl_awt.so" fileType="regular" />
+        <entry location="wwlib/libjogl_cg.jnilib" fileType="regular" />
+        <entry location="wwlib/libjogl.jnilib" fileType="regular" />
+        <entry location="wwlib/libjogl_cg.so" fileType="regular" />
+        <entry location="wwlib/libjogl_awt.jnilib" fileType="regular" />
+        <entry location="wwlib/libgluegen-rt.jnilib" fileType="regular" />
+        <entry location="wwlib/libgluegen-rt.so" fileType="regular" />
+        <entry location="wwlib/libjogl.so" fileType="regular" />
+      </exclude>
+      <variables />
+      <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
+        <commentFiles />
+        <customAttributes />
+      </autoUpdate>
+      <excludedComponents />
+      <includedDownloadableComponents />
+    </windows>
   </mediaSets>
   <buildIds buildAll="false">
     <mediaSet refId="24" />
