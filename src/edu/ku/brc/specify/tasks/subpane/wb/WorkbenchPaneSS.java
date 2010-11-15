@@ -4166,7 +4166,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 					if (useGlassPane)
 					{
 						int progress = (int)( (100.0 * ++rowCount) / count);
-						System.out.println(progress);
+						//System.out.println(progress);
 						glassPane.setProgress(progress);
 					}
 				}
