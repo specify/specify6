@@ -41,6 +41,12 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
     protected String     data;
     protected String     mapToTbl = null; //mapping read from XLS document properties
     protected String     mapToFld = null; //mappint read from XLS document properties
+    protected int		 formXCoord = -1;
+    protected int 		 formYCoord = -1;
+    protected int		 frmFieldType = 0;
+    protected String     caption = null;
+    protected String	 frmMetaData = null;
+    
     protected final boolean    isSystemCol;
     
     public ImportColumnInfo(final int      colInx, 
@@ -58,6 +64,7 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
         this.colName = colName;
         this.isSystemCol = this.colName.equals(DataImport.GEO_DATA_HEADING) || this.colName.equals(DataImport.IMAGE_PATH_HEADING);
         this.colTitle = colTitle;
+        this.caption = colTitle;
         this.mapToTbl = mapToTbl;
         this.mapToFld = mapToFld;
         this.data    = data;
@@ -186,5 +193,86 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
     {
         this.mapToFld = mapToFld;
     }
+
+	/**
+	 * @return the formXCoord
+	 */
+	public int getFormXCoord() 
+	{
+		return formXCoord;
+	}
+
+	/**
+	 * @param formXCoord the formXCoord to set
+	 */
+	public void setFormXCoord(int formXCoord) 
+	{
+		this.formXCoord = formXCoord;
+	}
+
+	/**
+	 * @return the formYCoord
+	 */
+	public int getFormYCoord() 
+	{
+		return formYCoord;
+	}
+
+	/**
+	 * @param formYCoord the formYCoord to set
+	 */
+	public void setFormYCoord(int formYCoord) 
+	{
+		this.formYCoord = formYCoord;
+	}
+
+	/**
+	 * @return the frmFieldType
+	 */
+	public int getFrmFieldType() 
+	{
+		return frmFieldType;
+	}
+
+	/**
+	 * @param frmFieldType the frmFieldType to set
+	 */
+	public void setFrmFieldType(int frmFieldType) 
+	{
+		this.frmFieldType = frmFieldType;
+	}
+
+	/**
+	 * @return the caption
+	 */
+	public String getCaption() 
+	{
+		return caption;
+	}
+
+	/**
+	 * @param caption the caption to set
+	 */
+	public void setCaption(String caption) 
+	{
+		this.caption = caption;
+	}
+
+	/**
+	 * @return the frmMetaData
+	 */
+	public String getFrmMetaData() 
+	{
+		return frmMetaData;
+	}
+
+	/**
+	 * @param frmMetaData the frmMetaData to set
+	 */
+	public void setFrmMetaData(String frmMetaData) 
+	{
+		this.frmMetaData = frmMetaData;
+	}
+    
     
 }

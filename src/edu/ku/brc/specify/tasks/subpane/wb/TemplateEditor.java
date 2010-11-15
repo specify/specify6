@@ -1926,12 +1926,18 @@ public class TemplateEditor extends CustomDialog
                     item.initialize();
                 
                     //trim to fit. User will have been warned of truncation during import.
-                    String caption = colInfo.getColName();
+                    String caption = colInfo.getCaption();
                     int maxCapLen = DBTableIdMgr.getInstance().getInfoByTableName("workbenchtemplatemappingitem").getFieldByColumnName("Caption").getLength();
                     int maxImportedColNameLen = DBTableIdMgr.getInstance().getInfoByTableName("workbenchtemplatemappingitem").getFieldByColumnName("ImportedColName").getLength();
                     item.setCaption(caption.length() > maxCapLen ? caption.substring(0, maxCapLen) : caption);
                     item.setImportedColName(caption.length() > maxImportedColNameLen ? caption.substring(0, maxImportedColNameLen) : caption);
                     origColNum = fmp.isAdded() ? -1 : colInfo.getColInx();
+                    
+                    item.setXCoord(Integer.valueOf(colInfo.getFormXCoord()).shortValue());
+                    item.setYCoord(Integer.valueOf(colInfo.getFormYCoord()).shortValue());
+                    item.setFieldType(Integer.valueOf(colInfo.getFrmFieldType()).shortValue());
+                    item.setMetaData(colInfo.getFrmMetaData());
+                    
                     newItems.add(item);
                     
                 } else
@@ -1971,8 +1977,13 @@ public class TemplateEditor extends CustomDialog
         ImportColumnInfo colInfo = fmp.getColInfo();
         FieldInfo fieldInfo = fmp.getFieldInfo();
         
-        item.setCaption(colInfo.getColName());
+        item.setCaption(colInfo.getCaption());
         item.setImportedColName(colInfo.getColName());
+        item.setXCoord(Integer.valueOf(colInfo.getFormXCoord()).shortValue());
+        item.setYCoord(Integer.valueOf(colInfo.getFormYCoord()).shortValue());
+        item.setFieldType(Integer.valueOf(colInfo.getFrmFieldType()).shortValue());
+        item.setMetaData(colInfo.getFrmMetaData());
+        
         Integer origColNum = fmp.isAdded() ? -1 : colInfo.getColInx();
             
         item.setFieldName(fieldInfo.getFieldInfo().getName());
