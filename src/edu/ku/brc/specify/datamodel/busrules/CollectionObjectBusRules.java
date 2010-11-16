@@ -491,22 +491,25 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
      */
     private void doSeriesProcessing()
     {
-        Component catNumComp = formViewObj.getControlByName(CATNUMNAME);
-        if (catNumComp instanceof SeriesProcCatNumPlugin)
+        if (formViewObj != null)
         {
-            SeriesProcCatNumPlugin spCatNumPlugin = (SeriesProcCatNumPlugin)catNumComp;
-            if (spCatNumPlugin.isExpanded())
-            {
-                DBTableInfo tblInfo       = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()); // don't need to check for null
-                DBFieldInfo fieldInfo     = tblInfo.getFieldByName(CATNUMNAME);
-                UIFieldFormatterIFace fmt = fieldInfo.getFormatter();
-                if (fmt != null && fmt.getAutoNumber() != null && !formViewObj.isAutoNumberOn())
-                {
+        	Component catNumComp = formViewObj.getControlByName(CATNUMNAME);
+        	if (catNumComp instanceof SeriesProcCatNumPlugin)
+        	{
+        		SeriesProcCatNumPlugin spCatNumPlugin = (SeriesProcCatNumPlugin)catNumComp;
+        		if (spCatNumPlugin.isExpanded())
+        		{
+        			DBTableInfo tblInfo       = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()); // don't need to check for null
+        			DBFieldInfo fieldInfo     = tblInfo.getFieldByName(CATNUMNAME);
+        			UIFieldFormatterIFace fmt = fieldInfo.getFormatter();
+        			if (fmt != null && fmt.getAutoNumber() != null && !formViewObj.isAutoNumberOn())
+        			{
                     
-                    doCreateBatchOfColObj(spCatNumPlugin.getStartAndEndCatNumbers());
-                    spCatNumPlugin.clearEndTextField();
-                }
-            }
+        				doCreateBatchOfColObj(spCatNumPlugin.getStartAndEndCatNumbers());
+        				spCatNumPlugin.clearEndTextField();
+        			}
+        		}
+        	}
         }
     }
     
