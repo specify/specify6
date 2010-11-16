@@ -263,6 +263,7 @@ import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
@@ -1185,7 +1186,8 @@ public class BuildSampleDatabase
         boolean isFromScratch = props.getProperty("instName") != null;
         
         
-        String postFix = "FROM autonumberingscheme ans INNER JOIN autonumsch_div ad ON ans.AutoNumberingSchemeID = ad.AutoNumberingSchemeID INNER JOIN division d ON ad.DivisionID = d.UserGroupScopeId WHERE d.UserGroupScopeId = " + division.getId();
+        String postFix = "FROM autonumberingscheme ans INNER JOIN autonumsch_div ad ON ans.AutoNumberingSchemeID = ad.AutoNumberingSchemeID " +
+        	             "INNER JOIN division d ON ad.DivisionID = d.UserGroupScopeId WHERE d.UserGroupScopeId = " + division.getId();
         String sql = "SELECT COUNT(*) " + postFix;
         log.debug(sql);
         int numOfDivAns = BasicSQLUtils.getCountAsInt(sql);
@@ -8247,7 +8249,7 @@ public class BuildSampleDatabase
      * @param memoryContainer
      * @param newContainer
      */
-    public static void loadLocalization(final Integer           disciplineId,
+    private static void loadLocalization(final Integer           disciplineId,
                                         final String            disciplineName,
                                         final SpLocaleContainer memoryContainer, 
                                         final SpLocaleContainer newContainer,
@@ -8533,20 +8535,27 @@ public class BuildSampleDatabase
      * @param externalFile
      * @param sessionArg
      */
-    public void loadSchemaLocalization(final Discipline   discipline, 
-                                       final Byte         schemaType, 
-                                       final DBTableIdMgr tableMgr,
-                                       final String       catFmtName,
-                                       final String       accFmtName,
-                                       final UpdateType   updateType,
-                                       final File         externalFile,
-                                       final SimpleGlassPane glassPane,
-                                       final DataProviderSessionIFace sessionArg)
+    public boolean loadSchemaLocalization(final Discipline   discipline, 
+                                          final Byte         schemaType, 
+                                          final DBTableIdMgr tableMgr,
+                                          final String       catFmtName,
+                                          final String       accFmtName,
+                                          final UpdateType   updateType,
+                                          final File         externalFile,
+                                          final SimpleGlassPane glassPane,
+                                          final DataProviderSessionIFace sessionArg)
     {
         HiddenTableMgr hiddenTableMgr = new HiddenTableMgr();
 
         SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(schemaType, tableMgr);
-        schemaLocalizer.loadWithExternalFile(externalFile, true);
+        schemaLocalizer.loadWithExternalFile(externalFile, false);
+        
+        List<Locale> availLocales = schemaLocalizer.getAvailLocales();
+        if (availLocales.size() > 1)
+        {
+            UIRegistry.displayErrorDlgLocalized("BSD.TOOMANYLOCALES");
+            return false;
+        }
         
         boolean hideGenericFields = true;
         
@@ -8604,6 +8613,7 @@ public class BuildSampleDatabase
                     } catch (Exception ex)
                     {
                         ex.printStackTrace();
+                        return false;
                     }
                 }
                 
@@ -8620,6 +8630,7 @@ public class BuildSampleDatabase
                 container.setDiscipline(discipline);
             }
         }
+        return true;
     }
     
     /**

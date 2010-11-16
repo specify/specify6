@@ -42,6 +42,7 @@ import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -83,11 +84,13 @@ import edu.ku.brc.ui.dnd.SimpleGlassPane;
  */
 public class SchemaToolsDlg extends CustomDialog
 {
+    private static final String SL_CHS_LOC = "SL_CHS_LOC";
+    private static final String SL_CHS_IMP = "SL_CHS_IMP";
+    
     protected JButton      editSchemaBtn        = createI18NButton("SL_EDIT_SCHEMA");
     protected JButton      removeLocaleBtn      = createI18NButton("SL_REMOVE_SCHEMA_LOC");
     protected JButton      exportSchemaLocBtn   = createI18NButton("SL_EXPORT_SCHEMA_LOC");
     protected JButton      importSchemaLocBtn   = createI18NButton("SL_IMPORT_SCHEMA_LOC");
-    protected JButton      localizeSchemaLocBtn = createI18NButton("SL_L10N_SCHEMA_LOC");
     protected JList        localeList;
     protected Byte         schemaType;
     protected DBTableIdMgr tableMgr;
@@ -131,7 +134,7 @@ public class SchemaToolsDlg extends CustomDialog
 
         CellConstraints cc = new CellConstraints();
         
-        PanelBuilder builder   = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,2px,p,16px,p,4px,p,8px,p,8px,p,10px"));
+        PanelBuilder builder   = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,2px,p,16px,p,4px,p,8px,p,10px"));
         builder.addSeparator(getResourceString("SL_LOCALES_IN_USE"), cc.xywh(1, 1, 3, 1));
         builder.add(sp, cc.xywh(1,3,3,1));
         
@@ -140,7 +143,6 @@ public class SchemaToolsDlg extends CustomDialog
         builder.add(removeLocaleBtn,      cc.xy(3,7));
         builder.add(exportSchemaLocBtn,   cc.xy(1,9));
         builder.add(importSchemaLocBtn,   cc.xy(3,9));
-        builder.add(localizeSchemaLocBtn, cc.xy(3,11));
         
         builder.setDefaultDialogBorder();
         
@@ -193,15 +195,7 @@ public class SchemaToolsDlg extends CustomDialog
 
             public void actionPerformed(ActionEvent arg0)
             {
-                importSchema(false);
-            }
-        });
-        
-        localizeSchemaLocBtn.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent arg0)
-            {
-                importSchema(true);
+                chooseImportType();
             }
         });
         
@@ -276,12 +270,22 @@ public class SchemaToolsDlg extends CustomDialog
         });
     }
     
+    private void chooseImportType()
+    {
+        int rv = UIRegistry.askYesNoLocalized(SL_CHS_IMP, SL_CHS_LOC, getResourceString("SL_CHOOSEIMPMSG"), "SL_CHOOSEIMPMSG_TITLE");
+        if (rv == JOptionPane.YES_OPTION || rv == JOptionPane.NO_OPTION)
+        {
+            importSchema(rv == JOptionPane.NO_OPTION);
+        }
+    }
+    
     /**
      * 
      */
     private void importSchema(final boolean doLocalization)
     {
         FileDialog fileDlg = new FileDialog((Dialog)null);
+        fileDlg.setTitle(getResourceString(doLocalization ? SL_CHS_LOC : SL_CHS_IMP));
         fileDlg.setVisible(true);
         
         String fileName = fileDlg.getFile();
@@ -314,18 +318,23 @@ public class SchemaToolsDlg extends CustomDialog
                         
                         Discipline discipline = localSession.get(Discipline.class, AppContextMgr.getInstance().getClassObject(Discipline.class).getId());
                         
-                        bsd.loadSchemaLocalization(discipline, 
-                                                    SpLocaleContainer.CORE_SCHEMA, 
-                                                    DBTableIdMgr.getInstance(),
-                                                    null, //catFmtName,
-                                                    null, //accFmtName,
-                                                    doLocalization ? UpdateType.eLocalize : UpdateType.eImport, // isDoingUpdate
-                                                    file, // external file
-                                                    glassPane,
-                                                    localSession);
-                        localSession.commit();
+                        isOK = bsd.loadSchemaLocalization(discipline, 
+                                                            SpLocaleContainer.CORE_SCHEMA, 
+                                                            DBTableIdMgr.getInstance(),
+                                                            null, //catFmtName,
+                                                            null, //accFmtName,
+                                                            doLocalization ? UpdateType.eLocalize : UpdateType.eImport, // isDoingUpdate
+                                                            file, // external file
+                                                            glassPane,
+                                                            localSession);
+                        if (isOK)
+                        {
+                            localSession.commit();
+                        } else
+                        {
+                            localSession.rollback();
+                        }
                         
-                        isOK = true;
                     } catch (Exception ex)
                     {
                         ex.printStackTrace();
