@@ -41,6 +41,7 @@ import org.apache.commons.lang.StringUtils;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -64,9 +65,13 @@ public class CreateTextSchema
 {
     private static Locale currLang  = new Locale("en");
     
+    private static byte SCHEMATYPE = SpLocaleContainer.CORE_SCHEMA;
+    
     protected static String schemaOutputHTMLName = "SpecifySchema%s.html";
     protected static String NBSP                 = "&nbsp;";
     protected static String VERSION              =  "<!-- Version -->";
+    
+    protected static DBTableIdMgr tableMgr;
     
 
     protected String basePath = "src/edu/ku/brc/specify/utilapps/";
@@ -79,7 +84,16 @@ public class CreateTextSchema
      */
     public CreateTextSchema()
     {
+        System.setProperty(AppContextMgr.factoryName, "edu.ku.brc.specify.config.SpecifyAppContextMgr");      // Needed by AppContextMgr //$NON-NLS-1$
         
+        if (SCHEMATYPE == SpLocaleContainer.CORE_SCHEMA)
+        {
+            tableMgr = DBTableIdMgr.getInstance();
+        } else
+        {
+            tableMgr = new DBTableIdMgr(false);
+            tableMgr.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml"))); //$NON-NLS-1$
+        }
     }
     
     /**
@@ -93,7 +107,7 @@ public class CreateTextSchema
         clsName = inx > -1 ? clsName.substring(inx+1) : clsName;
         clsName = clsName.toLowerCase();
         
-        DBTableInfo toTable = DBTableIdMgr.getInstance().getInfoByTableName(clsName);
+        DBTableInfo toTable =tableMgr.getInfoByTableName(clsName);
         if (toTable != null)
         {
             clsName = toTable.getTitle();
@@ -158,7 +172,7 @@ public class CreateTextSchema
     {
         for (DBTableInfo tn : tables)
         {
-            DBTableInfo tblInfo   = DBTableIdMgr.getInstance().getInfoByTableName(tn.getName());
+            DBTableInfo tblInfo   =tableMgr.getInfoByTableName(tn.getName());
             po.write("<LI> <a href=\"#"+tn.getName()+"\">"+tblInfo.getTitle()+"</a></LI>\n");
         }
     }
@@ -170,7 +184,7 @@ public class CreateTextSchema
     {
         for (DBTableInfo tn : tables)
         {
-            DBTableInfo tblInfo   = DBTableIdMgr.getInstance().getInfoByTableName(tn.getName());
+            DBTableInfo tblInfo   =tableMgr.getInfoByTableName(tn.getName());
             po.write("<LI> <a href=\"#"+tn.getName()+"\">"+tblInfo.getTitle()+"</a></LI>\n");
         }
     }
@@ -360,14 +374,14 @@ public class CreateTextSchema
             System.out.println("Writing "+oFile.getAbsolutePath());
             
             
-            Vector<DBTableInfo> tables = DBTableIdMgr.getInstance().getTables();
+            Vector<DBTableInfo> tables =tableMgr.getTables();
             Collections.sort(tables);
             
-            SchemaLocalizerXMLHelper schemaXMLHelper = new SchemaLocalizerXMLHelper(SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
+            SchemaLocalizerXMLHelper schemaXMLHelper = new SchemaLocalizerXMLHelper(SCHEMATYPE, tableMgr);
             schemaXMLHelper.load(true);
             schemaXMLHelper.setTitlesIntoSchema();
             
-            //SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineId, DBTableIdMgr.getInstance(), Locale.getDefault());
+            //SchemaI18NService.getInstance().loadWithLocale(SCHEMATYPE, disciplineId,tableMgr, Locale.getDefault());
             
             List<String> lines = FileUtils.readLines(new File(basePath+ adjustFileNameForLocale("SpecifySchemaTemplate%s.html")));
             for (String line : lines)

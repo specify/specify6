@@ -969,14 +969,8 @@ public class ERDVisualizer extends JFrame
                 
                 if (kidOK && (override || r.getType() == DBRelationshipInfo.RelationshipType.OneToMany))
                 {
-                    System.out.println("    ["+rTable.getClassName()+"]");
+                    //System.out.println("    ["+rTable.getClassName()+"]");
                     
-                    if (rTable.getClassName().indexOf("FieldNote") > -1)
-                    {
-                        int x= 0;
-                        x++;
-                    }
-
                     if (table.addKid(rTable))
                     {
                         rTable.setTreeParent(table);
