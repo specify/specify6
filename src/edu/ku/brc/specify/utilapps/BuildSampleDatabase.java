@@ -8545,26 +8545,29 @@ public class BuildSampleDatabase
                                           final SimpleGlassPane glassPane,
                                           final DataProviderSessionIFace sessionArg)
     {
+        boolean isUpdate   = updateType == UpdateType.eImport || updateType == UpdateType.eMerge;
+        boolean isLocalize = updateType == UpdateType.eLocalize;
+        
         HiddenTableMgr hiddenTableMgr = new HiddenTableMgr();
 
         SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(schemaType, tableMgr);
-        schemaLocalizer.loadWithExternalFile(externalFile, false);
         
-        List<Locale> availLocales = schemaLocalizer.getAvailLocales();
-        if (availLocales.size() > 1)
-        {
-            UIRegistry.displayErrorDlgLocalized("BSD.TOOMANYLOCALES");
-            return false;
-        }
+        // NOTE: For localization 'false' is passed in 
+        schemaLocalizer.loadWithExternalFile(externalFile, !isLocalize);
         
         boolean hideGenericFields = true;
         
-        //loadFieldsToHideHash();
-        
         String dispName = discipline.getType().toString();
         
-        boolean isUpdate   = updateType == UpdateType.eImport || updateType == UpdateType.eMerge;
-        boolean isLocalize = updateType == UpdateType.eLocalize;
+        if (isLocalize)
+        {
+            List<Locale> availLocales = schemaLocalizer.getAvailLocales();
+            if (availLocales.size() > 1)
+            {
+                UIRegistry.displayErrorDlgLocalized("BSD.TOOMANYLOCALES");
+                return false;
+            }
+        }
         
         float progressCnt = 0.0f;
         float len = (float)schemaLocalizer.getSpLocaleContainers().size();
