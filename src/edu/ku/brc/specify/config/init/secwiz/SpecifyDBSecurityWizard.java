@@ -222,30 +222,7 @@ public class SpecifyDBSecurityWizard extends JPanel
                     backBtn, 
                     true, 
                     masterLoginPanel));
-            
-            /*
-            panels.add(new GenericFormPanel("SECURITY", 
-                    "SECURITY_INFO",
-                    "wizard_security_on",
-                    new String[] { "SECURITY_ON"}, 
-                    new String[] { "security_on"},
-                    new String[] { "checkbox"},
-                    nextBtn, backBtn, true));
 
-    
-            userInfoPanel = new UserInfoPanel("AGENT", 
-                    "ENTER_COLMGR_INFO", 
-                    "wizard_create_it_user",
-                    new String[] { "FIRSTNAME", "LASTNAME", "MIDNAME",       "EMAIL",  null,  "USERLOGININFO", "USERNAME",    "PASSWORD"}, 
-                    new String[] { "firstName", "lastName", "middleInitial", "email",  " ",   "-",             "usrUsername",  "usrPassword"}, 
-                    new boolean[] { true,       true,       false,            true,    true,  false,           true,           true},
-                    new Integer[] { 50,         120,        50,               50,      null,  null,            64,             32},
-                    nextBtn, backBtn);
-            panels.add(userInfoPanel);*/
-            
-
-        panels.add(new SummaryPanel("SUMMARY", "wizard_summary", nextBtn, backBtn, panels));
-         
         lastStep = panels.size();
         
         if (backBtn != null)
@@ -275,24 +252,6 @@ public class SpecifyDBSecurityWizard extends JPanel
         {
             public void actionPerformed(ActionEvent ae)
             {
-                if (step == lastStep-2)
-                {
-            		SwingUtilities.invokeLater(new Runnable() {
-						@Override
-						public void run() {
-							Component c = SpecifyDBSecurityWizard.this.getParent();
-		                	while (!(c instanceof Window) && c != null)
-		                	{
-		                		c = c.getParent();
-		                	}
-		                	if (c != null)
-		                	{
-		                		((Window)c).pack();
-		                	}
-						}
-            		});
-                }
-
                 if (step < lastStep-1)
                 {
                     panels.get(step).getValues(props);
@@ -408,7 +367,8 @@ public class SpecifyDBSecurityWizard extends JPanel
         if (step == lastStep-1)
         {
             nextBtn.setEnabled(panels.get(step).isUIValid());
-            //nextBtn.setText(getResourceString(key));
+            nextBtn.setText(getResourceString("DONE"));
+            cancelBtn.setVisible(false);
             
         } else
         {

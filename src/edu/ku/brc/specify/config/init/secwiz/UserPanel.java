@@ -30,7 +30,6 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -59,7 +58,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBMSUserMgr;
-import edu.ku.brc.dbsupport.TableModel2Excel;
 import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.config.init.BaseSetupPanel;
@@ -145,7 +143,9 @@ public class UserPanel extends BaseSetupPanel
         
         label = UIHelper.createLabel("", SwingConstants.CENTER);
         
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p", "f:p:g,8px,p,8px,p,4px,f:p:g,4px,p"), this);
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p", "f:p:g,8px,p,8px,p,4px,f:p:g,4px,p,4px,p"), this);
+        
+        sendKeysBtn.setVisible(false);
         
         int y = 1;
         pb.add(dbScrollPane = UIHelper.createScrollPane(dbList), cc.xyw(1, y, 2)); y += 2;
@@ -153,6 +153,7 @@ public class UserPanel extends BaseSetupPanel
         pb.add(label,              cc.xyw(1, y, 2)); y += 2;
         pb.add(userScrollPane = UIHelper.createScrollPane(userTable), cc.xyw(1, y, 2)); y += 2;
         pb.add(btnPB.getPanel(),   cc.xy(2, y));  y += 2;
+        pb.addSeparator("",        cc.xyw(1, y, 2));  y += 2;
         
         dbList.setVisibleRowCount(8);
         
@@ -625,7 +626,7 @@ public class UserPanel extends BaseSetupPanel
     @Override
     public boolean isUIValid()
     {
-        return false;
+        return true;
     }
 
     /* (non-Javadoc)
