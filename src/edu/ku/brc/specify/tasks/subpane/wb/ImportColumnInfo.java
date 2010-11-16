@@ -22,6 +22,8 @@ package edu.ku.brc.specify.tasks.subpane.wb;
 import java.util.Calendar;
 import java.util.Date;
 
+import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+
 
 
 /**
@@ -43,7 +45,7 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
     protected String     mapToFld = null; //mappint read from XLS document properties
     protected int		 formXCoord = -1;
     protected int 		 formYCoord = -1;
-    protected int		 frmFieldType = 0;
+    protected int		 frmFieldType = WorkbenchTemplateMappingItem.TEXTFIELD;
     protected String     caption = null;
     protected String	 frmMetaData = null;
     
