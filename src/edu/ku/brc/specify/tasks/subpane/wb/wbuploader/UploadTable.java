@@ -3063,16 +3063,13 @@ public class UploadTable implements Comparable<UploadTable>
         
         for (UploadTable child : matchChildren)
         {
-        	try
+        	child.loadFromDataSet(wbCurrentRow);
+        	for (int c = 0; c < child.getUploadFields().size(); c++)
         	{
-        		child.loadFromDataSet(wbCurrentRow);
-        		if (child.needToWrite(recNum))
+        		if (child.getCurrentRecord(c) != null)
         		{
         			return true;
         		}
-        	} finally
-        	{
-        		child.loadFromDataSet(child.wbCurrentRow);
         	}
         }
         
