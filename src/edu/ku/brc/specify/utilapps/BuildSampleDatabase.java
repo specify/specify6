@@ -8547,13 +8547,14 @@ public class BuildSampleDatabase
     {
         boolean isUpdate   = updateType == UpdateType.eImport || updateType == UpdateType.eMerge;
         boolean isLocalize = updateType == UpdateType.eLocalize;
+        boolean isImportOrLocalize = updateType == UpdateType.eImport || updateType == UpdateType.eLocalize;
         
         HiddenTableMgr hiddenTableMgr = new HiddenTableMgr();
 
         SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(schemaType, tableMgr);
         
         // NOTE: For localization 'false' is passed in 
-        schemaLocalizer.loadWithExternalFile(externalFile, !isLocalize);
+        schemaLocalizer.loadWithExternalFile(externalFile, !isImportOrLocalize);
         
         boolean hideGenericFields = true;
         

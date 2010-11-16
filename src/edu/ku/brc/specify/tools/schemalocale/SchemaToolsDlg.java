@@ -286,7 +286,7 @@ public class SchemaToolsDlg extends CustomDialog
     {
         FileDialog fileDlg = new FileDialog((Dialog)null);
         fileDlg.setTitle(getResourceString(doLocalization ? SL_CHS_LOC : SL_CHS_IMP));
-        fileDlg.setVisible(true);
+        UIHelper.centerAndShow(fileDlg);
         
         String fileName = fileDlg.getFile();
         if (StringUtils.isNotEmpty(fileName))
