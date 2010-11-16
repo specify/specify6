@@ -23,6 +23,7 @@ import static edu.ku.brc.ui.UIHelper.createIconBtn;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.AWTKeyStroke;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -60,6 +61,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -74,6 +76,7 @@ import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValTextArea;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.specify.datamodel.Workbench;
+import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
@@ -162,6 +165,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             {
                 stateChange();
             }
+            
         };
         
         changeListener = new ChangeListener() {
@@ -838,6 +842,45 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
     }
     
     /**
+     * @param p
+     * @param wbRow
+     */
+    protected void copyDataFromForm(final InputPanel p, final WorkbenchRow wbRow)
+    {
+        short col = p.getWbtmi().getViewOrder();
+        
+        if (p.getComp() instanceof JTextComponent)
+        {
+            String data     = ((JTextComponent)p.getComp()).getText();
+            String cellData = wbRow.getData(col);
+            if (StringUtils.isNotEmpty(cellData) || data != null)
+            {
+                wbRow.setData(data == null ? "" : data, col, true);
+            }
+            
+        } else if (p.getComp() instanceof GetSetValueIFace)
+        {
+            Object data     = ((GetSetValueIFace)p.getComp()).getValue();
+            String cellData = wbRow.getData(col);
+            if (StringUtils.isNotEmpty(cellData) || data != null)
+            {
+                wbRow.setData(data == null ? "" : data.toString(), col, true);
+            }
+            
+        } else if (p.getComp() instanceof JScrollPane)
+        {
+            JScrollPane sc   = (JScrollPane)p.getComp();
+            Component   comp = sc.getViewport().getView();
+            if (comp instanceof JTextArea)
+            {
+                wbRow.setData(((JTextArea)comp).getText(), col, true);
+            }
+        } else
+        {
+           log.error("Can't get data from control["+p.getLabelText()+"]");
+        }
+    }
+    /**
      * Copies the data from the form into the row.
      * @param index the index of the row
      */
@@ -855,38 +898,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         WorkbenchRow wbRow = workbench.getWorkbenchRowsAsList().get(index);
         for (InputPanel p : uiComps)
         {
-            short col = p.getWbtmi().getViewOrder();
-            
-            if (p.getComp() instanceof JTextComponent)
-            {
-                String data     = ((JTextComponent)p.getComp()).getText();
-                String cellData = wbRow.getData(col);
-                if (StringUtils.isNotEmpty(cellData) || data != null)
-                {
-                    wbRow.setData(data == null ? "" : data, col, true);
-                }
-                
-            } else if (p.getComp() instanceof GetSetValueIFace)
-            {
-                Object data     = ((GetSetValueIFace)p.getComp()).getValue();
-                String cellData = wbRow.getData(col);
-                if (StringUtils.isNotEmpty(cellData) || data != null)
-                {
-                    wbRow.setData(data == null ? "" : data.toString(), col, true);
-                }
-                
-            } else if (p.getComp() instanceof JScrollPane)
-            {
-                JScrollPane sc   = (JScrollPane)p.getComp();
-                Component   comp = sc.getViewport().getView();
-                if (comp instanceof JTextArea)
-                {
-                    wbRow.setData(((JTextArea)comp).getText(), col, true);
-                }
-            } else
-            {
-               log.error("Can't get data from control["+p.getLabelText()+"]");
-            }
+        	copyDataFromForm(p, wbRow);
         }
         ignoreChanges = false;
     }
@@ -999,6 +1011,10 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         {
             currentIndex  = newIndex;
             setDataIntoForm(currentIndex);
+            if (workbenchPane.isDoIncrementalValidation())
+            {
+            	updateValidationUI();
+            }
             
             if (firstComp != null)
             {
@@ -1145,6 +1161,51 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         {
             changesInForm = true;
             workbenchPane.setChanged(true);
+            if (workbenchPane.isDoIncrementalValidation())
+            {
+                WorkbenchRow wbRow = workbench.getWorkbenchRowsAsList().get(currentIndex);
+            	copyDataFromForm(selectedInputPanel, wbRow);
+            	workbenchPane.updateRowValidationStatus(currentIndex, -1);
+            	updateValidationUI(wbRow);
+            }
         }
+    }
+    
+    /**
+     * Updates validation status display for all controls.
+     */
+    public void updateValidationUI()
+    {
+    	updateValidationUI(workbench.getWorkbenchRowsAsList().get(currentIndex));
+    }
+    
+    /**
+     * @param wbRow
+     * 
+     * Updates validation status display for all controls.
+     */
+    protected void updateValidationUI(final WorkbenchRow wbRow)
+    {
+    	for (InputPanel ip : uiComps)
+    	{
+    		updateValidationUI(ip, wbRow);
+    	}
+    }
+    
+    /**
+     * @param ip
+     */
+    protected void updateValidationUI(InputPanel ip, WorkbenchRow wbRow)
+    {
+		String toolTip = null;
+		LineBorder border = null;
+		WorkbenchDataItem wbCell = wbRow.getItems().get(ip.getWbtmi().getViewOrder());
+		if (wbCell != null && wbCell.getValidationStatus() == WorkbenchDataItem.VAL_ERROR)
+		{
+			toolTip = wbCell.getStatusText();
+			border = new LineBorder(Color.RED);
+		} 	
+		ip.setToolTipText(toolTip);
+		ip.setBorder(border);
     }
  }

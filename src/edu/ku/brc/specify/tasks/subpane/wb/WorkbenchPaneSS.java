@@ -1456,7 +1456,19 @@ public class WorkbenchPaneSS extends BaseSubPane
         switcher.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
             {
-                showPanel(switcher.getCurrentIndex() == 1 ? PanelType.Spreadsheet : PanelType.Form);
+                PanelType panel = switcher.getCurrentIndex() == 1 ? PanelType.Spreadsheet : PanelType.Form;
+            	showPanel(panel);
+            	
+            	//Until auto-validation is hooked up to form view:
+//            	if (panel == PanelType.Spreadsheet && doIncrementalValidation)
+//            	{
+//            		validateAll(null);
+//            	}
+            	
+            	if (panel == PanelType.Form && doIncrementalValidation)
+            	{
+            		formPane.updateValidationUI();
+            	}
             }
         });
         switcher.validate();
