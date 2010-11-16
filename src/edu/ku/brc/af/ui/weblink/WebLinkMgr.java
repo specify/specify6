@@ -21,7 +21,6 @@ package edu.ku.brc.af.ui.weblink;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
-import java.io.Writer;
 import java.security.AccessController;
 import java.util.Vector;
 
@@ -29,12 +28,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.core.util.QuickWriter;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
-import com.thoughtworks.xstream.io.xml.XppDriver;
 
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.helpers.XMLHelper;
 
 /**
  * This is a singleton factory for managing WebLinks.
@@ -217,26 +213,7 @@ public class WebLinkMgr
      */
     protected String convertToXML()
     {
-        //XStream xstream = new XStream();
-        XStream xstream = new XStream(
-                new XppDriver() 
-                {
-                    @Override
-                    public HierarchicalStreamWriter createWriter(Writer out) 
-                    {
-                        return new PrettyPrintWriter(out) 
-                        {
-                            @Override
-                            protected void writeText(QuickWriter writer, String text) 
-                            {
-                                writer.write("<![CDATA[");
-                                writer.write(text);
-                                writer.write("]]>");
-                            }
-                        };
-                    }
-                }
-            );
+        XStream xstream = XMLHelper.createXStreamWithCData();
         config(xstream);
 
         return xstream.toXML(webLinkDefs);

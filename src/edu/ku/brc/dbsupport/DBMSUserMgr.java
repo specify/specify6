@@ -23,6 +23,7 @@ import java.io.File;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.sql.Connection;
+import java.util.List;
 
 import edu.ku.brc.specify.config.init.SpecifyDBSetupWizard;
 import edu.ku.brc.ui.UIHelper;
@@ -231,6 +232,25 @@ public abstract class DBMSUserMgr
 	 */
 	public abstract boolean setPermissions(String username, String dbName, int permissions);
 	
+    /**
+     * @return list of databases.
+     */
+    public abstract List<String> getDatabaseList();
+    
+    /**
+     * @param username the user to check
+     * @return list of databases that this user has permissions to access.
+     */
+    public abstract List<String> getDatabaseListForUser(String username);
+    
+    /**
+     * Checks to see if a user has permissions to grant permissions.
+     * @param hostName
+     * @param username
+     * @return
+     */
+    public abstract boolean canGrantPemissions(String hostName, String username);
+    
     /**
      * @param hostName the host name to connect to
      */

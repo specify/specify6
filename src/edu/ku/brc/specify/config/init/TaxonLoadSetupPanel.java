@@ -251,7 +251,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
             TaxonFileDesc tfd = (TaxonFileDesc)fileCBX.getSelectedItem();
             if (tfd != null && FilenameUtils.isExtension(tfd.getFileName().toLowerCase(), XLS))
             {
-                fileName = downloadedFileName != null ? downloadedFileName : tfd.getFileName();
+                fileName = downloadedFileName;
             }
         }
         
@@ -475,8 +475,21 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
                 dlg.setModal(true);
                 UIHelper.centerAndShow(dlg);
                 
-                downloadedFileName = dlg.getStatus() == TaxonDownloadDlg.StatusType.eOK ? fileName : null;
-                
+                if (dlg.getStatus() == TaxonDownloadDlg.StatusType.eOK)
+                {
+                    downloadedFileName = fileName;
+                } else
+                {
+                    downloadedFileName = null;
+                    try
+                    {
+                        File file = new File(fileName);
+                        if (file.exists())
+                        {
+                            file.delete();
+                        }
+                    } catch (Exception ex) {}
+                }
             } else
             {
                 UIRegistry.showLocalizedError(BAD_TAXON_URL);

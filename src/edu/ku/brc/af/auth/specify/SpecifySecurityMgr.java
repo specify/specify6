@@ -44,6 +44,7 @@ import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.auth.specify.permission.PermissionService;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * 
@@ -132,7 +133,7 @@ public class SpecifySecurityMgr extends SecurityMgr
                 
                 if (StringUtils.isNotEmpty(dbPassword) && 
                     StringUtils.isAlphanumeric(dbPassword) &&
-                    isAllCaps(dbPassword) && 
+                    UIHelper.isAllCaps(dbPassword) && 
                     dbPassword.length() > 20)
                 {
                     dbPassword = Encryption.decrypt(dbPassword, pass);
@@ -181,23 +182,6 @@ public class SpecifySecurityMgr extends SecurityMgr
             }
         }
         return passwordMatch;
-    }
-    
-    /**
-     * @param str
-     * @return
-     */
-    public static boolean isAllCaps(final String str)
-    {
-        for (int i=0;i<str.length();i++)
-        {
-            char ch = str.charAt(i);
-            if (Character.isLetter(ch) && Character.isLowerCase(ch))
-            {
-                return false;
-            }
-        }
-        return true;
     }
     
     // XXX should be moved to PermissionService class

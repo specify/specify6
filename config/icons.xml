@@ -14,6 +14,8 @@
     <icon name="SpecifyLargeIconE" file="specify128E.png" sizes="NonStd"/>
     <icon name="SpecifyLargeIconM" file="specify128M.png" sizes="NonStd"/>
     <icon name="SpecifyConv"       file="specify128Conv.png" sizes="NonStd"/>
+    <icon name="SpecifySecWiz"     file="spsecwizard128.png" sizes="NonStd"/>
+    <icon name="SpecifySecWiz32"    file="spsecwizard32.png" sizes="all"/>
     
     
     <icon name="Specify16"        file="specify16.png" sizes="16"/>   <!-- Not Needed anymore -->

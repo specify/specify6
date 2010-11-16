@@ -45,6 +45,12 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.core.util.QuickWriter;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
+import com.thoughtworks.xstream.io.xml.XppDriver;
+
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.XMLChecksumUtil;
@@ -405,6 +411,32 @@ public class XMLHelper
            }
        }
    }
+   
+    /**
+     * @return XStream with HierarchicalStreamWriter for CDATA fields.
+     */
+    public static XStream createXStreamWithCData()
+    {
+       return new XStream(
+               new XppDriver() 
+               {
+                   @Override
+                   public HierarchicalStreamWriter createWriter(Writer out) 
+                   {
+                       return new PrettyPrintWriter(out) 
+                       {
+                           @Override
+                           protected void writeText(QuickWriter writer, String text) 
+                           {
+                               writer.write("<![CDATA[");
+                               writer.write(text);
+                               writer.write("]]>");
+                           }
+                       };
+                   }
+               }
+           );
+    }
    
    public static void indent(final StringBuilder sb, final int width)
    {

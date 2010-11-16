@@ -388,7 +388,6 @@ public class DatabaseLoginPanel extends JTiledPanel
     private String getUserPrefPath(final String dbName, final boolean includeDBName)
     {
         String key = (StringUtils.isNotEmpty(dbName) && includeDBName? (dbName + '_') : "")  + "login.username";
-        System.out.println(key);
         return key;
     }
 

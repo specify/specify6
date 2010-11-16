@@ -2459,7 +2459,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 
                 if (StringUtils.isNotEmpty(dbPassword) && 
                         (!StringUtils.isAlphanumeric(dbPassword) ||
-                         !SpecifySecurityMgr.isAllCaps(dbPassword) ||
+                         !UIHelper.isAllCaps(dbPassword) ||
                          dbPassword.length() < 25))
                 {
                     String encryptedPassword = Encryption.encrypt(spUser.getPassword(), spUser.getPassword());

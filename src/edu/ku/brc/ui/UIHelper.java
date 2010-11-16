@@ -3848,5 +3848,21 @@ public final class UIHelper
         Double dbl = parseDouble(value);
         return dbl != null ? new BigDecimal(dbl) : null;
     }
-
+    
+    /**
+     * @param str
+     * @return
+     */
+    public static boolean isAllCaps(final String str)
+    {
+        for (int i=0;i<str.length();i++)
+        {
+            char ch = str.charAt(i);
+            if (Character.isLetter(ch) && Character.isLowerCase(ch))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 }
