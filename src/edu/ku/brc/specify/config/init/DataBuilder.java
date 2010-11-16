@@ -22,8 +22,13 @@ package edu.ku.brc.specify.config.init;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,17 +43,23 @@ import org.hibernate.Session;
 
 import com.thoughtworks.xstream.XStream;
 
+import edu.ku.brc.af.auth.SecurityOptionIFace;
 import edu.ku.brc.af.auth.specify.principal.AdminPrincipal;
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.PermissionIFace;
+import edu.ku.brc.af.core.TaskMgr;
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.PickListIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.AttributeIFace;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.SpecifyUserTypes;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.AccessionAuthorization;
@@ -2539,9 +2550,9 @@ public class DataBuilder
      */
     public static void createDefaultPermissions(final Session sessionArg, final Map<String, SpPrincipal> groupMap)
     {
-        createDefaultPermissions(sessionArg, "dataobjs.xml",   "DO.",    groupMap);
-        createDefaultPermissions(sessionArg, "prefsperms.xml", "Prefs.", groupMap);
-        createDefaultPermissions(sessionArg, "tasks.xml",      "Task.",  groupMap);
+        createDefaultPermissions(sessionArg, "dataobjs.xml",   "DO.",    groupMap, null);
+        createDefaultPermissions(sessionArg, "prefsperms.xml", "Prefs.", groupMap, null);
+        createDefaultPermissions(sessionArg, "tasks.xml",      "Task.",  groupMap, getTasksAdditionalSecOpts());
     }
     
     /**
@@ -2575,33 +2586,53 @@ public class DataBuilder
     public static void createDefaultPermissions(final Session     sessionArg,
                                                 final String      filename,
                                                 final String      prefix,
-                                                final Map<String, SpPrincipal> groupMap)
+                                                final Map<String, SpPrincipal> groupMap,
+                                                final List<SecurityOptionIFace> additionalSecOpts)
     {
         Hashtable<String, Hashtable<String, PermissionOptionPersist>> mainHash = BaseTask.readDefaultPermsFromXML(filename);
-        if (true)
+        for (String permName : mainHash.keySet())
         {
-            for (String permName : mainHash.keySet())
+            String userType = "LimitedAccess";
+            Hashtable<String, PermissionOptionPersist> hash = mainHash.get(permName);
+            if (hash.get(userType) == null)
             {
-                String userType = "LimitedAccess";
-                Hashtable<String, PermissionOptionPersist> hash = mainHash.get(permName);
-                if (hash.get(userType) == null)
+                PermissionOptionPersist permOpts = hash.get("Manager");
+                PermissionOptionPersist newPermOpts = new PermissionOptionPersist(permOpts.getTaskName(), userType, permOpts.isCanView(), permOpts.isCanModify(), permOpts.isCanDel(), permOpts.isCanAdd());
+                hash.put(userType, newPermOpts);
+            }
+            
+            userType = "FullAccess";
+            hash = mainHash.get(permName);
+            if (hash.get(userType) == null)
+            {
+                PermissionOptionPersist permOpts = hash.get("Manager");
+                PermissionOptionPersist newPermOpts = new PermissionOptionPersist(permOpts.getTaskName(), userType, permOpts.isCanView(), permOpts.isCanModify(), permOpts.isCanDel(), permOpts.isCanAdd());
+                hash.put(userType, newPermOpts);
+            }
+        }
+        
+        if (additionalSecOpts != null)
+        {
+            for (SecurityOptionIFace aso : additionalSecOpts)
+            {
+                Hashtable<String, PermissionOptionPersist> hash = mainHash.get(aso.getPermissionName());
+                if (hash == null)
                 {
-                    PermissionOptionPersist permOpts = hash.get("Manager");
-                    PermissionOptionPersist newPermOpts = new PermissionOptionPersist(permOpts.getTaskName(), userType, permOpts.isCanView(), permOpts.isCanModify(), permOpts.isCanDel(), permOpts.isCanAdd());
-                    hash.put(userType, newPermOpts);
+                    hash = new Hashtable<String, PermissionOptionPersist>();
+                    mainHash.put(aso.getPermissionName(), hash);
                 }
-                
-                userType = "FullAccess";
-                hash = mainHash.get(permName);
-                if (hash.get(userType) == null)
+                for (SpecifyUserTypes.UserType userType : SpecifyUserTypes.UserType.values())
                 {
-                    PermissionOptionPersist permOpts = hash.get("Manager");
-                    PermissionOptionPersist newPermOpts = new PermissionOptionPersist(permOpts.getTaskName(), userType, permOpts.isCanView(), permOpts.isCanModify(), permOpts.isCanDel(), permOpts.isCanAdd());
-                    hash.put(userType, newPermOpts);
+                    PermissionIFace asoPerm = aso.getDefaultPermissions(userType.toString());
+                    if (asoPerm != null)
+                    {
+                        PermissionOptionPersist newPermOpts = new PermissionOptionPersist(aso.getPermissionName(), userType.toString(), asoPerm.canView(), asoPerm.canModify(), asoPerm.canDelete(), asoPerm.canAdd());
+                        hash.put(userType.toString(), newPermOpts);
+                    }
                 }
             }
-            writePerms(mainHash, filename);
         }
+        writePerms(mainHash, filename);
 
         for (SpPrincipal p : groupMap.values())
         {
@@ -2624,6 +2655,185 @@ public class DataBuilder
             }
         }
     }
+    
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    /**
+     * Create default groups under the given scope.
+     *
+     */
+    public static Map<String, List<Integer>> mergeStandardGroups(final Session    sessionArg,
+                                                                 final Collection scope)
+    {
+        loadDefaultGroupDefinitions();
+        
+        Map<String, List<Integer>> groupMap = new HashMap<String, List<Integer>>();
+
+        for (String usertype : usertypeToDefaultGroup.keySet()) 
+        {
+            Pair<String, Byte> grpInfo = usertypeToDefaultGroup.get(usertype);
+            List<Integer> principleIds = getGroup(grpInfo.first, usertype, scope);
+            groupMap.put(usertype, principleIds);
+        }
+        mergeDefaultPermissions(sessionArg, groupMap);
+
+        return groupMap;
+    }
+    
+    /**
+     * @return
+     */
+    private static List<SecurityOptionIFace> getTasksAdditionalSecOpts()
+    {
+        List<SecurityOptionIFace> additionalTaskSecOpts = new ArrayList<SecurityOptionIFace>();
+        for (Taskable task : TaskMgr.getInstance().getAllTasks())
+        {
+            List<SecurityOptionIFace> list = task.getAdditionalSecurityOptions();
+            if (list != null)
+            {
+                additionalTaskSecOpts.addAll(list);
+            }
+        }
+        return additionalTaskSecOpts;
+    }
+    
+    /**
+     * @param groupMap
+     */
+    private static void mergeDefaultPermissions(final Session sessionArg, final Map<String, List<Integer>> groupMap)
+    {
+
+        
+        mergeDefaultPermissions(sessionArg, "dataobjs.xml",   "DO.",    groupMap, null);
+        mergeDefaultPermissions(sessionArg, "prefsperms.xml", "Prefs.", groupMap, null);
+        mergeDefaultPermissions(sessionArg, "tasks.xml",      "Task.",  groupMap, null);
+    }
+    
+    /**
+     * @param name
+     * @param type
+     * @param scope
+     * @return
+     */
+    private static List<Integer> getGroup(final String name, 
+                                          final String type, 
+                                          final Collection scope)
+    {   
+        ArrayList<Integer> ids = new ArrayList<Integer>();
+        String sql = " SELECT SpPrincipalID FROM spprincipal WHERE Name=? AND groupType=? AND GroupSubClass=? AND userGroupScopeID=?"; 
+        String grpTypeStr = GroupPrincipal.class.getCanonicalName();
+        
+        Connection conn = DBConnection.getInstance().getConnection();
+        PreparedStatement pStmt = null;
+        try
+        {
+            pStmt = conn.prepareStatement(sql);
+            pStmt.setString(1, name);
+            pStmt.setString(2, type);
+            pStmt.setString(3, grpTypeStr);
+            pStmt.setInt(4, scope.getId());
+            
+            ResultSet rs = pStmt.executeQuery();
+            while (rs.next())
+            {
+                ids.add(rs.getInt(1));
+            }
+            rs.close();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            try
+            {
+                if (pStmt != null) pStmt.close();
+            } catch (SQLException e) {}
+        }
+        
+        return ids;
+    }
+    
+    /**
+     * @param filename
+     * @param prefix
+     * @param groupMap
+     */
+    public static void mergeDefaultPermissions(final Session     sessionArg,
+                                               final String      filename,
+                                               final String      prefix,
+                                               final Map<String, List<Integer>> groupMap,
+                                               final List<SecurityOptionIFace> additionalSecOpts)
+    {
+        Hashtable<String, Hashtable<String, PermissionOptionPersist>> mainHash = BaseTask.readDefaultPermsFromXML(filename);
+        for (String permName : mainHash.keySet())
+        {
+            String userType = "LimitedAccess";
+            Hashtable<String, PermissionOptionPersist> hash = mainHash.get(permName);
+            if (hash.get(userType) == null)
+            {
+                PermissionOptionPersist permOpts = hash.get("Manager");
+                PermissionOptionPersist newPermOpts = new PermissionOptionPersist(permOpts.getTaskName(), userType, permOpts.isCanView(), permOpts.isCanModify(), permOpts.isCanDel(), permOpts.isCanAdd());
+                hash.put(userType, newPermOpts);
+            }
+            
+            userType = "FullAccess";
+            hash = mainHash.get(permName);
+            if (hash.get(userType) == null)
+            {
+                PermissionOptionPersist permOpts = hash.get("Manager");
+                PermissionOptionPersist newPermOpts = new PermissionOptionPersist(permOpts.getTaskName(), userType, permOpts.isCanView(), permOpts.isCanModify(), permOpts.isCanDel(), permOpts.isCanAdd());
+                hash.put(userType, newPermOpts);
+            }
+        }
+        
+        /*if (additionalSecOpts != null)
+        {
+            for (SpecifyUserTypes.UserType userType : SpecifyUserTypes.UserType.values())
+            {
+                System.out.println(userType.toString()+" --------------------------------------");
+                for (SecurityOptionIFace aso : additionalSecOpts)
+                {
+                    PermissionIFace asoPerm = aso.getDefaultPermissions(userType.toString());
+                    if (asoPerm != null)
+                    {
+                        System.out.println("  "+prefix+aso.getPermissionName()+"  "+asoPerm.getOptions());
+                    }
+                }
+            }
+        }*/
+
+        for (String permName : mainHash.keySet())
+        {
+            String fullPermName = prefix + permName;
+            
+            Hashtable<String, PermissionOptionPersist> hash = mainHash.get(permName);
+            for (String userType : hash.keySet()) 
+            {
+                PermissionOptionPersist tp   = hash.get(userType);
+                SpPermission            perm = tp.getSpPermission();
+                
+                //sessionArg.saveOrUpdate(perm);
+                
+                //Set<SpPrincipal> groupSet = new HashSet<SpPrincipal>();
+                //groupSet.add(groupMap.get(userType));
+                for (Integer id : groupMap.get(userType))
+                {
+                    String str = "SELECT p.SpPermissionID FROM sppermission AS p Inner Join spprincipal_sppermission AS pp ON p.SpPermissionID = pp.SpPermissionID " +
+                    		     "WHERE p.Name = '%s' AND pp.SpPrincipalID = %d";
+                    String sql = String.format(str, fullPermName, id);
+                    Integer permId = BasicSQLUtils.getCount(sql);
+                    if (permId == null)
+                    {
+                        System.out.println(String.format("Need to create %s for Prin: %d", fullPermName, id));
+                    }
+                    //perm.setPrincipals(groupSet);
+                    //perm.setName(prefix + permName);
+                }
+            }
+        }
+    }
+//------------------------------------------------------------------------
 
     
     public static Workbench createWorkbench(final SpecifyUser user,

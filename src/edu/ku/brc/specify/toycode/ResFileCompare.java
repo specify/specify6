@@ -58,8 +58,8 @@ public class ResFileCompare
         
         if (doBranch)
         {
-            engFile = new File(String.format("/Users/rods/workspace/Specify_6202/src/%s_en.properties", baseFileName));
-            lngFile = new File(String.format("/Users/rods/workspace/Specify_6202/src/%s_%s.properties", baseFileName, lang));
+            engFile = new File(String.format("/home/rods/workspace/Specify_6202SF/src/%s_en.properties", baseFileName));
+            lngFile = new File(String.format("/home/rods/workspace/Specify_6202SF/src/%s_%s.properties", baseFileName, lang));
         } else
         {
             engFile = new File(String.format("src/%s_en.properties", baseFileName));
@@ -214,7 +214,7 @@ public class ResFileCompare
         ResFileCompare compare = new ResFileCompare();
         for (String baseFileName : fileNames)
         {
-            compare.compare(baseFileName, lang, false);
+            compare.compare(baseFileName, lang, true);
         }
     }
 }

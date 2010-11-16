@@ -168,6 +168,7 @@ import edu.ku.brc.specify.config.FixDBAfterLogin;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
+import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.config.init.RegisterSpecify;
 import edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
@@ -2597,6 +2598,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     fixer.checkMultipleLocalities();
                 }
             });
+            
+            DataBuilder.mergeStandardGroups(null, AppContextMgr.getInstance().getClassObject(Collection.class));
             
         } else if (status == AppContextMgr.CONTEXT_STATUS.Error)
         {

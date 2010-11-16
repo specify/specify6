@@ -30,12 +30,15 @@ import org.apache.log4j.Logger;
 
 import com.thoughtworks.xstream.XStream;
 
+import edu.ku.brc.af.auth.PermissionSettings;
+import edu.ku.brc.af.auth.SecurityOption;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpReport;
@@ -230,4 +233,19 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
      */
     @Override
     public abstract SubPaneIFace getStarterPane();
+    
+    
+    /**
+     * @param secOpt
+     * @param perms
+     */
+    protected void addPerms(final SecurityOption secOpt, final boolean[][] perms)
+    {
+        int i = 0;
+        for (SpecifyUserTypes.UserType userType : SpecifyUserTypes.UserType.values())
+        {
+            boolean[] p = perms[i++];
+            secOpt.addDefaultPerm(userType.toString(), new PermissionSettings(p[0], p[1], p[2], p[3]));
+        }
+    }
 }

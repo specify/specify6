@@ -53,7 +53,6 @@ import edu.ku.brc.af.ui.db.CommandActionForDB;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.SpVisualQuery;
 import edu.ku.brc.specify.tasks.subpane.VisualQueryPanel;
 import edu.ku.brc.ui.CommandAction;
@@ -283,12 +282,19 @@ public class VisualQueryTask extends BaseTask
     {
         List<SecurityOptionIFace> list = new ArrayList<SecurityOptionIFace>();
         
-        list.add(new SecurityOption(VISQRY_SECURITY, 
-                getResourceString("VISQRY_TITLE"), 
-                securityPrefix,
-                new BasicPermisionPanel(VISQRY_TITLE, 
-                                        "VISQRY_VIEW", 
-                                        "VISQRY_EDIT")));
+        SecurityOption secOpt = new SecurityOption(VISQRY_SECURITY, 
+                                                    getResourceString("VISQRY_TITLE"), 
+                                                    securityPrefix,
+                                                    new BasicPermisionPanel(VISQRY_TITLE, 
+                                                                            "VISQRY_VIEW", 
+                                                                            "VISQRY_EDIT"));
+        addPerms(secOpt, new boolean[][] 
+                   {{true, true, true, false},
+                   {false, false, false, false},
+                   {false, false, false, false},
+                   {false, false, false, false}});
+        
+        list.add(secOpt);
 
         return list;
     }

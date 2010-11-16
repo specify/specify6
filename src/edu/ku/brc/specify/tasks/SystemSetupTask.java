@@ -1100,7 +1100,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         securityName = buildTaskPermissionName(SCHEMACONFIG_SECURITY);
         if (!AppContextMgr.isSecurityOn() || 
             (secMgr.getPermission(securityName) != null && 
-             secMgr.getPermission(securityName).canAdd()))
+             secMgr.getPermission(securityName).canView()))
         {
             titleArg = getI18NKey("SCHEMA_CONFIG_MENU"); //$NON-NLS-1$
             mneu     = getI18NKey("SCHEMA_CONFIG_MNU");  //$NON-NLS-1$
@@ -1344,6 +1344,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     // SecurityOption Interface
     //-------------------------------------------------------
 
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#getAdditionalSecurityOptions()
      */
@@ -1352,24 +1353,43 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     {
         List<SecurityOptionIFace> list = new ArrayList<SecurityOptionIFace>();
         
-        list.add(new SecurityOption(RESIMPORTEXPORT_SECURITY, 
-                getResourceString("RIE_TITLE"), 
-                securityPrefix,
-                new BasicPermisionPanel("RIE_TITLE", 
-                                        "RIE_SEC_IMPORT", 
-                                        "RIE_SEC_EXPORT")));
+        SecurityOption secOpt = new SecurityOption(RESIMPORTEXPORT_SECURITY, 
+                                                    getResourceString("RIE_TITLE"), 
+                                                    securityPrefix,
+                                                    new BasicPermisionPanel("RIE_TITLE", 
+                                                                            "RIE_SEC_IMPORT", 
+                                                                            "RIE_SEC_EXPORT"));
+        addPerms(secOpt, new boolean[][] 
+                {{true, true, true, false},
+                {false, false, false, false},
+                {false, false, false, false},
+                {false, false, false, false}});
+        list.add(secOpt);
 
-        list.add(new SecurityOption(SCHEMACONFIG_SECURITY, 
-                getResourceString(getI18NKey("SCHEMA_CONFIG")), 
-                securityPrefix,
-                new BasicPermisionPanel(getI18NKey("SCHEMA_CONFIG"), 
-                                        "Enable")));
+        secOpt = new SecurityOption(SCHEMACONFIG_SECURITY, 
+                                    getResourceString(getI18NKey("SCHEMA_CONFIG")), 
+                                    securityPrefix,
+                                    new BasicPermisionPanel(getI18NKey("SCHEMA_CONFIG"), 
+                                                            "Enable"));
+        addPerms(secOpt, new boolean[][] 
+                {{true, false, false, false},
+                {false, false, false, false},
+                {false, false, false, false},
+                {false, false, false, false}});
+        list.add(secOpt);
 
-        list.add(new SecurityOption(WBSCHEMACONFIG_SECURITY, 
-                getResourceString(getI18NKey("WBSCHEMA_CONFIG")), 
-                securityPrefix,
-                new BasicPermisionPanel(getI18NKey("WBSCHEMA_CONFIG"), 
-                                        "Enable")));
+
+        secOpt = new SecurityOption(WBSCHEMACONFIG_SECURITY, 
+                                    getResourceString(getI18NKey("WBSCHEMA_CONFIG")), 
+                                    securityPrefix,
+                                    new BasicPermisionPanel(getI18NKey("WBSCHEMA_CONFIG"), 
+                                                            "Enable"));
+        addPerms(secOpt, new boolean[][] 
+                {{true, false, false, false},
+                {false, false, false, false},
+                {false, false, false, false},
+                {false, false, false, false}});
+        list.add(secOpt);
 
         return list;
     }
