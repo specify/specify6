@@ -319,7 +319,7 @@ public class SchemaToolsDlg extends CustomDialog
                         Discipline discipline = localSession.get(Discipline.class, AppContextMgr.getInstance().getClassObject(Discipline.class).getId());
                         
                         isOK = bsd.loadSchemaLocalization(discipline, 
-                                                            SpLocaleContainer.CORE_SCHEMA, 
+                                                            schemaType, 
                                                             DBTableIdMgr.getInstance(),
                                                             null, //catFmtName,
                                                             null, //accFmtName,
