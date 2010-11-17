@@ -42,44 +42,65 @@
     </hashtable>
   </entry>
   <entry>
-    <string>dnasequencerun</string>
+    <string>dnasequencingrun</string>
     <hashtable>
       <entry>
         <string>Manager</string>
-        <tp name="dnasequencerun" type="Manager" view="true" modify="true" del="true" add="true"/>
+        <tp name="dnasequencingrun" type="Manager" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="dnasequencerun" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="dnasequencingrun" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>Guest</string>
-        <tp name="dnasequencerun" type="Guest" view="true" modify="false" del="false" add="false"/>
+        <tp name="dnasequencingrun" type="Guest" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="dnasequencerun" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="dnasequencingrun" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
   <entry>
-    <string>dnasequencerunattachment</string>
+    <string>dnasequencingruncitation</string>
     <hashtable>
       <entry>
         <string>Manager</string>
-        <tp name="dnasequencerunattachment" type="Manager" view="true" modify="true" del="true" add="true"/>
+        <tp name="dnasequencingruncitation" type="Manager" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="dnasequencerunattachment" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="dnasequencingruncitation" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>Guest</string>
-        <tp name="dnasequencerunattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+        <tp name="dnasequencingruncitation" type="Guest" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="dnasequencerunattachment" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="dnasequencingruncitation" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>dnasequencingrunattachment</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="dnasequencingrunattachment" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="dnasequencingrunattachment" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="dnasequencingrunattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="dnasequencingrunattachment" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -269,27 +290,6 @@
       <entry>
         <string>FullAccess</string>
         <tp name="workbench" type="FullAccess" view="true" modify="true" del="true" add="true"/>
-      </entry>
-    </hashtable>
-  </entry>
-  <entry>
-    <string>dnasequenceattachment</string>
-    <hashtable>
-      <entry>
-        <string>Manager</string>
-        <tp name="dnasequenceattachment" type="Manager" view="true" modify="true" del="true" add="true"/>
-      </entry>
-      <entry>
-        <string>LimitedAccess</string>
-        <tp name="dnasequenceattachment" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
-      </entry>
-      <entry>
-        <string>Guest</string>
-        <tp name="dnasequenceattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
-      </entry>
-      <entry>
-        <string>FullAccess</string>
-        <tp name="dnasequenceattachment" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
