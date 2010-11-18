@@ -8336,7 +8336,7 @@ public class BuildSampleDatabase
                 		                   "WHERE ci.Name = '%s' AND c.DisciplineID = %d AND c.SpLocaleContainerID = %d", 
                 		                   item.getName(), disciplineId, newContainer.getId());
                 String fullSQL = "SELECT COUNT(*)" + sql;
-                if (isColObj) log.debug(fullSQL);
+                //if (isColObj) log.debug(fullSQL);
                 int cnt = BasicSQLUtils.getCountAsInt(fullSQL);
                 if (cnt > 0)
                 {
@@ -8598,7 +8598,7 @@ public class BuildSampleDatabase
             }
             
             SpLocaleContainer container = null;
-            if (okToCreate && !isLocalize)
+            if (okToCreate) // && !isLocalize)
             {
                 container = new SpLocaleContainer();
                 container.initialize();

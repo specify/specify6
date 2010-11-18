@@ -63,6 +63,8 @@ import edu.ku.brc.specify.datamodel.SpLocaleBase;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
+import edu.ku.brc.ui.ToggleButtonChooserDlg;
+import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -159,7 +161,6 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     public boolean loadWithExternalFile(final File externalFile, final boolean useCurrentLocaleOnly)
     {
         tables = load(null, externalFile, useCurrentLocaleOnly);
-        discoverLocalesFromData();
         
         boolean loadedOk = tables != null;
         if (loadedOk && externalFile == null)
@@ -204,11 +205,11 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     /**
      * 
      */
-    private void discoverLocalesFromData()
+    private void discoverLocalesFromData(final Vector<DisciplineBasedContainer> containers)
     {
         HashSet<String> hash = new HashSet<String>();
         
-        for (DisciplineBasedContainer container : tables)
+        for (DisciplineBasedContainer container : containers)
         {
             for (SpLocaleItemStr str : container.getNames())
             {
@@ -234,6 +235,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                     }
                     if (locale != null)
                     {
+                        System.err.println("["+key+"] "+locale);
                         availLocales.add(locale);
                         hash.add(key);
                     }
@@ -592,6 +594,36 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 
                 String lang = SchemaI18NService.getCurrentLocale().getLanguage();
                 
+                discoverLocalesFromData(containers);
+                if (availLocales.size() == 1)
+                {
+                    lang = availLocales.get(0).getLanguage();
+                    
+                } else
+                {
+                    Vector<DisplayLocale> list = new Vector<DisplayLocale>();
+                    for (Locale locale : availLocales)
+                    {
+                        list.add(new DisplayLocale(locale));
+                    }
+                    Collections.sort(list);
+
+                    boolean cont = false;
+                    while (cont)
+                    {
+                        ToggleButtonChooserDlg<DisplayLocale> dlg = new ToggleButtonChooserDlg<DisplayLocale>(null, 
+                                                                   "CHOOSE_LOCALE", list, ToggleButtonChooserPanel.Type.RadioButton);
+                        dlg.setUseScrollPane(true);
+                        dlg.setVisible(true);
+                        
+                        cont = dlg.isCancelled();
+                        if (!cont)
+                        {
+                            lang = dlg.getSelectedObject().getLocale().getLanguage();
+                        }
+                    }
+                }
+                
                 log.info("Adding New Tables and fields....");
                 for (DBTableInfo ti : tableMgr.getTables())
                 {
@@ -786,7 +818,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                             if (tblChild == null)
                             {
                                 container.removeItem(item);
-                                log.info("For Table["+ti.getName()+"] Removing Rel ["+item.getName()+"]");
+                                //log.info("For Table["+ti.getName()+"] Removing Rel ["+item.getName()+"]");
                                 changesMadeDuringStartup = true;
                                 changesBuffer.append("<tr><td align=\"center\" color=\"red\">Removed</td>");
                                 changesBuffer.append("<td align=\"center\">"+ti.getName()+"</td><td align=\"center\">");
