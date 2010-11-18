@@ -419,7 +419,7 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
             
             if (possibleValues != numValues)
             {
-                if (!forToolTip)
+                /*if (!forToolTip)
                 {
                     StringBuilder sb = new StringBuilder();
                     for (String name : missingList)
@@ -428,7 +428,7 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
                         sb.append("\n");
                     }
                     UIRegistry.showLocalizedError("WEBLNK_MIS_FLD", "\n"+sb.toString());
-                }
+                }*/
                 return null;
             }
             
