@@ -41,6 +41,7 @@ import java.util.Locale;
 import java.util.Vector;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -122,7 +123,8 @@ public class SchemaToolsDlg extends CustomDialog
         
         super.createUI();
         
-
+        setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        
         Vector<DisplayLocale> localeDisplays = new Vector<DisplayLocale>();
         for (Locale locale : SchemaLocalizerDlg.getLocalesInUseInDB(schemaType))
         {

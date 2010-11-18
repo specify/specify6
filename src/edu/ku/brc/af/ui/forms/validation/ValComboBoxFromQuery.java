@@ -598,7 +598,31 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         dlg.getDialog().setVisible(true);
         if (!dlg.isCancelled())
         {
-            setValue(dlg.getSelectedObject(), null);
+            Object dlgDataObj = dlg.getSelectedObject();
+            
+            if (dlgDataObj instanceof FormDataObjIFace)
+            {
+                DataProviderSessionIFace session = null;
+                try
+                {
+                    session = DataProviderFactory.getInstance().createSession();
+                    session.attach(dlgDataObj);
+                    setValue(dlgDataObj, null);
+                    
+                } catch (Exception ex)
+                {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ValComboBoxFromQuery.class, ex);
+                    ex.printStackTrace();
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                }
+            }
+           
             valueHasChanged();
             
             if (listSelectionListeners != null)
