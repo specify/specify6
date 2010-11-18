@@ -89,6 +89,7 @@ public class DeterminationBusRules extends BaseBusRules
     protected boolean        isBlockingChange      = false;
     
     protected ChangeListener chkbxCL               = null;
+    protected ValCheckBox    isCurrentCheckbox     = null;
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BaseBusRules#beforeFormFill()
@@ -227,7 +228,6 @@ public class DeterminationBusRules extends BaseBusRules
             {
                 if (determination != null)
                 {
-                    //((JTextField) altNameComp).setEditable(determination.getTaxon() == null);
                     altNameComp.setEnabled(determination.getTaxon() == null);
                 }
             }
@@ -239,32 +239,40 @@ public class DeterminationBusRules extends BaseBusRules
                     @Override
                     public void stateChanged(ChangeEvent e)
                     {
-                        if (!isBlockingChange)
-                        {
-                            determination = (Determination)formViewObj.getDataObj();
-                            if (determination != null && 
-                                determination.getIsCurrent() &&
-                                determination.getCollectionObject() != null) // For Batch ReIdentify the CO can be NULL
-                            {
-                                for (Determination d : determination.getCollectionObject().getDeterminations())
-                                {
-                                    if (d != determination)
-                                    {
-                                        d.setIsCurrent(false);
-                                    }
-                                }
-                            }
-                        }
+                        adjustIsCurrentCheckbox();
                     }
                 };
             
-                ValCheckBox currChkbx = (ValCheckBox)currentComp;
-                currChkbx.addChangeListener(chkbxCL);
+                isCurrentCheckbox = (ValCheckBox)currentComp;
+                isCurrentCheckbox.addChangeListener(chkbxCL);
             }
         }
         isNewObject = false;
     }
     
+    /**
+     * 
+     */
+    private void adjustIsCurrentCheckbox()
+    {
+        if (!isBlockingChange)
+        {
+            determination = (Determination)formViewObj.getDataObj();
+            if (determination != null && 
+                isCurrentCheckbox.isSelected())
+            {
+                log.debug("Current: "+determination.getId());
+                for (Determination d : determination.getCollectionObject().getDeterminations())
+                {
+                    if (d != determination)
+                    {
+                        d.setIsCurrent(false);
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * @param kl
      * @param comp
