@@ -66,10 +66,10 @@ import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.af.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.af.ui.db.JComboBoxFromQuery;
 import edu.ku.brc.af.ui.db.TextFieldWithQuery;
+import edu.ku.brc.af.ui.db.TextFieldWithQuery.ExternalQueryProviderIFace;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.af.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
-import edu.ku.brc.af.ui.db.TextFieldWithQuery.ExternalQueryProviderIFace;
 import edu.ku.brc.af.ui.forms.DataGetterForObj;
 import edu.ku.brc.af.ui.forms.DataObjectSettable;
 import edu.ku.brc.af.ui.forms.DataObjectSettableFactory;
@@ -205,13 +205,13 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         }
         if (StringUtils.isEmpty(tableInfo.getNewObjDialog()))
         {
-            FormDevHelper.showFormDevError("For ValComboBoxFromQuery table["+tableInfo.getName()+"] displayInfoDialogName is null.");
+            FormDevHelper.showFormDevError("For ValComboBoxFromQuery table["+tableInfo.getName()+"]  New Obj Dialog name (displayInfoDialogName) is null.");
             return;
         }
         
         this.tableInfo             = tableInfo;
         this.keyName               = keyName;
-        this.dataObjFormatterName  = dataObjFormatterName;
+        this.dataObjFormatterName  = dataObjFormatterName != null ? dataObjFormatterName : tableInfo.getDataObjFormatter();
         this.frameTitle            = tableInfo.getTitle();
         this.helpContext           = helpContext;
         
@@ -273,7 +273,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public void setReadOnlyMode()
     {
-        textWithQuery.setReadOnlyMode();
+        if (textWithQuery != null)
+        {
+            textWithQuery.setReadOnlyMode();
+        }
         if (editBtn != null)
         {
             editBtn.setVisible(false);
@@ -286,7 +289,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     public void setDoAdjustQuery(boolean doAdjustQuery)
     {
         this.doAdjustQuery = doAdjustQuery;
-        textWithQuery.setDoAdjustQuery(doAdjustQuery);
+        if (textWithQuery != null)
+        {
+            textWithQuery.setDoAdjustQuery(doAdjustQuery);
+        }
     }
     
     /**
@@ -302,7 +308,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public void setExternalQueryProvider(ExternalQueryProviderIFace externalQueryProvider)
     {
-        textWithQuery.setExternalQueryProvider(externalQueryProvider);
+        if (textWithQuery != null)
+        {
+            textWithQuery.setExternalQueryProvider(externalQueryProvider);
+        }
     }
     
     /**
@@ -347,7 +356,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     {
         super.setEnabled(enabled);
         
-        textWithQuery.setEnabled(enabled);
+        if (textWithQuery != null)
+        {
+            textWithQuery.setEnabled(enabled);
+        }
         if (searchBtn != null)
         {
             searchBtn.setEnabled(enabled);
@@ -1053,7 +1065,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 }
             }
 
-            if (newVal != null)
+            if (newVal != null && textWithQuery != null)
             {
                 valState = UIValidatable.ErrorType.Valid;
                 textWithQuery.setSelectedId(dataObj != null ? dataObj.getId() : null); // needs to be done before and after
@@ -1087,19 +1099,25 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 
             } else
             {
-                textWithQuery.clearSelection();
+                if (textWithQuery != null)
+                {
+                    textWithQuery.clearSelection();
+                }
                 valState = UIValidatable.ErrorType.Incomplete;
             }
 
         } else
         {
-            textWithQuery.clearSelection();
+            if (textWithQuery != null)
+            {
+                textWithQuery.clearSelection();
+            }
             valState = UIValidatable.ErrorType.Incomplete;
             if (editBtn != null)
             {
                 editBtn.setEnabled(false);
             }
-            if (textWithQuery.getTextField() != null)
+            if (textWithQuery != null && textWithQuery.getTextField() != null)
             {
                 textWithQuery.setText("");
                 textWithQuery.getTextField().repaint();
@@ -1153,7 +1171,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public void setRequired(boolean isRequired)
     {
-        textWithQuery.getTextField().setBackground(isRequired && isEnabled() ? requiredFieldColor.getColor() : bgColor);
+        if (textWithQuery != null && textWithQuery.getTextField() != null)
+        {
+            textWithQuery.getTextField().setBackground(isRequired && isEnabled() ? requiredFieldColor.getColor() : bgColor);
+        }
         this.isRequired = isRequired;
     }
 
@@ -1221,7 +1242,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public void cleanUp()
     {
-        if (textWithQuery.getTextField() != null)
+        if (textWithQuery != null && textWithQuery.getTextField() != null)
         {
             UIHelper.removeFocusListeners(textWithQuery.getTextField());
             UIHelper.removeKeyListeners(textWithQuery.getTextField());
@@ -1381,7 +1402,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public Object getValue()
     {
-        Integer id = textWithQuery.getSelectedId();
+        Integer id = textWithQuery != null ? textWithQuery.getSelectedId() : null;
         if (id == null)
         {
             return dataObj = null;

@@ -182,6 +182,10 @@ public class TypeSearchForQueryFactory
             if (tblInfo != null)
             {
                 String dofName = StringUtils.isNotEmpty(dataObjFormatterNameArg) ? dataObjFormatterNameArg : typeSearchInfo.getDataObjFormatterName();
+                if (StringUtils.isEmpty(dofName) && StringUtils.isNotEmpty(tblInfo.getDataObjFormatter()))
+                {
+                    dofName = tblInfo.getDataObjFormatter();
+                }
                 return new TextFieldWithInfo(tblInfo.getClassName(),
                                              tblInfo.getIdFieldName(),
                                              typeSearchInfo.getSearchFieldName(),
