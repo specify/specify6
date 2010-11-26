@@ -1921,13 +1921,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     public void doAbout()
     {
-        boolean b = true;
-        if (b)
-        {
-            FixDBAfterLogin fixer = new FixDBAfterLogin();
-            fixer.fixUserPermissions();
-            return;
-        }
         AppContextMgr acm        = AppContextMgr.getInstance();
         boolean       hasContext = acm.hasContext();
         
@@ -2576,20 +2569,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     {
                         FixDBAfterLogin fixer = new FixDBAfterLogin();
                         fixer.fixUploaderRecordsets();
-                    }
-                });
-            }
-
-            if (true)//!AppPreferences.getGlobalPrefs().getBoolean("FixUploaderUserPerms", false))
-            {
-                // Temp Code to Fix User Permissions 6.2.09 and below
-                SwingUtilities.invokeLater(new Runnable() 
-                {
-                    @Override
-                    public void run()
-                    {
-                        FixDBAfterLogin fixer = new FixDBAfterLogin();
-                        fixer.fixUserPermissions();
                     }
                 });
             }
