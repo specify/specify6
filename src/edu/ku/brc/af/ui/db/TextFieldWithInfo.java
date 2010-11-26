@@ -400,7 +400,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
                 newVal = DataObjFieldFormatMgr.getInstance().format(value, dataObjFormatterName);
             }
 
-            textField.setText(newVal.toString());
+            textField.setText(newVal != null ? newVal.toString() : "");
             textField.setCaretPosition(0);
 
         } else
