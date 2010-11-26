@@ -1921,6 +1921,13 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     public void doAbout()
     {
+        boolean b = true;
+        if (b)
+        {
+            FixDBAfterLogin fixer = new FixDBAfterLogin();
+            fixer.fixUserPermissions();
+            return;
+        }
         AppContextMgr acm        = AppContextMgr.getInstance();
         boolean       hasContext = acm.hasContext();
         
@@ -2097,20 +2104,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         "This is free software licensed under GNU General Public License 2 (GPL2).</P></font></html>"; //$NON-NLS-1$
 
     }
-    
-    /**
-     * 
-     */
-    private void shutdownAllPrefs()
-    {
-        try
-        {
-            AppPreferences.getLocalPrefs().flush();
-        } catch (BackingStoreException ex) {}
-        
-        AppPreferences.shutdownRemotePrefs();
-        AppPreferences.shutdownPrefs();
-    }
 
     /**
      * Checks to see if cache has changed before exiting.
@@ -2250,13 +2243,13 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                         statsTrackerTask.setSendSecondaryStatsAllowed(canSendISAStats);
                         statsTrackerTask.sendStats(!UIRegistry.isMobile(), false, UIRegistry.isMobile()); // false means don't do it silently
                         
-                        shutdownAllPrefs();
+                        AppPreferences.shutdownAllPrefs();
                         DataProviderFactory.getInstance().shutdown();
                         DBConnection.shutdown();
                         
                         return false;
                     }
-                    shutdownAllPrefs();
+                    AppPreferences.shutdownAllPrefs();
                     DataProviderFactory.getInstance().shutdown();
                     DBConnection.shutdown();
                     
@@ -2267,8 +2260,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     
                 } else
                 {
-                    shutdownAllPrefs();
-                    
+                    AppPreferences.shutdownAllPrefs();
                     DataProviderFactory.getInstance().shutdown();
                     DBConnection.shutdown();
                     System.exit(0);
@@ -2584,6 +2576,20 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     {
                         FixDBAfterLogin fixer = new FixDBAfterLogin();
                         fixer.fixUploaderRecordsets();
+                    }
+                });
+            }
+
+            if (true)//!AppPreferences.getGlobalPrefs().getBoolean("FixUploaderUserPerms", false))
+            {
+                // Temp Code to Fix User Permissions 6.2.09 and below
+                SwingUtilities.invokeLater(new Runnable() 
+                {
+                    @Override
+                    public void run()
+                    {
+                        FixDBAfterLogin fixer = new FixDBAfterLogin();
+                        fixer.fixUserPermissions();
                     }
                 });
             }

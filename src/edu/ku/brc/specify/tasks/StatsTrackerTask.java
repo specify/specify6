@@ -45,6 +45,9 @@ import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
@@ -70,6 +73,9 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
     private Hashtable<Class<?>, Boolean> tablesHash          = new Hashtable<Class<?>, Boolean>();
     private Vector<Pair<String, String>> queries             = new Vector<Pair<String,String>>();
     private Collection                   collection          = null;  
+    private Discipline                   discipline          = null;  
+    private Division                     division            = null;  
+    private Institution                  institution          = null;  
     
     /**
      * Constructor.
@@ -156,7 +162,10 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
     @Override
     protected void completed()
     {
-        collection = null;
+        collection  = null;
+        discipline  = null;
+        division    = null;
+        institution = null;
         queries.clear();
     }
 
@@ -169,6 +178,10 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
         if (collection == null)
         {
             collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+            discipline  = AppContextMgr.getInstance().getClassObject(Discipline.class);
+            division    = AppContextMgr.getInstance().getClassObject(Division.class);
+            institution = AppContextMgr.getInstance().getClassObject(Institution.class);
+            
             queries.clear();
             
             // Need to do this now before all the Cached Objects change
@@ -247,11 +260,27 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
         if (collection != null)
         {
             Integer estSize = collection.getEstimatedSize();
-            String  estSizeStr = estSize != null ? Integer.toString(estSize) : ""; 
+            String  estSizeStr = estSize != null ? Integer.toString(estSize) : "";
+            
             stats.add(new NameValuePair("Collection_estsize",  estSizeStr)); //$NON-NLS-1$
             stats.add(new NameValuePair("Collection_number",  fixParam(collection.getRegNumber()))); //$NON-NLS-1$
             stats.add(new NameValuePair("Collection_website", fixParam(collection.getWebSiteURI()))); //$NON-NLS-1$
             stats.add(new NameValuePair("Collection_portal",  fixParam(collection.getWebPortalURI()))); //$NON-NLS-1$
+        }
+
+        if (discipline != null)
+        {
+            stats.add(new NameValuePair("Disicpline_number",  fixParam(discipline.getRegNumber()))); //$NON-NLS-1$
+        }
+
+        if (division != null)
+        {
+            stats.add(new NameValuePair("Division_number",  fixParam(division.getRegNumber()))); //$NON-NLS-1$
+        }
+
+        if (institution != null)
+        {
+            stats.add(new NameValuePair("Institution_number",  fixParam(institution.getRegNumber()))); //$NON-NLS-1$
         }
 
         return stats;

@@ -218,10 +218,10 @@ public class UsageTracker
 
         if (appPrefs.isAvailable())
         {
+            String usagePrefName = USAGE_PREFIX + featureName; //$NON-NLS-1$
             if (usageFile == null || usageProps == null)
             {
-                String         usagePrefName     = USAGE_PREFIX + featureName; //$NON-NLS-1$
-                Integer        currentUsageCount = appPrefs.getInt(usagePrefName, 0);
+                Integer currentUsageCount = appPrefs.getInt(usagePrefName, 0);
                 if (currentUsageCount != null)
                 {
                     appPrefs.putInt(usagePrefName, ++currentUsageCount);
@@ -229,14 +229,14 @@ public class UsageTracker
                 
             } else
             {
-                String currentUsageCountStr = usageProps.getProperty(featureName, null);
+                String currentUsageCountStr = usageProps.getProperty(usagePrefName, null);
                 int    currentUsageCount    = 0;
                 if (currentUsageCountStr != null)
                 {
                     currentUsageCount = Integer.parseInt(currentUsageCountStr);
                 }
                 currentUsageCount++;
-                usageProps.put(USAGE_PREFIX + featureName, Integer.toString(currentUsageCount));
+                usageProps.put(usagePrefName, Integer.toString(currentUsageCount));
             }
         }
     }

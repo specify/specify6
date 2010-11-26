@@ -37,6 +37,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.helpers.SwingWorker;
@@ -173,6 +174,7 @@ public class StatsTrackerTask extends BaseTask
                     
                     if (doExit)
                     {
+                        AppPreferences.shutdownAllPrefs();
                         DataProviderFactory.getInstance().shutdown();
                         DBConnection.shutdown();
                         System.exit(0);

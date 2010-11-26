@@ -272,6 +272,20 @@ public class AppPreferences
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AppPreferences.class, ex);
         }
     }
+    
+    /**
+     * 
+     */
+    public static void shutdownAllPrefs()
+    {
+        try
+        {
+            AppPreferences.getLocalPrefs().flush();
+        } catch (BackingStoreException ex) {}
+        
+        AppPreferences.shutdownRemotePrefs();
+        AppPreferences.shutdownPrefs();
+    }
 
     /**
      * Returns the singleton.
