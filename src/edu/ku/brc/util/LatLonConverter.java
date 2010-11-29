@@ -58,7 +58,7 @@ public class LatLonConverter
     public static int[] DECIMAL_SIZES = {7, 5, 3, 0};
     
     public enum LATLON          {Latitude, Longitude}
-    public enum FORMAT          {DDDDDD, DDMMMM, DDMMSS, None} // None must be at the end so the values match Specify 5
+    public enum FORMAT          {DDDDDD, DDMMSS, DDMMMM, None} // None must be at the end so the values match Specify 5
     public enum DEGREES_FORMAT  {None, Symbol, String}
     public enum DIRECTION       {None, NorthSouth, EastWest}
     
@@ -112,8 +112,8 @@ public class LatLonConverter
         switch (formatInt)
         {
             case 0 : return FORMAT.DDDDDD;
-            case 1 : return FORMAT.DDMMMM;
-            case 2 : return FORMAT.DDMMSS;
+            case 1 : return FORMAT.DDMMSS;
+            case 2 : return FORMAT.DDMMMM;
             default : return FORMAT.DDDDDD;
         }
     }
@@ -182,11 +182,13 @@ public class LatLonConverter
         {
             String str = strArg;
             
-            String[] tokens = breakStringAPart(str);
-            boolean startsWithMinus = str.startsWith("-");
+            boolean  redoSplit       = false;
+            String[] tokens          = breakStringAPart(str);
+            boolean  startsWithMinus = str.startsWith("-");
             if (startsWithMinus)
             {
                 str = str.substring(1);
+                redoSplit = true;
             }
             
             if (tokens.length == 1)
@@ -198,30 +200,36 @@ public class LatLonConverter
                 {
                     str += " " + eastWest[startsWithMinus ? 1 : 0]; 
                 }
+                redoSplit = true;
             }
             
-            tokens = breakStringAPart(str);
-            String   zero   = inclZeroes ? "0" : "";
+            if (redoSplit)
+            {
+                tokens = breakStringAPart(str);
+            }
+            
+            String zero = inclZeroes ? "0" : "";
             //System.err.println("tokens[1] ["+tokens[1]+"]["+str+"]");
             boolean hasDegreesTxt = tokens[1].length() == 3 && tokens[1].equals("deg");
    
             LatLonValueInfo latLonInfo = new LatLonValueInfo(hasDegreesTxt);
             latLonInfo.addPart(tokens[0]);
             
-            String dirStr = null;
-            FORMAT fmt    = null;
+            int    toksLen = tokens.length;
+            String dirStr  = null;
+            FORMAT fmt     = null;
             
             if (actualFmt != null && actualFmt != FORMAT.None)
             {
                 switch (actualFmt)
                 {
                     case DDDDDD:
-                        dirStr = tokens[1];
+                        dirStr = tokens[toksLen-1];
                         break;
                         
                     case DDMMMM:
                         
-                        if (tokens.length == 3)
+                        if (toksLen == 3)
                         {
                             latLonInfo.addPart(tokens[1]);
                             dirStr = tokens[2];
@@ -234,19 +242,29 @@ public class LatLonConverter
                         break;
                         
                     case DDMMSS:
-                        if (tokens.length == 4)
+                        if (toksLen == 4)
                         {
                             latLonInfo.addPart(tokens[1]);
                             latLonInfo.addPart(tokens[2]);
                             dirStr = tokens[3];
                             
-                        } else if (tokens.length == 3)
+                        } else if (toksLen == 3)
                         {
-                            latLonInfo.addPart(tokens[1]);
-                            latLonInfo.addPart(zero);
+                            String tok1 = tokens[1];
+                            if (StringUtils.contains(tok1, formatSymbols.getDecimalSeparator()))
+                            {
+                                String[] tks = StringUtils.split(tok1, formatSymbols.getDecimalSeparator());
+                                latLonInfo.addPart(tks[0]);
+                                latLonInfo.addPart(tks[1]);
+                                
+                            } else
+                            {
+                                latLonInfo.addPart(tok1);
+                                latLonInfo.addPart(zero);
+                            }
                             dirStr = tokens[2];
                             
-                        } else if (tokens.length == 2)
+                        } else if (toksLen == 2)
                         {
                             latLonInfo.addPart(zero);
                             latLonInfo.addPart(zero);
@@ -261,7 +279,7 @@ public class LatLonConverter
                 
             } else
             {
-                switch (tokens.length)
+                switch (toksLen)
                 {
                     case 2 : 
                     {

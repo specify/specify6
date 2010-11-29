@@ -104,8 +104,8 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
     protected final static String TYP_PREF = "latlon.plugin.def_typ";
     protected final static String FMT_PREF = "latlon.plugin.def_fmt";
     
-    protected final static String[] formatClass             = new String[] {"DDDDPanel", "DDMMMMPanel", "DDMMSSPanel"};
-    protected final static String[] formats                 = new String[] {"DDD.DDD", "DD_MM.MM", "DD_MM_SS"};
+    protected final static String[] formatClass             = new String[] {"DDDDPanel", "DDMMSSPanel", "DDMMMMPanel", };
+    protected final static String[] formats                 = new String[] {"DDD.DDD", "DD_MM_SS", "DD_MM.MM"};
 
     protected final static String[] pointNames              = {"LatLonPoint", "LatLonLineLeft", "LatLonLineRight", "LatLonRectTopLeft", "LatLonRectBottomRight"};
     protected final static String[] typeNames               = {"LatLonPoint", "LatLonLine", "LatLonRect"};
@@ -731,7 +731,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
             }
             choosenFormat = defaultFormat;
             
-            srcFormat         = convertIntToFORMAT(locality.getSrcLatLongUnit());
+            srcFormat         = choosenFormat;//convertIntToFORMAT(locality.getSrcLatLongUnit());
             srcLatLon1.first  = ensureFormattedString(locality.getLatitude1(),  locality.getLat1text(),  defaultFormat, LATLON.Latitude);
             srcLatLon1.second = ensureFormattedString(locality.getLongitude1(), locality.getLong1text(), defaultFormat, LATLON.Longitude);
             
