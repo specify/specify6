@@ -20,7 +20,6 @@
 package edu.ku.brc.specify.prefs;
 
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
 import java.awt.Point;
@@ -45,10 +44,8 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -257,9 +254,11 @@ public class SystemPrefs extends GenericPrefsPanel
         
         //ValCheckBox askCollChk = form.getCompById(ALWAYS_ASK_COLL);
         //askCollChk.setValue(localPrefs.getBoolean(ALWAYS_ASK_COLL, false), null);
-
     }
     
+    /**
+     * 
+     */
     protected void clearCache()
     {
         final String CLEAR_CACHE = "CLEAR_CACHE";
@@ -415,7 +414,7 @@ public class SystemPrefs extends GenericPrefsPanel
             localPrefs.putBoolean(SYSTEM_HasOpenGL, (Boolean)chk.getValue());
             
             chk = form.getCompById(USE_WORLDWIND);
-            localPrefs.putBoolean(USE_WORLDWIND, (Boolean)chk.getValue());
+            localPrefs.putBoolean(USE_WORLDWIND, (Boolean)chk.getValue());  
             
             //chk = form.getCompById(ALWAYS_ASK_COLL);
             //localPrefs.putBoolean(ALWAYS_ASK_COLL, (Boolean)chk.getValue());
@@ -497,7 +496,7 @@ public class SystemPrefs extends GenericPrefsPanel
      */
     protected boolean okChangeAttachmentPath(final String oldPath, final String newPath)
     {
-        if (false)
+        /*if (false)
         {
             File  oldDir = new File(oldPath);
             if (oldDir.exists())
@@ -567,11 +566,11 @@ public class SystemPrefs extends GenericPrefsPanel
                 }
             }
         } else
-        {
+        {*/
             return AttachmentUtils.isAttachmentDirMounted(new File(newPath));
-        }
+        //}
         
-        return true;
+        //return true;
     }
     
     /**

@@ -100,6 +100,15 @@
                 <altview name="GEOLocatePrefs" viewdef="GEOLocatePrefs" label="GEOLocate" mode="edit" validated="true"/>
             </altviews>
         </view>
+                
+        <view
+            name="NetworkProxy"
+            class="java.util.prefs.Preferences">
+            <desc><![CDATA[Network Proxy Form.]]></desc>
+            <altviews>
+                <altview name="NetworkProxy" viewdef="NetworkProxy" label="NETWORK_PROXY" mode="edit" validated="true"/>
+            </altviews>
+        </view>
         
     </views>
 
@@ -872,7 +881,46 @@
                 </row>
             </rows>
         </viewdef>
-        
+                
+        <viewdef
+            type="form"
+            name="NetworkProxy"
+            class="java.util.prefs.Preferences"
+            gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+            useresourcelabels="true">
+            
+            <desc><![CDATA[Network Proxy Preference Form.]]></desc>
+            
+            <columnDef>p,4px,p,p:g,f:p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+               
+            <rows>
+                <row>
+                    <cell type="separator" label="NETWORK_PROXY_SET" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="PROXY_HOST" label="PROXY_HOST"/>
+                    <cell type="field" id="PROXY_HOST" name="PROXY_HOST" uitype="text" cols="30" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="PROXY_PORT" label="PROXY_PORT"/>
+                    <cell type="field" id="PROXY_PORT" name="PROXY_PORT" uitype="text" cols="8"/>
+                </row>
+             <!-- <row>
+                    <cell type="label" labelfor="PROXY_HOST_HTTPS" label="PROXY_HOST_HTTPS"/>
+                    <cell type="field" id="PROXY_HOST_HTTPS" name="PROXY_HOST_HTTPS" uitype="text" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="PROXY_PORT_HTTPS" label="PROXY_PORT_HTTPS"/>
+                    <cell type="field" id="PROXY_PORT_HTTPS" name="PROXY_PORT_HTTPS" uitype="text" cols="8"/>
+                </row> -->
+           <!--      <row>
+                    <cell type="label" labelfor="PROXY_TYPE"/>
+                    <cell type="field" id="PROXY_TYPE" name="PROXY_TYPE" uitype="text" colspan="4"/>
+                </row>  -->
+            </rows>
+        </viewdef>
         
     </viewdefs>
 </viewset>

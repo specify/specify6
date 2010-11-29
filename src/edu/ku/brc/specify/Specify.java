@@ -157,6 +157,7 @@ import edu.ku.brc.dbsupport.QueryExecutor;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.exceptions.ExceptionTracker;
 import edu.ku.brc.helpers.Encryption;
+import edu.ku.brc.helpers.ProxyHelper;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.services.gpx.GPXPanel;
@@ -3069,20 +3070,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       }
   }
   
-    /**
-     * 
-     */
-    private static void doSetProxySettings()
-    {
-        String proxyHost = AppPreferences.getLocalPrefs().get("PROXY_HOST", null);
-        String proxyPort = AppPreferences.getLocalPrefs().get("PROXY_PORT", null);
-
-        if (StringUtils.isNotEmpty(proxyHost) && StringUtils.isNotEmpty(proxyPort))
-        {
-            //ProxyHelper.registerProxy(proxyHost, proxyPort);
-        }
-    }
-  
   /**
    *
    */
@@ -3134,7 +3121,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                   AppPreferences localPrefs = AppPreferences.getLocalPrefs();
                   localPrefs.setDirPath(UIRegistry.getAppDataDir());
                   
-                  doSetProxySettings();
+                  ProxyHelper.setProxySettingsFromPrefs();
                   
                   checkDebugLoggerSettings();
                   

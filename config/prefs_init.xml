@@ -105,4 +105,13 @@
         </pref>
     </section>
     
+    <section title="NETWORK_PROXY">
+        <pref name="NetworkProxy" title="NETWORK_PROXY" icon="WorldWind" panelClass="edu.ku.brc.specify.prefs.NetworkProxyPanel" help="PrefsNetworkProxy">
+            <defperm name="Manager"       perm="true,true,true,true"/>
+            <defperm name="FullAccess"    perm="true,true,true,true"/>
+            <defperm name="LimitedAccess" perm="true,true,true,true"/>
+            <defperm name="Guest"         perm="true,true,true,true"/>
+        </pref>
+    </section>
+    
 </prefs>
