@@ -72,7 +72,7 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
     
     protected Class<? extends FormDataObjIFace> dataClass;
     protected Vector<String>      numbersList   = new Vector<String>();
-    protected Vector<Integer>     colObjIds     = new Vector<Integer>();
+    protected Vector<Integer>     dataObjsIds   = new Vector<Integer>();
     protected String              labelKey;
     protected String              fieldName;
     protected JTextArea           textArea;
@@ -148,7 +148,7 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
      */
     protected boolean processNumbers()
     {
-        colObjIds.clear();
+        dataObjsIds.clear();
         numbersList.clear();
         
         numErrorList.clear();
@@ -156,14 +156,15 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
         errorPanel.setNumbers(null);
         missingPanel.setNumbers(null);
         
-        DBTableInfo           ti        = DBTableIdMgr.getInstance().getByClassName(dataClass.getName());
-        DBFieldInfo           fi        = ti.getFieldByName(fieldName);
-        UIFieldFormatterIFace formatter = fi.getFormatter();
+        DBTableInfo           ti          = DBTableIdMgr.getInstance().getByClassName(dataClass.getName());
+        DBFieldInfo           fi          = ti.getFieldByName(fieldName);
+        boolean               hasColMemID = ti.getFieldByColumnName("CollectionMemberID", true) != null;
+        UIFieldFormatterIFace formatter   = fi.getFormatter();
         
         boolean isOK = true;
         
         String catNumbersStr = textArea.getText().trim();
-        if (StringUtils.isNotEmpty(catNumbersStr) && formatter != null)
+        if (StringUtils.isNotEmpty(catNumbersStr))
         {
             DataProviderSessionIFace session = null;
             try
@@ -183,17 +184,24 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
                         {
                             try
                             {
-                                if (formatter.isNumeric())
+                                if (formatter != null)
                                 {
-                                    if (!StringUtils.isNumeric(catNum) || !StringUtils.isNumeric(endCatNum))
+                                    if (formatter.isNumeric())
                                     {
-                                        numErrorList.add(catNumStr.trim());
-                                        isOK = false;
-                                        continue;
+                                        if (!StringUtils.isNumeric(catNum) || !StringUtils.isNumeric(endCatNum))
+                                        {
+                                            numErrorList.add(catNumStr.trim());
+                                            isOK = false;
+                                            continue;
+                                        }
                                     }
+                                    catNum    = (String)formatter.formatFromUI(tokens[0].trim());
+                                    endCatNum = (String)formatter.formatFromUI(tokens[1].trim());
+                                } else
+                                {
+                                    catNum    = tokens[0].trim();
+                                    endCatNum = tokens[1].trim();
                                 }
-                                catNum    = (String)formatter.formatFromUI(tokens[0].trim());
-                                endCatNum = (String)formatter.formatFromUI(tokens[1].trim());
                                 
                             } catch (java.lang.NumberFormatException ex)
                             {
@@ -203,13 +211,13 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
                                 isOK = false;
                             }
                             
-                            String sql = String.format("SELECT id FROM %s WHERE %s >= '%s' AND %s <= '%s' AND CollectionMemberID = COLLID", 
-                                                        ti.getClassName(), fieldName, catNum, fieldName, endCatNum);
+                            String sql = String.format("SELECT id FROM %s WHERE %s >= '%s' AND %s <= '%s' %s", 
+                                                        ti.getClassName(), fieldName, catNum, fieldName, endCatNum, (hasColMemID ? " AND CollectionMemberID = COLLID" : ""));
                             sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
                             List<?> list = session.getDataList(sql);
                             for (Object obj : list)
                             {
-                                colObjIds.add((Integer)obj);
+                                dataObjsIds.add((Integer)obj);
                             }
                             numbersList.add(numToken);
                             
@@ -224,16 +232,22 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
                     String catNumForDB = numToken;
                     try
                     {
-                        if (formatter.isNumeric())
+                        if (formatter != null)
                         {
-                            if (!StringUtils.isNumeric(numToken))
+                            if (formatter.isNumeric())
                             {
-                                numErrorList.add(numToken);
-                                isOK = false;
-                                continue;
+                                if (!StringUtils.isNumeric(numToken))
+                                {
+                                    numErrorList.add(numToken);
+                                    isOK = false;
+                                    continue;
+                                }
                             }
+                            catNumForDB = (String)formatter.formatFromUI(numToken);
+                        } else
+                        {
+                            catNumForDB = numToken;
                         }
-                        catNumForDB = (String)formatter.formatFromUI(numToken);
                         
                     } catch (java.lang.NumberFormatException ex)
                     {
@@ -245,14 +259,14 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
                 
                     if (StringUtils.isNotEmpty(catNumForDB))
                     {
-                        String sql = String.format("SELECT id FROM %s WHERE %s = '%s' AND CollectionMemberID = COLLID", ti.getClassName(), fieldName, catNumForDB);
+                        String sql = String.format("SELECT id FROM %s WHERE %s = '%s' %s", ti.getClassName(), fieldName, catNumForDB, (hasColMemID ? " AND CollectionMemberID = COLLID" : ""));
                         sql        = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
                         //log.debug(sql);
                         Integer colObjId = (Integer)session.getData(sql);
                         
                         if (colObjId != null)
                         {
-                            colObjIds.add(colObjId);
+                            dataObjsIds.add(colObjId);
                             numbersList.add(numToken);
                         } else
                         {
@@ -345,7 +359,7 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
      */
     public Vector<Integer> getNumbersList()
     {
-        return colObjIds;
+        return dataObjsIds;
     }
     
     /**
@@ -353,13 +367,13 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
      */
     public RecordSetIFace getRecordSet()
     {
-        if (colObjIds.size() > 0)
+        if (dataObjsIds.size() > 0)
         {
             RecordSet rs = new RecordSet();
             rs.initialize();
             rs.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
             rs.setDbTableId(DBTableIdMgr.getInstance().getByClassName(dataClass.getName()).getTableId());
-            for (Integer id : colObjIds)
+            for (Integer id : dataObjsIds)
             {
                 rs.addItem(id);
             }

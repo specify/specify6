@@ -27,7 +27,7 @@
     <droppableFlavors>
       <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
         <tableIds>
-          <int>52</int>
+          <!--  <int>52</int> -->
           <int>1</int>
           <int>50</int>
         </tableIds>
@@ -116,7 +116,7 @@
     <droppableFlavors>
       <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
         <tableIds>
-          <int>18</int>
+          <int>18</int> <!-- borrow       -->
         </tableIds>
       </flavor>
     </droppableFlavors>
@@ -127,15 +127,15 @@
     <droppableFlavors>
       <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
         <tableIds>
-          <int>39</int>
-          <int>40</int>
-          <int>1</int>
-          <int>50</int>
+          <int>39</int> <!-- exchangein   -->
+          <int>40</int> <!-- exchangeout  -->
+          <int>1</int>  <!-- Col Obj      -->
+          <int>50</int> <!-- inforequest  -->
         </tableIds>
       </flavor>
       <flavor isdrag="false" classname="edu.ku.brc.specify.datamodel.InfoRequest" humanreadable="InfoRequest">
         <tableIds>
-          <int>50</int>
+          <int>50</int> <!-- inforequest  -->
         </tableIds>
       </flavor>
     </droppableFlavors>
@@ -151,13 +151,26 @@
       </flavor>
     </droppableFlavors>
   </entry>
+  
+  <entry name="returnloan" table="loan" label="RET_LOAN" type="Interactions" action="RET_LOAN" icon="Loan" 
+         issrchsrv="false" isonleft="true" order="0" enabled="true" visible="true" tooltip="">
+    <draggableFlavors/>
+    <droppableFlavors>
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
+        <tableIds>
+          <int>52</int>  <!-- loan         -->
+        </tableIds>
+      </flavor>
+    </droppableFlavors>
+  </entry>
+  
   <entry name="printloan" table="loan" label="PRINT_INVOICE" type="Interactions" action="PRINT_INVOICE" icon="Reports" isonleft="true" 
                 issrchsrv="false" order="0" enabled="true" visible="true" tooltip="InteractionsTask.PRT_INV">
     <draggableFlavors/>
     <droppableFlavors>
       <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
         <tableIds>
-          <int>52</int>
+          <int>52</int>  <!-- loan         -->
           <int>7</int>   <!-- accession    -->
           <int>18</int>  <!-- borrow       -->
           <int>34</int>  <!-- deaccession  -->

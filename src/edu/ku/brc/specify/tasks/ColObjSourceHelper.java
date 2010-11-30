@@ -60,7 +60,7 @@ public class ColObjSourceHelper
     /**
      * @return the chosen RecordSet
      */
-    public RecordSetIFace getRecordSet(Vector<RecordSetIFace> rsList)
+    public RecordSetIFace getRecordSet(final Vector<RecordSetIFace> rsList)
     {
         RecordSetIFace recordSet = null;
         if (recordSet == null)
@@ -84,7 +84,7 @@ public class ColObjSourceHelper
                 {
                     recordSet = RecordSetTask.askForRecordSet(CollectionObject.getClassTableId(), rsList);
                     
-                } else if (askTypeRV == ASK_TYPE.EnterCats)
+                } else if (askTypeRV == ASK_TYPE.EnterDataObjs)
                 {
                     recordSet = askForCatNumbersRecordSet();
                     
@@ -105,7 +105,10 @@ public class ColObjSourceHelper
      */
     public static RecordSetIFace askForCatNumbersRecordSet()
     {
-        AskForNumbersDlg dlg = new AskForNumbersDlg("BT_COLOBJ_TITLE", "BT_LABEL", CollectionObject.class, "catalogNumber");
+        String titleKey = "BT_TITLE_"+CollectionObject.class.getSimpleName();
+        String labelKey = "BT_LABEL_"+CollectionObject.class.getSimpleName();
+
+        AskForNumbersDlg dlg = new AskForNumbersDlg(titleKey, labelKey, CollectionObject.class, "catalogNumber");
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
@@ -148,7 +151,7 @@ public class ColObjSourceHelper
                                                      JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         if (userChoice == JOptionPane.NO_OPTION)
         {
-            return ASK_TYPE.EnterCats;
+            return ASK_TYPE.EnterDataObjs;
             
         } else if (userChoice == JOptionPane.YES_OPTION)
         {

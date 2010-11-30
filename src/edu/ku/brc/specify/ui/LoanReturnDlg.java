@@ -971,53 +971,7 @@ public class LoanReturnDlg extends JDialog
     //------------------------------------------------------------------------------------------
     //
     //------------------------------------------------------------------------------------------
-    public class LoanReturnInfo
-    {
-        protected LoanPreparation lpo;
-        protected boolean         isResolved;
-        protected String          remarks;
-        protected int             returnedQty;
-        protected int             resolvedQty;
-        
-        public LoanReturnInfo(LoanPreparation lpo, 
-                              String remarks, 
-                              int returnedQty, 
-                              int resolvedQty,
-                              boolean isResolved)
-        {
-            super();
-            this.lpo = lpo;
-            this.remarks = remarks;
-            this.returnedQty = returnedQty;
-            this.resolvedQty = resolvedQty;
-            this.isResolved  = isResolved;
-        }
-        public LoanPreparation getLoanPreparation()
-        {
-            return lpo;
-        }
-        public String getRemarks()
-        {
-            return remarks;
-        }
-        public int getReturnedQty()
-        {
-            return returnedQty;
-        }
-        public int getResolvedQty()
-        {
-            return resolvedQty;
-        }
-        /**
-         * @return the isResolved
-         */
-        public boolean isResolved()
-        {
-            return isResolved;
-        }
-        
-    }
-    
+
     class RemarksText extends JTextField
     {
         protected Insets inner;
@@ -1054,6 +1008,5 @@ public class LoanReturnDlg extends JDialog
 
         }
     }
-
 
 }

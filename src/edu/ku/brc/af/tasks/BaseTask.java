@@ -74,7 +74,6 @@ import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.SpecifyUserTypes;
-import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.specify.ui.db.AskForNumbersDlg;
@@ -107,7 +106,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     
     protected static final String  securityPrefix    = "Task"; //$NON-NLS-1$
     
-    public enum ASK_TYPE { Cancel, EnterCats, ChooseRS}
+    public enum ASK_TYPE { Cancel, EnterDataObjs, ChooseRS}
 
     
     public static final String APP_CMD_TYPE      = "App"; //$NON-NLS-1$
@@ -1342,14 +1341,16 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
 
     /**
       * Helper method for registering a NavBoxItem as a GhostMouseDropAdapter
-      * @param navBox the parent box for the nbi to be added to
-      * @param navBoxItemDropZone the nbi in question
-      * @return returns the new NavBoxItem
-      */
-     protected NavBoxItemIFace addToNavBoxAndRegisterAsDroppable(final DataFlavor          dataFlavor,
-                                                                 final NavBox              navBox,
-                                                                 final NavBoxItemIFace     nbi,
-                                                                 final Properties          params)
+     * @param dataFlavor
+     * @param navBox  the parent box for the nbi to be added to
+     * @param nbi
+     * @param params
+     * @return returns the new NavBoxItem
+     */
+    protected NavBoxItemIFace addToNavBoxAndRegisterAsDroppable(final DataFlavor          dataFlavor,
+                                                                final NavBox              navBox,
+                                                                final NavBoxItemIFace     nbi,
+                                                                final Properties          params)
      {
          NavBoxButton roc = (NavBoxButton)nbi;
          roc.setData(params);
@@ -1371,20 +1372,20 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
       * (This needs to be moved to the BaseTask in specify package)
       * @return the source enum
       */
-     public ASK_TYPE askSourceOfColObj()
+     public ASK_TYPE askSourceOfObjects(final Class<? extends FormDataObjIFace> classForSrc)
      {
          Object[] options = { 
                  getResourceString("NEW_BT_USE_RS"), 
-                 getResourceString("NEW_BT_ENTER_CATNUM") 
+                 getResourceString("NEW_BT_ENTER_"+classForSrc.getSimpleName()) 
                };
          int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                                                      getResourceString("NEW_BT_CHOOSE_RSOPT"), 
+                                                      getResourceString("NEW_BT_CHOOSE_RS_"+classForSrc.getSimpleName()), 
                                                       getResourceString("NEW_BT_CHOOSE_RSOPT_TITLE"), 
                                                       JOptionPane.YES_NO_CANCEL_OPTION,
                                                       JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
          if (userChoice == JOptionPane.NO_OPTION)
          {
-             return ASK_TYPE.EnterCats;
+             return ASK_TYPE.EnterDataObjs;
              
          } else if (userChoice == JOptionPane.YES_OPTION)
          {
@@ -1396,11 +1397,16 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      
      /**
       * (This needs to be moved to the BaseTask in specify package)
-      * @return a RecordSet of newly entered Catalog Numbers
-      */
-     public RecordSetIFace askForCatNumbersRecordSet()
+     * @param classForSrc
+     * @param field
+     * @return a RecordSet of newly entered Catalog Numbers
+     */
+    public RecordSetIFace askForDataObjRecordSet(final Class<? extends FormDataObjIFace> classForSrc, 
+                                                 final String field)
      {
-         AskForNumbersDlg dlg = new AskForNumbersDlg("BT_COLOBJ_TITLE", "BT_LABEL", CollectionObject.class, "catalogNumber");
+        String titleKey = "BT_TITLE_"+classForSrc.getSimpleName();
+        String labelKey = "BT_LABEL_"+classForSrc.getSimpleName();
+         AskForNumbersDlg dlg = new AskForNumbersDlg(titleKey, labelKey, classForSrc, field);
          dlg.setVisible(true);
          if (!dlg.isCancelled())
          {
@@ -1409,34 +1415,43 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
          return null;
      }
      
-     /**
-     * @param recordSetArg
-     * @param numColObjRS
-     * @return
+    /**
+     * @param recordSetArg optional RecordSet, if set it will return this RecordSet
+     * @param classForSrc the class of data objects to be gotten
+     * @param fieldName the field name of the numbers that are typed in
+     * @param numObjRS the number of RS items
+     * @return a RecordSet of the data object items
      */
-    public RecordSetIFace getRecordSetOfColObj(final RecordSetIFace recordSetArg,
-                                                   final int numColObjRS)
+    public RecordSetIFace getRecordSetOfDataObjs(final RecordSetIFace recordSetArg,
+                                                 final Class<? extends FormDataObjIFace> classForSrc,
+                                                 final String fieldName,
+                                                 final int    numObjRS)
      {
-         RecordSetIFace recordSetFromDB = recordSetArg;
-         if (recordSetFromDB == null)
-         {
-             if (numColObjRS > 0)
+        RecordSetIFace recordSetFromDB = recordSetArg;
+        
+        DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(classForSrc.getName());
+        if (tblInfo != null)
+        {
+             if (recordSetFromDB == null)
              {
-                 ASK_TYPE rv = askSourceOfColObj();
-                 if (rv == ASK_TYPE.ChooseRS)
+                 if (numObjRS > 0)
                  {
-                     recordSetFromDB = recordSetArg == null ? RecordSetTask.askForRecordSet(CollectionObject.getClassTableId()) : recordSetArg;
-                 
-                 } else if (rv == ASK_TYPE.EnterCats)
+                     ASK_TYPE rv = askSourceOfObjects(classForSrc);
+                     if (rv == ASK_TYPE.ChooseRS)
+                     {
+                         recordSetFromDB = recordSetArg == null ? RecordSetTask.askForRecordSet(tblInfo.getTableId()) : recordSetArg;
+                     
+                     } else if (rv == ASK_TYPE.EnterDataObjs)
+                     {
+                         recordSetFromDB = askForDataObjRecordSet(classForSrc, fieldName);
+                     }
+                 } else
                  {
-                     recordSetFromDB = askForCatNumbersRecordSet();
+                     recordSetFromDB = askForDataObjRecordSet(classForSrc, fieldName);
                  }
-             } else
-             {
-                 recordSetFromDB = askForCatNumbersRecordSet();
              }
-         }
-         return recordSetFromDB;
+        }
+        return recordSetFromDB;
     }
     
     /* (non-Javadoc)

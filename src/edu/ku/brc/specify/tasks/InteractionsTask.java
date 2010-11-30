@@ -26,8 +26,11 @@ import java.awt.Component;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -88,6 +91,7 @@ import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.dbsupport.TableModel2Excel;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.helpers.EMailHelper;
@@ -117,7 +121,7 @@ import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.busrules.LoanBusRules;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.LoanReturnDlg;
-import edu.ku.brc.specify.ui.LoanReturnDlg.LoanReturnInfo;
+import edu.ku.brc.specify.ui.LoanReturnInfo;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -168,6 +172,7 @@ public class InteractionsTask extends BaseTask
     protected static final String CREATE_MAILMSG       = "CreateMailMsg";
     protected static final String ADD_TO_LOAN          = "AddToLoan";
     protected static final String ADD_TO_GIFT          = "AddToGift";
+    protected static final String RET_LOAN             = "RET_LOAN";
     protected static final String OPEN_NEW_VIEW        = "OpenNewView";
     protected static final String LN_NO_PRP            = "LN_NO_PRP";
     
@@ -749,8 +754,8 @@ public class InteractionsTask extends BaseTask
         extendedNavBoxes.clear();
         extendedNavBoxes.addAll(navBoxes);
 
-        RecordSetTask rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
-        List<NavBoxIFace> nbs = rsTask.getNavBoxes();
+        RecordSetTask     rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
+        List<NavBoxIFace> nbs    = rsTask.getNavBoxes();
         if (nbs != null)
         {
             extendedNavBoxes.addAll(nbs);
@@ -869,6 +874,19 @@ public class InteractionsTask extends BaseTask
      * @return returns a list of RecordSets of InfoRequests
      */
     protected Vector<RecordSetIFace> getInfoReqRecordSetsFromSideBar()
+    {
+        Vector<RecordSetIFace> rsList = new Vector<RecordSetIFace>();
+        for (NavBoxItemIFace nbi : infoRequestNavBox.getItems())
+        {
+            rsList.add((RecordSet)nbi.getData());
+        }
+        return rsList;
+    }
+    
+    /**
+     * @return returns a list of RecordSets of InfoRequests
+     */
+    protected Vector<RecordSetIFace> getLoanRecordSetsFromSideBar()
     {
         Vector<RecordSetIFace> rsList = new Vector<RecordSetIFace>();
         for (NavBoxItemIFace nbi : infoRequestNavBox.getItems())
@@ -1175,7 +1193,7 @@ public class InteractionsTask extends BaseTask
         RecordSetTask          rsTask       = (RecordSetTask)TaskMgr.getTask(RecordSetTask.RECORD_SET);
         List<RecordSetIFace>   colObjRSList = rsTask.getRecordSets(CollectionObject.getClassTableId());
 
-        RecordSetIFace recordSetFromDB = getRecordSetOfColObj(recordSetArg, colObjRSList.size());
+        RecordSetIFace recordSetFromDB = getRecordSetOfDataObjs(recordSetArg, CollectionObject.class, "catalogNumber", colObjRSList.size());
         
         if (recordSetFromDB != null)
         {
@@ -1700,14 +1718,14 @@ public class InteractionsTask extends BaseTask
     /**
      * Starts process to return a loan.
      * @param multiView the current form doing the return
-     * @param loan the loan being returned
+     * @param loansList the list of loans being returned
      * @param agent the agent doing the return
      * @param returns the list of items being returned
      */
-    protected void doReturnLoan(final MultiView            multiView,
-                                final Loan                 loanArg,
-                                final Agent                agent, 
-                                final List<LoanReturnInfo> returns)
+    protected void doReturnLoans(final MultiView            multiView,
+                                 final Agent                agent, 
+                                 final List<LoanReturnInfo> returns,
+                                 final boolean              doingSingleItem)
     {
         final JStatusBar statusBar = UIRegistry.getStatusBar();
         statusBar.setIndeterminate(INTERACTIONS, true);
@@ -1718,8 +1736,8 @@ public class InteractionsTask extends BaseTask
         
         final SwingWorker worker = new SwingWorker()
         {
-            protected int  numLPR = 0;
-            protected Loan loan   = null;
+            protected int numLPR = 0;
+            protected HashMap<Integer, Loan> mergedLoans = new HashMap<Integer, Loan>();
             
             @Override
             public Object construct()
@@ -1728,14 +1746,20 @@ public class InteractionsTask extends BaseTask
                 try
                 {
                     session = DataProviderFactory.getInstance().createSession();
-                    
                     session.beginTransaction();
                     
-                    loan = session.merge(loanArg);
-                    
                     for (LoanReturnInfo loanRetInfo : returns)
-                    {   
+                    { 
                         LoanPreparation loanPrep = loanRetInfo.getLoanPreparation();
+                        Loan            loan     = mergedLoans.get(loanPrep.getLoan().getId()); // get already merged loan
+                        
+                        if (loan == null)
+                        {
+                            loan = session.merge(loanPrep.getLoan());
+                            mergedLoans.put(loan.getId(), loan);
+                        }
+                        
+                        // Find the LoanPrep in the Merged Loan Object
                         for (LoanPreparation lp : loan.getLoanPreparations())
                         {
                             if (loanPrep.getId().equals(lp.getId()))
@@ -1747,54 +1771,50 @@ public class InteractionsTask extends BaseTask
                         // The loanRetInfo contains the total number of Resolved and Returned
                         // so we need to go get the number already resolved/returned and subtract it
                         // to get the remaining difference for this last LoanReturnPrep
-                        int qtyRes = 0;
-                        int qtyRet = 0;
-                        for (LoanReturnPreparation lrp : loanPrep.getLoanReturnPreparations())
-                        {
-                            qtyRes += lrp.getQuantityResolved();
-                            qtyRet += lrp.getQuantityReturned();
-                        }
-                        
                         LoanReturnPreparation loanRetPrep = new LoanReturnPreparation();
                         loanRetPrep.initialize();
                         loanRetPrep.setReceivedBy(agent);
                         loanRetPrep.setModifiedByAgent(Agent.getUserAgent());
                         loanRetPrep.setReturnedDate(Calendar.getInstance());
-                        loanRetPrep.setQuantityResolved(loanRetInfo.getResolvedQty() - qtyRes);
-                        loanRetPrep.setQuantityReturned(loanRetInfo.getReturnedQty() - qtyRet);
-                        
-                        loanRetPrep.setRemarks(loanRetInfo.getRemarks());
                         
                         loanPrep.setIsResolved(loanRetInfo.isResolved());
+                        loanRetPrep.setRemarks(loanRetInfo.getRemarks());
                         loanPrep.setQuantityResolved(loanRetInfo.getResolvedQty());
                         loanPrep.setQuantityReturned(loanRetInfo.getReturnedQty());
+                        
                         loanPrep.addReference(loanRetPrep, "loanReturnPreparations");
+                        
+                        if (doingSingleItem)
+                        {
+                            boolean isClosed = true;
+                            for (LoanPreparation lp : loan.getLoanPreparations())
+                            {
+                                if (lp.getQuantityResolved().equals(lp.getQuantity()))
+                                {
+                                    if (!lp.getIsResolved())
+                                    {
+                                        lp.setIsResolved(true);
+                                    }
+                                } else
+                                {
+                                    isClosed = false;
+                                }
+                            }
+                            loan.setIsClosed(isClosed);
+                            
+                        } else
+                        {
+                            loan.setIsClosed(true);
+                        }
                         
                         session.save(loanRetPrep);
                         session.saveOrUpdate(loanPrep);
                         session.saveOrUpdate(loan);
                     }
                     
-                    boolean isClosed = true;
-                    for (LoanPreparation lp : loan.getLoanPreparations())
-                    {
-                        if (lp.getQuantityResolved().equals(lp.getQuantity()))
-                        {
-                            if (!lp.getIsResolved())
-                            {
-                                lp.setIsResolved(true);
-                            }
-                        } else
-                        {
-                            isClosed = false;
-                        }
-                    }
-                    loan.setIsClosed(isClosed);
-                    session.saveOrUpdate(loan);
-                    
                     session.commit();
                     
-                    numLPR = returns.size();
+                    numLPR += returns.size();
                     
                 } catch (Exception ex)
                 {
@@ -1819,9 +1839,15 @@ public class InteractionsTask extends BaseTask
             {
                 statusBar.setProgressDone(INTERACTIONS);
                 statusBar.setText("");
-                multiView.setIsNewForm(false, true);
-                multiView.setData(null);
-                multiView.setData(loan);
+                if (multiView != null)
+                {
+                    multiView.setIsNewForm(false, true);
+                    multiView.setData(null);
+                    if (doingSingleItem && mergedLoans.size() == 1)
+                    {
+                        multiView.setData(mergedLoans.keySet().iterator().next());
+                    }
+                }
                 UIRegistry.clearSimpleGlassPaneMsg();
                 
                 UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "InteractionsTask.LN_RET_TITLE", "InteractionsTask.RET_LN_SV", numLPR);
@@ -1871,7 +1897,7 @@ public class InteractionsTask extends BaseTask
                     List<LoanReturnInfo> returns = dlg.getLoanReturnInfo();
                     if (returns.size() > 0)
                     {
-                        doReturnLoan(mv, loan, dlg.getAgent(), returns);
+                        doReturnLoans(mv, dlg.getAgent(), returns, true);
                     }
                 }
             }
@@ -2094,6 +2120,91 @@ public class InteractionsTask extends BaseTask
     }
     
     /**
+     * @param dataObj
+     */
+    private void returnLoan(final RecordSetIFace dataObj)
+    {
+        RecordSetIFace recordSet = null;
+        if (dataObj instanceof RecordSetIFace)
+        {
+            recordSet = dataObj;
+            
+        } else if (dataObj == null)
+        {
+            RecordSetTask            rsTask     = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
+            Vector<RecordSetIFace>   loanRSList = new Vector<RecordSetIFace>(rsTask.getRecordSets(Loan.getClassTableId()));
+            
+            recordSet = getRecordSetOfDataObjs(null, Loan.class, "loanNumber", loanRSList.size());
+        }
+        
+        if (recordSet == null)
+        {
+            return;
+        }
+        
+        List<LoanReturnInfo> lriList = new ArrayList<LoanReturnInfo>();
+        
+        if (recordSet.getDbTableId() == Loan.getClassTableId())
+        {
+            DataProviderSessionIFace session = null;
+            try
+            {
+                HashSet<Integer> loanHashMap = new HashSet<Integer>();
+                
+                session = DataProviderFactory.getInstance().createSession();
+                
+                for (RecordSetItemIFace rsi : recordSet.getItems())
+                {
+                    if (!loanHashMap.contains(rsi.getRecordId()))
+                    {
+                        Loan loan = session.get(Loan.class, rsi.getRecordId());
+                        if (loan != null)
+                        {
+                            loanHashMap.add(rsi.getRecordId());
+                            
+                            if (!loan.getIsClosed())
+                            {
+                                for (LoanPreparation lp : loan.getLoanPreparations())
+                                {
+                                    if (!lp.getIsResolved())
+                                    {
+                                        int qty         = lp.getQuantity();
+                                        int qtyResolved = lp.getQuantityResolved();
+                                        int qtyReturned = lp.getQuantityReturned();
+                                        
+                                        int qtyToBeReturned = qty - (qtyResolved + qtyReturned);
+                                        lriList.add(new LoanReturnInfo(lp, null, qtyToBeReturned, 0, true));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsTask.class, ex);
+                
+            } finally
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
+            }
+        }
+        
+        if (lriList.size() > 0)
+        {
+            Agent currAgent = AppContextMgr.getInstance().getClassObject(Agent.class);
+            doReturnLoans(null, currAgent, lriList, false);
+        }
+
+    }
+    
+    /**
      * Processes all Commands of type INTERACTIONS.
      * @param cmdAction the command to be processed
      */
@@ -2264,9 +2375,20 @@ public class InteractionsTask extends BaseTask
                 showInfoReqForm((CommandActionForDB)cmdAction.getData(), null);
             }
             
-        } else if (cmdAction.isAction("ReturnLoan"))
+        } else if (cmdAction.isAction("ReturnLoan")) // from the 'Return Loan' button on the form
         {
             returnLoan();
+            
+        } else if (cmdAction.isAction("RET_LOAN")) // from the sidebar
+        {
+            if (cmdAction.getData() instanceof RecordSetIFace)
+            {
+                returnLoan((RecordSetIFace)cmdAction.getData());
+                
+            } else if (cmdAction.getData() == cmdAction)
+            {
+                returnLoan(null);
+            }
             
         } else if (cmdAction.isAction(DELETE_CMD_ACT))
         {

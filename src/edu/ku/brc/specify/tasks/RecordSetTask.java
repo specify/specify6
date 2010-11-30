@@ -916,9 +916,9 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                                     ex2.printStackTrace();
                                 }
                             }
-                        } else
-                        {
-                            success = persistRecordSet(dstRecordSet);
+                        //} else
+                        //{
+                        //    success = persistRecordSet(dstRecordSet);
                         }
                         //System.err.println("Time: "+(System.currentTimeMillis() - start));
                         

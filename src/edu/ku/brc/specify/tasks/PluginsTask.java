@@ -379,7 +379,7 @@ public class PluginsTask extends BaseTask
      */
     protected void processToolDataFromList(final Object data, final Properties requestParams, final RecordSetToolsIFace exporter)
     {
-        if (data instanceof List)
+        if (data instanceof List<?>)
         {
             doProcessTool(exporter, (List<?>)data, requestParams);
         }
@@ -565,7 +565,7 @@ public class PluginsTask extends BaseTask
                 
                 // XXX Probably need to also get RSs with Localisties and or CollectingEvents
 
-                data = getRecordSetOfColObj(null, colObjRSList.size());
+                data = getRecordSetOfDataObjs(null, CollectionObject.class, "catalogNumber", colObjRSList.size());
             }
             
             processToolDataFromRecordSet(data, cmdAction.getProperties(), tool);
