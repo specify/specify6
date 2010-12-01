@@ -26,8 +26,6 @@ import java.awt.Color;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -208,7 +206,7 @@ public class SecurityAdminTask extends BaseTask
                 if (newPwd1.length() >= pwdLen)
                 {
                     SpecifyUser spUser    = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-                    String      username  = spUser.getName();
+                    //String      username  = spUser.getName();
                     String      spuOldPwd = spUser.getPassword();
                     
                     String newEncryptedPwd = null;
@@ -255,15 +253,6 @@ public class SecurityAdminTask extends BaseTask
         }
     }
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.tasks.BaseTask#requestContext()
-     */
-    @Override
-    public void requestContext()
-    {
-        super.requestContext();
-    }
-
     /**
      * @param key
      * @return
@@ -362,26 +351,16 @@ public class SecurityAdminTask extends BaseTask
         return menuItems;
     }
     
-    
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#getToolBarItems()
      */
     @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
-        // XXX RELEASE
-        if (!UIRegistry.isRelease())
+        String securityName = buildTaskPermissionName(SECURITY_ADMIN);
+        if (!AppContextMgr.isSecurityOn() || SecurityMgr.getInstance().checkPermission(securityName, BasicSpPermission.view)) //$NON-NLS-1$
         {
-            String  userName       = System.getProperty("user.name");
-            boolean addSecurityBtn = false;
-            try {
-                InetAddress addr = InetAddress.getLocalHost();
-                addSecurityBtn = addr.getHostAddress().startsWith("129.237");
-                
-            } catch (UnknownHostException e) {}
-            
-            if (addSecurityBtn || userName.startsWith("rod"))
+            if (AppPreferences.getLocalPrefs().getBoolean("SEC_TOOLBAR", false))
             {
                 toolbarItems = new Vector<ToolBarItemDesc>();
                 toolbarItems.add(new ToolBarItemDesc(createToolbarButton("Security", iconName, "")));

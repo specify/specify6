@@ -63,6 +63,7 @@ import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
+import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -1457,6 +1458,31 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 worker.start();
             }
         }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getToolBarItems()
+     */
+    @Override
+    public List<ToolBarItemDesc> getToolBarItems()
+    {
+        if (!AppContextMgr.isSecurityOn() || SpecifyUser.isCurrentUserType(UserType.Manager))
+        {
+            if (AppPreferences.getLocalPrefs().getBoolean("SYSSETUP_TOOLBAR", false))
+            {
+                ActionListener al = new ActionListener()
+                {
+                    @Override
+                    public void actionPerformed(ActionEvent arg0)
+                    {
+                        SystemSetupTask.this.requestContext();
+                    }
+                };
+                toolbarItems = new Vector<ToolBarItemDesc>();
+                toolbarItems.add(new ToolBarItemDesc(createToolbarButton("System Setup", iconName, "", null, al)));
+            }
+        }
+        return toolbarItems;
     }
     
     /* (non-Javadoc)
