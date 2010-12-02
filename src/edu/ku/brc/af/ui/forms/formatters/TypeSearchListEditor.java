@@ -360,36 +360,40 @@ public class TypeSearchListEditor extends CustomDialog
         }
         
         //----------------------- Data Obj Formatter -----------------------------
-        Class<?> cls = DBTableIdMgr.getInstance().getInfoById(tsi.getTableId()).getClassObj();
-        List<DataObjSwitchFormatter>   list          = DataObjFieldFormatMgr.getInstance().getFormatterList(cls);
-        final ValComboBox              dataObjFmtCbx = fvo.getCompById("dataObjFormatterNameCBX");
-        Vector<DataObjSwitchFormatter> dofList       = new Vector<DataObjSwitchFormatter>(list);
-        dataObjFmtCbx.setModel(new DefaultComboBoxModel(dofList));
-        
-        if (dofList.size() > 0)
+        int tblId = tsi.getTableId();
+        if (tblId > 0)
         {
-            int i   = 0;
-            int inx = -1;
-            for (DataObjSwitchFormatter dof : dofList)
+            Class<?> cls = DBTableIdMgr.getInstance().getInfoById(tblId).getClassObj();
+            List<DataObjSwitchFormatter>   list          = DataObjFieldFormatMgr.getInstance().getFormatterList(cls);
+            final ValComboBox              dataObjFmtCbx = fvo.getCompById("dataObjFormatterNameCBX");
+            Vector<DataObjSwitchFormatter> dofList       = new Vector<DataObjSwitchFormatter>(list);
+            dataObjFmtCbx.setModel(new DefaultComboBoxModel(dofList));
+            
+            if (dofList.size() > 0)
             {
-                if (dof.getName().equals(tsi.getDataObjFormatterName()))
+                int i   = 0;
+                int inx = -1;
+                for (DataObjSwitchFormatter dof : dofList)
                 {
-                    inx = i;
-                    break;
+                    if (dof.getName().equals(tsi.getDataObjFormatterName()))
+                    {
+                        inx = i;
+                        break;
+                    }
+                    i++;
                 }
-                i++;
+                dataObjFmtCbx.getComboBox().setSelectedIndex(inx);
+            } else
+            {
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        dataObjFmtCbx.getComboBox().setEnabled(false);
+                    }
+                });
             }
-            dataObjFmtCbx.getComboBox().setSelectedIndex(inx);
-        } else
-        {
-            SwingUtilities.invokeLater(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    dataObjFmtCbx.getComboBox().setEnabled(false);
-                }
-            });
         }
     }
 }
