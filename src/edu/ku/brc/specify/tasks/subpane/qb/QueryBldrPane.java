@@ -3532,7 +3532,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             	{
             		return new RelQRI((TableQRI) qri, relInfo);
             	}
-            	throw new RuntimeException(QueryBldrPane.class.getName() + ": unable to determine relationship.");
+                throw new RuntimeException(QueryBldrPane.class.getName() + ": unable to determine relationship."
+                		+ ((TableQRI )qri).getTableTree().getField() + " <-> " 
+            			+ ((TableQRI )qri).getTableTree().getParent().getField());
             }
         }
         return null;
