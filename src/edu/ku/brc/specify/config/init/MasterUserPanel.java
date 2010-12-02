@@ -33,6 +33,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.apache.commons.lang.StringUtils;
@@ -204,11 +205,27 @@ public class MasterUserPanel extends GenericFormPanel
             {
                 nextBtn.setEnabled(true);
                 mgr.close();
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        nextBtn.doClick();
+                    }
+                });
                 return true;
             }
         } else
         {
             nextBtn.setEnabled(true);
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    nextBtn.doClick();
+                }
+            });
             return true;
         }
         return false;
@@ -404,6 +421,15 @@ public class MasterUserPanel extends GenericFormPanel
                     {
                         setUIEnabled(false);
                         label.setText(UIRegistry.getResourceString("MASTER_CREATED"));
+                        
+                        SwingUtilities.invokeLater(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                nextBtn.doClick();
+                            }
+                        });
                         
                     } else
                     {

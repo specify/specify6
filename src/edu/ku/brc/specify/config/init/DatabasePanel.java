@@ -300,7 +300,20 @@ public class DatabasePanel extends BaseSetupPanel
                 dbc.setUsernamePassword(dbUserName, dbPwd);
                 dbc.setDatabaseName(databaseName);
                 
-                nextBtn.setEnabled(isOK == null || isOK || manualLoginOK);
+                boolean canCont = isOK == null || isOK || manualLoginOK;
+                nextBtn.setEnabled(canCont);
+                
+                if (canCont)
+                {
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            nextBtn.doClick();
+                        }
+                    });
+                }
                 mgr.close();
                 return true;
             }
@@ -562,7 +575,20 @@ public class DatabasePanel extends BaseSetupPanel
         boolean isValid = isUIValid();
         if (nextBtn != null)
         {
-            nextBtn.setEnabled(isValid && (isOK == null || isOK || manualLoginOK));
+            boolean canCont = isValid && (isOK == null || isOK || manualLoginOK);
+            nextBtn.setEnabled(canCont);
+            
+            if (canCont)
+            {
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        nextBtn.doClick();
+                    }
+                });
+            }
         }
         if (createDBBtn != null)
         {
