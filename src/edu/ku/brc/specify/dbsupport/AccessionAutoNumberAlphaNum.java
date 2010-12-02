@@ -32,7 +32,9 @@ import edu.ku.brc.af.core.db.AutoNumberGeneric;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -113,16 +115,24 @@ public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
         }
 
         StringBuilder sb = new StringBuilder("SELECT a.accessionNumber FROM Accession a Join a.division dv Join dv.numberingSchemes ans WHERE ans.id = ");
-        sb.append(currDivision.getNumberingSchemesByType(Accession.getClassTableId()).getAutoNumberingSchemeId());
-        sb.append(" AND dv.id in (");
-        //sb.append(currDivision.getId());
-        for (Integer dvId : divIds)
+        AutoNumberingScheme accessionAutoNumScheme = currDivision.getNumberingSchemesByType(Accession.getClassTableId());
+        if (accessionAutoNumScheme != null && accessionAutoNumScheme.getAutoNumberingSchemeId() != null)
         {
-            sb.append(dvId);
-            sb.append(',');
+            sb.append(accessionAutoNumScheme.getAutoNumberingSchemeId());
+            sb.append(" AND dv.id in (");
+            for (Integer dvId : divIds)
+            {
+                sb.append(dvId);
+                sb.append(',');
+            }
+            sb.setLength(sb.length()-1);
+            sb.append(')');
+            
+        } else
+        {
+            UIRegistry.showError("There is no AutonumberingScheme for the Accession formatter!");
+            return "";
         }
-        sb.setLength(sb.length()-1);
-        sb.append(')');
         
         if (yearVal != null)
         {
