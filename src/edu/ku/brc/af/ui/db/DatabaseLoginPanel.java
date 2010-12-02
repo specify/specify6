@@ -898,10 +898,16 @@ public class DatabaseLoginPanel extends JTiledPanel
         if (doSaveUPPrefs)
         {
             String dbName = null;
-            PickListItemIFace pli = (PickListItemIFace)databases.getSelectedItem();
-            if (pli != null)
+            if (databases.getSelectedItem() instanceof PickListItemIFace)
             {
-                dbName = pli.getValue();
+                PickListItemIFace pli = (PickListItemIFace)databases.getSelectedItem();
+                if (pli != null)
+                {
+                    dbName = pli.getValue();
+                }
+            } else
+            {
+                dbName = (String)databases.getSelectedItem();
             }
             
             localPrefs.putBoolean("login.rememberuser", rememberUsernameCBX.isSelected()); //$NON-NLS-1$

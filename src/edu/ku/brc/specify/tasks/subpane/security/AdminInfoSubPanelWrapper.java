@@ -27,6 +27,7 @@ import java.util.List;
 import javax.swing.JPanel;
 
 import edu.ku.brc.af.auth.specify.permission.PermissionService;
+import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
 import edu.ku.brc.af.ui.db.TextFieldWithInfo;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayPanel;
 import edu.ku.brc.af.ui.forms.FormViewObj;
@@ -34,6 +35,7 @@ import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
@@ -54,12 +56,14 @@ public class AdminInfoSubPanelWrapper
     private List<PermissionPanelEditor> permissionEditors; 
     private TextFieldWithInfo           agentTFWI   = null;
     
-    private SpPrincipal                 principal   = null;  // first  Principal
-    private SpPrincipal                 principal2  = null;  // second Principal
+    private SpPrincipal                 principal      = null;     // first Principal
+    private SpPrincipal                 principal2     = null;     // user  Principal
+    private SpPrincipal                 groupPrincipal = null;     // group Principal
     
-    private SpecifyUser                 user        = null;
-    private DataModelObjBaseWrapper     firstWrp    = null;
-    private DataModelObjBaseWrapper     secondWrp   = null;
+    private SpecifyUser                 user           = null;
+    private DataModelObjBaseWrapper     firstWrp       = null;
+    private DataModelObjBaseWrapper     secondWrp      = null;
+    private DataModelObjBaseWrapper     collectionWrp  = null;
     
     /**
      * Constructor taking only a JPanel as parameter
@@ -127,11 +131,125 @@ public class AdminInfoSubPanelWrapper
      * Set form data based on a given persistent object
      * If first object is a SpecifyUser, secondObject is the group (GroupPrincipal) a user belongs to
      * @param firstWrpArg
+     * @param groupWrpArg
+     * @return whether new data was set (usually from setting defaults)
+     */
+    /*public boolean setData(final DataModelObjBaseWrapper firstWrpArg, 
+                           final DataModelObjBaseWrapper userWrpArg,
+                           final DataModelObjBaseWrapper groupWrpArg,
+                           final DataModelObjBaseWrapper collectionWrpArg,
+                           final Division                division)
+    {
+        firstWrp = firstWrpArg;
+        userWrp  = userWrpArg;
+        groupWrp = groupWrpArg;
+        
+        boolean hasChanged = false;
+        if (!(displayPanel instanceof ViewBasedDisplayPanel))
+        {
+            // let's quit as soon as possible
+            return false;
+        }
+        
+        Object firstObj = firstWrp.getDataObj();
+        Object userObj  = (userWrp != null)  ? userWrp.getDataObj()  : null;
+        Object groupObj = (groupWrp != null) ? groupWrp.getDataObj() : null;
+        Object collectionObj = (collectionWrpArg != null) ? collectionWrpArg.getDataObj() : null;
+        
+        ViewBasedDisplayPanel panel = (ViewBasedDisplayPanel)displayPanel;
+        panel.setData(null);
+
+        user = null;
+        
+        String userType = null;
+        
+        // set permissions table if appropriate according to principal (user or usergroup)
+        principal      = null;
+        userPrincipal  = null;
+        groupPrincipal = null;
+        
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+                    
+            if (firstObj instanceof SpecifyUser)
+            {
+                user            = session.get(SpecifyUser.class, ((SpecifyUser)firstObj).getId());
+                userType        = user.getUserType();
+                
+                Collection collection = (Collection)groupWrpArg.getDataObj(); 
+                //Integer collId  = userPrincipal != null ? SpPrincipal.getUserGroupScopeFromPrincipal(userPrincipal.getId()) : null;
+                userPrincipal = user.getUserPrincipal(UserPrincipal.class.getCanonicalName(), collection.getId());
+                if (userPrincipal != null)
+                {
+                    userPrincipal.getPermissions().size(); //force load
+                }
+                
+                groupPrincipal = groupObj instanceof SpPrincipal ? (SpPrincipal)groupObj : null;
+                
+                panel.setData(user);
+                for (Agent agent : user.getAgents())
+                {
+                    if (agent.getDivision().getId().equals(division.getId()))
+                    {
+                        agentTFWI.setValue(agent, null);
+                        break;
+                    }
+                }
+                
+            } else if (firstObj instanceof SpPrincipal)
+            {
+                // first object is just a user group 
+                user            = null;
+                principal       = session.get(SpPrincipal.class, ((SpPrincipal)firstObj).getId());
+                userPrincipal   = null;
+                groupPrincipal  = null;
+                panel.setData(principal);
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
+        
+        if (userPrincipal == null || permissionEditors.size() == 0)
+        {
+            return false;
+        }
+        
+        Hashtable<String, SpPermission> existingPerms   = PermissionService.getExistingPermissions(userPrincipal.getId());
+        Hashtable<String, SpPermission> overrulingPerms = null;
+        if (groupPrincipal != null)
+        {
+            overrulingPerms = PermissionService.getExistingPermissions(groupPrincipal.getId());
+        }
+
+        for (PermissionPanelEditor editor : permissionEditors)
+        {
+            editor.updateData(userPrincipal, groupPrincipal, existingPerms, overrulingPerms, userType);
+        }
+
+        return hasChanged;
+    }*/
+    
+    /**
+     * Set form data based on a given persistent object
+     * If first object is a SpecifyUser, secondObject is the group (GroupPrincipal) a user belongs to
+     * @param firstWrpArg
      * @param secondWrpArg
      * @return whether new data was set (usually from setting defaults)
      */
     public boolean setData(final DataModelObjBaseWrapper firstWrpArg, 
                            final DataModelObjBaseWrapper secondWrpArg,
+                           final DataModelObjBaseWrapper collectionWrpArg,
                            final Division                division)
     {
         firstWrp  = firstWrpArg;
@@ -167,8 +285,20 @@ public class AdminInfoSubPanelWrapper
             {
                 user            = session.get(SpecifyUser.class, ((SpecifyUser)firstObj).getId());
                 userType        = user.getUserType();
-                firstPrincipal  = user.getUserPrincipal();
+                
+                Collection collection = (Collection)collectionWrpArg.getDataObj(); 
+                firstPrincipal = user.getUserPrincipal(UserPrincipal.class.getCanonicalName(), collection.getId());
                 secondPrincipal = (SpPrincipal)secondObj; // must be the user group
+                
+                if (secondPrincipal instanceof SpPrincipal)
+                {
+                    SpPrincipal p = (SpPrincipal)secondObj;
+                    System.err.println("*******> "+user.getId()+"  "+p.getId()+"  "+p.getGroupSubClass()+"  "+p.getUserGroupId()+"  "+p.getName());
+                    for (SpPrincipal up : user.getSpPrincipals())
+                    {
+                        System.err.println("            "+up.getId()+"  "+up.getGroupSubClass()+"  "+up.getUserGroupId()+"  "+up.getName());
+                    }
+                }
                 
                 panel.setData(user);
                 for (Agent agent : user.getAgents())
@@ -208,6 +338,12 @@ public class AdminInfoSubPanelWrapper
         
         principal  = firstPrincipal;
         principal2 = secondPrincipal;
+        
+        if (secondPrincipal instanceof SpPrincipal)
+        {
+            System.err.println("-------> "+user.getId()+"  "+principal.getId()+"  "+principal.getGroupSubClass()+"  "+principal.getUserGroupId()+"  "+principal.getName());
+            System.err.println("-------> "+user.getId()+"  "+principal2.getId()+"  "+principal2.getGroupSubClass()+"  "+principal2.getUserGroupId()+"  "+principal2.getName());
+        }
 
         Hashtable<String, SpPermission> existingPerms   = PermissionService.getExistingPermissions(principal.getId());
         Hashtable<String, SpPermission> overrulingPerms = null;
@@ -223,6 +359,7 @@ public class AdminInfoSubPanelWrapper
 
         return hasChanged;
     }
+
 
     /**
      * @param session the current session
@@ -279,6 +416,7 @@ public class AdminInfoSubPanelWrapper
             user = session.merge(user);
             firstWrp.setDataObj(user);
             secondWrp.setDataObj(principal2);
+            //groupWrp.setDataObj(groupPrincipal);
             
         } else
         {

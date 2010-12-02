@@ -473,7 +473,7 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 			}
 			else if (perm.hasChanged())
 			{
-			    log.debug("Saving: " + perm.getName()+" ["+perm.getActions()+"]");
+			    log.debug("Saving: " + perm.getName()+" ["+perm.getActions()+"] "+principal.getName()+", "+principal.getGroupType()+", "+principal.getGroupSubClass()+", "+principal.getPriority());
 				// set new flags
 				perm.setActions(canView, canAdd, canMod, canDel);
 

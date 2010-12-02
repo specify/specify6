@@ -2392,6 +2392,7 @@ public class DataBuilder
                                                              final String             abbrev,
                                                              final Discipline         discipline, 
                                                              final Division           division, 
+                                                             final Collection         collection,
                                                              final Map<String, SpPrincipal> groupMap, 
                                                              final String             userType) 
     {
@@ -2403,7 +2404,7 @@ public class DataBuilder
         SpecifyUser testerUser = createSpecifyUser(name, email, pwd, groupMap, userType);
         sessionArg.saveOrUpdate(testerUser);
         
-        SpPrincipal testerUserPrincipal = DataBuilder.createUserPrincipal(testerUser);
+        SpPrincipal testerUserPrincipal = DataBuilder.createUserPrincipal(testerUser, collection);
         sessionArg.saveOrUpdate(testerUserPrincipal);
         
         testerUser.addUserToSpPrincipalGroup(testerUserPrincipal);
@@ -2464,12 +2465,13 @@ public class DataBuilder
         return groupPrincipal;
     }
     
-    public static SpPrincipal createUserPrincipal(final SpecifyUser user)
+    public static SpPrincipal createUserPrincipal(final SpecifyUser user, final Collection scope)
     {
         SpPrincipal userPrincipal = new SpPrincipal();
         userPrincipal.initialize();
         userPrincipal.setName(user.getName());
         userPrincipal.setPriority(80);
+        userPrincipal.setScope(scope);
         userPrincipal.setGroupSubClass(UserPrincipal.class.getCanonicalName());
         user.getSpPrincipals().add(userPrincipal);
         return userPrincipal;   
@@ -3375,6 +3377,7 @@ public class DataBuilder
      */
     public static SpecifyUser createAdminGroupAndUser(final Session     sessionArg,
                                                       final Institution institution, 
+                                                      final Collection  collection,
                                                       final String      username,
                                                       final String      email, 
                                                       final String      password, 
@@ -3383,7 +3386,7 @@ public class DataBuilder
         
         SpecifyUser specifyAdminUser = createSpecifyUser(username, email, password, userType);
         sessionArg.saveOrUpdate(specifyAdminUser);
-        SpecifyUser spUser = createAdminGroupWithSpUser(sessionArg, institution, specifyAdminUser);
+        SpecifyUser spUser = createAdminGroupWithSpUser(sessionArg, institution, collection, specifyAdminUser);
         sessionArg.saveOrUpdate(spUser);
         return spUser;
     }
@@ -3395,13 +3398,14 @@ public class DataBuilder
      */
     public static SpecifyUser createAdminGroupWithSpUser(final Session sessionArg,
                                                          final Institution institution, 
+                                                         final Collection collection, 
                                                          final SpecifyUser specifyAdminUser) 
     {
         SpPrincipal adminGroup = createAdminGroup("Administrator", institution);
         sessionArg.saveOrUpdate(adminGroup);
         specifyAdminUser.addUserToSpPrincipalGroup(adminGroup);
         
-        SpPrincipal spPrin = createUserPrincipal(specifyAdminUser);
+        SpPrincipal spPrin = createUserPrincipal(specifyAdminUser, collection);
         sessionArg.saveOrUpdate(spPrin);
         
         return specifyAdminUser;

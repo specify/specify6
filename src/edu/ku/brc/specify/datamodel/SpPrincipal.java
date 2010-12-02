@@ -39,6 +39,8 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+
 /**
 
  */
@@ -323,6 +325,18 @@ public class SpPrincipal extends DataModelObjBase implements java.io.Serializabl
 		this.groupType = groupType;
 	}
 	
+    /**
+     * @param principalId the object to ask
+     * @return the integer ID from field 'userGroupScopeID'
+     */
+    @Transient
+    public static Integer getUserGroupScopeFromPrincipal(final Integer principalId)
+    {
+        String sql = "SELECT userGroupScopeID FROM spprincipal WHERE SpPrincipalID = "+principalId;
+        System.out.println(sql);
+        return principalId == null ? null : BasicSQLUtils.getCount(sql);
+    }
+    
     //----------------------------------------------------------------------
     //-- Comparable Interface
     //----------------------------------------------------------------------

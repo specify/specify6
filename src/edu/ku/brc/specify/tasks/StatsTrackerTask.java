@@ -48,6 +48,7 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Institution;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
@@ -256,6 +257,12 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
             }
         }
         
+        SpecifyUser su = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+        if (su != null)
+        {
+            stats.add(new NameValuePair("specifyuser",  fixParam(su.getName()))); //$NON-NLS-1$
+        }
+
         // Gather Collection Counts;
         if (collection != null)
         {

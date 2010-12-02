@@ -580,10 +580,8 @@ public class NavigationTreeMgr
         // discipline to which the user's being added
         Discipline parentDiscipline = getParentDiscipline(grpNode);
         Division   parentDivision   = parentDiscipline.getDivision();
+        Collection collection       = getParentOfClass(grpNode, Collection.class);
        
-        //final Division   division   = parentDiscipline.getDivision();
-        //final Discipline discipline = parentDiscipline;
-        
         DataModelObjBaseWrapper parentWrp = (DataModelObjBaseWrapper)grpNode.getUserObject();
         if (!parentWrp.isGroup())
         {
@@ -712,7 +710,7 @@ public class NavigationTreeMgr
                 }
                 
                 // create a JAAS principal and associate it with the user
-                SpPrincipal userPrincipal = DataBuilder.createUserPrincipal(specifyUser);
+                SpPrincipal userPrincipal = DataBuilder.createUserPrincipal(specifyUser, collection);
                 session.save(userPrincipal);
                 specifyUser.addUserToSpPrincipalGroup(userPrincipal);
                 
@@ -851,8 +849,10 @@ public class NavigationTreeMgr
                 session.saveOrUpdate(userAgent);
             }
             
+            Collection collection = getParentOfClass(grpNode, Collection.class);
+
             // create a JAAS principal and associate it with the user
-            SpPrincipal userPrincipal = DataBuilder.createUserPrincipal(specifyUser);
+            SpPrincipal userPrincipal = DataBuilder.createUserPrincipal(specifyUser, collection);
             session.save(userPrincipal);
             specifyUser.addUserToSpPrincipalGroup(userPrincipal);
             

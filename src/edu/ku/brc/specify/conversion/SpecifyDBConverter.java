@@ -1029,7 +1029,7 @@ public class SpecifyDBConverter extends AppBase
                     Institution institution = (Institution)getSession().createQuery("FROM Institution").list().get(0);
                     
                     String encrypted = Encryption.encrypt(password, password);
-                    specifyUser = createAdminGroupAndUser(getSession(), institution,  username, email, encrypted, userType);
+                    specifyUser = createAdminGroupAndUser(getSession(), institution,  null, username, email, encrypted, userType);
                     specifyUser.addReference(userAgent, "agents");
                     
                     getSession().saveOrUpdate(institution);

@@ -559,7 +559,7 @@ public class BuildSampleDatabase
         String userType = props.getProperty("userType");
 
         String encrypted = Encryption.encrypt(password, password);
-        SpecifyUser specifyAdminUser = DataBuilder.createAdminGroupAndUser(session, institution, username, email, encrypted, userType);
+        SpecifyUser specifyAdminUser = DataBuilder.createAdminGroupAndUser(session, institution, null, username, email, encrypted, userType);
         
         ////////////////////////////////
         // Create the really high-level stuff
@@ -2018,7 +2018,7 @@ public class BuildSampleDatabase
 
         // Tester
         createAndAddTesterToCollection(session, "botanyuser", "botanyuser@ku.edu", "botanyuser", "mr", "Bob", "", "Botony", "",  
-                                        discipline, division, groupMap, "Guest");
+                                        discipline, division, collection, groupMap, "Guest");
 
         persist(discipline);
 
@@ -3109,7 +3109,7 @@ public class BuildSampleDatabase
 
         // Tester
         createAndAddTesterToCollection(session, "ivpuser", "InvertPaleo@ku.edu", "ivpuser", "mr", "Joe", "", "InvertPaleo", "",
-                                       discipline, division, groupMap, "Guest");
+                                       discipline, division, collection, groupMap, "Guest");
 
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
 
@@ -4290,7 +4290,7 @@ public class BuildSampleDatabase
         // Tester
         String dspAbbrev = disciplineType.getAbbrev();
         createAndAddTesterToCollection(session, dspAbbrev+"Tester", dspAbbrev+"tester@brc.ku.edu", dspAbbrev+"Tester", 
-                "", dspAbbrev, "", "Tester", "", discipline, division, groupMap, "Guest");
+                "", dspAbbrev, "", "Tester", "", discipline, division, collection, groupMap, "Guest");
 
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
         
@@ -5512,7 +5512,7 @@ public class BuildSampleDatabase
         // Tester
         String userPrefix = (isVoucherCol)? "" : "Tis";
         createAndAddTesterToCollection(session, userPrefix + "FishTester", "fishtester@brc.ku.edu", userPrefix + "FishTester", 
-                "", "Fish", "", "Tester", "", discipline, division, groupMap, "Guest");
+                "", "Fish", "", "Tester", "", discipline, division, collection, groupMap, "Guest");
         
         commitTx();
         
@@ -6522,7 +6522,7 @@ public class BuildSampleDatabase
         
         startTx();
         
-        SpecifyUser specifyAdminUser = DataBuilder.createAdminGroupAndUser(session, institution,  username, email, password, userType);
+        SpecifyUser specifyAdminUser = DataBuilder.createAdminGroupAndUser(session, institution,  null, username, email, password, userType);
         
         dataType = createDataType("Biota");
         

@@ -56,6 +56,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.SchemaI18NService;
@@ -510,10 +511,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // First get the Collections the User has access to.
             Hashtable<String, Pair<String, Integer>> collectionHash = new Hashtable<String, Pair<String, Integer>>();
             
-            String sqlStr = "SELECT cln.CollectionName, cln.CollectionID, cln.DisciplineID FROM collection AS cln " +
+            String sqlStr = String.format("SELECT cln.CollectionName, cln.CollectionID, cln.DisciplineID FROM collection AS cln " +
                             "Inner Join spprincipal AS p ON cln.UserGroupScopeId = p.userGroupScopeID " +
                             "Inner Join specifyuser_spprincipal AS su_pr ON p.SpPrincipalID = su_pr.SpPrincipalID " +
-                            "WHERE su_pr.SpecifyUserID = " +spUser.getSpecifyUserId(); //$NON-NLS-1$
+                            "WHERE su_pr.SpecifyUserID = %d AND GroupSubClass = '%s'", spUser.getSpecifyUserId(), UserPrincipal.class.getName()); //$NON-NLS-1$
             
             log.debug(sqlStr);
             
@@ -1639,6 +1640,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     }
                 }
             }
+            
+            //FixDBAfterLogin.fixUserPermissions();
             
             // We close the session here so all SpAppResourceDir get unattached to hibernate
             // because UIFieldFormatterMgr and loading views all need a session

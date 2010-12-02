@@ -41,7 +41,6 @@ import org.hibernate.annotations.Cascade;
 
 import edu.ku.brc.af.auth.specify.principal.AdminPrincipal;
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
-import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.specify.SpecifyUserTypes;
 
@@ -706,13 +705,22 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      * @return the user principal
      */
     @Transient
-    public SpPrincipal getUserPrincipal()
+    public SpPrincipal getUserPrincipal(final String groupClassStr, final Integer collectionID)
     {
-        for (SpPrincipal principal : getSpPrincipals())
+        if (collectionID != null)
         {
-            if (UserPrincipal.class.getCanonicalName().equals(principal.getGroupSubClass()))
+            for (SpPrincipal principal : getSpPrincipals())
             {
-                return principal;
+                if (groupClassStr.equals(principal.getGroupSubClass()))
+                {
+                    Integer colId = SpPrincipal.getUserGroupScopeFromPrincipal(principal.getId());
+                    //Integer colId = principal.getScope() != null ? principal.getScope().getId() : null;
+                    System.err.println(String.format("getUserPrincipal[%d]: [%d][%d]", principal.getId(), colId != null ? colId : -1, collectionID));
+                    if (colId != null && collectionID.equals(colId))
+                    {
+                        return principal;
+                    }
+                }
             }
         }
         

@@ -56,8 +56,11 @@ public class GeneralPermissionTableCellEditor extends AbstractCellEditor
     }
 
     @Override
-    public Component getTableCellEditorComponent(JTable table, Object value,
-            boolean isSelected, int row, int column)
+    public Component getTableCellEditorComponent(JTable table, 
+                                                 Object value,
+                                                 boolean isSelected, 
+                                                 int row, 
+                                                 int column)
     {
         GeneralPermissionTableCellValueWrapper wrapper = (GeneralPermissionTableCellValueWrapper) value;
         wrapper.prepareComponent(customCheckbox);

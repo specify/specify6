@@ -40,6 +40,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.auth.BasicPermisionPanel;
+import edu.ku.brc.af.auth.PermissionEditorIFace;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
@@ -522,6 +524,27 @@ public class CollectionRelTask extends BaseTask
         edaPanel.getDelBtn().setEnabled(isSelected);
         
         edaPanel.getAddBtn().setEnabled(leftSelectedInx != -1 && rightSelectedInx != -1);// && leftSelectedInx != rightSelectedInx);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getPermEditorPanel()
+     */
+    @Override
+    public PermissionEditorIFace getPermEditorPanel()
+    {
+        return new BasicPermisionPanel(null, "ENABLE");
+    }
+
+    /**
+     * @return the permissions array
+     */
+    @Override
+    protected boolean[][] getPermsArray()
+    {
+        return new boolean[][] {{true, true, true, true},
+                                {true, true, true, true},
+                                {true, true, false, true},
+                                {true, true, true, true}};
     }
     
     //-------------------------------------------------------
