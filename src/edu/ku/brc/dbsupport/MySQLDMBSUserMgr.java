@@ -670,26 +670,37 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
     @Override
     public boolean doesDBHaveTable(String tableName)
     {
-        try
+        if (tableName != null)
         {
-            if (StringUtils.isNotEmpty(connection.getCatalog()))
+            PreparedStatement stmt = null;
+            ResultSet         rs   = null;
+            try
             {
-                for (Object row : BasicSQLUtils.querySingleCol(connection, "show tables"))
+                String sql = "SELECT COUNT(*) FROM information_schema.`TABLES` T WHERE T.TABLE_SCHEMA = '?' AND T.TABLE_NAME = '?'";
+                stmt = connection.prepareStatement(sql);
+                if (stmt != null)
                 {
-                    //System.out.println("["+row.toString()+"]["+tableName+"]");
-                    if (row.toString().equalsIgnoreCase(tableName))
+                    stmt.setString(1, connection.getCatalog());
+                    stmt.setString(2, tableName);
+                    rs = stmt.executeQuery();
+                    if (rs != null && rs.next())
                     {
-                        return true;
+                        return (rs.getInt(1) > 0);
                     }
                 }
-            } else
+            } catch (SQLException ex)
             {
-                log.error("Catalog is NOT set.");
+                ex.printStackTrace();
+            } finally
+            {
+                try
+                {
+                    if (stmt != null) stmt.close();
+                    if (rs != null) rs.close();
+                } catch (SQLException ex) {}
             }
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
         }
+
         return false;
     }
 
