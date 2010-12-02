@@ -270,23 +270,23 @@ public class FixDBAfterLogin
         String whereStr  = " WHERE p.GroupSubClass = 'edu.ku.brc.af.auth.specify.principal.UserPrincipal' " +
                            "AND p.userGroupScopeID IS NULL";
         
-        String clauseStr = "FROM spprincipal p INNER JOIN specifyuser_spprincipal sp ON p.SpPrincipalID = sp.SpPrincipalID " +
-                           "INNER JOIN specifyuser su ON sp.SpecifyUserID = su.SpecifyUserID ";
-
-        String sql = "SELECT su.Name " + clauseStr + whereStr + " GROUP BY su.Name";
+        String postSQL = " FROM specifyuser su " +
+                         "INNER JOIN specifyuser_spprincipal ss ON su.SpecifyUserID = ss.SpecifyUserID " +
+                         "INNER JOIN spprincipal p ON ss.SpPrincipalID = p.SpPrincipalID " +
+                         "LEFT JOIN spprincipal_sppermission pp ON p.SpPrincipalID = pp.SpPrincipalID " +
+                         "LEFT OUTER JOIN sppermission pm ON pp.SpPermissionID = pm.SpPermissionID " +
+                         whereStr;
+        
+        String sql = "SELECT COUNT(*)" + postSQL;
+        if (BasicSQLUtils.getCountAsInt(sql) < 1)
+        {
+            return;
+        }
         
         final String updatePermSQL = "DELETE FROM %s WHERE SpPermissionID = %d";
         final String updatePrinSQL = "DELETE FROM %s WHERE SpPrincipalID = %d";
-        
-        log.debug(sql);
-        
-        sql = "SELECT p.SpPrincipalID, pp.SpPermissionID FROM specifyuser su " +
-        	  "INNER JOIN specifyuser_spprincipal ss ON su.SpecifyUserID = ss.SpecifyUserID " +
-              "INNER JOIN spprincipal p ON ss.SpPrincipalID = p.SpPrincipalID " +
-              "LEFT JOIN spprincipal_sppermission pp ON p.SpPrincipalID = pp.SpPrincipalID " +
-              "LEFT OUTER JOIN sppermission pm ON pp.SpPermissionID = pm.SpPermissionID " +
-              whereStr;
-        
+
+        sql = "SELECT p.SpPrincipalID, pp.SpPermissionID" + postSQL;
         log.debug(sql);
         
         HashSet<Integer> prinIds = new HashSet<Integer>();
@@ -416,9 +416,12 @@ public class FixDBAfterLogin
             sb.append(nm);
         }
         
+        
         JTextArea ta = UIHelper.createTextArea(15, 30);
         ta.setText(sb.toString());
-        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), "Permissions Removed", true, CustomDialog.OK_BTN, UIHelper.createScrollPane(ta));
+        ta.setEditable(false);
+        
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), "Permissions Fixed", true, CustomDialog.OK_BTN, UIHelper.createScrollPane(ta));
         dlg.setOkLabel(UIRegistry.getResourceString("CLOSE"));
         UIHelper.centerAndShow(dlg);
     }

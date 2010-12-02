@@ -676,7 +676,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
             ResultSet         rs   = null;
             try
             {
-                String sql = "SELECT COUNT(*) FROM information_schema.`TABLES` T WHERE T.TABLE_SCHEMA = '?' AND T.TABLE_NAME = '?'";
+                String sql = "SELECT COUNT(*) FROM information_schema.`TABLES` T WHERE T.TABLE_SCHEMA = ? AND T.TABLE_NAME = ?";
                 stmt = connection.prepareStatement(sql);
                 if (stmt != null)
                 {

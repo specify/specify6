@@ -1295,6 +1295,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // work with for this "Context" then we need to go get all the Default View and
             // additional XML Resources.
             
+            FixDBAfterLogin.fixUserPermissions();
+            
             Collection curColl = getClassObject(Collection.class);
             int prevCollectionId =  curColl != null ? curColl.getCollectionId() : -1;
             
@@ -1640,8 +1642,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     }
                 }
             }
-            
-            //FixDBAfterLogin.fixUserPermissions();
             
             // We close the session here so all SpAppResourceDir get unattached to hibernate
             // because UIFieldFormatterMgr and loading views all need a session
