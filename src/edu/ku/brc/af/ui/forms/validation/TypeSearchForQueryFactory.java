@@ -181,8 +181,9 @@ public class TypeSearchForQueryFactory
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(typeSearchInfo.getTableId());
             if (tblInfo != null)
             {
+                // Let the one defined in the Schema Config override the one defined by the QCBX
                 String dofName = StringUtils.isNotEmpty(dataObjFormatterNameArg) ? dataObjFormatterNameArg : typeSearchInfo.getDataObjFormatterName();
-                if (StringUtils.isEmpty(dofName) && StringUtils.isNotEmpty(tblInfo.getDataObjFormatter()))
+                if (StringUtils.isNotEmpty(tblInfo.getDataObjFormatter()))
                 {
                     dofName = tblInfo.getDataObjFormatter();
                 }
