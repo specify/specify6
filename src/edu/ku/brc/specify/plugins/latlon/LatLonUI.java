@@ -393,7 +393,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
             }
         };
         
-        JButton infoBtn = UIHelper.createIconBtn("InfoIcon", IconManager.IconSize.Std16, getResourceString("PREFERENCES"), true, infoAL);
+        JButton infoBtn = UIHelper.createIconBtn("Preferences", IconManager.IconSize.Std16, getResourceString("PREFERENCES"), true, infoAL);
         infoBtn.setEnabled(true);
         
         PanelBuilder topPane = new PanelBuilder(new FormLayout("l:p, c:p:g" + (isViewMode ? "" : ",4px,p,8px"), "p"));

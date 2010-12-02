@@ -202,7 +202,7 @@
     <icon name="Attach16"         file="attachicon16.png" sizes="16"/>
     
     <!-- Preferences -->
-
+    <icon name="Preferences"      file="preferences.png"    sizes="all"/>
     
     <!-- TreeTableViewer icons -->
     <icon name="TTV_Subtree"        file="ExpandChildren32x32.png"    sizes="all"/>
