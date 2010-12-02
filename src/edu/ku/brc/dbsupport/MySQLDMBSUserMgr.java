@@ -33,6 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.ui.UIRegistry;
 
 
 /**
@@ -173,19 +174,28 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
     {
         ArrayList<String> dbNames = new ArrayList<String>();
         PreparedStatement pStmt       = null;
+        PreparedStatement pStmt2      = null;
         try
         {
             if (connection != null)
             {
                 try
                 {
-                    pStmt = connection.prepareStatement("SELECT Db FROM mysql.db WHERE User = ?");
+                    pStmt  = connection.prepareStatement("SELECT Db FROM mysql.db WHERE User = ?");
+                    pStmt2 = connection.prepareStatement("SELECT * FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = ?");
                     pStmt.setString(1, username);
                     
                     ResultSet rs = pStmt.executeQuery();
                     while (rs.next())
                     {
-                        dbNames.add(rs.getString(1));
+                        String dbNm = rs.getString(1);
+                        pStmt2.setString(1, dbNm);
+                        ResultSet rs2 = pStmt2.executeQuery();
+                        if (rs.next())
+                        {
+                            dbNames.add(dbNm);
+                        }
+                        rs2.close();
                     }
                     rs.close();
                     
@@ -197,6 +207,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                     try
                     {
                         if (pStmt != null) pStmt.close();
+                        if (pStmt2 != null) pStmt2.close();
                     } catch (SQLException ex) {}
                 }
             }
@@ -213,7 +224,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
      * @see edu.ku.brc.dbsupport.DBMSUserMgr#canGrantPemissions(java.lang.String, java.lang.String)
      */
     @Override
-    public boolean canGrantPemissions(String hostName, String username)
+    public boolean canGrantPemissions(String hostMachineName, String username)
     {
         PreparedStatement pStmt = null;
         try
@@ -223,7 +234,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                 try
                 {
                     pStmt = connection.prepareStatement("SELECT Grant_priv FROM mysql.user WHERE Host = ? AND User = ?");
-                    pStmt.setString(1, hostName);
+                    pStmt.setString(1, hostMachineName);
                     pStmt.setString(2, username);
                     
                     boolean hasPerm = false;
@@ -304,7 +315,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                 int rv = BasicSQLUtils.update(connection, "CREATE DATABASE "+dbName);
                 if (rv == 1)
                 {
-                    String sql = String.format("GRANT ALL ON %s.* TO '%s'@'%s' IDENTIFIED BY '%s'", dbName, itUsername, hostName, itPassword);
+                    String sql = String.format("GRANT ALL ON %s.* TO '%s'@'%s' IDENTIFIED BY '%s'@'%s'", dbName, itUsername, hostName, itPassword, hostName);
                     log.debug(sql);
                     rv = BasicSQLUtils.update(connection, sql);
                     return rv == 0;
@@ -389,10 +400,10 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                     ResultSet rs = pStmt.executeQuery();
                     while (rs.next())
                     {
-                        String hostName = rs.getString(1);
+                        String hostNm = rs.getString(1);
                         
                         delStmtUser.setString(1, username);
-                        delStmtUser.setString(2, hostName);
+                        delStmtUser.setString(2, hostNm);
                         if (delStmtUser.executeUpdate() == 0)
                         {
                             isOK = false;
@@ -400,7 +411,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                         }
                         
                         delStmtDB.setString(1, username);
-                        delStmtDB.setString(2, hostName);
+                        delStmtDB.setString(2, hostNm);
                         if (delStmtDB.executeUpdate() == 0)
                         {
                             isOK = false;
@@ -661,13 +672,19 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
     {
         try
         {
-            for (Object row : BasicSQLUtils.querySingleCol(connection, "show tables"))
+            if (StringUtils.isNotEmpty(connection.getCatalog()))
             {
-                //System.out.println("["+row.toString()+"]["+tableName+"]");
-                if (row.toString().equalsIgnoreCase(tableName))
+                for (Object row : BasicSQLUtils.querySingleCol(connection, "show tables"))
                 {
-                    return true;
+                    //System.out.println("["+row.toString()+"]["+tableName+"]");
+                    if (row.toString().equalsIgnoreCase(tableName))
+                    {
+                        return true;
+                    }
                 }
+            } else
+            {
+                log.error("Catalog is NOT set.");
             }
         } catch (Exception ex)
         {
@@ -682,31 +699,61 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
     @Override
     public boolean setPermissions(final String username, final String dbName, final int permissions)
     {
-        Statement stmt = null;
-        try
+       
+        if (connection != null)
         {
-            if (connection != null)
+            if (permissions == PERM_NONE)
+            {
+                PreparedStatement pStmt = null;
+                try
+                {
+                    pStmt = connection.prepareStatement("DELETE FROM mysql.db WHERE Host=? AND Db=? AND User=?");
+                    pStmt.setString(1, hostName);
+                    pStmt.setString(2, dbName);
+                    pStmt.setString(3, username);
+                    int rv = pStmt.executeUpdate();
+                    BasicSQLUtils.update(connection, "FLUSH PRIVILEGES");
+                    
+                    return rv == 1;
+                    
+                } catch (SQLException ex)
+                {
+                    UIRegistry.showError("Removing permissions failed.");
+                    ex.printStackTrace();
+                } finally
+                {
+                    close(pStmt);
+                }
+                
+            } else
             {
                 StringBuilder sb = new StringBuilder("GRANT ");
                 appendPerms(sb, permissions);
-                sb.append(String.format(" ON %s.* TO '%s'@'%s'",dbName, username, hostName));
-                
-                stmt = connection.createStatement();
+                sb.append(String.format(" ON %s.* TO '%s'@'%s'", dbName, username, hostName));
                 log.debug(sb.toString());
                 
-                int rv = stmt.executeUpdate(sb.toString());
-
-                return rv == 0;
+                Statement stmt = null;
+                try
+                {
+                    stmt = connection.createStatement();
+                    
+                    int rv = stmt.executeUpdate(sb.toString());
+                    BasicSQLUtils.update(connection, "FLUSH PRIVILEGES");
+                    
+                    return rv == 0;
+                    
+                } catch (SQLException ex)
+                {
+                    ex.printStackTrace();
+                    UIRegistry.showError("Setting permissions failed.");
+                    
+                } finally
+                {
+                    close(stmt);
+                }
             }
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            
-        } finally
-        {
-            close(stmt);
         }
+            
         return false;
     }
 

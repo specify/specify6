@@ -22,6 +22,7 @@ package edu.ku.brc.specify.config.init.secwiz;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Insets;
@@ -38,11 +39,14 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -52,6 +56,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -63,6 +68,7 @@ import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.config.init.BaseSetupPanel;
 import edu.ku.brc.specify.config.init.PrintTableHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
@@ -77,8 +83,10 @@ import edu.ku.brc.util.Pair;
  */
 public class UserPanel extends BaseSetupPanel
 {
-    protected JList             dbList = null;
+    protected JList             dbList      = null;
+    protected JList             otherDBList = null;
     protected JScrollPane       dbScrollPane;
+    protected JScrollPane       odbScrollPane;
     protected JLabel            label;
     
     protected JTable            userTable = null;
@@ -88,11 +96,15 @@ public class UserPanel extends BaseSetupPanel
     protected JButton           saveBtn    = null;
     protected JButton           mkKeysBtn    = null;
     protected JButton           sendKeysBtn  = null;
+    protected JButton           showKeysBtn  = null;
     protected JButton           printKeysBtn = null;
     protected JButton[]         btns         = null;
+    protected JButton           gainAccessBtn = null;
+    protected JButton           loseAccessBtn = null;
     
     protected MasterLoginPanel  masterPanel;
     protected String            databaseName = null;
+    protected String            otherDBName  = null;
     
     /**
      * @param panelName
@@ -118,18 +130,20 @@ public class UserPanel extends BaseSetupPanel
      */
     protected void createUI()
     {
-        dbList = new JList(new DefaultListModel());
+        dbList      = new JList(new DefaultListModel());
+        otherDBList = new JList(new DefaultListModel());
         
         userModel = new UserTableModel(null);
         userTable = new JTable(userModel);
         
         CellConstraints cc = new CellConstraints();
         
-        saveBtn    = UIHelper.createButton("Save");
+        saveBtn      = UIHelper.createButton("Save");
         mkKeysBtn    = UIHelper.createButton("Make Keys");
         sendKeysBtn  = UIHelper.createButton("Send Keys");
+        showKeysBtn  = UIHelper.createButton("Show Summary");
         printKeysBtn = UIHelper.createButton("Print");
-        btns         = new JButton[] {saveBtn, sendKeysBtn, mkKeysBtn, printKeysBtn};
+        btns         = new JButton[] {saveBtn, sendKeysBtn, mkKeysBtn, showKeysBtn, printKeysBtn};
         
         String       colDef = UIHelper.createDuplicateJGoodiesDef("p", "8px", btns.length);
         PanelBuilder btnPB  = new PanelBuilder(new FormLayout("f:p:g,"+colDef, "p"));
@@ -143,19 +157,37 @@ public class UserPanel extends BaseSetupPanel
         
         label = UIHelper.createLabel("", SwingConstants.CENTER);
         
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p", "f:p:g,8px,p,8px,p,4px,f:p:g,4px,p,4px,p"), this);
+        gainAccessBtn = UIHelper.createIconBtn("Unmap", "", null);
+        loseAccessBtn = UIHelper.createIconBtn("Map", "", null);
+
+        PanelBuilder bpb = new PanelBuilder(new FormLayout("p", "f:p:g,p,8px,p,f:p:g"));
+        bpb.add(gainAccessBtn,   cc.xy(1, 2));
+        bpb.add(loseAccessBtn,   cc.xy(1, 4));
+        
+        PanelBuilder tpb = new PanelBuilder(new FormLayout("f:p:g,10px,p,10px,f:p:g", "p,4px,f:p:g"));
+        
+        tpb.add(UIHelper.createI18NLabel("MSTR_HAS_PERM", SwingConstants.CENTER),   cc.xy(1, 1));
+        tpb.add(UIHelper.createI18NLabel("MSTR_HAS_NOPERM", SwingConstants.CENTER), cc.xy(5, 1));
+        
+        tpb.add(dbScrollPane = UIHelper.createScrollPane(dbList),                   cc.xy(1, 3));
+        tpb.add(bpb.getPanel(),                                                     cc.xy(3, 3));
+        tpb.add(odbScrollPane = UIHelper.createScrollPane(otherDBList),             cc.xy(5, 3));
+
+        
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p", "f:p:g,20px,p,8px,p,4px,f:p:g,4px,p,20px,p"), this);
         
         sendKeysBtn.setVisible(false);
         
         int y = 1;
-        pb.add(dbScrollPane = UIHelper.createScrollPane(dbList), cc.xyw(1, y, 2)); y += 2;
-        pb.addSeparator("",        cc.xyw(1, y, 2)); y += 2;
+        pb.add(tpb.getPanel(),     cc.xyw(1, y, 2)); y += 2;
+        y += 2;
         pb.add(label,              cc.xyw(1, y, 2)); y += 2;
         pb.add(userScrollPane = UIHelper.createScrollPane(userTable), cc.xyw(1, y, 2)); y += 2;
         pb.add(btnPB.getPanel(),   cc.xy(2, y));  y += 2;
         pb.addSeparator("",        cc.xyw(1, y, 2));  y += 2;
         
         dbList.setVisibleRowCount(8);
+        otherDBList.setVisibleRowCount(8);
         
         SwingUtilities.invokeLater(new Runnable()
         {
@@ -169,6 +201,7 @@ public class UserPanel extends BaseSetupPanel
         });
         
         dbScrollPane.setVisible(false);
+        odbScrollPane.setVisible(false);
         updateBtnUI(false);
         
         dbList.getSelectionModel().addListSelectionListener(new ListSelectionListener()
@@ -179,6 +212,10 @@ public class UserPanel extends BaseSetupPanel
                 if (!e.getValueIsAdjusting())
                 {
                     loadData(false);
+                    
+                    gainAccessBtn.setEnabled(false);
+                    loseAccessBtn.setEnabled(databaseName != null);
+
                 }
             }
         });
@@ -222,12 +259,52 @@ public class UserPanel extends BaseSetupPanel
             }
         });
         
+        showKeysBtn.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                displayData();
+            }
+        });
+        
         printKeysBtn.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
             {
                 printUserData();
+            }
+        });
+        gainAccessBtn.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                changeMasterAccess(true);
+            }
+        });
+        
+        loseAccessBtn.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                changeMasterAccess(false);
+            }
+        });
+        
+        otherDBList.getSelectionModel().addListSelectionListener(new ListSelectionListener()
+        {
+            @Override
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (!e.getValueIsAdjusting())
+                {
+                    otherDBName = (String)otherDBList.getSelectedValue();
+                    gainAccessBtn.setEnabled(otherDBName != null);
+                    loseAccessBtn.setEnabled(false);
+                }
             }
         });
     }
@@ -238,6 +315,7 @@ public class UserPanel extends BaseSetupPanel
     private void updateBtnUI(final boolean enabled)
     {
         saveBtn.setEnabled(enabled && userModel.isChanged());
+        mkKeysBtn.setEnabled(enabled && userModel.isPwdChanged());
     }
     
     /**
@@ -285,7 +363,7 @@ public class UserPanel extends BaseSetupPanel
                         
                         if (StringUtils.isNotEmpty(ud.getEmail()))
                         {
-                            String sql = String.format("SELECT AgentID WHERE SpecifyUserID = %d AND (Email IS NULL OR Email <> '%s')", ud.getId(), ud.getEmail());
+                            String sql = String.format("SELECT AgentID FROM agent WHERE SpecifyUserID = %d AND (Email IS NULL OR Email <> '%s')", ud.getId(), ud.getEmail());
                             Vector<Integer> agentIds = BasicSQLUtils.queryForInts(mgr.getConnection(), sql);
                             for (Integer agentId : agentIds)
                             {
@@ -301,7 +379,6 @@ public class UserPanel extends BaseSetupPanel
                         }
                     }
                 }
-
             }
         } catch (SQLException e)
         {
@@ -315,8 +392,10 @@ public class UserPanel extends BaseSetupPanel
                 mgr.close();
             } catch (SQLException e){}
         }
+        
         if (!hasErrors)
         {
+            userModel.setPwdChanged(false);
             userModel.setChanged(false);
             saveBtn.setEnabled(false);
             mkKeysBtn.setEnabled(false);
@@ -351,16 +430,16 @@ public class UserPanel extends BaseSetupPanel
         //String saUserName = properties.getProperty("saUserName");
         String saPassword = properties.getProperty("saPassword");
         
-        int[] selectedIds = getSelectedIds();
-        
-        Vector<UserData> items = userModel.getUserData();
-        for (int inx : selectedIds)
+        //int[] selectedIds = getSelectedIds();
+        //Vector<UserData> items = userModel.getUserData();
+        //for (int inx : selectedIds)
+        for (UserData ud : userModel.getUserData())
         {
-            UserData ud  = items.get(inx);
+            //UserData ud  = items.get(inx);
             String   pwd = ud.getPassword();
-            if (StringUtils.isNotEmpty(pwd) && 
-                    (!StringUtils.isAlphanumeric(pwd) ||
-                     !UIHelper.isAllCaps(pwd) ||
+            if (ud.isChanged() &&
+                    StringUtils.isNotEmpty(pwd) && 
+                    (!UIHelper.isAllCaps(pwd) ||
                      pwd.length() < 25))
             {
                 String encryptedPwd = Encryption.encrypt(saPassword, pwd);
@@ -374,6 +453,7 @@ public class UserPanel extends BaseSetupPanel
             }
         }
         saveBtn.setEnabled(userModel.isChanged());
+        mkKeysBtn.setEnabled(false);
     }
 
     /**
@@ -438,6 +518,78 @@ public class UserPanel extends BaseSetupPanel
             }
         }
     }
+    
+    /**
+     * 
+     */
+    protected void displayData()
+    {
+        StringBuilder sb = new StringBuilder();
+        
+        String[] headers = {"Username", "Passsword", "Last Name", "First Name", "EMail", "New Password"};
+        int i = 0;
+        Object[][] pValueObjs = new Object[userModel.getUserData().size()][6];
+        for (UserData ud : userModel.getUserData())
+        {
+            pValueObjs[i++] = ud.getData();
+        }
+        
+        /*for (Object[] row :pValueObjs)
+        {
+            sb.append("\n--------------------------------------\n");
+            for (i=0;i<headers.length;i++)
+            {
+                sb.append(headers[i]);
+                sb.append(": ");
+                sb.append(row[i]);
+                sb.append("\n");
+            }
+        }*/
+        
+        sb.append("<HTML><BODY><TABLE border=1><TR>");
+        for (String hd : headers)
+        {
+            sb.append("<TH>");
+            sb.append(hd);
+            sb.append("</TH>");
+        }
+        sb.append("</TR>");
+        for (Object[] row :pValueObjs)
+        {
+            sb.append("<TR>");
+            for (i=0;i<headers.length;i++)
+            {
+                sb.append("<TD>");
+                sb.append(row[i] == null ? "&nbsp;" : row[i]);
+                sb.append("</TD>");
+            }
+            sb.append("</TR>");
+        }
+        sb.append("</TABLE></BODY></HTML>");
+        
+        JEditorPane htmlPane   = new JEditorPane("text/html", sb.toString()); //$NON-NLS-1$
+        final JScrollPane scrollPane = UIHelper.createScrollPane(htmlPane);
+        htmlPane.setEditable(false);
+        
+        JPanel p = new JPanel(new BorderLayout());
+        p.add(scrollPane, BorderLayout.CENTER);
+        p.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), "Summary", true, CustomDialog.OK_BTN, p);
+        dlg.setOkLabel(UIRegistry.getResourceString("CLOSE"));
+        dlg.createUI();
+        dlg.setSize(dlg.getPreferredSize().width, 768);
+
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                scrollPane.getVerticalScrollBar().setValue(0);
+            }
+        });
+        UIHelper.centerAndShow(dlg);
+    }
 
     /**
      * 
@@ -468,6 +620,70 @@ public class UserPanel extends BaseSetupPanel
         PrintTableHelper pth = new PrintTableHelper(printTable);
         pth.printGrid(UIRegistry.getResourceString("SUMMARY"));
     }
+    
+    /**
+     * 
+     */
+    private void changeMasterAccess(final boolean doGainAccess)
+    {
+        DBMSUserMgr mgr = DBMSUserMgr.getInstance();
+        
+        String dbUserName = properties.getProperty("dbUserName");
+        String dbPassword = properties.getProperty("dbPassword");
+        String saUserName = properties.getProperty("saUserName");
+        String hostName   = properties.getProperty("hostName");
+        
+        String dbName = doGainAccess ? otherDBName : databaseName;
+        
+        if (mgr.getConnection() == null)
+        {
+            if (!mgr.connectToDBMS(dbUserName, dbPassword, hostName))
+            {
+                
+            }
+        }
+               
+        if (mgr.setPermissions(saUserName, dbName, doGainAccess ? DBMSUserMgr.PERM_ALL_BASIC : DBMSUserMgr.PERM_NONE))
+        {
+            int sInx = -1;
+            if (doGainAccess)
+            {
+                int inx = otherDBList.getSelectedIndex();
+                ((DefaultListModel)dbList.getModel()).addElement(otherDBList.getSelectedValue());
+                ((DefaultListModel)otherDBList.getModel()).remove(inx);
+                sInx = dbList.getModel().getSize() - 1;
+                
+            } else
+            {
+                int inx = dbList.getSelectedIndex();
+                ((DefaultListModel)otherDBList.getModel()).addElement(dbList.getSelectedValue());
+                ((DefaultListModel)dbList.getModel()).remove(inx);
+                sInx = 0;
+            }
+            
+            final int selInx = sInx;
+            UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "MSTR_PERM_CHGED_TITLE", doGainAccess ? "MSTR_PERM_ADDED" : "MSTR_PERM_DEL", saUserName, dbName);
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    dbList.setSelectedIndex(selInx);
+                    
+                }
+            });
+        }
+        
+        mgr.close();
+    }
+    
+    /**
+     * 
+     */
+    private void loseAccess()
+    {
+        
+    }
 
     /**
      * 
@@ -496,7 +712,6 @@ public class UserPanel extends BaseSetupPanel
     {
         label.setText("");
         
-        DBMSUserMgr mgr   = DBMSUserMgr.getInstance();
         
         String hostName   = properties.getProperty("hostName");
         
@@ -507,9 +722,11 @@ public class UserPanel extends BaseSetupPanel
         //String saPassword = properties.getProperty("saPassword");
         
         int index = 0;
-        List<String>   dbNamesList = masterPanel.getDbNamesForMaster();
+        List<String>   dbNamesList    = masterPanel.getDbNamesForMaster();
+        List<String>   otherNamesList = masterPanel.getDbNameList();
         Vector<String> items       = new Vector<String>(dbNamesList);
         Collections.sort(items);
+        
         if (!isInitial)
         {
             index = dbList.getSelectedIndex();
@@ -519,17 +736,29 @@ public class UserPanel extends BaseSetupPanel
             }
         }
         
-        databaseName = items.get(index);
+        databaseName = isInitial ? items.get(0) : (String)dbList.getSelectedValue();
         
+        DBMSUserMgr mgr   = DBMSUserMgr.getInstance();
         if (mgr.connect(dbUserName, dbPassword, hostName, databaseName))
         {
-            dbScrollPane.setVisible(dbNamesList.size() > 1);
-            DefaultListModel model = new DefaultListModel();
-            for (String nm : items)
+            if (isInitial)
             {
-                model.addElement(nm);
+                dbScrollPane.setVisible(dbNamesList.size() > 1);
+                DefaultListModel model = new DefaultListModel();
+                for (String nm : items)
+                {
+                    model.addElement(nm);
+                }
+                dbList.setModel(model);
+                
+                odbScrollPane.setVisible(otherNamesList.size() > 1);
+                model = new DefaultListModel();
+                for (String nm : otherNamesList)
+                {
+                    model.addElement(nm);
+                }
+                otherDBList.setModel(model);
             }
-            dbList.setModel(model);
             
             label.setText(databaseName);
             
@@ -590,8 +819,24 @@ public class UserPanel extends BaseSetupPanel
                     }
                 }
             });
+        } else
+        {
+            //UIRegistry.askYesNoLocalized("FIX", "SKIP, nonL10NMsg, titleKey)
         }
         
+        
+        if (isInitial && items.size() > 0)
+        {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    dbList.setSelectedIndex(0);
+                    
+                }
+            });
+        }
     }
 
     /* (non-Javadoc)
@@ -840,8 +1085,9 @@ public class UserPanel extends BaseSetupPanel
     {
         protected String[] headers = {"Changed", "Username", "Passsword", "Last Name", "First Name", "EMail"};
         
-        protected Vector<UserData> items     = new Vector<UserData>();
-        protected boolean          isChanged = false;
+        protected Vector<UserData> items        = new Vector<UserData>();
+        protected boolean          isChanged    = false;
+        protected boolean          isPwdChanged = false;
         
         /**
          * @param items
@@ -949,7 +1195,9 @@ public class UserPanel extends BaseSetupPanel
                 this.items.clear();
                 this.items.addAll(list);
                 fireTableDataChanged();
-                isChanged = false;
+                isChanged    = false;
+                isPwdChanged = false;
+                updateBtnUI(false);
             }
         }
         
@@ -959,6 +1207,22 @@ public class UserPanel extends BaseSetupPanel
         public boolean isChanged()
         {
             return isChanged;
+        }
+
+        /**
+         * @return the isPwdChanged
+         */
+        public boolean isPwdChanged()
+        {
+            return isPwdChanged;
+        }
+
+        /**
+         * @param isPwdChanged the isPwdChanged to set
+         */
+        public void setPwdChanged(boolean isPwdChanged)
+        {
+            this.isPwdChanged = isPwdChanged;
         }
 
         /* (non-Javadoc)
@@ -994,21 +1258,27 @@ public class UserPanel extends BaseSetupPanel
                     case 0:
                         ud.setChanged((Boolean)aValue);
                         ud.setEmail(ud.getCachedEmail());
+                        isChanged = true;
                         fireTableDataChanged();
                         break;
                         
                     case 2: 
                         ud.setPassword((String)aValue);
                         ud.setChanged(true);
+                        isPwdChanged = true;
+                        isChanged = true;
+                        fireTableDataChanged();
                         break;
                         
                     case 5: 
                         isChanged = true;
                         ud.setEmail((String)aValue);
                         ud.setChanged(true);
+                        fireTableDataChanged();
                         break;
                 }
             }
+            updateBtnUI(true);
         }
     }
 }

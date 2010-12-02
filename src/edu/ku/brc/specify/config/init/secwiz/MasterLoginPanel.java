@@ -28,6 +28,9 @@ import java.awt.Color;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
@@ -41,7 +44,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBConnection;
@@ -79,6 +81,7 @@ public class MasterLoginPanel extends GenericFormPanel
     protected boolean                 isEmbedded = false;
 
     protected List<String>            dbNamesForMaster = null;
+    protected List<String>            dbNameList       = null;
 
 
     /**
@@ -305,8 +308,31 @@ public class MasterLoginPanel extends GenericFormPanel
             String saUserName = properties.getProperty("saUserName");
             
             boolean doFix = false;
-            dbNamesForMaster = mgr.getDatabaseListForUser(saUserName);
-
+            dbNameList          = new ArrayList<String>();
+            dbNamesForMaster    = mgr.getDatabaseListForUser(saUserName);
+            List<String> allDBs = mgr.getDatabaseList();
+            
+            HashSet<String> hash = new HashSet<String>(dbNamesForMaster);
+            for (String dbNm : allDBs)
+            {
+                
+                if (!hash.contains(dbNm) && mgr.doesDBExists(dbNm))
+                {
+                    try
+                    {
+                        mgr.getConnection().setCatalog(dbNm);
+                        if ( mgr.doesDBHaveTable("specifyuser"))
+                        {
+                            dbNameList.add(dbNm);
+                        }
+                        
+                    } catch (SQLException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            
             if (dbNamesForMaster.size() == 0)
             {
                 int rv = UIRegistry.askYesNoLocalized("SEC_FIX_PERMS", "CANCEL", getResourceString("SEC_NO_DBS_PERMS"), "WARNING");
@@ -325,7 +351,6 @@ public class MasterLoginPanel extends GenericFormPanel
                 
                 if (badDBs.size() > 0)
                 {
-                    CellConstraints cc   = new CellConstraints();
                     PanelBuilder    pb   = new PanelBuilder(new FormLayout("f:MAX(300px; p):g", "p,8px,f:MAX(300px; p):g"));
                     JList           list = new JList(badDBs);
                     pb.add(UIHelper.createI18NLabel("SEC_BAD_DBS_PERMS"), cc.xy(1, 1));
@@ -346,8 +371,8 @@ public class MasterLoginPanel extends GenericFormPanel
             
             if (doFix)
             {
-                boolean isOK = doResetMaster(badDBs);
-                if (isOK)
+                boolean isResetOK = doResetMaster(badDBs);
+                if (isResetOK)
                 {
                     dbNamesForMaster = mgr.getDatabaseListForUser(saUserName); // Get them again after everything is fixed.
                     
@@ -591,6 +616,14 @@ public class MasterLoginPanel extends GenericFormPanel
     public List<String> getDbNamesForMaster()
     {
         return dbNamesForMaster;
+    }
+
+    /**
+     * @return the dbNameList
+     */
+    public List<String> getDbNameList()
+    {
+        return dbNameList;
     }
     
 }

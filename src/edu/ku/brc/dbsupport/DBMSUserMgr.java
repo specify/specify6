@@ -245,11 +245,11 @@ public abstract class DBMSUserMgr
     
     /**
      * Checks to see if a user has permissions to grant permissions.
-     * @param hostName
+     * @param hostMachineName
      * @param username
      * @return
      */
-    public abstract boolean canGrantPemissions(String hostName, String username);
+    public abstract boolean canGrantPemissions(String hostMachineName, String username);
     
     /**
      * @param hostName the host name to connect to
