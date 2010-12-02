@@ -211,7 +211,7 @@ public class DataObjFieldFormatDlg extends CustomDialog implements ChangeListene
             PanelBuilder pb = new PanelBuilder(new FormLayout("r:p,4px,f:p:g", "p,6px,p,2px,p,4px,p,10px"));
     
             int y = 1;
-            pb.addSeparator("Custom Editor", cc.xyw(1,y,3)); y += 2;
+            pb.addSeparator(getResourceString("DOF_CST_ED"), cc.xyw(1,y,3)); y += 2;
             
             pb.add(nameLbl,   cc.xy(1, y));
             pb.add(nameText,  cc.xy(3, y)); y += 2;

@@ -19,18 +19,23 @@
 */
 package edu.ku.brc.specify.config;
 
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.getCount;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getCountAsInt;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.query;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.update;
 
 import java.awt.Frame;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashSet;
 import java.util.TreeSet;
 
 import javax.swing.JTextArea;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -50,7 +55,10 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class FixDBAfterLogin
 {
-    private static final Logger  log = Logger.getLogger(FixDBAfterLogin.class);
+    private static final Logger log  = Logger.getLogger(FixDBAfterLogin.class);
+    
+    public final static String DEGREES_SYMBOL = "\u00b0";
+    public final static String SEPS           = DEGREES_SYMBOL + ":'\" ";
     
     /**
      * 
@@ -65,8 +73,8 @@ public class FixDBAfterLogin
      */
     public void checkMultipleLocalities()
     {
-         int cnt = getCountAsInt("select count(localitydetailid) - count(distinct localityid) from localitydetail");
-         if (cnt > 0)
+        int cnt = getCountAsInt("select count(localitydetailid) - count(distinct localityid) from localitydetail");
+        if (cnt > 0)
 		{
 			cnt = getCountAsInt("select count(collectionobjectid) from collectionobject co " +
 					"inner join collectingevent ce on ce.collectingeventid = co.collectingeventid " +
@@ -96,13 +104,169 @@ public class FixDBAfterLogin
     }
     
     /**
+     * @param pStmt
+     * @param locId
+     * @param origUnit
+     * @param srcUnit
+     * @param lat1Text
+     * @param long1Text
+     * @param isNew
+     * @return
+     * @throws SQLException
+     */
+    private boolean fixLatLong(final PreparedStatement pStmt, 
+                               final int locId, 
+                               final int origUnit, 
+                               final int srcUnit, 
+                               final String lat1Text, 
+                               final String long1Text,
+                               final boolean isNew) throws SQLException
+    {
+        pStmt.setInt(3, locId);
+        
+        boolean doUpdate = false;
+        if (isNew)
+        {
+            // These could be entered from Sp5 or Sp6
+            int numColonsLat = lat1Text  != null ? StringUtils.countMatches(lat1Text, ":") : 0;
+            int numColonsLon = long1Text != null ? StringUtils.countMatches(long1Text, ":") : 0;
+            
+            if (numColonsLat == 2 || numColonsLon == 2) // definitely Deg, Min Dec Secs
+            {
+                if (srcUnit != 1)
+                {
+                    //log.debug(String.format("1 - Lat[%s]  Lon[%s]  origUnit %d  srcUnit %d", lat1Text, long1Text, origUnit, srcUnit));
+                    pStmt.setInt(1, origUnit);  // How Viewed
+                    pStmt.setInt(2, 1);         // How Stored
+                    return true;
+                }
+                return false;
+            }
+            
+            String[] latTokens    = StringUtils.split(lat1Text, SEPS);
+            String[] lonTokens    = StringUtils.split(long1Text, SEPS);
+            int      latLen       = latTokens.length;
+            int      lonLen       = lonTokens.length;
+            
+            if (latLen == 4 || lonLen == 4)
+            {
+                if (srcUnit != 1)  // Deg, Min Dec Secs
+                {
+                    //log.debug(String.format("Fix1 Lat[%s]  Lon[%s]  origUnit %d  srcUnit %d", lat1Text, long1Text, origUnit, srcUnit));
+                    pStmt.setInt(1, origUnit);  // How Viewed
+                    pStmt.setInt(2, 1);         // How Stored
+                    return true;
+                }
+                
+            } else if (latLen == 3 || lonLen == 3)
+            {
+                if (srcUnit != 2) // Degrees Decimal Minutes
+                {
+                    //log.debug(String.format("Fix2 Lat[%s]  Lon[%s]  origUnit %d  srcUnit %d", lat1Text, long1Text, origUnit, srcUnit));
+                    pStmt.setInt(1, origUnit);  // How Viewed
+                    pStmt.setInt(2, 2);         // How Stored
+                    return true;
+                }
+
+            } else if (latLen == 2 || lonLen == 2)
+            {
+                if (srcUnit != 0) // Decimal Degrees 
+                {
+                    //log.debug(String.format("Fix0 Lat[%s]  Lon[%s]  origUnit %d  srcUnit %d", lat1Text, long1Text, origUnit, srcUnit));
+                    pStmt.setInt(1, origUnit);  // How Viewed
+                    pStmt.setInt(2, 1);         // How Stored
+                    return true;
+                }
+            } else
+            {
+                log.debug(String.format("*** Couldn't parse Lat[%s]  Lon[%s]  origUnit %d  srcUnit %d", lat1Text, long1Text, origUnit, srcUnit));
+            }
+            
+            
+        } else
+        {
+            if (srcUnit == 0 && origUnit != 0)
+            {
+                pStmt.setInt(1, origUnit); // How Viewed
+                pStmt.setInt(2, origUnit); // How Stored
+                doUpdate = true;
+            }
+        }
+        return doUpdate;
+    }
+    
+    /**
+     * 
+     */
+    public void fixLatLongUnit()
+    {
+        int     fixed = 0;
+        String  updateSQL = "UPDATE locality SET OriginalLatLongUnit=?, SrcLatLongUnit=?  WHERE LocalityID=?";
+        String  postStr   = " WHERE OriginalLatLongUnit > 0 AND (Lat1Text IS NOT NULL OR Long1Text IS NOT NULL)";
+        
+        Connection        conn  = DBConnection.getInstance().getConnection();
+        PreparedStatement pStmt = null;
+        Statement         stmt  = null;
+        try
+        {
+            int totalCnt = getCount(conn, "SELECT COUNT(*) FROM locality" + postStr);
+            //log.debug("Total Count: "+totalCnt);
+            if (totalCnt > 0)
+            {
+                pStmt = conn.prepareStatement(updateSQL);
+                stmt  = conn.createStatement();
+                
+                int cnt = 0;
+                ResultSet rs = stmt.executeQuery("SELECT LocalityID, OriginalLatLongUnit, SrcLatLongUnit, Lat1Text, Long1Text, (TimestampCreated > '2008-06-01 00:00:00') AS IsNew FROM locality" + postStr);
+                while (rs.next())
+                {
+                    int     id        = rs.getInt(1);
+                    int     origUnit  = rs.getInt(2);
+                    int     srcUnit   = rs.getInt(3);
+                    String  lat1Text  = rs.getString(4);
+                    String  long1Text = rs.getString(5);
+                    boolean isNew     = rs.getInt(6) == 1;
+                    
+                    if (fixLatLong(pStmt, id, origUnit, srcUnit, lat1Text, long1Text, isNew))
+                    {
+                        
+                        if (pStmt.executeUpdate() != 1)
+                        {
+                            log.error("Error updating "+id);
+                        } else
+                        {
+                            fixed++;
+                        }
+                    }
+                    cnt++;
+                    if (cnt % 100 == 0)
+                    {
+                        log.debug(String.format("Processing %d/%d", cnt, totalCnt));
+                    }
+                }
+                rs.close();
+                log.debug(String.format("Fixed %d/%d", fixed, totalCnt));
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            try
+            {
+                if (pStmt != null) pStmt.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {}
+        }
+    }
+    
+    /**
      * 
      */
     public static void fixUserPermissions()
     {
-        boolean isOK = true;
-        if (!isOK) return;
-
         String whereStr  = " WHERE p.GroupSubClass = 'edu.ku.brc.af.auth.specify.principal.UserPrincipal' " +
                            "AND p.userGroupScopeID IS NULL";
         

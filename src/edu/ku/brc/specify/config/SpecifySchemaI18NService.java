@@ -92,9 +92,9 @@ public class SpecifySchemaI18NService extends SchemaI18NService
                 ti.setTitle(row[1].toString());
                 ti.setAggregatorName(row[2] != null ? row[2].toString() : null);
                 
-                if (row[3] != null && row[4] != null)
+                if (row[4] != null)
                 {
-                    if ((Boolean)row[3])
+                    if (row[3] != null && ((Boolean)row[3]))
                     {
                         ti.setUiFormatter(row[4].toString());
                     } else
