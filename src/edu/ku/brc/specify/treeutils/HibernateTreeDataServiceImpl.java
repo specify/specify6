@@ -181,32 +181,34 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     @SuppressWarnings("unchecked")
     public List<TreeNode> getChildTreeNodes(final T parent)
     {
-        Vector<TreeNode> treeNodes = null;
+        Vector<TreeNode> treeNodes = new Vector<TreeNode>();
         
-        Session session = getNewSession(parent);
-        try
+        if (parent != null)
         {
-            String childQueryString = TreeFactory.getChildQueryString(parent);
-            Query  getNodeInfoList  = session.createQuery(childQueryString);
-            getNodeInfoList.setParameter("PARENT", parent);
-            List list = getNodeInfoList.list();
-            List<Object[]> nodeInfoList = list;
+        	Session session = getNewSession(parent);
+        	try
+        	{
+        		String childQueryString = TreeFactory.getChildQueryString(parent);
+        		Query  getNodeInfoList  = session.createQuery(childQueryString);
+        		getNodeInfoList.setParameter("PARENT", parent);
+        		List list = getNodeInfoList.list();
+        		List<Object[]> nodeInfoList = list;
             
-            treeNodes = new Vector<TreeNode>();
-            for (Object[] nodeInfo: nodeInfoList)
-            {
-                treeNodes.add(createNode(nodeInfo,parent));
-            }
+        		for (Object[] nodeInfo: nodeInfoList)
+        		{
+        			treeNodes.add(createNode(nodeInfo,parent));
+        		}
             
-        } catch (Exception ex)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HibernateTreeDataServiceImpl.class, ex);
-            log.error(ex);
+        	} catch (Exception ex)
+        	{
+        		edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+        		edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HibernateTreeDataServiceImpl.class, ex);
+        		log.error(ex);
             
-        } finally
-        {
-            session.close();
+        	} finally
+        	{
+        		session.close();
+        	}
         }
         return treeNodes;
     }
