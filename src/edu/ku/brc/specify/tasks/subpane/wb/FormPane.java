@@ -1200,7 +1200,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
 		String toolTip = null;
 		LineBorder border = null;
 		WorkbenchDataItem wbCell = wbRow.getItems().get(ip.getWbtmi().getViewOrder());
-		if (wbCell != null && wbCell.getValidationStatus() == WorkbenchDataItem.VAL_ERROR)
+		if (wbCell != null && wbCell.getEditorValidationStatus() == WorkbenchDataItem.VAL_ERROR)
 		{
 			toolTip = wbCell.getStatusText();
 			border = new LineBorder(Color.RED);

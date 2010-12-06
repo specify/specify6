@@ -247,6 +247,9 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected JButton               exportExcelCsvBtn      = null;
     protected JButton               uploadDatasetBtn       = null;
     protected JCheckBox				autoValidateChk		   = null;
+    protected JButton			    prevInvalidCellBtn     = null;
+    protected JButton				nextInvalidCellBtn	   = null;
+    protected JLabel				invalidCellCountLbl    = null;
     
     protected DropDownButtonStateful ssFormSwitcher        = null;  
     protected List<JButton>         selectionSensitiveButtons  = new Vector<JButton>();
@@ -285,6 +288,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected static Uploader       datasetUploader            = null; 
     protected WorkbenchValidator    workbenchValidator         = null;
     protected boolean 		        doIncrementalValidation    = AppPreferences.getLocalPrefs().getBoolean(wbAutoValidatePrefName, true);
+    protected AtomicInteger			invalidCellCount		   = new AtomicInteger(0);
     
     //Single thread executor to ensure that rows are not validated concurrently as a result of batch operations
     //protected final ExecutorService validationExecutor		   = Executors.newSingleThreadExecutor(Executors.defaultThreadFactory());
@@ -529,6 +533,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         if (isReadOnly)
         {
             autoValidateChk = null;
+            prevInvalidCellBtn = null;
+            nextInvalidCellBtn = null;
+            invalidCellCountLbl = null;
         }
         else
         {
@@ -547,6 +554,9 @@ public class WorkbenchPaneSS extends BaseSubPane
 							buildValidator();
 						}
 						validateAll(null);
+						prevInvalidCellBtn.setVisible(true);
+						nextInvalidCellBtn.setVisible(true);
+						invalidCellCountLbl.setVisible(true);
 						AppPreferences.getLocalPrefs().putBoolean(wbAutoValidatePrefName, doIncrementalValidation);
 					} else
 					{
@@ -557,6 +567,27 @@ public class WorkbenchPaneSS extends BaseSubPane
 				}
             	
             });
+            Action PrevErrAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_F5, "PrevErr", new AbstractAction()
+            {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    goToInvalidCell(false);
+                }
+            });
+            prevInvalidCellBtn = UIHelper.createIconBtn("DelRec", "WB_PREV_ERROR", PrevErrAction);
+            Action NextErrAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_F6, "NextErr", new AbstractAction()
+            {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    goToInvalidCell(true);
+                }
+            });
+            nextInvalidCellBtn = UIHelper.createIconBtn("DelRec", "WB_NEXT_ERROR", NextErrAction);
+            invalidCellCountLbl = UIHelper.createLabel(String.format(UIRegistry.getResourceString("WB_INVALID_CELL_COUNT"), 0));
+            
+			prevInvalidCellBtn.setVisible(doIncrementalValidation);
+			nextInvalidCellBtn.setVisible(doIncrementalValidation);
+			invalidCellCountLbl.setVisible(doIncrementalValidation);
         }
 
         if (isReadOnly)
@@ -875,7 +906,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         CellConstraints cc = new CellConstraints();
 
         JComponent[] compsArray = {addRowsBtn, deleteRowsBtn, clearCellsBtn, showMapBtn, exportKmlBtn, 
-                                   geoRefToolBtn, convertGeoRefFormatBtn, exportExcelCsvBtn, uploadDatasetBtn, autoValidateChk};
+                                   geoRefToolBtn, convertGeoRefFormatBtn, exportExcelCsvBtn, uploadDatasetBtn, autoValidateChk,
+                                   prevInvalidCellBtn, invalidCellCountLbl, nextInvalidCellBtn};
         Vector<JComponent> availableComps = new Vector<JComponent>(compsArray.length + workBenchPluginBtns.size());
         for (JComponent c : compsArray)
         {
@@ -1097,6 +1129,20 @@ public class WorkbenchPaneSS extends BaseSubPane
         return isOK;
     }
     
+    
+    /**
+     * @param isNext
+     */
+    protected void goToInvalidCell(boolean isNext)
+    {
+    	if (!isNext)
+    	{
+    		//System.out.println("goToInvalidCell prev");
+    	}
+    	
+    		//System.out.println("goToInvalidCell next");
+    }
+    
     /**
      * Update enaabled state of buttons effected by the spreadsheet selection.
      */
@@ -1119,6 +1165,10 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             resultsetController.getNewRecBtn().setEnabled(enable && !isReadOnly);
         }
+        
+        prevInvalidCellBtn.setEnabled(invalidCellCount.get() > 0);
+        nextInvalidCellBtn.setEnabled(invalidCellCount.get() > 0);
+        invalidCellCountLbl.setText(String.format(UIRegistry.getResourceString("WB_INVALID_CELL_COUNT"), invalidCellCount.get()));
     }
     
     /**
@@ -1300,7 +1350,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         //Or Just wait until validation is done.
         while (validationWorkerQueue.peek() != null) 
         {
-        	System.out.println("waiting for validation workers to finish");
+        	//System.out.println("waiting for validation workers to finish");
         	//sit and wait)
         }
         	
@@ -3589,6 +3639,9 @@ public class WorkbenchPaneSS extends BaseSubPane
 			doIncrementalValidation = false;
 			workbenchValidator = null;
 			model.fireDataChanged();
+			prevInvalidCellBtn.setVisible(false);
+			nextInvalidCellBtn.setVisible(false);
+			invalidCellCountLbl.setVisible(false);
 			AppPreferences.getLocalPrefs().putBoolean(wbAutoValidatePrefName, doIncrementalValidation);
 		} finally
 		{
@@ -3940,17 +3993,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected void updateRowValidationStatus(int editRow, int editCol)
     {
 		WorkbenchRow wbRow = workbench.getRow(editRow);
-		for (WorkbenchDataItem wbItem : wbRow.getWorkbenchDataItems())
-		{
-			//WorkbenchDataItems can be updated by GridCellEditor or by background validation initiated at load time or after find/replace ops			
-			synchronized(wbItem)
-			{
-				wbItem.setStatusText(null);
-				wbItem.setValidationStatus(WorkbenchDataItem.VAL_OK);
-				wbItem.setRequired(false);
-			}
-		}
 		List<UploadTableInvalidValue> issues = workbenchValidator.endCellEdit(editRow, editCol);
+		Set<WorkbenchDataItem> invalidItems = new HashSet<WorkbenchDataItem>();
 		if (issues != null && issues.size() > 0)
 		{
 			for (UploadTableInvalidValue issue : issues)
@@ -3965,17 +4009,42 @@ public class WorkbenchPaneSS extends BaseSubPane
 					}
 					if (wbItem != null)
 					{
+						invalidItems.add(wbItem);
 						//WorkbenchDataItems can be updated by GridCellEditor or by background validation initiated at load time or after find/replace ops			
 						synchronized(wbItem)
 						{
 							wbItem.setStatusText(issue.getDescription());
-							wbItem.setValidationStatus(WorkbenchDataItem.VAL_ERROR);
+							if (wbItem.getEditorValidationStatus() != WorkbenchDataItem.VAL_ERROR)
+							{
+								wbItem.setEditorValidationStatus(WorkbenchDataItem.VAL_ERROR);
+								invalidCellCount.getAndIncrement();
+								//System.out.println("error " + invalidCellCount.get());
+							}
 						}
 					}
 					else
 					{
 						log.error("couldn't find workbench item for col " + col);
 					}
+				}
+			}
+		} 			
+		for (WorkbenchDataItem wbItem : wbRow.getWorkbenchDataItems())
+		{
+			if (!invalidItems.contains(wbItem))
+			{
+				//WorkbenchDataItems can be updated by GridCellEditor or by background validation initiated at load time or after find/replace ops			
+				synchronized(wbItem)
+				{
+					wbItem.setStatusText(null);
+					if (wbItem.getEditorValidationStatus() != WorkbenchDataItem.VAL_OK && wbItem.getEditorValidationStatus() != WorkbenchDataItem.VAL_NONE)
+					{
+						invalidCellCount.getAndDecrement();
+						//System.out.println(invalidCellCount.get());
+					}
+					wbItem.setEditorValidationStatus(WorkbenchDataItem.VAL_OK);
+					//XXX wtf is the setRequired below about???
+					//wbItem.setRequired(false); 
 				}
 			}
 		}
@@ -4346,7 +4415,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         	init(combo, caption, length, gcSaveBtn);
         }
         
-        protected void init(final JComponent comp, final String caption, final int length, @SuppressWarnings("unused") final JButton gcSaveBtn)
+        protected void init(final JComponent comp, final String caption, final int length, final JButton gcSaveBtn)
         {
            	this.uiComponent = comp;
             this.length    = length;
@@ -4642,7 +4711,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 					// but probably not necessary to synchronize here?
 					synchronized (wbCell)
 					{
-						if (wbCell.getValidationStatus() == WorkbenchDataItem.VAL_ERROR)
+						if (wbCell.getEditorValidationStatus() == WorkbenchDataItem.VAL_ERROR)
 						{
 							toolTip = wbCell.getStatusText();
 							border = new LineBorder(Color.RED);
@@ -4894,5 +4963,45 @@ public class WorkbenchPaneSS extends BaseSubPane
 		return doIncrementalValidation;
 	}
 
+//	private class InvalidCellInfo
+//	{
+//		protected final int row;
+//		protected final int col;
+//		protected final Object info;
+//		/**
+//		 * @param row
+//		 * @param col
+//		 */
+//		public InvalidCellInfo(int row, int col)
+//		{
+//			super();
+//			this.row = row;
+//			this.col = col;
+//			this.info = null;
+//		}
+//		/**
+//		 * @return the row
+//		 */
+//		public int getRow() 
+//		{
+//			return row;
+//		}
+//		/**
+//		 * @return the col
+//		 */
+//		public int getCol() 
+//		{
+//			return col;
+//		}
+//		/**
+//		 * @return the info
+//		 */
+//		public Object getInfo() 
+//		{
+//			return info;
+//		}
+//		
+//		
+//	}
 }
 

@@ -65,6 +65,9 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     //Transient
     protected String	   statusText = null;
     protected boolean	   required = false;
+    protected int		   editorValidationStatus = VAL_OK;	//the validation status is actually relative to factors
+    														//outside the workbench such as picklist contents. It
+    														//is easier to work with when transient
     
     // Constructors
 
@@ -197,7 +200,23 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
         this.validationStatus = validationStatus;
     }
     
+    /**
+     * @return transient validation status
+     */
+    @Transient
+    public int getEditorValidationStatus()
+    {
+    	return editorValidationStatus;
+    }
 
+    /**
+     * @param editorValidationStatus the transient validation status to set
+     */
+    public void setEditorValidationStatus(int editorValidationStatus)
+    {
+    	this.editorValidationStatus = editorValidationStatus;
+    }
+    
     /**
      * 
      */
