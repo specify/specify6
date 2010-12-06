@@ -197,6 +197,10 @@ public class TaskSemaphoreMgr
             {
                 UIRegistry.showLocalizedMsg("TIMEOUT_ERR");
                 
+            } catch (com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException ex)
+            {
+                UIRegistry.showLocalizedMsg("TIMEOUT_ERR");
+                
             } catch (Exception ex)
             {
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();

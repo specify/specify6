@@ -810,23 +810,29 @@ public class BasicSQLUtils
                 }
     
                 tries++;
-                stmt = connection.createStatement();
-                ResultSet         rs       = stmt.executeQuery(sql);
-                ResultSetMetaData metaData = rs.getMetaData();
-                int               numCols  = metaData.getColumnCount();
-                
-                if (numCols > 1)
+                if (connection != null)
                 {
-                    log.warn("Query has "+numCols+" columns and should only have one.");
-                }
-
-                while (rs.next())
+                    stmt = connection.createStatement();
+                    ResultSet         rs       = stmt.executeQuery(sql);
+                    ResultSetMetaData metaData = rs.getMetaData();
+                    int               numCols  = metaData.getColumnCount();
+                    
+                    if (numCols > 1)
+                    {
+                        log.warn("Query has "+numCols+" columns and should only have one.");
+                    }
+    
+                    while (rs.next())
+                    {
+                        list.add(rs.getObject(1));
+                    }
+                    rs.close();
+                    
+                    isStale = false;
+                } else
                 {
-                    list.add(rs.getObject(1));
+                    isStale = true;
                 }
-                rs.close();
-                
-                isStale = false;
     
             } catch (CommunicationsException ex)
             {

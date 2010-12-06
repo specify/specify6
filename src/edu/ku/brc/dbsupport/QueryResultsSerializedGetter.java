@@ -84,10 +84,16 @@ public class QueryResultsSerializedGetter implements QRCProcessorListener
      */
     public void add(final List<QueryResultsContainerIFace> qrcsArg)
     {
-        this.qrcs.addAll(qrcsArg);
+        if (qrcsArg != null)
+        {
+            this.qrcs.addAll(qrcsArg);
+        }
         
         currentProcessingIndex = 0;
-        startContainer(qrcs.get(currentProcessingIndex));
+        if (qrcs.size() > 0)
+        {
+            startContainer(qrcs.get(currentProcessingIndex));
+        }
     }
    
     /**

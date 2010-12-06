@@ -1607,6 +1607,19 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
                 if (fndLocale == null)
                 {
+                    if (engLocale != null)
+                    {
+                        fndLocale = engLocale;
+                        
+                    } else if (locales != null && locales.size() > 0)
+                    {
+                        fndLocale = locales.get(0);
+                    } else
+                    {
+                        currentStatus = CONTEXT_STATUS.Error;
+                        return currentStatus;
+                    }
+                    
                     fndLocale = engLocale != null ? engLocale : locales.get(0);
                     SchemaI18NService.setCurrentLocale(fndLocale);
                     Locale.setDefault(fndLocale);

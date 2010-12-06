@@ -22,6 +22,7 @@ package edu.ku.brc.af.ui.forms.formatters;
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.security.AccessController;
 import java.util.Calendar;
 import java.util.Collection;
@@ -126,11 +127,15 @@ public class DataObjFieldFormatMgr
     {
         localFileName = "backstop"+File.separator+"dataobj_formatters.xml";
         
-        Object[] initTypeData = {"string", String.class, 
-                                 "int",     Integer.class, 
-                                 "float",   Float.class, 
-                                 "double",  Double.class, 
-                                 "boolean", Boolean.class};
+        Object[] initTypeData = {"string",     String.class, 
+                                 "int",        Integer.class, 
+                                 "long",       Long.class, 
+                                 "float",      Float.class, 
+                                 "double",     Double.class, 
+                                 "boolean",    Boolean.class,
+                                 "bigdecimal", BigDecimal.class,
+                                 "short",      Short.class,
+                                 "byte",       Byte.class};
         for (int i=0;i<initTypeData.length;i++)
         {
             typeHash.put((String)initTypeData[i], (Class<?>)initTypeData[i+1]);

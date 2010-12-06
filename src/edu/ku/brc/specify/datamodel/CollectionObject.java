@@ -1194,6 +1194,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
             prep.forceLoad();
         }
         collectionObjectAttachments.size();
+        collectionObjectCitations.size();
         projects.size();
         if (collection != null)
         {
@@ -1201,7 +1202,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         }
         
         CollectingEvent ce = getCollectingEvent();
-        if (ce != null && AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
+        //if (ce != null && AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
         {
             ce.forceLoad();
         }
