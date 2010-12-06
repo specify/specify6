@@ -213,6 +213,60 @@
     <field table="CollectionObjectAttribute" name="colObjAttributeYesNo6" actualname="YesNo6"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeYesNo7" actualname="YesNo7"/>
 
+ 	<!-- DNASequence -->
+	  <field table="dnasequence" name="ambiguousResidues1" actualname="ambiguousResidues" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="boldBarcodeId1" actualname="boldBarcodeId" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="boldLastUpdateDate1" actualname="boldLastUpdateDate" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="boldSampleId1" actualname="boldSampleId" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="boldTranslationMatrix1" actualname="boldTranslationMatrix" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="collectionMemberId" actualname="collectionMemberId" onetomanysequence="0" relationshipname="collectionObject" />
+      <field table="dnasequence" name="compA1" actualname="compA" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="compC1" actualname="compC" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="compG1" actualname="compG" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="compT1" actualname="compT" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="genbankAccessionNumber1" actualname="genbankAccessionNumber" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="geneSequence1" actualname="geneSequence" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="moleculeType1" actualname="moleculeType" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="number11" actualname="number1" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="number21" actualname="number2" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="number31" actualname="number3" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="remarks1" actualname="remarks" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="targetMarker1" actualname="targetMarker" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="text11" actualname="text1" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="text21" actualname="text2" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="text31" actualname="text3" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="totalResidues1" actualname="totalResidues" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="yesNo11" actualname="yesNo1" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="yesNo21" actualname="yesNo2" onetomanysequence="0" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="yesNo31" actualname="yesNo3" onetomanysequence="0" relationshipname="collectionObject"/>
+	
+	  <field table="dnasequence" name="ambiguousResidues2" actualname="ambiguousResidues" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="boldBarcodeId2" actualname="boldBarcodeId" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="boldLastUpdateDate2" actualname="boldLastUpdateDate" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="boldSampleId2" actualname="boldSampleId" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="boldTranslationMatrix2" actualname="boldTranslationMatrix" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="collectionMemberId" actualname="collectionMemberId" onetomanysequence="1" relationshipname="collectionObject" />
+      <field table="dnasequence" name="compA2" actualname="compA" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="compC2" actualname="compC" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="compG2" actualname="compG" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="compT2" actualname="compT" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="genbankAccessionNumber2" actualname="genbankAccessionNumber" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="geneSequence2" actualname="geneSequence" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="moleculeType2" actualname="moleculeType" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="number12" actualname="number1" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="number22" actualname="number2" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="number32" actualname="number3" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="remarks2" actualname="remarks" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="targetMarker2" actualname="targetMarker" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="text12" actualname="text1" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="text22" actualname="text2" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="text32" actualname="text3" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="totalResidues2" actualname="totalResidues" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="yesNo12" actualname="yesNo1" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="yesNo22" actualname="yesNo2" onetomanysequence="1" relationshipname="collectionObject"/>
+      <field table="dnasequence" name="yesNo32" actualname="yesNo3" onetomanysequence="1" relationshipname="collectionObject"/>
+ 
+ 
     <!-- determination -->
     
     <field table="Determination" name="determinedDate1" actualname="determinedDate" onetomanysequence="0" relationshipname="collectionObject"/>

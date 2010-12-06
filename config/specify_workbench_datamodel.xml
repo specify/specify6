@@ -267,6 +267,90 @@
     <field column="YesNo 6 (Col. Obj. Attribute)" name="colObjAttributeYesNo6" type="boolean"/>
     <field column="YesNo 7 (Col. Obj. Attribute)" name="colObjAttributeYesNo7" type="boolean"/>
   </table>  
+
+  <table classname="edu.ku.brc.specify.datamodel.DNASequence" table="dnasequence" tableid="121" >
+      <field column="AmbiguousResidues 1" name="ambiguousResidues1" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="BOLDBarcodeID 1" name="boldBarcodeId1" type="java.lang.String" length="32" indexName="BOLDBarcodeIDX" updatable="true" required="false" unique="false" indexed="true" partialDate="false"/>
+      <field column="BOLDLastUpdateDate 1" name="boldLastUpdateDate1" type="java.util.Calendar" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="BOLDSampleID 1" name="boldSampleId1" type="java.lang.String" length="32" indexName="BOLDSampleIDX" updatable="true" required="false" unique="false" indexed="true" partialDate="false"/>
+      <field column="BOLDTranslationMatrix 1" name="boldTranslationMatrix1" type="java.lang.String" length="64" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="CompA 1" name="compA1" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="CompC 1" name="compC1" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="CompG 1" name="compG1" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="compT 1" name="compT1" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="GenBankAccessionNumber 1" name="genbankAccessionNumber1" type="java.lang.String" length="32" indexName="GenBankAccIDX" updatable="true" required="false" unique="false" indexed="true" partialDate="false"/>
+      <field column="GeneSequence 1" name="geneSequence1" type="text" length="2048" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="MoleculeType 1" name="moleculeType1" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="Number1 1" name="number11" type="java.lang.Float" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="Number2 1" name="number21" type="java.lang.Float" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="Number3 1" name="number31" type="java.lang.Float" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="Remarks 1" name="remarks1" type="text" length="4096" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="TargetMarker 1" name="targetMarker1" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="Text1 1" name="text11" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="Text2 1" name="text21" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="Text3 1" name="text31" type="java.lang.String" length="64" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="TotalResidues 1" name="totalResidues1" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="YesNo1 1" name="yesNo11" type="java.lang.Boolean" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="YesNo2 1" name="yesNo21" type="java.lang.Boolean" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="YesNo3 1" name="yesNo31" type="java.lang.Boolean" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+
+      <field column="AmbiguousResidues 2" name="ambiguousResidues2" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="BOLDBarcodeID 2" name="boldBarcodeId2" type="java.lang.String" length="32" indexName="BOLDBarcodeIDX" updatable="true" required="false" unique="false" indexed="true" partialDate="false"/>
+      <field column="BOLDLastUpdateDate 2" name="boldLastUpdateDate2" type="java.util.Calendar" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="BOLDSampleID 2" name="boldSampleId2" type="java.lang.String" length="32" indexName="BOLDSampleIDX" updatable="true" required="false" unique="false" indexed="true" partialDate="false"/>
+      <field column="BOLDTranslationMatrix 2" name="boldTranslationMatrix2" type="java.lang.String" length="64" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="CompA 2" name="compA2" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="CompC 2" name="compC2" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="CompG 2" name="compG2" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="compT 2" name="compT2" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="GenBankAccessionNumber 2" name="genbankAccessionNumber2" type="java.lang.String" length="32" indexName="GenBankAccIDX" updatable="true" required="false" unique="false" indexed="true" partialDate="false"/>
+      <field column="GeneSequence 2" name="geneSequence2" type="text" length="2048" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="MoleculeType 2" name="moleculeType2" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="Number1 2" name="number12" type="java.lang.Float" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="Number2 2" name="number22" type="java.lang.Float" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="Number3 2" name="number32" type="java.lang.Float" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="Remarks 2" name="remarks2" type="text" length="4096" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="TargetMarker 2" name="targetMarker2" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="Text1 2" name="text12" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="Text2 2" name="text22" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="Text3 2" name="text32" type="java.lang.String" length="64" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="TotalResidues 2" name="totalResidues2" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="YesNo1 2" name="yesNo12" type="java.lang.Boolean" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="YesNo2 2" name="yesNo22" type="java.lang.Boolean" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="YesNo3 2" name="yesNo32" type="java.lang.Boolean" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+
+  </table>
+  
+ 
+  <!--
+  <table classname="edu.ku.brc.specify.datamodel.DNASequencingRun" table="dnasequencingrun" tableid="88" searchable="true" abbrv="dnar">
+      <field column="Number1" name="number1" type="java.lang.Float" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="Number2" name="number2" type="java.lang.Float" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="Number3" name="number3" type="java.lang.Float" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="Ordinal" name="ordinal" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="PCRCocktailPrimer" name="pcrCocktailPrimer" type="java.lang.Boolean" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="PCRForwardPrimerCode" name="pcrForwardPrimerCode" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="PCRPrimerName" name="pcrPrimerName" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="PCRPrimerSequence5_3" name="pcrPrimerSequence5_3" type="java.lang.String" length="64" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="PCRReversePrimerCode" name="pcrReversePrimerCode" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="ReadDirection" name="readDirection" type="java.lang.String" length="16" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="Remarks" name="remarks" type="text" length="4096" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="RunDate" name="runDate" type="java.util.Calendar" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="ScoreFileName" name="scoreFileName" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="SequenceCocktailPrimer" name="sequenceCocktailPrimer" type="java.lang.Boolean" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="SequencePrimerCode" name="sequencePrimerCode" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="SequencePrimerName" name="sequencePrimerName" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="SequencePrimerSequence5_3" name="sequencePrimerSequence5_3" type="java.lang.String" length="64" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="Text1" name="text1" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="Text2" name="text2" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="Text3" name="text3" type="java.lang.String" length="64" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="TraceFileName" name="traceFileName" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="YesNo1" name="yesNo1" type="java.lang.Boolean" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="YesNo2" name="yesNo2" type="java.lang.Boolean" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+      <field column="YesNo3" name="yesNo3" type="java.lang.Boolean" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
+  </table>
+  -->
+
   
   <table classname="edu.ku.brc.specify.datamodel.Determination" table="determination" tableid="9" lazy="true" >
     <field column="Determined Date 1"       	name="determinedDate1" type="calendar_date"/>
