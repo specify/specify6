@@ -611,27 +611,30 @@ public class UploadTableTree extends UploadTable
     protected Vector<TreeDefItemIface<?,?,?>> getMissingRequiredDefs() throws UploaderException
     {
         Vector<TreeDefItemIface<?,?,?>> result = new Vector<TreeDefItemIface<?,?,?>>();
-        for (Object obj : getTreeDef().getTreeDefItems())
+        if (child != null)
         {
-            TreeDefItemIface<?,?,?> defItem = (TreeDefItemIface<?,?,?>)obj;
-            if (defItem.getRankId() > rank && defItem.getIsEnforced() != null && defItem.getIsEnforced())
-            {
-                UploadTableTree currLevel = this;
-                while (currLevel != null)
-                {
-                    if (!defItem.getRankId().equals(currLevel.rank))
-                    {
-                        currLevel = currLevel.child;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                if (currLevel == null)
-                {
-                    result.add(defItem);            
-                }
+        	for (Object obj : getTreeDef().getTreeDefItems())
+        	{
+        		TreeDefItemIface<?,?,?> defItem = (TreeDefItemIface<?,?,?>)obj;
+        		if (defItem.getRankId() > rank && defItem.getIsEnforced() != null && defItem.getIsEnforced())
+        		{
+        			UploadTableTree currLevel = this;
+        			while (currLevel != null)
+        			{
+        				if (!defItem.getRankId().equals(currLevel.rank))
+        				{
+        					currLevel = currLevel.child;
+        				}
+        				else
+        				{
+                        	break;
+        				}
+        			}
+        			if (currLevel == null)
+        			{
+        				result.add(defItem);            
+        			}
+        		}
             }
         }
         return result;

@@ -842,6 +842,46 @@ public class Uploader implements ActionListener, KeyListener
     }
 
     /**
+     * @param mapI
+     * @return true if mapI maps a taxonomic level for determination
+     * 
+     */
+    protected boolean isDetTaxLevelMapping(WorkbenchTemplateMappingItem mapI)
+    {
+        //XXX this is pretty dumb. Probably would be better to add original table
+    	//info when UploadMappingDefTree objects are created.
+    	//This code will have to be changed if/when tree levels are created on-the-fly
+    	//from TreeDefinitions.
+    	if (!mapI.getTableName().equalsIgnoreCase("determination"))
+        {
+        	return false;
+        }
+    	String fldName = mapI.getFieldName();
+        return fldName.startsWith("kingdom")
+        	|| fldName.startsWith("phylum") 
+        	|| fldName.startsWith("subphylum") 
+        	|| fldName.startsWith("superclass") 
+        	|| fldName.startsWith("class") 
+        	|| fldName.startsWith("subclass") 
+        	|| fldName.startsWith("infraclass") 
+        	|| fldName.startsWith("superorder") 
+        	|| fldName.startsWith("order") 
+        	|| fldName.startsWith("suborder") 
+        	|| fldName.startsWith("infraorder") 
+        	|| fldName.startsWith("superfamily") 
+        	|| fldName.startsWith("family") 
+        	|| fldName.startsWith("subfamily") 
+        	|| fldName.startsWith("tribe") 
+        	|| fldName.startsWith("subtribe") 
+        	|| fldName.startsWith("genus") 
+        	|| fldName.startsWith("subgenus") 
+        	|| fldName.startsWith("species")
+            || fldName.startsWith("subspecies")
+            || fldName.startsWith("variety") 
+        	|| fldName.startsWith("forma"); 
+    }
+
+    /**
      * Adds extra upload tables. Currently only adds Determination if necessary when Genus/Species
      * are selected. Also should add CollectingEvent if Locality and CollectionObject are present.
      * And others???
@@ -874,13 +914,12 @@ public class Uploader implements ActionListener, KeyListener
             int maxSeq = 0;
             for (WorkbenchTemplateMappingItem mapI : workbenchTemplateMappingItems)
             {
-                String fldName = mapI.getFieldName();
-                if (fldName.startsWith("genus") || fldName.startsWith("species")
-                        || fldName.startsWith("variety") || fldName.startsWith("subspecies"))
+                if (isDetTaxLevelMapping(mapI))
                 {
                     genSpPresent = true;
                     try
                     {
+                        String fldName = mapI.getFieldName();
                         if (Integer.valueOf(fldName.substring(fldName.length() - 1)) > maxSeq)
                         {
                             maxSeq = Integer.valueOf(fldName.substring(fldName.length() - 1));
@@ -4186,7 +4225,8 @@ public class Uploader implements ActionListener, KeyListener
         }
         catch (UploaderException ex)
         {
-            logDebug(ex.getMessage() + " (" + t.getTable().getName() + ", row "
+            //ex.getCause().printStackTrace();
+        	logDebug(ex.getMessage() + " (" + t.getTable().getName() + ", row "
                     + Integer.toString(row) + ")");
             throw ex;
         }
