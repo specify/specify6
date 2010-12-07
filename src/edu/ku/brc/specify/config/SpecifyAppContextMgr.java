@@ -1295,7 +1295,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // work with for this "Context" then we need to go get all the Default View and
             // additional XML Resources.
             
-            FixDBAfterLogin.fixUserPermissions();
+            FixDBAfterLogin.fixUserPermissions(false);
             
             Collection curColl = getClassObject(Collection.class);
             int prevCollectionId =  curColl != null ? curColl.getCollectionId() : -1;

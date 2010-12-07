@@ -265,7 +265,7 @@ public class FixDBAfterLogin
     /**
      * 
      */
-    public static void fixUserPermissions()
+    public static void fixUserPermissions(final boolean doSilently)
     {
         String whereStr  = " WHERE p.GroupSubClass = 'edu.ku.brc.af.auth.specify.principal.UserPrincipal' " +
                            "AND p.userGroupScopeID IS NULL";
@@ -362,7 +362,7 @@ public class FixDBAfterLogin
                 ResultSet rs = selStmt.executeQuery();
                 if (rs.next())
                 {
-                    log.debug(String.format("%s - adding UserPrincipal for Collection %d / %d", usrName, rs.getInt(9), collId));
+                    log.debug(String.format("%s - adding UserPrincipal for Collection  %d / %d", usrName, rs.getInt(9), collId));
                     Integer createdByAgentID  = (Integer)rs.getObject(10);
                     Integer modifiedByAgentID = (Integer)rs.getObject(11);
                     
@@ -416,13 +416,15 @@ public class FixDBAfterLogin
             sb.append(nm);
         }
         
-        
-        JTextArea ta = UIHelper.createTextArea(15, 30);
-        ta.setText(sb.toString());
-        ta.setEditable(false);
-        
-        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), "Permissions Fixed", true, CustomDialog.OK_BTN, UIHelper.createScrollPane(ta));
-        dlg.setOkLabel(UIRegistry.getResourceString("CLOSE"));
-        UIHelper.centerAndShow(dlg);
+        if (!doSilently)
+        {
+            JTextArea ta = UIHelper.createTextArea(15, 30);
+            ta.setText(sb.toString());
+            ta.setEditable(false);
+            
+            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), "Permissions Fixed", true, CustomDialog.OK_BTN, UIHelper.createScrollPane(ta));
+            dlg.setOkLabel(UIRegistry.getResourceString("CLOSE"));
+            UIHelper.centerAndShow(dlg);
+        }
     }
 }

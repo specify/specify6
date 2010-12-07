@@ -212,15 +212,4 @@ public class DisciplinePanel extends BaseSetupPanel
         list.add(new Pair<String, String>(getResourceString("DSP_NAME"), disciplineName.getText()));
         return list;
     }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.config.init.BaseSetupPanel#doingNext()
-     */
-    @Override
-    public void doingNext()
-    {
-        super.doingNext();
-    }
-    
-    
 }
