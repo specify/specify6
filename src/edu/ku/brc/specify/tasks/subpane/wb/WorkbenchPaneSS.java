@@ -52,6 +52,7 @@ import java.util.Comparator;
 import java.util.EventObject;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -574,7 +575,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                     goToInvalidCell(false);
                 }
             });
-            prevInvalidCellBtn = UIHelper.createIconBtn("DelRec", "WB_PREV_ERROR", PrevErrAction);
+            prevInvalidCellBtn = UIHelper.createIconBtn("UpArrow", "WB_PREV_ERROR", PrevErrAction);
             Action NextErrAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_F6, "NextErr", new AbstractAction()
             {
                 public void actionPerformed(ActionEvent ae)
@@ -582,7 +583,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                     goToInvalidCell(true);
                 }
             });
-            nextInvalidCellBtn = UIHelper.createIconBtn("DelRec", "WB_NEXT_ERROR", NextErrAction);
+            nextInvalidCellBtn = UIHelper.createIconBtn("DownArrow", "WB_NEXT_ERROR", NextErrAction);
             invalidCellCountLbl = UIHelper.createLabel(String.format(UIRegistry.getResourceString("WB_INVALID_CELL_COUNT"), 0));
             
 			prevInvalidCellBtn.setVisible(doIncrementalValidation);
@@ -1132,15 +1133,92 @@ public class WorkbenchPaneSS extends BaseSubPane
     
     /**
      * @param isNext
+     * @return
      */
-    protected void goToInvalidCell(boolean isNext)
+    protected Pair<Integer, Integer> getNextInvalidCell(boolean isNext)
     {
     	if (!isNext)
     	{
     		//System.out.println("goToInvalidCell prev");
+    	} else
+    	{
+    		//System.out.println("goToInvalidCell next");
     	}
     	
-    		//System.out.println("goToInvalidCell next");
+    	int startRow = spreadSheet.getSelectedRow() >= 0 ? spreadSheet.getSelectedRow() : 0;
+    	int startCol = spreadSheet.getSelectedColumn() >= 0 ? spreadSheet.getSelectedColumn() : 0;
+    	int increment = isNext ? 1 : -1;
+    	int currentRow = startRow;
+    	int currentCol = startCol + increment;
+    	if (currentCol < 0 || currentCol == spreadSheet.getColumnCount())
+    	{
+    		if (currentCol < 0)
+    		{
+    			currentCol = spreadSheet.getColumnCount() - 1; //XXX what about attachment column?
+    		} else
+    		{
+    			currentCol = 0;
+    		}
+    		currentRow += increment;
+    		if (currentRow < 0)
+    		{
+    			currentRow = spreadSheet.getRowCount() - 1 ;
+    		} else if (currentRow == spreadSheet.getRowCount())
+    		{
+    			currentRow = 0;
+    		}  
+    	}
+    	do
+    	{
+    		Hashtable<Short, WorkbenchDataItem> rowItems = workbench.getRow(currentRow).getItems();
+    		do 
+    		{
+    	    	WorkbenchDataItem di = rowItems.get(new Short((short )currentCol));
+    	    	if (di != null && (di.getEditorValidationStatus() == WorkbenchDataItem.VAL_ERROR 
+    	    			|| di.getEditorValidationStatus() == WorkbenchDataItem.VAL_ERROR_EDIT))
+    	    	{
+    	    		return new Pair<Integer, Integer>(currentRow, currentCol);
+    	    	}		
+    			currentCol += increment;
+    			
+    		} while (currentCol >= 0 && currentCol < spreadSheet.getColumnCount());
+	    	if (currentCol < 0)
+	    	{
+	    		currentCol = spreadSheet.getColumnCount() - 1; //XXX what about attachment column?
+	    	} else if (currentCol == spreadSheet.getColumnCount())
+	    	{
+	    		currentCol = 0;
+	    	}
+    		
+    		currentRow += increment;
+    		if (currentRow < 0)
+    		{
+    			currentRow = spreadSheet.getRowCount() - 1 ;
+    		} else if (currentRow == spreadSheet.getRowCount())
+    		{
+    			currentRow = 0;
+    		}
+    	} while (currentRow != startRow && currentCol != startCol);
+    	return null;
+    }
+    
+    /**
+     * @param isNext
+     */
+    protected void goToInvalidCell(boolean isNext)
+    {
+    	Pair<Integer, Integer> invalidCell = getNextInvalidCell(isNext);
+    	if (invalidCell != null)
+    	{
+            if (spreadSheet.getCellEditor() != null)
+            {
+                spreadSheet.getCellEditor().stopCellEditing();
+            }
+            spreadSheet.getSelectionModel().setSelectionInterval(invalidCell.getFirst(), invalidCell.getFirst());
+            spreadSheet.getColumnModel().getSelectionModel().setSelectionInterval(invalidCell.getSecond(), invalidCell.getSecond());
+            spreadSheet.scrollCellToVisible(invalidCell.getFirst(), invalidCell.getSecond());
+            //spreadSheet.editCellAt(invalidCell.getFirst(), invalidCell.getSecond());
+    	}
     }
     
     /**
@@ -4481,6 +4559,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             	if (doIncrementalValidation && workbenchValidator != null)
             	{
             		updateRowValidationStatus(spreadSheet.convertRowIndexToModel(editRow), spreadSheet.convertColumnIndexToModel(editCol));
+            		updateBtnUI();
             	}
             	editRow = -1;
             	editCol = -1;
