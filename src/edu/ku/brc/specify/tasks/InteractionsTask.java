@@ -2168,12 +2168,17 @@ public class InteractionsTask extends BaseTask
                                 {
                                     if (!lp.getIsResolved())
                                     {
+                                        // Returned items are always resolved.
+                                        // but resolved items are not always returned.
                                         int qty         = lp.getQuantity();
                                         int qtyResolved = lp.getQuantityResolved();
                                         int qtyReturned = lp.getQuantityReturned();
                                         
-                                        int qtyToBeReturned = qty - (qtyResolved + qtyReturned);
-                                        lriList.add(new LoanReturnInfo(lp, null, qtyToBeReturned, 0, true));
+                                        int qtyToBeReturned = qty - qtyResolved;
+                                        qtyResolved += qtyToBeReturned;
+                                        qtyReturned += qtyToBeReturned;
+                                        
+                                        lriList.add(new LoanReturnInfo(lp, null, qtyToBeReturned, qtyResolved, true));
                                     }
                                 }
                             }
