@@ -343,7 +343,7 @@ public class MasterLoginPanel extends GenericFormPanel
                 for (String dbn : dbNamesForMaster)
                 {
                     int perms = mgr.getPermissions(saUserName, dbn);
-                    if (perms != DBMSUserMgr.PERM_ALL_BASIC)
+                    if ((perms & DBMSUserMgr.PERM_ALL_BASIC) != DBMSUserMgr.PERM_ALL_BASIC)
                     {
                         badDBs.add(dbn);
                     }

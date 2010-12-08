@@ -596,41 +596,37 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
         return PERM_NONE;
     }
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.dbsupport.DBMSUserMgr#getPermissions(java.lang.String, java.lang.String)
+    /**
+     * @param permList
+     * @param sql
+     * @param args
+     * @return
      */
-    @Override
-    public int getPermissions(final String username, final String dbName)
+    private int getPerms(int[] permList, final String sql, final String...args)
     {
-        int[]  permList = {PERM_SELECT, PERM_INSERT, PERM_UPDATE, PERM_DELETE, PERM_DELETE, PERM_LOCK_TABLES, };
-        String yes   = "Y";
+        String            yes   = "Y";
+        int               perms = PERM_NONE;
         PreparedStatement pStmt = null;
+        ResultSet         rs    = null;
         try
         {
-            if (connection != null)
+            pStmt = connection.prepareStatement(sql);
+            for (int i=0;i<args.length;i++)
             {
-                int perms = PERM_NONE;
-                pStmt     = connection.prepareStatement("SELECT Select_priv, Insert_priv, Update_priv, Delete_priv, Lock_tables_priv FROM mysql.db WHERE User = ? AND Db = ?");
-                pStmt.setString(1, username);
-                pStmt.setString(2, dbName);
-                ResultSet rs = pStmt.executeQuery();
-                if (rs.next())
+                pStmt.setString(i+1, args[i]);
+            }
+            rs = pStmt.executeQuery();
+            if (rs.next())
+            {
+                for (int i=0;i<permList.length;i++)
                 {
-                    for (int i=0;i<permList.length;i++)
+                    if (rs.getString(1).equals(yes))
                     {
-                        if (rs.getString(1).equals(yes))
-                        {
-                            perms |= permList[i];
-                        }
+                        perms |= permList[i];
                     }
                 }
-                rs.close();
-                log.debug("PERMS: "+perms);
-                    
-                return perms;
             }
-            
-        } catch (Exception ex)
+        } catch (SQLException ex)
         {
             ex.printStackTrace();
             
@@ -639,12 +635,46 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
             try
             {
                 if (pStmt != null) pStmt.close();
+                if (rs != null) rs.close();
             } catch (SQLException ex) {}
         }
+        return perms;
+    }
+    
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DBMSUserMgr#getPermissions(java.lang.String, java.lang.String)
+     */
+    @Override
+    public int getPermissions(final String username, final String dbName)
+    {
+        int[]  permList = {PERM_SELECT, PERM_INSERT, PERM_UPDATE, PERM_DELETE, PERM_LOCK_TABLES, PERM_ALTER_TABLE, PERM_CREATE_TABLE, PERM_DROP_TABLE, };
+        String columns  = "Select_priv, Insert_priv, Update_priv, Delete_priv, Lock_tables_priv, Alter_priv, Create_priv, Drop_priv ";
+        
+        if (connection != null)
+        {
+            String pre = "SELECT " + columns + " ";
+            // Check permissions for the user against the database
+            String sql = pre + " FROM mysql.db WHERE User = ? AND Db = ?";
+            int perms = getPerms(permList, sql, username, dbName);
+            
+            log.debug("PERMS: "+perms);
+            
+            if (perms == PERM_NONE)
+            {
+                // the the global permissions of the user (like 'root')
+                sql = pre + "FROM mysql.user WHERE User = ? AND Host = ?";
+                perms = getPerms(permList, sql, username, hostName);
+            }
+                
+            return perms;
+        }
+            
         return PERM_NONE;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DBMSUserMgr#doesDBHaveTables(java.lang.String)
      */
     @Override
@@ -842,6 +872,19 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
             if ((permissions & PERM_LOCK_TABLES) == PERM_LOCK_TABLES)
             {
                 sb.append("LOCK TABLES,");
+            }
+            
+            if ((permissions & PERM_ALTER_TABLE) == PERM_ALTER_TABLE)
+            {
+                sb.append("ALTER,");
+            }
+            if ((permissions & PERM_CREATE_TABLE) == PERM_CREATE_TABLE)
+            {
+                sb.append("CREATE,");
+            }
+            if ((permissions & PERM_DROP_TABLE) == PERM_DROP_TABLE)
+            {
+                sb.append("DROP,");
             }
             sb.setLength(sb.length()-1); // chomp comma
         }

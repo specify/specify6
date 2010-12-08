@@ -48,18 +48,20 @@ public abstract class DBMSUserMgr
                            error,
                            cancelled }
     
-    public static final int PERM_NONE        = 0;
-    public static final int PERM_SELECT      = 1;
-    public static final int PERM_UPDATE      = 2;
-    public static final int PERM_DELETE      = 4;
-    public static final int PERM_INSERT      = 8;
-    public static final int PERM_LOCK_TABLES = 16;
+    public static final int PERM_NONE         =    0;
+    public static final int PERM_SELECT       =    1;
+    public static final int PERM_UPDATE       =    2;
+    public static final int PERM_DELETE       =    4;
+    public static final int PERM_INSERT       =    8;
+    public static final int PERM_LOCK_TABLES  =   16;
     
-    public static final int PERM_ALL_BASIC   = 31; // Literally 'all' the basic permissions
+    public static final int PERM_ALL_BASIC    =   31; // Literally 'all' the basic permissions
     
-    public static final int PERM_ALTER_TABLE = 64;
+    public static final int PERM_ALTER_TABLE  =   64;
+    public static final int PERM_CREATE_TABLE =  128;
+    public static final int PERM_DROP_TABLE   =  512;
     
-    public static final int PERM_ALL         = 127;
+    public static final int PERM_ALL          = 1023;
     
     private static DBMSUserMgr instance = null;
    
@@ -222,7 +224,7 @@ public abstract class DBMSUserMgr
 	 * @return the mask of bits indicating the permissions setting
 	 */
 	public abstract int getPermissions(String username, String dbName);
-
+	
 	/**
 	 * Sets permissions for a user on a database 
 	 * @param username the user

@@ -33,10 +33,15 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.TreeSet;
 
+import javax.swing.JEditorPane;
 import javax.swing.JTextArea;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -342,9 +347,26 @@ public class FixDBAfterLogin
         PreparedStatement pStmt2  = null;
         try
         {
-            pStmt   = DBConnection.getInstance().getConnection().prepareStatement(insertSQL);
-            pStmt2  = DBConnection.getInstance().getConnection().prepareStatement(insertSQL2);
-            selStmt = DBConnection.getInstance().getConnection().prepareStatement(searchSql);
+            Connection conn = DBConnection.getInstance().getConnection();
+            
+            pStmt   = conn.prepareStatement(insertSQL);
+            pStmt2  = conn.prepareStatement(insertSQL2);
+            selStmt = conn.prepareStatement(searchSql);
+            
+            String adtSQL = "SELECT DISTINCT ca.AgentID FROM specifyuser AS su INNER Join agent AS ca ON su.CreatedByAgentID = ca.AgentID";
+            Integer createdById = BasicSQLUtils.getCount(conn, adtSQL);
+            if (createdById == null)
+            {
+                createdById = BasicSQLUtils.getCount(conn, "SELECT AgentID FROM agent ORDER BY AgentID ASC LIMIT 0,1");
+                if (createdById == null)
+                {
+                    UIRegistry.showError("The permissions could not be fixed because there were not agents.");
+                    AppPreferences.shutdownAllPrefs();
+                    DBConnection.shutdownFinalConnection(true, true);
+                    return;
+                }
+            }
+            
             for (Object[] row : query(sql))
             {
                 String  usrName = (String)row[0];
@@ -354,7 +376,7 @@ public class FixDBAfterLogin
              
                 nameSet.add(usrName);
                 
-                log.debug("prinId: "+prinId);
+                log.debug("usrName: " + usrName + "  prinId: "+prinId);
                 if (sb1.length() > 0) sb1.append(",");
                 sb1.append(prinId.toString());
                 
@@ -375,8 +397,8 @@ public class FixDBAfterLogin
                     pStmt.setInt(7,    80);                                                   // Priority
                     pStmt.setString(8, rs.getString(8));                                      // Remarks
                     pStmt.setInt(9,    rs.getInt(9));                                         // userGroupScopeID
-                    pStmt.setInt(10,   createdByAgentID != null ? createdByAgentID : 1);
-                    pStmt.setInt(11,   modifiedByAgentID != null ? modifiedByAgentID : 1);
+                    pStmt.setInt(10,   createdByAgentID != null ? createdByAgentID : createdById);
+                    pStmt.setInt(11,   modifiedByAgentID != null ? modifiedByAgentID : createdById);
                     
                     // Create UserPrincipal
                     pStmt.executeUpdate();
@@ -422,7 +444,16 @@ public class FixDBAfterLogin
             ta.setText(sb.toString());
             ta.setEditable(false);
             
-            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), "Permissions Fixed", true, CustomDialog.OK_BTN, UIHelper.createScrollPane(ta));
+            JEditorPane htmlPane   = new JEditorPane("text/html",  UIRegistry.getResourceString("FDBAL_PERMFIXEDDESC")); //$NON-NLS-1$
+            htmlPane.setOpaque(false);
+            
+            CellConstraints cc = new CellConstraints();
+            PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p:g,8px,f:p:g"));
+            pb.add(htmlPane, cc.xy(1, 1));
+            pb.add(UIHelper.createScrollPane(ta), cc.xy(1, 3));
+            pb.setDefaultDialogBorder();
+            
+            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), UIRegistry.getResourceString("FDBAL_PERMFIXED"), true, CustomDialog.OK_BTN, pb.getPanel());
             dlg.setOkLabel(UIRegistry.getResourceString("CLOSE"));
             UIHelper.centerAndShow(dlg);
         }
