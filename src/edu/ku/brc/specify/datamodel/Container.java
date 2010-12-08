@@ -74,7 +74,7 @@ public class Container extends CollectionMember implements java.io.Serializable,
 
     // Constructors
 
-    /** default constructor */
+    /** default " */
     public Container() 
     {
         //
@@ -84,6 +84,7 @@ public class Container extends CollectionMember implements java.io.Serializable,
     public Container(Integer containerId) 
     {
         this.containerId = containerId;
+        System.err.println("2constructor "+hashCode());
     }
 
     // Initializer
@@ -168,6 +169,7 @@ public class Container extends CollectionMember implements java.io.Serializable,
 
     public void setName(String name) 
     {
+        System.err.println(hashCode()+" SetName["+name+"]");
         this.name = name;
     }
 

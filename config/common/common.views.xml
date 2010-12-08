@@ -228,6 +228,17 @@
               </altviews>      
          </view>
         
+         <view name="CollectionObjectSubTable"
+              class="edu.ku.brc.specify.datamodel.CollectionObject"
+              usedefbusrule="false"
+              resourcelabels="false">
+              <desc><![CDATA[The Collection Object Subform for Accessions.]]></desc>
+              <altviews>
+                  <altview name="COS Table Edit" viewdef="CollectionObjectSub Table" mode="edit"/>
+                  <altview name="COS Table View" viewdef="CollectionObjectSub Table" mode="view"/>
+              </altviews>      
+         </view>
+        
         <view name="CommonNameTx"
             class="edu.ku.brc.specify.datamodel.CommonNameTx"
             resourcelabels="false">
@@ -285,12 +296,25 @@
         
         <view name="ContainerBrief"
             class="edu.ku.brc.specify.datamodel.Container"  
-             isinternal="false"
+             isinternal="true"
             resourcelabels="false">
             <desc><![CDATA[Conservation Description.]]></desc>
             <altviews>
                 <altview name="ContainerBrief View" viewdef="ContainerBrief" mode="view" default="true"/>
                 <altview name="ContainerBrief Edit" viewdef="ContainerBrief" mode="edit" />
+                
+            </altviews>
+        </view>
+        
+        <view name="ContainerBriefTable"
+            class="edu.ku.brc.specify.datamodel.Container"  
+             isinternal="true"
+            resourcelabels="false">
+            <desc><![CDATA[Conservation Description.]]></desc>
+            <altviews>
+                <altview name="ContainerBrief Table View" viewdef="ContainerBrief Table" mode="view" default="true"/>
+                <altview name="ContainerBrief Table Edit" viewdef="ContainerBrief Table" mode="edit" />
+                
             </altviews>
         </view>
         
@@ -1814,7 +1838,6 @@
             <columnDef>125px,2px,p,8px,p,2px,p,f:p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
-                
                 <row> 
                     <cell type="label" labelfor="nm"/>
                     <cell type="field" id="nm" name="name" uitype="text" />
@@ -1824,13 +1847,35 @@
                     <cell type="field" id="typ" name="type" uitype="combobox" />
                 </row>
                 <row>
+                    <cell type="label" labelfor="parent"/>
+                    <cell type="field" id="parent" name="parent" uitype="querycbx" initialize="name=Container;displaydlg=ContainerDisplay;searchdlg=ContainerSearch;" colspan="6"/>                
+                </row>
+                <row>
+                    <cell type="label" labelfor="collectionObjects"/>
+                    <cell type="field" id="collectionObjects" name="collectionObjects" uitype="querycbx" initialize="name=CollectionObject;displaydlg=CollectionObjectDisplay;searchdlgCollectionObjectSearch;single=true;" colspan="6"/>                
+                </row>
+                <row>
                     <cell type="label" labelfor="desc"/>
                     <cell type="field" id="desc" name="description" uitype="textareabrief" rows="2" colspan="6"/>                   
                 </row>
                 <row>
-                    <cell type="field" id="cop" uitype="plugin" name="this" initialize="name=ContainerList;"  colspan="8"/>
+                    <cell type="subview" id="collectionObjectKids" name="collectionObjectKids" viewname="CollectionObjectSubTable" initialize="addsearch=true" defaulttype="table" colspan="8"/>               
+                </row>
+                <row>
+                    <cell type="subview" id="children" name="children" viewname="ContainerBriefTable" initialize="addsearch=true" defaulttype="table" colspan="8"/>               
                 </row>
             </rows>
+        </viewdef>
+        
+        <viewdef
+            type="formtable"
+            name="ContainerBrief Table"
+            class="edu.ku.brc.specify.datamodel.Container"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Container grid view for Container form for children.]]></desc>
+            <definition>ContainerBrief</definition>
         </viewdef>
         
         <viewdef
@@ -1846,7 +1891,6 @@
             <columnDef>125px,2px,p,8px,p,2px,p,f:p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
-                
                 <row> 
                     <cell type="label" labelfor="nm"/>
                     <cell type="field" id="nm" name="name" uitype="text" />

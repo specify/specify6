@@ -2635,9 +2635,12 @@ public final class UIHelper
      */
     public static void removeFocusListeners(final Component comp)
     {
-        for (FocusListener l : comp.getFocusListeners())
+        if (comp != null)
         {
-            comp.removeFocusListener(l);
+            for (FocusListener l : comp.getFocusListeners())
+            {
+                comp.removeFocusListener(l);
+            }
         }
     }
 
@@ -2647,9 +2650,12 @@ public final class UIHelper
      */
     public static void removeListSelectionListeners(final JList comp)
     {
-        for (ListSelectionListener l : comp.getListSelectionListeners())
+        if (comp != null)
         {
-            comp.removeListSelectionListener(l);
+            for (ListSelectionListener l : comp.getListSelectionListeners())
+            {
+                comp.removeListSelectionListener(l);
+            }
         }
     }
     
@@ -2659,9 +2665,12 @@ public final class UIHelper
      */
     public static void removeKeyListeners(final Component comp)
     {
-        for (KeyListener l : comp.getKeyListeners())
+        if (comp != null)
         {
-            comp.removeKeyListener(l);
+            for (KeyListener l : comp.getKeyListeners())
+            {
+                comp.removeKeyListener(l);
+            }
         }
     }
 
@@ -2672,13 +2681,16 @@ public final class UIHelper
      */
     public static void removeMouseListeners(final Component c)
     {
-        for (MouseListener l : c.getMouseListeners())
+        if (c != null)
         {
-            c.removeMouseListener(l);
-        }
-        for (MouseMotionListener l : c.getMouseMotionListeners())
-        {
-            c.removeMouseMotionListener(l);
+            for (MouseListener l : c.getMouseListeners())
+            {
+                c.removeMouseListener(l);
+            }
+            for (MouseMotionListener l : c.getMouseMotionListeners())
+            {
+                c.removeMouseMotionListener(l);
+            }
         }
     }
     

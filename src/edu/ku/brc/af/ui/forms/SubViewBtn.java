@@ -228,6 +228,8 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
            log.error(ex);
            FormDevHelper.showFormDevError(ex);
         }
+        
+        setOpaque(false);
     }
     
     /**

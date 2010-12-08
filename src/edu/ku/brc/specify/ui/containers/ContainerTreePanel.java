@@ -46,7 +46,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Stack;
 import java.util.Vector;
 
 import javax.print.attribute.HashPrintRequestAttributeSet;
@@ -63,6 +62,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -78,12 +79,16 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayPanel;
 import edu.ku.brc.af.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.validation.ValComboBox;
+import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -92,7 +97,11 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Container;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.EditDeleteAddVertPanel;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
@@ -108,20 +117,21 @@ import edu.ku.brc.ui.dnd.GhostGlassPane;
  * Oct 3, 2010
  *
  */
-public class ContainerTreePanel extends JPanel
+public class ContainerTreePanel extends JPanel implements CommandListener
 {
-    private static final String GETSQL = "SELECT cn.Name, cn.Type, co.CollectionObjectID, co.CatalogNumber, pcn.ContainerID " +
-                                         "FROM container cn LEFT OUTER JOIN collectionobject co ON cn.ContainerID = co.CollectingEventID " +
-                                         "LEFT JOIN container pcn ON cn.ParentID = pcn.ContainerID " +
+    private static final String GETSQL = "SELECT pcn.ContainerID FROM container cn LEFT JOIN container pcn ON cn.ParentID = pcn.ContainerID " +
                                          "WHERE cn.ContainerID = ?";
     
-    protected final static Color      bgColor      = new Color(245, 245, 245);
+    protected final static Color      bgColor      = Color.WHITE;//new Color(245, 245, 245, 255);
     protected final static int        ROW_HEIGHT   = 26;
     protected final static Color      bannerColor  = new Color(30, 144, 255);    // XXX PREF
     protected Component               header = null;
     
     protected Container               rootContainer;
     protected CollectionObject        rootColObj;
+    
+    protected Container               currContainer;
+    protected CollectionObject        currColObj;
     
     protected HashSet<Integer>        colObjIdHash    = new HashSet<Integer>();
     protected HashSet<Integer>        containerIdHash = new HashSet<Integer>();
@@ -130,9 +140,7 @@ public class ContainerTreePanel extends JPanel
     protected DefaultTreeModel        model;
     protected JScrollPane             scrollPane;
     
-    protected JTree                   treeParent;
-    protected DefaultTreeModel        modelParent;
-    protected JScrollPane             scrollPaneParent;
+    protected ViewBasedDisplayPanel   containerPanel;
     
     protected boolean                 isViewMode     = false;
     protected EditDeleteAddVertPanel  edaColObjPanel;
@@ -149,17 +157,22 @@ public class ContainerTreePanel extends JPanel
     
     
     protected FormViewObj             formViewObj     = null;
+    protected ChangeListener          changeListener  = null;
     
     /**
      * 
      */
-    public ContainerTreePanel(final boolean isViewModeArg,
+    public ContainerTreePanel(final ChangeListener changeListener,
+                              final boolean isViewModeArg,
                               final Container rootCon,
                               final CollectionObject rootCO)
     {
-        this.isViewMode    = isViewModeArg;
-        this.rootContainer = rootCon;
-        this.rootColObj    = rootCO;
+        this.changeListener = changeListener;
+        this.isViewMode     = isViewModeArg;
+        this.rootContainer  = rootCon;
+        this.rootColObj     = rootCO;
+        
+        CommandDispatcher.register("DATA_ENTRY", this);
         
         createUI();
     }
@@ -177,7 +190,6 @@ public class ContainerTreePanel extends JPanel
         set(rootContainer,  rootColObj);
         
         scrollPane       = UIHelper.createScrollPane(tree, true);
-        scrollPaneParent = UIHelper.createScrollPane(treeParent, true);
         
         treeRenderer = new ContainerTreeRenderer(null, !isViewMode, isViewMode);
         treeRenderer.setEditable(true);
@@ -213,8 +225,7 @@ public class ContainerTreePanel extends JPanel
         colObjIcon.setEnabled(false);
         containerIcon.setEnabled(false);
         
-        JLabel leftLbl  = UIHelper.createI18NLabel("Container Hierarchy", SwingConstants.CENTER);
-        JLabel rightLbl = UIHelper.createI18NLabel("Parent Hierarchy",    SwingConstants.CENTER);
+        containerPanel = new ViewBasedDisplayPanel(null, "ContainerBrief", Container.class.getName(), true, MultiView.NO_OPTIONS);
         
         // Right Vertical Control Panel
         PanelBuilder rpb = null;
@@ -240,19 +251,16 @@ public class ContainerTreePanel extends JPanel
         }
         
         // Main Layout
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,8px,l:p,20px,f:p:g", "p,4px,f:p:g"), this);
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,8px,l:p", "f:p:g,10px,p,2px,p"), this);
         
-        int x = 1;
-        pb.add(leftLbl,          cc.xy(x,1));
-        //pb.add(lhPB.getPanel(),  cc.xy(x,3));
-        pb.add(scrollPane,       cc.xy(x,3)); x += 2;
+        pb.add(scrollPane,       cc.xy(1,1));
         if (rpb != null)
         {
-            pb.add(rpb.getPanel(),   cc.xy(x,3)); 
+            pb.add(rpb.getPanel(),   cc.xy(3,1)); 
         }
-        x += 2;
-        pb.add(rightLbl,         cc.xy(x,1));
-        pb.add(scrollPaneParent, cc.xy(x,3)); x += 2;
+        
+        pb.addSeparator("Container", cc.xyw(1,3,3));
+        pb.add(containerPanel,       cc.xyw(1,5,3));
         
         pb.setDefaultDialogBorder();
         
@@ -262,6 +270,25 @@ public class ContainerTreePanel extends JPanel
             public void valueChanged(TreeSelectionEvent e)
             {
                 updateBtnUI();
+                
+                currContainer = null;
+                currColObj    = null;
+                
+                DefaultMutableTreeNode node = getSelectedTreeNode();
+                if (node != null)
+                {
+                    if (node.getUserObject() instanceof Container)
+                    {
+                        currContainer = (Container)node.getUserObject();
+                        if (containerPanel != null)
+                        {
+                            containerPanel.getMultiView().setData(currContainer);
+                        }
+                    } else if (node.getUserObject() instanceof  CollectionObject)
+                    {
+                        currColObj = (CollectionObject)node.getUserObject();
+                    }
+                }
             }
         });
         
@@ -288,6 +315,56 @@ public class ContainerTreePanel extends JPanel
                 addContainer(true);
             }
         });
+        
+        FormViewObj fvo = containerPanel.getMultiView().getCurrentViewAsFormViewObj();
+        if (fvo != null)
+        {
+            Component comp = fvo.getCompById("nm");
+            if (comp instanceof ValTextField)
+            {
+                final ValTextField nameTF = fvo.getCompById("nm");
+                nameTF.getDocument().addDocumentListener(new DocumentAdaptor() {
+                    @Override
+                    protected void changed(DocumentEvent e)
+                    {
+                        nameFieldChanged(nameTF.getText());
+                        if (changeListener != null) changeListener.stateChanged(null);
+                    }
+                });
+                
+                final ValComboBox typeCBX = fvo.getCompById("typ");
+                typeCBX.getComboBox().addActionListener(new ActionListener()
+                {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        PickListItemIFace pli = (PickListItemIFace)typeCBX.getComboBox().getSelectedItem();
+                        typeChanged(pli == null ? -1 : Integer.parseInt(pli.getValue()));
+                        if (changeListener != null) changeListener.stateChanged(null);
+                    }
+                });
+            }
+        }
+    }
+    
+    /**
+     * @return NO_OPTION for discard (continue), YES_OPTION for save, CANCEL_OPTION for Cancel
+     */
+    private boolean checkForChanges()
+    {
+        boolean isOK = containerPanel.getMultiView().getCurrentViewAsFormViewObj().isDataCompleteAndValid(true);
+        //((JButton)fvo.getSaveComponent()).setEnabled(isOK);
+
+        /*if (formViewObj.getValidator().hasChanged())
+        {
+            int rv = UIRegistry.askYesNoLocalized("SAVE", "DISCARD", "CANCEL", "The data in the form has not been changed.", "TITLE");
+            if (rv == JOptionPane.YES_OPTION)
+            {
+                ((JButton)formViewObj.getSaveComponent()).doClick();
+            }
+        }
+        return JOptionPane.NO_OPTION;*/
+        return isOK;
     }
     
     /**
@@ -308,9 +385,9 @@ public class ContainerTreePanel extends JPanel
                 {
                     if (node.getUserObject() instanceof Container)
                     {
-                        Container        cn = (Container)node.getUserObject();
-                        CollectionObject co = cn.getCollectionObject();
-                        if (co == null)
+                        Container cn = (Container)node.getUserObject();
+                        
+                        if (cn == null)
                         {
                             if (!isViewMode)
                             {
@@ -344,20 +421,15 @@ public class ContainerTreePanel extends JPanel
                                 delColObj();
                             }                        
                         }
-                    } else if (node.getUserObject() instanceof CollectionObject)
+                    } else if (node.getUserObject() instanceof CollectionObject && i == 0)
                     {
-                        CollectionObject co = (CollectionObject)node.getUserObject();
-                        if (co != null && i == 0)
-                        {
-                            viewColObj();
-                        }
+                        viewColObj();
                     }
                 }
                 break;
             }
             i++;
         }
-        
     }
     
     /**
@@ -376,9 +448,9 @@ public class ContainerTreePanel extends JPanel
      */
     public void nameFieldChanged(final String text)
     {
-        if (rootContainer != null)
+        if (currContainer != null)
         {
-            rootContainer.setName(text);
+            currContainer.setName(text);
         }
         model.nodeChanged((TreeNode)model.getRoot());
     }
@@ -388,9 +460,9 @@ public class ContainerTreePanel extends JPanel
      */
     public void typeChanged(final int type)
     {
-        if (rootContainer != null)
+        if (currContainer != null)
         {
-            rootContainer.setType((short)type);
+            currContainer.setType((short)type);
         }
         model.nodeChanged((TreeNode)model.getRoot());
     }
@@ -400,56 +472,51 @@ public class ContainerTreePanel extends JPanel
      * @param containerId
      * @throws SQLException
      */
-    private Stack<ParentNodeInfo> getParentContainers(final Integer containerId)
+    private Integer getTopMostParentId(final Integer containerId)
     {
-        PreparedStatement pStmt = null;
-        try
+        if (containerId != null)
         {
-            Stack<ParentNodeInfo> nodeHierachy = new Stack<ParentNodeInfo>();
-            pStmt = DBConnection.getInstance().getConnection().prepareStatement(GETSQL);
-            
-            Integer pContainerId = containerId;
-            do
+            PreparedStatement pStmt = null;
+            try
             {
-                pStmt.setInt(1, pContainerId);
-                pContainerId = null;
+                pStmt = DBConnection.getInstance().getConnection().prepareStatement(GETSQL);
                 
-                ResultSet rs = pStmt.executeQuery();
-                if (rs.next())
+                Integer pContainerId = containerId;
+                do
                 {
-                    String  containerName = rs.getString(1);
-                    Integer type          = (Integer)rs.getObject(2);
-                    Integer colObjId      = (Integer)rs.getObject(3);
-                    String  colObjName    = rs.getString(4);
-                    pContainerId  = (Integer)rs.getObject(5);
+                    pStmt.setInt(1, pContainerId);
+                    pContainerId = null;
                     
-                    ParentNodeInfo pInfo = new ParentNodeInfo(colObjId != null, containerName, colObjName, type);
-                    nodeHierachy.push(pInfo);
-                }
-                rs.close();
-                
-            } while (pContainerId != null);
-        
-            return nodeHierachy;
+                    ResultSet rs = pStmt.executeQuery();
+                    if (rs.next())
+                    {
+                        pContainerId = (Integer)rs.getObject(1);
+                    }
+                    rs.close();
+                    
+                } while (pContainerId != null);
             
-        } catch (SQLException ex)
-        {
-            ex.printStackTrace();
-        } finally
-        {
-           try
+                return pContainerId;
+                
+            } catch (SQLException ex)
             {
-                if (pStmt != null) pStmt.close();
-            } catch (SQLException e)
+                ex.printStackTrace();
+            } finally
             {
-                e.printStackTrace();
+               try
+                {
+                    if (pStmt != null) pStmt.close();
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                }
             }
         }
         return null;
     }
     
     /**
-     * @return a simepl JTree to display the parent hierarchy.
+     * @return a simple JTree to display the parent hierarchy.
      */
     private JTree createTreeParent()
     {
@@ -467,90 +534,6 @@ public class ContainerTreePanel extends JPanel
     /**
      * 
      */
-    private void createParentTree()
-    {
-        if (rootContainer != null)
-        {
-            Stack<ParentNodeInfo> parentStack = null;
-            if (rootContainer.getId() != null)
-            {
-                parentStack = getParentContainers(rootContainer.getId());
-            }
-                
-            if (parentStack == null || parentStack.size() == 0)
-            {
-                if (treeParent == null)
-                {
-                    treeParent = createTreeParent();
-                    
-                } else
-                {
-                    treeParent.setModel(null);
-                }
-                return;
-            }
-            
-            DefaultMutableTreeNode rootNode  = new DefaultMutableTreeNode();
-            DefaultMutableTreeNode pTreeNode = rootNode;
-            ParentNodeInfo         pNodeRoot = parentStack.pop();
-            pTreeNode.setUserObject(pNodeRoot);
-            
-            //System.out.println("Top: "+pNodeRoot.getTitle());
-            
-            pTreeNode.setAllowsChildren(true);
-            
-            while (!parentStack.empty())
-            {
-                DefaultMutableTreeNode node  = new DefaultMutableTreeNode();
-                ParentNodeInfo         pNode = parentStack.pop();
-                node.setUserObject(pNode);
-                pTreeNode.add(node);
-                pTreeNode = node;
-                pTreeNode.setAllowsChildren(true);
-                //System.out.println("  "+pNode.getTitle());
-            }
-            //System.out.println();
-            
-            modelParent = new DefaultTreeModel(rootNode);
-            if (treeParent == null)
-            {
-                treeParent = createTreeParent();
-                
-            } else
-            {
-                treeParent.setModel(modelParent);
-            }
-            
-            final DefaultMutableTreeNode bottomNode = pTreeNode;
-            SwingUtilities.invokeLater(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    TreeNode[] path = modelParent.getPathToRoot(bottomNode.getParent());
-                    if (path != null && path.length > 0)
-                    {
-                        treeParent.expandPath(new TreePath(path));
-                    }
-                }
-            });
-            
-        } else
-        {
-            if (treeParent == null)
-            {
-                treeParent = createTreeParent();
-                
-            } else
-            {
-                treeParent.setModel(null);
-            }
-        }
-    }
-    
-    /**
-     * 
-     */
     public void set(final Container rootCon,
                     final CollectionObject rootCO)
     {
@@ -560,7 +543,18 @@ public class ContainerTreePanel extends JPanel
         colObjIdHash.clear();
         containerIdHash.clear();
         
-        createParentTree();
+        if (rootCon != null)
+        {
+            Integer rootParentId = getTopMostParentId(rootCon.getId());
+            if (rootParentId != null)
+            {
+                this.rootContainer = getContainerFromDB(rootParentId);
+                this.rootColObj    = rootContainer.getCollectionObject();
+            }
+        } else if (rootCO ==  null)
+        {
+            
+        }
         
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
         rootNode.setUserObject(rootContainer != null ? rootContainer : rootColObj);
@@ -574,7 +568,7 @@ public class ContainerTreePanel extends JPanel
             loadContainerTree(rootNode, null, rootColObj);
         } else
         {
-            rootNode.setUserObject("Loading...");
+            rootNode.setUserObject("New Container");
         }
         
         model = new DefaultTreeModel(rootNode);
@@ -592,6 +586,11 @@ public class ContainerTreePanel extends JPanel
             tree.setModel(model);
         }
         model.reload();
+        
+        if (containerPanel != null)
+        {
+            containerPanel.getMultiView().setData(rootCon);
+        }
     }
     
     /**
@@ -670,6 +669,11 @@ public class ContainerTreePanel extends JPanel
      */
     public void addRecordSet(final RecordSetIFace rs)
     {
+        if (!checkForChanges())
+        {
+            return;
+        }
+
         DataProviderSessionIFace session = null;
         try
         {
@@ -845,13 +849,16 @@ public class ContainerTreePanel extends JPanel
      */
     private void editColObj()
     {
-        DefaultMutableTreeNode node = getSelectedTreeNode();
-        if (node != null && node.getUserObject() instanceof CollectionObject)
+        if (checkForChanges())
         {
-            CollectionObject co = editColObj((CollectionObject)node.getUserObject());
-            if (co != null)
+            DefaultMutableTreeNode node = getSelectedTreeNode();
+            if (node != null && node.getUserObject() instanceof CollectionObject)
             {
-                node.setUserObject(co);
+                CollectionObject co = editColObj((CollectionObject)node.getUserObject());
+                if (co != null)
+                {
+                    node.setUserObject(co);
+                }
             }
         }
     }
@@ -861,28 +868,62 @@ public class ContainerTreePanel extends JPanel
      */
     private void delColObj()
     {
-        DefaultMutableTreeNode node = getSelectedTreeNode();
-        if (node != null)
+        if (checkForChanges())
         {
-            if (node.getUserObject() instanceof Container)
+            DefaultMutableTreeNode node = getSelectedTreeNode();
+            if (node != null)
             {
-                Container cn = (Container)node.getUserObject();
-                CollectionObject co = cn.getCollectionObject();
-                if (cn != null)
+                if (node.getUserObject() instanceof Container)
                 {
-                    cn.getCollectionObjects().clear();
-                    co.setContainer(null);
-                    model.nodeChanged(node);
+                    Container cn = (Container)node.getUserObject();
+                    CollectionObject co = cn.getCollectionObject();
+                    if (cn != null)
+                    {
+                        cn.getCollectionObjects().clear();
+                        co.setContainer(null);
+                        model.nodeChanged(node);
+                    }
+                } else
+                {
+                    CollectionObject co = (CollectionObject)node.getUserObject();
+                    colObjIdHash.remove(co.getId());
+                    model.removeNodeFromParent(node);
                 }
-            } else
-            {
-                CollectionObject co = (CollectionObject)node.getUserObject();
-                colObjIdHash.remove(co.getId());
-                model.removeNodeFromParent(node);
             }
         }
     }
     
+    /**
+     * @param colObj
+     */
+    private Container getContainerFromDB(final Integer containerId)
+    {
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            Container container = session.get(Container.class, containerId);
+            container.forceLoad();
+            
+            return container;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ContainerTreePanel.class, ex);
+
+        } finally
+        {
+            try
+            {
+                if (session != null) session.close();
+            } catch (Exception ex) {}
+        }
+        return null;
+    }
+    
+
     /**
      * @param colObj
      */
@@ -977,15 +1018,15 @@ public class ContainerTreePanel extends JPanel
     /**
      * @param container
      */
-    private Container createContainer()
+    private Container createContainer(final Container parentContainer)
     {
-        return createOrEditContainer(null);
+        return createOrEditContainer(null, parentContainer);
     }
     
     /**
      * @param container
      */
-    private Container createOrEditContainer(final Container container)
+    private Container createOrEditContainer(final Container container, final Container parentContainer)
     {
         final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UIRegistry.getTopWindow(),
                 null,
@@ -1002,10 +1043,22 @@ public class ContainerTreePanel extends JPanel
             @Override
             protected void okButtonPressed()
             {
-                //MultiView mvParent = getMultiView();
+                MultiView mvParent = getMultiView();
                 
-                //saveColObj(mvParent, (CollectionObject)mvParent.getCurrentViewAsFormViewObj().getDataObj());
+                mvParent.getDataFromUI();
                 
+                FormViewObj fvo = mvParent.getCurrentViewAsFormViewObj();
+                if (fvo != null)
+                {
+                    if (parentContainer != null)
+                    {
+                        Container newContainer = (Container)fvo.getDataObj();
+                        newContainer.setParent(parentContainer);
+                        parentContainer.getChildren().add(newContainer);
+                    }
+                    
+                    fvo.saveObject();
+                }
                 super.okButtonPressed();
             }
         };
@@ -1043,7 +1096,7 @@ public class ContainerTreePanel extends JPanel
             if (srchDlg != null)
             {
                 //srchDlg.setTitle(title);
-                srchDlg.getDialog().setVisible(true);
+                UIHelper.centerAndShow(srchDlg.getDialog());
                 if (!srchDlg.isCancelled())
                 {
                     return forceLoad((FormDataObjIFace)srchDlg.getSelectedObject());
@@ -1066,23 +1119,29 @@ public class ContainerTreePanel extends JPanel
      */
     private void addColObjToContainer(final boolean doAddBySearch, final boolean doAssociate)
     {
-        DefaultMutableTreeNode parentNode = getSelectedTreeNode();
-        if (parentNode != null)
+        if (checkForChanges())
         {
-            Container container = (Container)parentNode.getUserObject();
-            
-            CollectionObject co = doAddBySearch ? (CollectionObject)searchForDataObj(CollectionObject.class) : editColObj(null);
-            if (co != null)
+            DefaultMutableTreeNode parentNode = getSelectedTreeNode();
+            if (parentNode != null)
             {
+                Container container = (Container)parentNode.getUserObject();
                 
-                if (doAssociate)
+                CollectionObject co = doAddBySearch ? (CollectionObject)searchForDataObj(CollectionObject.class) : editColObj(null);
+                if (co != null)
                 {
-                    co.setContainer(container);
-                    container.getCollectionObjects().add(co);
-                    model.nodeChanged(parentNode);
-                } else
-                {
-                    addColObjAsChild(parentNode, co);
+                    if (doAssociate)
+                    {
+                        co.setContainer(container);
+                        container.getCollectionObjects().add(co);
+                        
+                        saveObjs(co, container);
+                        
+                        model.nodeChanged(parentNode);
+                        
+                    } else
+                    {
+                        addColObjAsChild(parentNode, co);
+                    }
                 }
             }
         }
@@ -1124,12 +1183,15 @@ public class ContainerTreePanel extends JPanel
      */
     private void editContainer()
     {
-        DefaultMutableTreeNode node = getSelectedTreeNode();
-        if (node != null && node.getUserObject() instanceof Container)
+        if (checkForChanges())
         {
-            Container container = (Container)node.getUserObject();
-            createOrEditContainer(container);
-            model.nodeChanged(node);
+            DefaultMutableTreeNode node = getSelectedTreeNode();
+            if (node != null && node.getUserObject() instanceof Container)
+            {
+                Container container = (Container)node.getUserObject();
+                createOrEditContainer(container, null);
+                model.nodeChanged(node);
+            }
         }
     }
     
@@ -1190,49 +1252,89 @@ public class ContainerTreePanel extends JPanel
      */
     private void delContainer()
     {
-        DefaultMutableTreeNode node = getSelectedTreeNode();
-        if (node != null)
+        if (checkForChanges())
         {
-            ArrayList<Container>        containersToBeDeleted = new ArrayList<Container>();
-            ArrayList<CollectionObject> colObjsToBeUpdated    = new ArrayList<CollectionObject>();
-            
-            recursePrune(node, containersToBeDeleted, colObjsToBeUpdated);
-            
-            DataProviderSessionIFace session = null;
-            try
+            DefaultMutableTreeNode node = getSelectedTreeNode();
+            if (node != null)
             {
-                session = DataProviderFactory.getInstance().createSession();
+                ArrayList<Container>        containersToBeDeleted = new ArrayList<Container>();
+                ArrayList<CollectionObject> colObjsToBeUpdated    = new ArrayList<CollectionObject>();
                 
-                session.beginTransaction();
-                for (CollectionObject co : colObjsToBeUpdated)
-                {
-                    CollectionObject mergedCO = session.merge(co);
-                    session.update(mergedCO);
-                }
+                recursePrune(node, containersToBeDeleted, colObjsToBeUpdated);
                 
-                for (Container cn : containersToBeDeleted)
-                {
-                    session.delete(cn);
-                }
-                
-                session.commit();
-                
-            } catch (Exception ex)
-            {
-                session.rollback();
-                
-                ex.printStackTrace();
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ContainerTreePanel.class, ex);
-
-            } finally
-            {
+                DataProviderSessionIFace session = null;
                 try
                 {
-                    if (session != null) session.close();
-                } catch (Exception ex) {}
+                    session = DataProviderFactory.getInstance().createSession();
+                    
+                    session.beginTransaction();
+                    for (CollectionObject co : colObjsToBeUpdated)
+                    {
+                        CollectionObject mergedCO = session.merge(co);
+                        session.update(mergedCO);
+                    }
+                    
+                    for (Container cn : containersToBeDeleted)
+                    {
+                        session.delete(cn);
+                    }
+                    
+                    session.commit();
+                    
+                } catch (Exception ex)
+                {
+                    session.rollback();
+                    
+                    ex.printStackTrace();
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ContainerTreePanel.class, ex);
+    
+                } finally
+                {
+                    try
+                    {
+                        if (session != null) session.close();
+                    } catch (Exception ex) {}
+                }
             }
         }
+    }
+    
+    /**
+     * @param objs
+     * @return
+     */
+    private boolean saveObjs(Object...objs)
+    {
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            
+            session.beginTransaction();
+            for (Object obj : objs)
+            {
+                session.saveOrUpdate(obj);
+            }
+            session.commit();
+            return true;
+            
+        } catch (Exception ex)
+        {
+            session.rollback();
+            
+            ex.printStackTrace();
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ContainerTreePanel.class, ex);
+
+        } finally
+        {
+            try
+            {
+                if (session != null) session.close();
+            } catch (Exception ex) {}
+        }
+        return false;
     }
     
     /**
@@ -1262,30 +1364,39 @@ public class ContainerTreePanel extends JPanel
      */
     private void addContainer(final boolean doSearch)
     {
-        DefaultMutableTreeNode parentNode = getSelectedTreeNode();
-        if (parentNode != null)
+        if (checkForChanges())
         {
-            Container newContainer = doSearch ? (Container)searchForDataObj(Container.class) : createContainer();
-            if (newContainer != null)
+            DefaultMutableTreeNode parentNode = getSelectedTreeNode();
+            if (parentNode != null)
             {
-                Container container = (Container)parentNode.getUserObject();
-                newContainer.setParent(container);
-                container.getChildren().add(newContainer);
-                
-                DefaultMutableTreeNode newNode = new DefaultMutableTreeNode();
-                newNode.setUserObject(newContainer);
-                if (newContainer.getId() != null)
+                Container parentContainer = (Container)parentNode.getUserObject();
+                Container newContainer    = doSearch ? (Container)searchForDataObj(Container.class) : createContainer(parentContainer);
+                if (newContainer != null)
                 {
-                    containerIdHash.add(newContainer.getId());
+                    if (doSearch)
+                    {
+                        // check here to see if they are already parented.
+                        newContainer.setParent(parentContainer);
+                        parentContainer.getChildren().add(newContainer);
+                        saveObjs(newContainer, parentContainer);
+                    }
+                    
+                    DefaultMutableTreeNode newNode = new DefaultMutableTreeNode();
+                    newNode.setUserObject(newContainer);
+                    if (newContainer.getId() != null)
+                    {
+                        containerIdHash.add(newContainer.getId());
+                    }
+                    
+                    int inx = parentNode.getChildCount();
+                    model.insertNodeInto(newNode, parentNode, inx);
+                    model.nodesWereInserted(parentNode, new int[] {inx});
+                    model.nodeChanged(parentNode);
+                    model.reload();
+                    tree.restoreTree();
+                    
+                    expandToNode(newNode); // invokedLater
                 }
-                int inx = parentNode.getChildCount();
-                model.insertNodeInto(newNode, parentNode, inx);
-                model.nodesWereInserted(parentNode, new int[] {inx});
-                model.nodeChanged(parentNode);
-                model.reload();
-                tree.restoreTree();
-                
-                expandToNode(newNode); // invokedLater
             }
         }
     }
@@ -1603,7 +1714,6 @@ public class ContainerTreePanel extends JPanel
                             print(actionTree);
                         }
                     });
-                    
                 }
             }
             
@@ -1629,6 +1739,22 @@ public class ContainerTreePanel extends JPanel
         });
     }
 
+    
+    //-------------------------------------------------------------------------------------------
+    //--
+    //-------------------------------------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CommandListener#doCommand(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    public void doCommand(CommandAction cmdAction)
+    {
+        if (cmdAction.isAction("Save") && cmdAction.getData() instanceof Container)
+        {
+            System.out.println(cmdAction);
+        }
+    }
     
     //-------------------------------------------------------------------------------------------
     //--

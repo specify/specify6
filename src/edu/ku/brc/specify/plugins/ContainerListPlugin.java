@@ -19,24 +19,18 @@
 */
 package edu.ku.brc.specify.plugins;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Properties;
 
-import javax.swing.event.DocumentEvent;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
-import edu.ku.brc.af.ui.forms.validation.ValComboBox;
-import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.specify.datamodel.Container;
 import edu.ku.brc.specify.ui.containers.ContainerTreePanel;
-import edu.ku.brc.ui.DocumentAdaptor;
 
 /**
  * @author rods
@@ -46,7 +40,7 @@ import edu.ku.brc.ui.DocumentAdaptor;
  * Oct 7, 2010
  *
  */
-public class ContainerListPlugin extends UIPluginBase
+public class ContainerListPlugin extends UIPluginBase implements ChangeListener
 {
     protected ContainerTreePanel treePanel;
     
@@ -66,13 +60,12 @@ public class ContainerListPlugin extends UIPluginBase
     {
         super.initialize(propertiesArg, isViewModeArg);
         
-        treePanel = new ContainerTreePanel(isViewModeArg, null, null);
+        treePanel = new ContainerTreePanel(this, isViewModeArg, null, null);
         
         CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g",  "p,4px,f:p:g"), this);
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g",  "f:p:g"), this);
         
-        pb.addSeparator("Container Hierarchy",  cc.xy(1, 1));
-        pb.add(treePanel,                       cc.xy(1, 3));
+        pb.add(treePanel, cc.xy(1, 1));
     }
 
     /* (non-Javadoc)
@@ -104,31 +97,11 @@ public class ContainerListPlugin extends UIPluginBase
     @Override
     public void setParent(FormViewObj parent)
     {
-        treePanel.setFVO(parent);
-        
-        Component comp = parent.getCompById("nm");
-        if (comp instanceof ValTextField)
+        if (parent != null && parent.getSaveComponent() != null)
         {
-            final ValTextField nameTF = parent.getCompById("nm");
-            nameTF.getDocument().addDocumentListener(new DocumentAdaptor() {
-                @Override
-                protected void changed(DocumentEvent e)
-                {
-                    treePanel.nameFieldChanged(nameTF.getText());
-                }
-            });
-            
-            final ValComboBox typeCBX = parent.getCompById("typ");
-            typeCBX.getComboBox().addActionListener(new ActionListener()
-            {
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    PickListItemIFace pli = (PickListItemIFace)typeCBX.getComboBox().getSelectedItem();
-                    treePanel.typeChanged(pli == null ? -1 : Integer.parseInt(pli.getValue()));
-                }
-            });
+            parent.getSaveComponent().setVisible(false);
         }
+        treePanel.setFVO(parent);
     }
 
     /* (non-Javadoc)
@@ -147,6 +120,20 @@ public class ContainerListPlugin extends UIPluginBase
     public void shutdown()
     {
         treePanel.cleanUp();
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
+     */
+    @Override
+    public void stateChanged(ChangeEvent e)
+    {
+        ChangeEvent ce = e;
+        if (ce == null)
+        {
+            ce = new ChangeEvent(this);
+        }
+        notifyChangeListeners(e);
     }
 
 }

@@ -58,7 +58,7 @@ public class ContainerTreeRenderer extends DefaultTreeCellRenderer
 {
     protected final static String DASH = " - ";
     
-    protected Color bgColor = new Color(245, 245, 245);
+    protected Color bgColor = Color.WHITE;//new Color(245, 245, 245, 255);
     
     protected HashMap<Class<?>, ImageIcon> iconHash     = new HashMap<Class<?>, ImageIcon>();
     protected HashMap<Short, ImageIcon>    typeIconHash = new HashMap<Short, ImageIcon>();
@@ -117,7 +117,7 @@ public class ContainerTreeRenderer extends DefaultTreeCellRenderer
             typeIconHash.put((short)i, IconManager.getIcon(fNames[i], IconManager.IconSize.Std24));
         }
         
-        catNumFmt = DBTableIdMgr.getInstance().getFieldFormatterFor(CollectionObject.class, "CatalogNumber");
+        catNumFmt = DBTableIdMgr.getFieldFormatterFor(CollectionObject.class, "CatalogNumber");
         
         this.layoutComp = layoutComp;
         
@@ -142,14 +142,15 @@ public class ContainerTreeRenderer extends DefaultTreeCellRenderer
         super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
         
         //System.err.println(value+" sel:"+sel+"  exp:"+expanded+"  foc:"+hasFocus);
-        if (!sel)
+        /*if (!sel)
         {
             setOpaque(true);
             setBackground(bgColor);
         } else
         {
-            setBackground(getBackgroundSelectionColor().brighter());
-        }
+            System.out.println(getBackgroundSelectionColor());
+            setBackground(getBackgroundSelectionColor());
+        }*/
         
         isSelected = sel;
         
@@ -166,6 +167,8 @@ public class ContainerTreeRenderer extends DefaultTreeCellRenderer
             hasColObj   = false;
             
             userObj = ((DefaultMutableTreeNode)value).getUserObject();
+            if (userObj instanceof Container)
+                System.err.println(value.hashCode()+"  "+userObj.hashCode()+"  "+((Container)userObj).getName()+"  "+((Container)userObj).getId());
             if (userObj instanceof Container)
             {
                 isContainer = true;

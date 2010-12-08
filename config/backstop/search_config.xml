@@ -2109,7 +2109,7 @@ SELECT cn.ContainerID,
             </detailView>
         </table>
         
-        <table id="129" tableid="1" name="ContainerSearch" priority="1" color="30, 144, 255">
+        <table id="129" tableid="31" name="ContainerSearch" priority="1" color="30, 144, 255">
             <detailView icon="Container">
                 <sql>
                     <![CDATA[SELECT ContainerID, Name FROM container WHERE CollectionMemberID = COLMEMID AND (%s)]]>

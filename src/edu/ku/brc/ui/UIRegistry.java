@@ -1016,6 +1016,32 @@ public class UIRegistry
     }
 
     /**
+     * Asks Yes, No, Cancel question using a JOptionPane
+     * @param yesKey the resource key for the Yes button
+     * @param noKey the resource key for the No button
+     * @param cancelKey the resource key for the Cancel button
+     * @param nonL10NMsg the message or question NOT Localized
+     * @param titleKey the resource key for the Dialog Title
+     * @return JOptionPane.NO_OPTION or JOptionPane.YES_OPTION
+     */
+    public static int askYesNoLocalized(final String yesKey, 
+                                        final String noKey, 
+                                        final String cancelKey, 
+                                        final String nonL10NMsg, 
+                                        final String titleKey)
+    {
+        int userChoice = JOptionPane.CANCEL_OPTION;
+        Object[] options = { getResourceString(yesKey), getResourceString(noKey), getResourceString(cancelKey) };
+
+        userChoice = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
+                                                  nonL10NMsg,
+                                                     getResourceString(titleKey),
+                                                     JOptionPane.YES_NO_CANCEL_OPTION,
+                                                     JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        return userChoice;
+    }
+
+    /**
      * Displays an error dialog with a non-localized error message.
      * @param msg the message
      */

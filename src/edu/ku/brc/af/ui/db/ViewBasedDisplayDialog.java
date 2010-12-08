@@ -23,6 +23,7 @@ import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.Frame;
 
+import javax.swing.BorderFactory;
 import javax.swing.JScrollPane;
 
 import org.apache.commons.lang.StringUtils;
@@ -231,11 +232,12 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
     public void createUI()
     {
         super.createUI();
-
+        
         contentPanel = viewBasedPanel;
         viewBasedPanel.setOkCancelBtns(okBtn, cancelBtn);
         
         JScrollPane scrollPane = UIHelper.createScrollPane(viewBasedPanel, true);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         mainPanel.add(scrollPane, BorderLayout.CENTER);
         
         pack();
