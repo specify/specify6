@@ -1011,7 +1011,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         {
             currentIndex  = newIndex;
             setDataIntoForm(currentIndex);
-            if (workbenchPane.isDoIncrementalValidation())
+            if (workbenchPane.isDoIncremental())
             {
             	updateValidationUI();
             }
@@ -1161,7 +1161,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         {
             changesInForm = true;
             workbenchPane.setChanged(true);
-            if (workbenchPane.isDoIncrementalValidation())
+            if (workbenchPane.isDoIncremental())
             {
                 WorkbenchRow wbRow = workbench.getWorkbenchRowsAsList().get(currentIndex);
             	copyDataFromForm(selectedInputPanel, wbRow);

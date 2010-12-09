@@ -26,6 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -429,7 +430,7 @@ public class UploadTableTree extends UploadTable
      */
     protected String getDefaultParentName()
     {
-        return uploader.getIdentifier();
+    	return uploader.getIdentifier();
     }
     
     /* (non-Javadoc)
@@ -1005,6 +1006,21 @@ public class UploadTableTree extends UploadTable
         }
         return result;
     }
+
+    
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#isMatchable(java.util.Set, int)
+	 */
+	@Override
+	protected boolean isMatchable(Set<Integer> unmatchableCols, int seq) 
+	{
+		boolean result = parent != null ? parent.isMatchable(unmatchableCols, seq) : true;
+		if (result)
+		{
+			result = super.isMatchable(unmatchableCols, seq);
+		}
+		return result;
+	}
 
 	/**
 	 * @return the parent

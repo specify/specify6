@@ -31,6 +31,7 @@ import java.awt.event.KeyListener;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -39,6 +40,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -254,11 +256,11 @@ public class Uploader implements ActionListener, KeyListener
     protected static Uploader                       currentUpload            = null;
 
     /**
-     * A unique identifier currently used to identify the upload. Currently not used. NOTE: Would it
+     * A unique identifier currently used to identify the upload. NOTE: Would it
      * be desirable to store info on imports - dataset imported, date, user, basic stats ???
      * 
      */
-    protected String                                identifier;
+    protected String                                identifier = "uploader";
     
     /**
      * The time of the upload. Used to create the identifier.
@@ -1513,6 +1515,78 @@ public class Uploader implements ActionListener, KeyListener
             result.addAll(validateLengths(tbl, row, col));
             tbl.validateRowValues(row, uploadData, result);
         }
+    	return result;
+    }
+    
+    /**
+     * @param col
+     * @return
+     */
+    protected Vector<Pair<Integer, UploadTable>> getUploadTablesForColForMatch(int col, List<UploadTableInvalidValue> invalidCols)
+    {
+    	Vector<Pair<Integer, UploadTable>> result = new Vector<Pair<Integer, UploadTable>>();
+    	Set<Integer> badCols = new HashSet<Integer>();
+    	for (UploadTableInvalidValue utiv : invalidCols)
+    	{
+    		badCols.add(utiv.getCol());
+    	}
+    	if (col == -1)
+    	{
+    		for (UploadTable ut : uploadTables)
+    		{
+				for (int seq = 0; seq < ut.getUploadFields().size(); seq++)
+				{
+					if (ut.isMatchable(badCols, seq))
+					{
+						//only need to add lowest rank for trees
+						if (!(ut instanceof UploadTableTree) || 
+    						((UploadTableTree )ut).getChild() == null)
+						{
+    						result.add(new Pair<Integer, UploadTable>(seq, ut));
+    					}
+    				}
+    			}
+    		}
+    		return result;
+    	} else
+    	{
+    		for (UploadTable ut: uploadTables)
+    		{
+    			int seq = 0;
+    			for (Vector<UploadField> flds : ut.getUploadFields())
+    			{
+    				if (ut.isMatchable(badCols, seq))
+    				{
+    					for (UploadField fld : flds)
+    					{
+    						if (fld.getIndex() == col)
+    						{
+    							result.add(new Pair<Integer, UploadTable>(seq, ut));
+    							return result;
+    						}
+    					}
+    				}
+    				seq++;
+    			}
+    		}
+    		return result;
+    	}
+    }
+    
+    /**
+     * @param row
+     * @param col -1 -> match all cols
+     * @return
+     */
+    public Vector<UploadTableMatchInfo> matchData(int row, int col, List<UploadTableInvalidValue> invalidCols) throws UploaderException,
+		InvocationTargetException, IllegalAccessException, ParseException,
+		NoSuchMethodException
+    {
+    	Vector<UploadTableMatchInfo> result = new Vector<UploadTableMatchInfo>();
+    	for (Pair<Integer, UploadTable> utSeq : getUploadTablesForColForMatch(col, invalidCols))
+    	{
+    		result.add(utSeq.getSecond().getMatchInfo(row, utSeq.getFirst()));
+    	}
     	return result;
     }
     

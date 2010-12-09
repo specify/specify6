@@ -106,7 +106,7 @@ public class WorkbenchSpreadSheet extends SpreadSheet
 						
 						boolean result = super.replace(cell, findValue, replaceValue, isMtchCaseOn,
 								isSearchSelection);
-						if (result && workbenchPaneSS.isDoIncrementalValidation())
+						if (result && workbenchPaneSS.isDoIncremental())
 						{
 							replacedRows.add(cell.getRow());
 						}
@@ -119,7 +119,7 @@ public class WorkbenchSpreadSheet extends SpreadSheet
 					@Override
 					public void replacementCleanup()
 					{
-						if (workbenchPaneSS.isDoIncrementalValidation())
+						if (workbenchPaneSS.isDoIncremental())
 						{
 							//This is not good.
 							//I have avoided making WorkbenchPaneSS a table model listener

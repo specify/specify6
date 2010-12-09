@@ -2085,7 +2085,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                              finiSession.attach(workbench);
                          }
                          wbSS = createEditorForWorkbench(workbench, glassPane, showImageView, thisTask);
-                         if (wbSS.isDoIncrementalValidation())
+                         if (wbSS.isDoIncremental())
                          {
                         	 SwingUtilities.invokeLater(new Runnable() {
 
@@ -2129,7 +2129,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 @Override
                 public void finished()
                 {
-                    if (wbSS == null || !wbSS.isDoIncrementalValidation())
+                    if (wbSS == null || !wbSS.isDoIncremental())
                     {
                     	UIRegistry.clearSimpleGlassPaneMsg();
                     }

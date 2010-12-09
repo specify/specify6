@@ -49,10 +49,12 @@ import org.hibernate.annotations.Index;
 @SuppressWarnings("serial")
 public class WorkbenchDataItem implements java.io.Serializable, Comparable<WorkbenchDataItem>
 {
-    public static final short VAL_NONE       = 0;
-    public static final short VAL_OK         = 1;
-    public static final short VAL_ERROR      = 2;
-    public static final short VAL_ERROR_EDIT = 3;
+    public static final short VAL_NONE       		= 0;
+    public static final short VAL_OK         		= 1;
+    public static final short VAL_ERROR      		= 2;
+    public static final short VAL_ERROR_EDIT 		= 3;
+    public static final short VAL_NEW_DATA   		= 4;
+    public static final short VAL_MULTIPLE_MATCH 	= 5;
         
     // Fields
     protected Integer      workbenchDataItemId;

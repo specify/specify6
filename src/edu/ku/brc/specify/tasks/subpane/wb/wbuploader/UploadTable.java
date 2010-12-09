@@ -2002,6 +2002,24 @@ public class UploadTable implements Comparable<UploadTable>
         }*/
     }
     
+    /**
+     * @param ut
+     * @param unmatchableCols
+     * @return
+     */
+    protected boolean isMatchable(Set<Integer> unmatchableCols, int seq)
+    {
+    	for (UploadField fld : uploadFields.get(seq))
+    	{
+    		if (unmatchableCols.contains(new Integer(fld.getIndex())))
+    		{
+    			return false;
+    		}
+    	}
+    	return true;
+    }
+
+    
     protected boolean getUpdateMatchCriteria(CriteriaIFace critter,
                                        final int recNum,
                                        Vector<MatchRestriction> restrictedVals)
@@ -2113,6 +2131,35 @@ public class UploadTable implements Comparable<UploadTable>
     }
     
     /**
+     * @param row
+     * @param recNum
+     * @return the number matches for the current contents of this tables columns for row and recNum
+     * 
+     * @throws UploaderException
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     * @throws ParseException
+     * @throws NoSuchMethodException
+     */
+    public UploadTableMatchInfo getMatchInfo(int row, int recNum) throws UploaderException,
+    	InvocationTargetException, IllegalAccessException, ParseException,
+    	NoSuchMethodException
+    {
+    	//XXX assuming that an upload is NOT in progress!!
+    	wbCurrentRow = row;
+    	int matchCount = findMatch(recNum, false, true);
+    	Vector<Integer> colIdxs = new Vector<Integer>();
+    	for (UploadField uf : uploadFields.get(recNum))
+    	{
+    		if (uf.getIndex() != -1)
+    		{
+    			colIdxs.add(uf.getIndex());
+    		}
+    	}
+    	return new UploadTableMatchInfo(matchCount, colIdxs);
+    }
+    
+    /**
      * @param recNum
      * @return
      * @throws UploaderException
@@ -2123,7 +2170,7 @@ public class UploadTable implements Comparable<UploadTable>
      * action depends on props of matchSetting member.
      */
     @SuppressWarnings("unchecked")
-    protected boolean findMatch(int recNum, boolean forceMatch) throws UploaderException,
+    protected int findMatch(int recNum, boolean forceMatch, boolean returnCount) throws UploaderException,
             InvocationTargetException, IllegalAccessException, ParseException,
             NoSuchMethodException
     {
@@ -2132,7 +2179,7 @@ public class UploadTable implements Comparable<UploadTable>
         
         if (skipMatching)
         {
-            return false;
+            return 0;
         }
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -2177,6 +2224,12 @@ public class UploadTable implements Comparable<UploadTable>
             {
                 matches = matchChildren(matches, recNum);
             }
+            
+            if (returnCount)
+            {
+            	return matches.size();
+            }
+            
             if (matches.size() == 1)
             {
                 match = matches.get(0);
@@ -2225,9 +2278,9 @@ public class UploadTable implements Comparable<UploadTable>
             		}
             	}
             }
-            return true;
+            return -1;
         }
-        return false;
+        return 0;
     }
 
     public void onAddNewMatch(final Vector<MatchRestriction> restrictedVals)
@@ -2951,7 +3004,7 @@ public class UploadTable implements Comparable<UploadTable>
             {
                 if (needToWrite(recNum))
                 {
-                    if (skipMatch || !findMatch(recNum, false) || updateMatches)
+                    if (skipMatch || findMatch(recNum, false, false) == 0 || updateMatches)
                     {
                     	if (isSecurityOn && !getWriteTable().getTableInfo().getPermissions().canAdd())
                     	{
