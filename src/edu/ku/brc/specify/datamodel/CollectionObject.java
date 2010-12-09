@@ -47,6 +47,8 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.AttributeProviderIFace;
@@ -1201,8 +1203,14 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
             collection.getId();
         }
         
+        DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(OtherIdentifier.getClassTableId());
+        if (ti != null && !ti.isHidden())
+        {
+            otherIdentifiers.size();
+        }
+        
         CollectingEvent ce = getCollectingEvent();
-        //if (ce != null && AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
+        if (ce != null)// && AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
         {
             ce.forceLoad();
         }
