@@ -4298,33 +4298,34 @@ public class WorkbenchPaneSS extends BaseSubPane
 		}
 			
 		
-		Hashtable<Integer, Short> exceptionalItems = updateCellStatuses(csis, wbRow);
+		updateCellStatuses(csis, wbRow);
 		for (WorkbenchDataItem wbItem : wbRow.getWorkbenchDataItems())
 		{
-			//XXX can't ignore 'exceptional items' anymore - i.e. status can have changed from error to unmatched. 
-			//Maybe need to seriously rethink the issue decrementing plan?
-			if (exceptionalItems.get(new Integer(wbItem.getColumnNumber())) == null)
+			Short origstat = originalStats.get(new Short((short )wbItem.getColumnNumber()));
+			if (origstat != null)
 			{
-				//WorkbenchDataItems can be updated by GridCellEditor or by background validation initiated at load time or after find/replace ops			
-				Short origstat = originalStats.get(wbItem.getColumnNumber());
-				if (origstat != null)
+				if (origstat != wbItem.getEditorValidationStatus())
 				{
-					if (origstat.equals(WorkbenchDataItem.VAL_ERROR)
-							|| origstat.equals(WorkbenchDataItem.VAL_ERROR_EDIT))
-					{
-						invalidCellCount.getAndDecrement();
-					} else if (origstat.equals(WorkbenchDataItem.VAL_MULTIPLE_MATCH)
-							|| origstat.equals(WorkbenchDataItem.VAL_NEW_DATA))
+					if (origstat == WorkbenchDataItem.VAL_MULTIPLE_MATCH || origstat == WorkbenchDataItem.VAL_NEW_DATA)
 					{
 						unmatchedCellCount.getAndDecrement();
+					} else if (origstat == WorkbenchDataItem.VAL_ERROR || origstat == WorkbenchDataItem.VAL_ERROR_EDIT)
+					{
+						invalidCellCount.getAndDecrement();
+					}
+					if (wbItem.getEditorValidationStatus() == WorkbenchDataItem.VAL_NONE 
+							|| wbItem.getEditorValidationStatus() == WorkbenchDataItem.VAL_OK)
+					{
+						//XXX synchronization is not really necessary anymore, right??
+						synchronized(wbItem)
+						{
+							wbItem.setStatusText(null);
+							wbItem.setEditorValidationStatus(WorkbenchDataItem.VAL_OK);
+						}
 					}
 				}
-				synchronized(wbItem)
-				{
-					wbItem.setStatusText(null);
-					wbItem.setEditorValidationStatus(WorkbenchDataItem.VAL_OK);
-				}
 			}
+			
 		}
     }
     
@@ -4990,16 +4991,16 @@ public class WorkbenchPaneSS extends BaseSubPane
 					// but probably not necessary to synchronize here?
 					synchronized (wbCell)
 					{
-						if (wbCell.getEditorValidationStatus() == WorkbenchDataItem.VAL_ERROR 
-								|| wbCell.getEditorValidationStatus() == WorkbenchDataItem.VAL_ERROR_EDIT)
+						if (doIncrementalValidation && (wbCell.getEditorValidationStatus() == WorkbenchDataItem.VAL_ERROR 
+								|| wbCell.getEditorValidationStatus() == WorkbenchDataItem.VAL_ERROR_EDIT))
 						{
 							toolTip = wbCell.getStatusText();
 							border = new LineBorder(Color.RED);
-						} else if (wbCell.getEditorValidationStatus() == WorkbenchDataItem.VAL_NEW_DATA)
+						} else if (doIncrementalMatching && wbCell.getEditorValidationStatus() == WorkbenchDataItem.VAL_NEW_DATA)
 						{
 							toolTip = wbCell.getStatusText();
 							border = new LineBorder(Color.YELLOW);
-						} else if (wbCell.getEditorValidationStatus() == WorkbenchDataItem.VAL_MULTIPLE_MATCH)
+						} else if (doIncrementalMatching && wbCell.getEditorValidationStatus() == WorkbenchDataItem.VAL_MULTIPLE_MATCH)
 						{
 							toolTip = wbCell.getStatusText();
 							border = new LineBorder(Color.ORANGE);
