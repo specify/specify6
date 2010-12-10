@@ -840,18 +840,18 @@ public class Uploader implements ActionListener, KeyListener
         {	
         	currentUpload = this;
         }
-        for (UploadTable ut : uploadTables){
-        	System.out.print(ut + " " + ut.isMatchChild() + " ");
-        	if (ut.getParentTables() != null && ut.getParentTables().size() > 0)
-        	{
-        		System.out.println(ut.getParentTables().get(0).size());
-        	} else
-        	{
-        		System.out.println("0");
-        	}
-        }
-        System.out.println("end of upload tables");
-        System.out.println(getRootTable());
+//        for (UploadTable ut : uploadTables){
+//        	System.out.print(ut + " " + ut.isMatchChild() + " ");
+//        	if (ut.getParentTables() != null && ut.getParentTables().size() > 0)
+//        	{
+//        		System.out.println(ut.getParentTables().get(0).size());
+//        	} else
+//        	{
+//        		System.out.println("0");
+//        	}
+//        }
+//        System.out.println("end of upload tables");
+//        System.out.println(getRootTable());
     }
 
     /**
