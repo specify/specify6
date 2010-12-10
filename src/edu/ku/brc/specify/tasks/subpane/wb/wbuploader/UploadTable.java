@@ -72,6 +72,7 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
 import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.specify.datamodel.DNASequence;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -330,6 +331,24 @@ public class UploadTable implements Comparable<UploadTable>
         matchSetting = new UploadMatchSetting();
     }
 
+    /**
+     * @return true if this table is a one-to-many or one-to-one child of some other table.
+     */
+    public boolean isMatchChild()
+    {
+    	for (Vector<ParentTableEntry> ptes : parentTables)
+    	{
+    		for (ParentTableEntry pte : ptes)
+    		{
+    			if (pte.getImportTable().matchChildren != null && pte.getImportTable().matchChildren.contains(this))
+    			{
+    				return true;
+    			}
+    		}
+    	}
+    	return false;
+    }
+    
     /**
      * @return true if the findMatch step should be skipped.
      * 
@@ -1841,7 +1860,8 @@ public class UploadTable implements Comparable<UploadTable>
         	return childClass
                 .equals(Determination.class)
                 || childClass.equals(Preparation.class)
-                || childClass.equals(CollectionObjectAttribute.class); 
+                || childClass.equals(CollectionObjectAttribute.class)
+                || childClass.equals(DNASequence.class); 
         }
         if (tblClass.equals(Locality.class))
         {
@@ -2044,6 +2064,7 @@ public class UploadTable implements Comparable<UploadTable>
      * @param critter
      * @param recNum
      * @param restrictedVals
+     * @param overrideParentParams
      * @return true if blank cells were ignored when matching
      * @throws UploaderException
      * @throws IllegalAccessException
@@ -2052,7 +2073,8 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected boolean getMatchCriteria(CriteriaIFace critter,
                                        final int recNum,
-                                       Vector<MatchRestriction> restrictedVals)
+                                       Vector<MatchRestriction> restrictedVals,
+                                       HashMap<UploadTable, DataModelObjBase> overrideParentParams)
             throws UploaderException, IllegalAccessException, NoSuchMethodException,
             InvocationTargetException
     {
@@ -2097,9 +2119,11 @@ public class UploadTable implements Comparable<UploadTable>
             {
                 if (!needToMatchChildren() || !pte.getImportTable().isOneToOneChild())
                 {
+                	DataModelObjBase parentParam = overrideParentParams != null ? overrideParentParams.get(pte.getImportTable())
+                			: pte.getImportTable().getParentRecord(
+                                    recNum, this);
                 	restrictedVals.add(new MatchRestriction(pte.getPropertyName(), addRestriction(
-                        critter, pte.getPropertyName(), pte.getImportTable().getParentRecord(
-                                recNum, this), false), -1));
+                        critter, pte.getPropertyName(), parentParam, false), -1));
                 }
             }
         }
@@ -2130,6 +2154,100 @@ public class UploadTable implements Comparable<UploadTable>
         return ignoringBlankCell;
     }
     
+    private class ParentMatchInfo 
+    {
+    	protected final List<DataModelObjBase> matches;
+    	protected final UploadTable table;
+    	protected final boolean isBlank;
+		/**
+		 * @param matches
+		 * @param parent
+		 */
+		public ParentMatchInfo(List<DataModelObjBase> matches,
+				UploadTable table, boolean isBlank)
+		{
+			super();
+			this.matches = matches;
+			this.table = table;
+			this.isBlank = isBlank;
+		}
+		/**
+		 * @return the matches
+		 */
+		public List<DataModelObjBase> getMatches() 
+		{
+			return matches;
+		}
+		/**
+		 * @return the parent
+		 */
+		public UploadTable getTable() 
+		{
+			return table;
+		}
+		/**
+		 * @return the isBlank
+		 */
+		public boolean isBlank() 
+		{
+			return isBlank;
+		}
+    	
+    	
+    }
+    
+    protected List<ParentMatchInfo> getMatchInfoInternal(int row, int recNum) throws UploaderException,
+		InvocationTargetException, IllegalAccessException, ParseException,
+		NoSuchMethodException
+    {
+    	//XXX still need to follow matchChildren links
+    	//XXX when doing children need to do all recnums - collector1 2 3 ...
+    	
+    	int adjustedRecNum = uploadFields.size() == 1 ? 0 : recNum;
+    	
+    	List<ParentMatchInfo> result = new Vector<ParentMatchInfo>();
+    	Vector<List<ParentMatchInfo>> parentMatches = new Vector<List<ParentMatchInfo>>();
+    	
+    	for (Vector<ParentTableEntry> ptes : parentTables)
+    	{
+    		
+    		for (ParentTableEntry pte : ptes)
+    		{
+    			parentMatches.add(pte.getImportTable().getMatchInfoInternal(row, adjustedRecNum));
+    		}
+    	}
+    	
+    	HashMap<UploadTable, DataModelObjBase> parentParams = new HashMap<UploadTable, DataModelObjBase>();
+    	boolean doMatch = true;
+    	boolean blankParentage = true;
+    	for (List<ParentMatchInfo> pm : parentMatches)
+    	{
+    		if (doMatch && pm.size() > 0)
+    		{
+    			ParentMatchInfo nearest = pm.get(pm.size() - 1);
+    			blankParentage &= nearest.isBlank();
+    			if (nearest.getMatches().size() == 1 || (nearest.getMatches().size() == 0 && nearest.isBlank()))
+    			{
+    				DataModelObjBase match = nearest.getMatches().size() == 1 ? nearest.getMatches().get(0) : null;
+    				parentParams.put(nearest.getTable(), match);
+    			} else
+    			{
+    				doMatch = false;
+    			}
+    		}
+    		result.addAll(pm);
+    	}
+		Vector<DataModelObjBase> matches = new Vector<DataModelObjBase>(); 
+		boolean blank = blankParentage && isBlankRow(row, uploader.getUploadData(), adjustedRecNum);
+    	if (doMatch && !blank)
+    	{
+    		findMatch(adjustedRecNum, false, matches, parentParams);
+    	}     		
+    	result.add(new ParentMatchInfo(matches, this, blank));
+    	
+    	return result;
+    }
+    
     /**
      * @param row
      * @param recNum
@@ -2141,22 +2259,44 @@ public class UploadTable implements Comparable<UploadTable>
      * @throws ParseException
      * @throws NoSuchMethodException
      */
-    public UploadTableMatchInfo getMatchInfo(int row, int recNum) throws UploaderException,
+    public List<UploadTableMatchInfo> getMatchInfo(int row, int recNum) throws UploaderException,
     	InvocationTargetException, IllegalAccessException, ParseException,
     	NoSuchMethodException
     {
     	//XXX assuming that an upload is NOT in progress!!
     	wbCurrentRow = row;
-    	int matchCount = findMatch(recNum, false, true);
-    	Vector<Integer> colIdxs = new Vector<Integer>();
-    	for (UploadField uf : uploadFields.get(recNum))
+    	//XXX assuming this public method is called by Uploader for its Root table.
+    	List<ParentMatchInfo> internalResult = getMatchInfoInternal(row, recNum);
+    	List<UploadTableMatchInfo> result = new Vector<UploadTableMatchInfo>();
+    	for (ParentMatchInfo pmi : internalResult)
     	{
-    		if (uf.getIndex() != -1)
-    		{
-    			colIdxs.add(uf.getIndex());
-    		}
+    		System.out.println(pmi.getTable() + " " + pmi.isBlank() + " " + pmi.getMatches());
+        	Vector<Integer> colIdxs = new Vector<Integer>();
+        	int adjustedRecNum = pmi.getTable().getUploadFields().size() == 0 ? 1 : recNum;
+        	for (UploadField uf : pmi.getTable().getUploadFields().get(adjustedRecNum))
+        	{
+        		if (uf.getIndex() != -1)
+        		{
+        			colIdxs.add(uf.getIndex());
+        		}
+        	}
+        	result.add(new UploadTableMatchInfo(pmi.matches.size(), colIdxs));
     	}
-    	return new UploadTableMatchInfo(matchCount, colIdxs);
+    	return result;
+    	
+//    	//XXX assuming that an upload is NOT in progress!!
+//    	wbCurrentRow = row;
+//    	Vector<DataModelObjBase> matched = new Vector<DataModelObjBase>();
+//    	findMatch(recNum, false, matched, null);
+//    	Vector<Integer> colIdxs = new Vector<Integer>();
+//    	for (UploadField uf : uploadFields.get(recNum))
+//    	{
+//    		if (uf.getIndex() != -1)
+//    		{
+//    			colIdxs.add(uf.getIndex());
+//    		}
+//    	}
+//    	return new UploadTableMatchInfo(matched.size(), colIdxs);
     }
     
     /**
@@ -2170,7 +2310,8 @@ public class UploadTable implements Comparable<UploadTable>
      * action depends on props of matchSetting member.
      */
     @SuppressWarnings("unchecked")
-    protected int findMatch(int recNum, boolean forceMatch, boolean returnCount) throws UploaderException,
+    protected boolean findMatch(int recNum, boolean forceMatch, List<DataModelObjBase> returnMatches, 
+    		HashMap<UploadTable, DataModelObjBase> overrideParentParams) throws UploaderException,
             InvocationTargetException, IllegalAccessException, ParseException,
             NoSuchMethodException
     {
@@ -2179,7 +2320,7 @@ public class UploadTable implements Comparable<UploadTable>
         
         if (skipMatching)
         {
-            return 0;
+            return false;
         }
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -2189,7 +2330,7 @@ public class UploadTable implements Comparable<UploadTable>
         try
         {
             CriteriaIFace critter = session.createCriteria(tblClass);
-            ignoringBlankCell = getMatchCriteria(critter, recNum, restrictedVals);
+            ignoringBlankCell = getMatchCriteria(critter, recNum, restrictedVals, overrideParentParams);
             
             List<DataModelObjBase> matches;
             List<DataModelObjBase> matchList = (List<DataModelObjBase>) critter.list();
@@ -2225,9 +2366,10 @@ public class UploadTable implements Comparable<UploadTable>
                 matches = matchChildren(matches, recNum);
             }
             
-            if (returnCount)
+            if (returnMatches != null)
             {
-            	return matches.size();
+            	returnMatches.addAll(matches);
+            	return true;
             }
             
             if (matches.size() == 1)
@@ -2278,9 +2420,9 @@ public class UploadTable implements Comparable<UploadTable>
             		}
             	}
             }
-            return -1;
+            return true;
         }
-        return 0;
+        return false;
     }
 
     public void onAddNewMatch(final Vector<MatchRestriction> restrictedVals)
@@ -3004,7 +3146,7 @@ public class UploadTable implements Comparable<UploadTable>
             {
                 if (needToWrite(recNum))
                 {
-                    if (skipMatch || findMatch(recNum, false, false) == 0 || updateMatches)
+                    if (skipMatch || !findMatch(recNum, false, null, null) || updateMatches)
                     {
                     	if (isSecurityOn && !getWriteTable().getTableInfo().getPermissions().canAdd())
                     	{

@@ -4198,9 +4198,9 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param wbRow 
      * @return list of updated data items
      */
-    protected Hashtable<Integer, Short> updateCellStatuses(List<CellStatusInfo> stats, final WorkbenchRow wbRow)
+    protected Hashtable<Short, Short> updateCellStatuses(List<CellStatusInfo> stats, final WorkbenchRow wbRow)
     {
-    	Hashtable<Integer, Short> exceptionalItems = new Hashtable<Integer, Short>();
+    	Hashtable<Short, Short> exceptionalItems = new Hashtable<Short, Short>();
 		if (stats != null && stats.size() > 0)
 		{
 			for (CellStatusInfo issue : stats)
@@ -4215,7 +4215,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 					}
 					if (wbItem != null)
 					{
-						exceptionalItems.put(col, issue.getStatus());
+						exceptionalItems.put(col.shortValue(), issue.getStatus());
 						//WorkbenchDataItems can be updated by GridCellEditor or by background validation initiated at load time or after find/replace ops			
 						synchronized(wbItem)
 						{
@@ -4298,13 +4298,13 @@ public class WorkbenchPaneSS extends BaseSubPane
 		}
 			
 		
-		updateCellStatuses(csis, wbRow);
+		Hashtable<Short, Short> exceptionalItems = updateCellStatuses(csis, wbRow);
 		for (WorkbenchDataItem wbItem : wbRow.getWorkbenchDataItems())
 		{
 			Short origstat = originalStats.get(new Short((short )wbItem.getColumnNumber()));
 			if (origstat != null)
 			{
-				if (origstat != wbItem.getEditorValidationStatus())
+				if (origstat != wbItem.getEditorValidationStatus() || exceptionalItems.get(wbItem.getColumnNumber()) == null)
 				{
 					if (origstat == WorkbenchDataItem.VAL_MULTIPLE_MATCH || origstat == WorkbenchDataItem.VAL_NEW_DATA)
 					{
@@ -4313,8 +4313,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 					{
 						invalidCellCount.getAndDecrement();
 					}
-					if (wbItem.getEditorValidationStatus() == WorkbenchDataItem.VAL_NONE 
-							|| wbItem.getEditorValidationStatus() == WorkbenchDataItem.VAL_OK)
+					if (exceptionalItems.get(wbItem.getColumnNumber()) == null)
 					{
 						//XXX synchronization is not really necessary anymore, right??
 						synchronized(wbItem)

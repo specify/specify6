@@ -133,7 +133,6 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.ui.dnd.Trash;
-import edu.ku.brc.util.Pair;
 
 /**
  * Placeholder for additional work.

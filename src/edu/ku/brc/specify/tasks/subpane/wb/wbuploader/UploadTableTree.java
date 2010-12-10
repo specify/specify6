@@ -24,6 +24,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -986,16 +987,17 @@ public class UploadTableTree extends UploadTable
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#getMatchCriteria(edu.ku.brc.dbsupport.DataProviderSessionIFace.CriteriaIFace, int, java.util.Vector)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#getMatchCriteria(edu.ku.brc.dbsupport.DataProviderSessionIFace.CriteriaIFace, int, java.util.Vector, java.util.HashMap)
      */
     @Override
     protected boolean getMatchCriteria(CriteriaIFace critter,
                                        int recNum,
-                                       Vector<UploadTable.MatchRestriction> restrictedVals)
+                                       Vector<UploadTable.MatchRestriction> restrictedVals,
+                                       HashMap<UploadTable, DataModelObjBase> overrideParentParams)
             throws UploaderException, IllegalAccessException, NoSuchMethodException,
             InvocationTargetException
     {
-        boolean result =  super.getMatchCriteria(critter, recNum, restrictedVals);
+        boolean result =  super.getMatchCriteria(critter, recNum, restrictedVals, overrideParentParams);
         if (!allowUnacceptedMatches)
         {
         //XXX It is possible for taxa (or other tree tables) to have null (interpreted as true) isAccepted

@@ -40,7 +40,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -841,8 +840,70 @@ public class Uploader implements ActionListener, KeyListener
         {	
         	currentUpload = this;
         }
+        for (UploadTable ut : uploadTables){
+        	System.out.print(ut + " " + ut.isMatchChild() + " ");
+        	if (ut.getParentTables() != null && ut.getParentTables().size() > 0)
+        	{
+        		System.out.println(ut.getParentTables().get(0).size());
+        	} else
+        	{
+        		System.out.println("0");
+        	}
+        }
+        System.out.println("end of upload tables");
+        System.out.println(getRootTable());
     }
 
+    /**
+     * @param ut child whose parents will be traced
+     * @param rps current list of parents
+     */
+    protected void processParentsForRootTableSearch(UploadTable ut, Set<UploadTable> rps)
+    {
+		for (Vector<ParentTableEntry> ptes : ut.getParentTables())
+		{
+			for (ParentTableEntry pte : ptes)
+			{
+				UploadTable p = pte.getImportTable();
+				if (!p.getMatchChildren().contains(ut))
+				{
+					rps.add(p);
+					processParentsForRootTableSearch(p, rps);
+				}
+			}
+		}
+    	
+    }
+    
+    /**
+     * @return the 'root' or 'main' table for a dataset
+     * 
+     * This will be the table that has no one-to-many or one-to-one child tables or 'owns' all its child tables. 
+     */
+    protected UploadTable getRootTable()
+    {
+    	//First, construct all tables that are 'owned' by other tables and their non-'owner' parents.
+    	HashSet<UploadTable> ruledChildrenAndTheirReqs = new HashSet<UploadTable>();
+    	for (UploadTable ut : uploadTables)
+    	{
+    		if (ut.isMatchChild())
+    		{
+    			ruledChildrenAndTheirReqs.add(ut);
+    			processParentsForRootTableSearch(ut, ruledChildrenAndTheirReqs);
+    		}
+    	}
+    	//Then move backwards through the ALREADY ordered upload tables until we get to a table 
+    	//that is not in the list constructed above 
+    	for (int t = uploadTables.size() - 1; t >= 0; t--)
+    	{
+    		if (!uploadTables.get(t).isMatchChild() && !ruledChildrenAndTheirReqs.contains(uploadTables.get(t)))
+    		{
+    			return uploadTables.get(t);
+    		}
+    	}
+    	return null;
+    }
+    
     /**
      * @param mapI
      * @return true if mapI maps a taxonomic level for determination
@@ -1578,16 +1639,31 @@ public class Uploader implements ActionListener, KeyListener
      * @param col -1 -> match all cols
      * @return
      */
-    public Vector<UploadTableMatchInfo> matchData(int row, int col, List<UploadTableInvalidValue> invalidCols) throws UploaderException,
+    public List<UploadTableMatchInfo> matchData(int row, int col, List<UploadTableInvalidValue> invalidCols) throws UploaderException,
 		InvocationTargetException, IllegalAccessException, ParseException,
 		NoSuchMethodException
     {
-    	Vector<UploadTableMatchInfo> result = new Vector<UploadTableMatchInfo>();
-    	for (Pair<Integer, UploadTable> utSeq : getUploadTablesForColForMatch(col, invalidCols))
+    	//Whereas, a match or non-match in any column X depends on matches or non-matches for columns whose tables are parents to X's table, and
+    	//whereas, a match or non-match in X can change the match status for columns whose tables are children of X's tables, and
+    	//whereas, a match or non-match in X can even change the match status for columns whose tables are parents of the children of X's tables
+    	//for example a change to species can affect determination which can effect collection object,
+    	//therefore it is best simply not to try to do matching on a col by col basis.
+    	int matchCol = -1;  //match entire row
+    		
+    	if (matchCol == -1)
     	{
-    		result.add(utSeq.getSecond().getMatchInfo(row, utSeq.getFirst()));
+        	List<UploadTableMatchInfo> result = getRootTable().getMatchInfo(row, 0);
+        	return result;
     	}
-    	return result;
+    	
+    	return null;
+    	
+//    	Vector<UploadTableMatchInfo> result = new Vector<UploadTableMatchInfo>();
+//    	for (Pair<Integer, UploadTable> utSeq : getUploadTablesForColForMatch(matchCol, invalidCols))
+//    	{
+//    		result.add(utSeq.getSecond().getMatchInfo(row, utSeq.getFirst()));
+//    	}
+//    	return result;
     }
     
     /**
@@ -1717,6 +1793,14 @@ public class Uploader implements ActionListener, KeyListener
         return result;
     }
 
+    /**
+     * @return the uploadData
+     */
+    public UploadData getUploadData()
+    {
+    	return uploadData;
+    }
+    
     /**
      * @param t
      * @return true if there is an UploadTable defined for t.
