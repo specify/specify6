@@ -191,7 +191,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                         String dbNm = rs.getString(1);
                         pStmt2.setString(1, dbNm);
                         ResultSet rs2 = pStmt2.executeQuery();
-                        if (rs.next())
+                        if (rs2.next())
                         {
                             dbNames.add(dbNm);
                         }
