@@ -37,6 +37,7 @@ import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author ricardo
@@ -98,14 +99,21 @@ public class SecuritySummaryDlg extends CustomDialog
         mainPanel.add(contentPanel, BorderLayout.CENTER);
 
         // updates panels with permission data from the user who's currently logged on
-		SpecifyUser user = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+		SpecifyUser user      = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
 		SpPrincipal principal = UserPrincipalHibernateService.getUserPrincipalBySpecifyUser(user);
-        Hashtable<String, SpPermission> existingPerms = PermissionService.getExistingPermissions(principal.getId());
-        
-        // get the groups this user belongs to and stuff the list of overriding permissions with their permissions
-        Hashtable<String, SpPermission> overridingPerms = PermissionService.getOverridingPermissions(user);
+		if (principal != null)
+		{
+            Hashtable<String, SpPermission> existingPerms = PermissionService.getExistingPermissions(principal.getId());
+            
+            // get the groups this user belongs to and stuff the list of overriding permissions with their permissions
+            Hashtable<String, SpPermission> overridingPerms = PermissionService.getOverridingPermissions(user);
 
-		generalEditor.updateData(principal, null, existingPerms, overridingPerms, null);
+            generalEditor.updateData(principal, null, existingPerms, overridingPerms, null);
+            
+		} else
+		{
+		    UIRegistry.showError(String.format("The user '%s' doesn't have a User Principal object, which should not happen.\nPlease contact Specify Support.", user.getName()));
+		}
         
         pack();
         
