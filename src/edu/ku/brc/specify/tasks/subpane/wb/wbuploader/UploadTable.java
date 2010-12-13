@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.persistence.CascadeType;
 import javax.swing.SwingUtilities;
@@ -194,6 +195,7 @@ public class UploadTable implements Comparable<UploadTable>
      * For example: Collectors must be checked when matching collectingEvents.
      */
     protected Vector<UploadTable>                       matchChildren;
+    protected AtomicBoolean						        skipChildrenMatching = new AtomicBoolean(false);
     
     protected boolean                                   skipMatching = false;
     /**
@@ -1834,9 +1836,10 @@ public class UploadTable implements Comparable<UploadTable>
     {
         // temporary fix. Really should determine based on cascade rules and the fields in the
         // dataset.
-        return tblClass.equals(CollectingEvent.class) || tblClass.equals(Accession.class)
+        return !skipChildrenMatching.get() &&
+        	(tblClass.equals(CollectingEvent.class) || tblClass.equals(Accession.class)
                 || tblClass.equals(CollectionObject.class) 
-                || tblClass.equals(Locality.class)
+                || tblClass.equals(Locality.class))
                 ;
     }
 
@@ -2154,6 +2157,10 @@ public class UploadTable implements Comparable<UploadTable>
         return ignoringBlankCell;
     }
     
+    /**
+     * @author timo
+     *
+     */
     private class ParentMatchInfo 
     {
     	protected final List<DataModelObjBase> matches;
@@ -2196,55 +2203,152 @@ public class UploadTable implements Comparable<UploadTable>
     	
     }
     
-    protected List<ParentMatchInfo> getMatchInfoInternal(int row, int recNum) throws UploaderException,
+    /**
+     * @param recNum
+     * @param invalidColNums - indexes of cols that contain invalid values.
+     * @return
+     */
+    protected boolean containsInvalidCol(int recNum, Set<Integer> invalidColNums)
+    {
+    	int adjustedRecNum = uploadFields.size() == 1 ? 0 : recNum; //I guess
+    	for (UploadField fld : uploadFields.get(adjustedRecNum))
+    	{
+    		if (invalidColNums.contains(fld.getIndex()))
+    		{
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
+    /**
+     * @param row
+     * @param recNum
+     * @return
+     * @throws UploaderException
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     * @throws ParseException
+     * @throws NoSuchMethodException
+     */
+    protected List<ParentMatchInfo> getMatchInfoInternal(int row, int recNum, 
+    		Set<Integer> invalidColNums, HashMap<UploadTable, DataModelObjBase> mactchChildrenParents) throws UploaderException,
 		InvocationTargetException, IllegalAccessException, ParseException,
 		NoSuchMethodException
     {
     	//XXX still need to follow matchChildren links
     	//XXX when doing children need to do all recnums - collector1 2 3 ...
+    	//XXX need to skip tables with invalid columns
+    	//XXX what about ...Attribute tables? Do they need special treatment?
+    	//XXX if CE is embedded? 
     	
     	int adjustedRecNum = uploadFields.size() == 1 ? 0 : recNum;
+    	//XXX assuming that an upload is NOT in progress!!
+    	wbCurrentRow = row;
     	
     	List<ParentMatchInfo> result = new Vector<ParentMatchInfo>();
     	Vector<List<ParentMatchInfo>> parentMatches = new Vector<List<ParentMatchInfo>>();
-    	
+    	Vector<List<ParentMatchInfo>> childMatches = new Vector<List<ParentMatchInfo>>();
+    	List<UploadTable> childTables = new Vector<UploadTable>(matchChildren);
     	for (Vector<ParentTableEntry> ptes : parentTables)
     	{
-    		
     		for (ParentTableEntry pte : ptes)
     		{
-    			parentMatches.add(pte.getImportTable().getMatchInfoInternal(row, adjustedRecNum));
+    			if (!pte.getImportTable().matchChildren.contains(this))
+    			{
+    				if (pte.getImportTable().isOneToOneChild())
+    				{
+    					childTables.add(pte.getImportTable());
+    				} else
+    				{
+    					parentMatches.add(pte.getImportTable().getMatchInfoInternal(row, adjustedRecNum, invalidColNums, 
+    							mactchChildrenParents));
+    				}
+    			}
     		}
     	}
     	
     	HashMap<UploadTable, DataModelObjBase> parentParams = new HashMap<UploadTable, DataModelObjBase>();
-    	boolean doMatch = true;
+    	boolean doMatch = true; 
     	boolean blankParentage = true;
-    	for (List<ParentMatchInfo> pm : parentMatches)
+    	boolean blank = isBlankRow(row, uploader.getUploadData(), adjustedRecNum);
+		Vector<DataModelObjBase> matches = new Vector<DataModelObjBase>();
+		//XXX need to include matchChildrenParents in parentParams 
+		for (List<ParentMatchInfo> pm : parentMatches)
+		{
+			if (doMatch && pm.size() > 0)
+			{
+				ParentMatchInfo nearest = pm.get(pm.size() - 1);
+				blankParentage &= nearest.isBlank();
+				if (nearest.getMatches().size() == 1
+						|| (nearest.getMatches().size() == 0 && nearest
+								.isBlank()))
+				{
+					DataModelObjBase match = nearest.getMatches().size() == 1 ? nearest
+							.getMatches().get(0)
+							: null;
+					parentParams.put(nearest.getTable(), match);
+				} else
+				{
+					doMatch = false;
+				}
+			}
+			result.addAll(pm);
+		}
+		if (doMatch && !blank)
+		{
+			for (Vector<UploadField> ufs : uploadFields)
+			{
+				for (UploadField uf : ufs)
+				{
+	                if (uf.getIndex() != -1)
+	                {
+	                	uf.setValue(uploader.getUploadData().get(row, uf.getIndex()));
+	                }
+				}
+			}
+			skipChildrenMatching.set(true);
+			try
+			{
+				findMatch(adjustedRecNum, false, matches, parentParams);
+			} finally
+			{
+				skipChildrenMatching.set(false);
+			}
+			
+	    	
+	    	
+	    	
+		}
+		
+		//XXX add this table to matchChildrenParents
+		if (mactchChildrenParents == null)
+		{
+			
+		}
+    	for (UploadTable ut : childTables)
     	{
-    		if (doMatch && pm.size() > 0)
+    		for (int rc = 0; rc < ut.getUploadFields().size(); rc++)
     		{
-    			ParentMatchInfo nearest = pm.get(pm.size() - 1);
-    			blankParentage &= nearest.isBlank();
-    			if (nearest.getMatches().size() == 1 || (nearest.getMatches().size() == 0 && nearest.isBlank()))
-    			{
-    				DataModelObjBase match = nearest.getMatches().size() == 1 ? nearest.getMatches().get(0) : null;
-    				parentParams.put(nearest.getTable(), match);
-    			} else
-    			{
-    				doMatch = false;
-    			}
+    			childMatches.add(ut.getMatchInfoInternal(row, rc, invalidColNums, mactchChildrenParents));
     		}
-    		result.addAll(pm);
     	}
-		Vector<DataModelObjBase> matches = new Vector<DataModelObjBase>(); 
-		boolean blank = blankParentage && isBlankRow(row, uploader.getUploadData(), adjustedRecNum);
-    	if (doMatch && !blank)
-    	{
-    		findMatch(adjustedRecNum, false, matches, parentParams);
-    	}     		
-    	result.add(new ParentMatchInfo(matches, this, blank));
+    	//XXX what the hell to do with childMatches??? Need to add them to result to get Agent, taxon matches, but how to 
+    	//Use them in findMatch?? Does findMatch need to be done first?? WTF?
+		// XXX what the hell happens for matchchildren in findMatch??
+		//OK. Current plan is to match children in a way similar to the above - create a parentParam for this object and pass
+		//it to findMatch for the children...
+		// XXX this is not the final word on matchchildren matches
     	
+		for (List<ParentMatchInfo> cm : childMatches)
+		{
+			result.addAll(cm);
+		}
+    	
+    	if (!containsInvalidCol(adjustedRecNum, invalidColNums))
+    	{
+    		result.add(new ParentMatchInfo(matches, this, blank && blankParentage));
+    	}
     	return result;
     }
     
@@ -2259,18 +2363,18 @@ public class UploadTable implements Comparable<UploadTable>
      * @throws ParseException
      * @throws NoSuchMethodException
      */
-    public List<UploadTableMatchInfo> getMatchInfo(int row, int recNum) throws UploaderException,
+    public List<UploadTableMatchInfo> getMatchInfo(int row, int recNum, Set<Integer> invalidColNums) throws UploaderException,
     	InvocationTargetException, IllegalAccessException, ParseException,
     	NoSuchMethodException
     {
     	//XXX assuming that an upload is NOT in progress!!
     	wbCurrentRow = row;
     	//XXX assuming this public method is called by Uploader for its Root table.
-    	List<ParentMatchInfo> internalResult = getMatchInfoInternal(row, recNum);
+    	List<ParentMatchInfo> internalResult = getMatchInfoInternal(row, recNum, invalidColNums, null);
     	List<UploadTableMatchInfo> result = new Vector<UploadTableMatchInfo>();
     	for (ParentMatchInfo pmi : internalResult)
     	{
-    		System.out.println(pmi.getTable() + " " + pmi.isBlank() + " " + pmi.getMatches());
+    		//System.out.println(pmi.getTable() + " " + pmi.isBlank() + " " + pmi.getMatches());
         	Vector<Integer> colIdxs = new Vector<Integer>();
         	int adjustedRecNum = pmi.getTable().getUploadFields().size() == 0 ? 1 : recNum;
         	for (UploadField uf : pmi.getTable().getUploadFields().get(adjustedRecNum))

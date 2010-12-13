@@ -1650,9 +1650,15 @@ public class Uploader implements ActionListener, KeyListener
     	//therefore it is best simply not to try to do matching on a col by col basis.
     	int matchCol = -1;  //match entire row
     		
+    	Set<Integer> invalidColNums = new HashSet<Integer>();
+    	for (UploadTableInvalidValue iv : invalidCols)
+    	{
+    		invalidColNums.add(iv.getCol());
+    	}
+    	
     	if (matchCol == -1)
     	{
-        	List<UploadTableMatchInfo> result = getRootTable().getMatchInfo(row, 0);
+        	List<UploadTableMatchInfo> result = getRootTable().getMatchInfo(row, 0, invalidColNums);
         	return result;
     	}
     	
