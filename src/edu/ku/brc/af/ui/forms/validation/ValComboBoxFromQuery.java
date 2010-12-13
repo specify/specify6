@@ -66,10 +66,10 @@ import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.af.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.af.ui.db.JComboBoxFromQuery;
 import edu.ku.brc.af.ui.db.TextFieldWithQuery;
-import edu.ku.brc.af.ui.db.TextFieldWithQuery.ExternalQueryProviderIFace;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.af.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
+import edu.ku.brc.af.ui.db.TextFieldWithQuery.ExternalQueryProviderIFace;
 import edu.ku.brc.af.ui.forms.DataGetterForObj;
 import edu.ku.brc.af.ui.forms.DataObjectSettable;
 import edu.ku.brc.af.ui.forms.DataObjectSettableFactory;
@@ -77,6 +77,7 @@ import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.SessionListenerIFace;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.persist.FormDevHelper;
@@ -108,7 +109,8 @@ import edu.ku.brc.ui.UIRegistry;
 public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                                                             ListSelectionListener,
                                                             GetSetValueIFace,
-                                                            AppPrefsChangeListener
+                                                            AppPrefsChangeListener,
+                                                            SessionListenerIFace
 {
     protected static final Logger log = Logger.getLogger(ValComboBoxFromQuery.class);
 
@@ -167,6 +169,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected ActionListener defaultCloneAction;
     
     protected ViewBasedSearchQueryBuilderIFace builder = null;
+    protected DataProviderSessionIFace         session;
     
     /**
      * Constructor.
@@ -1127,6 +1130,19 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     }
 
     //--------------------------------------------------
+    //-- SessionListenerIFace Interface
+    //--------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.SessionListenerIFace#setSession(edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void setSession(DataProviderSessionIFace session)
+    {
+        this.session = session;
+    }
+    
+    //--------------------------------------------------
     //-- UIValidatable Interface
     //--------------------------------------------------
 
@@ -1378,7 +1394,11 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             dataObj = (FormDataObjIFace)value;
             if (dataObj != null)
             {
-                dataObj.forceLoad();
+                if (session != null)
+                {
+                    session.attach(dataObj);
+                    dataObj.forceLoad();
+                }
             }
             refreshUIFromData(false);
             
@@ -1424,6 +1444,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 if (list.size() != 0)
                 {
                     dataObj = (FormDataObjIFace)list.get(0);
+                    dataObj.forceLoad();
                     
                 } else
                 {
@@ -1581,5 +1602,4 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             documentChanged();
         }
     }
-
 }

@@ -199,11 +199,12 @@ public class FormViewObj implements Viewable,
     public    static final String           STATUSBAR_NAME  = "FormViewObj";
 
     // Data Members
-    protected DataProviderSessionIFace      session        = null;
-    protected boolean                       isEditing     = false;
+    protected DataProviderSessionIFace      session               = null;
+    protected Vector<SessionListenerIFace>  sessionListeners      = null;
+    protected boolean                       isEditing             = false;
     protected boolean                       isNewlyCreatedDataObj = false;
     protected boolean                       isCreatingNewObject   = false;  // true when in the middle of creating a new Object
-    protected MultiView                     mvParent       = null;
+    protected MultiView                     mvParent              = null;
     protected ViewIFace                     view;
     protected AltViewIFace                  altView;
     protected FormViewDef                   formViewDef;
@@ -2272,7 +2273,8 @@ public class FormViewObj implements Viewable,
                 session.close();
             }
             
-            session = DataProviderFactory.getInstance().createSession();
+            setSession(DataProviderFactory.getInstance().createSession());
+            
             //DataProviderFactory.getInstance().evict(dataObj.getClass()); 
             
             if (list != null && dataObj instanceof FormDataObjIFace)
@@ -2766,8 +2768,8 @@ public class FormViewObj implements Viewable,
         {
             session.close();
         }
-        session = DataProviderFactory.getInstance().createSession();
-        setSession(session);
+        
+        setSession(DataProviderFactory.getInstance().createSession());
         
         //log.info("saveObject "+hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"]");
 
@@ -2851,7 +2853,7 @@ public class FormViewObj implements Viewable,
             if (session != null && (mvParent == null || mvParent.isTopLevel()))
             {
                 session.close();
-                session = null;
+                setSession(null);
             }
             
             if (viewStateList != null && viewStateList.size() > 0 && mvParent != null && mvParent.isTopLevel())
@@ -3066,8 +3068,7 @@ public class FormViewObj implements Viewable,
             session.close();
         }
         
-        session = DataProviderFactory.getInstance().createSession();
-        setSession(session);
+        setSession(DataProviderFactory.getInstance().createSession());
         
         try
         {
@@ -3192,8 +3193,7 @@ public class FormViewObj implements Viewable,
                     //if (attachFailed)
                     {
                         session.close();
-                        session = DataProviderFactory.getInstance().createSession();
-                        setSession(session);
+                        setSession(DataProviderFactory.getInstance().createSession());
                     }
                     
                     //session.evict(dataObj);
@@ -3275,7 +3275,7 @@ public class FormViewObj implements Viewable,
             if (session != null && (mvParent == null || mvParent.isTopLevel()))
             {
                 session.close();
-                session = null;
+                setSession(null);
             }
         }
         
@@ -4704,7 +4704,7 @@ public class FormViewObj implements Viewable,
                     session.close();
                 }
                 
-                session = DataProviderFactory.getInstance().createSession();
+                setSession(DataProviderFactory.getInstance().createSession());
                 
                 if (session != null && mvParent != null)
                 {
@@ -4713,7 +4713,7 @@ public class FormViewObj implements Viewable,
                 
                 try
                 {
-                    session.refresh(dataObj);
+                    session.attach(dataObj);
                     ((FormDataObjIFace)dataObj).forceLoad();
                 }
                 catch (HibernateException ex)
@@ -5059,7 +5059,7 @@ public class FormViewObj implements Viewable,
         if (session != null && (mvParent == null || mvParent.isTopLevel() || forceCreateSession))
         {
             session.close();
-            session = null;
+            setSession(null);
             
             if (mvParent != null)
             {
@@ -5569,6 +5569,14 @@ public class FormViewObj implements Viewable,
     {
         //log.debug("setSession "+hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
         this.session = session;
+        
+        if (sessionListeners != null)
+        {
+            for (SessionListenerIFace sli : sessionListeners)
+            {
+                sli.setSession(session);
+            }
+        }
     }
 
     /**
@@ -5577,6 +5585,29 @@ public class FormViewObj implements Viewable,
     public DataProviderSessionIFace getSession()
     {
         return session;
+    }
+    
+    /**
+     * @param sli
+     */
+    public void addSessionListener(final SessionListenerIFace sli)
+    {
+        if (sessionListeners == null)
+        {
+            sessionListeners = new Vector<SessionListenerIFace>();
+        }
+        sessionListeners.add(sli);
+    }
+    
+    /**
+     * @param sli
+     */
+    public void removeSessionListener(final SessionListenerIFace sli)
+    {
+        if (sessionListeners != null)
+        {
+            sessionListeners.remove(sli);
+        }
     }
 
     /* (non-Javadoc)
@@ -5649,6 +5680,7 @@ public class FormViewObj implements Viewable,
         controlsById.clear();
         controlsByName.clear();
         labels.clear();
+        sessionListeners.clear();
         
         if (altViewsList != null)
         {
@@ -5801,6 +5833,10 @@ public class FormViewObj implements Viewable,
      */
     public void addControlToUI(Component control, int colInx, int rowInx, int colSpan, int rowSpan)
     {
+        if (control instanceof SessionListenerIFace)
+        {
+            addSessionListener((SessionListenerIFace)control);
+        }
         builder.add(control, cc.xywh(colInx, rowInx, colSpan, rowSpan));
     }
     
