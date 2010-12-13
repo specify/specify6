@@ -738,105 +738,116 @@ public class UserPanel extends BaseSetupPanel
         
         databaseName = isInitial ? items.get(0) : (String)dbList.getSelectedValue();
         
-        DBMSUserMgr mgr   = DBMSUserMgr.getInstance();
-        if (mgr.connect(dbUserName, dbPassword, hostName, databaseName))
+        DBMSUserMgr mgr = DBMSUserMgr.getInstance();
+        do 
         {
-            if (isInitial)
+            if (mgr.connect(dbUserName, dbPassword, hostName, databaseName))
             {
-                dbScrollPane.setVisible(dbNamesList.size() > 1);
-                DefaultListModel model = new DefaultListModel();
-                for (String nm : items)
+                if (isInitial)
                 {
-                    model.addElement(nm);
-                }
-                dbList.setModel(model);
-                
-                odbScrollPane.setVisible(otherNamesList.size() > 1);
-                model = new DefaultListModel();
-                for (String nm : otherNamesList)
-                {
-                    model.addElement(nm);
-                }
-                otherDBList.setModel(model);
-            }
-            
-            label.setText(databaseName);
-            
-            Vector<UserData> userDataList = new Vector<UserData>();
-            String           sql          = "SELECT SpecifyUserId, Name, Password, EMail FROM specifyuser";
-            Vector<Object[]> data         = BasicSQLUtils.query(mgr.getConnection(), sql);
-            
-            for (Object[] c : data)
-            {
-                UserData ud = new UserData((Integer)c[0], (String)c[1], (String)c[2], (String)c[3]);
-                userDataList.add(ud);
-                
-                sql = String.format("SELECT LastName, FirstName, EMail FROM agent WHERE SpecifyUserID = %d ORDER BY TimestampModified, TimestampCreated LIMIT 0,1", ud.getId());
-                Vector<Object[]> uData = BasicSQLUtils.query(mgr.getConnection(), sql);
-                if (uData.size() > 0)
-                {
-                    Object[] d = uData.get(0);
-                    ud.setLastName((String)d[0]);
-                    ud.setFirstName((String)d[1]);
-                    
-                    String email = (String)d[2];
-                    if (StringUtils.isNotEmpty(email) && StringUtils.isEmpty(ud.getEmail()))
+                    dbScrollPane.setVisible(dbNamesList.size() > 1);
+                    DefaultListModel model = new DefaultListModel();
+                    for (String nm : items)
                     {
-                        ud.setEmail(email);
+                        model.addElement(nm);
                     }
-                } else
-                {
-                    // error
-                }
-            }
-            mgr.close();
-            userModel.setUserData(userDataList);
-            UIHelper.calcColumnWidths(userTable);
-            
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run()
-                {
-                    Window    window       = getTopWindow();
-                    Insets    screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(window.getGraphicsConfiguration());
-                    Rectangle screenRect   = window.getGraphicsConfiguration().getBounds();
+                    dbList.setModel(model);
                     
-                    screenRect.height -= screenInsets.top + screenInsets.bottom;
-                    screenRect.width  -= screenInsets.left + screenInsets.right;
-                    
-                    Rectangle rect     = window.getBounds();
-                    Dimension size     = window.getPreferredSize();
-                    
-                    // Make sure the window isn't larger than the screen
-                    size.width  = Math.min(size.width, screenRect.width);
-                    size.height = Math.min(size.height, screenRect.height);
-                    
-                    if (size.height > rect.height || size.width > rect.width)
+                    odbScrollPane.setVisible(otherNamesList.size() > 1);
+                    model = new DefaultListModel();
+                    for (String nm : otherNamesList)
                     {
-                        window.setBounds(rect.x, rect.y, size.width, size.height);
-                        UIHelper.centerWindow(getTopWindow());
+                        model.addElement(nm);
+                    }
+                    otherDBList.setModel(model);
+                }
+                
+                label.setText(databaseName);
+                
+                Vector<UserData> userDataList = new Vector<UserData>();
+                String           sql          = "SELECT SpecifyUserId, Name, Password, EMail FROM specifyuser";
+                Vector<Object[]> data         = BasicSQLUtils.query(mgr.getConnection(), sql);
+                
+                for (Object[] c : data)
+                {
+                    UserData ud = new UserData((Integer)c[0], (String)c[1], (String)c[2], (String)c[3]);
+                    userDataList.add(ud);
+                    
+                    sql = String.format("SELECT LastName, FirstName, EMail FROM agent WHERE SpecifyUserID = %d ORDER BY TimestampModified, TimestampCreated LIMIT 0,1", ud.getId());
+                    Vector<Object[]> uData = BasicSQLUtils.query(mgr.getConnection(), sql);
+                    if (uData.size() > 0)
+                    {
+                        Object[] d = uData.get(0);
+                        ud.setLastName((String)d[0]);
+                        ud.setFirstName((String)d[1]);
                         
+                        String email = (String)d[2];
+                        if (StringUtils.isNotEmpty(email) && StringUtils.isEmpty(ud.getEmail()))
+                        {
+                            ud.setEmail(email);
+                        }
+                    } else
+                    {
+                        // error
                     }
                 }
-            });
-        } else
-        {
-            //UIRegistry.askYesNoLocalized("FIX", "SKIP, nonL10NMsg, titleKey)
-        }
-        
-        
-        if (isInitial && items.size() > 0)
-        {
-            SwingUtilities.invokeLater(new Runnable()
-            {
-                @Override
-                public void run()
+                mgr.close();
+                userModel.setUserData(userDataList);
+                UIHelper.calcColumnWidths(userTable);
+                
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        Window    window       = getTopWindow();
+                        Insets    screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(window.getGraphicsConfiguration());
+                        Rectangle screenRect   = window.getGraphicsConfiguration().getBounds();
+                        
+                        screenRect.height -= screenInsets.top + screenInsets.bottom;
+                        screenRect.width  -= screenInsets.left + screenInsets.right;
+                        
+                        Rectangle rect     = window.getBounds();
+                        Dimension size     = window.getPreferredSize();
+                        
+                        // Make sure the window isn't larger than the screen
+                        size.width  = Math.min(size.width, screenRect.width);
+                        size.height = Math.min(size.height, screenRect.height);
+                        
+                        if (size.height > rect.height || size.width > rect.width)
+                        {
+                            window.setBounds(rect.x, rect.y, size.width, size.height);
+                            UIHelper.centerWindow(getTopWindow());
+                            
+                        }
+                    }
+                });
+                
+                
+                if (isInitial && items.size() > 0)
                 {
-                    dbList.setSelectedIndex(0);
-                    
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            dbList.setSelectedIndex(0);
+                            
+                        }
+                    });
                 }
-            });
-        }
+                
+                break;
+            } else if (items.size() > 1)
+            {
+                items.remove(0);
+                databaseName = isInitial ? items.get(0) : (String)dbList.getSelectedValue();
+            } else
+            {
+                break;
+            }
+            
+        } while (true);
+
     }
 
     /* (non-Javadoc)
