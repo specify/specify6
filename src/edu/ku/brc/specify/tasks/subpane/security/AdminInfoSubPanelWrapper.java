@@ -290,7 +290,7 @@ public class AdminInfoSubPanelWrapper
                 firstPrincipal = user.getUserPrincipal(UserPrincipal.class.getCanonicalName(), collection.getId());
                 secondPrincipal = (SpPrincipal)secondObj; // must be the user group
                 
-                if (secondPrincipal instanceof SpPrincipal)
+                /*if (secondPrincipal instanceof SpPrincipal)
                 {
                     SpPrincipal p = (SpPrincipal)secondObj;
                     System.err.println("*******> "+user.getId()+"  "+p.getId()+"  "+p.getGroupSubClass()+"  "+p.getUserGroupId()+"  "+p.getName());
@@ -298,7 +298,7 @@ public class AdminInfoSubPanelWrapper
                     {
                         System.err.println("            "+up.getId()+"  "+up.getGroupSubClass()+"  "+up.getUserGroupId()+"  "+up.getName());
                     }
-                }
+                }*/
                 
                 panel.setData(user);
                 for (Agent agent : user.getAgents())
@@ -339,11 +339,11 @@ public class AdminInfoSubPanelWrapper
         principal  = firstPrincipal;
         principal2 = secondPrincipal;
         
-        if (secondPrincipal instanceof SpPrincipal)
+        /*if (secondPrincipal instanceof SpPrincipal)
         {
             System.err.println("-------> "+user.getId()+"  "+principal.getId()+"  "+principal.getGroupSubClass()+"  "+principal.getUserGroupId()+"  "+principal.getName());
             System.err.println("-------> "+user.getId()+"  "+principal2.getId()+"  "+principal2.getGroupSubClass()+"  "+principal2.getUserGroupId()+"  "+principal2.getName());
-        }
+        }*/
 
         Hashtable<String, SpPermission> existingPerms   = PermissionService.getExistingPermissions(principal.getId());
         Hashtable<String, SpPermission> overrulingPerms = null;

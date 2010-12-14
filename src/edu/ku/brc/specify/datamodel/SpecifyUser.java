@@ -715,7 +715,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
                 {
                     Integer colId = SpPrincipal.getUserGroupScopeFromPrincipal(principal.getId());
                     //Integer colId = principal.getScope() != null ? principal.getScope().getId() : null;
-                    System.err.println(String.format("getUserPrincipal[%d]: [%d][%d]", principal.getId(), colId != null ? colId : -1, collectionID));
+                    //System.err.println(String.format("getUserPrincipal[%d]: [%d][%d]", principal.getId(), colId != null ? colId : -1, collectionID));
                     if (colId != null && collectionID.equals(colId))
                     {
                         return principal;
