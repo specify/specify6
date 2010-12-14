@@ -206,6 +206,8 @@ public class RegisterSpecify
     public static Institution setHasBeenAsked()
     {
         Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
+        inst = (Institution)DataModelObjBase.getDataObj(Institution.class, ((DataModelObjBase)inst).getId());
+        
         inst.setHasBeenAsked(true);
         inst = getInstance().update(Institution.class, inst);
         return inst;

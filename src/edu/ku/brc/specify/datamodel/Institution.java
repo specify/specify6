@@ -76,6 +76,10 @@ public class Institution extends UserGroupScope implements java.io.Serializable
      protected Boolean       isAccessionsGlobal;
      protected Boolean       isSingleGeographyTree;
      protected Boolean       isSharingLocalities;
+     protected Boolean       isReleaseManagedGlobally;
+     
+     protected String        currentManagedRelVersion;
+     protected String        currentManagedSchemaVersion;
      
      protected Address       address;
      protected Set<Agent>    technicalContacts;
@@ -124,6 +128,10 @@ public class Institution extends UserGroupScope implements java.io.Serializable
         isAccessionsGlobal = true;
         isSingleGeographyTree = false;
         isSharingLocalities   = false;
+        isReleaseManagedGlobally = false;
+        currentManagedRelVersion = null;
+        currentManagedSchemaVersion = null;
+        
         technicalContacts = new HashSet<Agent>();
         contentContacts   = new HashSet<Agent>();
         divisions         = new HashSet<Division>();
@@ -385,6 +393,33 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     }
 
     /**
+     * @return the isReleaseManagedGlobally
+     */
+    @Column(name = "IsReleaseManagedGlobally", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getIsReleaseManagedGlobally()
+    {
+        return isReleaseManagedGlobally == null ? false : isReleaseManagedGlobally;
+    }
+
+    /**
+     * @return the currentManagedRelVersion
+     */
+    @Column(name = "CurrentManagedRelVersion", unique = false, nullable = true, insertable = true, updatable = true, length = 8)
+    public String getCurrentManagedRelVersion()
+    {
+        return currentManagedRelVersion;
+    }
+
+    /**
+     * @return the currentManagedRelVersion
+     */
+    @Column(name = "CurrentManagedSchemaVersion", unique = false, nullable = true, insertable = true, updatable = true, length = 8)
+    public String getCurrentManagedSchemaVersion()
+    {
+        return currentManagedSchemaVersion;
+    }
+
+    /**
      * @param contentContacts the contentContacts to set
      */
     public void setContentContacts(Set<Agent> contentContacts)
@@ -421,7 +456,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
      */
     public void setInstitutionId(Integer institutionId)
     {
-    	setUserGroupScopeId(institutionId);
+        setUserGroupScopeId(institutionId);
     }
 
     /**
@@ -558,6 +593,30 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     public void setIsSharingLocalities(Boolean isSharingLocalities)
     {
         this.isSharingLocalities = isSharingLocalities;
+    }
+
+    /**
+     * @param isReleaseManagedGlobally the isReleaseManagedGlobally to set
+     */
+    public void setIsReleaseManagedGlobally(Boolean isReleaseManagedGlobally)
+    {
+        this.isReleaseManagedGlobally = isReleaseManagedGlobally;
+    }
+
+    /**
+     * @param currentManagedRelVersion the currentManagedRelVersion to set
+     */
+    public void setCurrentManagedRelVersion(String currentManagedRelVersion)
+    {
+        this.currentManagedRelVersion = currentManagedRelVersion;
+    }
+
+    /**
+     * @param currentManagedSchemaVersion the currentManagedSchemaVersion to set
+     */
+    public void setCurrentManagedSchemaVersion(String currentManagedSchemaVersion)
+    {
+        this.currentManagedSchemaVersion = currentManagedSchemaVersion;
     }
 
     /**
