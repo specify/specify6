@@ -3405,8 +3405,11 @@ public class DataBuilder
         sessionArg.saveOrUpdate(adminGroup);
         specifyAdminUser.addUserToSpPrincipalGroup(adminGroup);
         
-        SpPrincipal spPrin = createUserPrincipal(specifyAdminUser, collection);
-        sessionArg.saveOrUpdate(spPrin);
+        if (collection != null)
+        {
+            SpPrincipal spPrin = createUserPrincipal(specifyAdminUser, collection);
+            sessionArg.saveOrUpdate(spPrin);
+        }
         
         return specifyAdminUser;
     }

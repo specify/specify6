@@ -147,7 +147,7 @@ public class MasterUserPanel extends GenericFormPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                createMU();
+                createMasterUser();
             }
         });
         progressBar.setVisible(false);
@@ -317,7 +317,7 @@ public class MasterUserPanel extends GenericFormPanel
     /**
      * 
      */
-    protected void createMU()
+    protected void createMasterUser()
     {
         String saUsrNm = ((JTextField)comps.get("saUserName")).getText();
         if (!DBConnection.getInstance().isEmbedded() && 

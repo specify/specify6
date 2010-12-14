@@ -1095,6 +1095,11 @@ public class BuildSampleDatabase
 
         // create the standard user groups for this collection
         Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(session, collection);
+        
+        SpPrincipal userPrin = DataBuilder.createUserPrincipal(specifyAdminUser, collection);
+        
+        persist(userPrin);
+        persist(specifyAdminUser);
 
         // add the administrator as a Collections Manager in this group
         specifyAdminUser.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
