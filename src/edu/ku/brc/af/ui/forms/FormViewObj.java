@@ -5680,7 +5680,11 @@ public class FormViewObj implements Viewable,
         controlsById.clear();
         controlsByName.clear();
         labels.clear();
-        sessionListeners.clear();
+        
+        if (sessionListeners != null)
+        {
+            sessionListeners.clear();
+        }
         
         if (altViewsList != null)
         {
