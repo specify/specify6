@@ -1396,7 +1396,13 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             {
                 if (session != null)
                 {
-                    session.attach(dataObj);
+                    try
+                    {
+                        session.attach(dataObj);
+                    } catch (Exception ex)
+                    {
+                        session.refresh(dataObj);
+                    }
                     dataObj.forceLoad();
                 }
             }
