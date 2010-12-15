@@ -3783,6 +3783,7 @@ public class Uploader implements ActionListener, KeyListener
                     {
                         for (rowUploading = uploadStartRow; rowUploading < uploadData.getRows();)
                         {
+                        	boolean rowAborted = false;
                         	if (cancelled)
                         	{
                         		paused = true;
@@ -3825,6 +3826,7 @@ public class Uploader implements ActionListener, KeyListener
                         				{
                         					logDebug(ex.getMessage());
                         					abortRow(ex, rowUploading);
+                        					rowAborted = true;
                         					break;
                         				}
                         				throw ex;
@@ -3833,8 +3835,11 @@ public class Uploader implements ActionListener, KeyListener
                         		}
                         	}
 
-                            wbSS.getWorkbench().getRow(rowUploading).setUploadStatus(
-                                WorkbenchRow.UPLD_SUCCESS);
+                            if (!rowAborted)
+                            {
+                            	wbSS.getWorkbench().getRow(rowUploading).setUploadStatus(
+                            			WorkbenchRow.UPLD_SUCCESS);
+                            }
                             if (!cancelled)
                             {
                             	rowUploading++;
