@@ -1851,12 +1851,12 @@
                     <cell type="field" id="parent" name="parent" uitype="querycbx" initialize="name=Container;displaydlg=ContainerDisplay;searchdlg=ContainerSearch;" colspan="6"/>                
                 </row>
                 <row>
-                    <cell type="label" labelfor="collectionObjects"/>
-                    <cell type="field" id="collectionObjects" name="collectionObjects" uitype="querycbx" initialize="name=CollectionObject;displaydlg=CollectionObjectDisplay;searchdlgCollectionObjectSearch;single=true;" colspan="6"/>                
+                    <cell type="label" label="Container:"  initialize="align=right"/>
+                    <cell type="field" id="this_" name="this" uitype="plugin" initialize="name=ContainersColObjPlugin" colspan="6"/>                
                 </row>
                 <row>
                     <cell type="label" labelfor="desc"/>
-                    <cell type="field" id="desc" name="description" uitype="textareabrief" rows="2" colspan="6"/>                   
+                    <cell type="field" id="desc" name="description" uitype="textareabrief" rows="2" colspan="6"/> 
                 </row>
                 <row>
                     <cell type="subview" id="collectionObjectKids" name="collectionObjectKids" viewname="CollectionObjectSubTable" initialize="addsearch=true" defaulttype="table" colspan="8"/>               

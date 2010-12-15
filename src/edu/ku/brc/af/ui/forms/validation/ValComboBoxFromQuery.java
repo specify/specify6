@@ -617,11 +617,11 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             
             if (dlgDataObj instanceof FormDataObjIFace)
             {
-                DataProviderSessionIFace session = null;
+                DataProviderSessionIFace localSession = null;
                 try
                 {
-                    session = DataProviderFactory.getInstance().createSession();
-                    session.attach(dlgDataObj);
+                    localSession = DataProviderFactory.getInstance().createSession();
+                    localSession.attach(dlgDataObj);
                     setValue(dlgDataObj, null);
                     
                 } catch (Exception ex)
@@ -629,11 +629,12 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ValComboBoxFromQuery.class, ex);
                     ex.printStackTrace();
+                    
                 } finally
                 {
-                    if (session != null)
+                    if (localSession != null)
                     {
-                        session.close();
+                        localSession.close();
                     }
                 }
             }

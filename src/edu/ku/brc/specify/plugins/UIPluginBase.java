@@ -34,7 +34,7 @@ import edu.ku.brc.ui.GetSetValueIFace;
 /**
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Complete
  *
  * Created Date: Jul 18, 2007
  *

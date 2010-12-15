@@ -89,6 +89,8 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.JPAQuery;
+import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
+import edu.ku.brc.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.DocumentAdaptor;
@@ -929,7 +931,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
      * Process the results from the search
      * @param customQuery the query
      */
-    public void processResults(final CustomQueryIFace customQuery)
+    private void processResults(final CustomQueryIFace customQuery)
     {
         searchedForText = prevEnteredText;
         
@@ -1212,6 +1214,13 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 returnCount = (Integer)dataObjList.get(0);
             }
             
+            if (returnCount != null && returnCount == 0)
+            {
+                processResults(new EmptyCustomQuery(customQuery));
+                isDoingQuery.set(false);
+                return;
+            }
+            
             list.clear();
             idList.clear();
             
@@ -1374,6 +1383,10 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         return textField;
     }
     
+    //--------------------------------------------------------------------------
+    // ExternalQueryProviderIFace
+    //--------------------------------------------------------------------------
+
     public interface ExternalQueryProviderIFace
     {
         /**
@@ -1502,4 +1515,110 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         this.builder = builder;
     }
     
+    //--------------------------------------------------------------------------
+    // Class for short cutting search if count returns zero.
+    //--------------------------------------------------------------------------
+    class EmptyCustomQuery implements CustomQueryIFace
+    {
+        private CustomQueryIFace cqi;
+        
+        /**
+         * 
+         */
+        public EmptyCustomQuery(CustomQueryIFace cqi)
+        {
+            super();
+            this.cqi = cqi;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.dbsupport.CustomQueryIFace#cancel()
+         */
+        @Override
+        public void cancel()
+        {
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.dbsupport.CustomQueryIFace#execute()
+         */
+        @Override
+        public boolean execute()
+        {
+            return false;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.dbsupport.CustomQueryIFace#execute(edu.ku.brc.dbsupport.CustomQueryListener)
+         */
+        @Override
+        public void execute(CustomQueryListener cql)
+        {
+            
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.dbsupport.CustomQueryIFace#getDataObjects()
+         */
+        @Override
+        public List<?> getDataObjects()
+        {
+            return new ArrayList<Object>();
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.dbsupport.CustomQueryIFace#getName()
+         */
+        @Override
+        public String getName()
+        {
+            return cqi.getName();
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.dbsupport.CustomQueryIFace#getQueryDefinition()
+         */
+        @Override
+        public List<QueryResultsContainerIFace> getQueryDefinition()
+        {
+            return cqi.getQueryDefinition();
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.dbsupport.CustomQueryIFace#getResults()
+         */
+        @Override
+        public List<QueryResultsDataObj> getResults()
+        {
+            return new ArrayList<QueryResultsDataObj>();
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.dbsupport.CustomQueryIFace#getTableIds()
+         */
+        @Override
+        public List<Integer> getTableIds()
+        {
+            return cqi.getTableIds();
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.dbsupport.CustomQueryIFace#isCancelled()
+         */
+        @Override
+        public boolean isCancelled()
+        {
+            return cqi.isCancelled();
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.dbsupport.CustomQueryIFace#isInError()
+         */
+        @Override
+        public boolean isInError()
+        {
+            return cqi.isInError();
+        }
+        
+    }
 }
