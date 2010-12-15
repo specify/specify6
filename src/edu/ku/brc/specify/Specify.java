@@ -2170,7 +2170,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                         AppPreferences.getLocalPrefs().putInt("APP.H", r.height);
             		}
             
-                    //AppPreferences.shutdownLocalPrefs();
                     AppPreferences.getLocalPrefs().flush();
                     
              		// save the long term cache mapping info
@@ -2235,10 +2234,12 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                         statsTrackerTask.setSendSecondaryStatsAllowed(canSendISAStats);
                         statsTrackerTask.sendStats(!UIRegistry.isMobile(), false, UIRegistry.isMobile()); // false means don't do it silently
                         
-                        AppPreferences.shutdownAllPrefs();
-                        DataProviderFactory.getInstance().shutdown();
-                        DBConnection.shutdown();
-                        
+                        if (UIRegistry.isMobile())
+                        {
+                            AppPreferences.shutdownAllPrefs();
+                            DataProviderFactory.getInstance().shutdown();
+                            DBConnection.shutdown();
+                        }
                         return false;
                     }
                     AppPreferences.shutdownAllPrefs();
