@@ -101,12 +101,8 @@
     	
         <alias name="Determination" field="determinations"/>
         
-        <table name="PaleoContext" field="paleoContext">
-    		<table name="GeologicTimePeriod" field="bioStrat"/>
-    		<table name="GeologicTimePeriod" field="chronosStrat"/>
-    		<table name="LithoStrat"/>
-    	</table>
-    	
+        <alias name="PaleoContext" field="paleoContext" />
+   	
         <alias name="Preparation" field="preparations"/>
       	<alias name="Appraisal" field="appraisal" />
       	<alias name="Agent" field="cataloger" />
@@ -250,6 +246,13 @@
       	<alias name="Locality" field="localities" />
       	<alias name="Agent" field="modifiedByAgent" />    	
     </table>
+
+     <table name="GeologicTimePeriod" >
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />
+      	<alias name="PaleoContext" field="bioStratsPaleoContext" />
+      	<alias name="PaleoContext" field="chronosStratsPaleoContext" />
+    </table>
     
     <table name="Gift">
    		<alias name="AddressOfRecord"/>
@@ -277,6 +280,12 @@
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />   
       	<alias name="ReferenceWork" field="referenceWorks"/>
+    </table>
+ 
+     <table name="LithoStrat" >
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />
+      	<alias name="PaleoContext" field="paleoContexts" />
     </table>
     
     <table name="Loan">
@@ -324,6 +333,12 @@
         <!-- alias name="CollectingEvent" field="collectingEvents"/-->
     </table>
     
+    <table name="PaleoContext" flags="paleo">
+    	<alias name="GeologicTimePeriod" field="bioStrat"/>
+    	<alias name="GeologicTimePeriod" field="chronosStrat"/>
+    	<alias name="LithoStrat"/>
+    </table>
+    	
     <table name="Permit">
         <table name="PermitAttachment" field="permitAttachments">
             <alias name="Attachment"/>

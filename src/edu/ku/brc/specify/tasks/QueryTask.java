@@ -876,6 +876,11 @@ public class QueryTask extends BaseTask
                 }));
     }
 
+    protected boolean showQueryCreator(final String tblName)
+    {
+        DBTableInfo tbl = DBTableIdMgr.getInstance().getByShortClassName(tblName);
+        return !tbl.isHidden() && (!AppContextMgr.isSecurityOn() || tbl.getPermissions().canView());
+    }
     /**
      * Adds the NavBtns for creating new queries.
      */
@@ -891,8 +896,8 @@ public class QueryTask extends BaseTask
             for (Object obj : tableNodes)
             {
                 String sName = XMLHelper.getAttr((Element)obj, "name", null);
-                if (!AppContextMgr.isSecurityOn() || DBTableIdMgr.getInstance().getByShortClassName(sName).getPermissions().canView())
-                {
+            	if (showQueryCreator(sName))
+            	{
                     stdQueries.add(sName);
                 }
             }
