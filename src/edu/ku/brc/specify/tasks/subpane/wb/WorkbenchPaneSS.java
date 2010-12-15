@@ -1244,19 +1244,20 @@ public class WorkbenchPaneSS extends BaseSubPane
     			currentRow = 0;
     		}  
     	}
+    	boolean lastRow = false;
     	do
     	{
-    		Hashtable<Short, WorkbenchDataItem> rowItems = workbench.getRow(currentRow).getItems();
+    		Hashtable<Short, WorkbenchDataItem> rowItems = workbench.getRow(spreadSheet.convertRowIndexToModel(currentRow)).getItems();
     		do 
     		{
-    	    	WorkbenchDataItem di = rowItems.get(new Short((short )currentCol));
+    	    	WorkbenchDataItem di = rowItems.get(new Short((short )spreadSheet.convertColumnIndexToModel(currentCol)));
         	    if (di != null && stats.contains(new Short((short )di.getEditorValidationStatus())))
     	    	{
     	    		return new Pair<Integer, Integer>(currentRow, currentCol);
     	    	}		
     			currentCol += increment;
     			
-    		} while (currentCol >= 0 && currentCol < spreadSheet.getColumnCount());
+    		} while (currentCol >= 0 && currentCol < spreadSheet.getColumnCount() && (!lastRow || currentCol != startCol));
 	    	if (currentCol < 0)
 	    	{
 	    		currentCol = spreadSheet.getColumnCount() - 1; //XXX what about attachment column?
@@ -1265,15 +1266,19 @@ public class WorkbenchPaneSS extends BaseSubPane
 	    		currentCol = 0;
 	    	}
     		
-    		currentRow += increment;
-    		if (currentRow < 0)
+    		if (!lastRow)
     		{
-    			currentRow = spreadSheet.getRowCount() - 1 ;
-    		} else if (currentRow == spreadSheet.getRowCount())
-    		{
-    			currentRow = 0;
+    			currentRow += increment;
+    			if (currentRow < 0)
+    			{
+    				currentRow = spreadSheet.getRowCount() - 1 ;
+    			} else if (currentRow == spreadSheet.getRowCount())
+    			{
+    				currentRow = 0;
+    			}
     		}
-    	} while (currentRow != startRow && currentCol != startCol);
+    		lastRow = !lastRow && currentRow == startRow;
+    	} while (currentRow != startRow || lastRow);
     	return null;
     }
     
@@ -1292,9 +1297,11 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 spreadSheet.getCellEditor().stopCellEditing();
             }
-            spreadSheet.getSelectionModel().setSelectionInterval(invalidCell.getFirst(), invalidCell.getFirst());
-            spreadSheet.getColumnModel().getSelectionModel().setSelectionInterval(invalidCell.getSecond(), invalidCell.getSecond());
-            spreadSheet.scrollCellToVisible(invalidCell.getFirst(), invalidCell.getSecond());
+            int row = invalidCell.getFirst();
+            int col = invalidCell.getSecond();
+            spreadSheet.getSelectionModel().setSelectionInterval(row, row);
+            spreadSheet.getColumnModel().getSelectionModel().setSelectionInterval(col, col);
+            spreadSheet.scrollCellToVisible(row, col);
             //spreadSheet.editCellAt(invalidCell.getFirst(), invalidCell.getSecond());
     	}
     }
