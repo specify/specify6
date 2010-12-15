@@ -510,41 +510,44 @@ public class SearchReplacePanel extends JPanel
             //log.debug("updateTableUiForFoundValue() - Cell row[" + curRow + "] ");
             //log.debug("                               Cell col[" + curCol + "] ");
             //log.debug("updateTableUiForFoundValue() - preoapring to set selection model");
-            ListSelectionModel rsm = table.getSelectionModel();
-            ListSelectionModel csm = table.getColumnModel().getSelectionModel();
-            Rectangle rect = table.getCellRect(curRow, curCol, false);
-            if (!isSearchSelection())
+            if (curRow != -1 && curCol != -1)
             {
-            	rsm.setSelectionInterval(curRow, curRow);
-            	csm.setSelectionInterval(curCol, curCol);
-            }
-            else
-            {
-            	table.setEmphasizedCell(curRow, curCol);
-            	if (rect != null)
+            	ListSelectionModel rsm = table.getSelectionModel();
+            	ListSelectionModel csm = table.getColumnModel().getSelectionModel();
+            	Rectangle rect = table.getCellRect(curRow, curCol, false);
+            	if (!isSearchSelection())
             	{
-            		table.repaint(rect);
+            		rsm.setSelectionInterval(curRow, curRow);
+            		csm.setSelectionInterval(curCol, curCol);
             	}
             	else
             	{
-            		table.repaint();
+            		table.setEmphasizedCell(curRow, curCol);
+            		if (rect != null)
+            		{
+            			table.repaint(rect);
+            		}
+            		else
+            		{
+            			table.repaint();
+            		}
+            	}
+            	if (rect != null && table.getAutoscrolls()) 
+            	{
+            		//log.debug("updateTableUiForFoundValue() - preparing to scroll");
+            		table.scrollRectToVisible(rect);
+            		//log.debug("updateTableUiForFoundValue() - done scrolling");
             	}
             }
-            if (rect != null && table.getAutoscrolls()) 
-            {
-                //log.debug("updateTableUiForFoundValue() - preparing to scroll");
-                table.scrollRectToVisible(rect);
-                //log.debug("updateTableUiForFoundValue() - done scrolling");
-            }
-            if (isSearchDown())
-            {
-                enablePreviousButton();
-            }            
-            else
-            {
-                enableNextButton();
-            }
-            updateStatusLabel(replacementCount, isReplace);
+        	if (isSearchDown())
+        	{
+        		enablePreviousButton();
+        	}            
+        	else
+        	{
+        		enableNextButton();
+        	}
+        	updateStatusLabel(replacementCount, isReplace);
         }
         else
         {

@@ -4364,7 +4364,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
     	if (getIncremental())
 		{
-			validateRows(rows, -1, -1, true, null);
+			validateRows(rows, -1, -1, rows.length <= 17, null);
+			//validateRows(rows, -1, -1, true, null);
     		return true;
 		}
     	return false;
