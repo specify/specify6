@@ -75,7 +75,7 @@ public class BatchAttachFiles
 {
     protected static final Logger log = Logger.getLogger(BatchAttachFiles.class);
     
-	protected static String[] exts = {"TIF", "JPG", "PNG"};
+	protected static String[] exts = {"TIF", "JPG", "PNG", "jpg"};
 	protected final Class<?> tblClass;
 	protected final Class<?> attachmentClass;
 	protected final FileNameParserIFace fnParser;
@@ -83,6 +83,7 @@ public class BatchAttachFiles
 	protected List<File> files;
 	protected List<Pair<String, String>> errors = new Vector<Pair<String, String>>();
 	protected DataProviderSessionIFace session;
+	protected String errLogName = "errors";
 	//protected List<Integer> attachments = new Vector<Integer>();
 	
 	/**
@@ -100,7 +101,7 @@ public class BatchAttachFiles
 		attachmentClass = determineAttachmentClass();
 		if (directory.isDirectory())
 		{
-			bldFilesFromDir();
+			files = bldFilesFromDir(directory, exts);
 		} else
 		{
 			bldFilesFromList();
@@ -147,19 +148,20 @@ public class BatchAttachFiles
 	/**
 	 * build a list of files in directory.
 	 */
-	protected void bldFilesFromDir()
+	public static Vector<File> bldFilesFromDir(File directory, String[] exts)
 	{
-		files = new Vector<File>();
+		Vector<File> result = new Vector<File>();
 		Collection<?> fs = FileUtils.listFiles(directory, exts, false);
 		for (Object f : fs)
 		{
-			files.add((File )f);
+			result.add((File )f);
 //			if (files.size() == 10)
 //			{
 //				System.out.println("!!!!!!!!!Only processing first 10 files!!!!!!!!!");
 //				break;
 //			}
 		}
+		return result;
 	}
 	
 	/**
@@ -182,7 +184,7 @@ public class BatchAttachFiles
 	/**
 	 * Attach the files in directory.
 	 */
-	public void attachFiles() 
+	public void attachFiles() throws Exception
 	{
 		errors.clear();
 		//attachments.clear();
@@ -195,11 +197,14 @@ public class BatchAttachFiles
 			}
 			if (errors.size() > 0)
 			{
+				Vector<String> errLines = new Vector<String>();
 				for (Pair<String, String> error : errors)
 				{
-					System.out.println(error.getFirst() + ": "
-							+ error.getSecond());
+					String errLine = error.getFirst() + ": " + error.getSecond();
+					System.out.println(errLine);
+					errLines.add(errLine);
 				}
+				FileUtils.writeLines(new File(errLogName), errLines);
 			} else
 			{
 				System.out.println("All files in the directory were attached.");
@@ -232,6 +237,22 @@ public class BatchAttachFiles
 			attachFileTo(f, id);
 		}
 		//System.out.println("attachFile Exit: " + Runtime.getRuntime().freeMemory());
+	}
+
+	
+	/**
+	 * @return the errLogName
+	 */
+	public String getErrLogName() 
+	{
+		return errLogName;
+	}
+
+	/**
+	 * @param errLogName the errLogName to set
+	 */
+	public void setErrLogName(String errLogName) {
+		this.errLogName = errLogName;
 	}
 
 	/**

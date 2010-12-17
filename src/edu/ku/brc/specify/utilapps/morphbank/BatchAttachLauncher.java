@@ -181,10 +181,37 @@ public class BatchAttachLauncher implements DatabaseLoginListener
 			//BatchAttachFiles baf = new BatchAttachFiles(CollectionObject.class, new BarCodeFileNameParser(),
 			//		new File("/home/timo/TroyImages"));
 			
+			//For troy+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			//Attach 'blank' attachments from list of image file names
-			BatchAttachFiles baf = new BatchAttachFiles(CollectionObject.class, new BarCodeFileNameParser(),
-					new File("/media/Terror/ConversionsAndFixes/Troy/Troy_directory_listing.txt"));
+			//BatchAttachFiles baf = new BatchAttachFiles(CollectionObject.class, new BarCodeFileNameParser(),
+			//		new File("/media/Terror/ConversionsAndFixes/Troy/Troy_directory_listing.txt"));
+			//baf.attachFiles();
+			//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+			
+			//for SD State ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+			
+			SDStateFileNameParser p = new SDStateFileNameParser();
+			p.setPicType(SDStateFileNameParser.DorsalPic);
+			
+			BatchAttachFiles baf = new BatchAttachFiles(CollectionObject.class, p,
+					new File("/media/Terror/ConversionsAndFixes/sdstate/SpSub31OCT10/PictureFiles/SpecimenPics"));
+			baf.setErrLogName("/media/Terror/ConversionsAndFixes/sdstate/DorsalPicErrors.txt");
 			baf.attachFiles();
+			
+			p.setPicType(SDStateFileNameParser.SpecPic);
+			baf.setErrLogName("/media/Terror/ConversionsAndFixes/sdstate/SpecPicErrors.txt");
+			baf.attachFiles();
+			
+			
+			p.setPicType(SDStateFileNameParser.VentralPic);
+			baf.setErrLogName("/media/Terror/ConversionsAndFixes/sdstate/VertralPicErrors.txt");
+			baf.attachFiles();
+			
+			
+			//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+			
+			
+			
 			System.exit(0);
 		} catch (Exception ex)
 		{
