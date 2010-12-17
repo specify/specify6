@@ -38,7 +38,7 @@ public class MorphBankTest
 {
 	//public static String MORPHBANK_URL = "http://test.morphbank.net";
 	
-	//The followint two fields are modified if preference settings for the urls are set in specify
+	//The following two fields are modified if preference settings for the urls are set in specify
 	public static String MORPHBANK_URL = "http://www.morphbank.net";
 	public static String MORPHBANK_IM_POST_URL = "http://itest.morphbank.net/Image/imageFileUpload.php";
 	
