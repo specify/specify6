@@ -21,17 +21,21 @@ public class UploadTableMatchInfo
 {
 	protected final Vector<Integer> colIdxs;
 	protected final int numberOfMatches;
+	protected final boolean isBlank;
+	protected final boolean isSkipped;
 	
 	
 	/**
 	 * @param match
 	 * @param uploadTable
 	 */
-	public UploadTableMatchInfo(int numberOfMatches, Vector<Integer> colIdxs)
+	public UploadTableMatchInfo(int numberOfMatches, Vector<Integer> colIdxs, boolean isBlank, boolean isSkipped)
 	{
 		super();
 		this.numberOfMatches = numberOfMatches;
 		this.colIdxs = colIdxs;
+		this.isBlank = isBlank;
+		this.isSkipped = isSkipped;
 	}
 	
 	/**
@@ -50,6 +54,22 @@ public class UploadTableMatchInfo
 		return numberOfMatches;
 	}
 	
+	/**
+	 * @return the isBlank
+	 */
+	public boolean isBlank() 
+	{
+		return isBlank;
+	}
+
+	/**
+	 * @return the isSkipped
+	 */
+	public boolean isSkipped() 
+	{
+		return isSkipped;
+	}
+
 	/**
 	 * @return text description of the match situation.
 	 */

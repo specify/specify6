@@ -43,7 +43,6 @@ public class CollectionObjectFieldMapper
 {
 	private static final Logger  log = Logger.getLogger(CollectionObjectFieldMapper.class);	
 	
-	//TO DO This class should work with hibernate objects as well as record ids (as for DarwinCoreSpecimen)
 	protected CollectionObject collectionObject;
 	protected Integer collectionObjectId;
 	protected DwcMapper dwcMapper;

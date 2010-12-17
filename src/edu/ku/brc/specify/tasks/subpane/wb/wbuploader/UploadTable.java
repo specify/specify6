@@ -2166,17 +2166,19 @@ public class UploadTable implements Comparable<UploadTable>
     	protected final List<DataModelObjBase> matches;
     	protected final UploadTable table;
     	protected final boolean isBlank;
+    	protected final boolean isSkipped; //true if matching was not attempted because of un-matched parent
 		/**
 		 * @param matches
 		 * @param parent
 		 */
 		public ParentMatchInfo(List<DataModelObjBase> matches,
-				UploadTable table, boolean isBlank)
+				UploadTable table, boolean isBlank, boolean isSkipped)
 		{
 			super();
 			this.matches = matches;
 			this.table = table;
 			this.isBlank = isBlank;
+			this.isSkipped = isSkipped;
 		}
 		/**
 		 * @return the matches
@@ -2199,8 +2201,13 @@ public class UploadTable implements Comparable<UploadTable>
 		{
 			return isBlank;
 		}
-    	
-    	
+		/**
+		 * @return the isSkipped
+		 */
+		public boolean isSkipped() 
+		{
+			return isSkipped;
+		}
     }
     
     /**
@@ -2270,6 +2277,7 @@ public class UploadTable implements Comparable<UploadTable>
     	
     	HashMap<UploadTable, DataModelObjBase> parentParams = new HashMap<UploadTable, DataModelObjBase>();
     	boolean doMatch = true; 
+    	boolean matched = false;
     	boolean blankParentage = true;
     	boolean blank = isBlankRow(row, uploader.getUploadData(), adjustedRecNum);
 		Vector<DataModelObjBase> matches = new Vector<DataModelObjBase>();
@@ -2311,6 +2319,7 @@ public class UploadTable implements Comparable<UploadTable>
 			try
 			{
 				findMatch(adjustedRecNum, false, matches, parentParams);
+				matched = true;
 			} finally
 			{
 				skipChildrenMatching.set(false);
@@ -2347,7 +2356,7 @@ public class UploadTable implements Comparable<UploadTable>
     	
     	if (!containsInvalidCol(adjustedRecNum, invalidColNums))
     	{
-    		result.add(new ParentMatchInfo(matches, this, blank && blankParentage));
+    		result.add(new ParentMatchInfo(matches, this, blank && blankParentage, !matched));
     	}
     	return result;
     }
@@ -2384,7 +2393,7 @@ public class UploadTable implements Comparable<UploadTable>
         			colIdxs.add(uf.getIndex());
         		}
         	}
-        	result.add(new UploadTableMatchInfo(pmi.matches.size(), colIdxs));
+        	result.add(new UploadTableMatchInfo(pmi.matches.size(), colIdxs, pmi.isBlank(), pmi.isSkipped()));
     	}
     	return result;
     	

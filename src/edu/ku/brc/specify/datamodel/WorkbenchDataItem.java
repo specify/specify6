@@ -55,7 +55,9 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     public static final short VAL_ERROR_EDIT 		= 3;
     public static final short VAL_NEW_DATA   		= 4;
     public static final short VAL_MULTIPLE_MATCH 	= 5;
-        
+    public static final short VAL_NOT_MATCHED 		= 6; //match not attempted, 
+    													//most likely due to un-matched parent
+       
     // Fields
     protected Integer      workbenchDataItemId;
     protected String       cellData;

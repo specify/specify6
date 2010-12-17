@@ -299,6 +299,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected boolean	            doIncrementalMatching      = AppPreferences.getLocalPrefs().getBoolean(wbAutoMatchPrefName, false);
     protected AtomicInteger			invalidCellCount		   = new AtomicInteger(0);
     protected AtomicInteger			unmatchedCellCount		   = new AtomicInteger(0);
+    protected CellRenderingAttributes cellRenderAtts           = new CellRenderingAttributes();
     
     //Single thread executor to ensure that rows are not validated concurrently as a result of batch operations
     //protected final ExecutorService validationExecutor		   = Executors.newSingleThreadExecutor(Executors.defaultThreadFactory());
@@ -4289,7 +4290,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 		List<CellStatusInfo> csis = new Vector<CellStatusInfo>(issues.size() + (matchInfo == null ? 0 : matchInfo.size()));
 		for (UploadTableInvalidValue utiv : issues)
 		{
-				csis.add(new CellStatusInfo(WorkbenchDataItem.VAL_ERROR, utiv.getDescription(), utiv.getCols()));
+				csis.add(new CellStatusInfo(utiv));
 		}
 		if (doIncrementalMatching && matchInfo != null)
 		{
@@ -4297,9 +4298,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 			{
 				if (utmi.getNumberOfMatches() != 1) //for now we don't care if a single match exists
 				{
-					short stat = utmi.getNumberOfMatches() == 0 ? WorkbenchDataItem.VAL_NEW_DATA :
-							WorkbenchDataItem.VAL_MULTIPLE_MATCH;
-					csis.add(new CellStatusInfo(stat, utmi.getDescription(), utmi.getColIdxs()));
+					csis.add(new CellStatusInfo(utmi));
 				}
 			}
 		}
@@ -4985,41 +4984,13 @@ public class WorkbenchPaneSS extends BaseSubPane
 					.convertColumnIndexToModel(tblColumn);
 			WorkbenchDataItem wbCell = wbRow.getItems().get(
 					(short) modelCol);
-			//XXX lots more to do with rendering cell states
-			if (getIncremental())
-			{
-				String toolTip = null;
-				LineBorder border = null;
-				if (wbCell != null)
-				{
-					// XXX WorkbenchDataItems can be updated by GridCellEditor
-					// or by background validation initiated at load time or
-					// after find/replace ops
-					// but probably not necessary to synchronize here?
-					synchronized (wbCell)
-					{
-						if (doIncrementalValidation && (wbCell.getEditorValidationStatus() == WorkbenchDataItem.VAL_ERROR 
-								|| wbCell.getEditorValidationStatus() == WorkbenchDataItem.VAL_ERROR_EDIT))
-						{
-							toolTip = wbCell.getStatusText();
-							border = new LineBorder(Color.RED);
-						} else if (doIncrementalMatching && wbCell.getEditorValidationStatus() == WorkbenchDataItem.VAL_NEW_DATA)
-						{
-							toolTip = wbCell.getStatusText();
-							border = new LineBorder(Color.YELLOW);
-						} else if (doIncrementalMatching && wbCell.getEditorValidationStatus() == WorkbenchDataItem.VAL_MULTIPLE_MATCH)
-						{
-							toolTip = wbCell.getStatusText();
-							border = new LineBorder(Color.ORANGE);
-						} 
- 
-					}
-				} 				
-				lbl.setToolTipText(toolTip);
-				lbl.setBorder(border);
-			}
+			cellRenderAtts.addAttributes(lbl, wbCell);
+			//setBackground(lbl.getBackground());
+			//setOpaque(lbl.isOpaque());
 			return lbl;
 		}
+		
+		
     }
     
     //------------------------------------------------------------
@@ -5050,7 +5021,8 @@ public class WorkbenchPaneSS extends BaseSubPane
             if (isSelected)
             {
                 setBackground(table.getSelectionBackground());
-            } else
+            } 
+            else
             {
                 setBackground(table.getBackground());
             }
@@ -5267,17 +5239,32 @@ public class WorkbenchPaneSS extends BaseSubPane
 		protected final List<Integer> columns;
 		
 		/**
-		 * @param status
-		 * @param statusText
+		 * @param invalidValue
 		 */
-		public CellStatusInfo(short status, String statusText, List<Integer> columns)
+		public CellStatusInfo(UploadTableInvalidValue invalidValue)
 		{
-			super();
-			this.status = status;
-			this.statusText = statusText;
-			this.columns = columns;
+			status = WorkbenchDataItem.VAL_ERROR;
+			statusText = invalidValue.getDescription(); 
+			columns = invalidValue.getCols();		
 		}
 		
+		/**
+		 * @param matchInfo
+		 */
+		public CellStatusInfo(UploadTableMatchInfo matchInfo)
+		{
+			if (matchInfo.isSkipped())
+			{
+				status = WorkbenchDataItem.VAL_NOT_MATCHED;
+			} else
+			{
+				//Currently, getNumberOfMatches() will never return 1
+				status = matchInfo.getNumberOfMatches() == 0 ? WorkbenchDataItem.VAL_NEW_DATA :
+					WorkbenchDataItem.VAL_MULTIPLE_MATCH;
+			}
+			statusText = matchInfo.getDescription(); 
+			columns = matchInfo.getColIdxs();			
+		}
 		/**
 		 * @return the status
 		 */
@@ -5301,48 +5288,109 @@ public class WorkbenchPaneSS extends BaseSubPane
 		{
 			return columns;
 		}
+			}
+
+	/**
+	 * @author timo
+	 *
+	 */
+	private class CellRenderingAttributes
+	{
+		protected Color errorBackground = Color.RED;
+		protected Color errorBorder = Color.RED;
+		protected Color newDataBackground = Color.YELLOW;
+		protected Color newDataBorder = Color.YELLOW;
+		protected Color multipleMatchBackground = Color.ORANGE;
+		protected Color multipleMatchBorder = Color.ORANGE;
+		protected Color notMatchedBorder = newDataBorder;
+		protected Color notMatchedBackground = null;
 		
 		
+		private class Atts
+		{
+			public String toolTip;
+			public Border border;
+			public Color background;
+			
+			public Atts(String toolTip, Border border, Color background)
+			{
+				this.toolTip = toolTip;
+				this.border = border;
+				this.background = background;
+			}
+		}
+		
+		
+		protected Atts getAtts(int wbCellStatus, String statusText)
+		{
+			LineBorder bdr = null;
+			Color bg = null;
+			if (doIncrementalValidation && (wbCellStatus == WorkbenchDataItem.VAL_ERROR 
+					|| wbCellStatus == WorkbenchDataItem.VAL_ERROR_EDIT))
+			{
+				bdr = new LineBorder(errorBorder);
+				bg = errorBackground;
+			} else if (doIncrementalMatching && wbCellStatus == WorkbenchDataItem.VAL_NEW_DATA)
+			{
+				bdr = new LineBorder(newDataBorder);
+				bg = newDataBackground;
+			} else if (doIncrementalMatching && wbCellStatus == WorkbenchDataItem.VAL_MULTIPLE_MATCH)
+			{
+				bdr = new LineBorder(multipleMatchBorder);
+				bg = multipleMatchBackground;
+			} else if (doIncrementalMatching && wbCellStatus == WorkbenchDataItem.VAL_NOT_MATCHED)
+			{
+				bdr = new LineBorder(notMatchedBorder);
+				bg = notMatchedBackground;
+			}
+			//return new Atts(statusText, bdr, bg);
+			//Background settings are not 'taking'
+			return new Atts(statusText, bdr, null);
+		}
+		
+		public CellRenderingAttributes()
+		{
+			
+		}
+		
+		/**
+		 * @param lbl
+		 * @param wbCell
+		 */
+		public void addAttributes(JLabel lbl, final WorkbenchDataItem wbCell)
+		{
+			if (getIncremental())
+			{
+				int cellStatus = WorkbenchDataItem.VAL_OK;
+				String cellStatusText = null;
+				if (wbCell != null)
+				{
+					// XXX WorkbenchDataItems can be updated by GridCellEditor
+					// or by background validation initiated at load time or
+					// after find/replace ops
+					// but probably not necessary to synchronize here?
+					synchronized (wbCell)
+					{
+						cellStatus = wbCell.getEditorValidationStatus();
+						cellStatusText = wbCell.getStatusText();
+					}
+				} 			
+				//currently nothing extra is done for OK cells
+				if (cellStatus != WorkbenchDataItem.VAL_NONE && cellStatus != WorkbenchDataItem.VAL_OK)
+				{
+					Atts atts = getAtts(cellStatus, cellStatusText);
+					lbl.setToolTipText(atts.toolTip);
+					lbl.setBorder(atts.border);
+					if (atts.background != null)
+					{
+						lbl.setOpaque(true);
+						//lbl.setForeground(atts.background);
+						lbl.setBackground(atts.background);
+					}
+				}
+			}
+			
+		}
 	}
-//	private class InvalidCellInfo
-//	{
-//		protected final int row;
-//		protected final int col;
-//		protected final Object info;
-//		/**
-//		 * @param row
-//		 * @param col
-//		 */
-//		public InvalidCellInfo(int row, int col)
-//		{
-//			super();
-//			this.row = row;
-//			this.col = col;
-//			this.info = null;
-//		}
-//		/**
-//		 * @return the row
-//		 */
-//		public int getRow() 
-//		{
-//			return row;
-//		}
-//		/**
-//		 * @return the col
-//		 */
-//		public int getCol() 
-//		{
-//			return col;
-//		}
-//		/**
-//		 * @return the info
-//		 */
-//		public Object getInfo() 
-//		{
-//			return info;
-//		}
-//		
-//		
-//	}
 }
 
