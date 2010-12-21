@@ -111,6 +111,12 @@ import javax.swing.undo.UndoManager;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jdesktop.swingx.decorator.AbstractHighlighter;
+import org.jdesktop.swingx.decorator.ColorHighlighter;
+import org.jdesktop.swingx.decorator.ComponentAdapter;
+import org.jdesktop.swingx.decorator.HighlightPredicate;
+import org.jdesktop.swingx.decorator.Highlighter;
+import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.jdesktop.swingx.table.TableColumnExt;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -359,8 +365,21 @@ public class WorkbenchPaneSS extends BaseSubPane
         model       = new GridTableModel(this);
         spreadSheet = new WorkbenchSpreadSheet(model, this);
         spreadSheet.setReadOnly(isReadOnly);
-        //spreadSheet.setC
         model.setSpreadSheet(spreadSheet);
+        
+        Highlighter simpleStriping = HighlighterFactory.createSimpleStriping();
+        GridCellHighlighter hl = new GridCellHighlighter(new GridCellPredicate(GridCellPredicate.AnyPredicate, null));
+        Integer[] errs = {WorkbenchDataItem.VAL_ERROR, WorkbenchDataItem.VAL_ERROR_EDIT};
+        ColorHighlighter errColorHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.ValidationPredicate, errs), 
+        		cellRenderAtts.errorBackground, null);
+        Integer[] newdata = {WorkbenchDataItem.VAL_NEW_DATA};
+        ColorHighlighter noDataHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.MatchingPredicate, newdata), 
+        		cellRenderAtts.newDataBackground, null);
+        Integer[] multimatch = {WorkbenchDataItem.VAL_MULTIPLE_MATCH};
+        ColorHighlighter multiMatchHighlighter = new ColorHighlighter(new GridCellPredicate(GridCellPredicate.MatchingPredicate, multimatch), 
+        		cellRenderAtts.multipleMatchBackground, null);
+
+        spreadSheet.setHighlighters(simpleStriping, hl, errColorHighlighter, noDataHighlighter, multiMatchHighlighter);
         
         //add key mappings for cut, copy, paste
         //XXX Note: these are shortcuts directly to the SpreadSheet cut,copy,paste methods, NOT to the Specify edit menu.
@@ -4980,13 +4999,6 @@ public class WorkbenchPaneSS extends BaseSubPane
 				lbl.setText(filename);
 				lbl.setHorizontalAlignment(SwingConstants.CENTER);
 			}
-			int modelCol = spreadSheet
-					.convertColumnIndexToModel(tblColumn);
-			WorkbenchDataItem wbCell = wbRow.getItems().get(
-					(short) modelCol);
-			cellRenderAtts.addAttributes(lbl, wbCell);
-			//setBackground(lbl.getBackground());
-			//setOpaque(lbl.isOpaque());
 			return lbl;
 		}
 		
@@ -5296,14 +5308,18 @@ public class WorkbenchPaneSS extends BaseSubPane
 	 */
 	private class CellRenderingAttributes
 	{
-		protected Color errorBackground = Color.RED;
-		protected Color errorBorder = Color.RED;
-		protected Color newDataBackground = Color.YELLOW;
-		protected Color newDataBorder = Color.YELLOW;
-		protected Color multipleMatchBackground = Color.ORANGE;
-		protected Color multipleMatchBorder = Color.ORANGE;
-		protected Color notMatchedBorder = newDataBorder;
-		protected Color notMatchedBackground = null;
+		public Color errorBorder = Color.RED;
+		public Color errorForeground = errorBorder;
+		public Color errorBackground = new Color(errorBorder.getRed(), errorBorder.getGreen(), errorBorder.getBlue(), 37);
+		public Color newDataBorder = Color.YELLOW;
+		public Color newDataForeground = Color.YELLOW;
+		public Color newDataBackground = new Color(newDataBorder.getRed(), newDataBorder.getGreen(), newDataBorder.getBlue(), 37);
+		public Color multipleMatchBorder = Color.ORANGE;
+		public Color multipleMatchBackground = new Color(multipleMatchBorder.getRed(), multipleMatchBorder.getGreen(), multipleMatchBorder.getBlue(), 37);
+		public Color multipleMatchForeground = multipleMatchBorder;
+		public Color notMatchedBorder = newDataBorder;
+		public Color notMatchedBackground = null;
+		public Color notMatchedForeground = notMatchedBorder;
 		
 		
 		private class Atts
@@ -5343,9 +5359,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 				bdr = new LineBorder(notMatchedBorder);
 				bg = notMatchedBackground;
 			}
-			//return new Atts(statusText, bdr, bg);
-			//Background settings are not 'taking'
-			return new Atts(statusText, bdr, null);
+			return new Atts(statusText, bdr, bg);
 		}
 		
 		public CellRenderingAttributes()
@@ -5369,11 +5383,11 @@ public class WorkbenchPaneSS extends BaseSubPane
 					// or by background validation initiated at load time or
 					// after find/replace ops
 					// but probably not necessary to synchronize here?
-					synchronized (wbCell)
-					{
+					//synchronized (wbCell)
+					//{
 						cellStatus = wbCell.getEditorValidationStatus();
 						cellStatusText = wbCell.getStatusText();
-					}
+					//}
 				} 			
 				//currently nothing extra is done for OK cells
 				if (cellStatus != WorkbenchDataItem.VAL_NONE && cellStatus != WorkbenchDataItem.VAL_OK)
@@ -5381,16 +5395,98 @@ public class WorkbenchPaneSS extends BaseSubPane
 					Atts atts = getAtts(cellStatus, cellStatusText);
 					lbl.setToolTipText(atts.toolTip);
 					lbl.setBorder(atts.border);
-					if (atts.background != null)
-					{
-						lbl.setOpaque(true);
-						//lbl.setForeground(atts.background);
-						lbl.setBackground(atts.background);
-					}
+					//Using ColorHighlighters to set background colors because
+					//they do not override the selection color
+//					if (atts.background != null)
+//					{
+//						//lbl.setOpaque(true);
+//						lbl.setBackground(atts.background);
+//					}
 				}
 			}
 			
 		}
+	}
+	
+	private class GridCellPredicate implements HighlightPredicate
+	{
+		final static public int ValidationPredicate = 0;
+		final static public int MatchingPredicate = 1;
+		final static public int AnyPredicate = 2;
+		protected final int activation;
+		protected final Integer[] conditions;
+		
+		public GridCellPredicate(int activation, Integer[] conditions)
+		{
+			this.activation = activation;
+			this.conditions = conditions;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.jdesktop.swingx.decorator.HighlightPredicate#isHighlighted(java.awt.Component, org.jdesktop.swingx.decorator.ComponentAdapter)
+		 */
+		@Override
+		public boolean isHighlighted(Component arg0, ComponentAdapter arg1) 
+		{
+			if ((activation == AnyPredicate && !getIncremental())
+					|| (activation == ValidationPredicate && !doIncrementalValidation)
+					|| (activation == MatchingPredicate && !doIncrementalMatching))
+			{
+				return false;
+			
+			} 
+			
+			WorkbenchRow wbRow = workbench.getRow(spreadSheet.convertRowIndexToModel(arg1.row));
+			WorkbenchDataItem wbCell = wbRow.getItems().get((short )spreadSheet.convertColumnIndexToModel(arg1.column));
+			if (wbCell == null)
+			{
+				return false;
+			}
+			
+			int status = wbCell.getEditorValidationStatus();
+			if (activation == AnyPredicate)
+			{
+				//Seems like a good idea to try to be as efficient as possible
+				//but this will need to be recoded as new cell states are added
+				return status == WorkbenchDataItem.VAL_ERROR
+					|| status == WorkbenchDataItem.VAL_ERROR_EDIT
+					|| status == WorkbenchDataItem.VAL_MULTIPLE_MATCH
+					|| status == WorkbenchDataItem.VAL_NEW_DATA
+					|| status == WorkbenchDataItem.VAL_NOT_MATCHED;
+			}
+			else {
+				for (Integer condition : conditions)
+				{
+					if (condition == status)
+					{
+						((JLabel )arg0).setToolTipText(wbCell.getStatusText());
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+	}
+
+	private class GridCellHighlighter extends AbstractHighlighter
+	{
+		public GridCellHighlighter(HighlightPredicate predicate)
+		{
+			super(predicate);
+		}
+
+		/* (non-Javadoc)
+		 * @see org.jdesktop.swingx.decorator.AbstractHighlighter#doHighlight(java.awt.Component, org.jdesktop.swingx.decorator.ComponentAdapter)
+		 */
+		@Override
+		protected Component doHighlight(Component arg0, ComponentAdapter arg1) {
+			WorkbenchRow wbRow = workbench.getRow(spreadSheet.convertRowIndexToModel(arg1.row));
+			WorkbenchDataItem wbCell = wbRow.getItems().get((short )spreadSheet.convertColumnIndexToModel(arg1.column));
+			cellRenderAtts.addAttributes((JLabel )arg0, wbCell);
+			return arg0;
+		}
+		
+		
 	}
 }
 

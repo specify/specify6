@@ -411,7 +411,8 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         
         //add 3-state sort toggle
         setFilters(new CustomToggleSortOrderFP());
-        
+ 
+
     }
     
     

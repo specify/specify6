@@ -27,6 +27,8 @@ import javax.swing.table.TableModel;
 
 import org.jdesktop.swingx.JXTable;
 
+
+
 //import edu.ku.brc.ui.xxxTable.FindAllTable.FindAllTableSearchable;
 
 /**
