@@ -1845,7 +1845,7 @@ public class InteractionsTask extends BaseTask
                     multiView.setData(null);
                     if (doingSingleItem && mergedLoans.size() == 1)
                     {
-                        multiView.setData(mergedLoans.keySet().iterator().next());
+                        multiView.setData(mergedLoans.values().iterator().next());
                     }
                 }
                 UIRegistry.clearSimpleGlassPaneMsg();
