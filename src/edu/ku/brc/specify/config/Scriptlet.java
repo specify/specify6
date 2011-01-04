@@ -26,6 +26,8 @@ import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -42,6 +44,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -396,7 +399,7 @@ public class Scriptlet extends JRDefaultScriptlet
      */
     public String escapeForHtml(final String text)
     {
-    	String[] subs = {"&", "&amp"};
+    	String[] subs = {"&", "&amp;"};
     	String result = text;
     	for (int s = 0; s < subs.length; s+=2)
     	{
@@ -405,6 +408,114 @@ public class Scriptlet extends JRDefaultScriptlet
     	return result;
     }
     
+    
+    /**
+     * @param catalogNumber
+     * @return for specimen indicated by catalogNumber, the Collector with the lowest orderNumber in the default Collector format.
+     */
+    public String getFirstCollector(final Object catalogNumber)
+    {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+        	String result = "";
+            UIFieldFormatterIFace formatter = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()).getFieldByName("catalogNumber").getFormatter();
+            Object dbCatNum = formatter.formatFromUI(catalogNumber);
+            List<?> list = session.getDataList(CollectionObject.class, "catalogNumber", dbCatNum);
+        	if (list.size() > 0)
+        	{
+        		CollectingEvent ce = (CollectingEvent )((CollectionObject )list.get(0)).getCollectingEvent();
+        		Set<Collector> collectors = ce.getCollectors();
+        		if (collectors.size() > 0)
+        		{
+        			Collector firstCollector = null;
+        			for (Collector collector : collectors)
+        			{
+        				if (firstCollector == null || collector.getOrderNumber() < firstCollector.getOrderNumber())
+        				{
+        					firstCollector = collector;
+        				}
+        			}
+        			if (firstCollector != null)
+        			{
+        				result = DataObjFieldFormatMgr.getInstance().format(firstCollector, Collector.class);
+        			}
+        		} else
+        		{
+        			result = "";
+        		}
+        	} else
+        	{
+        		log.error("Couldn't locate CatalogNumber [" + catalogNumber + "]");
+        	}
+        		return result;
+        } finally
+        {
+        	session.close();
+        }
+    }
+    
+    /**
+     * @param catalogNumber
+     * @return for specimen indicated by catalogNumber, the Collectors (excluding the first Collector formatted by the default Collector aggregator.
+     */
+    public String getSecondaryCollectors(final Object catalogNumber)
+    {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+        	String result = "";
+            UIFieldFormatterIFace formatter = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()).getFieldByName("catalogNumber").getFormatter();
+            Object dbCatNum = formatter.formatFromUI(catalogNumber);
+            List<?> list = session.getDataList(CollectionObject.class, "catalogNumber", dbCatNum);
+        	if (list.size() > 0)
+        	{
+        		CollectingEvent ce = (CollectingEvent )((CollectionObject )list.get(0)).getCollectingEvent();
+        		Set<Collector> collectors = ce.getCollectors();
+        		if (collectors.size() > 1)
+        		{
+        			Collector firstCollector = null;
+        			for (Collector collector : collectors)
+        			{
+        				if (firstCollector == null || collector.getOrderNumber() < firstCollector.getOrderNumber())
+        				{
+        					firstCollector = collector;
+        				}
+        			}
+        			if (firstCollector != null)
+        			{
+        				collectors.remove(firstCollector);
+        				Vector<Collector> sortedCollectors = new Vector<Collector>(collectors);
+        				Collections.sort(sortedCollectors, new Comparator<Collector>(){
+
+							/* (non-Javadoc)
+							 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+							 */
+							@Override
+							public int compare(Collector arg0, Collector arg1) {
+								Integer order0 = arg0.getOrderNumber() != null ? arg0.getOrderNumber() : -1;;
+								Integer order1 = arg1.getOrderNumber() != null ? arg1.getOrderNumber() : -1;
+								return order0.compareTo(order1);
+							}
+        					
+        				});
+        				result = DataObjFieldFormatMgr.getInstance().aggregate(collectors, Collector.class);
+        			}
+        		} else
+        		{
+        			result = "";
+        		}
+        	} else
+        	{
+        		log.error("Couldn't locate CatalogNumber [" + catalogNumber + "]");
+        	}
+        		return result;
+        } finally
+        {
+        	session.close();
+        }
+    }
+
     /**
      * Builds the shipped to agent's name string.
      * @param firstName
