@@ -25,6 +25,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -92,7 +93,8 @@ public class RegPivot
                          final String tblName, 
                          final String keyName,
                          final String defSQL,
-                         final String fillSQL)
+                         final String fillSQL,
+                         final boolean isRegBuild)
     {
         
         String sql  = String.format("SELECT DISTINCT Name FROM %s", tblName);
@@ -180,6 +182,12 @@ public class RegPivot
                         dbFieldNames.add(name);
                         dbFieldTypes.add(java.sql.Types.INTEGER);
                         
+                    } else if (name.endsWith("_number"))
+                    {
+                        tblSQL.append(String.format("`%s` VARCHAR(16) DEFAULT NULL", name));
+                        dbFieldNames.add(name);
+                        dbFieldTypes.add(java.sql.Types.VARCHAR);
+                        
                     } else
                     {
                         int maxLen = BasicSQLUtils.getCountAsInt(connection, String.format(sql2, name));
@@ -190,6 +198,10 @@ public class RegPivot
                     cnt++;
                 }
                 
+                if (isRegBuild) 
+                {
+                    tblSQL.append(String.format(",\n`RecordType`INT(11) DEFAULT NULL"));
+                }
                 tblSQL.append(String.format(",\n PRIMARY KEY (`%s`)) ENGINE=InnoDB DEFAULT CHARSET=UTF8", keyName));
                 
                 System.out.println(tblSQL.toString());
@@ -219,138 +231,27 @@ public class RegPivot
                     inx++;
                 }
                 
+                if (isRegBuild) 
+                {
+                    if (fields.length() > 0) fields.append(","); 
+                    fields.append("RecordType");
+                    
+                    if (vals.length() > 0) vals.append(","); 
+                    vals.append('?');
+                }
+                
                 String insertSQL = String.format("INSERT INTO %s (%s) VALUES(%s)", newTblName, fields.toString(), vals.toString());
                 System.out.println(insertSQL);
                 
                 PreparedStatement pStmt = connection.prepareStatement(insertSQL);
                 
-                HashMap<String, Object> nameToVals = new HashMap<String, Object>();
-                
-                System.out.println(fillSQL);
-                
-                String prevId = null;
-                ResultSet rs = stmt.executeQuery(fillSQL);
-                while (rs.next())
+                if (isRegBuild)
                 {
-                    String id = rs.getString(1);
-                    if (prevId == null) prevId = id;
-                    
-                    if (!prevId.equals(id))
-                    {
-                       for (int i=1;i<secInx;i++)
-                       {
-                           //System.out.println("Put: "+dbFieldNames.get(i-1)+"  "+dbFieldTypes.get(i-1));//+"  = "+rs.getObject(i));
-                           if (dbFieldTypes.get(i-1) == java.sql.Types.TIMESTAMP)
-                           {
-                               try
-                               {
-                                   String ts = rs.getString(i);
-                                   if (StringUtils.isNotEmpty(ts) && ts.equals("0000-00-00 00:00:00"))
-                                   {
-                                       //nameToVals.put(dbFieldNames.get(i-1), null);
-                                       continue;
-                                   }
-                               } catch (Exception ex)
-                               {
-                                   nameToVals.put(dbFieldNames.get(i-1), null);//"2000-01-01 00:00:00");
-                                   continue;
-                               }
-                           }
-                           nameToVals.put(dbFieldNames.get(i-1), rs.getObject(i));
-                       }
-                       
-                       for (int i=0;i<dbFieldNames.size();i++)
-                       {
-                           int    fInx  = i + 1;
-                           String name  = inxToName.get(i);
-                           Object value = nameToVals.get(name);
-                           
-                           pStmt.setObject(fInx, null);
-                           
-                           /*if (name.equals("num_co"))
-                           {
-                               System.out.println(/"+value+"  "+(value != null ? value.getClass().getSimpleName() : ""));
-                           }*/
-                           
-                           //System.out.println(name+" - "+dbFieldTypes.get(i)+"["+value+"]"+(value != null ? value.getClass().getSimpleName():""));
-                           
-                           int typ = dbFieldTypes.get(i);
-                           
-                           if (value != null)
-                           {
-                               /*if (value instanceof String)
-                               {
-                                   String valStr = (String)value;
-                                   if (StringUtils.isNotEmpty(valStr))
-                                   {
-                                       typ = java.sql.Types.VARCHAR;
-                                   }
-                                   
-                               } else if (value instanceof Integer)
-                               {
-                                   typ = java.sql.Types.INTEGER;
-                               }*/
-                                if (name.equals("Institution_name"))
-                                {
-                                    String valStr = (String)value;
-                                    if (StringUtils.isNotEmpty(valStr))
-                                    {
-                                        instCnt++;
-                                    }
-                                }
-                               switch (typ)
-                               {
-                                   case java.sql.Types.INTEGER : 
-                                       if (value instanceof Integer)
-                                       {
-                                           pStmt.setInt(fInx, (Integer)value);
-                                       }
-                                       break;
-                                   
-                                   case java.sql.Types.VARCHAR : 
-                                       if (value instanceof String)
-                                       {
-                                           pStmt.setString(fInx, (String)value);
-                                       }
-                                       break;
-                                   
-                                   case java.sql.Types.TIMESTAMP : 
-                                   {
-                                       if (value instanceof Timestamp)
-                                       {
-                                           pStmt.setTimestamp(fInx, (Timestamp)value);
-                                       }
-                                       break;
-                                   }
-                               }
-                           } else
-                           {
-                               pStmt.setObject(fInx, null);
-                           }
-                       }
-                       pStmt.executeUpdate();
-                       
-                       prevId = id;
-                       nameToVals.clear();
-                    }
-                    
-                    String  name   = rs.getString(secInx);
-                    name = StringUtils.replace(name, "(", "_");
-                    name = StringUtils.replace(name, ")", "_");
-
-                    Integer intVal = (Integer)rs.getObject(secInx+1);
-                    String  strVal = (String)rs.getObject(secInx+2);
-                    nameToVals.put(name, strVal != null ? strVal : intVal);
+                    fillRegisterTable(newTblName, stmt, pStmt, fillSQL, secInx, dbFieldTypes, dbFieldNames, inxToName);
+                } else
+                {
+                    fillTrackTable(newTblName, stmt, pStmt, fillSQL, secInx, dbFieldTypes, dbFieldNames, inxToName);
                 }
-                
-                String alterSQL = "ALTER TABLE "+newTblName+" ADD Lookup VARCHAR(64) AFTER IP";
-                BasicSQLUtils.update(connection, alterSQL);
-                
-                alterSQL = "ALTER TABLE "+newTblName+" ADD Country VARCHAR(64) AFTER Lookup";
-                BasicSQLUtils.update(connection, alterSQL);
-                
-                alterSQL = "ALTER TABLE "+newTblName+" ADD City VARCHAR(64) AFTER Country";
-                BasicSQLUtils.update(connection, alterSQL);
                 
                 System.out.println("InstCnt: "+instCnt);
                 pStmt.close();
@@ -424,6 +325,491 @@ public class RegPivot
     }
     
     /**
+     * @param newTblName
+     * @param stmt
+     * @param pStmt
+     * @param fillSQL
+     * @param secInx
+     * @param dbFieldTypes
+     * @param dbFieldNames
+     * @param inxToName
+     * @return
+     * @throws SQLException
+     */
+    private int fillRegisterTable(final String newTblName,
+                                  final Statement         stmt,
+                                  final PreparedStatement pStmt,
+                                  final String fillSQL, 
+                                  final int secInx, 
+                                  final Vector<Integer> dbFieldTypes,
+                                  final Vector<String>  dbFieldNames,
+                                  final HashMap<Integer, String> inxToName) throws SQLException
+    {
+        System.out.println("Filling Register Table.");
+
+        int instCnt = 0;
+        
+        System.out.println(fillSQL);
+        
+        ResultSet         rs   = stmt.executeQuery(fillSQL);
+        ResultSetMetaData rsmd = rs.getMetaData();
+        
+        HashMap<String, Integer> nameToIndex = new HashMap<String, Integer>();
+        for (int c=1;c<=rsmd.getColumnCount();c++)
+        {
+            nameToIndex.put(rsmd.getColumnName(c), c);
+            System.out.println(c+" - "+rsmd.getColumnName(c));
+        }
+        
+        //int nameInx = nameToIndex.get("i.Name");
+        boolean debug = false;
+        
+        String prevRegId = null;
+        
+        HashMap<String, HashMap<String, Object>> instHash = new HashMap<String, HashMap<String, Object>>();
+        HashMap<String, HashMap<String, Object>> divHash  = new HashMap<String, HashMap<String, Object>>();
+        HashMap<String, HashMap<String, Object>> dspHash  = new HashMap<String, HashMap<String, Object>>();
+        HashMap<String, HashMap<String, Object>> colHash  = new HashMap<String, HashMap<String, Object>>();
+        
+        HashMap<String, Object> nameToVals = new HashMap<String, Object>();
+
+        
+        while (rs.next())
+        {
+            String regId = rs.getString(1);
+            if (prevRegId == null) prevRegId = regId;
+            
+            for (int i = 1; i < secInx; i++)
+            {
+                if (debug) System.out.println("Put: "+dbFieldNames.get(i-1)+"  "+dbFieldTypes.get(i-1)+"  = "+rs.getObject(i));
+                nameToVals.put(dbFieldNames.get(i - 1), rs.getObject(i));
+            }
+            String name = rs.getString(secInx);
+            name = StringUtils.replace(name, "(", "_");
+            name = StringUtils.replace(name, ")", "_");
+            
+            if (name.equals("reg_type"))
+            {
+                String strVal = (String) rs.getObject(secInx + 2);
+                name = strVal + "_number";
+                
+                nameToVals.put(name, regId);
+                if (debug) System.out.println("Put: "+name+" = "+regId);
+            } else
+            {
+                Integer intVal = (Integer) rs.getObject(secInx + 1);
+                String  strVal = (String) rs.getObject(secInx + 2);
+                nameToVals.put(name, strVal != null ? strVal : intVal);
+                if (debug) System.out.println("Put: "+name+" = "+intVal+" / "+strVal);
+            }
+            
+            if (debug) System.out.println("-------------------------------------------");
+            
+            if (!prevRegId.equals(regId))
+            {
+                String instNum = (String)nameToVals.get("Institution_number");
+                String divNum  = (String)nameToVals.get("Division_number");
+                String dspNum  = (String)nameToVals.get("Discipline_number");
+                String colNum  = (String)nameToVals.get("Collection_number");
+                
+                if (StringUtils.isNotEmpty(instNum))
+                {
+                    copyHash(instNum, instHash, nameToVals);
+                }
+                
+                if (StringUtils.isNotEmpty(divNum))
+                {
+                    copyHash(divNum, divHash, nameToVals);
+                }
+                
+                if (StringUtils.isNotEmpty(dspNum))
+                {
+                    copyHash(dspNum, dspHash, nameToVals);
+                }
+                
+                if (StringUtils.isNotEmpty(colNum))
+                {
+                    // 1288612353.83
+                    String cn = (String)nameToVals.get("Collection_number");
+                    copyHash(colNum, colHash, nameToVals);
+                }
+                
+                /*{
+                    System.err.println("ID is empty:");
+                    for (String key : nameToVals.keySet())
+                    {
+                        System.out.println("--: "+key+" = "+nameToVals.get(key));
+                    }
+                    System.err.println("===============");
+                }*/
+                prevRegId = regId;
+                nameToVals.clear();
+            }
+        }
+        
+        writeHash(instHash, 0, pStmt, dbFieldTypes, dbFieldNames, inxToName);
+        writeHash(divHash,  1, pStmt, dbFieldTypes, dbFieldNames, inxToName);
+        writeHash(dspHash,  2, pStmt, dbFieldTypes, dbFieldNames, inxToName);
+        writeHash(colHash,  3, pStmt, dbFieldTypes, dbFieldNames, inxToName);
+        
+        String alterSQL = "ALTER TABLE "+newTblName+" ADD Lookup VARCHAR(64) AFTER IP";
+        BasicSQLUtils.update(connection, alterSQL);
+        
+        alterSQL = "ALTER TABLE "+newTblName+" ADD Country VARCHAR(64) AFTER Lookup";
+        BasicSQLUtils.update(connection, alterSQL);
+        
+        alterSQL = "ALTER TABLE "+newTblName+" ADD City VARCHAR(64) AFTER Country";
+        BasicSQLUtils.update(connection, alterSQL);
+
+        return instCnt;
+    }
+    
+    /**
+     * @param numId
+     * @param hash
+     * @param data
+     */
+    private void copyHash(final String numId, final HashMap<String, HashMap<String, Object>> hash, final HashMap<String, Object> data)
+    {
+        HashMap<String, Object> dataHash = hash.get(numId);
+        if (dataHash == null)
+        {
+            dataHash = new HashMap<String, Object>(data);
+            hash.put(numId, dataHash);
+        } else
+        {
+            for (String key : data.keySet())
+            {
+                dataHash.put(key, data.get(key));
+            }
+        }
+    }
+    
+    /**
+     * @param hash
+     * @param recordType
+     * @param pStmt
+     * @param dbFieldTypes
+     * @param dbFieldNames
+     * @param inxToName
+     * @throws SQLException
+     */
+    private void writeHash(final HashMap<String, HashMap<String, Object>> hash, 
+                           final Integer                  recordType,
+                           final PreparedStatement        pStmt,
+                           final Vector<Integer>          dbFieldTypes,
+                           final Vector<String>           dbFieldNames,
+                           final HashMap<Integer, String> inxToName) throws SQLException
+    {
+        int totalCnt = hash.size();
+        int cnt = 0;
+        
+        for (String idKey : hash.keySet())
+        {
+            cnt++;
+            if (cnt % 500 == 0) System.out.println(cnt +" / "+totalCnt);
+            
+            HashMap<String, Object> nameToVals = hash.get(idKey);
+            
+            if (recordType != null)
+            {
+                pStmt.setInt(dbFieldNames.size()+1, (Integer) recordType);
+            }
+            
+            for (int i = 0; i < dbFieldNames.size(); i++)
+            {
+                int fInx = i + 1;
+                String name  = inxToName.get(i);
+                Object value = nameToVals.get(name);
+
+                pStmt.setObject(fInx, null);
+
+                int typ = dbFieldTypes.get(i);
+
+                if (value != null)
+                {
+                    if (value instanceof Integer)
+                    {
+                        pStmt.setInt(fInx, (Integer) value);
+                        
+                    } else if (value instanceof String)
+                    {
+                        pStmt.setString(fInx, (String) value);
+                    } else if (value instanceof Timestamp)
+                    {
+                        pStmt.setTimestamp(fInx, (Timestamp) value);
+                    } else
+                    {
+                        System.err.println("Unhandled class: "+ value.getClass().getName());
+                    }
+                } else
+                {
+                    pStmt.setObject(fInx, null);
+                }
+            }
+            pStmt.executeUpdate();
+        }
+
+    }
+    /**
+     * @param newTblName
+     * @param stmt
+     * @param pStmt
+     * @param fillSQL
+     * @param secInx
+     * @param dbFieldTypes
+     * @param dbFieldNames
+     * @param inxToName
+     * @return
+     * @throws SQLException
+     */
+    private int fillTrackTable(final String newTblName,
+                                  final Statement         stmt,
+                                  final PreparedStatement pStmt,
+                                  final String fillSQL, 
+                                  final int secInx, 
+                                  final Vector<Integer> dbFieldTypes,
+                                  final Vector<String>  dbFieldNames,
+                                  final HashMap<Integer, String> inxToName) throws SQLException
+    {
+        System.out.println("Filling Track Table.");
+
+        int instCnt = 0;
+        
+        System.out.println(fillSQL);
+        
+        ResultSet         rs   = stmt.executeQuery(fillSQL);
+        ResultSetMetaData rsmd = rs.getMetaData();
+        
+        HashMap<String, Integer> nameToIndex = new HashMap<String, Integer>();
+        for (int c=1;c<=rsmd.getColumnCount();c++)
+        {
+            nameToIndex.put(rsmd.getColumnName(c), c);
+            System.out.println(c+" - "+rsmd.getColumnName(c));
+        }
+        
+        boolean debug = false;
+        
+        String prevRegId = null;
+        
+        HashMap<String, HashMap<String, Object>> colHash  = new HashMap<String, HashMap<String, Object>>();
+        
+        HashMap<String, Object> nameToVals = new HashMap<String, Object>();
+
+        
+        while (rs.next())
+        {
+            String regId = rs.getString(1);
+            if (prevRegId == null) prevRegId = regId;
+            
+            for (int i = 1; i < secInx; i++)
+            {
+                if (debug) System.out.println("Put: "+dbFieldNames.get(i-1)+"  "+dbFieldTypes.get(i-1)+"  = "+rs.getObject(i));
+                
+                if (dbFieldTypes.get(i-1) == java.sql.Types.TIMESTAMP)
+                {
+                    try
+                    {
+                        String ts = rs.getString(i);
+                        if (StringUtils.isNotEmpty(ts) && ts.equals("0000-00-00 00:00:00"))
+                        {
+                            continue;
+                        }
+                    } catch (Exception ex)
+                    {
+                        continue;
+                    }
+                }
+                nameToVals.put(dbFieldNames.get(i - 1), rs.getObject(i));
+            }
+            String name = rs.getString(secInx);
+            name = StringUtils.replace(name, "(", "_");
+            name = StringUtils.replace(name, ")", "_");
+            
+            if (name.equals("reg_type"))
+            {
+                String strVal = (String) rs.getObject(secInx + 2);
+                name = strVal + "_number";
+                
+                nameToVals.put(name, regId);
+                if (debug) System.out.println("Put: "+name+" = "+regId);
+            } else
+            {
+                Integer intVal = (Integer) rs.getObject(secInx + 1);
+                String  strVal = (String) rs.getObject(secInx + 2);
+                nameToVals.put(name, strVal != null ? strVal : intVal);
+                if (debug) System.out.println("Put: "+name+" = "+intVal+" / "+strVal);
+            }
+            
+            if (debug) System.out.println("-------------------------------------------");
+            
+            if (!prevRegId.equals(regId))
+            {
+                String colNum  = (String)nameToVals.get("Collection_number");
+                
+                if (StringUtils.isNotEmpty(colNum))
+                {
+                    copyHash(colNum, colHash, nameToVals);
+                }
+                prevRegId = regId;
+                nameToVals.clear();
+            }
+        }
+        
+        writeHash(colHash,  null, pStmt, dbFieldTypes, dbFieldNames, inxToName);
+        
+        String alterSQL = "ALTER TABLE "+newTblName+" ADD Lookup VARCHAR(64) AFTER IP";
+        BasicSQLUtils.update(connection, alterSQL);
+        
+        alterSQL = "ALTER TABLE "+newTblName+" ADD Country VARCHAR(64) AFTER Lookup";
+        BasicSQLUtils.update(connection, alterSQL);
+        
+        alterSQL = "ALTER TABLE "+newTblName+" ADD City VARCHAR(64) AFTER Country";
+        BasicSQLUtils.update(connection, alterSQL);
+
+        return instCnt;
+    }
+
+    /**
+     * @param newTblName
+     * @param stmt
+     * @param pStmt
+     * @param fillSQL
+     * @param secInx
+     * @param dbFieldTypes
+     * @param dbFieldNames
+     * @param inxToName
+     * @return
+     * @throws SQLException
+     */
+    private int fillTrackTableX(final String            newTblName,
+                               final Statement         stmt,
+                               final PreparedStatement pStmt,
+                               final String            fillSQL, 
+                               final int               secInx, 
+                               final Vector<Integer>   dbFieldTypes,
+                               final Vector<String>    dbFieldNames,
+                               final HashMap<Integer, String> inxToName) throws SQLException
+    {
+        System.out.println("Filling Track Table.");
+        int instCnt = 0;
+        
+        HashMap<String, Object> nameToVals = new HashMap<String, Object>();
+        
+        System.out.println(fillSQL);
+        
+        String prevId = null;
+        ResultSet         rs   = stmt.executeQuery(fillSQL);
+        ResultSetMetaData rsmd = rs.getMetaData();
+        
+        HashMap<String, Integer> nameToIndex = new HashMap<String, Integer>();
+        for (int c=1;c<=rsmd.getColumnCount();c++)
+        {
+            nameToIndex.put(rsmd.getColumnName(c), c);
+            System.out.println(c+" - "+rsmd.getColumnName(c));
+        }
+        
+        while (rs.next())
+        {
+            String id = rs.getString(1);
+            if (prevId == null) prevId = id;
+            
+            if (!prevId.equals(id))
+            {
+               for (int i=1;i<secInx;i++)
+               {
+                   //System.out.println("Put: "+dbFieldNames.get(i-1)+"  "+dbFieldTypes.get(i-1));//+"  = "+rs.getObject(i));
+                   if (dbFieldTypes.get(i-1) == java.sql.Types.TIMESTAMP)
+                   {
+                       try
+                       {
+                           String ts = rs.getString(i);
+                           if (StringUtils.isNotEmpty(ts) && ts.equals("0000-00-00 00:00:00"))
+                           {
+                               //nameToVals.put(dbFieldNames.get(i-1), null);
+                               continue;
+                           }
+                       } catch (Exception ex)
+                       {
+                           nameToVals.put(dbFieldNames.get(i-1), null);//"2000-01-01 00:00:00");
+                           continue;
+                       }
+                   }
+                   nameToVals.put(dbFieldNames.get(i-1), rs.getObject(i));
+               }
+               
+               
+               for (int i=0;i<dbFieldNames.size();i++)
+               {
+                   int    fInx  = i + 1;
+                   String name  = inxToName.get(i);
+                   Object value = nameToVals.get(name);
+                   
+                   pStmt.setObject(fInx, null);
+                   
+                   int typ = dbFieldTypes.get(i);
+                   
+                   if (value != null)
+                   {
+                       switch (typ)
+                       {
+                           case java.sql.Types.INTEGER : 
+                               if (value instanceof Integer)
+                               {
+                                   pStmt.setInt(fInx, (Integer)value);
+                               }
+                               break;
+                           
+                           case java.sql.Types.VARCHAR : 
+                               if (value instanceof String)
+                               {
+                                   pStmt.setString(fInx, (String)value);
+                               }
+                               break;
+                           
+                           case java.sql.Types.TIMESTAMP : 
+                           {
+                               if (value instanceof Timestamp)
+                               {
+                                   pStmt.setTimestamp(fInx, (Timestamp)value);
+                               }
+                               break;
+                           }
+                       }
+                   } else
+                   {
+                       pStmt.setObject(fInx, null);
+                   }
+               }
+               pStmt.executeUpdate();
+               
+               prevId = id;
+               nameToVals.clear();
+            }
+            
+            String  name   = rs.getString(secInx);
+            name = StringUtils.replace(name, "(", "_");
+            name = StringUtils.replace(name, ")", "_");
+
+            Integer intVal = (Integer)rs.getObject(secInx+1);
+            String  strVal = (String)rs.getObject(secInx+2);
+            nameToVals.put(name, strVal != null ? strVal : intVal);
+        }
+        
+        String alterSQL = "ALTER TABLE "+newTblName+" ADD Lookup VARCHAR(64) AFTER IP";
+        BasicSQLUtils.update(connection, alterSQL);
+        
+        alterSQL = "ALTER TABLE "+newTblName+" ADD Country VARCHAR(64) AFTER Lookup";
+        BasicSQLUtils.update(connection, alterSQL);
+        
+        alterSQL = "ALTER TABLE "+newTblName+" ADD City VARCHAR(64) AFTER Country";
+        BasicSQLUtils.update(connection, alterSQL);
+
+        return instCnt;
+    }
+    
+
+    /**
      * @param tblName
      * @param keyName
      */
@@ -438,7 +824,7 @@ public class RegPivot
         
             HTTPGetter httpGetter = new HTTPGetter();
             
-            String sql = String.format("SELECT %s, IP, Lookup, Country, City from %s", keyName, tblName);
+            String sql = String.format("SELECT %s, IP, Lookup, Country, City FROM %s WHERE Country IS NULL", keyName, tblName);
             PreparedStatement pStmt = connection.prepareStatement(String.format("UPDATE %s SET lookup=?, Country=?, City=? WHERE %s = ?", tblName, keyName));
             
             HashMap<String, String>               ipHash = new HashMap<String, String>();
@@ -595,7 +981,7 @@ public class RegPivot
                 {
                     String defSQL  = "SELECT r.RegNumber, r.RegType, r.IP, r.TimestampCreated FROM register r WHERE r.RegNumber IS NULL";
                     String fillSQL = "SELECT r.RegNumber, r.RegType, r.IP, r.TimestampCreated, i.Name, i.CountAmt, i.Value FROM register r INNER JOIN registeritem i ON r.RegisterID = i.RegisterID";
-                    process("reg", "registeritem", "RegID", defSQL, fillSQL);
+                    process("reg", "registeritem", "RegID", defSQL, fillSQL, true);
                 }
                 break;
                 
@@ -603,7 +989,7 @@ public class RegPivot
                 {
                     String defSQL  = "SELECT t.CountAmt, t.IP, t.TimestampCreated, t.TimestampModified FROM track t WHERE t.Id IS NULL";
                     String fillSQL = "SELECT t.CountAmt, t.IP, t.TimestampCreated, t.TimestampModified, i.Name, i.CountAmt, i.Value FROM track t INNER JOIN trackitem i ON t.TrackID = i.TrackID ORDER BY TimestampCreated";
-                    process("trk", "trackitem", "TrkID", defSQL, fillSQL);
+                    process("trk", "trackitem", "TrkID", defSQL, fillSQL, false);
                 }
                 break;
                 
@@ -631,7 +1017,12 @@ public class RegPivot
         RegPivot rp = new RegPivot();
         
         rp.doProcess(ProcessType.eBuildReg);
+        //rp.doProcess(ProcessType.eBuildTrack);
+        //rp.doProcess(ProcessType.eBuildRegCC);
+        //rp.doProcess(ProcessType.eBuildTrkCC);
         rp.shutdown();
+        
+        System.out.println("App Done.");
     }
 
 }
