@@ -644,7 +644,7 @@ public class UIFormatterEditorDlg extends CustomDialog
         
         int     size     = (Integer)sizeSpinner.getValue();
         boolean isByYear = fieldType == FieldType.year;
-        boolean isIncr   = isIncChk.isSelected();
+        boolean isIncr   = isIncChk.isSelected() && fieldType == FieldType.numeric;
         
         switch (fieldType)
         {

@@ -93,7 +93,7 @@ public class UIFieldFormatterField implements Cloneable
         this.incrementer = incrementer;
         this.byYear      = byYear;
         
-        if (incrementer)
+        if (incrementer && type == FieldType.numeric)
         {
             this.value = UIFieldFormatterMgr.getFormatterPattern(incrementer, null, size);
         }
@@ -323,6 +323,10 @@ public class UIFieldFormatterField implements Cloneable
 	public void setType(FieldType type)
     {
         this.type = type;
+        if (incrementer && type != FieldType.numeric)
+        {
+            incrementer = false;
+        }
     }
 
     public void setSize(int size)
