@@ -3202,9 +3202,9 @@ public class UploadTable implements Comparable<UploadTable>
     {
     	if (wbRow != wbCurrentRow)
     	{
-    		readFromDataSet(wbRow);
+    		readFromDataSet(wbRow, false);
     		writeRowOrNot(wbCurrentRow < wbRow, wbCurrentRow < wbRow);
-    		readFromDataSet(wbCurrentRow);
+    		readFromDataSet(wbCurrentRow, true);
     	}
     }
 
@@ -3213,7 +3213,7 @@ public class UploadTable implements Comparable<UploadTable>
      * 
      * reads data from the dataset to fields in this table and it's parent tables
      */
-    protected void readFromDataSet(int wbRow)
+    protected void readFromDataSet(int wbRow, boolean restore)
     {
     	Uploader.currentUpload.loadRow(this, wbRow);
 		for (Vector<ParentTableEntry> ptes : parentTables)
@@ -3222,7 +3222,7 @@ public class UploadTable implements Comparable<UploadTable>
 			{
 				if (pt.getImportTable() != null)
 				{
-					pt.getImportTable().readFromDataSet(wbRow);
+					pt.getImportTable().readFromDataSet(restore ? pt.getImportTable().wbCurrentRow : wbRow, restore);
 				}
 			}
 		}
