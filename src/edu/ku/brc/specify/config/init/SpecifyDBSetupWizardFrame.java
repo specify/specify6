@@ -174,10 +174,10 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
      */
     protected String getAppTitle(final String titleStr)
     {
-        String install4JStr = UIHelper.getInstall4JInstallString();
-        if (StringUtils.isNotEmpty(install4JStr))
+        String resAppVersion = UIRegistry.getAppVersion();
+        if (StringUtils.isNotEmpty(resAppVersion))
         {
-            appVersion = install4JStr;
+            appVersion = resAppVersion;
         }
         
         return AppBase.getTitle(appVersion, appBuildVersion, titleStr);

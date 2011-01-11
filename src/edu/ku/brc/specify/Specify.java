@@ -378,6 +378,11 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         setupDefaultFonts();
         
+        if (!UIRegistry.doesAppversionsMatch())
+        {
+            System.exit(0);
+        }
+        
         // Attachment related helpers
         Thumbnailer thumb = new Thumbnailer();
         File thumbnailDir = null;
@@ -2269,10 +2274,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     protected String getTitle()
     {
-        String install4JStr = UIHelper.getInstall4JInstallString();
-        if (StringUtils.isNotEmpty(install4JStr))
+        String resAppVersion = UIRegistry.getAppVersion();
+        if (StringUtils.isNotEmpty(resAppVersion))
         {
-            appVersion = install4JStr;
+            appVersion = resAppVersion;
         }
         
         return AppBase.getTitle(appVersion, appBuildVersion, appName);
@@ -3184,7 +3189,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                       }
                   } else
                   {
-                      if (!isExtraCheck && StringUtils.isNotEmpty(UIHelper.getInstall4JInstallString()))
+                      if (!isExtraCheck && StringUtils.isNotEmpty(UIRegistry.getAppVersion()))
                       {
                           UIRegistry.showLocalizedMsg(null, "SpReg.NOT_REGISTERED");
                       }

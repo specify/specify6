@@ -951,9 +951,9 @@ public class SpecifyDBSetupWizard extends JPanel
                 // Create Version Record and copy if there is a connection
                 if (DBConnection.getInstance().getConnection() != null)
                 {
-                    String  appVerNum = UIHelper.getInstall4JInstallString();
-                    String  dbVersion = SchemaUpdateService.getInstance().getDBSchemaVersionFromXML();
-                    SpVersion.createInitialRecord(DBConnection.getInstance().getConnection(), appVerNum, dbVersion);
+                    String resAppVersion = UIRegistry.getAppVersion();
+                    String dbVersion     = SchemaUpdateService.getInstance().getDBSchemaVersionFromXML();
+                    SpVersion.createInitialRecord(DBConnection.getInstance().getConnection(), resAppVersion, dbVersion);
             
                     if (UIRegistry.isMobile())
                     {

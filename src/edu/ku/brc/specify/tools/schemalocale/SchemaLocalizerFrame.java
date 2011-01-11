@@ -132,7 +132,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         new MacOSAppHandler(this);
         
         appName             = "Schema Localizer"; //$NON-NLS-1$
-        appVersion          = UIHelper.getInstall4JInstallString();
+        appVersion          = UIRegistry.getAppVersion();
         if (appVersion == null)
         {
             appVersion = "Unknown";

@@ -44,7 +44,6 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
@@ -395,12 +394,12 @@ public class StatsTrackerTask extends BaseTask
                 } catch (UnknownHostException e) {}
             }
             
-            String install4JStr = UIHelper.getInstall4JInstallString();
-            if (StringUtils.isEmpty(install4JStr))
+            String resAppVersion = UIRegistry.getAppVersion();
+            if (StringUtils.isEmpty(resAppVersion))
             {
-                install4JStr = "Unknown"; 
+                resAppVersion = "Unknown"; 
             }
-            postParams.add(new NameValuePair("app_version", install4JStr)); //$NON-NLS-1$
+            postParams.add(new NameValuePair("app_version", resAppVersion)); //$NON-NLS-1$
             
             if (doSendSecondaryStats)
             {

@@ -2085,7 +2085,7 @@ public class SpecifyDBConverter extends AppBase
         
         if (appVerStr != null)
         {
-            appVerStr = UIHelper.getInstall4JInstallString();
+            appVerStr = UIRegistry.getAppVersion();
             if (appVerStr == null)
             {
                 do
@@ -2106,7 +2106,7 @@ public class SpecifyDBConverter extends AppBase
             
         } else
         {
-            appVerStr = UIHelper.getInstall4JInstallString();
+            appVerStr = UIRegistry.getAppVersion();
             if (appVerStr == null)
             {
                 do

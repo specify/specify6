@@ -700,10 +700,10 @@ public class AppBase extends JPanel implements DatabaseLoginListener, CommandLis
     
     protected String getTitle()
     {
-        String install4JStr = UIHelper.getInstall4JInstallString();
-        if (StringUtils.isNotEmpty(install4JStr))
+        String resAppVersion = UIRegistry.getAppVersion();;
+        if (StringUtils.isNotEmpty(resAppVersion))
         {
-            appVersion = install4JStr;
+            appVersion = resAppVersion;
         }
         
         return getTitle(appVersion, appBuildVersion, appName);
@@ -717,9 +717,9 @@ public class AppBase extends JPanel implements DatabaseLoginListener, CommandLis
                                   final String appBuildVersionStr, 
                                   final String appNameStr)
     {
-        String title        = "";
-        String install4JStr = UIHelper.getInstall4JInstallString();
-        if (StringUtils.isNotEmpty(install4JStr))
+        String title         = "";
+        String resAppVersion = UIRegistry.getAppVersion();
+        if (StringUtils.isNotEmpty(resAppVersion))
         {
             title = appNameStr + " " + appVersionStr; //$NON-NLS-1$
         } else

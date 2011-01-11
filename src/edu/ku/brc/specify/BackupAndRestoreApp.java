@@ -441,7 +441,7 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
     protected String getTitle()
     {
         String title        = "";
-        String install4JStr = UIHelper.getInstall4JInstallString();
+        String resAppVersion = UIRegistry.getAppVersion();
         
         String postFix = "";
         if (UIRegistry.isEmbedded())
@@ -453,9 +453,9 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
             postFix = " (Mobile)";
         }
         
-        if (StringUtils.isNotEmpty(install4JStr))
+        if (StringUtils.isNotEmpty(resAppVersion))
         {
-            appVersion = install4JStr;
+            appVersion = resAppVersion;
             title = appName + postFix + " " + appVersion; //$NON-NLS-1$
         } else
         {

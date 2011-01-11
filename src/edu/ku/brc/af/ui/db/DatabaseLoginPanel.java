@@ -1142,7 +1142,7 @@ public class DatabaseLoginPanel extends JTiledPanel
                         DBConnection.getInstance().setConnectionStr(drvInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, getServerName(), getDatabaseName()));
                         
                         // This needs to be done before Hibernate starts up
-                        SchemaUpdateType status = SchemaUpdateService.getInstance().updateSchema(UIHelper.getInstall4JInstallString());
+                        SchemaUpdateType status = SchemaUpdateService.getInstance().updateSchema(UIRegistry.getAppVersion());
                         if (status == SchemaUpdateType.Error)
                         {
                             StringBuilder sb = new StringBuilder();

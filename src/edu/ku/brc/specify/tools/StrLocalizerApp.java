@@ -503,7 +503,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         {
             try
             {
-                String appVersion = UIHelper.getInstall4JInstallString();
+                String appVersion = UIRegistry.getAppVersion();
                 String version    = FileUtils.readFileToString(verFile);
                 
                 doRewrite = !version.equals(appVersion) && appVersion.compareTo(version) > 1;
@@ -521,7 +521,7 @@ public class StrLocalizerApp extends JPanel implements FrameworkAppIFace, Window
         {
             try
             {
-                FileUtils.writeStringToFile(verFile, UIHelper.getInstall4JInstallString());
+                FileUtils.writeStringToFile(verFile, UIRegistry.getAppVersion());
                 
             } catch (IOException e)
             {

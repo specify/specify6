@@ -19,8 +19,6 @@
 */
 package edu.ku.brc.ui;
 
-import static edu.ku.brc.ui.UIHelper.getInstall4JInstallString;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Properties;
@@ -210,12 +208,12 @@ public abstract class FeedBackSender
                 } catch (UnknownHostException e) {}
             }
             
-            String install4JStr = getInstall4JInstallString();
-            if (StringUtils.isEmpty(install4JStr))
+            String resAppVersion = UIRegistry.getAppVersion();
+            if (StringUtils.isEmpty(resAppVersion))
             {
-                install4JStr = "Unknown"; 
+                resAppVersion = "Unknown"; 
             }
-            postParams.add(new NameValuePair("app_version", install4JStr)); //$NON-NLS-1$
+            postParams.add(new NameValuePair("app_version", resAppVersion)); //$NON-NLS-1$
             
             Vector<NameValuePair> extraStats = collectionSecondaryInfo();
             if (extraStats != null)

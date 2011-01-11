@@ -280,6 +280,32 @@ public class UIRegistry
     }
     
     /**
+     * @return the string for the current version number from the resources file (e.g. 6.2.10)
+     */
+    public static String getAppVersion()
+    {
+        return getResourceString("SPECIFY_VERSION");
+    }
+    
+    /**
+     * @return true if the install version number matches the jar version number.
+     */
+    public static boolean doesAppversionsMatch()
+    {
+        String install4J     = UIHelper.getInstall4JInstallString();
+        String resAppVersion = getAppVersion();
+        
+        if (StringUtils.isEmpty(install4J) ||
+            StringUtils.isEmpty(resAppVersion) ||
+            !resAppVersion.equals(install4J))
+        {
+            showLocalizedError("APPVER_MISMATCH", install4J, resAppVersion);
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * @return the platformLocale
      */
     public static Locale getPlatformLocale()
