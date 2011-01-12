@@ -3126,7 +3126,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			//assumes consistent naming of parent and rank fields in Treeable classes
 			sql = "select distinct RankID from " + tbl + " where ParentID = " + upper.getId() + " and RankID <= " + lower.getRank() + " order by RankID";
 		}
-		return BasicSQLUtils.querySingleCol(sql);
+		if (sql != null)
+		{
+			return BasicSQLUtils.querySingleCol(sql);
+		}
+		log.error("Unable to check ranks for merge: upper=" + upper.getFullName() + ", lower=" + lower.getFullName());
+		return null;
 	}
 	
 	/**
@@ -3177,7 +3182,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 				
 			} else
 			{
-				if (getInvalidChildRanksForMerge(draggedNode, droppedOnNode).size() > 0)
+				List<Object> invalidRanks = getInvalidChildRanksForMerge(draggedNode, droppedOnNode);
+				if (invalidRanks == null || invalidRanks.size() > 0)
 				{
 					return false;
 				}
