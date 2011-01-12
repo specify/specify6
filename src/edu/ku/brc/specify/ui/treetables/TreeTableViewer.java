@@ -36,9 +36,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -83,14 +86,10 @@ import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.af.ui.forms.EditViewCompSwitcherPanel;
-import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.UIValidator;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Taxon;
@@ -168,6 +167,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     protected FindPanel findPanel;
 	
 	protected D treeDef;
+	protected List<TreeDefItemIface<T,D,I>> sortedTreeDefItems = null; 
 	
     protected String  findName;
     protected int     resultsIndex;
@@ -246,6 +246,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		canAdd = isEditMode && perms.canAdd();
 		canDelete = isEditMode && perms.canDelete();
 		this.treeDef = treeDef;
+		sortedTreeDefItems = buildSortedTreeDefItems();
 		allButtons = new Vector<AbstractButton>();
 		statusBar = UIRegistry.getStatusBar();
 		popupMenu = new TreeNodePopupMenu(this, isEditMode, canAdd, canDelete);
@@ -1914,110 +1915,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 @Override
                 public Object construct()
                 {
-                    if (true)
-                    {
-                        success          = fvo.saveObject();
-                        afterSaveSuccess = success;
-                        mergedNode       = (T)fvo.getDataObj();
-                        
-                    } else
-                    {
-                        // save the node and update the tree viewer appropriately
-                        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                        try
-                        {
-                            mergedNode = session.merge(node);
-                        }
-                        catch (StaleObjectException e1)
-                        {
-                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeTableViewer.class, e1);
-                            // another user or process has changed the data "underneath" us
-                            UIRegistry.showLocalizedError("UPDATE_DATA_STALE");
-                            if (session != null)
-                            {
-                                session.close();
-                            }
-                            session = DataProviderFactory.getInstance().createSession();
-                            mergedNode = (T)session.load(node.getClass(), node.getTreeId());
-                            success = false;
-                            return success;
-                        }
-                        success = true;
-                        afterSaveSuccess = false;
-                        
-                        if (businessRules != null)
-                        {
-                            businessRules.beforeSave(mergedNode, session);
-                        }
-                        
-                        try
-                        {
-                            session.beginTransaction();
-                            
-                            MultiView mvParent = fvo.getMVParent();
-                            Vector<Object> deletedItems = mvParent != null ? mvParent.getDeletedItems() : null;
-                            if (deletedItems != null)
-                            {
-                                // Ok, at this point we have all of the deleted data objects,
-                                // but Josh has already done a merge. So we need to used the record Id
-                                // and build a new list with the merged objects.
-                                
-                                Hashtable<Integer, Boolean> idHash = new Hashtable<Integer, Boolean>();
-                                for (Object obj : deletedItems)
-                                {
-                                    Integer idInt = ((FormDataObjIFace)obj).getId(); // should never be null, but just in case
-                                    if (idInt != null)
-                                    {
-                                        int id = idInt;
-                                        idHash.put(id, true);
-                                    }
-                                    
-                                }
-                                
-                                FormViewObj.deleteItemsInDelList(session, deletedItems/*, null, null, true*/);
-                            }
-                            
-                            Vector<Object> toBeSavedItems = mvParent != null ? mvParent.getToBeSavedItems() : null;
-                            if (toBeSavedItems != null)
-                            {
-                                FormViewObj.saveItemsInToBeSavedList(session, toBeSavedItems);
-                            }
-                            
-                            session.saveOrUpdate(mergedNode);
-                            if (businessRules != null)
-                            {
-                                if (!businessRules.beforeSaveCommit(mergedNode, session))
-                                {
-                                    throw new Exception("Business rules processing failed");
-                                }
-                            }
-                            session.commit();
-                            //log.info("Successfully saved changes to " + mergedNode.getFullName());
-                            
-                            // at this point, the new node is in the DB (if success == true)
-        
-                            if (businessRules != null && success == true)
-                            {
-                                afterSaveSuccess = businessRules.afterSaveCommit(mergedNode, session);
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeTableViewer.class, e);
-                            success = false;
-                            UIRegistry.showLocalizedError("UNRECOVERABLE_DB_ERROR");
-    
-                            log.error("Error while saving node changes.  Rolling back transaction.", e);
-                            session.rollback();
-                        }
-                        finally
-                        {
-                            session.close();
-                        }
-
-                    }
+                	success          = fvo.saveObject();
+                    //See revision 9036 for dead code that once (possibly) dealt with stale object exceptions
+                	afterSaveSuccess = success;
+                    mergedNode       = (T)fvo.getDataObj();
                     return success;
                 }
 
@@ -3164,6 +3065,71 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	}
 	
 	/**
+	 * @return list of treedefitems sorted by rank
+	 */
+	private List<TreeDefItemIface<T,D,I>> buildSortedTreeDefItems()
+	{
+		List<TreeDefItemIface<T,D,I>> result = new Vector<TreeDefItemIface<T,D,I>>(treeDef.getTreeDefItems());
+		Collections.sort(result, new Comparator<TreeDefItemIface<T,D,I>>(){
+
+			/* (non-Javadoc)
+			 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+			 */
+			@Override
+			public int compare(TreeDefItemIface<T, D, I> arg0,
+					TreeDefItemIface<T, D, I> arg1) {
+				// TODO Auto-generated method stub
+				return arg0.getRankId().compareTo(arg1.getRankId());
+			}
+			
+		});
+		return result;
+	}
+	
+	/**
+	 * @return
+	 */
+	private String getTreeTableName()
+	{
+		Class<T> cls = treeDef.getNodeClass();
+		try
+		{
+			Method tblIdGetter = cls.getMethod("getClassTableId", (Class<?>[] )null);
+			Integer tableId = (Integer )tblIdGetter.invoke(null, (Object[] )null);
+			return DBTableIdMgr.getInstance().getInfoById(tableId).getName();
+		} catch (NoSuchMethodException ex)
+		{
+			return null;
+		} catch (SecurityException ex)
+		{
+			return null;
+		} catch (InvocationTargetException ex)
+		{
+			return null;
+		} catch (IllegalAccessException ex)
+		{
+			return null;
+		}
+	}
+	
+	/**
+	 * @param upper
+	 * @param lower
+	 * @return
+	 */
+	private List<Object> getInvalidChildRanksForMerge(final TreeNode upper, final TreeNode lower)
+	{
+		String sql = null;
+		String tbl = getTreeTableName();
+		if (tbl != null)
+		{
+			//assumes consistent naming of parent and rank fields in Treeable classes
+			sql = "select distinct RankID from " + tbl + " where ParentID = " + upper.getId() + " and RankID <= " + lower.getRank() + " order by RankID";
+		}
+		return BasicSQLUtils.querySingleCol(sql);
+	}
+	
+	/**
 	 * @param droppedOnNode
 	 * @param draggedNode
 	 * @return 	true if draggedNode can be merged into droppedOnNode
@@ -3176,10 +3142,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 //			return false;
 //		}
 		
-		//This is not strictly necessary, and 'cross-rank' merging could be useful for getting rid of unwanted 'sub' levels (subfamily, etc)
-		//But allowing cross-rank merges would require checking children to be sure parenting rules are not violated.
-		boolean ranksOK = droppedOnNode.getRank() == draggedNode.getRank();
-		
+
 		//if a node with no children is dropped on a synonym then 
 		//any records linked to the the dropped node will be reassigned to
 		//the drop node.
@@ -3189,10 +3152,38 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		//update Determination.PreferredTaxonID so preventing drops on synonyms for
 		//now
 		boolean synOK = droppedOnNode.getAcceptedParentId() == null;
+		if (!synOK)
+		{
+			return false;
+		}
 		
-		return ranksOK && synOK;
-		
-		//return false;
+		//Allowing cross-rank merges requires checking to be sure parenting rules are not violated.
+		if (droppedOnNode.getRank() != draggedNode.getRank())
+		{
+			TreeDefItemIface<T,D,I> draggedDef = treeDef.getDefItemByRank(draggedNode.getRank());
+			if (droppedOnNode.getRank() < draggedNode.getRank()) 
+			{
+				if (draggedDef.getIsEnforced())
+				{
+					return false;
+				}
+				for (TreeDefItemIface<T,D,I> di : sortedTreeDefItems)
+				{
+					if (di.getIsEnforced() && di.getRankId() > droppedOnNode.getRank() && di.getRankId() < draggedNode.getRank())
+					{
+						return false;
+					}
+				}
+				
+			} else
+			{
+				if (getInvalidChildRanksForMerge(draggedNode, droppedOnNode).size() > 0)
+				{
+					return false;
+				}
+			}
+		}
+		return true;
 		
 		//rank - is higher into lower feasible? Do isEnforced rules need all the time anyway??
 		//accepted status ??? 
@@ -3476,16 +3467,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
      */
     protected int getHighestPossibleNodeRank()
     {
-        int highestRank = Integer.MIN_VALUE;
-        for (I defItem: treeDef.getTreeDefItems())
-        {
-            Integer rank = defItem.getRankId();
-            if (rank != null && rank > highestRank)
-            {
-                highestRank = rank;
-            }
-        }
-        return highestRank;
+    	return sortedTreeDefItems.get(sortedTreeDefItems.size()-1).getRankId();
     }
     
 	/**
@@ -3799,9 +3781,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         // add the nodes to the model
         if (childNodes.size() == 0)
         {
-            parentNode.setHasChildren(false);
-            parentNode.setHasVisualChildren(false);
-            listModel.nodeValuesChanged(parentNode);
+            if (parentNode != null)
+            {
+            	parentNode.setHasChildren(false);
+            	parentNode.setHasVisualChildren(false);
+            	listModel.nodeValuesChanged(parentNode);
+            }
             return childNodes;
         }
         
