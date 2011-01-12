@@ -51,6 +51,7 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 
 import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -252,10 +253,20 @@ public class SpecifyExceptionTracker extends ExceptionTracker
             Division    division    = mgr.getClassObject(Division.class);
             Institution institution = mgr.getClassObject(Institution.class);
             
-            stats.add(new NameValuePair("collection",  collection != null  ? collection.getCollectionName() : "No Collection")); //$NON-NLS-1$
-            stats.add(new NameValuePair("discipline",  discipline != null  ? discipline.getName() :           "No Discipline")); //$NON-NLS-1$
-            stats.add(new NameValuePair("division",    division != null    ? division.getName() :             "No Division")); //$NON-NLS-1$
-            stats.add(new NameValuePair("institution", institution != null ? institution.getName() :          "No Institution")); //$NON-NLS-1$
+            stats.add(new NameValuePair("collection",  collection != null  ? collection.getCollectionName() : "No Collection")); //$NON-NLS-1$ $NON-NLS-2$
+            stats.add(new NameValuePair("discipline",  discipline != null  ? discipline.getName() :           "No Discipline")); //$NON-NLS-1$ $NON-NLS-2$
+            stats.add(new NameValuePair("division",    division != null    ? division.getName() :             "No Division")); //$NON-NLS-1$ $NON-NLS-2$
+            stats.add(new NameValuePair("institution", institution != null ? institution.getName() :          "No Institution")); //$NON-NLS-1$ $NON-NLS-2$
+            
+            stats.add(new NameValuePair("Collection_number",  collection != null  ? collection.getRegNumber()  : "No Collection Number")); //$NON-NLS-1$ $NON-NLS-2$
+            stats.add(new NameValuePair("Discipline_number",  discipline != null  ? discipline.getRegNumber()  : "No Discipline Number")); //$NON-NLS-1$ $NON-NLS-2$
+            stats.add(new NameValuePair("Division_number",    division != null    ? division.getRegNumber()    : "No Division Number")); //$NON-NLS-1$ $NON-NLS-2$
+            stats.add(new NameValuePair("Institution_number", institution != null ? institution.getRegNumber() : "No Institution Number")); //$NON-NLS-1$ $NON-NLS-2$
+            
+            if (collection != null && StringUtils.isNotEmpty(collection.getIsaNumber()))
+            {
+                stats.add(new NameValuePair("ISA_number", collection.getIsaNumber())); //$NON-NLS-1$
+            }
         }
         return stats;
     }
