@@ -399,7 +399,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 					}
                 });
             }
-        });
+        }, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
         addRecordKeyMappings(spreadSheet, KeyEvent.VK_X, "Cut", new AbstractAction()
         {
             public void actionPerformed(ActionEvent ae)
@@ -416,7 +416,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 					}
                 });
             }
-        });
+        }, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
         addRecordKeyMappings(spreadSheet, KeyEvent.VK_V, "Paste", new AbstractAction()
         {
             public void actionPerformed(ActionEvent ae)
@@ -433,7 +433,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 					}
                 });
             }
-        });
+        }, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
         
         findPanel = spreadSheet.getFindReplacePanel();
         UIRegistry.getLaunchFindReplaceAction().setSearchReplacePanel(findPanel);
@@ -547,7 +547,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 	deleteRows();
                 }
             }
-        });
+        }, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
         
         if (isReadOnly)
         {
@@ -601,28 +601,27 @@ public class WorkbenchPaneSS extends BaseSubPane
 				}
             	
             });
-            Action PrevErrAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_F5, "PrevErr", new AbstractAction()
+            Action prevErrAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_F5, "PrevErr", new AbstractAction()
             {
                 public void actionPerformed(ActionEvent ae)
                 {
                     goToInvalidCell(false);
                 }
-            });
-            prevInvalidCellBtn = UIHelper.createIconBtn("UpArrow", "WB_PREV_ERROR", PrevErrAction);
-            Action NextErrAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_F6, "NextErr", new AbstractAction()
+            }, 0);
+            prevInvalidCellBtn = UIHelper.createIconBtn("UpArrow", "WB_PREV_ERROR", prevErrAction);
+            Action nextErrAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_F6, "NextErr", new AbstractAction()
             {
                 public void actionPerformed(ActionEvent ae)
                 {
                     goToInvalidCell(true);
                 }
-            });
-            nextInvalidCellBtn = UIHelper.createIconBtn("DownArrow", "WB_NEXT_ERROR", NextErrAction);
+            }, 0);
+            nextInvalidCellBtn = UIHelper.createIconBtn("DownArrow", "WB_NEXT_ERROR", nextErrAction);
             invalidCellCountLbl = UIHelper.createLabel(String.format(UIRegistry.getResourceString("WB_INVALID_CELL_COUNT"), 0));
             
             prevInvalidCellBtn.setVisible(doIncrementalValidation);
             nextInvalidCellBtn.setVisible(doIncrementalValidation);
             invalidCellCountLbl.setVisible(doIncrementalValidation);
-
  
         	autoMatchChk = UIHelper.createI18NCheckBox("WorkbenchPaneSS.AutoMatchChk");
         	autoMatchChk.setSelected(doIncrementalMatching);
@@ -653,22 +652,22 @@ public class WorkbenchPaneSS extends BaseSubPane
             	
             });
 
-            Action PrevUnmatchedAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_F7, "PrevUnMatched", new AbstractAction()
+            Action prevUnmatchedAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_F7, "PrevUnMatched", new AbstractAction()
             {
                 public void actionPerformed(ActionEvent ae)
                 {
                     goToUnmatchedCell(false);
                 }
-            });
-            prevUnmatchedCellBtn = UIHelper.createIconBtn("UpArrow", "WB_PREV_UNMATCHED", PrevUnmatchedAction);
-            Action NextUnMatchedAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_F8, "NextUnMatched", new AbstractAction()
+            }, 0);
+            prevUnmatchedCellBtn = UIHelper.createIconBtn("UpArrow", "WB_PREV_UNMATCHED", prevUnmatchedAction);
+            Action nextUnMatchedAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_F8, "NextUnMatched", new AbstractAction()
             {
                 public void actionPerformed(ActionEvent ae)
                 {
                     goToUnmatchedCell(true);
                 }
-            });
-            nextUnmatchedCellBtn = UIHelper.createIconBtn("DownArrow", "WB_NEXT_UNMATCHED", NextUnMatchedAction);
+            }, 0);
+            nextUnmatchedCellBtn = UIHelper.createIconBtn("DownArrow", "WB_NEXT_UNMATCHED", nextUnMatchedAction);
             unmatchedCellCountLbl = UIHelper.createLabel(String.format(UIRegistry.getResourceString("WB_UNMATCHED_CELL_COUNT"), 0));
             
 			prevUnmatchedCellBtn.setVisible(doIncrementalMatching);
@@ -676,6 +675,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 			unmatchedCellCountLbl.setVisible(doIncrementalMatching);
 
         }
+
 
         if (isReadOnly)
         {
@@ -713,7 +713,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                     }
                 }
             }
-        });
+        }, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
         
         if (isReadOnly)
         {
@@ -1389,12 +1389,13 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param action action 
      * @return the action
      */
-    protected Action addRecordKeyMappings(final JComponent comp, final int keyCode, final String actionName, final Action action)
+    protected Action addRecordKeyMappings(final JComponent comp, final int keyCode, final String actionName, final Action action,
+    		int modifiers)
     {
         InputMap  inputMap  = comp.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         ActionMap actionMap = comp.getActionMap();
         
-        inputMap.put(KeyStroke.getKeyStroke(keyCode, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), actionName);
+        inputMap.put(KeyStroke.getKeyStroke(keyCode, modifiers), actionName);
         actionMap.put(actionName, action);
         
         //UIRegistry.registerAction(actionName, action);
