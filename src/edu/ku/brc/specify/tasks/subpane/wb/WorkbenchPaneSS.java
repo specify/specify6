@@ -182,6 +182,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTableInvalidValue;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTableMatchInfo;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadToolPanel;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.WorkbenchUploadMapper;
@@ -256,14 +257,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected JButton               convertGeoRefFormatBtn = null;
     protected JButton               exportExcelCsvBtn      = null;
     protected JButton               uploadDatasetBtn       = null;
-    protected JCheckBox				autoValidateChk		   = null;
-    protected JButton			    prevInvalidCellBtn     = null;
-    protected JButton				nextInvalidCellBtn	   = null;
-    protected JLabel				invalidCellCountLbl    = null;
-    protected JCheckBox             autoMatchChk           = null;
-    protected JButton			    prevUnmatchedCellBtn   = null;
-    protected JButton				nextUnmatchedCellBtn   = null;
-    protected JLabel				unmatchedCellCountLbl  = null;
+    protected JButton				showHideUploadToolBtn  = null;
+    protected UploadToolPanel	    uploadToolPanel        = null;
     
     protected DropDownButtonStateful ssFormSwitcher        = null;  
     protected List<JButton>         selectionSensitiveButtons  = new Vector<JButton>();
@@ -560,120 +555,27 @@ public class WorkbenchPaneSS extends BaseSubPane
             spreadSheet.setDeleteAction(delAction);
         }
         
-        if (isReadOnly)
+        if (!isReadOnly)
         {
-            autoValidateChk = null;
-            prevInvalidCellBtn = null;
-            nextInvalidCellBtn = null;
-            invalidCellCountLbl = null;
-            autoMatchChk = null;
-            prevUnmatchedCellBtn = null;
-            nextUnmatchedCellBtn = null;
-            unmatchedCellCountLbl = null;
-        }
-        else
-        {
-        	autoValidateChk = UIHelper.createI18NCheckBox("WorkbenchPaneSS.AutoValidateChk");
-            autoValidateChk.setSelected(doIncrementalValidation);
-            autoValidateChk.addActionListener(new ActionListener() {
-            	
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					if (autoValidateChk.isSelected())
-					{
-						//System.out.println("turning on auto-validation");
-						doIncrementalValidation = true;
-						if (workbenchValidator == null)
-						{
-							buildValidator();
-						}
-						validateAll(null);
-						prevInvalidCellBtn.setVisible(true);
-						nextInvalidCellBtn.setVisible(true);
-						invalidCellCountLbl.setVisible(true);
-						AppPreferences.getLocalPrefs().putBoolean(wbAutoValidatePrefName, doIncrementalValidation);
-					} else
-					{
-						//System.out.println("turning off auto-validation");
-						turnOffIncrementalValidation();
-					}
-					
-				}
-            	
-            });
-            Action prevErrAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_F5, "PrevErr", new AbstractAction()
-            {
-                public void actionPerformed(ActionEvent ae)
-                {
-                    goToInvalidCell(false);
-                }
-            }, 0);
-            prevInvalidCellBtn = UIHelper.createIconBtn("UpArrow", "WB_PREV_ERROR", prevErrAction);
-            Action nextErrAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_F6, "NextErr", new AbstractAction()
-            {
-                public void actionPerformed(ActionEvent ae)
-                {
-                    goToInvalidCell(true);
-                }
-            }, 0);
-            nextInvalidCellBtn = UIHelper.createIconBtn("DownArrow", "WB_NEXT_ERROR", nextErrAction);
-            invalidCellCountLbl = UIHelper.createLabel(String.format(UIRegistry.getResourceString("WB_INVALID_CELL_COUNT"), 0));
-            
-            prevInvalidCellBtn.setVisible(doIncrementalValidation);
-            nextInvalidCellBtn.setVisible(doIncrementalValidation);
-            invalidCellCountLbl.setVisible(doIncrementalValidation);
- 
-        	autoMatchChk = UIHelper.createI18NCheckBox("WorkbenchPaneSS.AutoMatchChk");
-        	autoMatchChk.setSelected(doIncrementalMatching);
-        	autoMatchChk.addActionListener(new ActionListener() {
-            	
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					if (autoMatchChk.isSelected())
-					{
-						//System.out.println("turning on auto-matching");
-						doIncrementalMatching = true;
-						if (workbenchValidator == null)
-						{
-							buildValidator();
-						}
-						validateAll(null);
-						prevUnmatchedCellBtn.setVisible(true);
-						nextUnmatchedCellBtn.setVisible(true);
-						unmatchedCellCountLbl.setVisible(true);
-						AppPreferences.getLocalPrefs().putBoolean(wbAutoMatchPrefName, doIncrementalMatching);
-					} else
-					{
-						//System.out.println("turning off auto-validation");
-						turnOffIncrementalMatching();
-					}
-					
-				}
-            	
-            });
+        	uploadToolPanel = new UploadToolPanel(this, UploadToolPanel.EXPANDED);
 
-            Action prevUnmatchedAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_F7, "PrevUnMatched", new AbstractAction()
+            showHideUploadToolBtn = createIconBtn("Interactions", IconManager.IconSize.NonStd, "WB_HIDE_UPLOADTOOLPANEL", false, new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
                 {
-                    goToUnmatchedCell(false);
+                    if (uploadToolPanel.isExpanded())
+                    {
+                    	hideUploadToolPanel();
+                    	showHideUploadToolBtn.setToolTipText(getResourceString("WB_SHOW_UPLOADTOOLPANEL"));
+                    } else
+                    {
+                    	showUploadToolPanel();
+                    	showHideUploadToolBtn.setToolTipText(getResourceString("WB_HIDE_UPLOADTOOLPANEL"));
+                   }
                 }
-            }, 0);
-            prevUnmatchedCellBtn = UIHelper.createIconBtn("UpArrow", "WB_PREV_UNMATCHED", prevUnmatchedAction);
-            Action nextUnMatchedAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_F8, "NextUnMatched", new AbstractAction()
-            {
-                public void actionPerformed(ActionEvent ae)
-                {
-                    goToUnmatchedCell(true);
-                }
-            }, 0);
-            nextUnmatchedCellBtn = UIHelper.createIconBtn("DownArrow", "WB_NEXT_UNMATCHED", nextUnMatchedAction);
-            unmatchedCellCountLbl = UIHelper.createLabel(String.format(UIRegistry.getResourceString("WB_UNMATCHED_CELL_COUNT"), 0));
+            });
+            showHideUploadToolBtn.setEnabled(true);
             
-			prevUnmatchedCellBtn.setVisible(doIncrementalMatching);
-			nextUnmatchedCellBtn.setVisible(doIncrementalMatching);
-			unmatchedCellCountLbl.setVisible(doIncrementalMatching);
-
         }
 
 
@@ -993,9 +895,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         CellConstraints cc = new CellConstraints();
 
         JComponent[] compsArray = {addRowsBtn, deleteRowsBtn, clearCellsBtn, showMapBtn, exportKmlBtn, 
-                                   geoRefToolBtn, convertGeoRefFormatBtn, exportExcelCsvBtn, uploadDatasetBtn, autoValidateChk,
-                                   prevInvalidCellBtn, invalidCellCountLbl, nextInvalidCellBtn, autoMatchChk,
-                                   prevUnmatchedCellBtn, unmatchedCellCountLbl, nextUnmatchedCellBtn};
+                                   geoRefToolBtn, convertGeoRefFormatBtn, exportExcelCsvBtn, uploadDatasetBtn, showHideUploadToolBtn};
         Vector<JComponent> availableComps = new Vector<JComponent>(compsArray.length + workBenchPluginBtns.size());
         for (JComponent c : compsArray)
         {
@@ -1057,7 +957,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         controllerPane = new JPanel(cpCardLayout = new CardLayout());
         controllerPane.add(spreadSheetControlBar.getPanel(), PanelType.Spreadsheet.toString());
         controllerPane.add(resultSetPanel.getPanel(),        PanelType.Form.toString());
-        
+   
         JLabel sep1 = new JLabel(IconManager.getIcon("Separator"));
         JLabel sep2 = new JLabel(IconManager.getIcon("Separator"));
         ssFormSwitcher = createSwitcher();
@@ -1132,12 +1032,14 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         add(mainPanel, BorderLayout.CENTER);
         
-        FormLayout      formLayout = new FormLayout("f:p:g,4px,p", "2px,f:p:g,p:g");
+        FormLayout      formLayout = new FormLayout("f:p:g,4px,p", "2px,f:p:g,p:g,p:g");
         PanelBuilder    builder    = new PanelBuilder(formLayout);
 
         builder.add(controllerPane,      cc.xy(1,2));
         builder.add(ctrlBtns.getPanel(), cc.xy(3,2));
-        builder.add(findPanel,           cc.xywh(1, 3, 3, 1));
+        
+        builder.add(uploadToolPanel,     cc.xywh(1, 3, 3, 1));
+        builder.add(findPanel,           cc.xywh(1, 4, 3, 1));
 
 
         add(builder.getPanel(), BorderLayout.SOUTH);
@@ -1199,7 +1101,68 @@ public class WorkbenchPaneSS extends BaseSubPane
     	
     }
     
+    protected void showUploadToolPanel()
+    {
+    	uploadToolPanel.expand();
+    }
+    
+    protected void hideUploadToolPanel()
+    {
+    	uploadToolPanel.contract();
+    }
+    
     /**
+	 * @return the doIncrementalValidation
+	 */
+	public boolean isDoIncrementalValidation() 
+	{
+		return doIncrementalValidation;
+	}
+
+	/**
+	 * turns on incremental validation
+	 */
+	public void turnOnIncrementalValidation() 
+	{
+		doIncrementalValidation = true;
+		
+		if (workbenchValidator == null)
+		{
+			buildValidator();
+		}
+		//XXX If incremental matching is already turned on it would save lots
+		//of time if validateAll could be called without matching all.
+		validateAll(null);
+		
+		AppPreferences.getLocalPrefs().putBoolean(wbAutoValidatePrefName, doIncrementalValidation);
+	}
+
+	/**
+	 * @return the doIncrementalMatching
+	 */
+	public boolean isDoIncrementalMatching() 
+	{
+		return doIncrementalMatching;
+	}
+
+	/**
+	 * turns on incremental matching
+	 */
+	public void turnOnIncrementalMatching() 
+	{
+		doIncrementalMatching = true;
+		
+		if (workbenchValidator == null)
+		{
+			buildValidator();
+		}
+		validateAll(null);
+
+		AppPreferences.getLocalPrefs().putBoolean(wbAutoMatchPrefName, doIncrementalMatching);
+	}
+
+	
+	/**
      * Checks the cell for cell editing and stops it.
      */
     public boolean checkCurrentEditState()
@@ -1305,7 +1268,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * @param isNext
      */
-    protected void goToInvalidCell(boolean isNext)
+    public void goToInvalidCell(boolean isNext)
     {
     	Set<Short> stats = new HashSet<Short>();
     	stats.add(WorkbenchDataItem.VAL_ERROR);
@@ -1330,7 +1293,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * @param isNext
      */
-    protected void goToUnmatchedCell(boolean isNext)
+    public void goToUnmatchedCell(boolean isNext)
     {
     	Set<Short> stats = new HashSet<Short>();
     	stats.add(WorkbenchDataItem.VAL_MULTIPLE_MATCH);
@@ -1372,14 +1335,23 @@ public class WorkbenchPaneSS extends BaseSubPane
             resultsetController.getNewRecBtn().setEnabled(enable && !isReadOnly);
         }
         
-        prevInvalidCellBtn.setEnabled(invalidCellCount.get() > 0);
-        nextInvalidCellBtn.setEnabled(invalidCellCount.get() > 0);
-        invalidCellCountLbl.setText(String.format(UIRegistry.getResourceString("WB_INVALID_CELL_COUNT"), invalidCellCount.get()));
-
-        prevUnmatchedCellBtn.setEnabled(unmatchedCellCount.get() > 0);
-        nextUnmatchedCellBtn.setEnabled(unmatchedCellCount.get() > 0);
-        unmatchedCellCountLbl.setText(String.format(UIRegistry.getResourceString("WB_UNMATCHED_CELL_COUNT"), unmatchedCellCount.get()));
+        uploadToolPanel.updateBtnUI();
 }
+    /**
+     * @return number of invalid cells
+     */
+    public int getInvalidCellCount()
+    {
+    	return invalidCellCount.get();
+    }
+    
+    /**
+     * @return number of unmatched cells
+     */
+    public int getUnmatchedCellCount()
+    {
+    	return unmatchedCellCount.get();
+    }
     
     /**
      * Adds a Key mappings.
@@ -1389,7 +1361,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param action action 
      * @return the action
      */
-    protected Action addRecordKeyMappings(final JComponent comp, final int keyCode, final String actionName, final Action action,
+    public Action addRecordKeyMappings(final JComponent comp, final int keyCode, final String actionName, final Action action,
     		int modifiers)
     {
         InputMap  inputMap  = comp.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
@@ -3828,8 +3800,9 @@ public class WorkbenchPaneSS extends BaseSubPane
     			ex.printStackTrace();
     		}
     		UIRegistry.showLocalizedError("WorkbenchPaneSS.UnableToAutoValidate");
-    		this.autoValidateChk.setSelected(false);
-    		this.autoMatchChk.setSelected(false);
+    		uploadToolPanel.turnOffSelections();
+//    		this.autoValidateChk.setSelected(false);
+//    		this.autoMatchChk.setSelected(false);
     		turnOffIncrementalValidation();
     		turnOffIncrementalMatching();
 			workbenchValidator = null;
@@ -3840,7 +3813,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * 
      */
-    protected void turnOffIncrementalValidation()
+    public void turnOffIncrementalValidation()
     {
 		boolean savedBlockChanges = blockChanges;
 		try
@@ -3850,9 +3823,6 @@ public class WorkbenchPaneSS extends BaseSubPane
 			doIncrementalValidation = false;
 			workbenchValidator = null;
 			model.fireDataChanged();
-			prevInvalidCellBtn.setVisible(false);
-			nextInvalidCellBtn.setVisible(false);
-			invalidCellCountLbl.setVisible(false);
 			AppPreferences.getLocalPrefs().putBoolean(wbAutoValidatePrefName, doIncrementalValidation);
 		} finally
 		{
@@ -3864,7 +3834,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * 
      */
-    protected void turnOffIncrementalMatching()
+    public void turnOffIncrementalMatching()
     {
 		boolean savedBlockChanges = blockChanges;
 		try
@@ -3874,9 +3844,6 @@ public class WorkbenchPaneSS extends BaseSubPane
 			doIncrementalMatching = false;
 			workbenchValidator = null;
 			model.fireDataChanged();
-			prevUnmatchedCellBtn.setVisible(false);
-			nextUnmatchedCellBtn.setVisible(false);
-			unmatchedCellCountLbl.setVisible(false);
 			AppPreferences.getLocalPrefs().putBoolean(wbAutoMatchPrefName, doIncrementalMatching);
 		} finally
 		{
@@ -5245,6 +5212,8 @@ public class WorkbenchPaneSS extends BaseSubPane
 		return getIncremental();
 	}
 
+	
+	
 	private class CellStatusInfo
 	{
 		protected final short status;
