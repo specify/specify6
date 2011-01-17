@@ -223,6 +223,10 @@ public class UploadTable implements Comparable<UploadTable>
     protected boolean                                   updateMatches                = false;
 
     /**
+     * If true then Match Status will be displayed
+     */
+    protected boolean									showMatchInfo                = true;
+    /**
      * Used in processing new objects added as result of the UploadMatchSetting.ADD_NEW_MODE option.
      */
     protected Vector<MatchRestriction>              restrictedValsForAddNewMatch = null;
@@ -2167,18 +2171,20 @@ public class UploadTable implements Comparable<UploadTable>
     	protected final UploadTable table;
     	protected final boolean isBlank;
     	protected final boolean isSkipped; //true if matching was not attempted because of un-matched parent
+    	protected final int recNum;
 		/**
 		 * @param matches
 		 * @param parent
 		 */
 		public ParentMatchInfo(List<DataModelObjBase> matches,
-				UploadTable table, boolean isBlank, boolean isSkipped)
+				UploadTable table, boolean isBlank, boolean isSkipped, int recNum)
 		{
 			super();
 			this.matches = matches;
 			this.table = table;
 			this.isBlank = isBlank;
 			this.isSkipped = isSkipped;
+			this.recNum = recNum;
 		}
 		/**
 		 * @return the matches
@@ -2208,6 +2214,14 @@ public class UploadTable implements Comparable<UploadTable>
 		{
 			return isSkipped;
 		}
+		/**
+		 * @return the recNum
+		 */
+		public int getRecNum() 
+		{
+			return recNum;
+		}
+		
     }
     
     /**
@@ -2356,7 +2370,7 @@ public class UploadTable implements Comparable<UploadTable>
     	
     	if (!containsInvalidCol(adjustedRecNum, invalidColNums))
     	{
-    		result.add(new ParentMatchInfo(matches, this, blank && blankParentage, !matched));
+    		result.add(new ParentMatchInfo(matches, this, blank && blankParentage, !matched, recNum));
     	}
     	return result;
     }
@@ -2384,33 +2398,25 @@ public class UploadTable implements Comparable<UploadTable>
     	for (ParentMatchInfo pmi : internalResult)
     	{
     		//System.out.println(pmi.getTable() + " " + pmi.isBlank() + " " + pmi.getMatches());
-        	Vector<Integer> colIdxs = new Vector<Integer>();
-        	int adjustedRecNum = pmi.getTable().getUploadFields().size() == 0 ? 1 : recNum;
-        	for (UploadField uf : pmi.getTable().getUploadFields().get(adjustedRecNum))
+        	if (pmi.getTable().showMatchInfo)
         	{
-        		if (uf.getIndex() != -1)
+        		Vector<Integer> colIdxs = new Vector<Integer>();
+        		//int adjustedRecNum = pmi.getTable().getUploadFields().size() == 0 ? 1 : recNum;
+        		int adjustedRecNum = pmi.getRecNum();
+        		for (UploadField uf : pmi.getTable().getUploadFields().get(adjustedRecNum))
         		{
-        			colIdxs.add(uf.getIndex());
+        			if (uf.getIndex() != -1)
+        			{
+        				colIdxs.add(uf.getIndex());
+        			}
         		}
+        		result.add(new UploadTableMatchInfo(pmi.matches.size(), colIdxs, pmi.isBlank(), pmi.isSkipped()));
         	}
-        	result.add(new UploadTableMatchInfo(pmi.matches.size(), colIdxs, pmi.isBlank(), pmi.isSkipped()));
     	}
     	return result;
     	
-//    	//XXX assuming that an upload is NOT in progress!!
-//    	wbCurrentRow = row;
-//    	Vector<DataModelObjBase> matched = new Vector<DataModelObjBase>();
-//    	findMatch(recNum, false, matched, null);
-//    	Vector<Integer> colIdxs = new Vector<Integer>();
-//    	for (UploadField uf : uploadFields.get(recNum))
-//    	{
-//    		if (uf.getIndex() != -1)
-//    		{
-//    			colIdxs.add(uf.getIndex());
-//    		}
-//    	}
-//    	return new UploadTableMatchInfo(matched.size(), colIdxs);
     }
+    
     
     /**
      * @param recNum
@@ -4197,4 +4203,26 @@ public class UploadTable implements Comparable<UploadTable>
     {
         return autoAssignedField;
     }
+
+	/**
+	 * @return showMatchInfo
+	 */
+	public boolean isShowMatchInfo() 
+	{
+		return showMatchInfo;
+	}
+
+	/**
+	 * @param showMatchInfo the showMatchInfo
+	 * 
+	 */
+	public void setShowMatchInfo(boolean showMatchInfo) 
+	{
+		//NOTE: this field needs to be set carefully. Dependencies in the upload graph
+		//must be considered. In general, I think, if a table has showMatchInfo true, then
+		//all its ancestors in the upload graph should also have showMatchInfo true.
+		this.showMatchInfo = showMatchInfo;
+	}
+    
+    
 }

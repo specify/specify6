@@ -152,9 +152,9 @@ import edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordServiceProviderIFace;
 import edu.ku.brc.services.mapping.LatLonPlacemarkIFace;
 import edu.ku.brc.services.mapping.LocalityMapper;
-import edu.ku.brc.services.mapping.SimpleMapLocation;
 import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
 import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
+import edu.ku.brc.services.mapping.SimpleMapLocation;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Geography;
@@ -198,18 +198,18 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
+import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UnhandledExceptionDialog;
 import edu.ku.brc.ui.WorkBenchPluginIFace;
-import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.ui.tmanfe.SearchReplacePanel;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
 import edu.ku.brc.util.GeoRefConverter;
+import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 import edu.ku.brc.util.LatLonConverter;
 import edu.ku.brc.util.Pair;
-import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 
 /**
  * Main class that handles the editing of Workbench data. It creates both a spreasheet and a form pane for editing the data.
@@ -1089,6 +1089,10 @@ public class WorkbenchPaneSS extends BaseSubPane
         if (getIncremental())
         {
         	buildValidator();
+        	if (doIncrementalMatching)
+        	{
+        		setMatchStatusForUploadTables();
+        	}
         }
     }
     
@@ -1156,11 +1160,22 @@ public class WorkbenchPaneSS extends BaseSubPane
 		{
 			buildValidator();
 		}
+		setMatchStatusForUploadTables();
 		validateAll(null);
 
 		AppPreferences.getLocalPrefs().putBoolean(wbAutoMatchPrefName, doIncrementalMatching);
 	}
 
+	/**
+	 * Set up match status behavior. Currently this just sets showMatchInfo on agents and trees,
+	 * and turns it off for all other tables. This could be customized but would require
+	 * some datamodel changes, I think, because using preference might be tricky since the prefs
+	 * would need to be checked and modified or cleared whenever the wb structure was modified.  
+	 */
+	protected void setMatchStatusForUploadTables()
+	{
+		workbenchValidator.getUploader().setDefaultMatchStatus();
+	}
 	
 	/**
      * Checks the cell for cell editing and stops it.
@@ -4604,10 +4619,10 @@ public class WorkbenchPaneSS extends BaseSubPane
 			}
 		}			
 		
-		public void rowDeleted(int row)
-		{
-			deletedRows.add(row);
-		}
+//		public void rowDeleted(int row)
+//		{
+//			deletedRows.add(row);
+//		}
     }
     
     /**
@@ -5276,6 +5291,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 	 * @author timo
 	 *
 	 */
+	@SuppressWarnings("unused")
 	private class CellRenderingAttributes
 	{
 		public Color errorBorder = Color.RED;
@@ -5290,6 +5306,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 		public Color notMatchedBorder = newDataBorder;
 		public Color notMatchedBackground = null;
 		public Color notMatchedForeground = notMatchedBorder;
+		public boolean highlightSkipped = false;
 		
 		
 		private class Atts
@@ -5324,7 +5341,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 			{
 				bdr = new LineBorder(multipleMatchBorder);
 				bg = multipleMatchBackground;
-			} else if (doIncrementalMatching && wbCellStatus == WorkbenchDataItem.VAL_NOT_MATCHED)
+			} else if (highlightSkipped && doIncrementalMatching && wbCellStatus == WorkbenchDataItem.VAL_NOT_MATCHED)
 			{
 				bdr = new LineBorder(notMatchedBorder);
 				bg = notMatchedBackground;
@@ -5363,6 +5380,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 				if (cellStatus != WorkbenchDataItem.VAL_NONE && cellStatus != WorkbenchDataItem.VAL_OK)
 				{
 					Atts atts = getAtts(cellStatus, cellStatusText);
+					System.out.println("col " + wbCell.getColumnNumber() + ":" + cellStatusText);
 					lbl.setToolTipText(atts.toolTip);
 					lbl.setBorder(atts.border);
 					//Using ColorHighlighters to set background colors because

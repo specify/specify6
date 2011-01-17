@@ -1673,6 +1673,27 @@ public class Uploader implements ActionListener, KeyListener
     }
     
     /**
+     * Sets default match status display settings.
+     * 
+     */
+    public void setDefaultMatchStatus()
+    {
+    	for (UploadTable t : uploadTables)
+    	{
+    		if (t instanceof UploadTableTree)
+    		{
+    			t.setShowMatchInfo(true);
+    		} else if (Agent.class.isAssignableFrom(t.getTblClass()))
+    		{
+    			t.setShowMatchInfo(true);
+    		} else
+    		{
+    			t.setShowMatchInfo(false);
+    		}
+    	}
+    }
+    
+    /**
      * Validates contents of all cells in dataset.
      */
     public void validateData()
