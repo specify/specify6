@@ -2319,7 +2319,11 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     public JFrame getFrame()
     {
-      return topFrame;
+        if (topFrame == null)
+        {
+            topFrame = new JFrame(); // There was an error at start up
+        }
+        return topFrame;
     }
 
     /**
@@ -2717,9 +2721,11 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         restartApp(window, databaseName, userName, false, firstTime);
         
-        statusField.setSectionText(2, userName);
-        statusField.setSectionToolTipText(2, DBTableIdMgr.getInstance().getTitleForId(SpecifyUser.getClassTableId()));
-        
+        if (statusField != null)
+        {
+            statusField.setSectionText(2, userName);
+            statusField.setSectionToolTipText(2, DBTableIdMgr.getInstance().getTitleForId(SpecifyUser.getClassTableId()));
+        }
     }
     
     /**
@@ -2727,26 +2733,29 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     protected void setDatabaseNameAndCollection()
     {
-        AppContextMgr mgr = AppContextMgr.getInstance();
-        String disciplineName = mgr.getClassObject(Discipline.class).getName();
-        String collectionName = mgr.getClassObject(Collection.class) != null ? mgr.getClassObject(Collection.class).getCollectionName() : ""; //$NON-NLS-1$ //$NON-NLS-2$
-        if (!UIRegistry.isMobile())
+        if (statusField != null)
         {
-            statusField.setSectionText(0, disciplineName);
-            statusField.setSectionText(1, collectionName);
+            AppContextMgr mgr = AppContextMgr.getInstance();
+            String disciplineName = mgr.getClassObject(Discipline.class).getName();
+            String collectionName = mgr.getClassObject(Collection.class) != null ? mgr.getClassObject(Collection.class).getCollectionName() : ""; //$NON-NLS-1$ //$NON-NLS-2$
+            if (!UIRegistry.isMobile())
+            {
+                statusField.setSectionText(0, disciplineName);
+                statusField.setSectionText(1, collectionName);
+                
+                statusField.setSectionToolTipText(0, DBTableIdMgr.getInstance().getTitleForId(Discipline.getClassTableId()));
+                statusField.setSectionToolTipText(1, DBTableIdMgr.getInstance().getTitleForId(Collection.getClassTableId()));
+            } else
+            {
+                statusField.setSectionText(0, "Specify Mobile");
+                statusField.setSectionText(1, "WorkBench");
+                
+                statusField.setSectionToolTipText(0, null);
+                statusField.setSectionToolTipText(1, null); 
+            }
             
-            statusField.setSectionToolTipText(0, DBTableIdMgr.getInstance().getTitleForId(Discipline.getClassTableId()));
-            statusField.setSectionToolTipText(1, DBTableIdMgr.getInstance().getTitleForId(Collection.getClassTableId()));
-        } else
-        {
-            statusField.setSectionText(0, "Specify Mobile");
-            statusField.setSectionText(1, "WorkBench");
-            
-            statusField.setSectionToolTipText(0, null);
-            statusField.setSectionToolTipText(1, null); 
+            AppPreferences.getLocalPrefs().put("CURRENT_DB", databaseName);
         }
-        
-        AppPreferences.getLocalPrefs().put("CURRENT_DB", databaseName);
     }
 
     /* (non-Javadoc)

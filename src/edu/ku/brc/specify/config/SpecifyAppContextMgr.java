@@ -77,6 +77,7 @@ import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewLoader;
 import edu.ku.brc.af.ui.forms.persist.ViewSet;
 import edu.ku.brc.af.ui.forms.persist.ViewSetIFace;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.exceptions.ConfigurationException;
@@ -1617,6 +1618,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     } else
                     {
                         currentStatus = CONTEXT_STATUS.Error;
+                        String msg = "Specify was unable to a Locale in the Schema Config for this discipline.\nPlease contact S[ecify support immediately.";
+                        UIRegistry.showError(msg);
+                        AppPreferences.shutdownAllPrefs();
+                        DataProviderFactory.getInstance().shutdown();
+                        DBConnection.shutdown();
+                        System.exit(0);
                         return currentStatus;
                     }
                     
