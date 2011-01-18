@@ -1654,9 +1654,12 @@ public class UploadTable implements Comparable<UploadTable>
 							{
 								AccessionAgent ag1 = (AccessionAgent) matches.get(rec);
 								AccessionAgent ag2 = (AccessionAgent) child.getCurrentRecord(rec);
-								if (!ag1.getAgent().getId().equals(ag2.getAgent().getId()))
+								if (!(ag1.getAgent() == null && ag2.getAgent() == null))
 								{
-									return false;
+									if ((ag1.getAgent() == null ^ ag2.getAgent() == null) ||  !ag1.getAgent().getId().equals(ag2.getAgent().getId()))
+									{
+										return false;
+									}
 								}
 							}
 						} finally
@@ -3257,7 +3260,7 @@ public class UploadTable implements Comparable<UploadTable>
     {
         int recNum = 0;
         logDebug("writeRowOrNot: " + this.table.getName());
-        //System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
+        System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
         autoAssignedVal = null;  //assumes one autoassign field per table.
         for (Vector<UploadField> seq : uploadFields)
         {
