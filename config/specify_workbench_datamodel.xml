@@ -154,11 +154,10 @@
 
   <table classname="edu.ku.brc.specify.datamodel.CollectingTrip" table="collectingtrip" tableid="87" lazy="true" >
     <field column="Name" name="collectingTripName" type="java.lang.String" length="64"/>
+    <field column="Sponsor" name="sponsor" type="java.lang.String" length="64"/>
     <field column="Start Date" name="startDate" type="calendar_date"/>
-    <field column="Start Date Precision" name="startDatePrecision" type="java.lang.Short"/>
     <field column="Start Date Verbatim" name="startDateVerbatim" type="java.lang.String" length="50"/>
     <field column="End Date" name="endDate" type="calendar_date"/>
-    <field column="End Date Precision" name="endDatePrecision" type="java.lang.Short"/>
     <field column="End Date Verbatim" name="endDateVerbatim" type="java.lang.String" length="50"/>
     <field column="Start Time" name="startTime" type="java.lang.Short"/>
     <field column="End Time" name="endTime" type="java.lang.Short"/>
@@ -384,7 +383,9 @@
     <field column="Species 1"               	name="species1" type="java.lang.String" length="64"/>
     <field column="Subspecies 1"            	name="subspecies1" type="java.lang.String" length="64"/>
     <field column="Variety 1"               	name="variety1" type="java.lang.String" length="64"/>
+    <field column="Subvariety 1"               	name="subvariety1" type="java.lang.String" length="64"/>
     <field column="Forma 1"               		name="forma1" type="java.lang.String" length="64"/>
+    <field column="SubForma 1"               	name="subforma1" type="java.lang.String" length="64"/>
     <field column="Phylum Author 1" 			name="phylumAuthor1" type="java.lang.String" length="128"/>
     <field column="Subphylum Author 1" 			name="subphylumAuthor1" type="java.lang.String" length="128"/>
     <field column="Superclass Author 1" 		name="superclassAuthor1" type="java.lang.String" length="128"/>
@@ -405,7 +406,9 @@
     <field column="Species Author 1" 			name="speciesAuthor1" type="java.lang.String" length="128"/>
     <field column="Subspecies Author 1" 		name="subspeciesAuthor1" type="java.lang.String" length="128"/>
     <field column="Variety Author 1" 			name="varietyAuthor1" type="java.lang.String" length="128"/>
+    <field column="Subvariety Author 1" 		name="subvarietyAuthor1" type="java.lang.String" length="128"/>
     <field column="Forma Author 1" 			    name="formaAuthor1" type="java.lang.String" length="128"/>
+    <field column="Subforma Author 1" 			name="subformaAuthor1" type="java.lang.String" length="128"/>
     <field column="Type Status Name 1"          name="typeStatusName1" type="java.lang.String" length="50"/>
     
     <field column="Determined Date 2"       	name="determinedDate2" type="calendar_date"/>
@@ -439,6 +442,9 @@
     <field column="Species 2"               	name="species2" type="java.lang.String" length="64"/>
     <field column="Subspecies 2"            	name="subspecies2" type="java.lang.String" length="64"/>
     <field column="Variety 2"               	name="variety2" type="java.lang.String" length="64"/>
+    <field column="Subvariety 2"               	name="subvariety2" type="java.lang.String" length="64"/>
+    <field column="Forma 2"               		name="forma2" type="java.lang.String" length="64"/>
+    <field column="SubForma 2"               	name="subforma2" type="java.lang.String" length="64"/>
     <field column="Phylum Author 2" 			name="phylumAuthor2" type="java.lang.String" length="128"/>
     <field column="Subphylum Author 2" 			name="subphylumAuthor2" type="java.lang.String" length="128"/>
     <field column="Superclass Author 2" 		name="superclassAuthor2" type="java.lang.String" length="128"/>
@@ -459,6 +465,9 @@
     <field column="Species Author 2" 			name="speciesAuthor2" type="java.lang.String" length="128"/>
     <field column="Subspecies Author 2" 		name="subspeciesAuthor2" type="java.lang.String" length="128"/>
     <field column="Variety Author 2" 			name="varietyAuthor2" type="java.lang.String" length="128"/>
+    <field column="Subvariety Author 2" 		name="subvarietyAuthor2" type="java.lang.String" length="128"/>
+    <field column="Forma Author 2" 			    name="formaAuthor2" type="java.lang.String" length="128"/>
+    <field column="Subforma Author 2" 			name="subformaAuthor2" type="java.lang.String" length="128"/>
     <field column="TypeStatusName 2"            name="typeStatusName2" type="java.lang.String" length="50"/> 
 
     <field column="Determined Date 3"       	name="determinedDate3" type="calendar_date"/>
@@ -492,6 +501,9 @@
     <field column="Species 3"               	name="species3" type="java.lang.String" length="64"/>
     <field column="Subspecies 3"            	name="subspecies3" type="java.lang.String" length="64"/>
     <field column="Variety 3"               	name="variety3" type="java.lang.String" length="64"/>
+    <field column="Subvariety 3"               	name="subvariety3" type="java.lang.String" length="64"/>
+    <field column="Forma 3"               		name="forma3" type="java.lang.String" length="64"/>
+    <field column="SubForma 3"               	name="subforma3" type="java.lang.String" length="64"/>
     <field column="Phylum Author 3" 			name="phylumAuthor3" type="java.lang.String" length="128"/>
     <field column="Subphylum Author 3" 			name="subphylumAuthor3" type="java.lang.String" length="128"/>
     <field column="Superclass Author 3" 		name="superclassAuthor3" type="java.lang.String" length="128"/>
@@ -512,6 +524,9 @@
     <field column="Species Author 3" 			name="speciesAuthor3" type="java.lang.String" length="128"/>
     <field column="Subspecies Author 3" 		name="subspeciesAuthor3" type="java.lang.String" length="128"/>
     <field column="Variety Author 3" 			name="varietyAuthor3" type="java.lang.String" length="128"/>
+    <field column="Subvariety Author 3" 		name="subvarietyAuthor3" type="java.lang.String" length="128"/>
+    <field column="Forma Author 3" 			    name="formaAuthor3" type="java.lang.String" length="128"/>
+    <field column="Subforma Author 3" 			name="subformaAuthor3" type="java.lang.String" length="128"/>
     <field column="Type Status Name 3"          name="typeStatusName3" type="java.lang.String" length="50"/>
 
 

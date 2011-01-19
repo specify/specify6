@@ -300,7 +300,9 @@
     <field table="Determination" name="species1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="220"/>
     <field table="Determination" name="subspecies1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="230"/>
     <field table="Determination" name="variety1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="240"/>
+    <field table="Determination" name="subvariety1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="250"/>
     <field table="Determination" name="forma1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="260"/>
+    <field table="Determination" name="subforma1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="270"/>
     <field table="Determination" name="phylumAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="30"/>
     <field table="Determination" name="subphylumAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="40"/>
     <field table="Determination" name="superclassAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="50"/>
@@ -321,7 +323,9 @@
     <field table="Determination" name="speciesAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="220"/>
     <field table="Determination" name="subspeciesAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="230"/>
     <field table="Determination" name="varietyAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="240"/>
+    <field table="Determination" name="subvarietyAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="250"/>
     <field table="Determination" name="formaAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="260"/>
+    <field table="Determination" name="subformaAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="270"/>
     <field table="Determination" name="typeStatusName1" actualname="typeStatusName" onetomanysequence="0" relationshipname="collectionObject"/>
     
     <field table="Determination" name="determinedDate2" actualname="determinedDate" onetomanysequence="1" relationshipname="collectionObject"/>
@@ -355,6 +359,9 @@
     <field table="Determination" name="species2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="220"/>
     <field table="Determination" name="subspecies2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="230"/>
     <field table="Determination" name="variety2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="240"/>
+    <field table="Determination" name="subvariety2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="250"/>
+    <field table="Determination" name="forma2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="260"/>
+    <field table="Determination" name="subforma2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="270"/>
     <field table="Determination" name="phylumAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="30"/>
     <field table="Determination" name="subphylumAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="40"/>
     <field table="Determination" name="superclassAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="50"/>
@@ -375,6 +382,9 @@
     <field table="Determination" name="speciesAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="220"/>
     <field table="Determination" name="subspeciesAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="230"/>
     <field table="Determination" name="varietyAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="240"/>
+    <field table="Determination" name="subvarietyAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="250"/>
+    <field table="Determination" name="formaAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="260"/>
+    <field table="Determination" name="subformaAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="270"/>
     <field table="Determination" name="typeStatusName2" actualname="typeStatusName" onetomanysequence="1" relationshipname="collectionObject"/> 
 
     <field table="Determination" name="determinedDate3" actualname="determinedDate" onetomanysequence="2" relationshipname="collectionObject"/>
@@ -408,6 +418,9 @@
     <field table="Determination" name="species3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="220"/>
     <field table="Determination" name="subspecies3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="230"/>
     <field table="Determination" name="variety3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="240"/>
+    <field table="Determination" name="subvariety3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="250"/>
+    <field table="Determination" name="forma3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="260"/>
+    <field table="Determination" name="subforma3" onetomanysequence="2" treename="taxon" maptofield="name" rankid="270"/>
     <field table="Determination" name="phylumAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="30"/>
     <field table="Determination" name="subphylumAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="40"/>
     <field table="Determination" name="superclassAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="50"/>
@@ -428,6 +441,9 @@
     <field table="Determination" name="speciesAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="220"/>
     <field table="Determination" name="subspeciesAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="230"/>
     <field table="Determination" name="varietyAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="240"/>
+    <field table="Determination" name="subvarietyAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="250"/>
+    <field table="Determination" name="formaAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="260"/>
+    <field table="Determination" name="subformaAuthor3" onetomanysequence="2" treename="taxon" maptofield="author" rankid="270"/>
     <field table="Determination" name="typeStatusName3" actualname="typeStatusName" onetomanysequence="2" relationshipname="collectionObject"/>
 
 
