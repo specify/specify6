@@ -559,7 +559,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
         	uploadToolPanel = new UploadToolPanel(this, UploadToolPanel.EXPANDED);
 
-            showHideUploadToolBtn = createIconBtn("Interactions", IconManager.IconSize.NonStd, "WB_HIDE_UPLOADTOOLPANEL", false, new ActionListener()
+            showHideUploadToolBtn = createIconBtn("Plugins", IconManager.IconSize.NonStd, "WB_HIDE_UPLOADTOOLPANEL", false, new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
                 {
