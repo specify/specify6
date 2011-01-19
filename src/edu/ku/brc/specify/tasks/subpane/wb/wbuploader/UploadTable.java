@@ -225,7 +225,7 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * If true then Match Status will be displayed
      */
-    protected boolean									showMatchInfo                = true;
+    protected boolean									showMatchInfo                = false;
     /**
      * Used in processing new objects added as result of the UploadMatchSetting.ADD_NEW_MODE option.
      */

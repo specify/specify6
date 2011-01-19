@@ -1089,10 +1089,6 @@ public class WorkbenchPaneSS extends BaseSubPane
         if (getIncremental())
         {
         	buildValidator();
-        	if (doIncrementalMatching)
-        	{
-        		setMatchStatusForUploadTables();
-        	}
         }
     }
     
@@ -3794,6 +3790,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     	try
     	{
     		workbenchValidator = new WorkbenchValidator(this);
+        	setMatchStatusForUploadTables();
     	} catch (Exception ex)
     	{
     		if (ex instanceof WorkbenchValidator.WorkbenchValidatorException || ex instanceof UploaderException)
@@ -3836,7 +3833,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 			blockChanges = true;
 			shutdownValidators();
 			doIncrementalValidation = false;
-			workbenchValidator = null;
+			//workbenchValidator = null;
 			model.fireDataChanged();
 			AppPreferences.getLocalPrefs().putBoolean(wbAutoValidatePrefName, doIncrementalValidation);
 		} finally
@@ -3857,7 +3854,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 			blockChanges = true;
 			shutdownValidators();
 			doIncrementalMatching = false;
-			workbenchValidator = null;
+			//workbenchValidator = null;
 			model.fireDataChanged();
 			AppPreferences.getLocalPrefs().putBoolean(wbAutoMatchPrefName, doIncrementalMatching);
 		} finally
@@ -5380,7 +5377,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 				if (cellStatus != WorkbenchDataItem.VAL_NONE && cellStatus != WorkbenchDataItem.VAL_OK)
 				{
 					Atts atts = getAtts(cellStatus, cellStatusText);
-					System.out.println("col " + wbCell.getColumnNumber() + ":" + cellStatusText);
+					//System.out.println("col " + wbCell.getColumnNumber() + ":" + cellStatusText);
 					lbl.setToolTipText(atts.toolTip);
 					lbl.setBorder(atts.border);
 					//Using ColorHighlighters to set background colors because
