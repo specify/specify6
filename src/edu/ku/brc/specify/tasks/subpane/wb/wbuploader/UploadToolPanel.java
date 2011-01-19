@@ -176,10 +176,11 @@ public class UploadToolPanel extends JPanel implements TimingTarget
         {
         	add(c, cc.xy(x,2));
             x += 2;
+            c.setFont(c.getFont().deriveFont(c.getFont().getSize() + 2.0F));
         }
 
         mode = startingMode;
-        
+        //setFont(getFont().deriveFont(getFont().getSize() + 2.0F));
         prefSize = super.getPreferredSize();
         contractedSize = new Dimension(prefSize.width,0);
         
