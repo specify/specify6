@@ -25,7 +25,6 @@ import edu.ku.brc.af.ui.db.DatabaseLoginListener;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.ui.UIRegistry;
@@ -190,22 +189,22 @@ public class BatchAttachLauncher implements DatabaseLoginListener
 			
 			//for SD State ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			
-			SDStateFileNameParser p = new SDStateFileNameParser();
-			p.setPicType(SDStateFileNameParser.DorsalPic);
-			
-			BatchAttachFiles baf = new BatchAttachFiles(CollectionObject.class, p,
-					new File("/media/Terror/ConversionsAndFixes/sdstate/SpSub31OCT10/PictureFiles/SpecimenPics"));
-			baf.setErrLogName("/media/Terror/ConversionsAndFixes/sdstate/DorsalPicErrors.txt");
-			baf.attachFiles();
-			
-			p.setPicType(SDStateFileNameParser.SpecPic);
-			baf.setErrLogName("/media/Terror/ConversionsAndFixes/sdstate/SpecPicErrors.txt");
-			baf.attachFiles();
-			
-			
-			p.setPicType(SDStateFileNameParser.VentralPic);
-			baf.setErrLogName("/media/Terror/ConversionsAndFixes/sdstate/VertralPicErrors.txt");
-			baf.attachFiles();
+//			SDStateFileNameParser p = new SDStateFileNameParser();
+//			p.setPicType(SDStateFileNameParser.DorsalPic);
+//			
+//			BatchAttachFiles baf = new BatchAttachFiles(CollectionObject.class, p,
+//					new File("/media/Terror/ConversionsAndFixes/sdstate/SpSub31OCT10/PictureFiles/SpecimenPics"));
+//			baf.setErrLogName("/media/Terror/ConversionsAndFixes/sdstate/DorsalPicErrors.txt");
+//			baf.attachFiles();
+//			
+//			p.setPicType(SDStateFileNameParser.SpecPic);
+//			baf.setErrLogName("/media/Terror/ConversionsAndFixes/sdstate/SpecPicErrors.txt");
+//			baf.attachFiles();
+//			
+//			
+//			p.setPicType(SDStateFileNameParser.VentralPic);
+//			baf.setErrLogName("/media/Terror/ConversionsAndFixes/sdstate/VertralPicErrors.txt");
+//			baf.attachFiles();
 			
 			
 			//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
