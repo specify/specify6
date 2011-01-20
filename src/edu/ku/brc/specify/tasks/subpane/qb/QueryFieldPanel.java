@@ -808,6 +808,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 			if (classObj.equals(String.class))
 			{
 				return new SpQueryField.OperatorType[] {
+						SpQueryField.OperatorType.BETWEEN,
 						SpQueryField.OperatorType.CONTAINS,
 						SpQueryField.OperatorType.LIKE,
 						SpQueryField.OperatorType.EQUALS,
