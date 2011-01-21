@@ -44,6 +44,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -68,7 +69,6 @@ import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
-import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
@@ -140,9 +140,9 @@ public class Uploader implements ActionListener, KeyListener
     protected final static String                INITIAL_STATE                = "WB_UPLOAD_INITIAL_STATE";
     protected final static String                CHECKING_REQS                = "WB_UPLOAD_CHECKING_REQS";
     protected final static String                VALIDATING_DATA              = "WB_UPLOAD_VALIDATING_DATA";
-    protected final static String                READY_TO_UPLOAD              = "WB_UPLOAD_READY_TO_UPLOAD";
+    public final static String                	 READY_TO_UPLOAD              = "WB_UPLOAD_READY_TO_UPLOAD";
     protected final static String                UPLOADING                    = "WB_UPLOAD_UPLOADING";
-    protected final static String                SUCCESS                      = "WB_UPLOAD_SUCCESS";
+    public final static String                	 SUCCESS                      = "WB_UPLOAD_SUCCESS";
     protected final static String                SUCCESS_PARTIAL              = "WB_UPLOAD_SUCCESS_PARTIAL";
     protected final static String                RETRIEVING_UPLOADED_DATA     = "WB_RETRIEVING_UPLOADED_DATA";
     protected final static String                FAILURE                      = "WB_UPLOAD_FAILURE";
@@ -1696,7 +1696,7 @@ public class Uploader implements ActionListener, KeyListener
     /**
      * Validates contents of all cells in dataset.
      */
-    public void validateData()
+    public boolean validateData(boolean doInBackground)
     {
         dataValidated = false;
         setOpKiller(null);
@@ -1706,9 +1706,10 @@ public class Uploader implements ActionListener, KeyListener
         final UploaderTask validateTask = new UploaderTask(true, "WB_UPLOAD_CANCEL_MSG")
         {
             @Override
-            public Object construct()
+            public Object doInBackground()
             {
-                try
+                start();
+            	try
                 {
                     int progress = 0;
                     initProgressBar(0, uploadTables.size(), true, 
@@ -1731,9 +1732,9 @@ public class Uploader implements ActionListener, KeyListener
             }
 
             @Override
-            public void finished()
+            public void done()
             {
-                super.finished();
+                super.done();
                 validationIssues = issues;
                 statusBar.setText("");
                 if (cancelled)
@@ -1752,21 +1753,47 @@ public class Uploader implements ActionListener, KeyListener
                 }
             }
 
-			/* (non-Javadoc)
-			 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.UploaderTask#cancelTask()
-			 */
-			@Override
-			public synchronized void cancelTask()
-			{
-				super.cancelTask();
-				interrupt();
-			}
+//			/* (non-Javadoc)
+//			 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.UploaderTask#cancelTask()
+//			 */
+//			@Override
+//			public synchronized void cancelTask()
+//			{
+//				super.cancelTask();
+//				interrupt();
+//			}
 
             
         };
         
-        UIRegistry.getStatusBar().setText(getResourceString(Uploader.VALIDATING_DATA));
-        validateTask.start();
+        SwingUtilities.invokeLater(new Runnable() {
+
+			/* (non-Javadoc)
+			 * @see java.lang.Runnable#run()
+			 */
+			@Override
+			public void run() {
+		        UIRegistry.getStatusBar().setText(getResourceString(Uploader.VALIDATING_DATA));
+			}
+        });
+        boolean result = true;
+        validateTask.execute();
+        if (!doInBackground)
+        {
+        	try
+        	{
+        		result = (Boolean )validateTask.get();
+        	} catch (ExecutionException ex)
+        	{
+        		//hopefully it will be clear to caller that something went wrong?
+        	} catch (InterruptedException ex)
+        	{
+        		//hopefully it will be clear to caller that something went wrong?
+        	}
+        	//validateTask.finished();
+        	//validateTask.
+        }
+        return result;
     }
 
     protected synchronized void cancelTask(final UploaderTask task)
@@ -2867,9 +2894,10 @@ public class Uploader implements ActionListener, KeyListener
             boolean          success   = false;
 
             @Override
-            public Object construct()
+            public Object doInBackground()
             {
-                try
+                start();
+            	try
                 {
                     missingRequiredClasses.clear();
                     missingRequiredFields.clear();
@@ -2918,9 +2946,9 @@ public class Uploader implements ActionListener, KeyListener
             }
 
             @Override
-            public void finished()
+            public void done()
             {
-                super.finished();
+                super.done();
                 statusBar.setText("");
                 if (success)
                 {
@@ -2936,7 +2964,7 @@ public class Uploader implements ActionListener, KeyListener
         };
 
         UIRegistry.getStatusBar().setText(getResourceString("WB_UPLOAD_CHECKING_REQS"));
-        uploadTask.start();
+        uploadTask.execute();
         initUI(Uploader.CHECKING_REQS);
     }
 
@@ -2949,7 +2977,7 @@ public class Uploader implements ActionListener, KeyListener
     	if (currentOp.equals(USER_INPUT)) 
     	{
     		uploadData.refresh(wbSS.getWorkbench().getWorkbenchRowsAsList());
-    		validateData();
+    		validateData(true);
     	}
     }
 
@@ -2993,7 +3021,7 @@ public class Uploader implements ActionListener, KeyListener
      * Shuts down upload UI.
      * @param notifyWB - If true, notify this Uploader's WorkBench.
      */
-    protected void closeMainForm(boolean notifyWB)
+    public void closeMainForm(boolean notifyWB)
     {
         try
         {
@@ -3052,11 +3080,11 @@ public class Uploader implements ActionListener, KeyListener
     {
         if (e.getActionCommand().equals(UploadMainPanel.VALIDATE_CONTENT))
         {
-            validateData();
+            validateData(true);
         }
         else if (e.getActionCommand().equals(UploadMainPanel.DO_UPLOAD))
         {
-            uploadIt();
+            uploadIt(true);
         }
         else if (e.getActionCommand().equals(UploadMainPanel.VIEW_UPLOAD))
         {
@@ -3782,7 +3810,7 @@ public class Uploader implements ActionListener, KeyListener
     /**
      * Uploads dataset.
      */
-    public void uploadIt() 
+    public void uploadIt(boolean doInBackground) 
     {
         try
         {
@@ -3796,9 +3824,10 @@ public class Uploader implements ActionListener, KeyListener
                 boolean paused = false;
                 @SuppressWarnings("synthetic-access")
                 @Override
-                public Object construct()
+                public Object doInBackground()
                 {
-                    initProgressBar(0, uploadData.getRows(), true, 
+                    start();
+                	initProgressBar(0, uploadData.getRows(), true, 
                         getResourceString("WB_UPLOAD_UPLOADING") + " " + getResourceString("WB_ROW"), false);
                     try
                     {
@@ -3878,7 +3907,7 @@ public class Uploader implements ActionListener, KeyListener
                 }
 
                 @Override
-                public void finished()
+                public void done()
                 {
                     try
                     {
@@ -3891,7 +3920,7 @@ public class Uploader implements ActionListener, KeyListener
                     	success = false;
                     	setOpKiller(ex);
                     }
-                    super.finished();
+                    super.done();
                     statusBar.setText("");
                     if (success)
                     {
@@ -3921,7 +3950,7 @@ public class Uploader implements ActionListener, KeyListener
             };
 
             UIRegistry.getStatusBar().setText(getResourceString(Uploader.UPLOADING));
-            uploadTask.start();
+            uploadTask.execute();
             if (mainPanel == null)
             {
                 initUI(Uploader.UPLOADING);
@@ -3929,6 +3958,21 @@ public class Uploader implements ActionListener, KeyListener
             else
             {
                 setCurrentOp(Uploader.UPLOADING);
+            }
+            
+            if (!doInBackground)
+            {
+            	try
+            	{
+            		uploadTask.get();
+            	} catch (ExecutionException ex)
+            	{
+            		//hopefully it will be clear to caller that something went wrong?
+            	} catch (InterruptedException ex)
+            	{
+            		//hopefully it will be clear to caller that something went wrong?
+            	}
+            	//uploadTask.finished();
             }
         }
         catch (UploaderException ex)
@@ -4028,9 +4072,10 @@ public class Uploader implements ActionListener, KeyListener
             Vector<UploadTable> undone = new Vector<UploadTable>();
             
             @Override
-            public Object construct()
+            public Object doInBackground()
             {
-                if (removeObjects)
+                start();
+            	if (removeObjects)
                 {
                     try
                     {
@@ -4096,7 +4141,7 @@ public class Uploader implements ActionListener, KeyListener
             }
 
             @Override
-            public void finished()
+            public void done()
             {
                 if (removeObjects)
                 {
@@ -4113,7 +4158,7 @@ public class Uploader implements ActionListener, KeyListener
                 	}
                 }
                 
-            	super.finished();
+            	super.done();
                 
                 if (removeObjects)
                 {
@@ -4198,7 +4243,7 @@ public class Uploader implements ActionListener, KeyListener
         {
             wbSS.incShutdownLock();
         }
-        undoTask.start();
+        undoTask.execute();
         setCurrentOp(isUserCmd ? Uploader.UNDOING_UPLOAD : Uploader.CLEANING_UP);
     }
 
@@ -4225,7 +4270,7 @@ public class Uploader implements ActionListener, KeyListener
         }
     }
 
-    protected abstract class UploaderTask extends SwingWorker
+    protected abstract class UploaderTask extends javax.swing.SwingWorker<Object, Object>
     {
         protected final JStatusBar statusBar = UIRegistry.getStatusBar();
         protected boolean cancelled = false;
@@ -4244,17 +4289,15 @@ public class Uploader implements ActionListener, KeyListener
             currentTask = this;
         }
         
-        @Override
         public void start()
         {
             startTime = System.nanoTime();
-            super.start();
         }
                 
         @Override
-        public void finished()
+        public void done()
         {
-            super.finished();
+            super.done();
             currentTask = null;
             done = true;
             endTime = System.nanoTime();
@@ -4270,10 +4313,6 @@ public class Uploader implements ActionListener, KeyListener
         	cancelled = true;
         }
         
-        public synchronized boolean isDone()
-        {
-            return done;
-        }
         
         public synchronized boolean isCancellable()
         {
@@ -4323,9 +4362,10 @@ public class Uploader implements ActionListener, KeyListener
         final UploaderTask retrieverTask = new UploaderTask(true, "WB_CANCEL_UPLOAD_MSG")
         {
             @Override
-            public Object construct()
+            public Object doInBackground()
             {
-                try
+                start();
+            	try
                 {
                     //
                 	return true;
@@ -4338,9 +4378,9 @@ public class Uploader implements ActionListener, KeyListener
             }
 
             @Override
-            public void finished()
+            public void done()
             {
-                super.finished();
+                super.done();
                 statusBar.setText("");
                 setCurrentOp(savedOp);
                 if (!cancelled)
@@ -4358,12 +4398,12 @@ public class Uploader implements ActionListener, KeyListener
 			/* (non-Javadoc)
 			 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.UploaderTask#cancelTask()
 			 */
-			@Override
-			public synchronized void cancelTask()
-			{
-				super.cancelTask();
-				interrupt();
-			}
+//			@Override
+//			public synchronized void cancelTask()
+//			{
+//				super.cancelTask();
+//				interrupt();
+//			}
             
 
         };
@@ -4377,7 +4417,7 @@ public class Uploader implements ActionListener, KeyListener
             setCurrentOp(Uploader.RETRIEVING_UPLOADED_DATA);
         }
         UIRegistry.getStatusBar().setText(getResourceString(Uploader.RETRIEVING_UPLOADED_DATA));
-        retrieverTask.start();
+        retrieverTask.execute();
     }
 
     /**
@@ -5123,4 +5163,14 @@ public class Uploader implements ActionListener, KeyListener
     {
     	umsbp.applySettingToAll(uploadTables);
     }
+
+	/**
+	 * @return the currentOp
+	 */
+	public String getCurrentOp() 
+	{
+		return currentOp;
+	}
+    
+    
 }

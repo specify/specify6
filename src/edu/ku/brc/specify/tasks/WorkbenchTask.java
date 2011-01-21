@@ -118,6 +118,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.TemplateEditor;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchBackupMgr;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
@@ -192,6 +193,9 @@ public class WorkbenchTask extends BaseTask
         
     // Temporary until we get a Workbench Icon
     protected boolean                     doingStarterPane = false;
+
+    //for batch upload hack
+    //protected boolean testingJUNK = false;
 
 	/**
 	 * Constructor. 
@@ -1904,7 +1908,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 {
                     UIRegistry.clearGlassPaneMsg();
                     
-                    createEditorForWorkbench(workbench, null, false);
+                    createEditorForWorkbench(workbench, null, false, true);
                 }
             };
             worker.start();
@@ -1937,115 +1941,207 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         return getResourceString("WB_DATASET");
     }
 
-    
     /**
-     * @param workbench
-     * @param glassPane
-     * @param showImageView
-     * @param thisTask
-     * @return workbenchPaneSS containing workbench
-     * 
-     * workbench must be attached to a session.
+     * Creates the Pane for editing a Workbench.
+     * @param workbench the workbench to be edited
+     * @param session a session to use to load the workbench (can be null)
+     * @param showImageView shows image window when first showing the window
      */
-    protected WorkbenchPaneSS createEditorForWorkbench(final Workbench workbench, 
-    		//final DataProviderSessionIFace session,
-    		final SimpleGlassPane glassPane, final boolean showImageView, final WorkbenchTask  thisTask)
-    {
-        final int rowCount = workbench.getWorkbenchRows().size() + 1;
-        
-        //force load the workbench here instead of calling workbench.forceLoad() because
-        //is so time-consuming and needs progress bar.
-        //workbench.getWorkbenchTemplate().forceLoad();
-        workbench.getWorkbenchTemplate().checkMappings(getDatabaseSchema());
-        //UIRegistry.getStatusBar().incrementValue(workbench.getName());
-        int count = 1;
-        // Adjust paint increment for number of rows in DataSet
-        int mod;
-        if (rowCount < 50) mod = 1;
-        else if (rowCount < 100) mod = 10;
-        else if (rowCount < 500) mod = 20;
-        else  if (rowCount < 1000) mod = 40;
-        else mod = 50;
-        for (WorkbenchRow row : workbench.getWorkbenchRows())
-        {
-            row.forceLoad();
-            
-            if (glassPane != null)
-            {
-            	if (count % mod == 0)
-            	{
-            		glassPane.setProgress((int)( (100.0 * count) / rowCount));
-            	}
-            }
-            count++;
-        }
-        if (glassPane != null)
-        {
-        	glassPane.setProgress(100);
-        }
-        
-        // do the conversion code right here!
-        boolean convertedAnImage = false;
-        Set<WorkbenchRow> rows = workbench.getWorkbenchRows();
-        if (rows != null)
-        {
-            for (WorkbenchRow row: rows)
-            {
-                // move any single images over to the wb row image table
-                Set<WorkbenchRowImage> rowImages = row.getWorkbenchRowImages();
-                if (rowImages == null)
-                {
-                    rowImages = new HashSet<WorkbenchRowImage>();
-                    row.setWorkbenchRowImages(rowImages);
-                }
-                if (row.getCardImageFullPath() != null && row.getCardImageData() != null && row.getCardImageData().length > 0)
-                {
-                    // create the WorkbenchRowImage record
-                    WorkbenchRowImage rowImage = new WorkbenchRowImage();
-                    rowImage.initialize();
-                    rowImage.setCardImageData(row.getCardImageData());
-                    rowImage.setCardImageFullPath(row.getCardImageFullPath());
-                    rowImage.setImageOrder(0);
-                    
-                    // clear the fields holding the single-image data
-                    row.setCardImageData(null);
-                    row.setCardImageFullPath(null);
-
-                    // connect the image and the row
-                    rowImage.setWorkbenchRow(row);
-                    rowImages.add(rowImage);
-                    
-                    convertedAnImage = true;
-                }
-            }
-        }
-        
-        WorkbenchPaneSS workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench, showImageView, 
-                !isPermitted());
-        addSubPaneToMgr(workbenchPane);
-        
-        if (convertedAnImage)
-        {
-            Component topFrame = UIRegistry.getTopWindow();
-            String message     = getResourceString("WB_DATASET_IMAGE_CONVERSION_NOTIFICATION");
-            String msgTitle    = getResourceString("WB_DATASET_IMAGE_CONVERSION_NOTIFICATION_TITLE");
-            JOptionPane.showMessageDialog(topFrame, message, msgTitle, JOptionPane.INFORMATION_MESSAGE);
-            workbenchPane.setChanged(true);
-        }
-
-        RolloverCommand roc = getNavBtnById(workbenchNavBox, workbench.getWorkbenchId(), "workbench");
-        if (roc != null)
-        {
-            roc.setEnabled(false);
-            
-        } else
-        {
-            log.error("Couldn't find RolloverCommand for WorkbenchId ["+workbench.getWorkbenchId()+"]");
-        }
-        
-        return workbenchPane;
-    }
-    
+//    protected void createEditorForWorkbench(final Workbench workbench, 
+//                                            final DataProviderSessionIFace session,
+//                                            final boolean showImageView)
+//    {
+//        if (workbench != null)
+//        {
+//            final SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE);
+//            
+//            // Make sure we have a session but use an existing one if it is passed in
+//            DataProviderSessionIFace tmpSession = session;
+//            if (tmpSession == null)
+//            {
+//                tmpSession = DataProviderFactory.getInstance().createSession();
+//            }
+//            
+//            
+//            final WorkbenchTask            thisTask    = this;
+//            final DataProviderSessionIFace finiSession = tmpSession;
+//            final SwingWorker worker = new SwingWorker()
+//            {
+//                WorkbenchPaneSS wbSS = null;
+//            	@SuppressWarnings("synthetic-access")
+//                @Override
+//                public Object construct()
+//                {
+//                     try
+//                     {
+//                         if (session == null)
+//                         {
+//                             finiSession.attach(workbench);
+//                         }
+//                         wbSS = createEditorForWorkbench(workbench, glassPane, showImageView, thisTask);
+//                         if (wbSS.isDoIncremental())
+//                         {
+//                        	 SwingUtilities.invokeLater(new Runnable() {
+//
+//								@Override
+//								public void run() {
+//									UIRegistry.clearSimpleGlassPaneMsg();
+//									wbSS.validateAll(null);
+//								}
+//                        		 
+//                        	 });
+//                         }
+//                     } catch (Exception ex)
+//                     {
+//                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+//                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+//                         log.error(ex);
+//                         ex.printStackTrace();
+//                     } 
+//                     finally
+//                     {
+//                         if (session == null && finiSession != null)
+//                         {
+//                             try
+//                             {
+//                                 finiSession.close();
+//                                 
+//                             } catch (Exception ex)
+//                             {
+//                                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+//                                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+//                                 log.error(ex);
+//                             }
+//                         }
+//                         updateNavBoxUI(null);
+//                     }
+//
+//                    return null;
+//                }
+//
+//                //Runs on the event-dispatching thread.
+//                @Override
+//                public void finished()
+//                {
+//                    if (wbSS == null || !wbSS.isDoIncremental())
+//                    {
+//                    	UIRegistry.clearSimpleGlassPaneMsg();
+//                    }
+//                    //UIRegistry.getStatusBar().setProgressDone(workbench.getName());
+//                }
+//            };
+//            worker.start();
+//        }
+//    }   
+//    
+// 
+//    /**
+//     * @param workbench
+//     * @param glassPane
+//     * @param showImageView
+//     * @param thisTask
+//     * @return workbenchPaneSS containing workbench
+//     * 
+//     * workbench must be attached to a session.
+//     */
+//    protected WorkbenchPaneSS createEditorForWorkbench(final Workbench workbench, 
+//    		//final DataProviderSessionIFace session,
+//    		final SimpleGlassPane glassPane, final boolean showImageView, final WorkbenchTask  thisTask)
+//    {
+//        final int rowCount = workbench.getWorkbenchRows().size() + 1;
+//        
+//        //force load the workbench here instead of calling workbench.forceLoad() because
+//        //is so time-consuming and needs progress bar.
+//        //workbench.getWorkbenchTemplate().forceLoad();
+//        workbench.getWorkbenchTemplate().checkMappings(getDatabaseSchema());
+//        //UIRegistry.getStatusBar().incrementValue(workbench.getName());
+//        int count = 1;
+//        // Adjust paint increment for number of rows in DataSet
+//        int mod;
+//        if (rowCount < 50) mod = 1;
+//        else if (rowCount < 100) mod = 10;
+//        else if (rowCount < 500) mod = 20;
+//        else  if (rowCount < 1000) mod = 40;
+//        else mod = 50;
+//        for (WorkbenchRow row : workbench.getWorkbenchRows())
+//        {
+//            row.forceLoad();
+//            
+//            if (glassPane != null)
+//            {
+//            	if (count % mod == 0)
+//            	{
+//            		glassPane.setProgress((int)( (100.0 * count) / rowCount));
+//            	}
+//            }
+//            count++;
+//        }
+//        if (glassPane != null)
+//        {
+//        	glassPane.setProgress(100);
+//        }
+//        
+//        // do the conversion code right here!
+//        boolean convertedAnImage = false;
+//        Set<WorkbenchRow> rows = workbench.getWorkbenchRows();
+//        if (rows != null)
+//        {
+//            for (WorkbenchRow row: rows)
+//            {
+//                // move any single images over to the wb row image table
+//                Set<WorkbenchRowImage> rowImages = row.getWorkbenchRowImages();
+//                if (rowImages == null)
+//                {
+//                    rowImages = new HashSet<WorkbenchRowImage>();
+//                    row.setWorkbenchRowImages(rowImages);
+//                }
+//                if (row.getCardImageFullPath() != null && row.getCardImageData() != null && row.getCardImageData().length > 0)
+//                {
+//                    // create the WorkbenchRowImage record
+//                    WorkbenchRowImage rowImage = new WorkbenchRowImage();
+//                    rowImage.initialize();
+//                    rowImage.setCardImageData(row.getCardImageData());
+//                    rowImage.setCardImageFullPath(row.getCardImageFullPath());
+//                    rowImage.setImageOrder(0);
+//                    
+//                    // clear the fields holding the single-image data
+//                    row.setCardImageData(null);
+//                    row.setCardImageFullPath(null);
+//
+//                    // connect the image and the row
+//                    rowImage.setWorkbenchRow(row);
+//                    rowImages.add(rowImage);
+//                    
+//                    convertedAnImage = true;
+//                }
+//            }
+//        }
+//        
+//        WorkbenchPaneSS workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench, showImageView, 
+//                !isPermitted());
+//        addSubPaneToMgr(workbenchPane);
+//        
+//        if (convertedAnImage)
+//        {
+//            Component topFrame = UIRegistry.getTopWindow();
+//            String message     = getResourceString("WB_DATASET_IMAGE_CONVERSION_NOTIFICATION");
+//            String msgTitle    = getResourceString("WB_DATASET_IMAGE_CONVERSION_NOTIFICATION_TITLE");
+//            JOptionPane.showMessageDialog(topFrame, message, msgTitle, JOptionPane.INFORMATION_MESSAGE);
+//            workbenchPane.setChanged(true);
+//        }
+//
+//        RolloverCommand roc = getNavBtnById(workbenchNavBox, workbench.getWorkbenchId(), "workbench");
+//        if (roc != null)
+//        {
+//            roc.setEnabled(false);
+//            
+//        } else
+//        {
+//            log.error("Couldn't find RolloverCommand for WorkbenchId ["+workbench.getWorkbenchId()+"]");
+//        }
+//        
+//        return workbenchPane;
+//    }
     /**
      * Creates the Pane for editing a Workbench.
      * @param workbench the workbench to be edited
@@ -2054,11 +2150,27 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      */
     protected void createEditorForWorkbench(final Workbench workbench, 
                                             final DataProviderSessionIFace session,
-                                            final boolean showImageView)
+                                            final boolean showImageView,
+                                            final boolean doInbackground)
     {
+    	//Hack for IN-HOUSE ONLY batch uploading
+//    	if (testingJUNK)
+//    	{
+//    		Vector<Integer> wbIds = new Vector<Integer>();
+//    		for (int i = 1; i <= 3; i++)
+//    		{
+//    			wbIds.add(i);
+//    		}
+//    		
+//    		uploadWorkbenches(wbIds);
+//    	} 
+//    	else 
+    	{
         if (workbench != null)
         {
-            final SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE);
+            final SimpleGlassPane glassPane = doInbackground ? 
+            		UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE) :
+            		null;
             
             // Make sure we have a session but use an existing one if it is passed in
             DataProviderSessionIFace tmpSession = session;
@@ -2067,75 +2179,202 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 tmpSession = DataProviderFactory.getInstance().createSession();
             }
             
-            
             final WorkbenchTask            thisTask    = this;
             final DataProviderSessionIFace finiSession = tmpSession;
-            final SwingWorker worker = new SwingWorker()
+            final WorkbenchEditorCreatorWorker worker = new WorkbenchEditorCreatorWorker(workbench,
+            		session, showImageView, thisTask, finiSession, glassPane);
+            worker.start();
+            if (!doInbackground)
             {
-                WorkbenchPaneSS wbSS = null;
-            	@SuppressWarnings("synthetic-access")
-                @Override
-                public Object construct()
-                {
+            	worker.get();
+            }
+        }
+    	}
+    }
+    
+    private class WorkbenchEditorCreatorWorker extends SwingWorker
+    {
+    	final Workbench workbench; 
+        final DataProviderSessionIFace session;
+        final boolean showImageView;        
+        final WorkbenchTask            thisTask;
+        final DataProviderSessionIFace finiSession;
+        final SimpleGlassPane glassPane;
+        WorkbenchPaneSS workbenchPane = null;
+        
+        
+    	/**
+		 * @param workbench
+		 * @param session
+		 * @param showImageView
+		 * @param thisTask
+		 * @param finiSession
+		 * @param glassPane
+		 */
+		public WorkbenchEditorCreatorWorker(Workbench workbench,
+				DataProviderSessionIFace session, boolean showImageView,
+				WorkbenchTask thisTask, DataProviderSessionIFace finiSession,
+				SimpleGlassPane glassPane)
+		{
+			super();
+			this.workbench = workbench;
+			this.session = session;
+			this.showImageView = showImageView;
+			this.thisTask = thisTask;
+			this.finiSession = finiSession;
+			this.glassPane = glassPane;
+		}
+
+		@SuppressWarnings("synthetic-access")
+        @Override
+        public Object construct()
+        {
+             try
+             {
+                 if (session == null)
+                 {
+                     finiSession.attach(workbench);
+                 }
+                 final int rowCount = workbench.getWorkbenchRows().size() + 1;
+                 /*SwingUtilities.invokeLater(new Runnable() {
+                     public void run()
+                     {
+                         UIRegistry.getStatusBar().setProgressRange(workbench.getName(), 0, rowCount);
+                         UIRegistry.getStatusBar().setIndeterminate(workbench.getName(), false);
+                     }
+                 });*/
+                 
+                 //force load the workbench here instead of calling workbench.forceLoad() because
+                 //is so time-consuming and needs progress bar.
+                 //workbench.getWorkbenchTemplate().forceLoad();
+                 workbench.getWorkbenchTemplate().checkMappings(getDatabaseSchema());
+                 //UIRegistry.getStatusBar().incrementValue(workbench.getName());
+                 int count = 1;
+                 // Adjust paint increment for number of rows in DataSet
+                 int mod;
+                 if (rowCount < 50) mod = 1;
+                 else if (rowCount < 100) mod = 10;
+                 else if (rowCount < 500) mod = 20;
+                 else  if (rowCount < 1000) mod = 40;
+                 else mod = 50;
+                 for (WorkbenchRow row : workbench.getWorkbenchRows())
+                 {
+                     row.forceLoad();
+                     //UIRegistry.getStatusBar().incrementValue(workbench.getName());
+                     
+                     if (glassPane != null)
+                     {                     	 
+                    	 if (count % mod == 0)
+                    	 {
+                    		 glassPane.setProgress((int)( (100.0 * count) / rowCount));
+                    	 }
+                    	 count++;
+                     }
+                 }
+                 if (glassPane != null)
+                 {
+                	 glassPane.setProgress(100);
+                 }
+                 
+                 // do the conversion code right here!
+                 boolean convertedAnImage = false;
+                 Set<WorkbenchRow> rows = workbench.getWorkbenchRows();
+                 if (rows != null)
+                 {
+                     for (WorkbenchRow row: rows)
+                     {
+                         // move any single images over to the wb row image table
+                         Set<WorkbenchRowImage> rowImages = row.getWorkbenchRowImages();
+                         if (rowImages == null)
+                         {
+                             rowImages = new HashSet<WorkbenchRowImage>();
+                             row.setWorkbenchRowImages(rowImages);
+                         }
+                         if (row.getCardImageFullPath() != null && row.getCardImageData() != null && row.getCardImageData().length > 0)
+                         {
+                             // create the WorkbenchRowImage record
+                             WorkbenchRowImage rowImage = new WorkbenchRowImage();
+                             rowImage.initialize();
+                             rowImage.setCardImageData(row.getCardImageData());
+                             rowImage.setCardImageFullPath(row.getCardImageFullPath());
+                             rowImage.setImageOrder(0);
+                             
+                             // clear the fields holding the single-image data
+                             row.setCardImageData(null);
+                             row.setCardImageFullPath(null);
+
+                             // connect the image and the row
+                             rowImage.setWorkbenchRow(row);
+                             rowImages.add(rowImage);
+                             
+                             convertedAnImage = true;
+                         }
+                     }
+                 }
+                 
+                 workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench, showImageView, 
+                         !isPermitted());
+                 addSubPaneToMgr(workbenchPane);
+                 
+                 if (convertedAnImage)
+                 {
+                     Component topFrame = UIRegistry.getTopWindow();
+                     String message     = getResourceString("WB_DATASET_IMAGE_CONVERSION_NOTIFICATION");
+                     String msgTitle    = getResourceString("WB_DATASET_IMAGE_CONVERSION_NOTIFICATION_TITLE");
+                     JOptionPane.showMessageDialog(topFrame, message, msgTitle, JOptionPane.INFORMATION_MESSAGE);
+                     workbenchPane.setChanged(true);
+                 }
+
+                 RolloverCommand roc = getNavBtnById(workbenchNavBox, workbench.getWorkbenchId(), "workbench");
+                 if (roc != null)
+                 {
+                     roc.setEnabled(false);
+                     
+                 } else
+                 {
+                     log.error("Couldn't find RolloverCommand for WorkbenchId ["+workbench.getWorkbenchId()+"]");
+                 }
+                 
+             } catch (Exception ex)
+             {
+                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+                 log.error(ex);
+                 ex.printStackTrace();
+             } 
+             finally
+             {
+                 if (session == null && finiSession != null)
+                 {
                      try
                      {
-                         if (session == null)
-                         {
-                             finiSession.attach(workbench);
-                         }
-                         wbSS = createEditorForWorkbench(workbench, glassPane, showImageView, thisTask);
-                         if (wbSS.isDoIncremental())
-                         {
-                        	 SwingUtilities.invokeLater(new Runnable() {
-
-								@Override
-								public void run() {
-									UIRegistry.clearSimpleGlassPaneMsg();
-									wbSS.validateAll(null);
-								}
-                        		 
-                        	 });
-                         }
+                         finiSession.close();
+                         
                      } catch (Exception ex)
                      {
                          edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                          edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
                          log.error(ex);
-                         ex.printStackTrace();
-                     } 
-                     finally
-                     {
-                         if (session == null && finiSession != null)
-                         {
-                             try
-                             {
-                                 finiSession.close();
-                                 
-                             } catch (Exception ex)
-                             {
-                                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-                                 log.error(ex);
-                             }
-                         }
-                         updateNavBoxUI(null);
                      }
+                 }
+                 updateNavBoxUI(null);
+             }
+            return null;
+        }
 
-                    return null;
-                }
-
-                //Runs on the event-dispatching thread.
-                @Override
-                public void finished()
-                {
-                    if (wbSS == null || !wbSS.isDoIncremental())
-                    {
-                    	UIRegistry.clearSimpleGlassPaneMsg();
-                    }
-                    //UIRegistry.getStatusBar().setProgressDone(workbench.getName());
-                }
-            };
-            worker.start();
+        //Runs on the event-dispatching thread.
+        @Override
+        public void finished()
+        {
+            if (glassPane != null)
+            {
+            	UIRegistry.clearSimpleGlassPaneMsg();
+            }
+            if (workbenchPane != null && workbenchPane.isDoIncremental())
+            {
+            	workbenchPane.validateAll(null);
+            }
+            //UIRegistry.getStatusBar().setProgressDone(workbench.getName());
         }
     }
     
@@ -3607,7 +3846,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             Workbench workbench = loadWorkbench((RecordSetIFace)cmdData);
             if (workbench != null)
             {
-                createEditorForWorkbench(workbench, null, false);
+                createEditorForWorkbench(workbench, null, false, true);
             } else
             {
                 log.error("Workbench was null!");
@@ -3619,7 +3858,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             Workbench workbench = loadWorkbench((RecordSetIFace)cmdAction.getProperty("workbench"));
             if (workbench != null)
             {
-                createEditorForWorkbench(workbench, null, false);
+                createEditorForWorkbench(workbench, null, false, true);
             } else
             {
                 log.error("Workbench was null!");
@@ -3631,36 +3870,146 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     /**
      * @param workbenchNames
      */
-//    public void uploadWorkbenches(List<Integer> workbenchIds)
-//    {
-//    	for (Integer wbId : workbenchIds)
-//    	{
-//    		DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();
-//            try
-//            {
-//                Workbench wb = loadWorkbench(wbId, session);  
-//        		if (wb != null)
-//        		{
-//        			System.out.println("loaded " + wb.getName());
-//        			WorkbenchPaneSS wbPane = createEditorForWorkbench(wb, null, false, this);
-//        			System.out.println("uploading " + wb.getName());
-//         			//SubPaneMgr.getInstance().removePane(wbPane);
-//        		} else
-//        		{
-//        			System.out.println("No workbench with id = " + wbId);
-//                } 
-//            }catch (Exception ex)
-//            {
-//                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-//                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
-//                    log.error(ex);
-//            }
-//            finally
-//            {
-//                session.close();            
-//            }
-//    	}
-//    }
+	public void uploadWorkbenches(final List<Integer> workbenchIds) 
+	{
+		/* !!!!!!!!!!!!!! for batch upload hack!!
+		 * testingJUNK = false;
+		 */
+		
+		javax.swing.SwingWorker<Object, Object> worker = new javax.swing.SwingWorker<Object, Object>() {
+
+			/**
+			 * @param wbId
+			 * @return
+			 */
+			protected RecordSet bldRS(Integer wbId)
+			{
+				RecordSet result = new RecordSet();
+				result.initialize();
+				result.addItem(wbId);
+				return result;
+			}
+			
+			/**
+			 * @param wb
+			 * @return
+			 */
+			protected WorkbenchPaneSS getWbSS(Workbench wb)
+			{
+				WorkbenchPaneSS wbSS = null;
+				for (SubPaneIFace sb : SubPaneMgr.getInstance()
+						.getSubPanes())
+				{
+					if (sb instanceof WorkbenchPaneSS)
+					{
+						Workbench pwb = ((WorkbenchPaneSS) sb)
+								.getWorkbench();
+						if (pwb == wb)
+						{
+							wbSS = (WorkbenchPaneSS) sb;
+							break;
+						}
+					}
+				}
+				return wbSS;
+			}
+			
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see javax.swing.SwingWorker#doInBackground()
+			 */
+			@Override
+			protected Object doInBackground() throws Exception 
+			{
+				for (Integer wbId : workbenchIds)
+				{
+					try
+					{
+						RecordSet rs = bldRS(wbId);
+						final Workbench wb = loadWorkbench(rs);
+						if (wb != null)
+						{
+							System.out.println("loaded " + wb.getName());
+							SwingUtilities.invokeAndWait(new Runnable(){
+
+								/* (non-Javadoc)
+								 * @see java.lang.Runnable#run()
+								 */
+								@Override
+								public void run() {
+									createEditorForWorkbench(wb, null, false, false);
+								}
+								
+							});
+							final WorkbenchPaneSS wbSS = getWbSS(wb);
+							if (wbSS != null)
+							{
+								SwingUtilities.invokeAndWait(new Runnable(){
+									/* (non-Javadoc)
+									 * @see java.lang.Runnable#run()
+									 */
+									@Override
+									public void run() {
+										wbSS.doDatasetUpload();
+										System.out.println("opened uploader for " + wb.getName());
+									}
+									
+								});
+								
+//								SwingUtilities.invokeLater(new Runnable(){
+//									/* (non-Javadoc)
+//									 * @see java.lang.Runnable#run()
+//									 */
+//									@Override
+//									public void run() {
+										boolean validated = Uploader.getCurrentUpload().validateData(false);
+//									}
+//									
+//								});
+								if (validated)
+								{
+									System.out.println("validated uploader for "+ wb.getName());
+									Uploader.getCurrentUpload().uploadIt(false);
+									if (Uploader.getCurrentUpload().getCurrentOp() != Uploader.SUCCESS)
+									{
+										System.out.println("upload failed for " + wb.getName());
+									} else
+									{
+										System.out.println("uploaded " + wb.getName());
+										// NOT saving recordsets of uploaded
+										// objects or setting isUploaded status for wb rows.
+									}
+								}
+								SwingUtilities.invokeLater(new Runnable() {
+
+									/* (non-Javadoc)
+									 * @see java.lang.Runnable#run()
+									 */
+									@Override
+									public void run() 
+									{
+										Uploader.getCurrentUpload().closeMainForm(true);
+										SubPaneMgr.getInstance().removePane(wbSS);
+									}
+									
+								});
+								System.out.println("closed uploader for " + wb.getName());
+							}
+						} else
+						{
+							System.out.println("No workbench with id = " + wbId);
+						}
+					} catch (Exception ex)
+					{
+						ex.printStackTrace();
+					}
+				}
+				return null;
+			}
+		};
+		worker.execute();
+	}
     
     /**
      * Returns the class of the DB field target of this mapping.

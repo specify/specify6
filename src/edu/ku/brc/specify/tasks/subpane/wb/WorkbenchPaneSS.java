@@ -152,9 +152,9 @@ import edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordServiceProviderIFace;
 import edu.ku.brc.services.mapping.LatLonPlacemarkIFace;
 import edu.ku.brc.services.mapping.LocalityMapper;
+import edu.ku.brc.services.mapping.SimpleMapLocation;
 import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
 import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
-import edu.ku.brc.services.mapping.SimpleMapLocation;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Geography;
@@ -198,18 +198,18 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
-import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UnhandledExceptionDialog;
 import edu.ku.brc.ui.WorkBenchPluginIFace;
+import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.ui.tmanfe.SearchReplacePanel;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
 import edu.ku.brc.util.GeoRefConverter;
-import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 import edu.ku.brc.util.LatLonConverter;
 import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 
 /**
  * Main class that handles the editing of Workbench data. It creates both a spreasheet and a form pane for editing the data.
@@ -296,8 +296,8 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected static Uploader       datasetUploader            = null; 
     protected WorkbenchValidator    workbenchValidator         = null;
-    protected boolean 		        doIncrementalValidation    = AppPreferences.getLocalPrefs().getBoolean(wbAutoValidatePrefName, true);
-    protected boolean	            doIncrementalMatching      = AppPreferences.getLocalPrefs().getBoolean(wbAutoMatchPrefName, false);
+    protected boolean 		        doIncrementalValidation    = false;
+    protected boolean	            doIncrementalMatching      = false;
     protected AtomicInteger			invalidCellCount		   = new AtomicInteger(0);
     protected AtomicInteger			unmatchedCellCount		   = new AtomicInteger(0);
     protected CellRenderingAttributes cellRenderAtts           = new CellRenderingAttributes();
@@ -555,6 +555,10 @@ public class WorkbenchPaneSS extends BaseSubPane
             spreadSheet.setDeleteAction(delAction);
         }
         
+        //XXX Using the wb ID in the prefname to do pref setting per wb, may result in a bloated prefs file?? 
+        doIncrementalValidation = AppPreferences.getLocalPrefs().getBoolean(wbAutoValidatePrefName + "." + workbench.getId(), true);
+        doIncrementalMatching = AppPreferences.getLocalPrefs().getBoolean(wbAutoMatchPrefName + "." + workbench.getId(), false);
+
         if (!isReadOnly)
         {
         	uploadToolPanel = new UploadToolPanel(this, UploadToolPanel.EXPANDED);
@@ -1158,8 +1162,8 @@ public class WorkbenchPaneSS extends BaseSubPane
 		}
 		setMatchStatusForUploadTables();
 		validateAll(null);
-
-		AppPreferences.getLocalPrefs().putBoolean(wbAutoMatchPrefName, doIncrementalMatching);
+		
+		AppPreferences.getLocalPrefs().putBoolean(wbAutoMatchPrefName + "." + workbench.getId(), doIncrementalMatching);
 	}
 
 	/**
@@ -1347,6 +1351,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         
         uploadToolPanel.updateBtnUI();
+        updateUploadBtnState();
 }
     /**
      * @return number of invalid cells
@@ -3833,9 +3838,10 @@ public class WorkbenchPaneSS extends BaseSubPane
 			blockChanges = true;
 			shutdownValidators();
 			doIncrementalValidation = false;
+			updateBtnUI();
 			//workbenchValidator = null;
 			model.fireDataChanged();
-			AppPreferences.getLocalPrefs().putBoolean(wbAutoValidatePrefName, doIncrementalValidation);
+			AppPreferences.getLocalPrefs().putBoolean(wbAutoValidatePrefName+ "." + workbench.getId(), doIncrementalValidation);
 		} finally
 		{
 			blockChanges = savedBlockChanges;
@@ -3890,7 +3896,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         dlg.dispose();
     }
     
-    protected void doDatasetUpload()
+    public void doDatasetUpload()
     {        
         if (datasetUploader != null)
         {
@@ -4022,6 +4028,10 @@ public class WorkbenchPaneSS extends BaseSubPane
 				imageFrame.setVisible(false);
 			}
 			datasetUploader.startUI();
+			if (doIncrementalValidation && invalidCellCount.get() == 0)
+			{
+				datasetUploader.validateData(true);
+			}
 		}
         catch (Exception ex)
         {
@@ -4173,12 +4183,27 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         if (canUpload())
         {
-           uploadDatasetBtn.setEnabled(!hasChanged);
+           if (hasChanged)
+           {
+        	   uploadDatasetBtn.setEnabled(false);
+           } else
+           {
+        	   if (!doIncrementalValidation)
+        	   {
+        		   uploadDatasetBtn.setEnabled(true);
+        	   } else
+        	   {
+        		   uploadDatasetBtn.setEnabled(invalidCellCount.get() == 0);
+        	   }
+           }
            if (uploadDatasetBtn.isEnabled())
            {
                uploadDatasetBtn.setToolTipText(getResourceString("WB_UPLOAD_DATA"));
            }
-           else
+           else if (doIncrementalValidation && invalidCellCount.get() > 0)
+           {
+        	   uploadDatasetBtn.setToolTipText(getResourceString("WB_UPLOAD_INVALID_DATA_HINT"));
+           } else
            {
                uploadDatasetBtn.setToolTipText(getResourceString("WB_UPLOAD_UNSAVED_CHANGES_HINT"));
            }
