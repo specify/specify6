@@ -21,6 +21,7 @@ package edu.ku.brc.specify.ui;
 
 import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
 
+import java.text.DecimalFormatSymbols;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -31,6 +32,7 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.ui.DateWrapper;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
@@ -329,7 +331,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     {
         if (isNumericCatalogNumber)
         {
-            if (data != null && data instanceof String && StringUtils.isNumeric((String)data))
+            if (data != null && data instanceof String && UIHelper.isANumber((String)data))
             {
                 String dataStr = (String)data;
                 if (StringUtils.isNotEmpty(dataStr))
@@ -338,8 +340,20 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
                     {
                         return pattern;
                     }
+                    
+                    //check for floating point cat num
+                	char separator = DecimalFormatSymbols.getInstance().getDecimalSeparator();
+                	int sepIdx = dataStr.indexOf(separator);
+                    if (sepIdx >= 0)
+                    {
+                        int precision = dataStr.length() - sepIdx - 1;
+                    	String fmtStr = "%0" + length + "." + precision + "f"; //$NON-NLS-1$ //$NON-NLS-2$
+                    	return String.format(fmtStr, Float.parseFloat((String)data));
+                    }
+                    
                     String fmtStr = "%0" + length + "d"; //$NON-NLS-1$ //$NON-NLS-2$
                     return String.format(fmtStr, Integer.parseInt((String)data));
+                    
                 }
             }
         }

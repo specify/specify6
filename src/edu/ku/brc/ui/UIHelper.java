@@ -77,6 +77,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -145,6 +146,7 @@ import javax.swing.text.MaskFormatter;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.record.formula.functions.Char;
 import org.dom4j.Element;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -3582,7 +3584,15 @@ public final class UIHelper
         return StringUtils.replace(name, "'", "`");
     }
     
-    
+    /**
+     * @param str
+     * @return true if str is a decimal number. (eg. "1", "1.1", "-1.1") 
+     */
+    public static boolean isANumber(final String str)
+    {
+    	String separator = "\\" + DecimalFormatSymbols.getInstance().getDecimalSeparator();
+    	return StringUtils.isNumeric(str.replaceFirst("-", "").replaceFirst(separator, ""));
+    }
     /**
      * Fixes a potential 8 char color to 6 where the first 2 chars are alpha
      * @param textColorArg the color string hex only
