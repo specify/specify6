@@ -34,6 +34,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -125,6 +128,7 @@ import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.skin.SkinItem;
 import edu.ku.brc.ui.skin.SkinsMgr;
 import edu.ku.brc.util.AttachmentUtils;
+import edu.ku.brc.util.TeeOutputStream;
 /**
  * A base class for Specify derived Applications
  *
@@ -194,6 +198,36 @@ public class AppBase extends JPanel implements DatabaseLoginListener, CommandLis
             UIRegistry.showLocalizedMsg("WARNING", "Specify.TOO_MANY_SP");
             System.exit(0);
         }
+    }
+    
+    /**
+     * Sets up StdErr and StdOut to be 'tee'd' to files. 
+     */
+    public static void setupTeeForStdErrStdOut(final boolean doStdErr, final boolean doStdOut)
+    {
+        try 
+        {
+            
+            String basePath = UIRegistry.getUserHomeDir() + File.separator;
+            
+            if (doStdOut)
+            {
+                // Tee standard output
+                PrintStream out = new PrintStream(new FileOutputStream(basePath + "output.log"));
+                PrintStream tee = new TeeOutputStream(System.out, out);
+    
+                System.setOut(tee);
+            }
+            
+            if (doStdErr)
+            {
+                // Tee standard error
+                PrintStream err = new PrintStream(new FileOutputStream(basePath + "error.log"));
+                PrintStream tee = new TeeOutputStream(System.err, err);
+                System.setErr(tee);
+            }
+            
+        } catch (FileNotFoundException e) {}
     }
 
     /**

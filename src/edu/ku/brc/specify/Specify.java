@@ -42,10 +42,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -230,6 +233,7 @@ import edu.ku.brc.util.FileCache;
 import edu.ku.brc.util.FileStoreAttachmentManager;
 import edu.ku.brc.util.MemoryWarningSystem;
 import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.TeeOutputStream;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 /**
  * Specify Main Application Class
@@ -1853,12 +1857,12 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         File logFile = getFile(userHome, fileName); //$NON-NLS-1$
         if (logFile != null) return logFile;
         
-        String logFilePath = UIRegistry.getDefaultWorkingPath();
+        /*String logFilePath = UIRegistry.getDefaultWorkingPath();
         logFile = getFile(logFilePath, fileName); //$NON-NLS-1$
         if (logFile != null) return logFile;
             
         logFile = getFile(".", fileName); //$NON-NLS-1$
-        if (logFile != null) return logFile;
+        if (logFile != null) return logFile;*/
             
         return null;
     }
@@ -1868,17 +1872,17 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     protected void dumpSpecifyLogFile()
     {
-        File logFile = checkAllPaths("error.log"); //$NON-NLS-1$
+        File logFile = checkAllPaths("specify.log"); //$NON-NLS-1$
         if (logFile == null)
         {
-            logFile = checkAllPaths("specify.log"); //$NON-NLS-1$
+            logFile = checkAllPaths("error.log"); //$NON-NLS-1$
         }
         
         if (logFile != null)
         {
             JTabbedPane tabPane = new JTabbedPane();
-            tabPane.add(getResourceString("Specify.ERROR"), getLogFilePanel(logFile, true)); //$NON-NLS-1$
-            //tabPane.add("Specify",                          getLogFilePanel(logFilePath, false)); //$NON-NLS-1$
+            //tabPane.add(getResourceString("Specify.ERROR"), getLogFilePanel(logFile, true)); //$NON-NLS-1$
+            tabPane.add("Specify",                          getLogFilePanel(logFile, true)); //$NON-NLS-1$
             
             String title = getResourceString("Specify.LOG_FILES_TITLE");//$NON-NLS-1$
             CustomDialog dialog = new CustomDialog((JFrame)UIRegistry.getTopWindow(), title, true, CustomDialog.OK_BTN, tabPane); 
@@ -3114,12 +3118,14 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
    */
   public static void main(String[] args)
   {
+      
       // Set App Name, MUST be done very first thing!
       UIRegistry.setAppName("Specify");  //$NON-NLS-1$
 
       log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
       
       AppBase.processArgs(args);
+      AppBase.setupTeeForStdErrStdOut(true, false);
       
       SwingUtilities.invokeLater(new Runnable() {
           @SuppressWarnings("synthetic-access") //$NON-NLS-1$

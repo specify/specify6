@@ -876,6 +876,7 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
    public static void main(String[] args)
    {
        AppBase.processArgs(args);
+       AppBase.setupTeeForStdErrStdOut(true, false);
        
        SwingUtilities.invokeLater(new Runnable() {
            @SuppressWarnings("synthetic-access") //$NON-NLS-1$

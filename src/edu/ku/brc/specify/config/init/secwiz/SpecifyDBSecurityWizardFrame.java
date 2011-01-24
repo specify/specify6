@@ -401,6 +401,8 @@ public class SpecifyDBSecurityWizardFrame extends JFrame implements FrameworkApp
         }
         
         AppBase.processArgs(args);
+        AppBase.setupTeeForStdErrStdOut(true, false);
+        
         System.setProperty("appdatadir", "..");
         
         SwingUtilities.invokeLater(new Runnable()

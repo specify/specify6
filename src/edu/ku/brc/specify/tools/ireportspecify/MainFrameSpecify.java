@@ -1742,7 +1742,7 @@ public class MainFrameSpecify extends MainFrame
         UIRegistry.setEmbeddedDBPath(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
         
         AppBase.processArgs(args);
-
+        AppBase.setupTeeForStdErrStdOut(true, false);
         
         // Then set this
         IconManager.setApplicationClass(Specify.class);
