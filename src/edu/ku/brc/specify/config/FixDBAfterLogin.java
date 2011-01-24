@@ -272,8 +272,8 @@ public class FixDBAfterLogin
      */
     public static void fixUserPermissions(final boolean doSilently)
     {
-        String whereStr  = " WHERE p.GroupSubClass = 'edu.ku.brc.af.auth.specify.principal.UserPrincipal' " +
-                           "AND p.userGroupScopeID IS NULL";
+        String whereStr  = " WHERE p.GroupSubClass = 'edu.ku.brc.af.auth.specify.principal.UserPrincipal' ";
+        String whereStr2 = "AND p.userGroupScopeID IS NULL";
         
         String postSQL = " FROM specifyuser su " +
                          "INNER JOIN specifyuser_spprincipal ss ON su.SpecifyUserID = ss.SpecifyUserID " +
@@ -282,10 +282,16 @@ public class FixDBAfterLogin
                          "LEFT OUTER JOIN sppermission pm ON pp.SpPermissionID = pm.SpPermissionID " +
                          whereStr;
         
-        String sql = "SELECT COUNT(*)" + postSQL;
+        String sql = "SELECT COUNT(*)" + postSQL + whereStr2;
+        log.debug(sql);
         if (BasicSQLUtils.getCountAsInt(sql) < 1)
         {
-            return;
+            sql = "SELECT COUNT(*)" + postSQL;
+            log.debug(sql);
+            if (BasicSQLUtils.getCountAsInt(sql) > 0)
+            {
+                return;
+            }
         }
         
         final String updatePermSQL = "DELETE FROM %s WHERE SpPermissionID = %d";
