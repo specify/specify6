@@ -88,6 +88,7 @@ import edu.ku.brc.specify.datamodel.SpExportSchemaItemMapping;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpQueryField.OperatorType;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
+import edu.ku.brc.specify.ui.CatalogNumberUIFieldFormatter;
 import edu.ku.brc.specify.ui.db.PickListDBAdapterFactory;
 import edu.ku.brc.specify.ui.db.PickListTableAdapter;
 import edu.ku.brc.ui.IconManager;
@@ -878,7 +879,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         }
         return StringUtils.isNotEmpty(getCriteriaText(true).trim());
     }
-    
+ 
     /**
      * @param criteriaEntry - String of comma-delimited entries
      * @return Array of formatted criteria
@@ -922,7 +923,12 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             try
             {
                 result[e] = formatter != null ? formatter.formatFromUI(raw[e].trim()) : raw[e].trim();
-            }
+                if (formatter instanceof CatalogNumberUIFieldFormatter && ((CatalogNumberUIFieldFormatter )formatter).isNumeric())
+                {
+                	//the formatFromUI call will catch format errors, but if numeric and a valid number was entered then just use the number
+                	result[e] = raw[e].trim();
+                }
+        }
             catch (Exception ex)
             {
                 throw new ParseException(getLabel() + " - " 
@@ -1061,7 +1067,21 @@ public class QueryFieldPanel extends JPanel implements ActionListener
     {
     	return isNotCheckbox != null && isNotCheckbox.isSelected();
     }
-    
+
+    /**
+     * @return true if criteria entries should be handled as numeric cat nums for hql/sql
+     * 
+     * NOTE: "where catalogNumber = 1000" works in hql even though catalogNumber is a string field.
+     * This MAY be because MySQL will automatically convert string/numeric types when necessary.
+     * If we switch to another sql dbms, catalogNumbers may have to be treated as strings.
+     * 
+     */
+    protected boolean isNumericCatalogNumber() 
+    {
+    	UIFieldFormatterIFace formatter = fieldQRI.getFormatter();
+    	return formatter instanceof CatalogNumberUIFieldFormatter && ((CatalogNumberUIFieldFormatter )formatter).isNumeric();    	
+    }
+
     /**
      * @return
      */
@@ -1103,7 +1123,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                     }
                     operStr = "=";
                 }
-                else if (fieldQRI.getDataClass().equals(String.class))
+                else if (fieldQRI.getDataClass().equals(String.class) && !isNumericCatalogNumber())
                 {
                     criteriaFormula = concatCriteria(criteriaStrs, operStr, !(pickList instanceof PickListTableAdapter));
                 }
@@ -1161,7 +1181,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                         criteriaFormula = "(" + criteriaFormula + ")";
                     }
                 }
-                else if (Number.class.isAssignableFrom(fieldQRI.getDataClass()) )
+                else if (Number.class.isAssignableFrom(fieldQRI.getDataClass()) || isNumericCatalogNumber())
                 {
                     Constructor<?> tester;
                     try
