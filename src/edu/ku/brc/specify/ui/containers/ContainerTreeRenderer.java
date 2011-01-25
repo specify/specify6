@@ -56,14 +56,13 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class ContainerTreeRenderer extends DefaultTreeCellRenderer 
 {
-    protected final static String DASH = " - ";
-    
     protected Color bgColor = Color.WHITE;//new Color(245, 245, 245, 255);
     
-    protected HashMap<Class<?>, ImageIcon> iconHash     = new HashMap<Class<?>, ImageIcon>();
-    protected HashMap<Short, ImageIcon>    typeIconHash = new HashMap<Short, ImageIcon>();
+    protected HashMap<Class<?>, ImageIcon> iconHash      = new HashMap<Class<?>, ImageIcon>();
+    protected HashMap<Class<?>, ImageIcon> iconFadedHash = new HashMap<Class<?>, ImageIcon>();
+    protected HashMap<Short, ImageIcon>    typeIconHash  = new HashMap<Short, ImageIcon>();
     protected UIFieldFormatterIFace        catNumFmt;
-    protected Object                       userObj      = null;
+    protected Object                       userObj       = null;
     
     protected Component                    layoutComp;
     
@@ -77,11 +76,12 @@ public class ContainerTreeRenderer extends DefaultTreeCellRenderer
     protected boolean                      isViewMode  = false;  // indicates whether the form is in View or Edit mode
     protected boolean                      isSelected  = false;
     protected boolean                      isContainer = false;
+    protected boolean                      isColObj    = false;
     protected boolean                      hasColObj   = false;
     protected int                          iconSep     = 8;
     protected Point                        transPoint  = null;
     
-    protected Rectangle[]                  hitRects = new Rectangle[2];                        
+    protected Rectangle[]                  hitRects = new Rectangle[3];                        
     
     protected ImageIcon                    addImgIcon  = IconManager.getIcon("AddRecord", IconManager.STD_ICON_SIZE.Std16);
     protected ImageIcon                    delImgIcon  = IconManager.getIcon("DelRecord", IconManager.STD_ICON_SIZE.Std16);
@@ -108,6 +108,7 @@ public class ContainerTreeRenderer extends DefaultTreeCellRenderer
         for (Class<?> c : cls)
         {
             iconHash.put(c, IconManager.getIcon(c.getSimpleName(), IconManager.IconSize.Std24));
+            iconFadedHash.put(c, IconManager.getIcon(c.getSimpleName(), IconManager.IconSize.Std24Fade));
         }
         setIcon(iconHash.get(cls[0]));
         
@@ -141,14 +142,14 @@ public class ContainerTreeRenderer extends DefaultTreeCellRenderer
     {
         super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
         
-        //System.err.println(value+" sel:"+sel+"  exp:"+expanded+"  foc:"+hasFocus);
+        //System.out.println(value+" sel:"+sel+"  exp:"+expanded+"  foc:"+hasFocus);
         /*if (!sel)
         {
             setOpaque(true);
             setBackground(bgColor);
         } else
         {
-            System.out.println(getBackgroundSelectionColor());
+            //System.out.println(getBackgroundSelectionColor());
             setBackground(getBackgroundSelectionColor());
         }*/
         
@@ -163,12 +164,14 @@ public class ContainerTreeRenderer extends DefaultTreeCellRenderer
         
         if (value instanceof DefaultMutableTreeNode)
         {
+            isColObj   = false;
             isContainer = false;
             hasColObj   = false;
             
             userObj = ((DefaultMutableTreeNode)value).getUserObject();
-            if (userObj instanceof Container)
-                System.err.println(value.hashCode()+"  "+userObj.hashCode()+"  "+((Container)userObj).getName()+"  "+((Container)userObj).getId());
+            //if (userObj instanceof Container)
+            //    //System.err.println("Val HC: "+value.hashCode()+"  UsrObj HC: "+userObj.hashCode()+"  Container Name: "+((Container)userObj).getName()+"  Cls: "+userObj.getClass().getSimpleName()+"  userObj Id: "+((Container)userObj).getId());
+            
             if (userObj instanceof Container)
             {
                 isContainer = true;
@@ -208,11 +211,12 @@ public class ContainerTreeRenderer extends DefaultTreeCellRenderer
                         img2 = IconManager.getIcon("CollectionObject", IconManager.IconSize.Std16);//iconHash.get(CollectionObject.class);
                     } else
                     {
-                        txt2 = " (Not Cataloged) ";
+                        txt2 = " (Not Cataloged) "; // I18N
                     }
                         
                 } else if (userObj instanceof CollectionObject)
                 {
+                    isColObj = true;
                     CollectionObject colObj = (CollectionObject)userObj;
                     String catNum = StringUtils.isNotEmpty(colObj.getCatalogNumber()) ? (String)catNumFmt.formatToUI(colObj.getCatalogNumber()) : null;
                     txt1 = catNum != null ? catNum : " ";
@@ -223,44 +227,62 @@ public class ContainerTreeRenderer extends DefaultTreeCellRenderer
                     txt1 = userObj.toString();
                 }
             }
+            Dimension prefDim = getPreferredSize();
+            setSize(prefDim);
         }
         return this;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.awt.Component#getSize()
+     */
+    @Override
+    public Dimension getSize()
+    {
+        return getPreferredSize();
     }
     
     @Override
     public Dimension getPreferredSize()
     {
+        //System.out.println("-------------------");
         Dimension   dim = super.getPreferredSize();
         FontMetrics fm  = this.getFontMetrics(getFont());
         
         dim.height = IconManager.STD_ICON_SIZE.Std24.size() + 2;
-        //int half   = layoutComp.getX();
         
         int width = 10;
         if (img1 != null)
         {
             width += img1.getIconWidth();
         }
-        if (img2 != null)
-        {
-            width += img2.getIconWidth() + 1;
-        }
+        
         if (txt1 != null)
         {
             width += getIconTextGap();
             width += fm.stringWidth(txt1);
         }
+        
+        if (img2 != null)
+        {
+            width += iconSep;
+            width += img2.getIconWidth() + 1;
+        }
+        
         if (txt2 != null)
         {
-            //width = half;
-            width += fm.stringWidth(DASH);
+            width += getIconTextGap();
             width += fm.stringWidth(txt2);
         }
-        dim.width  = width;
+        dim.width = width;
         
         // Add Space for Edit Icons
         int numIcons = 0;
-        if (isViewMode)
+        if (isColObj)
+        {
+            numIcons = 1;
+            
+        } else if (isViewMode)
         {
             numIcons = 2;
             
@@ -269,6 +291,9 @@ public class ContainerTreeRenderer extends DefaultTreeCellRenderer
             numIcons = 2;
         }
         dim.width += (IconManager.IconSize.Std16.size() * numIcons) + (iconSep * numIcons);
+        
+        //System.out.println(txt1+"/"+txt2+"  "+dim.width+"      "+numIcons);
+        //System.out.println("-------------------\n");
 
         return dim;
     }
@@ -291,6 +316,7 @@ public class ContainerTreeRenderer extends DefaultTreeCellRenderer
         super.paintComponent(g);
         
         Dimension d = getSize();
+        //System.out.println("d: "+d+"     "+g.getClipBounds());
         
         Graphics2D  g2d  = (Graphics2D)g.create();
         g2d.setRenderingHints(renderingHints);
@@ -301,72 +327,80 @@ public class ContainerTreeRenderer extends DefaultTreeCellRenderer
         int         txtY  = ((d.height - fm.getHeight()) / 2) + fm.getAscent();
         int         x     = 0;
         
+        Color color = g2d.getColor();
+        
         if (img1 != null)
         {
             g2d.drawImage(img1.getImage(), x, imgY, null);
             x += img1.getIconWidth();
         }
         
-        if (img2 != null)
-        {
-            x += 1;
-            g2d.drawImage(img2.getImage(), x, imgY2, null);
-            x += img2.getIconWidth() + getIconTextGap();
-        } else
-        {
-            x += getIconTextGap();
-        }
-        
-        g2d.setColor(getForeground());
+        int iconInx = 0;
         
         if (txt1 != null)
         {
+            x += getIconTextGap();
+            g2d.setColor(getForeground());
             g.drawString(txt1, x, txtY);
             x += fm.stringWidth(txt1);
+            g2d.setColor(color);
         }
         
-        if (txt2 != null)
+        if (isContainer)
         {
-            g.drawString(DASH, x, txtY);
-            x += fm.stringWidth(DASH);
-            g.drawString(txt2, x, txtY);
-            x += fm.stringWidth(txt2);
-        }
-        
-        if (isSelected)
-        {
-            if (isViewMode)
+            //if (isSelected  && isEditable)
+            //{
+            //    x += drawIcon(g2d, x, imgY2, delImgIcon, iconInx++); // Delete the container
+            //}
+            
+            if (hasColObj)
             {
-                x += iconSep;
-                x += drawIcon(g2d, x, imgY2, viewImgIcon, 0);
+                if (img2 != null)
+                {
+                    x += 1;
+                    x += iconSep;
+                    g2d.drawImage(img2.getImage(), x, imgY2, null);
+                    x += img2.getIconWidth();
+                }
                 
-                if (isContainer && hasColObj)
+                if (txt2 != null)
+                {
+                    x += getIconTextGap();
+                    g2d.setColor(getForeground());
+                    g.drawString(txt2, x, txtY);
+                    x += fm.stringWidth(txt2);
+                    g2d.setColor(color);
+                }
+                
+                if (isSelected)
                 {
                     x += iconSep;
-                    x += drawIcon(g2d, x, imgY2, viewImgIcon, 1);
+                    x += drawIcon(g2d, x, imgY2, viewImgIcon, iconInx++);
+                    
+                    if (isEditable)
+                    {
+                        x += drawIcon(g2d, x, imgY2, delImgIcon, iconInx++);
+                    }
                 }
-                
-            } else if (isEditable && isContainer)
+            } else // No Col Obj
             {
-                ImageIcon imgIcn1 = null;
-                ImageIcon imgIcn2 = null;
-                
-                if (hasColObj)
-                {
-                    imgIcn1 = edtImgIcon;
-                    imgIcn2 = delImgIcon;
-                } else
-                {
-                    imgIcn1 = schImgIcon;
-                    imgIcn2 = addImgIcon;
-                }
-                
                 x += iconSep;
-                x += drawIcon(g2d, x, imgY2, imgIcn1, 0);
-                x += drawIcon(g2d, x, imgY2, imgIcn2, 1);
+                x += drawIcon(g2d, x, imgY2, schImgIcon, iconInx++);
+                x += drawIcon(g2d, x, imgY2, addImgIcon, iconInx++);
             }
-        }
 
+        } else if (isSelected)
+        {
+            x += iconSep;
+            x += drawIcon(g2d, x, imgY2, viewImgIcon, iconInx++); // View for Collection Object
+            
+            //if (!isViewMode)
+            //{
+            //    x += iconSep;
+            //    x += drawIcon(g2d, x, imgY2, delImgIcon, iconInx++); // Delete for Collection Object
+            //}
+        }
+        
         g2d.dispose();
     }
     

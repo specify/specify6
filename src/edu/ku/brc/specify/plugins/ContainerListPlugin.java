@@ -19,16 +19,26 @@
 */
 package edu.ku.brc.specify.plugins;
 
+import static edu.ku.brc.ui.UIRegistry.getViewbasedFactory;
+
 import java.util.Properties;
 
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.ui.db.ViewBasedSearchDialogIFace;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Container;
 import edu.ku.brc.specify.ui.containers.ContainerTreePanel;
 
@@ -42,6 +52,8 @@ import edu.ku.brc.specify.ui.containers.ContainerTreePanel;
  */
 public class ContainerListPlugin extends UIPluginBase implements ChangeListener
 {
+    private static final Logger log = Logger.getLogger(ContainerListPlugin.class);
+            
     protected ContainerTreePanel treePanel;
     
     /**
@@ -60,7 +72,7 @@ public class ContainerListPlugin extends UIPluginBase implements ChangeListener
     {
         super.initialize(propertiesArg, isViewModeArg);
         
-        treePanel = new ContainerTreePanel(this, isViewModeArg, null, null);
+        treePanel = new ContainerTreePanel(this, false, null, null);
         
         CellConstraints cc = new CellConstraints();
         PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g",  "f:p:g"), this);
@@ -78,7 +90,84 @@ public class ContainerListPlugin extends UIPluginBase implements ChangeListener
         
         if (value instanceof Container)
         {
-            treePanel.set((Container)value, null);
+            Container container = (Container)value;
+            if (container.getId() == null)
+            {
+                final Thread waitThread = new Thread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        System.out.println("Here1");
+                        try
+                        {
+                            Thread.sleep(500);
+                            System.out.println("Here2");
+                        } catch (InterruptedException e) {}
+                        System.out.println("Here3");
+                        SwingUtilities.invokeLater(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                chooseContainer();
+                            }
+                        });
+                    }
+                });
+                
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        waitThread.start();
+                    }
+                });
+                
+                
+            }
+        }
+    }
+    
+    /**
+     * 
+     */
+    private void chooseContainer()
+    {
+        ViewBasedSearchDialogIFace srchDlg = getViewbasedFactory().createSearchDialog(null, "ContainerSearch"); //$NON-NLS-1$
+        if (srchDlg != null)
+        {
+            srchDlg.setTitle(title);
+            srchDlg.getDialog().setVisible(true);
+            if (!srchDlg.isCancelled())
+            {
+                Container container = (Container)srchDlg.getSelectedObject();
+                if (container != null)
+                {
+                    DataProviderSessionIFace session = null;
+                    try
+                    {
+                        session = DataProviderFactory.getInstance().createSession();
+                        session.attach(container);
+                        treePanel.set(container, null);
+                        
+                    } catch (Exception ex)
+                    {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
+                        log.error(ex);
+                        
+                    } finally
+                    {
+                        if (session != null)
+                        {
+                            session.close();
+                        }
+                    }
+                    
+                }
+            }
         }
     }
 
@@ -97,9 +186,17 @@ public class ContainerListPlugin extends UIPluginBase implements ChangeListener
     @Override
     public void setParent(FormViewObj parent)
     {
-        if (parent != null && parent.getSaveComponent() != null)
+        super.setParent(parent);
+        
+        if (parent != null)
         {
-            parent.getSaveComponent().setVisible(false);
+            fvo.getRsController().getPanel().setVisible(false);
+            fvo.getMVParent().getSeparator().setVisible(false);
+            
+            if (parent.getSaveComponent() != null)
+            {
+                parent.getSaveComponent().setVisible(false);
+            }
         }
         treePanel.setFVO(parent);
     }

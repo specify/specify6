@@ -199,8 +199,9 @@ public class ContainersColObjPlugin extends UIPluginBase implements SessionListe
         Integer selectedId = qcbx.getTextWithQuery().getSelectedId();
         if (selectedId != null)
         {
-            final String clause = String.format(" FROM collectionobject WHERE CollectionObjectId = %d AND ContainerID IS NULL", selectedId);
+            final String clause = String.format(" FROM collectionobject WHERE CollectionObjectId = %d AND ContainerID IS NOT NULL", selectedId);
             String sql = "SELECT COUNT(*)" + clause;
+            System.err.println("ContainersColObjPlugin: "+sql+" -> "+BasicSQLUtils.getCountAsInt(sql));
             
             if (BasicSQLUtils.getCountAsInt(sql) > 0)
             {

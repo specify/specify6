@@ -160,7 +160,10 @@ public class ContainerTreePanel extends JPanel implements CommandListener
     protected ChangeListener          changeListener  = null;
     
     /**
-     * 
+     * @param changeListener
+     * @param isViewModeArg
+     * @param rootCon
+     * @param rootCO
      */
     public ContainerTreePanel(final ChangeListener changeListener,
                               final boolean isViewModeArg,
@@ -231,7 +234,7 @@ public class ContainerTreePanel extends JPanel implements CommandListener
         PanelBuilder rpb = null;
         if (!isViewMode)
         {
-            rpb = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p,2px,p,10px,p, f:p:g,p,2px,p,10px,p"));
+            rpb = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p,2px,p,10px,p, 20px,p,2px,p,10px,p,f:p:g"));
     
             PanelBuilder cnCOLblPB = new PanelBuilder(new FormLayout("p,1px,p", "p"));
             cnCOLblPB.add(containerAssocIcon, cc.xy(1,1));
@@ -251,18 +254,17 @@ public class ContainerTreePanel extends JPanel implements CommandListener
         }
         
         // Main Layout
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,8px,l:p", "f:p:g,10px,p,2px,p"), this);
+        PanelBuilder pb = new PanelBuilder(new FormLayout("l:p,8px,f:p:g", "f:p:g,10px,p,2px,p"), this);
         
-        pb.add(scrollPane,       cc.xy(1,1));
         if (rpb != null)
         {
-            pb.add(rpb.getPanel(),   cc.xy(3,1)); 
+            pb.add(rpb.getPanel(), cc.xy(1,1)); 
         }
+        pb.add(scrollPane, cc.xy(3,1));
         
-        pb.addSeparator("Container", cc.xyw(1,3,3));
-        pb.add(containerPanel,       cc.xyw(1,5,3));
-        
-        pb.setDefaultDialogBorder();
+        //pb.addSeparator("Container", cc.xyw(1,3,3));
+        //pb.add(containerPanel,       cc.xyw(1,5,3));
+        //pb.setDefaultDialogBorder();
         
         tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener()
         {
@@ -386,44 +388,46 @@ public class ContainerTreePanel extends JPanel implements CommandListener
                     if (node.getUserObject() instanceof Container)
                     {
                         Container cn = (Container)node.getUserObject();
-                        
-                        if (cn == null)
+                        if (cn != null)
                         {
-                            if (!isViewMode)
+                            if (!isViewMode) // Edit Mode
                             {
-                                if (i == 0)
+                                if (cn.getCollectionObject() != null)
                                 {
-                                    addColObjToContainer(true, true);
+                                    if (i == 0)
+                                    {
+                                        viewColObj();
+                                    } else
+                                    {
+                                        delColObj();
+                                    }
                                 } else
                                 {
-                                    addColObjToContainer(false, true);
-                                }  
+                                    if (i == 0)
+                                    {
+                                        addColObjToContainer(true, true);
+                                    } else
+                                    {
+                                        addColObjToContainer(false, true);
+                                    }
+                                }
+                            }
+                        }
+                    } else if (node.getUserObject() instanceof CollectionObject)
+                    {
+                        if (isViewMode)
+                        {
+                            if (i == 0)
+                            {
+                                viewColObj();
                             }
                         } else
                         {
                             if (i == 0)
                             {
-                                if (isViewMode)
-                                {
-                                    viewContainer();
-                                    
-                                } else 
-                                {
-                                    editContainer();
-                                }
-                                
-                            } else if (isViewMode)
-                            {
-                                viewColObj();
-                                
-                            } else 
-                            {
-                                delColObj();
-                            }                        
+                                editColObj();
+                            }
                         }
-                    } else if (node.getUserObject() instanceof CollectionObject && i == 0)
-                    {
-                        viewColObj();
                     }
                 }
                 break;
@@ -468,9 +472,8 @@ public class ContainerTreePanel extends JPanel implements CommandListener
     }
     
     /**
-     * @param stack
      * @param containerId
-     * @throws SQLException
+     * @return
      */
     private Integer getTopMostParentId(final Integer containerId)
     {
@@ -513,22 +516,6 @@ public class ContainerTreePanel extends JPanel implements CommandListener
             }
         }
         return null;
-    }
-    
-    /**
-     * @return a simple JTree to display the parent hierarchy.
-     */
-    private JTree createTreeParent()
-    {
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode(" ");
-        JTree pTree = new JTree(new DefaultTreeModel(root));
-        pTree.setRowHeight(ROW_HEIGHT);
-        pTree.setBackground(bgColor);
-        pTree.setEditable(false);
-        pTree.setVisibleRowCount(15);
-        pTree.setCellRenderer(new ContainerTreeRenderer(null, false, false));
-        registerPrintContextMenu(pTree);
-        return pTree;
     }
     
     /**
