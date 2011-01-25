@@ -74,12 +74,10 @@ import java.io.Reader;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -146,6 +144,8 @@ import javax.swing.table.TableModel;
 import javax.swing.text.MaskFormatter;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.validator.routines.BigDecimalValidator;
+import org.apache.commons.validator.routines.DoubleValidator;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
@@ -199,6 +199,9 @@ public final class UIHelper
     protected static OSTYPE         oSType;
     protected static boolean        isMacOS_10_5_X   = false;
     protected static BasicStroke    stdLineStroke    = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    
+    protected static DoubleValidator     doubleValidator = new DoubleValidator();
+    protected static BigDecimalValidator bigDecValidator = new BigDecimalValidator();
     
     protected static Hashtable<CommandType, KeyStroke> cmdTypeKSHash = new Hashtable<CommandType, KeyStroke>();
 
@@ -3853,58 +3856,16 @@ public final class UIHelper
      */
     public static Double parseDouble(final String value)
     {
-        NumberFormat numberFormatter = NumberFormat.getNumberInstance(Locale.getDefault());
-        try
-        {
-            return numberFormatter.parse(value).doubleValue();
-        } catch (ParseException e){}
-        return null;
+        return doubleValidator.validate(value, Locale.getDefault());
     }
-    
-//    /**
-//     * @param value
-//     * @return
-//     */
-//    public static BigDecimal parseDoubleToBigDecimal(final String value)
-//    {
-//        Double dbl = parseDouble(value);
-//        return dbl != null ? new BigDecimal(dbl) : null;
-//    }
     
     /**
      * @param value: a decimal format number (exponential or other formats not supported)
      * @return
      */
     public static BigDecimal parseDoubleToBigDecimal(final String value)
-    {    	
-    	Double dbl = parseDouble(value);
-    	if (dbl == null)
-    	{
-    		return null;
-    	}
-
-    	int prec = 0;
-    	for (int c = 0; c < value.length(); c++)
-    	{
-    		char d = value.charAt(c);
-    		//presumably there is no need to worry about unicode issues for 0-9
-    		if (d >= '0' && d <= '9')
-    		{
-    			prec++;
-    		}
-    	}
-    	MathContext mc = new MathContext(prec);    	
-        return new BigDecimal(dbl, mc);
-        
-        //if BigDecimal(String) constructor ALWAYS EVERYWHERE uses english separators...
-//        DecimalFormatSymbols dfLocal = DecimalFormatSymbols.getInstance();
-//        String valueEN = value.replaceAll("\\" + dfLocal.getGroupingSeparator(), "");
-//        valueEN = valueEN.replace(dfLocal.getDecimalSeparator(), '.');
-//        valueEN = valueEN.replace(dfLocal.getMinusSign(), '-');
-//        return new BigDecimal(valueEN);
-        
-        
-        
+    {
+        return bigDecValidator.validate(value, Locale.getDefault());
     }
 
     /**
@@ -3923,4 +3884,6 @@ public final class UIHelper
         }
         return true;
     }
+    
+    
 }
