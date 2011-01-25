@@ -244,6 +244,7 @@ public class UploadTable implements Comparable<UploadTable>
     
     protected boolean                                   isSecurityOn; //Storing this here since checking security now requires db access.
     
+    protected GeoRefConverter                           geoRefConverter              = new GeoRefConverter();
     
     /**
      * @author timbo
@@ -1253,7 +1254,7 @@ public class UploadTable implements Comparable<UploadTable>
                     	{
                     		try
                     		{
-                    			fldStr = new GeoRefConverter().convert(StringUtils.stripToNull(fldStr), GeoRefFormat.D_PLUS_MINUS.name());
+                    			fldStr = geoRefConverter.convert(StringUtils.stripToNull(fldStr), GeoRefFormat.D_PLUS_MINUS.name());
                     		}
                     		catch (Exception ex)
                     		{
@@ -2894,7 +2895,7 @@ public class UploadTable implements Comparable<UploadTable>
         //for Locality table only
         LatLonConverter.FORMAT llFmt1 = null; 
         LatLonConverter.FORMAT llFmt2 = null;
-        GeoRefConverter gc = new GeoRefConverter();
+        //GeoRefConverter gc = new GeoRefConverter();
         UploadField llFld = null; //for 'generic' latlon errors.
         
         Vector<UploadTableInvalidValue> invalidNulls = new Vector<UploadTableInvalidValue>();
@@ -2949,7 +2950,7 @@ public class UploadTable implements Comparable<UploadTable>
                             || fldName.equalsIgnoreCase("longitude1") || fldName.equalsIgnoreCase("longitude2"))
                     {
                         llFld = fld;
-                    	LatLonConverter.FORMAT fmt = gc.getLatLonFormat(StringUtils.stripToNull(fld.getValue()));
+                    	LatLonConverter.FORMAT fmt = geoRefConverter.getLatLonFormat(StringUtils.stripToNull(fld.getValue()));
                         LatLonConverter.FORMAT llFmt = fldName.endsWith("1") ? llFmt1 : llFmt2;
                         if (llFmt == null)
                         {
