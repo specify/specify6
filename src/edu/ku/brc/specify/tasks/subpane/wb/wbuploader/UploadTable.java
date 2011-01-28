@@ -3210,10 +3210,10 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected void loadFromDataSet(int wbRow) throws UploaderException
     {
-    	if (wbRow != wbCurrentRow)
+    	if (wbRow == 0 || wbRow != wbCurrentRow)
     	{
     		readFromDataSet(wbRow, false);
-    		writeRowOrNot(wbCurrentRow < wbRow, wbCurrentRow < wbRow);
+    		writeRowOrNot(wbRow == 0 || wbCurrentRow < wbRow, wbRow == 0 || wbCurrentRow < wbRow);
     		readFromDataSet(wbCurrentRow, true);
     	}
     }
