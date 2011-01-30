@@ -856,8 +856,8 @@ public class LocalityDetail extends DataModelObjBase
             ((number2 == null && o.number2 == null) || ((number2 != null && o.number2 != null) && number2.equals(o.number2))) &&
             ((yesNo1 == null && o.yesNo1 == null) || ((yesNo1 != null && o.yesNo1 != null) && yesNo1.equals(o.yesNo1))) &&
             ((yesNo2 == null && o.yesNo2 == null) || ((yesNo2 != null && o.yesNo2 != null) && yesNo2.equals(o.yesNo2))) &&
-            ((utmEasting == null && o.utmEasting == null) || ((utmEasting != null && o.utmEasting != null) && utmEasting.toString().equals(o.utmEasting.toString()))) &&
-            ((utmNorthing == null && o.utmNorthing == null) || ((utmNorthing != null && o.utmNorthing != null) && utmNorthing.toString().equals(o.utmNorthing.toString()))) &&
+            ((utmEasting == null && o.utmEasting == null) || ((utmEasting != null && o.utmEasting != null) && String.format("%020.10f", utmEasting).equals(String.format("%020.10f", o.utmEasting)))) &&
+            ((utmNorthing == null && o.utmNorthing == null) || ((utmNorthing != null && o.utmNorthing != null) && String.format("%020.10f", utmNorthing).equals(String.format("%020.10f", o.utmNorthing)))) &&
             ((utmFalseEasting == null && o.utmFalseEasting == null) || ((utmFalseEasting != null && o.utmFalseEasting != null) && utmFalseEasting.equals(o.utmFalseEasting))) &&
             ((utmFalseNorthing == null && o.utmFalseNorthing == null) || ((utmFalseNorthing != null && o.utmFalseNorthing != null) && utmFalseNorthing.equals(o.utmFalseNorthing))) &&
             ((utmZone == null && o.utmZone == null) || ((utmZone != null && o.utmZone != null) && utmZone.equals(o.utmZone))) &&
