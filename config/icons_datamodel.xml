@@ -74,6 +74,11 @@
     <icon name="storage"              file="storage.png" sizes="all"/>
     <icon name="taxon"                file="taxon.png" sizes="all"/>
     <icon name="treatmentevent"       file="treatment_event.png" sizes="all"/>
+
+    <!--  Attribute Icons -->
+    <icon name="CollectionObjectAttribute"      file="collection_object_attr.png" sizes="NonStd"/>
+    <icon name="CollectingEventAttribute"       file="collecting_event_attr.png" sizes="NonStd"/>
+    <icon name="PreparationAttribute"           file="preparation_attr.png" sizes="NonStd"/>
     
     <!--  Attachment Icons -->
     <icon name="AccessionAttachment"             file="accession_attachment.png" sizes="NonStd"/>
@@ -167,19 +172,19 @@
     <icon name="LocalityCitation"       alias="citation"/>
     <icon name="TaxonCitation"          alias="citation"/>
     
-    <icon name="collectingeventattribute"  alias="attribute"/>
-    <icon name="collectingeventattr"       alias="attribute"/>
-    <icon name="preparationattribute"      alias="attribute"/>
-    <icon name="preparationattr"           alias="attribute"/>
-  	<icon name="collectionobjectattribute" alias="attribute"/>
-  	<icon name="collectionobjectattr"      alias="attribute"/>
+    <icon name="collectingeventattribute"  alias="CollectingEventAttribute"/>
+    <icon name="collectingeventattr"       alias="CollectingEventAttribute"/>
+    <icon name="preparationattribute"      alias="PreparationAttribute"/>
+    <icon name="preparationattr"           alias="PreparationAttribute"/>
+  	<icon name="collectionobjectattribute" alias="CollectionObjectAttribute"/>
+  	<icon name="collectionobjectattr"      alias="CollectionObjectAttribute"/>
     
-    <icon name="CollectingEventAttribute"  alias="attribute"/>
-    <icon name="CollectingEventAttr"       alias="attribute"/>
-    <icon name="PreparationAttribute"      alias="attribute"/>
-    <icon name="PreparationAttr"           alias="attribute"/>
-  	<icon name="CollectionObjectAttribute" alias="attribute"/>
-  	<icon name="CollectionObjectAttr"      alias="attribute"/>
+    <icon name="CollectingEventAttribute"  alias="CollectingEventAttribute"/>
+    <icon name="CollectingEventAttr"       alias="CollectingEventAttribute"/>
+    <icon name="PreparationAttribute"      alias="PreparationAttribute"/>
+    <icon name="PreparationAttr"           alias="PreparationAttribute"/>
+  	<icon name="CollectionObjectAttribute" alias="CollectionObjectAttribute"/>
+  	<icon name="CollectionObjectAttr"      alias="CollectionObjectAttribute"/>
     
     
     <icon name="Accession Agent"        alias="accessionagent"/>

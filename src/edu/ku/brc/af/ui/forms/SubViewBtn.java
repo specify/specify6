@@ -66,7 +66,9 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.IconEntry;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
@@ -158,13 +160,14 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             if (tableInfo != null)
             {
                 baseLabel = tableInfo.getTitle();
-                if (StringUtils.isNotEmpty(iconName))
+                
+                String    icNam = StringUtils.isNotEmpty(iconName) ? iconName : tableInfo.getName();
+                IconEntry entry = IconManager.getIconEntryByName(icNam);
+                if (entry != null)
                 {
-                    icon = IconManager.getIcon(iconName, IconManager.IconSize.NonStd);
-                } else
-                {
-                    icon = IconManager.getIcon(tableInfo.getName(), IconManager.IconSize.Std24);   
+                    icon = IconManager.getIcon(icNam, entry.getSize() == IconSize.NonStd ? IconSize.NonStd : IconSize.Std24);
                 }
+                
                 if (frameTitle == null)
                 {
                     frameTitle = baseLabel;
