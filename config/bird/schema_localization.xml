@@ -1,25 +1,8 @@
 <vector>
-  <container name="collectingevent" type="" isHidden="false">
+  <container name="collectingevent" isHidden="false">
     <version>0</version>
     <isSystem>false</isSystem>
     <items>
-      <desc name="method" type="java.lang.String" isHidden="false" isUIFormatter="false" pickListName="Method" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Method</text>
-          </str>
-        </names>
-        <descs>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>A method, such as net or trap, which is used to obtain the specimen.</text>
-          </str>
-        </descs>
-        <spExportSchemaItems/>
-      </desc>
       <desc name="stationFieldNumber" type="java.lang.String" isHidden="false" isRequired="false">
         <version>0</version>
         <isSystem>false</isSystem>
@@ -37,11 +20,132 @@
         </descs>
         <spExportSchemaItems/>
       </desc>
+      <desc name="method" type="java.lang.String" isHidden="false" isUIFormatter="false" pickListName="Method" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>Method</text>
+          </str>
+        </names>
+        <descs>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>A method, such as net or trap, which is used to obtain the specimen.</text>
+          </str>
+        </descs>
+        <spExportSchemaItems/>
+      </desc>
     </items>
     <names/>
     <descs/>
   </container>
-  <container name="determination" type="" isHidden="false">
+  <container name="collectionobjectattribute" isHidden="false">
+    <version>0</version>
+    <isSystem>false</isSystem>
+    <items>
+      <desc name="text7" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Molt</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text8" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Weight</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text5" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Stomach</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text1" isHidden="false" isUIFormatter="false" pickListName="Age" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Age</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text4" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Body</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text6" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Gonads</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text2" isHidden="false" isUIFormatter="false" pickListName="BiologicalSex" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Sex</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </desc>
+      <desc name="text3" isHidden="false" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>ReproCondition</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </desc>
+    </items>
+    <names/>
+    <descs/>
+  </container>
+  <container name="determination" isHidden="false">
     <version>0</version>
     <isSystem>false</isSystem>
     <items>
@@ -60,110 +164,6 @@
             <text>A pick list of all available type designations; Holotype, Paratype, Neotype. Specify ships with predetermined values which are editable for users.</text>
           </str>
         </descs>
-        <spExportSchemaItems/>
-      </desc>
-    </items>
-    <names/>
-    <descs/>
-  </container>
-  <container name="collectionobjectattribute" isHidden="false">
-    <version>0</version>
-    <isSystem>false</isSystem>
-    <items>
-      <desc name="text3" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>ReproCondition</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text2" isHidden="false" isUIFormatter="false" pickListName="BiologicalSex" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Sex</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text4" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Body</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text5" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Stomach</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text6" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Gonads</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text7" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Molt</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text1" isHidden="false" isUIFormatter="false" pickListName="Age" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Age</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </desc>
-      <desc name="text8" isHidden="false" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Weight</text>
-          </str>
-        </names>
-        <descs/>
         <spExportSchemaItems/>
       </desc>
     </items>
