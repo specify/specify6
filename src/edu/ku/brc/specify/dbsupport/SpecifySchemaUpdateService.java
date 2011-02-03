@@ -111,7 +111,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 16;
+    private final int OVERALL_TOTAL = 17;
     
     private static final String APP          = "App";
     private static final String APP_REQ_EXIT = "AppReqExit";
@@ -480,6 +480,27 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             return((Number )rows.get(0)[0]).intValue();
         }
     }
+    
+    /**
+     * @param conn
+     * @param databaseName
+     * @param tableName
+     * @param fieldName
+     * @return length of field or null if field does not exist.
+     */
+    private String getFieldColumnType(final Connection conn, final String databaseName, final String tableName, final String fieldName)
+    {
+        //XXX portability. This is MySQL -specific.
+        Vector<Object[]> rows = BasicSQLUtils.query(conn, "SELECT COLUMN_TYPE FROM `information_schema`.`COLUMNS` where TABLE_SCHEMA = '" +
+                databaseName + "' and TABLE_NAME = '" + tableName + "' and COLUMN_NAME = '" + fieldName + "'");                    
+        if (rows.size() == 0)
+        {
+            return null; //the field doesn't even exits
+        } else 
+        {
+            return rows.get(0)[0].toString();
+        }
+    }
     /**
      * @param dbdriverInfo
      * @param hostname
@@ -801,6 +822,28 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //System.setProperty("AddSchemaTablesFields", "TRUE");
                     
                     //fixLocaleSchema();
+                    
+                    //for schema 1.6
+                    
+                    //change column types for UTMEasting and UTMNorthing
+                    String columnType = getFieldColumnType(conn, databaseName, "localitydetail", "UTMEasting");
+                    if (columnType == null)
+                    {
+                        errMsgList.add("Column type couldn't be determined for update to table: localitydetail");
+                        return false;
+                    }
+                    if (!columnType.trim().equalsIgnoreCase("decimal(20,10)"))
+                    {
+                        count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM localitydetail");
+                        rv = BasicSQLUtils.update(conn, "ALTER TABLE localitydetail CHANGE COLUMN `UtmEasting` `UtmEasting` DECIMAL(20,10) NULL DEFAULT NULL  , CHANGE COLUMN `UtmNorthing` `UtmNorthing` DECIMAL(20,10) NULL DEFAULT NULL");
+                        if (rv != count)
+                        {
+                            errMsgList.add("Update count didn't match for update to table: localitydetail");
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+                    
                     
                     return true;
                     

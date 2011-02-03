@@ -83,8 +83,8 @@ public class LocalityDetail extends DataModelObjBase
 
     
     // UTM Fields
-    protected Float                 utmEasting;
-    protected Float                 utmNorthing;
+    protected BigDecimal            utmEasting;
+    protected BigDecimal            utmNorthing;
     protected Integer               utmFalseEasting;
     protected Integer               utmFalseNorthing;
     protected String                utmDatum;
@@ -570,7 +570,7 @@ public class LocalityDetail extends DataModelObjBase
      * @return the utmEasting
      */
     @Column(name = "UtmEasting", unique = false, nullable = true, updatable = true, insertable = true)
-    public Float getUtmEasting()
+    public BigDecimal getUtmEasting()
     {
         return utmEasting;
     }
@@ -578,7 +578,7 @@ public class LocalityDetail extends DataModelObjBase
     /**
      * @param utmEasting the utmEasting to set
      */
-    public void setUtmEasting(Float utmEasting)
+    public void setUtmEasting(BigDecimal utmEasting)
     {
         this.utmEasting = utmEasting;
     }
@@ -587,7 +587,7 @@ public class LocalityDetail extends DataModelObjBase
      * @return the utmNorthing
      */
     @Column(name = "UtmNorthing", unique = false, nullable = true, updatable = true, insertable = true)
-    public Float getUtmNorthing()
+    public BigDecimal getUtmNorthing()
     {
         return utmNorthing;
     }
@@ -595,7 +595,7 @@ public class LocalityDetail extends DataModelObjBase
     /**
      * @param utmNorthing the utmNorthing to set
      */
-    public void setUtmNorthing(Float utmNorthing)
+    public void setUtmNorthing(BigDecimal utmNorthing)
     {
         this.utmNorthing = utmNorthing;
     }
