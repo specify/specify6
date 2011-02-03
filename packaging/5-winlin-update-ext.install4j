@@ -71,6 +71,7 @@
           <entry location="libs/commons-validator.jar" fileType="regular" />
           <entry location="libs/itext.jar" fileType="regular" />
           <entry location="SpecifyBigSplash.png" fileType="regular" />
+          <entry location="wwlib_64" fileType="regular" />
         </exclude>
       </dirEntry>
     </entries>

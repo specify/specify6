@@ -28,6 +28,7 @@
         <exclude>
           <entry location="embedded_libs" fileType="regular" />
           <entry location="SpecifyBigSplash.png" fileType="regular" />
+          <entry location="wwlib_64" fileType="regular" />
         </exclude>
       </dirEntry>
     </entries>

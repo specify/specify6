@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #Globals
 current_path=`pwd`
@@ -299,22 +299,29 @@ if [ "$skip" = "0" ] ; then
 	if [ "$is_int" -ge "1" ] ; then
 		if [ "$4" = "p" ] ; then
 			list_loc="int-plain"
+			list_loc_64="int-plain-64"
 		elif [ "$4" = "e" ] ; then
 			list_loc="int-embed"
+			list_loc_64="int-embed-64"
 		else
 			list_loc="int-embed"
+			list_loc_64="int-embed-64"
 		fi
 	else
 		if [ "$4" = "p" ] ; then
 			list_loc="ext-plain"
+			list_loc_64="ext-plain-64"
 		elif [ "$4" = "e" ] ; then
 			list_loc="ext-embed"
+			list_loc_64="ext-embed-64"
 		else
 			list_loc="int-embed"
+			list_loc_64="ext-embed-64"
 		fi
 	fi
 	
 	./replace_install4j_update_path_2.sh -g ./i4jlists/${list_loc} $update_location ${projloc}
+	[[ "$is64" = "1" ]] && ./replace_install4j_update_path_2.sh -g ./i4jlists/${list_loc_64} $update_location ${projloc}
 	./replace_resources_update_path.sh $update_location ${projloc}/../src/resources_en.properties
 	./replace_resources_update_path.sh $update_location ${projloc}/../src/resources_pt.properties
 	#the new version number property placeholder NOTE version already is set to var: ${version}
@@ -328,6 +335,18 @@ if [ "$skip" = "0" ] ; then
 	ssh ${username}@${macip} ./replace_resources_update_path.sh $update_location ${projlocMac}/../src/resources_pt.properties
 	ssh ${username}@${macip} rm -r ./replace_install4j_update_path_2.sh ./replace_resources_update_path.sh ./i4jlists ${projlocMac}/file.tar
 	rm file.tar
+
+	#COPY IN LOG4J PROPERTIES FILES
+	if [ "$log4j_switch" = "1" ] ; then
+		cp cache/log4j.properties.release ${projloc}/../src/log4j.properties
+		tar -cvf tmp.tar cache/log4j.properties.release
+		scp tmp.tar ${username}@${macip}:.
+		ssh ${username}@${macip} tar -xvf tmp.tar
+		ssh ${username}@${macip} mv cache/log4j.properties.release ${projlocMac}/../src/log4j.properties
+		ssh ${username}@${macip} rm tmp.tar
+		ssh ${username}@${macip} rm -r cache
+		rm tmp.tar
+	fi
 
 	#ANT
 	ant -f ${projloc}/../build.xml installer-linux
@@ -374,7 +393,7 @@ n=`expr $n + 1`
 
 	#64bit prep
 	if [ "$is64" = "1" ] ; then
-		ID_WINLIN="${ID_LINUX},${ID_WINDOWS},${ID_WINDOWS_64}"
+		ID_WINLIN="${ID_LINUX},${ID_WINDOWS}"
 	else
 		ID_WINLIN="${ID_LINUX},${ID_WINDOWS}"
 	fi
@@ -383,21 +402,23 @@ n=`expr $n + 1`
 	$i4jlocal/install4jc --release="${version}" --destination="${webloc}" --build-ids=${ID_WINLIN} "${projloc}/${winlinbase}-update${Pappend1}.install4j"
 	mv ${webloc}/updates.xml ${webloc}/updates.xml.winlinupdate
 	if [ "$is64" = "1" ] ; then
+		$i4jlocal/install4jc --release="${version}" --destination="${webloc}" --build-ids=${ID_WINDOWS_64} "${projloc}/${winlinbase}-update${Pappend1}-64.install4j"
 		temp=`ls ${webloc} | grep exe | awk '{ ORS="|"; print; }' | cut -d'|' -f1 | cut -d'.' -f1`
 		temp2=`ls ${webloc} | grep exe | awk '{ ORS="|"; print; }' | cut -d'|' -f2`
 		mv ${webloc}/$temp2 ${webloc}/${temp}_64.exe
-		sed -e "/64/s/fileName=\"[^\"]*\"/fileName=\"${temp}_64.exe\"/" ${webloc}/updates.xml.winlinupdate > updates.tmp
-		mv updates.tmp ${webloc}/updates.xml.winlinupdate
+		sed -e "/64/s/fileName=\"[^\"]*\"/fileName=\"${temp}_64.exe\"/" ${webloc}/updates.xml > updates.tmp
+		mv updates.tmp ${webloc}/updates.xml.winlinupdate64
 	fi
 
 	$i4jlocal/install4jc --release="${version}" --destination="${webloc}" --build-ids=${ID_WINLIN} "${projloc}/${winlinbase}-full${Pappend1}.install4j"
 	mv ${webloc}/updates.xml ${webloc}/updates.xml.winlinfull
 	if [ "$is64" = "1" ] ; then
+		$i4jlocal/install4jc --release="${version}" --destination="${webloc}" --build-ids=${ID_WINDOWS_64} "${projloc}/${winlinbase}-full${Pappend1}-64.install4j"
 		temp=`ls ${webloc} | grep exe | awk '{ ORS="|"; print; }' | cut -d'|' -f1 | cut -d'.' -f1`
 		temp2=`ls ${webloc} | grep exe | awk '{ ORS="|"; print; }' | cut -d'|' -f4`
 		mv ${webloc}/$temp2 ${webloc}/${temp}_64.exe
-		sed -e "/64/s/fileName=\"[^\"]*\"/fileName=\"${temp}_64.exe\"/" ${webloc}/updates.xml.winlinfull > updates.tmp
-		mv updates.tmp ${webloc}/updates.xml.winlinfull
+		sed -e "/64/s/fileName=\"[^\"]*\"/fileName=\"${temp}_64.exe\"/" ${webloc}/updates.xml > updates.tmp
+		mv updates.tmp ${webloc}/updates.xml.winlinfull64
 	fi
 
 	#Building mac projects

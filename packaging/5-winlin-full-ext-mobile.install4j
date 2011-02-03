@@ -24,6 +24,7 @@
       <dirEntry mountPoint="18" file="../InstallerFiles" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="true" overrideOverwriteMode="true" overrideUninstallMode="true" entryMode="direct" subDirectory="" excludeSuffixes=".DS_Store, .svn" dirMode="755" overrideDirMode="true">
         <exclude>
           <entry location="SpecifyBigSplash.png" fileType="regular" />
+          <entry location="wwlib_64" fileType="regular" />
         </exclude>
       </dirEntry>
     </entries>

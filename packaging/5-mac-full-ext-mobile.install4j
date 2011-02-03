@@ -25,6 +25,7 @@
         <exclude>
           <entry location="non-mac-application-adapter.jar" fileType="regular" />
           <entry location="SpecifyBigSplash.png" fileType="regular" />
+          <entry location="wwlib_64" fileType="regular" />
         </exclude>
       </dirEntry>
     </entries>

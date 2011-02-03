@@ -68,6 +68,7 @@
           <entry location="libs/xpp3_minO.jar" fileType="regular" />
           <entry location="libs/xstream.jar" fileType="regular" />
           <entry location="non-mac-application-adapter.jar" fileType="regular" />
+          <entry location="wwlib_64" fileType="regular" />
         </exclude>
       </dirEntry>
     </entries>

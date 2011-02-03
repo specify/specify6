@@ -227,7 +227,12 @@
 			<fileset dir="wwlib">
 				<exclude name="**/*.svn" />
 			</fileset>
-		</copy>	
+		</copy>
+        <copy todir="${installer.dir}/wwlib_64">
+			<fileset dir="wwlib_64">
+				<exclude name="**/*.svn" />
+			</fileset>
+		</copy>
         <copy todir="${installer.dir}/embedded_libs">
 			<fileset dir="embedded_libs">
 				<exclude name="**/*.svn" />

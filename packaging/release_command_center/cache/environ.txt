@@ -23,3 +23,4 @@ specify6-prod.nhm.ku.edu/spinternal/trunk/updates.xml|the update address of the 
 specify6-prod.nhm.ku.edu/spinternal/trunk/updates-embed.xml|the update address of the embedded internal Trunk release|addr_e_tr
 specify6-prod.nhm.ku.edu/spinternal/branch/updates.xml|the update address of the plain internal Branch release|addr_p_br
 specify6-prod.nhm.ku.edu/spinternal/branch/updates-embed.xml|the update address of the embedded internal Branch release|addr_e_br
+1|the on-off switch for copying in the log4j property file into the source before the ant build|log4j_switch
