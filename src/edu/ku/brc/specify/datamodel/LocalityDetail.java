@@ -91,7 +91,7 @@ public class LocalityDetail extends DataModelObjBase
     protected Short                 utmZone;
     protected BigDecimal            utmOrigLatitude;
     protected BigDecimal            utmOrigLongitude;
-    protected Float                 utmScale;
+    protected BigDecimal            utmScale;
     protected String                mgrsZone;            // GZD only, precision level 6 x 8 (in most cases)
     
      
@@ -706,7 +706,7 @@ public class LocalityDetail extends DataModelObjBase
      * @return the utmScale
      */
     @Column(name = "UtmScale", unique = false, nullable = true, updatable = true, insertable = true)
-    public Float getUtmScale()
+    public BigDecimal getUtmScale()
     {
         return utmScale;
     }
@@ -714,7 +714,7 @@ public class LocalityDetail extends DataModelObjBase
     /**
      * @param utmScale the utmScale to set
      */
-    public void setUtmScale(Float utmScale)
+    public void setUtmScale(BigDecimal utmScale)
     {
         this.utmScale = utmScale;
     }
@@ -848,7 +848,7 @@ public class LocalityDetail extends DataModelObjBase
                     && drainage.equals(o.drainage))) &&
             ((utmDatum == null && o.utmDatum == null) || ((utmDatum != null && o.utmDatum != null)
                     && utmDatum.equals(o.utmDatum))) &&
-            ((utmScale == null && o.utmScale == null) || ((utmScale != null && o.utmScale != null) && utmScale.equals(o.utmScale))) &&
+            ((utmScale == null && o.utmScale == null) || ((utmScale != null && o.utmScale != null) && utmScale.compareTo(o.utmScale) == 0)) &&
             ((hucCode == null && o.hucCode == null) || ((hucCode != null && o.hucCode != null) && hucCode.equals(o.hucCode))) &&
             ((text1 == null && o.text1 == null) || ((text1 != null && o.text1 != null) && text1.equals(o.text1))) &&
             ((text2 == null && o.text2 == null) || ((text2 != null && o.text2 != null) && text2.equals(o.text2))) &&
@@ -856,15 +856,14 @@ public class LocalityDetail extends DataModelObjBase
             ((number2 == null && o.number2 == null) || ((number2 != null && o.number2 != null) && number2.equals(o.number2))) &&
             ((yesNo1 == null && o.yesNo1 == null) || ((yesNo1 != null && o.yesNo1 != null) && yesNo1.equals(o.yesNo1))) &&
             ((yesNo2 == null && o.yesNo2 == null) || ((yesNo2 != null && o.yesNo2 != null) && yesNo2.equals(o.yesNo2))) &&
-            ((utmEasting == null && o.utmEasting == null) || ((utmEasting != null && o.utmEasting != null) && String.format("%020.10f", utmEasting).equals(String.format("%020.10f", o.utmEasting)))) &&
-            ((utmNorthing == null && o.utmNorthing == null) || ((utmNorthing != null && o.utmNorthing != null) && String.format("%020.10f", utmNorthing).equals(String.format("%020.10f", o.utmNorthing)))) &&
+            ((utmEasting == null && o.utmEasting == null) || ((utmEasting != null && o.utmEasting != null) && utmEasting.compareTo(o.utmEasting) == 0)) &&
+            ((utmNorthing == null && o.utmNorthing == null) || ((utmNorthing != null && o.utmNorthing != null) && utmNorthing.compareTo(o.utmNorthing) == 0)) &&
             ((utmFalseEasting == null && o.utmFalseEasting == null) || ((utmFalseEasting != null && o.utmFalseEasting != null) && utmFalseEasting.equals(o.utmFalseEasting))) &&
             ((utmFalseNorthing == null && o.utmFalseNorthing == null) || ((utmFalseNorthing != null && o.utmFalseNorthing != null) && utmFalseNorthing.equals(o.utmFalseNorthing))) &&
             ((utmZone == null && o.utmZone == null) || ((utmZone != null && o.utmZone != null) && utmZone.equals(o.utmZone))) &&
-            ((utmOrigLatitude == null && o.utmOrigLatitude == null) || ((utmOrigLatitude != null && o.utmOrigLatitude != null) && utmOrigLatitude.equals(o.utmOrigLatitude))) &&
-            ((utmOrigLongitude == null && o.utmOrigLongitude == null) || ((utmOrigLongitude != null && o.utmOrigLongitude != null) && utmOrigLongitude.equals(o.utmOrigLongitude))) &&
+            ((utmOrigLatitude == null && o.utmOrigLatitude == null) || ((utmOrigLatitude != null && o.utmOrigLatitude != null) && utmOrigLatitude.compareTo(o.utmOrigLatitude) == 0)) &&
+            ((utmOrigLongitude == null && o.utmOrigLongitude == null) || ((utmOrigLongitude != null && o.utmOrigLongitude != null) && utmOrigLongitude.compareTo(o.utmOrigLongitude) == 0)) &&
             ((waterBody == null && o.waterBody == null) || ((waterBody != null && o.waterBody != null) && waterBody.equals(o.waterBody)));
     }
-    
     
 }

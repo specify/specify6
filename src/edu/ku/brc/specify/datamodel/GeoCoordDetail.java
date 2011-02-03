@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.datamodel;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 
 import javax.persistence.Column;
@@ -48,7 +49,7 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
 {
     // Manis Fields
     protected Integer               geoCoordDetailId;
-    protected Float                 namedPlaceExtent;
+    protected BigDecimal            namedPlaceExtent;
     protected String                geoRefAccuracyUnits;
     protected String                geoRefDetRef;
     protected Calendar              geoRefDetDate;
@@ -58,7 +59,7 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     protected String                geoRefVerificationStatus; 
     
     // New Fields
-    protected Float                 maxUncertaintyEst; 
+    protected BigDecimal            maxUncertaintyEst; 
     protected String                maxUncertaintyEstUnit; 
     protected String                originalCoordSystem; 
     protected String                validation; 
@@ -127,7 +128,7 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
      * @return the namedPlaceExtent
      */
     @Column(name = "NamedPlaceExtent", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getNamedPlaceExtent()
+    public BigDecimal getNamedPlaceExtent()
     {
         return namedPlaceExtent;
     }
@@ -135,7 +136,7 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     /**
      * @param namedPlaceExtent the namedPlaceExtent to set
      */
-    public void setNamedPlaceExtent(Float namedPlaceExtent)
+    public void setNamedPlaceExtent(BigDecimal namedPlaceExtent)
     {
         this.namedPlaceExtent = namedPlaceExtent;
     }
@@ -266,7 +267,7 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
      * @return the maxUncertaintyEst
      */
     @Column(name = "MaxUncertaintyEst", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getMaxUncertaintyEst()
+    public BigDecimal getMaxUncertaintyEst()
     {
         return maxUncertaintyEst;
     }
@@ -274,7 +275,7 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
     /**
      * @param maxUncertaintyEst the maxUncertaintyEst to set
      */
-    public void setMaxUncertaintyEst(Float maxUncertaintyEst)
+    public void setMaxUncertaintyEst(BigDecimal maxUncertaintyEst)
     {
         this.maxUncertaintyEst = maxUncertaintyEst;
     }
@@ -464,7 +465,7 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
         }
         
     	return
-        	((namedPlaceExtent == null && o.namedPlaceExtent == null) || ((namedPlaceExtent != null && o.namedPlaceExtent != null) && namedPlaceExtent.equals(o.namedPlaceExtent))) &&
+        	((namedPlaceExtent == null && o.namedPlaceExtent == null) || ((namedPlaceExtent != null && o.namedPlaceExtent != null) && namedPlaceExtent.compareTo(o.namedPlaceExtent) == 0)) &&
             ((geoRefAccuracyUnits == null && o.geoRefAccuracyUnits == null) || ((geoRefAccuracyUnits != null && o.geoRefAccuracyUnits != null) && geoRefAccuracyUnits.equals(o.geoRefAccuracyUnits))) &&
             ((geoRefDetRef == null && o.geoRefDetRef == null) || ((geoRefDetRef != null && o.geoRefDetRef != null) && geoRefDetRef.equals(o.geoRefDetRef))) &&
             ((geoRefDetDate == null && o.geoRefDetDate == null) || ((geoRefDetDate != null && o.geoRefDetDate != null)
@@ -477,7 +478,7 @@ public class GeoCoordDetail extends DataModelObjBase implements Cloneable
             ((geoRefVerificationStatus == null && o.geoRefVerificationStatus == null) || ((geoRefVerificationStatus != null && o.geoRefVerificationStatus != null)
                     && geoRefVerificationStatus.equals(o.geoRefVerificationStatus))) &&
             ((maxUncertaintyEst == null && o.maxUncertaintyEst == null) || ((maxUncertaintyEst != null && o.maxUncertaintyEst != null)
-                    && maxUncertaintyEst.equals(o.maxUncertaintyEst))) &&
+                    && maxUncertaintyEst.compareTo(o.maxUncertaintyEst) == 0)) &&
             ((maxUncertaintyEstUnit == null && o.maxUncertaintyEstUnit == null) || ((maxUncertaintyEstUnit != null && o.maxUncertaintyEstUnit != null)
             		&& maxUncertaintyEstUnit.equals(o.maxUncertaintyEstUnit))) &&
             ((originalCoordSystem == null && o.originalCoordSystem == null) || ((originalCoordSystem != null && o.originalCoordSystem != null)

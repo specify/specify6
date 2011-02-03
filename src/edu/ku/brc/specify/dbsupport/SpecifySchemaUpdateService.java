@@ -111,7 +111,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
-    private final int OVERALL_TOTAL = 17;
+    private final int OVERALL_TOTAL = 18;
     
     private static final String APP          = "App";
     private static final String APP_REQ_EXIT = "AppReqExit";
@@ -825,7 +825,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     
                     //for schema 1.6
                     
-                    //change column types for UTMEasting and UTMNorthing
+                    //change column types for UTMEasting, UTMNorthing and UTMScale
                     String columnType = getFieldColumnType(conn, databaseName, "localitydetail", "UTMEasting");
                     if (columnType == null)
                     {
@@ -835,7 +835,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     if (!columnType.trim().equalsIgnoreCase("decimal(20,10)"))
                     {
                         count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM localitydetail");
-                        rv = BasicSQLUtils.update(conn, "ALTER TABLE localitydetail CHANGE COLUMN `UtmEasting` `UtmEasting` DECIMAL(20,10) NULL DEFAULT NULL  , CHANGE COLUMN `UtmNorthing` `UtmNorthing` DECIMAL(20,10) NULL DEFAULT NULL");
+                        rv = BasicSQLUtils.update(conn, "ALTER TABLE localitydetail CHANGE COLUMN `UtmEasting` `UtmEasting` DECIMAL(20,10) NULL DEFAULT NULL  , CHANGE COLUMN `UtmNorthing` `UtmNorthing` DECIMAL(20,10) NULL DEFAULT NULL , CHANGE COLUMN `UtmScale` `UtmScale` DECIMAL(20,10) NULL DEFAULT NULL");
                         if (rv != count)
                         {
                             errMsgList.add("Update count didn't match for update to table: localitydetail");
@@ -844,7 +844,26 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall();
                     
-                    
+
+                    //change column types for MaxUncertaintityEst and NamedPlaceExtent
+                    columnType = getFieldColumnType(conn, databaseName, "geocoorddetail", "MaxUncertaintyEst");
+                    if (columnType == null)
+                    {
+                        errMsgList.add("Column type couldn't be determined for update to table: geocoorddetail");
+                        return false;
+                    }
+                    if (!columnType.trim().equalsIgnoreCase("decimal(20,10)"))
+                    {
+                        count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM geocoorddetail");
+                        rv = BasicSQLUtils.update(conn, "ALTER TABLE geocoorddetail CHANGE COLUMN `MaxUncertaintyEst` `MaxUncertaintyEst` DECIMAL(20,10) NULL DEFAULT NULL  , CHANGE COLUMN `NamedPlaceExtent` `NamedPlaceExtent` DECIMAL(20,10) NULL DEFAULT NULL");
+                        if (rv != count)
+                        {
+                            errMsgList.add("Update count didn't match for update to table: geocoorddetail");
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
                     return true;
                     
                 } catch (SQLException ex)
