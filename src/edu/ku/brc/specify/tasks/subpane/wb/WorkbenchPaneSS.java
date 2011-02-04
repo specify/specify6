@@ -4943,9 +4943,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             editCol = column;
             editRow = row;
-            //return textField;
-            //DefaultComboBoxModel model = new DefaultComboBoxModel(pickList.getList());
-            //((JComboBox )uiComponent).setModel(model);
+            ((JComboBox )uiComponent).setSelectedItem(value);
             return uiComponent;
         }
    	        
