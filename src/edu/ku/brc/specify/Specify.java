@@ -42,13 +42,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -233,7 +230,6 @@ import edu.ku.brc.util.FileCache;
 import edu.ku.brc.util.FileStoreAttachmentManager;
 import edu.ku.brc.util.MemoryWarningSystem;
 import edu.ku.brc.util.Pair;
-import edu.ku.brc.util.TeeOutputStream;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 /**
  * Specify Main Application Class
@@ -1872,27 +1868,21 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     protected void dumpSpecifyLogFile()
     {
-        File logFile = checkAllPaths("specify.log"); //$NON-NLS-1$
-        if (logFile == null)
-        {
-            logFile = checkAllPaths("error.log"); //$NON-NLS-1$
-        }
+        File spLogFile  = checkAllPaths("specify.log"); //$NON-NLS-1$
+        File errLogFile = checkAllPaths("error.log"); //$NON-NLS-1$
         
-        if (logFile != null)
-        {
-            JTabbedPane tabPane = new JTabbedPane();
-            //tabPane.add(getResourceString("Specify.ERROR"), getLogFilePanel(logFile, true)); //$NON-NLS-1$
-            tabPane.add("Specify",                          getLogFilePanel(logFile, true)); //$NON-NLS-1$
-            
-            String title = getResourceString("Specify.LOG_FILES_TITLE");//$NON-NLS-1$
-            CustomDialog dialog = new CustomDialog((JFrame)UIRegistry.getTopWindow(), title, true, CustomDialog.OK_BTN, tabPane); 
-            String okLabel = getResourceString("Specify.CLOSE");//$NON-NLS-1$
-            dialog.setOkLabel(okLabel); 
-            dialog.createUI();
-            dialog.setSize(800, 600);
-            UIHelper.centerWindow(dialog);
-            dialog.setVisible(true);
-        }
+        JTabbedPane tabPane = new JTabbedPane();
+        tabPane.add("Specify",                          getLogFilePanel(spLogFile, true)); //$NON-NLS-1$
+        tabPane.add(getResourceString("Specify.ERROR"), getLogFilePanel(errLogFile, true)); //$NON-NLS-1$
+        
+        String title = getResourceString("Specify.LOG_FILES_TITLE");//$NON-NLS-1$
+        CustomDialog dialog = new CustomDialog((JFrame)UIRegistry.getTopWindow(), title, true, CustomDialog.OK_BTN, tabPane); 
+        String okLabel = getResourceString("Specify.CLOSE");//$NON-NLS-1$
+        dialog.setOkLabel(okLabel); 
+        dialog.createUI();
+        dialog.setSize(800, 600);
+        UIHelper.centerWindow(dialog);
+        dialog.setVisible(true);
     }
     
     /**
