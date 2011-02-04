@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.tasks.subpane.security;
 
+import java.awt.Dialog;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -80,7 +81,7 @@ public class UserAgentVSQBldr implements ViewBasedSearchQueryBuilderIFace
         if (disciplineIds.size() > 1)
         {
             Vector<Object> divisionNames = BasicSQLUtils.querySingleCol("SELECT Name FROM discipline ORDER BY Name");
-            ToggleButtonChooserDlg<Object> divDlg = new ToggleButtonChooserDlg<Object>(null, UIRegistry.getResourceString("SEC_PK_SRCH"), 
+            ToggleButtonChooserDlg<Object> divDlg = new ToggleButtonChooserDlg<Object>((Dialog)null, UIRegistry.getResourceString("SEC_PK_SRCH"), 
                                                                                        divisionNames, ToggleButtonChooserPanel.Type.RadioButton);
             divDlg.setUseScrollPane(true);
             divDlg.createUI();

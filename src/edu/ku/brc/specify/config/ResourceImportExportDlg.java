@@ -688,7 +688,7 @@ public class ResourceImportExportDlg extends CustomDialog
                 final String EXP_DIR_PREF = "RES_LAST_EXPORT_DIR";
                 String initalExportDir = AppPreferences.getLocalPrefs().get(EXP_DIR_PREF, getUserHomeDir());
                 
-                FileDialog fileDlg = new FileDialog(this, "RIE_ExportResource", FileDialog.SAVE); 
+                FileDialog fileDlg = new FileDialog(this, getResourceString("RIE_ExportResource"), FileDialog.SAVE); 
                 
                 File expDir = new File(initalExportDir);
                 if (StringUtils.isNotEmpty(initalExportDir) && expDir.exists())
@@ -1170,7 +1170,7 @@ public class ResourceImportExportDlg extends CustomDialog
                         dlg.setVisible(false);
                     }
                 });
-                dlg.setVisible(true);
+                UIHelper.centerAndShow(dlg);
                 int option = dlg.getBtnPressed();
                 
                 if (option == CustomDialog.CANCEL_BTN)
@@ -1510,7 +1510,7 @@ public class ResourceImportExportDlg extends CustomDialog
     protected boolean getMetaInformation(final SpAppResource appRes, final String fileName)
     {
         ResImpExpMetaInfoDlg dlg = new ResImpExpMetaInfoDlg(appRes, fileName);
-        dlg.setVisible(true);
+        UIHelper.centerAndShow(dlg);
         return !dlg.isCancelled();
     }
     

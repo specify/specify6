@@ -24,6 +24,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Frame;
@@ -564,7 +565,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
             {
                 dspLocales.add(new DisplayLocale(l));
             }
-            ToggleButtonChooserDlg<DisplayLocale> dlg = new ToggleButtonChooserDlg<DisplayLocale>(null, "Choose", dspLocales, ToggleButtonChooserPanel.Type.RadioButton);
+            ToggleButtonChooserDlg<DisplayLocale> dlg = new ToggleButtonChooserDlg<DisplayLocale>((Dialog)null, "Choose", dspLocales, ToggleButtonChooserPanel.Type.RadioButton);
             dlg.setUseScrollPane(true);
             UIHelper.centerAndShow(dlg);
             if (!dlg.isCancelled())

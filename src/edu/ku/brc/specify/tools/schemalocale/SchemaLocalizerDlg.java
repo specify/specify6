@@ -22,6 +22,7 @@ package edu.ku.brc.specify.tools.schemalocale;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.beans.PropertyChangeEvent;
@@ -291,7 +292,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         }
         Collections.sort(list);
 
-        ToggleButtonChooserDlg<DisplayLocale> dlg = new ToggleButtonChooserDlg<DisplayLocale>(null, 
+        ToggleButtonChooserDlg<DisplayLocale> dlg = new ToggleButtonChooserDlg<DisplayLocale>((Dialog)null, 
                                                    "CHOOSE_LOCALE", list, ToggleButtonChooserPanel.Type.RadioButton);
         dlg.setUseScrollPane(true);
         dlg.setVisible(true);

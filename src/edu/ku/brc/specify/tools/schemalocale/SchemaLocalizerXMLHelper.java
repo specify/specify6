@@ -21,6 +21,7 @@ package edu.ku.brc.specify.tools.schemalocale;
 
 import static edu.ku.brc.specify.config.init.DataBuilder.createPickList;
 
+import java.awt.Dialog;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -611,7 +612,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                     boolean cont = false;
                     while (cont)
                     {
-                        ToggleButtonChooserDlg<DisplayLocale> dlg = new ToggleButtonChooserDlg<DisplayLocale>(null, 
+                        ToggleButtonChooserDlg<DisplayLocale> dlg = new ToggleButtonChooserDlg<DisplayLocale>((Dialog)null, 
                                                                    "CHOOSE_LOCALE", list, ToggleButtonChooserPanel.Type.RadioButton);
                         dlg.setUseScrollPane(true);
                         dlg.setVisible(true);

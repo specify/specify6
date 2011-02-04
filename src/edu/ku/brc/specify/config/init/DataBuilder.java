@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.config.init;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -2937,40 +2938,18 @@ public class DataBuilder
     }
     
     /**
-     * @return
+     * Configures both BldrPickList and BldrPickListItem
+     * @param xstream the stream
+     * @param doPartial not all the fields
      */
-    @SuppressWarnings("unchecked")
-    public static List<BldrPickList> getBldrPickLists(final String disciplineDirName)
+    public static void configXStream(final XStream xstream, 
+                                     final boolean doExportImport)
     {
-        XStream xstream = new XStream();
-        
-        //xstream.alias("picklist",     BldrPickList.class);
-        //xstream.alias("picklistitem", BldrPickListItem.class);
-        
-        /*
-        xstream.aliasAttribute(BldrPickList.class, "readonly", "readOnly");
-        xstream.aliasAttribute(BldrPickList.class, "tablename", "tableName");
-        xstream.aliasAttribute(BldrPickList.class, "sizelimit", "sizeLimit");
-        
-        xstream.aliasAttribute(BldrPickList.class, "readOnly", "readonly");
-        xstream.aliasAttribute(BldrPickList.class, "tableName", "tablename");
-        xstream.aliasAttribute(BldrPickList.class, "sizeLimit", "sizelimit");
-        
-        xstream.aliasField("readonly", BldrPickList.class, "readonly");
-        xstream.aliasField("tablename", BldrPickList.class, "tableName");
-        xstream.aliasField("sizelimit", BldrPickList.class, "sizeLimit");
-        
-        xstream.aliasAttribute("readonly", "readonly");
-        xstream.aliasAttribute("tablename", "tableName");
-        xstream.aliasAttribute("sizelimit", "sizeLimit");
-        */
-        //xstream.aliasAttribute(RelatedQuery.class, "isActive", "isactive");
-        
         xstream.alias("picklist",     BldrPickList.class);
         xstream.alias("picklistitem", BldrPickListItem.class);
         
         xstream.omitField(BldrPickList.class, "pickListId");
-        xstream.omitField(BldrPickList.class, "items");
+        //xstream.omitField(BldrPickList.class, "items");
         xstream.omitField(BldrPickList.class, "pickListItems");
         
         xstream.useAttributeFor(BldrPickList.class, "fieldName");
@@ -2994,20 +2973,68 @@ public class DataBuilder
         xstream.aliasAttribute("issystem",  "isSystem");
         xstream.aliasAttribute("sort",      "sortType");
         
-        String[] omit = {"changes","timestampCreated","timestampModified","createdByAgent","modifiedByAgent","version","valueObject",};
+        if (doExportImport)
+        {
+            xstream.useAttributeFor(BldrPickList.class, "filterFieldName");
+            xstream.useAttributeFor(BldrPickList.class, "filterValue");
+        }
+        
+        String[] omit = {"timestampCreated", "timestampModified", "version", };
         for (String fld : omit)
         {
-            xstream.omitField(DataModelObjBase.class, fld); 
+            if (doExportImport)
+            {
+                xstream.useAttributeFor(BldrPickList.class, fld);
+                xstream.useAttributeFor(BldrPickListItem.class, fld);
+
+            } else
+            {
+                xstream.omitField(BldrPickList.class, fld); 
+                xstream.omitField(BldrPickListItem.class, fld);
+            }
         }
-        xstream.omitField(PickListItem.class,       "pickListItemId");
-        xstream.omitField(PickListItem.class,       "timestampCreated");
-        xstream.omitField(PickListItem.class,       "pickList");
+        
+        xstream.omitField(BldrPickListItem.class, "pickListItemId");
+        xstream.omitField(BldrPickListItem.class, "pickList");
+    }
+
+    
+    /**
+     * @param disciplineDirName
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static List<BldrPickList> getBldrPickLists(final String disciplineDirName)
+    {
+        return getBldrPickLists(disciplineDirName, null);
+    }
+    
+    /**
+     * @param disciplineDirName
+     * @param plFile
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static List<BldrPickList> getBldrPickLists(final String disciplineDirName, 
+                                                      final File plFile)
+    {
+        XStream xstream = new XStream();
 
         try
         {
-            String dirName = disciplineDirName != null ? disciplineDirName + File.separator : "";
-            File pickListFile = new File(XMLHelper.getConfigDirPath(dirName + "picklist.xml"));
-            if (pickListFile.exists())
+            File pickListFile;
+            if (plFile == null)
+            {
+                String dirName = disciplineDirName != null ? disciplineDirName + File.separator : "";
+                pickListFile = new File(XMLHelper.getConfigDirPath(dirName + "picklist.xml"));
+                configXStream(xstream, false);
+            } else
+            {
+                pickListFile = plFile;
+                configXStream(xstream, true);
+            }
+            
+            if (pickListFile != null && pickListFile.exists())
             {
                 //System.out.println(FileUtils.readFileToString(pickListFile));
                 List<BldrPickList> list = (List<BldrPickList>)xstream.fromXML(FileUtils.readFileToString(pickListFile));
@@ -3042,47 +3069,27 @@ public class DataBuilder
     }
     
     /**
-     * 
+     * @param file
+     * @param pickLists
      */
-    /*public static void buildPickListFromXML(List<BldrPickList> list)
+    public static void writePickListsAsXML(final File file, List<BldrPickList> pickLists)
     {
-        if (list != null)
+        XStream xstream = new XStream();
+        configXStream(xstream, true);
+        
+        try
         {
-            for (BldrPickList pl : list)
-            {
-                PickList pickList = createPickList(pl.getName(), pl.getType(), pl.getTableName(), pl.getFieldName(), 
-                                                   pl.getFormatter(), pl.getReadOnly(), pl.getSizeLimit(), 
-                                                   pl.getIsSystem(), pl.getSortType());
-                for (BldrPickListItem item : pl.getItems())
-                {
-                    pickList.addItem(item.getTitle(), item.getValue());
-                }
-                persist(pickList);
-            }
+            FileOutputStream fos = new FileOutputStream(file);
+            xstream.toXML(pickLists, fos);
             
-        } else
+        } catch (IOException ex)
         {
-            try
-            {
-                System.err.println("Couldn't find file["+(new File("picklist.xml")).getCanonicalPath()+"]");
-                
-            } catch (IOException ex)
-            {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataBuilder.class, ex);
-                ex.printStackTrace();
-            }
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataBuilder.class, ex);
+            ex.printStackTrace();
         }
-    }*/
+    }
     
-    /**
-     * 
-     */
-    /*public static void buildPickListFromXML(final String dirName)
-    {
-        buildPickListFromXML(getBldrPickLists(dirName));
-    }*/
-
     /**
      * Helper method for saving when there is a session.
      * @param transientObject the object to be saved.
@@ -3095,7 +3102,6 @@ public class DataBuilder
             session.persist(transientObject);
         }
     }
-
     
     /**
      * 

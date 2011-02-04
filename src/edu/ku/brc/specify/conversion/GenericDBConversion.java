@@ -49,6 +49,7 @@ import static edu.ku.brc.specify.conversion.BasicSQLUtils.setShowErrors;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.setTblWriter;
 import static edu.ku.brc.ui.UIRegistry.showError;
 
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.io.File;
@@ -2779,7 +2780,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         }
         
         String msg = String.format("<html>Unable to automap type '%s' <BR>Catalog Series: '%s'", taxonDefName, catSeriesName);
-        ToggleButtonChooserDlg<DisciplineType> dlg = new ToggleButtonChooserDlg<DisciplineType>(null, 
+        ToggleButtonChooserDlg<DisciplineType> dlg = new ToggleButtonChooserDlg<DisciplineType>((Dialog)null, 
                                                                "Choose a Discipline", 
                                                                msg,
                                                                DisciplineType.getDisciplineList(), 

@@ -20,6 +20,7 @@
 package edu.ku.brc.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.util.List;
@@ -74,6 +75,7 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog
 
     /**
      * Constructor.
+     * @param parentFrame the parent Frame
      * @param titleKey dialog title
      * @param desckey description label above list (optional)
      * @param items the list to be selected from
@@ -109,6 +111,77 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
+
+    /**
+     * Constructor.
+     * @param parentDlg the parent Dialog
+     * @param titleKey dialog title
+     * @param desc description label above list (optional)
+     * @param items the list to be selected from
+     * @throws HeadlessException
+     */
+    public ToggleButtonChooserDlg(final Dialog  parentDlg, 
+                                  final String  titleKey, 
+                                  final List<T> listItems) throws HeadlessException
+    {
+        this(parentDlg, titleKey, null, listItems);
+    }
+
+    /**
+     * Constructor.
+     * @param parentDlg the parent Dialog
+     * @param titleKey dialog title
+     * @param desc description label above list (optional)
+     * @param items the list to be selected from
+     * @throws HeadlessException
+     */
+    public ToggleButtonChooserDlg(final Dialog  parentDlg, 
+                                  final String  titleKey, 
+                                  final List<T> listItems,
+                                  final ToggleButtonChooserPanel.Type uiType) throws HeadlessException
+    {
+        this(parentDlg, titleKey, null, listItems, OKCANCEL, uiType);
+    }
+
+    /**
+     * Constructor.
+     * @param parentDlg the parent Dialog
+     * @param titleKey dialog title
+     * @param desckey description label above list (optional)
+     * @param items the list to be selected from
+     * @throws HeadlessException
+     */
+    public ToggleButtonChooserDlg(final Dialog  parentDlg, 
+                                  final String  titleKey,
+                                  final String  desckey, 
+                                  final List<T> listItems) throws HeadlessException
+    {
+        this(parentDlg, titleKey, desckey, listItems, OKCANCEL, ToggleButtonChooserPanel.Type.Checkbox);
+    }
+
+    /**
+     * Constructor.
+     * @param parentDlg the parent Dialog
+     * @param key dialog title
+     * @param descKey description label above list (optional)
+     * @param items the list to be selected from
+     * @param icon the icon to be displayed in front of each entry in the list
+     * @throws HeadlessException
+     */
+    public ToggleButtonChooserDlg(final Dialog    parentDlg, 
+                                  final String    key, 
+                                  final String    descKey, 
+                                  final List<T>   listItems, 
+                                  final int       whichButtons,
+                                  final ToggleButtonChooserPanel.Type uiType) throws HeadlessException
+    {
+        super(parentDlg, UIRegistry.getResourceString(key), true, whichButtons, null);
+        
+        panel = new ToggleButtonChooserPanel<T>(listItems, UIRegistry.getResourceString(descKey), uiType);
+
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CustomDialog#createUI()

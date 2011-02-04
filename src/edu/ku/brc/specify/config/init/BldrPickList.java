@@ -19,7 +19,11 @@
 */
 package edu.ku.brc.specify.config.init;
 
+import java.sql.Timestamp;
 import java.util.Vector;
+
+import edu.ku.brc.specify.datamodel.PickList;
+import edu.ku.brc.specify.datamodel.PickListItem;
 
 /**
  * @author rod
@@ -44,12 +48,43 @@ public class BldrPickList
     protected Byte              sortType = 1;
     protected Vector<BldrPickListItem> items;
     
+    // Only Used for Import/Export
+    protected Timestamp         timestampCreated;
+    protected Timestamp         timestampModified;
+    protected int               version;
+    protected String            filterFieldName;
+    protected String            filterValue;
+
+    
     // Constructors
 
     /** default constructor */
     public BldrPickList()
     {
         // do nothing
+    }
+    
+    public BldrPickList(final PickList pl)
+    {
+        name      = pl.getName();
+        type      = pl.getType();
+        tableName = pl.getTableName();
+        fieldName = pl.getFieldName();
+        formatter = pl.getFormatter();
+        readOnly  = pl.getReadOnly();
+        sizeLimit = pl.getSizeLimit();
+        isSystem  = pl.isSystem();
+        sortType  = pl.getSortType();
+        
+        timestampCreated  = pl.getTimestampCreated();
+        timestampModified = pl.getTimestampModified();
+        version           = pl.getVersion();
+        
+        items = new Vector<BldrPickListItem>();
+        for (PickListItem pli : pl.getPickListItems())
+        {
+            items.add(new BldrPickListItem(pli));
+        }
     }
     
     public String getName()
@@ -167,5 +202,53 @@ public class BldrPickList
     public BldrPickListItem getItem(final int index)
     {
         return items.get(index);
+    }
+
+    /**
+     * @return the timestampCreated
+     */
+    public Timestamp getTimestampCreated()
+    {
+        return timestampCreated;
+    }
+
+    /**
+     * @param timestampCreated the timestampCreated to set
+     */
+    public void setTimestampCreated(Timestamp timestampCreated)
+    {
+        this.timestampCreated = timestampCreated;
+    }
+
+    /**
+     * @return the timestampModified
+     */
+    public Timestamp getTimestampModified()
+    {
+        return timestampModified;
+    }
+
+    /**
+     * @param timestampModified the timestampModified to set
+     */
+    public void setTimestampModified(Timestamp timestampModified)
+    {
+        this.timestampModified = timestampModified;
+    }
+
+    /**
+     * @return the version
+     */
+    public int getVersion()
+    {
+        return version;
+    }
+
+    /**
+     * @param version the version to set
+     */
+    public void setVersion(int version)
+    {
+        this.version = version;
     }
 }

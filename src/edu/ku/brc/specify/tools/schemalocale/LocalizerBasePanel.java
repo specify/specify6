@@ -207,7 +207,7 @@ public abstract class LocalizerBasePanel extends JPanel
         }
         Collections.sort(list);
         
-        ToggleButtonChooserDlg<DisplayLocale> dlg = new ToggleButtonChooserDlg<DisplayLocale>(null, 
+        ToggleButtonChooserDlg<DisplayLocale> dlg = new ToggleButtonChooserDlg<DisplayLocale>((java.awt.Dialog)null, 
                                                    "CHOOSE_LOCALE", list, ToggleButtonChooserPanel.Type.RadioButton);
         dlg.setUseScrollPane(true);
         dlg.setVisible(true);

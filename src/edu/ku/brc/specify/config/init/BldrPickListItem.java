@@ -19,6 +19,10 @@
 */
 package edu.ku.brc.specify.config.init;
 
+import java.sql.Timestamp;
+
+import edu.ku.brc.specify.datamodel.PickListItem;
+
 
 /**
  * @author rod
@@ -28,12 +32,17 @@ package edu.ku.brc.specify.config.init;
  * Jan 10, 2008
  *
  */
-public class BldrPickListItem
+public class BldrPickListItem implements Comparable<BldrPickListItem>
 {
     // Fields
     private String title;
     private String value;
     private Integer ordinal;
+    
+    // Only Used for Import/Export
+    protected Timestamp timestampCreated;
+    protected Timestamp timestampModified;
+    protected int       version;
 
     // Constructors
 
@@ -41,6 +50,16 @@ public class BldrPickListItem
     public BldrPickListItem()
     {
         // do nothing
+    }
+
+    public BldrPickListItem(final PickListItem pli)
+    {
+        title = pli.getTitle();
+        value = pli.getValue();
+        ordinal = pli.getOrdinal();
+        timestampCreated = pli.getTimestampCreated();
+        timestampModified = pli.getTimestampModified();
+        version = pli.getVersion();
     }
 
     public BldrPickListItem(final String title, final String value)
@@ -99,6 +118,54 @@ public class BldrPickListItem
         this.ordinal = ordinal;
     }
 
+    /**
+     * @return the timestampCreated
+     */
+    public Timestamp getTimestampCreated()
+    {
+        return timestampCreated;
+    }
+
+    /**
+     * @param timestampCreated the timestampCreated to set
+     */
+    public void setTimestampCreated(Timestamp timestampCreated)
+    {
+        this.timestampCreated = timestampCreated;
+    }
+
+    /**
+     * @return the timestampModified
+     */
+    public Timestamp getTimestampModified()
+    {
+        return timestampModified;
+    }
+
+    /**
+     * @param timestampModified the timestampModified to set
+     */
+    public void setTimestampModified(Timestamp timestampModified)
+    {
+        this.timestampModified = timestampModified;
+    }
+
+    /**
+     * @return the version
+     */
+    public int getVersion()
+    {
+        return version;
+    }
+
+    /**
+     * @param version the version to set
+     */
+    public void setVersion(int version)
+    {
+        this.version = version;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -107,4 +174,15 @@ public class BldrPickListItem
     {
         return title;
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(BldrPickListItem o)
+    {
+        return o.ordinal.compareTo(ordinal);
+    }
+    
+    
 }
