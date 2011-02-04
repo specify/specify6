@@ -1134,14 +1134,13 @@ public class UploadTable implements Comparable<UploadTable>
     	else
     	{
     		exportedRecordId = rec.getId();
-    		for (Vector<ParentTableEntry> ptes : parentTables)
+    	}
+    	for (Vector<ParentTableEntry> ptes : parentTables)
+    	{
+    		for (ParentTableEntry pte : ptes)
     		{
-    			for (ParentTableEntry pte : ptes)
-    			{
-    				System.out.println("setting exported recordid " + pte.getImportTable());
-    				pte.getImportTable().setExportedRecordId((DataModelObjBase )pte.getGetter().invoke(rec, (Object[] )null));
-    			
-    			}
+    			System.out.println("setting exported recordid " + pte.getImportTable());
+    			pte.getImportTable().setExportedRecordId((DataModelObjBase )pte.getGetter().invoke(rec, (Object[] )null));		
     		}
     	}
     }
