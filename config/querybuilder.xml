@@ -245,6 +245,7 @@
       	<!-- <alias name="Geography" field="parent" /-->
       	<alias name="Locality" field="localities" />
       	<alias name="Agent" field="modifiedByAgent" />    	
+        <table name="GeographyTreeDefItem" field="definitionItem"/>
     </table>
 
      <table name="GeologicTimePeriod" >
@@ -252,6 +253,7 @@
       	<alias name="Agent" field="modifiedByAgent" />
       	<alias name="PaleoContext" field="bioStratsPaleoContext" />
       	<alias name="PaleoContext" field="chronosStratsPaleoContext" />
+        <table name="GeologicTimePeriodTreeDefItem" field="definitionItem"/>
     </table>
     
     <table name="Gift">
@@ -286,6 +288,7 @@
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />
       	<alias name="PaleoContext" field="paleoContexts" />
+        <table name="LithoStratTreeDefItem" field="definitionItem"/>
     </table>
     
     <table name="Loan">
@@ -422,6 +425,7 @@
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />
       	<alias name="Preparation" field="preparations" />
+        <table name="StorageTreeDefItem" field="definitionItem"/>
     </table>
     
     <table name="Taxon">
@@ -449,6 +453,7 @@
             <!--<table name="DeterminationStatus" field="status"/>-->
             <alias name="Agent" field="determiner"/>
         </table>
+        <table name="TaxonTreeDefItem" field="definitionItem"/>
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />
     </table>
