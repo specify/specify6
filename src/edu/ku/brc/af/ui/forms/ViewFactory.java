@@ -1932,6 +1932,11 @@ public class ViewFactory
                                 options |= MultiView.ADD_SEARCH_BTN;
                             }
                             
+                            if (UIHelper.getProperty(props, "addadd", false))
+                            {
+                                options |= MultiView.INCLUDE_ADD_BTN;
+                            }
+                            
                             //MultiView.printCreateOptions("SUBVIEW", options);
                             MultiView multiView = new MultiView(parent, 
                                                                 cellSubView.getName(),

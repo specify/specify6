@@ -53,6 +53,7 @@ public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDispl
     protected ViewBasedDisplayPanel         viewBasedPanel = null;
     protected ViewBasedDisplayActionAdapter vbdaa          = null;
     protected Object                        parentDataObj  = null;
+    protected boolean                       doSave         = false;
 
     /**
      * Constructs a search dialog from form infor and from search info
@@ -136,6 +137,15 @@ public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDispl
         pack();
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.ViewBasedDisplayIFace#setDoSave(boolean)
+     */
+    public void setDoSave(boolean doSave)
+    {
+        this.doSave = doSave;
+    }
+
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.ViewBasedDisplayIFace#setParentData(java.lang.Object)
      */
@@ -224,11 +234,18 @@ public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDispl
             if (fvo != null)
             {
                 BusinessRulesIFace br = fvo.getBusinessRules();
-                if (br != null)
+                if (br != null && fvo.getDataObj() != null)
                 {
                     boolean isNewObj = MultiView.isOptionOn(fvo.getMVParent().getOptions(), MultiView.IS_NEW_OBJECT);
-                    if (BusinessRulesIFace.STATUS.OK != br.processBusinessRules(parentDataObj, 
-                                                                                fvo.getDataObj(),
+                    if (doSave)
+                    {
+                        if (!fvo.saveObject())
+                        {
+                            return;
+                        }
+                        
+                    } else if (BusinessRulesIFace.STATUS.OK != br.processBusinessRules(parentDataObj, 
+                                                                                fvo.getDataObj(), 
                                                                                 isNewObj))
                     {
                         UIRegistry.showError(br.getMessagesAsString());

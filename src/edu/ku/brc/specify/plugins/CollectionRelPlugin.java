@@ -99,6 +99,7 @@ public class CollectionRelPlugin extends UIPluginBase
                 } else
                 {
                     // RelName not found.
+                    
                 }
             } catch (Exception ex)
             {
@@ -127,6 +128,8 @@ public class CollectionRelPlugin extends UIPluginBase
                                     null, // helpContext
                                     btnOpts);
             pb.add(cbx, cc.xy(1, 1));
+            
+            cbx.setEnabled(colRelType != null);
             
             adjustSQLTemplate();
             
@@ -228,12 +231,15 @@ public class CollectionRelPlugin extends UIPluginBase
      */
     protected void adjustSQLTemplate()
     {
-        StringBuilder sql = new StringBuilder("SELECT %s1 FROM CollectionObject co ");
-        sql.append("WHERE co.collectionMemberId = ");
-        sql.append(isLeftSide ? rightSideCol.getCollectionId() : leftSideCol.getCollectionId());
-        sql.append(" AND %s2");
-        //System.out.println(sql.toString());
-        cbx.setSqlTemplate(sql.toString());
+        if (colRelType != null && ((!isLeftSide && rightSideCol != null) || (isLeftSide && leftSideCol != null)))
+        {
+            StringBuilder sql = new StringBuilder("SELECT %s1 FROM CollectionObject co ");
+            sql.append("WHERE co.collectionMemberId = ");
+            sql.append(isLeftSide ? rightSideCol.getCollectionId() : leftSideCol.getCollectionId());
+            sql.append(" AND %s2");
+            //System.out.println(sql.toString());
+            cbx.setSqlTemplate(sql.toString());
+        }
     }
 
     /* (non-Javadoc)

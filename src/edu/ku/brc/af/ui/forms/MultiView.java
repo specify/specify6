@@ -88,6 +88,7 @@ public class MultiView extends JPanel
     public static final int DONT_USE_EMBEDDED_SEP  = 1024; // use the internal embedded separator
     public static final int NO_MORE_BTN_FOR_SEP    = 2048; // doesn't include the separator's 'more' btn
     public static final int COLLAPSE_SEPARATOR     = 4096; // Make the Collapse Separator collapsed
+    public static final int INCLUDE_ADD_BTN        = 8192; // Includes the add btn even if the search btn has been added
 
     // Statics
     private static final Logger log = Logger.getLogger(MultiView.class);
@@ -1752,6 +1753,7 @@ public class MultiView extends JPanel
         log.debug("DONT_USE_EMBEDDED_SEP ["+((options & MultiView.DONT_USE_EMBEDDED_SEP) == MultiView.DONT_USE_EMBEDDED_SEP ? "true" : "false")+"]");
         log.debug("NO_MORE_BTN_FOR_SEP   ["+((options & MultiView.NO_MORE_BTN_FOR_SEP) == MultiView.NO_MORE_BTN_FOR_SEP ? "true" : "false")+"]");
         log.debug("COLLAPSE_SEPARATOR    ["+((options & MultiView.COLLAPSE_SEPARATOR) == MultiView.COLLAPSE_SEPARATOR ? "true" : "false")+"]");
+        log.debug("INCLUDE_ADD_BTN       ["+((options & MultiView.INCLUDE_ADD_BTN) == MultiView.INCLUDE_ADD_BTN ? "true" : "false")+"]");
         log.debug(" ");        
     }
     

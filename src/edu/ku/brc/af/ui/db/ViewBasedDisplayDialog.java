@@ -225,8 +225,8 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
         createUI();
     }
     
-    /**
-     * @param doSave the doSave to set
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.ViewBasedDisplayIFace#setDoSave(boolean)
      */
     public void setDoSave(boolean doSave)
     {

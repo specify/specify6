@@ -61,7 +61,7 @@ public class Container extends CollectionMember implements java.io.Serializable,
      protected String                name;
      protected String                description;
      protected Integer               number;
-     protected Set<CollectionObject> collectionObjects;
+     protected Set<CollectionObject> collectionObjects;    // This should only ever hold a single ColObj
      protected Set<CollectionObject> collectionObjectKids;
      protected Storage               storage;
 
@@ -304,7 +304,7 @@ public class Container extends CollectionMember implements java.io.Serializable,
 
     
     @OneToMany(mappedBy = "parent")
-    @Cascade( { CascadeType.ALL })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<Container> getChildren()
     {
         return this.children;

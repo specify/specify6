@@ -206,6 +206,8 @@ public class TableViewObj implements Viewable,
     protected JComboBox                     selectorCBX     = null;
     protected int                           mainCompRowInx  = 1;
     protected boolean                       addSearch;
+    protected boolean                       includeAddBtn;
+    protected boolean                       doSpecialAdd;
     protected JButton                       searchButton    = null;
     protected JButton                       editButton      = null;
     protected JButton                       newButton       = null;
@@ -280,7 +282,9 @@ public class TableViewObj implements Viewable,
         boolean hideSaveBtn                = MultiView.isOptionOn(options, MultiView.HIDE_SAVE_BTN);
         isEditing                          = MultiView.isOptionOn(options, MultiView.IS_EDITTING) && altView.getMode() == AltViewIFace.CreationMode.EDIT;
         
-        addSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
+        addSearch     = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
+        includeAddBtn = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.INCLUDE_ADD_BTN);
+        doSpecialAdd  = addSearch && includeAddBtn;
         
         // rods 7/23/10 - Not sure why this and the code below was added, because
         // it includes a search btn when in View mode
@@ -381,14 +385,18 @@ public class TableViewObj implements Viewable,
                         } else
                         {
                             String edtTTStr  = ResultSetController.createTooltip("EditRecordTT",   view.getObjTitle());
-                            String newTTStr  = ResultSetController.createTooltip("NewRecordTT",    view.getObjTitle());
                             editButton   = UIHelper.createIconBtnTT("EditForm", IconManager.IconSize.Std16, edtTTStr, false, new ActionListener() {
                                 public void actionPerformed(ActionEvent e)
                                 {
                                     editRow(table.getSelectedRow(), false);
                                 }
                             });
-                            newButton    = UIHelper.createIconBtnTT("CreateObj", IconManager.IconSize.Std16, newTTStr, false, new ActionListener() {
+                        }
+                        
+                        if (doSpecialAdd)
+                        {
+                            String newTTStr  = ResultSetController.createTooltip("NewRecordTT",    view.getObjTitle());
+                            newButton = UIHelper.createIconBtnTT("CreateObj", IconManager.IconSize.Std16, newTTStr, false, new ActionListener() {
                                 public void actionPerformed(ActionEvent e)
                                 {
                                     editRow(table.getSelectedRow(), true);
@@ -1010,7 +1018,7 @@ public class TableViewObj implements Viewable,
         
         // Add it in here so the Business Rules has a parent object to
         // get state from.
-        if (parentDataObj != null && isEditing && isNew)
+        if (!doSpecialAdd && parentDataObj != null && isEditing && isNew)
         {
             parentDataObj.addReference(dObj, dataSetFieldName);
         }
@@ -1072,6 +1080,13 @@ public class TableViewObj implements Viewable,
                 }
                 dialog.setSession(null);
                 
+                dialog.createUI();
+                
+                if (addSearch && includeAddBtn)
+                {
+                    dialog.setDoSave(true);
+                    dialog.getOkBtn().setText(UIRegistry.getResourceString("SAVE"));
+                }
                 dialog.showDisplay(true);
                 
             } catch (Exception ex)
@@ -1103,8 +1118,14 @@ public class TableViewObj implements Viewable,
                     if (mvParent != null)
                     {
                         tellMultiViewOfChange();
+
+                        Object daObj = dialog.getMultiView().getCurrentViewAsFormViewObj() != null ? dialog.getMultiView().getCurrentViewAsFormViewObj().getCurrentDataObj() : null;
+                        if (daObj == null)
+                        {
+                            daObj = dialog.getMultiView().getData();
+                        }
+                        dObj = daObj instanceof FormDataObjIFace ? (FormDataObjIFace)daObj : dObj;
                         
-                        Object daObj = dialog.getMultiView().getData();
                         if (isNew)
                         {
                             if (daObj instanceof Orderable)
@@ -1152,6 +1173,12 @@ public class TableViewObj implements Viewable,
                         comp.validate();
                         comp.repaint();
                     }
+                    
+                    if (doSpecialAdd && parentDataObj != null && isEditing && isNew)
+                    {
+                        parentDataObj.addReference(dObj, dataSetFieldName);
+                    }
+                    
                 } else if (dialog.isCancelled())
                 {
                     // since it was added in before the dlg was shown we now need to remove.
@@ -1534,7 +1561,7 @@ public class TableViewObj implements Viewable,
                     dataObjList =(List<Object>)session.getDataList(sqlStr);
                 }
 */
-            } else
+            } else if (dataObj != null)
             {
                 // single object
                 dataObjList.add(dataObj);

@@ -133,4 +133,9 @@ public interface ViewBasedDisplayIFace
      * @param session
      */
     public abstract void setSession(DataProviderSessionIFace session);
+    
+    /**
+     * @param doSave
+     */
+    public abstract void setDoSave(boolean doSave);
 }
