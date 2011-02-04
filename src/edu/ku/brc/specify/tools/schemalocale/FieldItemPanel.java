@@ -86,6 +86,7 @@ import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableChildIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.PickListIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFormatterListEdtDlg;
@@ -873,13 +874,8 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
             if (collection != null && collection.getNumberingSchemes().size() > 0)
             {
-                enableFormatter = false;
+                enableFormatter = AppPreferences.getLocalPrefs().getBoolean("EDIT_CATNUM", false);
             }
-            
-        } else if (tableInfo.getTableId() == CollectionObject.getClassTableId() &&
-                   fieldInfo.getName().equals("catalogNumber"))
-        {
-        
         }
             
         
