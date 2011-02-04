@@ -73,8 +73,6 @@ public class ContainersColObjPlugin extends UIPluginBase implements SessionListe
     {
         super.initialize(propertiesArg, isViewModeArg);
         
-        
-        
         DBTableInfo coTI = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId());
         DBFieldInfo catNumFld = coTI.getFieldByColumnName("CatalogNumber");
         colObjFmt = catNumFld.getFormatter();

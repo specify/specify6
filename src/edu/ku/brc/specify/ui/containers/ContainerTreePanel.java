@@ -396,7 +396,7 @@ public class ContainerTreePanel extends JPanel implements CommandListener
                                 {
                                     if (i == 0)
                                     {
-                                        viewColObj();
+                                        editColObj(cn.getCollectionObject());
                                     } else
                                     {
                                         delColObj();
@@ -411,6 +411,9 @@ public class ContainerTreePanel extends JPanel implements CommandListener
                                         addColObjToContainer(false, true);
                                     }
                                 }
+                            } else if (cn.getCollectionObject() != null && i == 0)
+                            {
+                                viewColObj();
                             }
                         }
                     } else if (node.getUserObject() instanceof CollectionObject)

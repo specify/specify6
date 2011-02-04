@@ -32,6 +32,8 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.ListModel;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -115,7 +117,7 @@ public class DataEntryConfigDlg extends TaskConfigureDlg
                     if (!ti.isHidden() && !InteractionsTask.isInteractionTable(ti.getTableId()))
                     {
                         hash.put(view.getName(), view);
-                        String title = ti != null ? ti.getTitle() : view.getName();
+                        String title = StringUtils.isNotEmpty(view.getObjTitle()) ? view.getObjTitle() : ti != null ? ti.getTitle() : view.getName();
                         if (newAvailViews.get(title) != null)
                         {
                             title = view.getName();
@@ -156,11 +158,12 @@ public class DataEntryConfigDlg extends TaskConfigureDlg
                 ViewIFace     view = newAvailViews.get(title);
                 DBTableInfo   ti   = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
                 
-                DataEntryView dev  = new DataEntryView(ti != null ? ti.getTitle() : view.getName(),  // Title 
-                                                       view.getName(),                               // Name
-                                                       ti != null ? ti.getName() : null,             // Icon Name
-                                                       view.getObjTitle(),                           // ToolTip
-                                                       model.getSize(),                              // Order
+                String frmTitle = StringUtils.isNotEmpty(view.getObjTitle()) ? view.getObjTitle() : ti != null ? ti.getTitle() : view.getName();
+                DataEntryView dev  = new DataEntryView(frmTitle,                         // Title 
+                                                       view.getName(),                   // Name
+                                                       ti != null ? ti.getName() : null, // Icon Name
+                                                       view.getObjTitle(),               // ToolTip
+                                                       model.getSize(),                  // Order
                                                        true);
                 dev.setTableInfo(ti);
                 ((DefaultListModel)model).addElement(dev);

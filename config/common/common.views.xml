@@ -296,7 +296,8 @@
         
         <view name="ContainerTree"
             class="edu.ku.brc.specify.datamodel.Container"  
-             isinternal="false"
+            isinternal="false"
+            objtitle="Container Tree"
             resourcelabels="false">
             <desc><![CDATA[Conservation Description.]]></desc>
             <altviews>
@@ -1869,7 +1870,7 @@
                     <cell type="field" id="desc" name="description" uitype="textareabrief" rows="2" colspan="6"/> 
                 </row>
                 <row>
-                    <cell type="subview" id="collectionObjectKids" name="collectionObjectKids" viewname="CollectionObjectSubTable" initialize="addsearch=true" defaulttype="table" colspan="8"/>               
+                    <cell type="subview" id="collectionObjectKids" name="collectionObjectKids" viewname="CollectionObjectSubTable" initialize="" defaulttype="table" colspan="8"/>               
                 </row>
                 <row>
                     <cell type="subview" id="children" name="children" viewname="ContainerBriefTable" initialize="addsearch=true" defaulttype="table" colspan="8"/>               

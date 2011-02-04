@@ -382,7 +382,7 @@ public class ContainerTreeRenderer extends DefaultTreeCellRenderer
                         x += drawIcon(g2d, x, imgY2, delImgIcon, iconInx++);
                     }
                 }
-            } else // No Col Obj
+            } else if (isSelected) // No Col Obj
             {
                 x += iconSep;
                 x += drawIcon(g2d, x, imgY2, schImgIcon, iconInx++);

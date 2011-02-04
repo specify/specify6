@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.tasks;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -207,7 +209,7 @@ public class DataEntryView implements TaskConfigItemIFace, Comparable<TaskConfig
     @Override
     public String toString()
     {
-        return tableInfo != null ? tableInfo.getTitle() : title;
+        return StringUtils.isNotEmpty(title) ? title : tableInfo != null ? tableInfo.getTitle() : view;
     }
     
     /* (non-Javadoc)

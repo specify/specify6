@@ -28,6 +28,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -69,42 +70,78 @@ public class CollectionRelPlugin extends UIPluginBase
     public CollectionRelPlugin()
     {
         super();
-        
-        // Temp
-        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
-        colRelType   = tmpSession.load(CollectionRelType.class, 1);
-        leftSideCol  = colRelType.getLeftSideCollection();
-        rightSideCol = colRelType.getRightSideCollection();
-        colRelType.getRelationships().size();
-        tmpSession.close();
-        
-        isLeftSide = AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId().equals(leftSideCol.getCollectionId());
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.UIPluginBase#initialize(java.util.Properties, boolean)
+     */
+    @Override
+    public void initialize(Properties propertiesArg, boolean isViewModeArg)
+    {
+        super.initialize(propertiesArg, isViewModeArg);
         
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder pb = new PanelBuilder(new FormLayout("p",  "p"), this);
-        
-        int btnOpts = ValComboBoxFromQuery.CREATE_EDIT_BTN | ValComboBoxFromQuery.CREATE_NEW_BTN | ValComboBoxFromQuery.CREATE_SEARCH_BTN;
-        cbx = new ValComboBoxFromQuery(DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()),
-                                "catalogNumber",
-                                "catalogNumber",
-                                "catalogNumber",
-                                null,
-                                "CatalogNumber",
-                                null,
-                                "",
-                                null, // helpContext
-                                btnOpts);
-        pb.add(cbx, cc.xy(1, 1));
-        
-        adjustSQLTemplate();
-        
-        cbx.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e)
+        String relName = propertiesArg.getProperty("relname");
+        if (StringUtils.isNotEmpty(relName))
+        {
+            DataProviderSessionIFace tmpSession = null;
+            try
             {
-                itemSelected();
+                tmpSession   = DataProviderFactory.getInstance().createSession();
+                colRelType   = tmpSession.getData(CollectionRelType.class, "name", relName, DataProviderSessionIFace.CompareType.Equals);
+                if (colRelType != null)
+                {
+                    leftSideCol  = colRelType.getLeftSideCollection();
+                    rightSideCol = colRelType.getRightSideCollection();
+                    colRelType.getRelationships().size();
+                    
+                    isLeftSide = AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId().equals(leftSideCol.getCollectionId());
+                    
+                } else
+                {
+                    // RelName not found.
+                }
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                
+            } finally
+            {
+                if (tmpSession != null)
+                {
+                    tmpSession.close();
+                }
             }
-        });
+            
+            CellConstraints cc = new CellConstraints();
+            PanelBuilder pb = new PanelBuilder(new FormLayout("p",  "p"), this);
+            
+            int btnOpts = ValComboBoxFromQuery.CREATE_EDIT_BTN | ValComboBoxFromQuery.CREATE_NEW_BTN | ValComboBoxFromQuery.CREATE_SEARCH_BTN;
+            cbx = new ValComboBoxFromQuery(DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()),
+                                    "catalogNumber",
+                                    "catalogNumber",
+                                    "catalogNumber",
+                                    null,
+                                    "CatalogNumber",
+                                    null,
+                                    "",
+                                    null, // helpContext
+                                    btnOpts);
+            pb.add(cbx, cc.xy(1, 1));
+            
+            adjustSQLTemplate();
+            
+            cbx.addListSelectionListener(new ListSelectionListener() {
+                public void valueChanged(ListSelectionEvent e)
+                {
+                    itemSelected();
+                }
+            });
+            
+        } else
+        {
+            // no Relationship name
+        }
+             
     }
     
     /**
@@ -200,16 +237,6 @@ public class CollectionRelPlugin extends UIPluginBase
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.UIPluginBase#initialize(java.util.Properties, boolean)
-     */
-    @Override
-    public void initialize(Properties propertiesArg, boolean isViewModeArg)
-    {
-        super.initialize(propertiesArg, isViewModeArg);
-        
-    }
-
-    /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.UIPluginBase#setValue(java.lang.Object, java.lang.String)
      */
     @Override
@@ -227,7 +254,7 @@ public class CollectionRelPlugin extends UIPluginBase
 
             for (CollectionRelationship colRel : rels)
             {
-                if (colRel.getCollectionRelType().equals(colRelType))
+                if (colRel.getCollectionRelType().getId().equals(colRelType.getId()))
                 {
                     collectionRel = colRel;
                     otherSide = isLeftSide ? colRel.getRightSide() : colRel.getLeftSide();

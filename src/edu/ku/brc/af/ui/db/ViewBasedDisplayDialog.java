@@ -53,7 +53,7 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
     protected ViewBasedDisplayPanel         viewBasedPanel = null;
     protected ViewBasedDisplayActionAdapter vbdaa          = null;
     protected Object                        parentDataObj  = null;
-    
+    protected boolean                       doSave         = false;
     
     
     /**
@@ -225,6 +225,14 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
         createUI();
     }
     
+    /**
+     * @param doSave the doSave to set
+     */
+    public void setDoSave(boolean doSave)
+    {
+        this.doSave = doSave;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CustomDialog#createUI()
      */
@@ -345,7 +353,14 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
                 if (br != null && fvo.getDataObj() != null)
                 {
                     boolean isNewObj = MultiView.isOptionOn(fvo.getMVParent().getOptions(), MultiView.IS_NEW_OBJECT);
-                    if (BusinessRulesIFace.STATUS.OK != br.processBusinessRules(parentDataObj, 
+                    if (doSave)
+                    {
+                        if (!fvo.saveObject())
+                        {
+                            return;
+                        }
+                        
+                    } else if (BusinessRulesIFace.STATUS.OK != br.processBusinessRules(parentDataObj, 
                                                                                 fvo.getDataObj(), 
                                                                                 isNewObj))
                     {

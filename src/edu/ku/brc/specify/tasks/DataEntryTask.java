@@ -80,8 +80,8 @@ import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewLoader;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -734,7 +734,7 @@ public class DataEntryTask extends BaseTask
                             
                             NavBoxAction nba = new NavBoxAction(cmdAction);
                             
-                            NavBoxItemIFace nbi = NavBox.createBtnWithTT(tableInfo.getTitle(), dev.getIconName(), dev.getToolTip(), IconManager.STD_ICON_SIZE, nba);
+                            NavBoxItemIFace nbi = NavBox.createBtnWithTT(dev.getTitle(), dev.getIconName(), dev.getToolTip(), IconManager.STD_ICON_SIZE, nba);
                             if (nbi instanceof NavBoxButton)
                             {
                                 NavBoxButton nbb = (NavBoxButton)nbi;
