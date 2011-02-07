@@ -25,11 +25,11 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
-import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**
@@ -166,6 +166,7 @@ public class DateConverter
                 }
                 Calendar result = new GregorianCalendar();
                 result.setLenient(false);
+                df.setLenient(false);
                 result.setTime(df.parse(dateStr));
                 return result;
             }
@@ -256,6 +257,7 @@ public class DateConverter
                 }
                 Calendar result = new GregorianCalendar();
                 result.setLenient(false);
+                df.setLenient(false);
                 result.setTime(df.parse(dateStr));
                 return result;
             }
@@ -345,6 +347,7 @@ public class DateConverter
                 }
                 Calendar result = new GregorianCalendar();
                 result.setLenient(false);
+                df.setLenient(false);
                 result.setTime(df.parse(dateStr));
                 return result;
             }
@@ -436,6 +439,7 @@ public class DateConverter
                 }
                 Calendar result = new GregorianCalendar();
                 result.setLenient(false);
+                df.setLenient(false);
                 result.setTime(df.parse(dateStr));
                 return result;
             }
@@ -613,8 +617,26 @@ public class DateConverter
      */
     public DateConverter()
     {
-        Locale loc = Locale.getDefault();
-        preferMonthDay = /*loc == Locale.CANADA || */loc == Locale.US;            
+        String currentFormat = AppPreferences.getRemote().get("ui.formatting.scrdateformat", null);  
+        if (currentFormat.startsWith("MM") || currentFormat.startsWith("mm"))
+        {
+        	preferMonthDay = true;
+        } else if (currentFormat.startsWith("DD") || currentFormat.startsWith("dd"))
+        {
+        	preferMonthDay = false;
+        } else
+        {
+            DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT); //for default locale; SHORT -> completely numeric
+            Calendar result = new GregorianCalendar();
+            result.set(2000, 3, 1);
+            String dtstr = df.format(result.getTime());
+            int moIdx = dtstr.indexOf("4");
+            int dayIdx = dtstr.indexOf("1");
+            preferMonthDay = moIdx < dayIdx;
+        }
+        
+        //System.out.println(df.)
+        //preferMonthDay = /*loc == Locale.CANADA || */loc == Locale.US;            
     }
 
     /**
