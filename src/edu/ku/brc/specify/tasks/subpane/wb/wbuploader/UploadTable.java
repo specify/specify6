@@ -3804,6 +3804,7 @@ public class UploadTable implements Comparable<UploadTable>
                 if (!busRule.beforeSaveCommit(mergedRec, tblSession))
                 {
                     tblSession.rollback();
+                    tblTransactionOpen = false;
                     throw new Exception("Business rules processing failed");
                 }
             }
