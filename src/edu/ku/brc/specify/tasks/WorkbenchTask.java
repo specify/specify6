@@ -97,6 +97,7 @@ import edu.ku.brc.helpers.ImageFilter;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.UIFileFilter;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -803,10 +804,38 @@ public class WorkbenchTask extends BaseTask
                 mapper.setSize(size);
             }
         }
+        if (!templateIsEditable(template))
+        {
+        	UIRegistry.showLocalizedMsg("WorkbenchTask.ExportedDatasetTemplateNotEditable");
+        	mapper.setReadOnly(true);
+        }
         UIHelper.centerAndShow(mapper);
         return mapper;
     }
     
+    /**
+     * @param template
+     * @return true if the template's mappings can be edited.
+     */
+    protected boolean templateIsEditable(final WorkbenchTemplate template)
+    {
+    	//the templates for workbenches that have been filled with records from the database are not editable
+		//seems like it might be better to indicate in the template that it was designed for export but for
+    	//now need to check the workbench
+    	for (Workbench wb : template.getWorkbenches())
+    	{
+    		//currently we maintain a 1-1 between wb and wb template.
+    		if (wb.getExportedFromTableName() != null)
+    		{
+    			int rowCount = BasicSQLUtils.getCountAsInt("select count(workbenchrowid) from workbenchrow where workbenchid = " + wb.getId());
+    			if (rowCount > 0)
+    			{
+    				return false;
+    			}
+    		}
+    	}
+    	return true;    	
+    }
     /**
      * Creates a new WorkBenchTemplate from the Column Headers and the Data in a file.
      * @return the new WorkbenchTemplate
