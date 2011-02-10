@@ -26,8 +26,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -42,10 +45,14 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBInfoBase;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.specify.dbsupport.cleanuptools.DataObjTableModel;
+import edu.ku.brc.specify.dbsupport.cleanuptools.DataObjTableModelRowInfo;
 import edu.ku.brc.specify.plugins.sgr.RawData.DataIndexType;
+import edu.ku.brc.specify.toycode.mexconabio.AnalysisBase;
+import edu.ku.brc.ui.DateParser;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 
@@ -59,7 +66,9 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class SGRResultsDisplay extends BaseResultsDisplay
 {
-    protected static final Logger  log = Logger.getLogger(SGRResultsDisplay.class);
+    private static final Logger  log = Logger.getLogger(SGRResultsDisplay.class);
+    private static final HashMap<String, Color> colorHash = new HashMap<String, Color>();
+
     
                 //                       0          1                    2                3
     private final String[] colNames = {"Id", "Institution Code", "Collection Code", "Catalog Number", 
@@ -75,6 +84,23 @@ public class SGRResultsDisplay extends BaseResultsDisplay
                                        "Collector Name", "Locality", "Date", "Collector Number", 
                 //                       24         
                                        "Score"};
+    // Names that match a WorkBench
+                                     //  0          1                 2                3
+    private final String[] wbNames = {"id", "institutioncode", "collectioncode", "catalognumber", 
+            //                       4            5            6             7 
+                                   "genus1", "species1", "subspecies1", "latitude1", 
+            //                       8                9               10              11
+                                   "longitude1", "latlonprec", "maxaltitude", "minaltitude", 
+            //                       12                 13          14            15 
+                                   "altprecision", "minDepth", "maxdepth", "depthprecision", 
+            //                       16            17         18      19
+                                   "continent", "country", "state", "county", 
+            //                       20                  21         22            23
+                                   "collectorname", "localityname", "startdate", "fieldnumber", 
+            //                       24         
+                                   null};
+    
+    private HashMap<String, Integer> wbColToIndexHash = new HashMap<String, Integer>();
     
     private final Class<?> dataClasses[] = {Integer.class, String.class, String.class, String.class, 
                                             String.class, String.class, String.class, String.class, 
@@ -87,7 +113,9 @@ public class SGRResultsDisplay extends BaseResultsDisplay
 
     protected List<Integer> idList    = new Vector<Integer>();
     protected List<Integer> rowScores = new Vector<Integer>();
-    protected List<RawData> baseRows;
+    protected RawData       baseRow;
+    
+    protected AnalysisBase  analysis  = new AnalysisBase();
     
     protected JButton       geoRefToolBtn;
 
@@ -98,6 +126,8 @@ public class SGRResultsDisplay extends BaseResultsDisplay
     public SGRResultsDisplay(final Connection connection)
     {
         super(connection);
+        
+        analysis.setColorsForJTable();
     }
     
     /**
@@ -105,6 +135,10 @@ public class SGRResultsDisplay extends BaseResultsDisplay
      */
     public void setGroupData(final GroupingColObjData groupData, final RawData baseRow)
     {
+        this.baseRow = baseRow;
+        
+        System.out.println(baseRow.toString());
+        
         hasData = false;
         
         idList.clear();
@@ -115,18 +149,13 @@ public class SGRResultsDisplay extends BaseResultsDisplay
         topTable.setModel(model);
         botTable.setModel(newModel);
         
-        if (colorGrid == null)
-        {
-            colorGrid = new ArrayList<Color[]>();
-            for (Object dataObj : model.getValues())
-            {
-                Object[] row      = (Object[])dataObj;
-                Color[]  colorRow = new Color[row.length];
-                colorGrid.add(colorRow);
-            }
-        }
-        Color CADETBLUE = new Color(95, 158, 160);
-        Color DARKGREEN = new Color(65, 105, 225);
+        initColorGrid(model.getValues());
+        
+        /*
+        Color CADETBLUE = new Color(166, 121, 0);
+        Color DARKGREEN = new Color(48, 77, 166);
+        Color GREEN     = new Color(166, 0, 166);
+        Color YELLOW    = new Color(166, 166, 0);
         
         int rowInx = 0;
         for (Object dataObj : model.getValues())
@@ -141,6 +170,11 @@ public class SGRResultsDisplay extends BaseResultsDisplay
             
             for (RawData.DataIndexType dt : RawData.DataIndexType.values())
             {
+                if (dt.ordinal() >= colIndex.length)
+                {
+                    continue;
+                }
+                
                 Integer inx = colIndex[dt.ordinal()];
                 if (inx != null)
                 {
@@ -155,7 +189,7 @@ public class SGRResultsDisplay extends BaseResultsDisplay
                         
                         if (StringUtils.isNotEmpty(rdStr) && StringUtils.isNotEmpty(mdStr))
                         {
-                            colorRow[inx] = rdStr.equals(mdStr) ? Color.BLACK : Color.GREEN;
+                            colorRow[inx] = rdStr.equals(mdStr) ? Color.BLACK : GREEN;
                             
                         } else if (StringUtils.isEmpty(rdStr) && StringUtils.isNotEmpty(mdStr))
                         {
@@ -163,14 +197,14 @@ public class SGRResultsDisplay extends BaseResultsDisplay
                             
                         } else if (StringUtils.isNotEmpty(rdStr) && StringUtils.isEmpty(mdStr))
                         {
-                            colorRow[inx] = Color.YELLOW;
+                            colorRow[inx] = YELLOW;
                         } else
                         {
                             colorRow[inx] = CADETBLUE;
                         }
                     } else if (rdDataObj != null && mdDataObj != null)
                     {
-                        colorRow[inx] = rdDataObj.equals(mdDataObj) ? Color.BLACK : Color.GREEN;
+                        colorRow[inx] = rdDataObj.equals(mdDataObj) ? Color.BLACK : GREEN;
                         
                     } else if (rdDataObj == null && mdDataObj != null)
                     {
@@ -178,7 +212,7 @@ public class SGRResultsDisplay extends BaseResultsDisplay
                         
                     } else if (rdDataObj != null && mdDataObj == null)
                     {
-                        colorRow[inx] = Color.YELLOW;
+                        colorRow[inx] = YELLOW;
                     } else
                     {
                         colorRow[inx] = CADETBLUE;
@@ -187,7 +221,36 @@ public class SGRResultsDisplay extends BaseResultsDisplay
                 }
             }
             rowInx++;
+        }*/
+    }
+    
+    /**
+     * 
+     */
+    protected void initColorGrid(final Vector<Object[]> vals)
+    {
+        if (colorGrid == null)
+        {
+            colorGrid = new Vector<Color[]>();
+            for (Object dataObj : vals)
+            {
+                Object[] row      = (Object[])dataObj;
+                Color[]  colorRow = new Color[row.length];
+                for (int i=0;i<colorRow.length;i++)
+                {
+                    colorRow[i] = Color.BLACK;
+                }
+                colorGrid.add(colorRow);
+            }
+            
+            Color[] colors = new Color[colorGrid.get(0).length];
+            for (int i=0;i<colors.length;i++)
+            {
+                colors[i] = Color.BLACK;
+            }
+            colorGrid.insertElementAt(colors, 0);
         }
+
     }
     
     /* (non-Javadoc)
@@ -228,10 +291,200 @@ public class SGRResultsDisplay extends BaseResultsDisplay
                     DBFieldInfo fi = new DBFieldInfo(tableInfo, colNames[i], dataClasses[i]);
                     fi.setTitle(colNames[i]);
                     colDefItems.add(fi);
+                    
+                    if (StringUtils.isNotEmpty(wbNames[i]))
+                    {
+                        wbColToIndexHash.put(wbNames[i], i);
+                        System.out.println("mappingv["+wbNames[i]+"]  i["+i+"]");
+                    }
                 }
                 numColumns = colNames.length;
                 
                 return idList.size() == 0 ? null : fullSQL;
+            }
+
+            /* (non-Javadoc)
+             * @see edu.ku.brc.specify.dbsupport.cleanuptools.DataObjTableModel#addAdditionalRows(java.util.ArrayList, java.util.ArrayList)
+             */
+            @Override
+            protected void addAdditionalRows(final ArrayList<DBInfoBase> colDefItems,
+                                             final ArrayList<DataObjTableModelRowInfo> rowInfoList)
+            {
+                super.addAdditionalRows(colDefItems, rowInfoList);
+                
+                initColorGrid(values);
+
+                Object[] row = new Object[colDefItems.size()];
+                for (String colName : wbNames)
+                {
+                    if (colName != null)
+                    {
+                        Object  data      = baseRow.getData(colName);
+                        Integer dataIndex = wbColToIndexHash.get(colName);
+                        if (dataIndex != null)
+                        {
+                            row[dataIndex] = data != null ? data : "";
+                        }
+                        System.out.println("colName["+colName+"]  data["+data+"]  dataIndex["+dataIndex+"]");
+                    }
+                }
+                
+                /*System.out.println("=================================================================================");
+                for (Object obj : row)
+                {
+                    System.out.print(obj+",");
+                    
+                }
+                System.out.println();
+                System.out.println("---------------------------------------------------------------------------------");
+                for (Object[] dataRow : values)
+                {
+                    for (Object obj : dataRow)
+                    {
+                        System.out.print(obj+",");
+                        
+                    }
+                    System.out.println();
+                }*/
+                
+                ArrayList<DataObjTableModelRowInfo> oldItems = new ArrayList<DataObjTableModelRowInfo>(rowInfoList);
+                for (DataObjTableModelRowInfo ri : oldItems)
+                {
+                    ri.setMainRecord(false);
+                }
+                rowInfoList.clear();
+                rowInfoList.add(new DataObjTableModelRowInfo(-1, true, true));
+                rowInfoList.addAll(oldItems);
+                
+                values.insertElementAt(row, 0);
+                
+                Object[] refRow = new Object[AnalysisBase.NUM_FIELDS];
+                for (DataIndexType dit : DataIndexType.values())
+                {
+                    if (dit.ordinal() < AnalysisBase.NUM_FIELDS)
+                    {
+                        refRow[dit.ordinal()] = baseRow.getData(dit);
+                        System.out.println(dit+" / "+refRow[dit.ordinal()] +"  "+dit.ordinal());
+                    }
+                }
+                System.out.println();
+                
+                row[row.length-1] = 100;
+                
+                Color[] cr = colorGrid.get(0);
+                for (int i=0;i<cr.length-1;i++)
+                {
+                    cr[i] = Color.BLACK;
+                }
+                
+                Object[] cmpRow = new Object[AnalysisBase.NUM_FIELDS];
+                for (int rowInx=1;rowInx<values.size();rowInx++)
+                {
+                    Object[] valRow = values.get(rowInx);
+                    
+                    for (int ii=0;ii<cmpRow.length;ii++)
+                    {
+                        cmpRow[ii] = null;
+                    }
+                        
+                    for (String colName : wbNames)
+                    {
+                        if (colName != null)
+                        {
+                            Integer destIndex = RawData.getIndex(colName);
+                            Integer srcIndex = wbColToIndexHash.get(colName);
+                            //System.out.println(destIndex+" / "+srcIndex);
+                            if (destIndex != null && srcIndex != null && 
+                                destIndex < AnalysisBase.NUM_FIELDS && srcIndex < valRow.length)
+                            {
+                                cmpRow[destIndex] = valRow[srcIndex];
+                                System.out.println(colName+" / "+valRow[srcIndex]+"  "+destIndex);
+                            }
+                        }
+                    }
+                    System.out.println();
+                    
+                    Integer srcIndex = wbColToIndexHash.get("startdate");
+                    String  dateStr  = (String)valRow[srcIndex];
+                    if (StringUtils.isNotEmpty(dateStr))
+                    {
+                        DateParser dp = new DateParser("yyyy-MM-dd");
+                        Date date = dp.parseDate(dateStr);
+                        if (date != null)
+                        {
+                            Calendar cal = Calendar.getInstance();
+                            cal.setTime(date);
+                            cmpRow[DataIndexType.eYear.ordinal()] = Integer.toString(cal.get(Calendar.YEAR));
+                            cmpRow[DataIndexType.eMonth.ordinal()] = Integer.toString(cal.get(Calendar.MONTH)+1);
+                            cmpRow[DataIndexType.eDay.ordinal()] = Integer.toString(cal.get(Calendar.DAY_OF_MONTH));
+                        } else
+                        {
+                            log.error("Bad date["+dateStr+"]");
+                        }
+                    }
+                    
+                    analysis.clearRowAttrs(); // clears colors
+                    
+                    int    score    = analysis.score(refRow, cmpRow);
+                    double maxScore = analysis.getMaxScore();
+                    valRow[valRow.length-1] = (int)(((score  / maxScore) * 100.0) + 0.5);
+                    
+                    String[] colors   = analysis.getTDColorCodes();
+                    Color[]  colorRow = colorGrid.get(rowInx);
+                    for (int i=0;i<colorRow.length-1;i++)
+                    {
+                        colorRow[i] = Color.GRAY;
+                    }
+                    colorRow[colorRow.length-1] = Color.BLACK;
+                    
+                    for (String colName : wbNames)
+                    {
+                        if (colName != null)
+                        {
+                            boolean isStartDate = colName.equals("startdate");
+                            Integer dIndex = RawData.getIndex(colName);
+                            Integer sIndex = wbColToIndexHash.get(colName);
+                            System.out.println(colName+"  dIndex:"+dIndex+"  sIndex:"+sIndex+"  colorRow.length:"+colorRow.length+"  colors.length:"+colors.length+"  "+Color.GRAY.getBlue());
+                            
+                            if (dIndex != null && srcIndex != null && 
+                                (isStartDate || dIndex < colors.length) && sIndex < colorRow.length)
+                            {
+                                String rgb = isStartDate ? colors[AnalysisBase.DAY_INX] : colors[dIndex];
+                                System.out.println(colName+"  colorStr:"+rgb+"  dIndex:"+dIndex+"  sIndex:"+sIndex);
+                                if (rgb != null)
+                                {
+                                    Color c = colorHash.get(rgb);
+                                    if (c == null)
+                                    {
+                                        c = UIHelper.parseRGB(rgb);
+                                        colorHash.put(rgb, c);
+                                    }
+                                    colorRow[sIndex] = c;
+                                } else
+                                {
+                                    colorRow[sIndex] = Color.GRAY;
+                                }
+                            }
+                        }
+                    }
+                    
+                    /*int colInx = 0;
+                    for (String colorStr : analysis.getTDColorCodes())
+                    {
+                        System.out.print(colorStr+", ");
+                        if (colorStr != null)
+                        {
+                            int rgb = Integer.parseInt(colorStr, 16);
+                            colorRow[colInx] = new Color(rgb);
+                        } else
+                        {
+                            colorRow[colInx] = Color.BLACK;
+                        }
+                        colInx++;
+                    }
+                    System.out.println();
+                    */
+                }
             }
 
             /* (non-Javadoc)
@@ -245,9 +498,17 @@ public class SGRResultsDisplay extends BaseResultsDisplay
                     @Override
                     public int compare(Object[] o1, Object[] o2)
                     {
-                        Integer i1 = (Integer)o1[o1.length-1];
-                        Integer i2 = (Integer)o2[o2.length-1];
-                        return i2.compareTo(i1);
+                        if (o1 != null && o2 != null && o1[o1.length-1] instanceof Integer && o2[o2.length-1] instanceof Integer)
+                        {
+                            Integer i1 = (Integer)o1[o1.length-1];
+                            Integer i2 = (Integer)o2[o2.length-1];
+                            
+                            if (i1 != null && i2 != null)
+                            {
+                                return i2.compareTo(i1);
+                            }
+                        }
+                        return 0;
                     }
                     
                 });
@@ -367,7 +628,7 @@ public class SGRResultsDisplay extends BaseResultsDisplay
      */
     private JButton createWeightingConfig()
     {
-        return createIconBtn("Weightings", IconManager.IconSize.NonStd, "WB_SHOW_IMG_WIN", false, true, new ActionListener()
+        return createIconBtn("Weightings", IconManager.IconSize.NonStd, "Weighting Config", false, true, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -381,7 +642,7 @@ public class SGRResultsDisplay extends BaseResultsDisplay
      */
     private JButton createColorConfig()
     {
-        return createIconBtn("ColorPalette", IconManager.IconSize.NonStd, "WB_SHOW_IMG_WIN", false, true, new ActionListener()
+        return createIconBtn("ColorPalette", IconManager.IconSize.NonStd, "COlor COnfig", false, true, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -395,7 +656,7 @@ public class SGRResultsDisplay extends BaseResultsDisplay
      */
     private JButton createImageLabelTool()
     {
-        return createIconBtn("CardImage", IconManager.IconSize.NonStd, "WB_SHOW_IMG_WIN", false, true, new ActionListener()
+        return createIconBtn("CardImage", IconManager.IconSize.NonStd, "Show Image Label", false, true, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {

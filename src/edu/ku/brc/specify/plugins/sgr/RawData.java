@@ -21,6 +21,8 @@ package edu.ku.brc.specify.plugins.sgr;
 
 import java.util.HashMap;
 
+import org.apache.log4j.Logger;
+
 /**
  * @author rods
  *
@@ -31,20 +33,35 @@ import java.util.HashMap;
  */
 public class RawData
 {
+    protected static final Logger  log = Logger.getLogger(RawData.class);
+            
     private static HashMap<Integer, DataIndexType> map = new HashMap<Integer, DataIndexType>();
     
+    // The order matches AnalysisBase
     public enum DataIndexType {
-        eCollector_num, eInstitution_code, eCollection_code, eCatalogue_number, eAuthor, eFamily, eGenus, eSpecies, eSubspecies, 
-        eLatitude, eLongitude, eMax_altitude, eMin_altitude, eCountry, eState_province, eCounty, eCollector_name, eLocality, eYear, eMonth, eDay
+        eCollector_num, eCatalogue_number, eGenus, eSpecies, eSubspecies, eCollector_name, eLocality, 
+        eLatitude, eLongitude, eYear, eMonth, eDay, eCountry, eState_province, eCounty, 
+        eFamily, eMax_altitude, eMin_altitude, eInstitution_code, eCollection_code, eAuthor, eStartDate,
     }
     
+    private static String[] dataColumnNames = {
+        "fieldnumber", "catalognumber", "genus1", "species1", "subspecies1", "collectorname", "localityname", 
+        "latitude1", "longitude1", "year", "month", "day", "country", "state", "county", 
+        "family1", "maxaltitude", "minaltitude", "institutioncode", "collectioncode", "author", "startdate",
+    };
+    
+    private static HashMap<String, DataIndexType> dataColInxHash = new HashMap<String, DataIndexType>();
+    
+    // Non-Static data members
     private HashMap<DataIndexType, Object>  values = new HashMap<DataIndexType, Object>();
 
+    // Static initialization
     static
     {
         for (DataIndexType dit : DataIndexType.values())
         {
             map.put(dit.ordinal(), dit);
+            dataColInxHash.put(dataColumnNames[dit.ordinal()], dit);
         }
     }
     
@@ -80,6 +97,54 @@ public class RawData
     public Object getData(final DataIndexType index)
     {
         return values.get(index);
+    }
+    
+    /**
+     * @param colName
+     * @return
+     */
+    public Object getData(final String colName)
+    {
+        DataIndexType dit = dataColInxHash.get(colName);
+        if (dit != null)
+        {
+            return getData(dit);
+        }
+        
+        log.error("Couldn't find column for name["+colName+"]");
+        return null;
+    }
+    
+    /**
+     * @param colName
+     * @return
+     */
+    public static Integer getIndex(final String colName)
+    {
+        DataIndexType dit = dataColInxHash.get(colName);
+        if (dit != null)
+        {
+            return dit.ordinal();
+        }  
+        return null;
+    }
+
+    /**
+     * @param dit
+     * @return standard column name for the enum
+     */
+    public static String getColumnName(final DataIndexType dit)
+    {
+        return dataColumnNames[dit.ordinal()];
+    }
+
+    /**
+     * @param colName
+     * @return
+     */
+    public static DataIndexType getDataIndexType(final String colName)
+    {
+        return dataColInxHash.get(colName);
     }
     
     /**

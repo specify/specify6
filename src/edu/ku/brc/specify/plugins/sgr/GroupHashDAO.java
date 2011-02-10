@@ -203,6 +203,11 @@ public class GroupHashDAO
         return null;
     }
     
+    public void score(final Object[] refRow)
+    {
+        
+    }
+    
     /**
      * @param collNum
      * @param genus
@@ -259,7 +264,7 @@ public class GroupHashDAO
     }
     
     /**
-     * @return
+     * @return a new or recycled data object
      */
     public RawData getRawDataObj()
     {

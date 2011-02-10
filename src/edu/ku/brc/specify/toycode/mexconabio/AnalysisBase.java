@@ -37,7 +37,7 @@ import edu.ku.brc.specify.conversion.ConversionLogger;
 import edu.ku.brc.specify.conversion.TableWriter;
 import edu.ku.brc.util.AttachmentUtils;
 
-public abstract class AnalysisBase
+public class AnalysisBase
 {
     protected final double        HRS = 1000.0 * 60.0 * 60.0;
     protected final Calendar      cal = Calendar.getInstance();
@@ -45,22 +45,22 @@ public abstract class AnalysisBase
     
     public    static final int NUM_FIELDS = 16;
     
-    protected static final int COLNUM_INX     = 0;
-    protected static final int CATNUM_INX     = 1;
-    protected static final int GENUS_INX      = 2;
-    protected static final int SPECIES_INX    = 3;
-    protected static final int SUBSPECIES_INX = 4;
-    protected static final int COLLECTOR_INX  = 5;
-    protected static final int LOCALITY_INX   = 6;
-    protected static final int LATITUDE_INX   = 7;
-    protected static final int LONGITUDE_INX  = 8;
-    protected static final int YEAR_INX       = 9;
-    protected static final int MON_INX        = 10;
-    protected static final int DAY_INX        = 11;
-    protected static final int COUNTRY_INX    = 12;
-    protected static final int STATE_INX      = 13;
-    protected static final int INST_INX       = 14;
-    protected static final int SCORE_INX      = 15;
+    public static final int COLNUM_INX     = 0;
+    public static final int CATNUM_INX     = 1;
+    public static final int GENUS_INX      = 2;
+    public static final int SPECIES_INX    = 3;
+    public static final int SUBSPECIES_INX = 4;
+    public static final int COLLECTOR_INX  = 5;
+    public static final int LOCALITY_INX   = 6;
+    public static final int LATITUDE_INX   = 7;
+    public static final int LONGITUDE_INX  = 8;
+    public static final int YEAR_INX       = 9;
+    public static final int MON_INX        = 10;
+    public static final int DAY_INX        = 11;
+    public static final int COUNTRY_INX    = 12;
+    public static final int STATE_INX      = 13;
+    public static final int INST_INX       = 14;
+    public static final int SCORE_INX      = 15;
     
     protected static final int DO_COLNUM     = 1;
     protected static final int DO_CATNUM     = 2;
@@ -77,14 +77,14 @@ public abstract class AnalysisBase
     protected static final int DO_STATE      = 16192;
     protected static final int DO_ALL        = (DO_STATE*2)-1;
     
-//                                                     1          2           3       4              5               6         7          8           9               10           11       12       13        14     15       16         17               18
-    protected static final String snibSQL = "SELECT IdSNIB, CatalogNumber, Genus, Species, Cataegoryinfraspecies, Latitude, Longitude, Country, LastNameFather, LastNameMother, FirstName, State, Locality, `Year`, `Month`, `Day`, CollectorNumber, InstitutionAcronym "; 
+//                                                 1          2           3       4              5               6         7          8           9               10           11       12       13        14     15       16         17               18
+    public static final String snibSQL = "SELECT IdSNIB, CatalogNumber, Genus, Species, Cataegoryinfraspecies, Latitude, Longitude, Country, LastNameFather, LastNameMother, FirstName, State, Locality, `Year`, `Month`, `Day`, CollectorNumber, InstitutionAcronym "; 
     
-//                                                  1         2           3        4         5           6         7          8          9               10            11      12    13    14        15               16
-    protected static final String gbifSQL = "SELECT id, catalogue_number, genus, species, subspecies, latitude, longitude, country, state_province, collector_name, locality, year, month, day, collector_num, institution_code ";
+//                                                1         2           3        4         5           6         7          8          9               10            11      12    13    14        15               16
+    public static final String gbifSQL = "SELECT id, catalogue_number, genus, species, subspecies, latitude, longitude, country, state_province, collector_name, locality, year, month, day, collector_num, institution_code ";
     
-//                                                    1       2           3              4           5             6              7               8           9       10   11
-    protected static final String michSQL = "SELECT BarCD, CollNr, Collectoragent1, GenusName, SpeciesName, SubSpeciesName, LocalityName, Datecollstandrd, COUNTRY, STATE, ID ";
+//                                                 1       2           3              4           5             6              7               8           9       10   11
+    public static final String michSQL = "SELECT BarCD, CollNr, Collectoragent1, GenusName, SpeciesName, SubSpeciesName, LocalityName, Datecollstandrd, COUNTRY, STATE, ID ";
 
     
     public static final  String CONN_STR = "jdbc:mysql://%s:%s/%s?characterEncoding=UTF-8&autoReconnect=true";
@@ -94,13 +94,13 @@ public abstract class AnalysisBase
     protected int      maxScore       = 0;
     protected int      thresholdScore = 50;
     
-    protected static final String BGR = "bgr";
-    protected static final String GR  = "gr";
-    protected static final String BYW = "byw";
-    protected static final String YW  = "yw";
-    protected static final String DF  = "df";
-    protected static final String RD  = "rd";
-    protected static final String BL  = "bl";
+    protected static String BGR = "bgr";
+    protected static String GR  = "gr";
+    protected static String BYW = "byw";
+    protected static String YW  = "yw";
+    protected static String DF  = "df";
+    protected static String RD  = "rd";
+    protected static String BL  = "bl";
     
     protected String[]          tdColorCodes;
     
@@ -141,6 +141,14 @@ public abstract class AnalysisBase
     }
     
     
+    /**
+     * @return the tdColorCodes
+     */
+    public String[] getTDColorCodes()
+    {
+        return tdColorCodes;
+    }
+
     /**
      * @param baseDirName
      * @param dirName
@@ -186,6 +194,23 @@ public abstract class AnalysisBase
         startNewDocument(fileName, title, includeTable, width);
     }
     
+    /**
+     * @return the maxScore
+     */
+    public int getMaxScore()
+    {
+        return maxScore;
+    }
+
+    /**
+     * @return the rowScore
+     */
+    public static int getRowScore()
+    {
+        return rowScore;
+    }
+
+
     /**
      * @return
      */
@@ -392,7 +417,7 @@ public abstract class AnalysisBase
     /**
      * 
      */
-    protected void clearRowAttrs()
+    public void clearRowAttrs()
     {
         clearRowAttrs(null);
     }
@@ -417,7 +442,7 @@ public abstract class AnalysisBase
      * @param rs
      * @throws SQLException 
      */
-    protected void fillMichRow(final Object[] refRow, final ResultSet rs) throws SQLException
+    public void fillMichRow(final Object[] refRow, final ResultSet rs) throws SQLException
     {
         String  catNum       = rs.getString(1);
         String  collectorNum = rs.getString(2);
@@ -477,7 +502,7 @@ public abstract class AnalysisBase
      * @param rs
      * @throws SQLException
      */
-    protected void fillSNIBRow(final Object[] cmpRow, final ResultSet rs) throws SQLException
+    public void fillSNIBRow(final Object[] cmpRow, final ResultSet rs) throws SQLException
     {
         //   1          2           3        4                5             6         7          8          9               10            11       12       13        14     15       16         17                18
         // IdSNIB, CatalogNumber, Genus, Species, Cataegoryinfraspecies, Latitude, Longitude, Country, LastNameFather, LastNameMother, FirstName, State, Locality, `Year`, `Month`, `Day`, CollectorNumber, InstitutionAcronym FROM angiospermas "; 
@@ -536,7 +561,7 @@ public abstract class AnalysisBase
      * @param rs
      * @throws SQLException
      */
-    protected void fillGBIFRow(final Object[] cmpRow, final ResultSet rs) throws SQLException
+    public void fillGBIFRow(final Object[] cmpRow, final ResultSet rs) throws SQLException
     {
         cmpRow[CATNUM_INX]     = rs.getString(2);
         cmpRow[COLNUM_INX]     = rs.getString(15);
@@ -586,7 +611,7 @@ public abstract class AnalysisBase
      * @param gRS
      * @throws SQLException
      */
-    protected int fillRowWithScore(final Object[] cmpRow, final ResultSet gRS) throws SQLException
+    public int fillRowWithScore(final Object[] cmpRow, final ResultSet gRS) throws SQLException
     {
         //                        1       2               3        4         5         6          7         8           9               10          11       12    13    14      15
         //String srcSQL = "SELECT id, catalogue_number, genus, species, subspecies, latitude, longitude, country, state_province, collector_name, locality, year, month, day, collector_num " +
@@ -757,7 +782,7 @@ public abstract class AnalysisBase
      * @param compareRow
      * @return
      */
-    protected int score(final Object[] refRow, final Object[] compareRow)
+    public int score(final Object[] refRow, final Object[] compareRow)
     {
         //Calendar cal = Calendar.getInstance();
         
@@ -831,12 +856,21 @@ public abstract class AnalysisBase
             refCountry = "México";
         }
         
+        if (StringUtils.isNotEmpty(refCollector))
+        {
+            refCollector = StringUtils.replaceChars(refCollector, ',', ' ');
+        }
+        if (StringUtils.isNotEmpty(collector))
+        {
+            collector = StringUtils.replaceChars(collector, ',', ' ');
+        }
+        
         int score = 0;
         
          score += compareDate(year, mon, day, refYear, refMon, refDay);
         
-        double ratingLoc   = longStringCompare(refLocality,  locality, false);
-        double ratingColtr = longStringCompare(refCollector, collector, false);
+        double ratingLoc   = longStringCompare(refLocality.toLowerCase(),  locality.toLowerCase(), false, true);
+        double ratingColtr = longStringCompare(refCollector.toLowerCase(), collector.toLowerCase(), false, true);
         
         if (ratingLoc > 50.0)
         {
@@ -937,6 +971,9 @@ public abstract class AnalysisBase
         
         if (refCountry != null && country != null) 
         {
+            refCountry = refCountry.toLowerCase();
+            country    = country.toLowerCase();
+            
             if (refCountry.equals(country))
             {
                 score += 10;
@@ -951,6 +988,9 @@ public abstract class AnalysisBase
         
         if (refState != null && state != null) 
         {
+            refState = refState.toLowerCase();
+            state    = state.toLowerCase();
+
             if (refState.equals(state))
             {
                 score += 10;
@@ -991,11 +1031,22 @@ public abstract class AnalysisBase
      * @param usePeriods
      * @return
      */
-    protected String cleanString(final String str, final boolean usePeriods)
+    protected String cleanString(final String str, 
+                                 final boolean usePeriods,
+                                 final boolean replaceWithSpaces)
     {
         String s = StringUtils.remove(str, ':');
         
-        if (!usePeriods) s = StringUtils.remove(s, '.');
+        if (!usePeriods)
+        {
+            if (replaceWithSpaces)
+            {
+                s = StringUtils.replaceChars(s, '.', ' ');
+            } else
+            {
+                s = StringUtils.remove(s, '.');
+            }
+        }
         
         s = StringUtils.remove(s, '-');
         s = StringUtils.remove(s, ',');
@@ -1008,14 +1059,17 @@ public abstract class AnalysisBase
      * @param usePeriods
      * @return
      */
-    protected double longStringCompare(final String str1, final String str2, final boolean usePeriods)
+    protected double longStringCompare(final String str1, 
+                                       final String str2, 
+                                       final boolean usePeriods,
+                                       final boolean replaceWithSpaces)
     {
         if (str1 == null || str2 == null) return 0.0;
         
         String longStr;
         String shortStr;
         
-        if (str1.length() > str2.length())
+        if (str1.length() >= str2.length())
         {
             longStr  = str1;
             shortStr = str2;
@@ -1025,8 +1079,8 @@ public abstract class AnalysisBase
             shortStr = str1;
         }
         
-        longStr  = cleanString(longStr, usePeriods);
-        shortStr = cleanString(shortStr, usePeriods);
+        longStr  = cleanString(longStr, usePeriods, replaceWithSpaces);
+        shortStr = cleanString(shortStr, usePeriods, replaceWithSpaces);
         
         int score = 0;
         String[] longToks  = StringUtils.split(longStr, " ");
@@ -1043,6 +1097,20 @@ public abstract class AnalysisBase
         //System.out.println(" L: "+shortToks.length+"  Sc: "+score+"  Rating: "+String.format("%5.2f", rating));
         
         return rating;
+    }
+    
+    /**
+     * Sets color for JTable
+     */
+    public void setColorsForJTable()
+    {
+        BGR = "0, 100, 0";
+        GR  = "200, 0, 200";
+        BYW = "255, 255, 0";
+        YW  = "184, 134, 11"; // Dark Yellow (Golden Rod)
+        DF  = "100, 255, 200";
+        RD  = "255, 0, 0";
+        BL  = "128, 128, 128";
     }
     
     
@@ -1139,7 +1207,10 @@ public abstract class AnalysisBase
     /**
      * 
      */
-    public abstract void process(final int type, final int options);
+    public void process(final int type, final int options)
+    {
+        
+    }
 
     
     /**

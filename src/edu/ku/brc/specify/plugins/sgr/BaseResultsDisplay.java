@@ -24,8 +24,8 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -64,7 +64,7 @@ public abstract class BaseResultsDisplay extends JPanel
 {
     protected static final Logger  log = Logger.getLogger(BaseResultsDisplay.class);
     
-    protected ArrayList<Color[]> colorGrid  = null;
+    protected Vector<Color[]>   colorGrid  = null;
     protected Color             shadedColor = new Color(235, 235, 255);
     protected Connection        connection;
     
@@ -138,7 +138,7 @@ public abstract class BaseResultsDisplay extends JPanel
                 boolean   isSelected = isCellSelected(rowIndex, colIndex);
                 Color     bgColor    = rowIndex % 2 == 0 && !isSelected ? shadedColor : isSelected ? getSelectionBackground() : getBackground();
                 
-                Color[] colorRow = colorGrid != null ? colorGrid.get(rowIndex) : null;
+                Color[] colorRow = colorGrid != null && rowIndex < colorGrid.size() ? colorGrid.get(rowIndex) : null;
                 if (colorRow != null)
                 {
                     Color fgColor = isSelected ? getSelectionForeground() : colorRow[colIndex] == null ? Color.BLACK : colorRow[colIndex];
@@ -281,7 +281,7 @@ public abstract class BaseResultsDisplay extends JPanel
     private void moveRecord()
     {
         int row = topTable.getSelectedRow();
-        if (row == -1 && topTable.getRowCount() == 1)
+        if (row == -1 && topTable.getRowCount() > 0)
         {
             row = 0;
         }

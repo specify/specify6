@@ -63,7 +63,7 @@ public class GBIFFindCleanupItems extends BaseFindCleanupItems
         FindItemInfo itemInfo = (FindItemInfo)itemsList.getSelectedValue();
         if (itemInfo != null)
         {
-            GBIFCleanupResults gbifResults = new GBIFCleanupResults("TITLE", itemInfo, awg);
+            GBIFCleanupResults gbifResults = new GBIFCleanupResults("Comparative Results", itemInfo, awg);
             
             Dimension dim = Toolkit.getDefaultToolkit().getScreenSize(); 
             gbifResults.createUI();

@@ -24,12 +24,12 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import java.awt.Frame;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -43,6 +43,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.plugins.sgr.RawData.DataIndexType;
+import edu.ku.brc.ui.DateParser;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.WorkBenchPluginIFace;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
@@ -58,28 +59,31 @@ import edu.ku.brc.ui.tmanfe.SpreadSheet;
  */
 public class SGRPluginImpl implements WorkBenchPluginIFace
 {
-    private static final String[] DATE_FORMATS = {"yyyy/MM/dd", "MM/dd/yyyy", "yyyy-MM-dd", "MM-dd-yyyy"};
-    protected SimpleDateFormat[]  sdFormats    = new SimpleDateFormat[DATE_FORMATS.length];
-    
-    protected Calendar calender = Calendar.getInstance();
+    private static final ArrayList<DateParser> sdFormats    = new ArrayList<DateParser>();
+    private static final Calendar            calender     = Calendar.getInstance();
+    protected static String[]                dateArray    = new String[3];
 
     protected static final String GENUS      = "genus1";
     protected static final String SPECIES    = "species1";
     protected static final String SUBSPECIES = "subspecies1";
-    protected static final String COLLNUM    = "fieldNumber";
-    protected static final String FIELDNUM   = "stationFieldNumber";
+    protected static final String COLLNUM    = "fieldnumber";
+    protected static final String FIELDNUM   = "stationfieldnumber";
     protected static final String COUNTRY    = "country";
-    protected static final String STARTDATE  = "startDate";
-    protected static final String LOCALITY   = "localityName";
+    protected static final String STARTDATE  = "startdate";
+    protected static final String LOCALITY   = "localityname";
     protected static final String LATITUDE   = "latitude1";
     protected static final String LONGITUDE  = "longitude1";
     protected static final String STATE      = "state";
     protected static final String COUNTY     = "county";
+    protected static final String FIRSTNAME = "firstname1";
+    protected static final String LASTNAME  = "lastname1";
     
-    protected static String[]        COLNAMES   = {GENUS, SPECIES, SUBSPECIES, COLLNUM, FIELDNUM, COUNTRY, STARTDATE, LOCALITY, LATITUDE, LONGITUDE, STATE, COUNTY, };
-    protected static DataIndexType[] DATAINXTYP = {DataIndexType.eGenus, DataIndexType.eSpecies, DataIndexType.eSubspecies, DataIndexType.eCollector_num, 
-                                                  null, DataIndexType.eCountry, DataIndexType.eYear, DataIndexType.eLocality, DataIndexType.eLatitude, 
-                                                  DataIndexType.eLongitude, DataIndexType.eState_province, DataIndexType.eCounty, };
+    protected static final String COLFIRSTNAME = "collectorfirstname1";
+    protected static final String COLLASTNAME  = "collectorlastname1";
+    protected static final String COLMIDNAME   = "collectormiddlename1";
+    
+    
+    protected static String[] COLNAMES   = {GENUS, SPECIES, SUBSPECIES, COLLNUM, FIELDNUM, COUNTRY, STARTDATE, LOCALITY, LATITUDE, LONGITUDE, STATE, COUNTY, LASTNAME, FIRSTNAME, };
 
     protected Integer                       collNumIndex;
     protected Integer                       fieldNumIndex;
@@ -93,6 +97,20 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
     protected HashMap<Integer, DBFieldInfo> indexToFieldInfo = new HashMap<Integer, DBFieldInfo>();
     protected HashMap<DBFieldInfo, Integer> fieldInfoToIndex = new HashMap<DBFieldInfo, Integer>();
     protected HashMap<String, Integer>      nameToIndex      = new HashMap<String, Integer>();
+    
+    static {
+        String[] defaultFormatters = {"yyyy/MM/dd",  "yyyy/M/dd",  "yyyy/MM/d",  "yyyy/M/d", 
+                "MM/dd/yyyy",  "M/dd/yyyy",  "MM/d/yyyy",  "M/d/yyyy",
+                "yyyy-MM-dd",  "yyyy-M-dd",  "yyyy-MM-d",  "yyyy-M-d", 
+                "MM-dd-yyyy",  "M-dd-yyyy",  "MM-d-yyyy",  "M-d-yyyy",
+                "yyyy.MM.dd",  "yyyy.M.dd",  "yyyy.MM.d",  "yyyy.M.d", 
+                "MM.dd.yyyy",  "M.dd.yyyy",  "MM.d.yyyy",  "M.d.yyyy"};
+          
+        for (String defaultFormat : defaultFormatters)
+        {
+            sdFormats.add(new DateParser(defaultFormat));
+        }
+    }
        
     /**
      * 
@@ -100,13 +118,7 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
     public SGRPluginImpl()
     {
         super();
-        
-        for (int i=0;i<sdFormats.length;i++)
-        {
-            sdFormats[i] = new SimpleDateFormat(DATE_FORMATS[i]);
-        }
     }
-
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.WorkBenchPluginIFace#process(java.util.List)
@@ -120,8 +132,8 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
         
         SwingWorker<Integer, Integer> dataGetter = new SwingWorker<Integer, Integer>()
         {
-            protected List<RawData>            wbRows = new ArrayList<RawData>();
-            protected List<GroupingColObjData> items  = new ArrayList<GroupingColObjData>();
+            protected Vector<RawData>            wbRows = new Vector<RawData>();
+            protected Vector<GroupingColObjData> items  = new Vector<GroupingColObjData>();
             protected String collectorNumber = null;
             protected String fieldNumber     = null;
             protected String startDate       = null;
@@ -133,14 +145,26 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
             @Override
             protected Integer doInBackground() throws Exception
             {
+                Integer genusInx = nameToIndex.get(GENUS);
+                
                 int rowCnt = 0;
                 for (WorkbenchRow row : rows)
                 {
-                    int colNumInx   = collNumIndex != null ? collNumIndex : fieldNumIndex;
-                    collectorNumber = row.getData(nameToIndex.get(COLLNUM));
-                    fieldNumber     = row.getData(colNumInx);
-                    startDate       = row.getData(startDateIndex);
-                    genus           = row.getData(nameToIndex.get(GENUS));
+                    try
+                    {
+                        int colNumInx   = collNumIndex != null ? collNumIndex : fieldNumIndex;
+                        collectorNumber = row.getData(collNumIndex);
+                        fieldNumber     = row.getData(colNumInx);
+                        startDate       = row.getData(startDateIndex);
+                        genus           = row.getData(genusInx);
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                        //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DbLoginCallbackHandler.class, ex);
+                        //log.error("Exception: " + e.getMessage()); //$NON-NLS-1$
+                    }
                     
                     fieldNumber = StringUtils.isNotEmpty(collectorNumber) && StringUtils.isEmpty(fieldNumber) ? collectorNumber : fieldNumber;
                     
@@ -148,42 +172,33 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
                         StringUtils.isNotEmpty(startDate) &&
                         StringUtils.isNotEmpty(genus))
                     {
-                        
-                        String year  = null;
-                        String month = null;
-                        
-                        for (SimpleDateFormat sdf : sdFormats)
+                        String[] ymd = parseForDate(startDate); // returns Year, Month as strings
+                        if (ymd != null)
                         {
-                            try
-                            {
-                                Date date = sdf.parse(startDate);
-                                calender.setTime(date);
-                                
-                                year  = ((Integer)calender.get(Calendar.YEAR)).toString();
-                                month = ((Integer)calender.get(Calendar.MONTH)).toString();
-                                
-                            } catch (Exception ex) {}
+                            String  year  = ymd[0];
+                            String  month = ymd[1];
                             
-                            if (year != null) break;
-                        }
-                        
-                        if (year != null)
-                        {
-                            try
+                            if (year != null)
                             {
-                                GroupingColObjData gcd = GroupHashDAO.getInstance().getGroupingData(collectorNumber, genus, year, month);
-                                if (gcd != null)
+                                try
                                 {
-                                    System.out.println(gcd.toString());
-                                    items.add(gcd);
-                                    
-                                    RawData rawData = GroupHashDAO.getInstance().getRawDataObj();
-                                    loadRawData(row, rawData, rowCnt);
-                                    wbRows.add(rawData);
+                                    GroupingColObjData gcd = GroupHashDAO.getInstance().getGroupingData(collectorNumber, genus, year, month);
+                                    if (gcd != null)
+                                    {
+                                        System.out.println(gcd.toString());
+                                        items.add(gcd);
+                                        
+                                        RawData rawData = GroupHashDAO.getInstance().getRawDataObj(); // return an empty recycled object
+                                        loadRawData(row, rawData);
+                                        
+                                        wbRows.add(rawData);
+                                        System.out.println((wbRows.size()-1)+ rawData.toString());
+                                        
+                                    }
+                                } catch (Exception ex)
+                                {
+                                    ex.printStackTrace();
                                 }
-                            } catch (Exception ex)
-                            {
-                                ex.printStackTrace();
                             }
                         }
                     }
@@ -252,37 +267,142 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
     }
     
     /**
+     * @param dateStr
+     * @return
+     */
+    public static String[] parseForDate(final String dateStr)
+    {
+        dateArray[0] = null;
+        dateArray[1] = null;
+        dateArray[2] = null;
+        
+        for (DateParser dateParser : sdFormats)
+        {
+            Date date = dateParser.parseDate(dateStr);
+            if (date != null)
+            {
+                calender.setTime(date);
+                
+                Integer yearInt = calender.get(Calendar.YEAR);
+                Integer monInt  = calender.get(Calendar.MONTH) + 1;
+                Integer dayInt  = calender.get(Calendar.DAY_OF_MONTH);
+                
+                dateArray[0] = yearInt.toString();
+                dateArray[1] = monInt.toString();
+                dateArray[2] = dayInt.toString();
+                
+                return dateArray;
+            }
+        }
+        return null;
+    }
+    
+    /**
      * @param wbRow
      * @param rowData
      */
     protected void loadRawData(final WorkbenchRow wbRow, 
-                               final RawData rawData,
-                               final int     rowInx)
+                               final RawData rawData)
     {
+        String[] extraCollNameCols = {COLLASTNAME, LASTNAME, COLFIRSTNAME, FIRSTNAME};
+        
+        String lastName  = null;
+        String firstName = null;
+        
         int colInx = 0;
-        for (String nm : COLNAMES)
+        for (DataIndexType dataInxTyp : DataIndexType.values())
         {
-            Integer index = nameToIndex.get(nm);
-            if (index == null || DATAINXTYP[index] == null)
-            {
-                colInx++;
-                continue;
-            }
+            String  columnName = RawData.getColumnName(dataInxTyp);
+            Integer dataIndex  = nameToIndex.get(columnName);
             
-            if (DataIndexType.eCollector_num == DATAINXTYP[index])
+            //System.out.println("dataIndex: "+dataIndex+"  dataInxTyp: "+dataInxTyp+"  columnName["+columnName+"]");
+           
+            if (DataIndexType.eCollector_num == dataInxTyp)
             {
                 int collNumInx = collNumIndex != null ? collNumIndex : fieldNumIndex;
                 
-                Object val = spreadSheet.getValueAt(rowInx, collNumInx);
-                rawData.setData(DATAINXTYP[index], val);
+                Object val = wbRow.getData(collNumInx);
+                rawData.setData(dataInxTyp, val);
+                
+            } else if (DataIndexType.eCollector_name == dataInxTyp)
+            {
+                if (dataIndex != null)
+                {
+                    Object val = wbRow.getData(dataIndex);
+                    rawData.setData(dataInxTyp, val);
+                } else
+                {
+                    int i = 0;
+                    for (String key : extraCollNameCols)
+                    {
+                        Integer inx = nameToIndex.get(key);
+                        if (inx != null)
+                        {
+                            if (i < 2)
+                            {
+                                lastName = (String)wbRow.getData(inx);
+                                if (lastName == null) lastName = "";
+                                break;
+                            } else
+                            {
+                                firstName = (String)wbRow.getData(inx);
+                                if (firstName == null) firstName = ""; 
+                                break;
+                            }
+                        }
+                        i++;
+                    }
+                }
+            } else if (columnName.equals(STARTDATE))
+            {
+                Object val = wbRow.getData(dataIndex);
+                if (StringUtils.isNotEmpty((String)val))
+                {
+                    
+                    String[] ymd = parseForDate((String)val);
+                    if (ymd != null)
+                    {
+                        rawData.setData(DataIndexType.eYear,  ymd[0]);
+                        rawData.setData(DataIndexType.eMonth, ymd[1]);
+                        rawData.setData(DataIndexType.eDay,   ymd[2]);
+                        rawData.setData(DataIndexType.eStartDate,  ymd[0]+"-"+ ymd[1]+"-"+ ymd[2]);
+                    } else
+                    {
+                        System.err.println("Couldn't parse date["+val+"]");
+                        rawData.setData(DataIndexType.eStartDate,  (String)val);
+                    }
+
+                }
+            } else  if (dataIndex != null)
+            {
+                Object val = wbRow.getData(dataIndex);
+                rawData.setData(dataInxTyp, val);
                 
             } else
             {
-                Object val = spreadSheet.getValueAt(rowInx, colInx);
-                rawData.setData(DATAINXTYP[index], val);
+                System.err.println("No index for Standard Column for ["+columnName+"]");
             }
             colInx++;
         }
+        
+        String fullName  = null;
+        if (lastName != null || firstName != null)
+        {
+            if (StringUtils.isNotEmpty(lastName) && StringUtils.isNotEmpty(firstName))
+            {
+                fullName = lastName + ", "+firstName;
+                
+            } else if (StringUtils.isNotEmpty(lastName))
+            {
+                fullName = lastName;
+            } else
+            {
+                fullName = firstName;
+            }
+            rawData.setData(DataIndexType.eCollector_name, fullName);
+        }
+        
+        System.out.println(rawData.toString());
     }
     
     /**
@@ -290,7 +410,7 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
      */
     protected void transferData(final List<RawData> rawResList)
     {
-        if (rawResList.size() > 0)
+        /*if (rawResList.size() > 0)
         {
             int[] selRowsIndexes = spreadSheet.getSelectedRows();
             int rowCnt = 0;
@@ -366,7 +486,7 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
                 }
                 rowCnt++;
             }
-        }
+        }*/
     }
 
 
@@ -405,10 +525,31 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
                 Short       viewOrderIndex = wbtmi.getViewOrder();
                 DBFieldInfo fieldInfo      = wbtmi.getFieldInfo();
                 
-                indexToFieldInfo.put(viewOrderIndex.intValue(), fieldInfo);
-                fieldInfoToIndex.put(fieldInfo, viewOrderIndex.intValue());
-                nameToIndex.put(fieldInfo.getName(), viewOrderIndex.intValue());
-                System.out.println("Name Mapping: "+fieldInfo.getName()+" => "+viewOrderIndex.intValue());
+                String  stdColName = fieldInfo.getName().toLowerCase();
+                
+                boolean override = false;
+                if (stdColName.equalsIgnoreCase(COLLASTNAME) ||
+                    stdColName.equalsIgnoreCase(COLFIRSTNAME) ||
+                    stdColName.equalsIgnoreCase(LASTNAME) ||
+                    stdColName.equalsIgnoreCase(FIRSTNAME) ||
+                    stdColName.equalsIgnoreCase(STARTDATE))
+                {
+                    override = true;
+                }
+                
+                Integer index = RawData.getIndex(stdColName);
+                if (index != null || override)
+                {
+                    indexToFieldInfo.put(viewOrderIndex.intValue(), fieldInfo);
+                    fieldInfoToIndex.put(fieldInfo, viewOrderIndex.intValue());
+                    nameToIndex.put(fieldInfo.getName().toLowerCase(), viewOrderIndex.intValue());
+                    
+                    System.out.println("Name Mapping: "+fieldInfo.getName().toLowerCase()+" => "+viewOrderIndex.intValue());
+                    
+                } else
+                {
+                    System.err.println("Name Mapping Error:"+fieldInfo.getName()+" was not a standard column name");
+                }
             }
             
             collNumIndex   = nameToIndex.get(COLLNUM);
