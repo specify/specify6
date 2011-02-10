@@ -605,32 +605,39 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
         UIValidator.Type type = isRequiredArg ? UIValidator.Type.Changed : valType;
 
-        UIValidator uiv;
+        UIValidator uiv = null;
         if (StringUtils.isEmpty(valStr))
         {
-            uiv = createValidator(textField, valType);
+            if (valType != UIValidator.Type.None)
+            {
+                uiv = createValidator(textField, valType);
+            }
         } else
         {
             uiv = changeListenerOnly ? null : createValidator(textField, type, valStr);
         }
-        DataChangeNotifier dcn = new DataChangeNotifier(id, textField, uiv);
-        dcn.addDataChangeListener(this);
-
-        dcNotifiers.put(id, dcn);
-
-        if (type == UIValidator.Type.Changed || isRequiredArg || changeListenerOnly)
+        
+        if (uiv != null)
         {
-            textField.getDocument().addDocumentListener(dcn);
-
-        } else if (type == UIValidator.Type.Focus)
-        {
-            textField.addFocusListener(dcn);
-
-        } else
-        {
-           // Do nothing for UIValidator.Type.OK
+            DataChangeNotifier dcn = new DataChangeNotifier(id, textField, uiv);
+            dcn.addDataChangeListener(this);
+    
+            dcNotifiers.put(id, dcn);
+    
+            if (type == UIValidator.Type.Changed || isRequiredArg || changeListenerOnly)
+            {
+                textField.getDocument().addDocumentListener(dcn);
+    
+            } else if (type == UIValidator.Type.Focus)
+            {
+                textField.addFocusListener(dcn);
+    
+            } else
+            {
+               // Do nothing for UIValidator.Type.OK
+            }
         }
-
+        
         addRuleObjectMapping(id, textField);
     }
 
