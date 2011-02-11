@@ -208,7 +208,7 @@ public class AppBase extends JPanel implements DatabaseLoginListener, CommandLis
         try 
         {
             
-            String basePath = UIRegistry.getUserHomeDir() + File.separator;
+            String basePath = System.getProperty("user.home");
             
             if (doStdOut)
             {

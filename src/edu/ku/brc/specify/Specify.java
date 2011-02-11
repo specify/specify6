@@ -1852,8 +1852,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     private File checkAllPaths(final String fileName)
     {
-    	String basePath = UIRegistry.getUserHomeDir() + File.separator;
-        File logFile = getFile(basePath, fileName); //$NON-NLS-1$
+        String userHome = System.getProperty("user.home");
+        File logFile = getFile(userHome, fileName); //$NON-NLS-1$
         if (logFile != null) return logFile;
         
         return null;
