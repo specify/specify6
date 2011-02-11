@@ -1802,25 +1802,28 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     }
     
     /**
-     * CReates a scrollpane with the text fro the log file.
-     * @param path the path to the files
+     * Creates a scrollpane with the text fro the log file.
+     * @param logFile the log file
      * @param doError indicates it should display the erro log
      * @return the scrollpane.
      */
     protected JScrollPane getLogFilePanel(final File logFile, final boolean doError)
     {
         JTextArea textArea = new JTextArea();
-        if (logFile.exists())
+        if (logFile != null)
         {
-            try
+            if (logFile.exists())
             {
-                textArea.setText(FileUtils.readFileToString(logFile));
+                try
+                {
+                    textArea.setText(FileUtils.readFileToString(logFile));
+                    
+                } catch (Exception ex) {} // no catch on purpose
                 
-            } catch (Exception ex) {} // no catch on purpose
-            
-        } else
-        {
-            textArea.setText(doError ? getResourceString("Specify.LOG_NO_ERRORS") : getResourceString("Specify.LOG_EMPTY")); //$NON-NLS-1$ //$NON-NLS-2$
+            } else
+            {
+                textArea.setText(doError ? getResourceString("Specify.LOG_NO_ERRORS") : getResourceString("Specify.LOG_EMPTY")); //$NON-NLS-1$ //$NON-NLS-2$
+            }
         }
         textArea.setEditable(false);
             
@@ -1853,13 +1856,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         File logFile = getFile(userHome, fileName); //$NON-NLS-1$
         if (logFile != null) return logFile;
         
-        /*String logFilePath = UIRegistry.getDefaultWorkingPath();
-        logFile = getFile(logFilePath, fileName); //$NON-NLS-1$
-        if (logFile != null) return logFile;
-            
-        logFile = getFile(".", fileName); //$NON-NLS-1$
-        if (logFile != null) return logFile;*/
-            
         return null;
     }
     
@@ -1872,8 +1868,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         File errLogFile = checkAllPaths("error.log"); //$NON-NLS-1$
         
         JTabbedPane tabPane = new JTabbedPane();
-        tabPane.add("Specify",                          getLogFilePanel(spLogFile, true)); //$NON-NLS-1$
         tabPane.add(getResourceString("Specify.ERROR"), getLogFilePanel(errLogFile, true)); //$NON-NLS-1$
+        tabPane.add("Specify",                          getLogFilePanel(spLogFile, true)); //$NON-NLS-1$
         
         String title = getResourceString("Specify.LOG_FILES_TITLE");//$NON-NLS-1$
         CustomDialog dialog = new CustomDialog((JFrame)UIRegistry.getTopWindow(), title, true, CustomDialog.OK_BTN, tabPane); 
@@ -1884,6 +1880,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         UIHelper.centerWindow(dialog);
         dialog.setVisible(true);
     }
+
     
     /**
      * 
