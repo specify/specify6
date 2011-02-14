@@ -822,15 +822,18 @@ public class WorkbenchTask extends BaseTask
     	//the templates for workbenches that have been filled with records from the database are not editable
 		//seems like it might be better to indicate in the template that it was designed for export but for
     	//now need to check the workbench
-    	for (Workbench wb : template.getWorkbenches())
+    	if (template != null)
     	{
-    		//currently we maintain a 1-1 between wb and wb template.
-    		if (wb.getExportedFromTableName() != null)
+    		for (Workbench wb : template.getWorkbenches())
     		{
-    			int rowCount = BasicSQLUtils.getCountAsInt("select count(workbenchrowid) from workbenchrow where workbenchid = " + wb.getId());
-    			if (rowCount > 0)
+    			//currently we maintain a 1-1 between wb and wb template.
+    			if (wb.getExportedFromTableName() != null)
     			{
-    				return false;
+    				int rowCount = BasicSQLUtils.getCountAsInt("select count(workbenchrowid) from workbenchrow where workbenchid = " + wb.getId());
+    				if (rowCount > 0)
+    				{
+    					return false;
+    				}
     			}
     		}
     	}
