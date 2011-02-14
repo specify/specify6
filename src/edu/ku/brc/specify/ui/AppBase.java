@@ -145,6 +145,11 @@ public class AppBase extends JPanel implements DatabaseLoginListener, CommandLis
     private static final Logger  log                = Logger.getLogger(AppBase.class);
     
     private static AppBase       appInstance         = null; // needed for ActionListeners etc.
+    
+    public static final String ERROR_LOG    = "error.log";
+    public static final String SPECIFY_LOG  = "specify.log";
+    public static final String OUTPUT_LOG   = "output.log";
+    public static final String ERRORSYS_LOG = "error_sys.log";
 
     // Status Bar
     protected JStatusBar         statusField        = null;
@@ -200,36 +205,6 @@ public class AppBase extends JPanel implements DatabaseLoginListener, CommandLis
         }
     }
     
-    /**
-     * Sets up StdErr and StdOut to be 'tee'd' to files. 
-     */
-    public static void setupTeeForStdErrStdOut(final boolean doStdErr, final boolean doStdOut)
-    {
-        try 
-        {
-            
-            String basePath = System.getProperty("user.home") + File.separator;
-            
-            if (doStdOut)
-            {
-                // Tee standard output
-                PrintStream out = new PrintStream(new FileOutputStream(basePath + "output.log"));
-                PrintStream tee = new TeeOutputStream(System.out, out);
-    
-                System.setOut(tee);
-            }
-            
-            if (doStdErr)
-            {
-                // Tee standard error
-                PrintStream err = new PrintStream(new FileOutputStream(basePath + "error.log"));
-                PrintStream tee = new TeeOutputStream(System.err, err);
-                System.setErr(tee);
-            }
-            
-        } catch (FileNotFoundException e) {}
-    }
-
     /**
      * Setup all the System properties. This names all the needed factories. 
      */
@@ -474,16 +449,58 @@ public class AppBase extends JPanel implements DatabaseLoginListener, CommandLis
         }
     }
     
+    
     /**
-     * Creates a scrollpane with the text fro the log file.
-     * @param path the path to the files
-     * @param doError indicates it should display the erro log
-     * @return the scrollpane.
+     * @param path
+     * @param fileName
+     * @param doCreate
+     * @return
      */
-    protected JScrollPane getLogFilePanel(final String path, final boolean doError)
+    private static File getFile(final String path, final String fileName, final boolean doCreate)
+    {
+        String fullPath = path + File.separator + fileName;
+        File   file     = new File(fullPath);
+        if (file.exists())
+        {
+            return file;
+        }
+        
+        if (doCreate)
+        {
+            File dir = new File(path);
+            if (dir.exists() || dir.mkdirs())
+            {
+                return file;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * @param fileName
+     * @return
+     */
+    private static File getFullLogFilePath(final String fileName)
+    {
+        String homePath = System.getProperty("user.home");
+        String userHome = homePath + File.separator + "Specify";
+        
+        File   logFile  = getFile(userHome, fileName, true);
+        if (logFile != null) return logFile;
+        
+        return null;
+    }
+    
+    /**
+     * Creates a ScrollPane with the text from the log file.
+     * @param logFile the file
+     * @param doError indicates it should display the error log
+     * @return the ScrollPane.
+     */
+    protected static JScrollPane getLogFilePanel(final File logFile, 
+                                                 final boolean doError)
     {
         JTextArea textArea = new JTextArea();
-        File      logFile  = new File(path + (doError ? "error.log" : "specify.log")); //$NON-NLS-1$ //$NON-NLS-2$
         if (logFile.exists())
         {
             try
@@ -504,43 +521,59 @@ public class AppBase extends JPanel implements DatabaseLoginListener, CommandLis
     /**
      * Creates a modal dialog displaying the the error and specify log files. 
      */
-    protected void dumpSpecifyLogFile()
+    public static void displaySpecifyLogFiles()
     {
-        String logFilePath = UIRegistry.getDefaultWorkingPath() + File.separator;
-        File logFile = new File(logFilePath + "specify.log"); //$NON-NLS-1$
-        if (logFile != null)
+        File spLogFile  = getFullLogFilePath(AppBase.SPECIFY_LOG); //$NON-NLS-1$
+        File errLogFile = getFullLogFilePath(AppBase.ERROR_LOG); //$NON-NLS-1$
+        
+        JTabbedPane tabPane = new JTabbedPane();
+        tabPane.add(getResourceString("Specify.ERROR"), getLogFilePanel(errLogFile, true)); //$NON-NLS-1$
+        tabPane.add("Specify",                          getLogFilePanel(spLogFile, true)); //$NON-NLS-1$
+        
+        String title = getResourceString("Specify.LOG_FILES_TITLE");//$NON-NLS-1$
+        CustomDialog dialog = new CustomDialog((JFrame)UIRegistry.getTopWindow(), title, true, CustomDialog.OK_BTN, tabPane); 
+        String okLabel = getResourceString("Specify.CLOSE");//$NON-NLS-1$
+        dialog.setOkLabel(okLabel); 
+        dialog.createUI();
+        dialog.setSize(800, 600);
+        UIHelper.centerWindow(dialog);
+        dialog.setVisible(true);
+    }
+
+    /**
+     * Sets up StdErr and StdOut to be 'tee'd' to files. 
+     */
+    public static void setupTeeForStdErrStdOut(final boolean doStdErr, 
+                                               final boolean doStdOut)
+    {
+        try 
         {
-            logFilePath = "";  //$NON-NLS-1$
-            logFile     = new File("specify.log"); //$NON-NLS-1$
-            
-            if (!logFile.exists())
+            if (doStdOut)
             {
-                logFile = new File(logFilePath + "error.log"); //$NON-NLS-1$
-                if (logFile != null)
+                // Tee standard output
+                File file = getFullLogFilePath(OUTPUT_LOG);
+                if (file != null)
                 {
-                    logFilePath = "";  //$NON-NLS-1$
-                    logFile     = new File("error.log"); //$NON-NLS-1$
+                    PrintStream out = new PrintStream(new FileOutputStream(file));
+                    PrintStream tee = new TeeOutputStream(System.out, out);
+                    System.setOut(tee);
                 }
             }
-        }
-        
-        if (logFile != null && logFile.exists())
-        {
-            JTabbedPane tabPane = new JTabbedPane();
-            tabPane.add(getResourceString("Specify.ERROR"), getLogFilePanel(logFilePath, true)); //$NON-NLS-1$
-            tabPane.add("Specify",                          getLogFilePanel(logFilePath, false)); //$NON-NLS-1$
             
-            String title = getResourceString("Specify.LOG_FILES_TITLE");//$NON-NLS-1$
-            CustomDialog dialog = new CustomDialog((JFrame)UIRegistry.getTopWindow(), title, true, CustomDialog.OK_BTN, tabPane); 
-            String okLabel = getResourceString("Specify.CLOSE");//$NON-NLS-1$
-            dialog.setOkLabel(okLabel); 
-            dialog.createUI();
-            dialog.setSize(800, 600);
-            UIHelper.centerWindow(dialog);
-            dialog.setVisible(true);
-        }
-    }
-    
+            if (doStdErr)
+            {
+                // Tee standard error
+                File file = getFullLogFilePath(ERRORSYS_LOG);
+                if (file != null)
+                {
+                    PrintStream err = new PrintStream(new FileOutputStream(file));
+                    PrintStream tee = new TeeOutputStream(System.err, err);
+                    System.setErr(tee);
+                }
+            }
+            
+        } catch (FileNotFoundException e) {}
+    }    
     /**
      * Shows the About dialog.
      */

@@ -76,12 +76,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -91,7 +87,6 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -1445,7 +1440,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             @SuppressWarnings("synthetic-access") //$NON-NLS-1$
             public void actionPerformed(ActionEvent ae)
             {
-                dumpSpecifyLogFile();
+                AppBase.displaySpecifyLogFiles();
             }
         });
                 
@@ -1800,87 +1795,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         UIRegistry.registerAction(name, actionObj);
         return actionObj;
     }
-    
-    /**
-     * Creates a scrollpane with the text fro the log file.
-     * @param logFile the log file
-     * @param doError indicates it should display the erro log
-     * @return the scrollpane.
-     */
-    protected JScrollPane getLogFilePanel(final File logFile, final boolean doError)
-    {
-        JTextArea textArea = new JTextArea();
-        if (logFile != null)
-        {
-            if (logFile.exists())
-            {
-                try
-                {
-                    textArea.setText(FileUtils.readFileToString(logFile));
-                    
-                } catch (Exception ex) {} // no catch on purpose
-                
-            } else
-            {
-                textArea.setText(doError ? getResourceString("Specify.LOG_NO_ERRORS") : getResourceString("Specify.LOG_EMPTY")); //$NON-NLS-1$ //$NON-NLS-2$
-            }
-        }
-        textArea.setEditable(false);
-            
-        return new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    }
-    
-    /**
-     * @param path
-     * @param fileName
-     * @return
-     */
-    private File getFile(final String path, final String fileName)
-    {
-        String fullPath = path + File.separator + fileName;
-        File file = new File(fullPath);
-        if (file.exists())
-        {
-            return file;
-        }
-        return null;
-    }
-    
-    /**
-     * @param fileName
-     * @return
-     */
-    private File checkAllPaths(final String fileName)
-    {
-        String userHome = System.getProperty("user.home");
-        File logFile = getFile(userHome, fileName); //$NON-NLS-1$
-        if (logFile != null) return logFile;
-        
-        return null;
-    }
-    
-    /**
-     * Creates a modal dialog displaying the the error and specify log files. 
-     */
-    protected void dumpSpecifyLogFile()
-    {
-        File spLogFile  = checkAllPaths("specify.log"); //$NON-NLS-1$
-        File errLogFile = checkAllPaths("error.log"); //$NON-NLS-1$
-        
-        JTabbedPane tabPane = new JTabbedPane();
-        tabPane.add(getResourceString("Specify.ERROR"), getLogFilePanel(errLogFile, true)); //$NON-NLS-1$
-        tabPane.add("Specify",                          getLogFilePanel(spLogFile, true)); //$NON-NLS-1$
-        
-        String title = getResourceString("Specify.LOG_FILES_TITLE");//$NON-NLS-1$
-        CustomDialog dialog = new CustomDialog((JFrame)UIRegistry.getTopWindow(), title, true, CustomDialog.OK_BTN, tabPane); 
-        String okLabel = getResourceString("Specify.CLOSE");//$NON-NLS-1$
-        dialog.setOkLabel(okLabel); 
-        dialog.createUI();
-        dialog.setSize(800, 600);
-        UIHelper.centerWindow(dialog);
-        dialog.setVisible(true);
-    }
-
     
     /**
      * 
