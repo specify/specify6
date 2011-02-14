@@ -377,7 +377,7 @@
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="password" uitype="password" cols="15"/> 
                     <!-- <cell type="command" id="ShowPwd" name="ShowPwd" label="Show Password" ignore="true"/>  -->
-                    <cell type="command" id="GenerateKey" name="GenerateKey" label="Generate New Key" ignore="true"/>
+                    <cell type="command" id="GenerateKey" name="GenerateKey" label="Generate Master Key" ignore="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="6" label="Password Strength"/>
