@@ -73,6 +73,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
     
     protected FilenameFilter nativeDlgFilter = null;
     protected FileFilter     fileFilter      = null;
+    protected String		 currentDir		 = null;
 
     /**
      * Constructor.
@@ -306,11 +307,31 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
         return textField.getText();
     }
 
+    /**
+	 * @return the currentDir
+	 */
+	public String getCurrentDir() 
+	{
+		return currentDir;
+	}
+
+	/**
+	 * @param currentDir the currentDir to set
+	 */
+	public void setCurrentDir(String currentDir) 
+	{
+		this.currentDir = currentDir;
+	}
+
+
+   
+    
     //---------------------------------------------------------
     // Inner Class
     //---------------------------------------------------------
 
-    /**
+
+	/**
      * Action used to pop up the File Dialog.
      * @author rods
      *
@@ -351,6 +372,11 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
                     fileDlg = new FileDialog((Frame)getTopWindow(), getResourceString("CHOOSE_FILE"), FileDialog.SAVE);
                 }
                 fileDlg.setFilenameFilter(nativeDlgFilter);
+                if (currentDir != null)
+                {
+                	//if currentDir is not a valid/existing directory name, FileDialog ignores the setting
+                	fileDlg.setDirectory(currentDir);
+                }
                 
                 UIHelper.centerAndShow(fileDlg);
                 
@@ -358,6 +384,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
                 if (StringUtils.isNotEmpty(fileDlg.getFile()))
                 {
                     String filePath = fileDlg.getDirectory() + fileDlg.getFile();
+                    currentDir = fileDlg.getDirectory();
                     
                     if (textField instanceof ValTextField)
                     {
@@ -378,6 +405,11 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
                 }
     
                 chooser.setFileFilter(fileFilter);
+                if (currentDir != null)
+                {
+                	//if currentDir is not a valid/existing directory name, JFileChooser ignores the setting
+                	chooser.setCurrentDirectory(new File(currentDir));
+                }
                 
                 int returnVal;
                 if (isForInputBA)
@@ -390,6 +422,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
                 
                 if (returnVal == JFileChooser.APPROVE_OPTION)
                 {
+                    currentDir = chooser.getCurrentDirectory().getPath();
                     if (textField instanceof ValTextField)
                     {
                         ((ValTextField)txtField).setValueWithNotification(chooser.getSelectedFile().getAbsolutePath(), "", true);
