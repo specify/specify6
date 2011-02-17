@@ -38,6 +38,37 @@
 	    </attrs>
     </control>
     
+    <control type="iconview">
+        <desc>Displays a subview or sub form</desc>
+        <attrs>
+            <attr name="id" type="string" required="false" default="">
+                <desc>The unique identifier within the form or subform.
+                    IDs do not have to be unique to it's parent form other sibling subforms, or its child subforms</desc>
+            </attr>
+            <attr name="name" type="string" required="true">
+                <desc> The name of the data object's field that will be used to fill in the form.</desc>
+            </attr>
+            <attr name="viewname" type="string" required="true">
+                <desc>References a View Definition in the same View Set.</desc>
+            </attr>
+            <attr name="colspan" type="integer" required="false" default="1">
+                <desc>The number of columns the separator will span.</desc>
+            </attr>
+            <attr name="rows" type="integer" required="false" default="5">
+                <desc>Indicates how many rows the grid should be.</desc>
+            </attr>
+        </attrs>
+        <params>             
+            <param name="nosep" type="boolean" required="false" default="false">
+                <desc>This tells the iconview not to add an embdded separator.</desc>
+            </param>
+            <param name="nosepmorebtn" type="boolean" required="false" default="false">
+                <desc>This tells the iconview not to add a 'More' (the triangle icon) button to the separator.</desc>
+            </param>
+        </params>          
+    </control>
+    
+    
     <control type="separator">
         <desc>Displays a separator with text and optional icon.</desc>
         <attrs>
@@ -61,6 +92,11 @@
 	            <desc>The name of the icon from the IconManager that will be displayed in the seaparator.</desc>
 	        </attr>
 	    </attrs>
+        <params>             
+            <param name="forclass" type="string" required="false" default="">
+                <desc>Tells the separator what DataModel class it should get it's title from. For Example, for a Collecting Event it would be forclass="CollectingEvent" </desc>
+            </param>
+	    </params>
     </control>
     
     <control type="subview">
@@ -84,9 +120,12 @@
             </attr>
 	    </attrs>
 	    <params>             
-	        <param name="addsearch" type="boolean" required="false" default="false">
-	            <desc>Tells the subview panel to add a search button.</desc>
-	        </param>
+            <param name="addsearch" type="boolean" required="false" default="false">
+                <desc>Tells the subview panel to add a search button.</desc>
+            </param>
+            <param name="addadd" type="boolean" required="false" default="false">
+                <desc>Tells the subview panel to add an 'Add' button. When this is used the removed/delete button does not delete the object it just removed it form the list.</desc>
+            </param>
 	        <param name="btn" type="boolean" required="false" default="false">
 	            <desc>Indicates the subview is "hidden" behind a launcher button.</desc>
 	        </param>
@@ -105,9 +144,18 @@
 	        <param name="bordercolor" type="color" required="false" default="">
 	            <desc>The color for a 'line' border. The RGB triplet separated by commas. For example: bgcolor=233,233,233</desc>
 	        </param>
- 	        <param name="noscrollbars" type="boolean" required="false" default="false">
-	            <desc>This tells the subform not to add scrollbars to the form.</desc>
-	        </param>
+            <param name="noscrollbars" type="boolean" required="false" default="false">
+                <desc>This tells the subform not to add scrollbars to the form.</desc>
+            </param>
+            <param name="nosep" type="boolean" required="false" default="false">
+                <desc>This tells the subform not to add an embdded separator.</desc>
+            </param>
+            <param name="nosepmorebtn" type="boolean" required="false" default="false">
+                <desc>This tells the subform not to add a 'More' (the triangle icon) button to the separator.</desc>
+            </param>
+            <param name="collapse" type="boolean" required="false" default="false">
+                <desc>This tells the subform to initially show the subviee in a 'collapsed' state.</desc>
+            </param>
         </params>          
 	    
     </control>
@@ -206,11 +254,18 @@
 	                    <desc>Indicates whether the control should accept partially filled in values. This is
 	                    sometimes needed for search dialogs.</desc>
 	                </param>        
-                </params>
-                <params>
-	                <param name="fromuifmt" type="boolean" required="false" default="false">
-	                    <desc>Indicates whether the control should perform any formatting when getValue is called.</desc>
-	                </param>        
+                    <param name="fromuifmt" type="boolean" required="false" default="false">
+                        <desc>Indicates whether the control should perform any formatting when getValue is called.</desc>
+                    </param>        
+                    <param name="cols" type="int" required="false" default="">
+                        <desc>Suggests the number of columns but it is font dependent.</desc>
+                    </param>        
+                    <param name="transparent" type="boolean" required="false" default="false">
+                        <desc>Indicates whether the background should be transparent.</desc>
+                    </param>        
+                    <param name="series" type="boolean" required="false" default="false">
+                        <desc>Indicates whether the formatter should support series processing.</desc>
+                    </param>        
                 </params>
             </subcontrol>
             
@@ -399,7 +454,7 @@
             <subcontrol type="spinner" dsp="dsptextfield">
                 <desc>Displays a Swing JSpinner control for numerical values.</desc>
                 <params>
-	                <param name="min" type="integer" required="true" default="1">
+	                <param name="min" type="integer" required="true" default="0">
 	                    <desc>The maximum value.</desc>
 	                </param>
 	                <param name="max" type="integer" required="true" default="0">
