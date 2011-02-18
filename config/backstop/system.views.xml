@@ -376,8 +376,7 @@
                 <row>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="password" uitype="password" cols="15"/> 
-                    <!-- <cell type="command" id="ShowPwd" name="ShowPwd" label="Show Password" ignore="true"/>  -->
-                    <cell type="command" id="GenerateKey" name="GenerateKey" label="Generate Master Key" ignore="true"/>
+                    <cell type="command" id="ShowPwd" name="ShowPwd" label="Show Password" ignore="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="6" label="Password Strength"/>
@@ -386,22 +385,21 @@
                 <!-- <row>
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="email" uitype="text" cols="40" isrequired="true"/> 
-                </row> -->
+                    </row> -->
                 <row>
                     <cell type="label" labelfor="4" label="Agent"/>
                     <cell type="field" id="4" name="agent" uitype="textfieldinfo" initialize="name=AgentSSPU;title=Agent;" isrequired="false" ignore="true"/>
                 </row>
-                <!-- <row>
+                <row>
                     <cell type="label" labelfor="key" label="Key"/>
                     <cell type="field" id="key" name="key" uitype="text" ignore="true" readonly="true"/> 
                     <cell type="command" id="GenerateKey" name="GenerateKey" label="Generate New Key" ignore="true"/>
                     <cell type="command" id="CopyToCB" name="CopyToCB" label="" initialize="icon=ClipboardCopy;size=24;tooltip=CPY_TO_CB_TT" ignore="true"/>
                 </row>
-                 -->
                 <!--row>
                     <cell type="label" labelfor="4" label="Retype Password"/>
                     <cell type="field" id="4" name="password" uitype="text" cols="15"/>
-                </row-->
+                    </row-->
             </rows>
         </viewdef>
 
