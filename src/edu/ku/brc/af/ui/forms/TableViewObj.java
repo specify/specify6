@@ -1082,7 +1082,7 @@ public class TableViewObj implements Viewable,
                 
                 dialog.createUI();
                 
-                if (addSearch && includeAddBtn)
+                if (addSearch && includeAddBtn && isEditing)
                 {
                     dialog.setDoSave(true);
                     dialog.getOkBtn().setText(UIRegistry.getResourceString("SAVE"));

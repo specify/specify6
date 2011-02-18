@@ -335,5 +335,23 @@ accession.DateAccessioned, accession.DateReceived From accession where (%s)]]>
             </detailView>
         </table>        
         
+        <table id="11" tableid="31" name="ContainerOwnerSearch" title="Container Owner" priority="1" color="30, 144, 255">
+            <outofdate/>
+            <index>
+                <sql/>
+                <cols/>
+            </index>
+            <detailView icon="">
+                <sql>
+                    <![CDATA[SELECT cn.ContainerID, co.CollectionObjectID FROM container cn LEFT JOIN collectionobject co ON cn.ContainerID = co.ContainerOwenerID WHERE (%s) AND co.CollectionObjectID IS NULL]]>
+                </sql>
+                <captions>
+                    <caption col="ContainerID" text="ContainerID"  visible="false"/>
+                    <caption col="Name" text="Name"/>
+                </captions>
+                <recordset tabletype="6" col="1"/>
+            </detailView>
+        </table>        
+        
     </generic>        
 </searches>

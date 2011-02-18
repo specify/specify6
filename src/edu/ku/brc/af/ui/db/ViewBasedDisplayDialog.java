@@ -355,9 +355,19 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
                     boolean isNewObj = MultiView.isOptionOn(fvo.getMVParent().getOptions(), MultiView.IS_NEW_OBJECT);
                     if (doSave)
                     {
-                        if (!fvo.saveObject())
+                        try
                         {
-                            return;
+                            if (!fvo.saveObject())
+                            {
+                                return;
+                            }
+                        } finally
+                        {
+                            DataProviderSessionIFace session = fvo.getSession();
+                            if (session != null && session.isOpen())
+                            {
+                                session.close();
+                            }
                         }
                         
                     } else if (BusinessRulesIFace.STATUS.OK != br.processBusinessRules(parentDataObj, 

@@ -28,6 +28,9 @@
         SELECT %s1 FROM CollectingEvent ce LEFT JOIN ce.locality loc LEFT JOIN loc.geography geo JOIN ce.discipline as dsp WHERE dsp.disciplineId = DSPLNID AND %s2 ORDER BY stationFieldNumber
     </typesearch>
     <typesearch tableid="31"  name="Container"              searchfield="name"            displaycols="name" format="%s"   dataobjformatter=""/>
+    <typesearch tableid="31"  name="ContainerOwner"         searchfield="name"            displaycols="name" format="%s"   dataobjformatter="">
+        SELECT %s1 FROM Container con WHERE %s2 AND con.collectionObjects.size = 0 ORDER BY name
+    </typesearch>
     <typesearch tableid="87"  name="CollectingTrip"         searchfield="collectingTripName" displaycols="collectingTripName" format="%s"  dataobjformatter=""/>
     <typesearch tableid="26"  name="Discipline"             searchfield="name"            displaycols="name"               format="%s"     dataobjformatter=""/>
     <typesearch tableid="96"  name="Division"               searchfield="name"            displaycols="name"               format="%s"     dataobjformatter=""/>

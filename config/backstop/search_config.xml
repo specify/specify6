@@ -2112,11 +2112,23 @@ SELECT cn.ContainerID,
         <table id="129" tableid="31" name="ContainerSearch" priority="1" color="30, 144, 255">
             <detailView icon="Container">
                 <sql>
-                    <![CDATA[SELECT ContainerID, Name FROM container WHERE CollectionMemberID = COLMEMID AND (%s)]]>
+                    <![CDATA[SELECT c.ContainerID, c.Name FROM container c WHERE c.CollectionMemberID = COLMEMID AND (%s)]]>
                 </sql>
                 <captions>
-                    <caption tableid="31" col="ContainerID" visible="false"/>
-                    <caption tableid="31" col="Name"/>
+                    <caption tableid="31" col="c.ContainerID" visible="false"/>
+                    <caption tableid="31" col="c.Name"/>
+                </captions>
+            </detailView>
+        </table>
+        
+        <table id="130" tableid="31" name="ContainerOwnerSearch" priority="1" color="30, 144, 255">
+            <detailView icon="Container">
+                <sql>
+                    <![CDATA[SELECT c.ContainerID, c.Name, co.CollectionObjectID FROM container AS c Left Join collectionobject AS co ON c.ContainerID = co.ContainerOwnerID WHERE co.CollectionObjectID IS NULL AND c.CollectionMemberID = COLMEMID AND (%s)]]>
+                </sql>
+                <captions>
+                    <caption tableid="31" col="c.ContainerID" visible="false"/>
+                    <caption tableid="31" col="c.Name"/>
                 </captions>
             </detailView>
         </table>

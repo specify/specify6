@@ -528,7 +528,7 @@ Good: <cell type="field" name="FieldNum" ...>
                 </row>
                 <row>
                     <cell type="label" labelfor="1" />
-                    <cell type="field" id="1" name="Name" uitype="text" initialize="ispartial=true"/>
+                    <cell type="field" id="1" name="c.Name" uitype="text" initialize="ispartial=true"/>
                 </row>
             </rows>
         </viewdef>        
