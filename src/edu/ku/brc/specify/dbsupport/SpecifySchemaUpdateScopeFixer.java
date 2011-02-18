@@ -92,7 +92,7 @@ public class SpecifySchemaUpdateScopeFixer
         
         for (int i=0;i<memberTableNames.length;i++)
         {
-            if (!fixCollectionMember(conn, memberTableNames[i], memberIndexNames[i]))
+            if (!fixCollectionMember(conn, memberTableNames[i].toLowerCase(), memberIndexNames[i]))
             {
                 return false;
             }
