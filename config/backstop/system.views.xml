@@ -393,7 +393,7 @@
                 <row>
                     <cell type="label" labelfor="key" label="Key"/>
                     <cell type="field" id="key" name="key" uitype="text" ignore="true" readonly="true"/> 
-                    <cell type="command" id="GenerateKey" name="GenerateKey" label="Generate New Key" ignore="true"/>
+                    <cell type="command" id="GenerateKey" name="GenerateKey" label="Generate Master Key" ignore="true"/>
                     <cell type="command" id="CopyToCB" name="CopyToCB" label="" initialize="icon=ClipboardCopy;size=24;tooltip=CPY_TO_CB_TT" ignore="true"/>
                 </row>
                 <!--row>
