@@ -120,15 +120,6 @@ public class SpecifyUserBusRules extends BaseBusRules
         
         if (genBtn != null)
         {
-            pwdTxt.getDocument().addDocumentListener(new DocumentAdaptor() {
-                @Override
-                protected void changed(DocumentEvent e)
-                {
-                    String passwordStr = new String(pwdTxt.getPassword());
-                    genBtn.setEnabled(passwordStr.length() > 0 && passwordStr.length() < 25);
-                }
-            });
-            
             genBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e)
@@ -145,6 +136,7 @@ public class SpecifyUserBusRules extends BaseBusRules
                     }
                 }
             });
+            genBtn.setEnabled(true);
         }
         
         if (pwdStrenthUI == null)
@@ -152,26 +144,7 @@ public class SpecifyUserBusRules extends BaseBusRules
             return;
         }
         
-        pwdStrenthUI.setPasswordField(pwdTxt, genBtn);
-        
-        // This is in case the BusRules are used without the form.
-        if (keyTxt == null || genBtn == null)
-        {
-            pwdStrenthUI.setPasswordField(pwdTxt, null);
-            return;
-        }
-        
-        copyBtn.setEnabled(false);
-        
-        keyTxt.getDocument().addDocumentListener(new DocumentAdaptor() {
-            @Override
-            protected void changed(DocumentEvent e)
-            {
-                copyBtn.setEnabled(!StringUtils.deleteWhitespace(keyTxt.getText()).isEmpty());
-            }
-        });
-        
-        pwdStrenthUI.setPasswordField(pwdTxt, genBtn);
+        pwdStrenthUI.setPasswordField(pwdTxt, null);
     }
 
     /**
