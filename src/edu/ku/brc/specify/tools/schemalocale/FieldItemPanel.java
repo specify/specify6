@@ -643,7 +643,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                 {
                     String ts      = fi.getType();
                     String typeStr = ts.indexOf('.') > -1 ? StringUtils.substringAfterLast(fi.getType(), ".") : ts;
-                    if (StringUtils.isNotEmpty(typeStr) && !typeStr.equals("text"))
+                    if (StringUtils.isNotEmpty(typeStr))
                     {
                         formatSwitcherCombo.addItem(SL_FORMAT);
                         formatSwitcherCombo.addItem(SL_WEBLINK);
