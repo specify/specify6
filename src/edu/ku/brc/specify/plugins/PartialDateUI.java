@@ -421,7 +421,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
     {
         if (value != null)
         {
-            if (value != null && !(value instanceof String))
+            if (!(value instanceof String))
             {
                 verifyGetterSetters(dataObj == null ? value : dataObj);
             }
@@ -506,6 +506,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
         {
             ignoreDocChanges = true;
             ((GetSetValueIFace)currentUIV).setValue(calDate, "");
+            isChanged = true;
             ignoreDocChanges = false;
         }
         

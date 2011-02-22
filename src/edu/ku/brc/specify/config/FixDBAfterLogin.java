@@ -30,7 +30,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
 import java.util.TreeSet;
 
 import javax.swing.JEditorPane;
@@ -43,7 +47,20 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
+import edu.ku.brc.af.ui.forms.persist.FormCellFieldIFace;
+import edu.ku.brc.af.ui.forms.persist.FormCellIFace;
+import edu.ku.brc.af.ui.forms.persist.FormRowIFace;
+import edu.ku.brc.af.ui.forms.persist.FormViewDef;
+import edu.ku.brc.af.ui.forms.persist.FormViewDefIFace;
+import edu.ku.brc.af.ui.forms.persist.ViewDefIFace;
+import edu.ku.brc.af.ui.forms.persist.ViewIFace;
+import edu.ku.brc.af.ui.forms.persist.ViewSetIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.ui.CustomDialog;
@@ -61,6 +78,8 @@ import edu.ku.brc.ui.UIRegistry;
 public class FixDBAfterLogin
 {
     private static final Logger log  = Logger.getLogger(FixDBAfterLogin.class);
+    
+    private final static String FIX_DEFDATES_PREF = "FIX_DEFDATES_PREF";
     
     public final static String DEGREES_SYMBOL = "\u00b0";
     public final static String SEPS           = DEGREES_SYMBOL + ":'\" ";
@@ -206,7 +225,7 @@ public class FixDBAfterLogin
     public void fixLatLongUnit()
     {
         int     fixed = 0;
-        String  updateSQL = "UPDATE locality SET OriginalLatLongUnit=?, SrcLatLongUnit=?  WHERE LocalityID=?";
+        //String  updateSQL = "UPDATE locality SET OriginalLatLongUnit=?, SrcLatLongUnit=?  WHERE LocalityID=?";
         String  postStr   = " WHERE OriginalLatLongUnit > 0 AND (Lat1Text IS NOT NULL OR Long1Text IS NOT NULL)";
         
         Connection        conn  = DBConnection.getInstance().getConnection();
@@ -464,4 +483,137 @@ public class FixDBAfterLogin
             UIHelper.centerAndShow(dlg);
         }
     }
+    
+    /**
+     * 
+     */
+    public static void fixDefaultDates()
+    {
+        if (!AppPreferences.getGlobalPrefs().getBoolean(FIX_DEFDATES_PREF, false))
+        {
+            HashMap<DBTableInfo, List<FormCellFieldIFace>>  tblToFldHash = new HashMap<DBTableInfo, List<FormCellFieldIFace>>();
+            Hashtable<String, List<ViewSetIFace>> hash         = AppContextMgr.getInstance().getViewSetHash();
+            
+            for (List<ViewSetIFace> viewList : hash.values())
+            {
+                for (ViewSetIFace viewSet : viewList)
+                {
+                    Hashtable<String, ViewIFace> viewSetHash = viewSet.getViews();
+                    for (ViewIFace view : viewSetHash.values())
+                    {
+                        String tableClassName = view.getClassName();
+                        DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(tableClassName);
+                        if (ti != null)
+                        {
+                            for (AltViewIFace avi : view.getAltViews())
+                            {
+                                ViewDefIFace vd = (ViewDefIFace)avi.getViewDef();
+                                if (vd instanceof FormViewDef)
+                                {
+                                    FormViewDefIFace fvd = (FormViewDefIFace)vd;
+                                    for (FormRowIFace fri : fvd.getRows())
+                                    {
+                                        for (FormCellIFace fci : fri.getCells())
+                                        {
+                                            if (fci instanceof FormCellFieldIFace)
+                                            {
+                                                FormCellFieldIFace fcf      = (FormCellFieldIFace)fci;
+                                                String             defValue = fcf.getDefaultValue();
+                                                if (StringUtils.isNotEmpty(defValue))
+                                                {
+                                                    List<FormCellFieldIFace> fieldList = tblToFldHash.get(ti);
+                                                    if (fieldList == null)
+                                                    {
+                                                        fieldList = new ArrayList<FormCellFieldIFace>();
+                                                        tblToFldHash.put(ti, fieldList);
+                                                    }
+                                                    fieldList.add(fcf);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        //} else
+                        //{
+                            //log.debug("Skipping table Class Name["+tableClassName+"]");
+                        }
+                    }
+                }
+            }
+            
+            int totalCount = processTableDefaultDates(tblToFldHash, true);
+            if (totalCount > 0)
+            {
+                totalCount = processTableDefaultDates(tblToFldHash, false);
+            }
+            
+            AppPreferences.getGlobalPrefs().putBoolean(FIX_DEFDATES_PREF, true);
+        }
+    }
+    
+    /**
+     * @param tblToFldHash
+     * @param doingCount
+     * @return
+     */
+    private static int processTableDefaultDates(final HashMap<DBTableInfo, List<FormCellFieldIFace>>  tblToFldHash, final boolean doingCount)
+    {
+        int totalCount = 0;
+        for (DBTableInfo ti : tblToFldHash.keySet())
+        {
+            for (FormCellFieldIFace fci : tblToFldHash.get(ti))
+            {
+                String[] names = fci.getFieldNames();
+                if (names.length < 3)
+                {
+                    DBFieldInfo fi = ti.getFieldByName(names[0]);
+                     if (fi != null && fi.getDataClass() == java.util.Calendar.class)
+                    {
+                         String sql = String.format("SELECT COUNT(*) FROM %s WHERE %s IS NULL AND TimestampCreated IS NOT NULL AND TimestampCreated > TIMESTAMP('2008-06-01 00:00:00')", ti.getName(), fi.getColumn());
+                         int cnt = BasicSQLUtils.getCountAsInt(sql);
+                         if (cnt > 0)
+                         {
+                             if (doingCount)
+                             {
+                                 totalCount += cnt;
+                             } else
+                             {
+                                 fixTableDefaultDates(ti, fi);
+                             }
+                         }
+                    }
+                }
+            }
+        }
+        
+        return 0;
+    }
+    
+    private static String updateSQL     = "UPDATE %s SET %s = DATE(TimestampCreated) WHERE %s IS NULL AND TimestampCreated IS NOT NULL AND TimestampCreated > TIMESTAMP('2008-06-01 00:00:00')";
+    private static String updatePrecSQL = "UPDATE %s SET %s = 1 WHERE %s IS NULL AND %s IS NULL AND TimestampCreated IS NOT NULL AND TimestampCreated > TIMESTAMP('2008-06-01 00:00:00')";
+
+    /**
+     * @param ti
+     * @param fi
+     * @return
+     */
+    private static int fixTableDefaultDates(final DBTableInfo ti, final DBFieldInfo fi)
+    {
+        String colName = fi.getColumn();
+        if (colName.length() > 4 && colName.endsWith("Date"))
+        {
+            String precName = colName + "Precision";
+            if (ti.getFieldByColumnName(precName) != null)
+            {
+                String sql = String.format(updatePrecSQL, ti.getName(), precName, precName, fi.getColumn());
+                BasicSQLUtils.update(sql);
+            }
+        }
+        String sql = String.format(updateSQL, ti.getName(), fi.getColumn(), fi.getColumn());
+        int rv = BasicSQLUtils.update(sql);
+
+        return rv;
+    }
+
 }

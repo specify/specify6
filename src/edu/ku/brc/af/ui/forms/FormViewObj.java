@@ -1009,7 +1009,7 @@ public class FormViewObj implements Viewable,
                     }
                 }
                 
-                log.debug("Field ["+fieldName+"] in ["+ti.getTitle()+"]");
+                //log.debug("Field ["+fieldName+"] in ["+(ti != null ? ti.getTitle() : "N/A")+"]");
                 
                 // Now we go get the DBFieldInfo and DBRelationshipInfo and check to make
                 // that the field or Relationship is still a candidate for CF
@@ -1892,7 +1892,7 @@ public class FormViewObj implements Viewable,
     {
         for (FVOFieldInfo fieldInfo : controlsById.values())
         {
-            System.out.println(fieldInfo.getFormCell().getType()+"  "+fieldInfo.getComp());
+            //log.debug(fieldInfo.getFormCell().getType()+"  "+fieldInfo.getComp());
             if (fieldInfo.isOfType(FormCellIFace.CellType.subview) && fieldInfo.getComp() instanceof SubViewBtn)
             {
                 ((SubViewBtn)fieldInfo.getComp()).wasCancelled();
@@ -4856,9 +4856,7 @@ public class FormViewObj implements Viewable,
                 if (fieldInfo.isOfType(FormCellIFace.CellType.field))
                 {
                     // Do Formatting here
-                    FormCellField cellField         = (FormCellField)fieldInfo.getFormCell();
-                    String        dataObjFormatName = cellField.getFormatName();
-                    String        defaultValue      = cellField.getDefaultValue();
+                    FormCellField cellField = (FormCellField)fieldInfo.getFormCell();
                     
                     // 02/13/08 - ignore means ignore
                     if (cellField.isIgnoreSetGet())
@@ -4866,10 +4864,18 @@ public class FormViewObj implements Viewable,
                         continue;
                     }
                     
-                    boolean hasID = dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() != null;
+                    String  dataObjFormatName = cellField.getFormatName();
+                    String  defaultValue      = isEditing() ? cellField.getDefaultValue() : null;
+                    boolean hasID             = dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() != null;
+                    
+                    //log.debug("["+cellField.getName()+"] hasID["+hasID+"]  defaultValue["+defaultValue+"]  hasDefault["+hasDefault+"]");
+                    
                     if (this.dataObj != null && !hasID && !hasDefault && StringUtils.isNotEmpty(defaultValue))
                     {
                        hasDefault = true; 
+                    } else
+                    {
+                        defaultValue = null;
                     }
                     
                     boolean isTextFieldPerMode = cellField.isTextFieldForMode(altView.getMode());
@@ -5165,11 +5171,11 @@ public class FormViewObj implements Viewable,
                         isReadOnly    = false;
                     }
                     
-                    String id = fieldInfo.getFormCell().getIdent();
+                    String  id                    = fieldInfo.getFormCell().getIdent();
+                    boolean hasFormControlChanged = hasFormControlChanged(id);
+                    //log.debug(fieldInfo.getName()+"\t"+fieldInfo.getFormCell().getName()+"\t   hasChanged: "+(!isReadOnly && hasFormControlChanged));
                     
-                    log.debug(fieldInfo.getName()+"\t"+fieldInfo.getFormCell().getName()+"\t   hasChanged: "+(!isReadOnly && hasFormControlChanged(id)));
-                    
-                     if (!isReadOnly && !isInoreGetSet && hasFormControlChanged(id))
+                    if (!isReadOnly && !isInoreGetSet && hasFormControlChanged)
                     {
                         // this ends up calling the getData on the GetSetValueIFace 
                         // which enables the control to set data into the data object
@@ -5185,7 +5191,8 @@ public class FormViewObj implements Viewable,
                             MultiView mv = (MultiView)fieldInfo.getComp();
                             mv.getDataFromUI();
                         }
-                        log.debug(fieldInfo.getName()+"  "+fieldInfo.getFormCell().getName() +"  HAS CHANGED!");
+                        
+                        //log.debug(fieldInfo.getName()+"  "+fieldInfo.getFormCell().getName() +"  HAS CHANGED!");
                         Object uiData = getDataFromUIComp(id); // if ID is null then we have huge problems
                         // if (uiData != null && dataObj != null) Changed for Bug 4994
                         if (dataObj != null)
@@ -5429,7 +5436,7 @@ public class FormViewObj implements Viewable,
 
         // Reset it's state as not being changes,
         // because setting in data will cause the change flag to be set
-        if (comp instanceof UIValidatable)
+        if (comp instanceof UIValidatable && StringUtils.isEmpty(defaultValue))
         {
             ((UIValidatable)comp).setChanged(false);
         }

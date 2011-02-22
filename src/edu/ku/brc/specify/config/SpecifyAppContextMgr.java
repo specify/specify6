@@ -1297,6 +1297,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // additional XML Resources.
             
             FixDBAfterLogin.fixUserPermissions(false);
+            FixDBAfterLogin.fixDefaultDates();
             
             Collection curColl = getClassObject(Collection.class);
             int prevCollectionId =  curColl != null ? curColl.getCollectionId() : -1;
