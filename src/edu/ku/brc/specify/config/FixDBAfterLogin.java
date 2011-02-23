@@ -489,7 +489,9 @@ public class FixDBAfterLogin
      */
     public static void fixDefaultDates()
     {
-        if (!AppPreferences.getGlobalPrefs().getBoolean(FIX_DEFDATES_PREF, false))
+        boolean doFix = !AppPreferences.getGlobalPrefs().getBoolean(FIX_DEFDATES_PREF, false);
+        log.debug("fixDefaultDates - Going To Fix["+doFix+"]");
+        if (doFix)
         {
             HashMap<DBTableInfo, List<FormCellFieldIFace>>  tblToFldHash = new HashMap<DBTableInfo, List<FormCellFieldIFace>>();
             Hashtable<String, List<ViewSetIFace>> hash         = AppContextMgr.getInstance().getViewSetHash();
@@ -586,6 +588,8 @@ public class FixDBAfterLogin
                 }
             }
         }
+        
+        log.debug("processTableDefaultDates - Fixed "+totalCount+" Records.");
         
         return 0;
     }
