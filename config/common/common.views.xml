@@ -2207,7 +2207,7 @@
 	              <cell type="label" labelfor="11"/>
 	              <cell type="field" id="11" name="boldBarcodeId" uitype="text" colspan="3"/>
 	              <cell type="label" labelfor="3"/>
-	              <cell type="field" id="3" name="boldLastUpdateDate" uitype="formattedtext" uifieldformatter="Date" default="Today"/>
+	              <cell type="field" id="3" name="boldLastUpdateDate" uitype="formattedtext" uifieldformatter="Date"/>
 	              <cell type="label" labelfor="7"/>
 	              <cell type="field" id="7" name="collectionObject" uitype="querycbx" initialize="name=CollectionObject;editbtn=false;newbtn=false" />
 	          </row>
@@ -2324,7 +2324,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="boldLastUpdateDate" uitype="formattedtext" uifieldformatter="Date" default="Today"/>
+                    <cell type="field" id="3" name="boldLastUpdateDate" uitype="formattedtext" uifieldformatter="Date"/>
                     <cell type="label" labelfor="22"/>
                     <cell type="field" id="22" name="sequencer" uitype="querycbx" initialize="name=Agent"  />
                     
@@ -2388,7 +2388,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="exchangeDate" uitype="formattedtext" uifieldformatter="Date"  default="Today"/>
+                    <cell type="field" id="1" name="exchangeDate" uitype="formattedtext" uifieldformatter="Date" />
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="agentCatalogedBy" uitype="querycbx" initialize="name=Agent" />
                     <cell type="label" labelfor="3"/>
@@ -2429,7 +2429,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="exchangeDate" uitype="formattedtext" uifieldformatter="Date"  default="Today"/>
+                    <cell type="field" id="1" name="exchangeDate" uitype="formattedtext" uifieldformatter="Date" />
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="agentCatalogedBy" uitype="querycbx" initialize="name=Agent" />
                     <cell type="label" labelfor="3"/>
