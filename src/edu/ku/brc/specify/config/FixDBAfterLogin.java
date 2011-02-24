@@ -555,7 +555,7 @@ public class FixDBAfterLogin
             log.debug("Number of Tables Found["+tblToFldHash.size()+"]");
             processTableDefaultDates(tblToFldHash, false);
             
-            //AppPreferences.getGlobalPrefs().putBoolean(FIX_DEFDATES_PREF, true);
+            AppPreferences.getGlobalPrefs().putBoolean(FIX_DEFDATES_PREF, true);
         }
     }
     
