@@ -38,6 +38,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -1297,7 +1298,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // additional XML Resources.
             
             FixDBAfterLogin.fixUserPermissions(false);
-            FixDBAfterLogin.fixDefaultDates();
             
             Collection curColl = getClassObject(Collection.class);
             int prevCollectionId =  curColl != null ? curColl.getCollectionId() : -1;
@@ -1571,6 +1571,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             closeSession();
             session = null;
+            
+            FixDBAfterLogin.fixDefaultDates();
             
             if (prevDisciplineId != -1)
             {
@@ -1884,7 +1886,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public List<ViewIFace> getEntirelyAllViews()
     {
-        Hashtable<String, ViewIFace> viewHash = new Hashtable<String, ViewIFace>();
+    	Vector<ViewIFace> list        = new Vector<ViewIFace>();
+        HashSet<String>   viewHashSet = new HashSet<String>();
         
         for (SpAppResourceDir appResDir : spAppResourceList)
         {
@@ -1893,15 +1896,16 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 Hashtable<String, ViewIFace> vsHash = vs.getViews();
                 for (ViewIFace view : vsHash.values())
                 {
-                    if (viewHash.get(view.getName()) == null)
+                    if (!viewHashSet.contains(view.getName()))
                     {
-                        viewHash.put(view.getName(), view);
+                    	viewHashSet.add(view.getName());
+                    	list.add(view);
                     }
                 }
             }
         }
         
-        return new Vector<ViewIFace>(viewHash.values());
+        return list;
     }
 
     /* (non-Javadoc)

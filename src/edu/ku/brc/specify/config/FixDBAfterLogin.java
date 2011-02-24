@@ -490,67 +490,72 @@ public class FixDBAfterLogin
     public static void fixDefaultDates()
     {
         boolean doFix = !AppPreferences.getGlobalPrefs().getBoolean(FIX_DEFDATES_PREF, false);
-        log.debug("fixDefaultDates - Going To Fix["+doFix+"]");
+        log.debug("fixDefaultDates -  Going To Fix["+doFix+"]");
         if (doFix)
         {
             HashMap<DBTableInfo, List<FormCellFieldIFace>>  tblToFldHash = new HashMap<DBTableInfo, List<FormCellFieldIFace>>();
-            Hashtable<String, List<ViewSetIFace>> hash         = AppContextMgr.getInstance().getViewSetHash();
+            HashSet<String> nameHash = new HashSet<String>();
             
-            for (List<ViewSetIFace> viewList : hash.values())
+            for (ViewIFace view : ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getEntirelyAllViews())
             {
-                for (ViewSetIFace viewSet : viewList)
+                String tableClassName = view.getClassName();
+                DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(tableClassName);
+                if (ti != null)
                 {
-                    Hashtable<String, ViewIFace> viewSetHash = viewSet.getViews();
-                    for (ViewIFace view : viewSetHash.values())
+                	if (nameHash.contains(tableClassName))
+                	{
+                		continue;
+                	}
+                	nameHash.add(tableClassName);
+                	
+                	System.err.println(tableClassName);
+                	
+                	boolean debug = ti.getTableId() == 1;
+                	
+                    for (AltViewIFace avi : view.getAltViews())
                     {
-                        String tableClassName = view.getClassName();
-                        DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(tableClassName);
-                        if (ti != null)
-                        {
-                            for (AltViewIFace avi : view.getAltViews())
-                            {
-                                ViewDefIFace vd = (ViewDefIFace)avi.getViewDef();
-                                if (vd instanceof FormViewDef)
-                                {
-                                    FormViewDefIFace fvd = (FormViewDefIFace)vd;
-                                    for (FormRowIFace fri : fvd.getRows())
-                                    {
-                                        for (FormCellIFace fci : fri.getCells())
-                                        {
-                                            if (fci instanceof FormCellFieldIFace)
-                                            {
-                                                FormCellFieldIFace fcf      = (FormCellFieldIFace)fci;
-                                                String             defValue = fcf.getDefaultValue();
-                                                if (StringUtils.isNotEmpty(defValue))
-                                                {
-                                                    List<FormCellFieldIFace> fieldList = tblToFldHash.get(ti);
-                                                    if (fieldList == null)
-                                                    {
-                                                        fieldList = new ArrayList<FormCellFieldIFace>();
-                                                        tblToFldHash.put(ti, fieldList);
-                                                    }
-                                                    fieldList.add(fcf);
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                    	if (avi.getMode() == AltViewIFace.CreationMode.EDIT)
+                    	{
+	                        ViewDefIFace vd = (ViewDefIFace)avi.getViewDef();
+	                        if (vd instanceof FormViewDef)
+	                        {
+	                            FormViewDefIFace fvd = (FormViewDefIFace)vd;
+	                            for (FormRowIFace fri : fvd.getRows())
+	                            {
+	                                for (FormCellIFace fci : fri.getCells())
+	                                {
+	                                    if (fci instanceof FormCellFieldIFace)
+	                                    {
+		                                	if (debug) System.err.println(ti.getName()+" - "+fci.getIdent()+"  "+fci.getName());
+		                                	
+	                                        FormCellFieldIFace fcf      = (FormCellFieldIFace)fci;
+	                                        String             defValue = fcf.getDefaultValue();
+	                                        if (StringUtils.isNotEmpty(defValue))
+	                                        {
+	                                            List<FormCellFieldIFace> fieldList = tblToFldHash.get(ti);
+	                                            if (fieldList == null)
+	                                            {
+	                                                fieldList = new ArrayList<FormCellFieldIFace>();
+	                                                tblToFldHash.put(ti, fieldList);
+	                                            }
+	                                            fieldList.add(fcf);
+	                                        }
+	                                    }
+	                                }
+	                            }
                             }
-                        //} else
-                        //{
-                            //log.debug("Skipping table Class Name["+tableClassName+"]");
                         }
                     }
+                //} else
+                //{
+                    //log.debug("Skipping table Class Name["+tableClassName+"]");
                 }
             }
             
-            int totalCount = processTableDefaultDates(tblToFldHash, true);
-            if (totalCount > 0)
-            {
-                totalCount = processTableDefaultDates(tblToFldHash, false);
-            }
+            log.debug("Number of Tables Found["+tblToFldHash.size()+"]");
+            processTableDefaultDates(tblToFldHash, false);
             
-            AppPreferences.getGlobalPrefs().putBoolean(FIX_DEFDATES_PREF, true);
+            //AppPreferences.getGlobalPrefs().putBoolean(FIX_DEFDATES_PREF, true);
         }
     }
     
@@ -564,26 +569,55 @@ public class FixDBAfterLogin
         int totalCount = 0;
         for (DBTableInfo ti : tblToFldHash.keySet())
         {
+        	log.debug("processTableDefaultDates - Fixing table "+ti.getName());
             for (FormCellFieldIFace fci : tblToFldHash.get(ti))
             {
                 String[] names = fci.getFieldNames();
-                if (names.length < 3)
+                if (names != null && names.length > 0 && names.length < 3)
                 {
-                    DBFieldInfo fi = ti.getFieldByName(names[0]);
-                     if (fi != null && fi.getDataClass() == java.util.Calendar.class)
+                	Class<?> dataClass = null;
+                	String   fldName   = null;
+                	if (fci.getUiType() == FormCellFieldIFace.FieldType.plugin) // assumes plugin
+                	{
+                		String pluginName = fci.getProperty("name"); 
+                		if (StringUtils.isNotEmpty(pluginName) && pluginName.equals("PartialDateUI"))
+                		{
+                			String dataField = fci.getProperty("df"); 
+                			if (StringUtils.isNotEmpty(dataField))
+                    		{
+                				fldName   = dataField;
+                				dataClass = java.util.Calendar.class;
+                    		}
+                		}
+                	} else
+                	{
+                		fldName = names[0];
+                	}
+                	
+                    DBFieldInfo fi = ti.getFieldByName(fldName);
+                    if (fi != null)
                     {
-                         String sql = String.format("SELECT COUNT(*) FROM %s WHERE %s IS NULL AND TimestampCreated IS NOT NULL AND TimestampCreated > TIMESTAMP('2008-06-01 00:00:00')", ti.getName(), fi.getColumn());
-                         int cnt = BasicSQLUtils.getCountAsInt(sql);
-                         if (cnt > 0)
-                         {
-                             if (doingCount)
-                             {
-                                 totalCount += cnt;
-                             } else
-                             {
-                                 fixTableDefaultDates(ti, fi);
-                             }
-                         }
+                    	if (dataClass == null)
+                        {
+                        	dataClass = fi.getDataClass();
+                        }
+                    	
+                    	if (dataClass == java.util.Calendar.class)
+                    	{
+	                       	log.debug("processTableDefaultDates - Fixing field "+fi.getColumn());
+	                        String sql = String.format("SELECT COUNT(*) FROM %s WHERE %s IS NULL AND TimestampCreated IS NOT NULL AND TimestampCreated > TIMESTAMP('2008-06-01 00:00:00')", ti.getName(), fi.getColumn());
+	                        int    cnt = BasicSQLUtils.getCountAsInt(sql);
+	                        if (cnt > 0)
+	                        {
+	                            if (doingCount)
+	                            {
+	                                totalCount += cnt;
+	                            } else
+	                            {
+	                            	totalCount += fixTableDefaultDates(ti, fi);
+	                            }
+	                        }
+                    	}
                     }
                 }
             }
