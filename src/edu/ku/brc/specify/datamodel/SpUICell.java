@@ -508,7 +508,7 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
         {
             if (defaultDateTodayDB == null && StringUtils.isNotEmpty(uiFieldFormatterName))
             {
-                defaultDateTodayDB = uiFieldFormatterName.equalsIgnoreCase("Date") && defaultValue.equalsIgnoreCase("today");
+                defaultDateTodayDB = uiFieldFormatterName.equals("Date") && defaultValue.equals("today");
             }
             
             if (defaultDateTodayDB != null && defaultDateTodayDB)

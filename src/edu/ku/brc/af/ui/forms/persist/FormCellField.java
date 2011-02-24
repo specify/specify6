@@ -265,7 +265,7 @@ public final class FormCellField extends FormCell implements FormCellFieldIFace
     {
         if (defaultDateToday == null)
         {
-            defaultDateToday = uiFieldFormatterName.equalsIgnoreCase("Date") && defaultValue.equalsIgnoreCase("today");
+            defaultDateToday = uiFieldFormatterName.equals("Date") && defaultValue.equals("today");
         }
         
         if (defaultDateToday)
