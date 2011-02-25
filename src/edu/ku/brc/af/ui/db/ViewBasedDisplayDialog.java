@@ -19,12 +19,15 @@
 */
 package edu.ku.brc.af.ui.db;
 
-import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.Frame;
 
 import javax.swing.BorderFactory;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+import javax.swing.UIManager;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -239,17 +242,27 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
     @Override
     public void createUI()
     {
-        super.createUI();
-        
-        contentPanel = viewBasedPanel;
-        viewBasedPanel.setOkCancelBtns(okBtn, cancelBtn);
-        
         JScrollPane scrollPane = UIHelper.createScrollPane(viewBasedPanel, true);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        contentPanel = scrollPane;
         
-        pack();
+        super.createUI();
         
+        viewBasedPanel.setOkCancelBtns(okBtn, cancelBtn); 
+        
+        if (UIHelper.isWindows())
+        {
+	        Integer width = (Integer)UIManager.get("ScrollBar.width");
+	        if (width == null)
+	        {
+	        	width = (new JScrollBar()).getPreferredSize().width;
+	        }
+	        
+	        Dimension dim1 = getPreferredSize();
+	        dim1.height += width;
+	        dim1.width  += width;
+	        setSize(dim1);
+        }
     }
 
     /* (non-Javadoc)
