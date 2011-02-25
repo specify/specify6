@@ -508,9 +508,7 @@ public class FixDBAfterLogin
                 	}
                 	nameHash.add(tableClassName);
                 	
-                	System.err.println(tableClassName);
-                	
-                	boolean debug = ti.getTableId() == 1;
+                	log.debug(tableClassName);
                 	
                     for (AltViewIFace avi : view.getAltViews())
                     {
@@ -526,11 +524,11 @@ public class FixDBAfterLogin
 	                                {
 	                                    if (fci instanceof FormCellFieldIFace)
 	                                    {
-		                                	if (debug) System.err.println(ti.getName()+" - "+fci.getIdent()+"  "+fci.getName());
+		                                	log.debug(ti.getName()+" - "+fci.getIdent()+"  "+fci.getName());
 		                                	
 	                                        FormCellFieldIFace fcf      = (FormCellFieldIFace)fci;
 	                                        String             defValue = fcf.getDefaultValue();
-	                                        if (StringUtils.isNotEmpty(defValue))
+	                                        if (StringUtils.isNotEmpty(defValue) && !defValue.equals("Today"))
 	                                        {
 	                                            List<FormCellFieldIFace> fieldList = tblToFldHash.get(ti);
 	                                            if (fieldList == null)
