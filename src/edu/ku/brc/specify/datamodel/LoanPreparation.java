@@ -351,8 +351,17 @@ public class LoanPreparation extends DisciplineMember implements java.io.Seriali
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(LoanPreparation obj)
+    public int compareTo(final LoanPreparation obj)
     {
+    	if (preparation != null && obj.getPreparation() != null)
+    	{
+    		CollectionObject co1 = preparation.getCollectionObject();
+    		CollectionObject co2 = obj.getPreparation().getCollectionObject();
+    		if (co1 != null && co2 != null && co1.getCatalogNumber() != null && co2.getCatalogNumber() != null)
+    		{
+    			return co1.getCatalogNumber().compareTo(co2.getCatalogNumber());
+    		}
+    	}
         return timestampCreated != null && obj != null && obj.timestampCreated != null ? timestampCreated.compareTo(obj.timestampCreated) : 0;
     }
 }
