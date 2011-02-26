@@ -197,7 +197,7 @@ public class UploadTable implements Comparable<UploadTable>
      * A vector of related tables that need to be checked when finding matching existing records.
      * For example: Collectors must be checked when matching collectingEvents.
      */
-    protected Vector<UploadTable>                       matchChildren;
+    protected Vector<UploadTable>                       specialChildren;
     protected AtomicBoolean						        skipChildrenMatching = new AtomicBoolean(false);
     
     protected boolean                                   skipMatching = false;
@@ -336,7 +336,7 @@ public class UploadTable implements Comparable<UploadTable>
         uploadFields = new Vector<Vector<UploadField>>();
         uploadedRecs = new TreeSet<UploadedRecordInfo>();
         currentRecords = new Vector<DataModelObjBase>();
-        matchChildren = new Vector<UploadTable>();
+        specialChildren = new Vector<UploadTable>();
         relatedClassDefaults = null;
         dateConverter = new DateConverter();
         matchSetting = new UploadMatchSetting();
@@ -351,7 +351,9 @@ public class UploadTable implements Comparable<UploadTable>
     	{
     		for (ParentTableEntry pte : ptes)
     		{
-    			if (pte.getImportTable().matchChildren != null && pte.getImportTable().matchChildren.contains(this))
+    			if (pte.getImportTable().specialChildren != null 
+    					&& pte.getImportTable().specialChildren.contains(this)
+    					&& pte.getImportTable().needToMatchChild(tblClass))
     			{
     				return true;
     			}
@@ -958,7 +960,7 @@ public class UploadTable implements Comparable<UploadTable>
 
     protected void addChild(final UploadTable child)
     {
-        matchChildren.add(child);
+        specialChildren.add(child);
     }
 
     /**
@@ -1035,8 +1037,9 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected boolean shouldLoadParent(ParentTableEntry pte)
     {
-    	return !pte.getImportTable().matchChildren.contains(this);
+    	return !pte.getImportTable().specialChildren.contains(this) || !pte.getImportTable().needToMatchChild(tblClass);
     }
+    
     /**
      * @param rec
      * @throws Exception
@@ -1063,7 +1066,7 @@ public class UploadTable implements Comparable<UploadTable>
     		}
     	}
     	
-    	for (UploadTable c : matchChildren)
+    	for (UploadTable c : specialChildren)
     	{
     		System.out.println("loading " + c);
     		int cSeq = 0; 
@@ -1692,7 +1695,7 @@ public class UploadTable implements Comparable<UploadTable>
         logDebug("Checking to see if children match:" + tblClass.toString() + "=" + match.getId());
         if (tblClass.equals(CollectingEvent.class))
         {
-            for (UploadTable child : matchChildren)
+            for (UploadTable child : specialChildren)
             {
                 logDebug(child.getTable().getName());
                 if (child.getTblClass().equals(Collector.class))
@@ -1813,7 +1816,7 @@ public class UploadTable implements Comparable<UploadTable>
         }
         else if (tblClass.equals(Accession.class))
         {
-            for (UploadTable child : matchChildren)
+            for (UploadTable child : specialChildren)
             {
                 logDebug(child.getTable().getName());
                 if (child.getTblClass().equals(AccessionAgent.class))
@@ -1921,7 +1924,7 @@ public class UploadTable implements Comparable<UploadTable>
         }
         else if (tblClass.equals(Locality.class))
         {
-        	for (UploadTable child : matchChildren)
+        	for (UploadTable child : specialChildren)
             {
         		if (child.getTblClass().equals(LocalityDetail.class))
                 {
@@ -2604,12 +2607,12 @@ public class UploadTable implements Comparable<UploadTable>
     	List<ParentMatchInfo> result = new Vector<ParentMatchInfo>();
     	Vector<List<ParentMatchInfo>> parentMatches = new Vector<List<ParentMatchInfo>>();
     	Vector<List<ParentMatchInfo>> childMatches = new Vector<List<ParentMatchInfo>>();
-    	List<UploadTable> childTables = new Vector<UploadTable>(matchChildren);
+    	List<UploadTable> childTables = new Vector<UploadTable>(specialChildren);
     	for (Vector<ParentTableEntry> ptes : parentTables)
     	{
     		for (ParentTableEntry pte : ptes)
     		{
-    			if (!pte.getImportTable().matchChildren.contains(this))
+    			if (!pte.getImportTable().specialChildren.contains(this) || !pte.getImportTable().needToMatchChild(tblClass))
     			{
     				if (pte.getImportTable().isOneToOneChild())
     				{
@@ -2864,9 +2867,9 @@ public class UploadTable implements Comparable<UploadTable>
                 // !updateMatches!!!)
                 if (!updateMatches)
                 {
-                	for (UploadTable child : matchChildren)
+                	for (UploadTable child : specialChildren)
                 	{
-                		if (!child.isOneToOneChild() || child.isZeroToOneMany())
+                		if (needToMatchChild(child.tblClass) && (!child.isOneToOneChild() || child.isZeroToOneMany()))
                 		{
                 			child.skipRow = true;
                 		}
@@ -3714,14 +3717,17 @@ public class UploadTable implements Comparable<UploadTable>
         	return true;
         }
         
-        for (UploadTable child : matchChildren)
+        for (UploadTable child : specialChildren)
         {
-        	child.loadFromDataSet(wbCurrentRow);
-        	for (int c = 0; c < child.getUploadFields().size(); c++)
+        	if (needToMatchChild(child.tblClass))
         	{
-        		if (child.getCurrentRecord(c) != null)
+        		child.loadFromDataSet(wbCurrentRow);
+        		for (int c = 0; c < child.getUploadFields().size(); c++)
         		{
-        			return true;
+        			if (child.getCurrentRecord(c) != null)
+        			{
+        				return true;
+        			}
         		}
         	}
         }
@@ -3740,7 +3746,7 @@ public class UploadTable implements Comparable<UploadTable>
     			{
     				if (pt.getParentRel().getRelType().startsWith("OneTo"))
     				{
-    					checkParent = !parentTbl.matchChildren.contains(this);    				
+    					checkParent = !parentTbl.specialChildren.contains(this);    				
     				}
     				else
     				{
@@ -4323,9 +4329,9 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * @return the matchChildren
      */
-    public Vector<UploadTable> getMatchChildren()
+    public Vector<UploadTable> getSpecialChildren()
     {
-        return matchChildren;
+        return specialChildren;
     }
 
     @Override

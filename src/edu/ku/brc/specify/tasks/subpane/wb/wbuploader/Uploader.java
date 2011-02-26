@@ -871,7 +871,7 @@ public class Uploader implements ActionListener, KeyListener
 			for (ParentTableEntry pte : ptes)
 			{
 				UploadTable p = pte.getImportTable();
-				if (!p.getMatchChildren().contains(ut))
+				if (!p.getSpecialChildren().contains(ut))
 				{
 					rps.add(p);
 					processParentsForRootTableSearch(p, rps);
@@ -1076,17 +1076,19 @@ public class Uploader implements ActionListener, KeyListener
         for (UploadTable ut : uploadTables)
         {            
             logDebug("Table: " + ut.getTable().getName());
-            for (UploadTable mc : ut.getMatchChildren())
+            for (UploadTable mc : ut.getSpecialChildren())
             {
-                logDebug("  Child: " + mc.getTable().getName());
-                for (ParentTableEntry pte : mc.getAncestors())
+                if (ut.needToMatchChild(mc.getTblClass()))
                 {
-                    if (uploadTables.indexOf(ut) < uploadTables.indexOf(pte.getImportTable()))
-                    {
-                        logDebug("reordering: " + pte.getImportTable().getTable().getName() + " must precede " + ut.getTable().getName());
-                        moves.add(new Pair<UploadTable, UploadTable>(ut, pte.getImportTable()));
-                    }
-
+                	logDebug("  Child: " + mc.getTable().getName());
+                	for (ParentTableEntry pte : mc.getAncestors())
+                	{
+                		if (uploadTables.indexOf(ut) < uploadTables.indexOf(pte.getImportTable()))
+                		{
+                			logDebug("reordering: " + pte.getImportTable().getTable().getName() + " must precede " + ut.getTable().getName());
+                			moves.add(new Pair<UploadTable, UploadTable>(ut, pte.getImportTable()));
+                		}
+                	}
                 }
             }
         }
