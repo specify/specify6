@@ -2127,8 +2127,8 @@ SELECT cn.ContainerID,
                     <![CDATA[SELECT c.ContainerID, c.Name, co.CollectionObjectID FROM container AS c Left Join collectionobject AS co ON c.ContainerID = co.ContainerOwnerID WHERE co.CollectionObjectID IS NULL AND c.CollectionMemberID = COLMEMID AND (%s)]]>
                 </sql>
                 <captions>
-                    <caption tableid="31" col="c.ContainerID" visible="false"/>
-                    <caption tableid="31" col="c.Name"/>
+                    <caption tableid="31" col="ContainerID" visible="false"/>
+                    <caption tableid="31" col="Name"/>
                 </captions>
             </detailView>
         </table>
