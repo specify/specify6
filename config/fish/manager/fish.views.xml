@@ -139,30 +139,27 @@
                 <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="12" initialize="btn=true;icon=CollectionObjectAttachment"/>
                 </row>
-                
                 <row>
                     <cell type="panel" id="containerPanel" name="outerPanel" coldef="115px,2px,p,2px,p,f:p:g,p,2px,p,2px,p" rowdef="p" colspan="12">
                         <rows>
                             <row>
                                 <cell type="label" labelfor="containerOwner"/>
                                 <cell type="field" id="containerOwner" name="containerOwner" uitype="querycbx" initialize="name=ContainerOwner;title=ContainerOwner;searchdlg=ContainerOwnerSearch" isrequired="false"/>
-                                <cell type="label" label="(Associated with)"/>
-                                <cell type="label" labelfor="container"/>
-                                <cell type="field" id="container" name="container" uitype="querycbx" initialize="name=Container;title=Container;searchdlg=ContainerSearch" isrequired="false"/>
                                 <cell type="label" label="(The parent container)"/>
+                                <cell type="label" labelfor="container"/>
+                                <cell type="field" id="container" name="container" uitype="querycbx" initialize="name=Container;title=Container;searchdlg=ContainerSearch;addbtn=false;" isrequired="false"/>
+                                <cell type="label" label="(Associated with)"/>
                             </row>
                         </rows>
                     </cell>
                 </row>
-                
                 <row>
-                    <cell type="label" label="Collection Rel:" initialize="align=right;"/>
+                    <cell type="label" label="Eaten By:" initialize="align=right;"/>
                     <cell type="field" id="colrel" uitype="plugin" name="this" initialize="name=ColRelTypePlugin;relname=Eaten By;"/>
                 </row>
                 <row>
                     <cell type="separator" label="" colspan="12"/>
                 </row>
-                
                 <row>
                     <cell type="label" labelfor="10"/>
                     <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent" colspan="3"/>

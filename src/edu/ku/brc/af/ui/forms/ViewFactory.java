@@ -1417,7 +1417,7 @@ public class ViewFactory
                 uiType == FormCellField.FieldType.text && 
                 fieldClass != null)
             {
-                if (fieldClass == String.class)
+                if (fieldClass == String.class && fieldInfo != null)
                 {
                 	// check whether there's a formatter defined for this field in the schema
                     if (fieldInfo.getFormatter() != null)
@@ -1442,7 +1442,7 @@ public class ViewFactory
 
             // Create the UI Component
             
-            boolean isReq = (cellField != null && cellField.isRequired()) || (fieldInfo != null && fieldInfo.isRequired()) || (relInfo != null && relInfo.isRequired());
+            boolean isReq = cellField.isRequired() || (fieldInfo != null && fieldInfo.isRequired()) || (relInfo != null && relInfo.isRequired());
             switch (uiType)
             {
                 case text:

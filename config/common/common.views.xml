@@ -1864,17 +1864,18 @@
                 </row>
                 <row>
                     <cell type="label" label="Collection Object:"  initialize="align=right"/>
-                    <cell type="field" id="this_" name="this" uitype="plugin" initialize="name=ContainersColObjPlugin" colspan="6"/>                
+                    <cell type="field" id="this_" name="this" uitype="plugin" initialize="name=ContainersColObjPlugin"/>                
+                    <cell type="label" label="(This container's Collection Object)" initialize="align=left"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="desc"/>
                     <cell type="field" id="desc" name="description" uitype="textareabrief" rows="2" colspan="6"/> 
                 </row>
                 <row>
-                    <cell type="subview" id="collectionObjectKids" name="collectionObjectKids" viewname="CollectionObjectSubTable" initialize="addsearch=true;addadd=true" defaulttype="table" colspan="8"/>               
+                    <cell type="subview" id="collectionObjectKids" name="collectionObjectKids" viewname="CollectionObjectSubTable" initialize="addsearch=true;addadd=true;title=Collection Object Children of Container" defaulttype="table" colspan="8"/>               
                 </row>
                 <row>
-                    <cell type="subview" id="children" name="children" viewname="ContainerBriefTable" initialize="addsearch=true;addadd=true" defaulttype="table" colspan="8"/>               
+                    <cell type="subview" id="children" name="children" viewname="ContainerBriefTable" initialize="addsearch=true;addadd=true;title=Container Children of Container" defaulttype="table" colspan="8"/>               
                 </row>
                 <row>
                   <cell type="panel" id="cppanel" name="cppanel" coldef="f:p:g,p,p" rowdef="p" colspan="8">

@@ -210,7 +210,8 @@ public class MultiView extends JPanel
         this.createOptions  = options | (createWithMode == AltViewIFace.CreationMode.EDIT ? IS_EDITTING : 0);
         this.cell           = cell;
         
-        initializeCardPanel(options);
+        String title = cell != null ? cell.getProperty("title") : null;
+        initializeCardPanel(options, title);
         
         this.isSelectorForm = StringUtils.isNotEmpty(view.getSelectorName());
         
@@ -317,7 +318,7 @@ public class MultiView extends JPanel
         this.createWithMode = createWithMode;
         this.createOptions  = options | (createWithMode == AltViewIFace.CreationMode.EDIT ? IS_EDITTING : NO_OPTIONS);
         
-        initializeCardPanel(options);
+        initializeCardPanel(options, null);
         
         if (AppContextMgr.isSecurityOn())
         {
@@ -327,21 +328,26 @@ public class MultiView extends JPanel
             this.permissions = new PermissionSettings(PermissionSettings.ALL_PERM);
         }
         
-        createViewable(altView != null ? altView : createDefaultViewable(null), cellName);
-        showView(altView.getName());
+        AltViewIFace avi = altView != null ? altView : createDefaultViewable(null);
+        createViewable(avi, cellName);
+        showView(avi.getName());
     }
     
     /**
      * @param options
      */
-    private void initializeCardPanel(final int options)
+    private void initializeCardPanel(final int options, final String title)
     {
         if (!isOptionOn(options, DONT_USE_EMBEDDED_SEP))
         {
             setLayout(new BorderLayout());
             
-            String title = view.getTitle();
-            if (mvParent != null && StringUtils.isNotEmpty(cellName))
+            String titleStr = view.getTitle();
+            if (StringUtils.isNotEmpty(title))
+            {
+                titleStr = title;
+                
+            } else if (mvParent != null && StringUtils.isNotEmpty(cellName))
             {
                 DBTableInfo parentTblInfo = DBTableIdMgr.getInstance().getByClassName(mvParent.getView().getClassName());
                 if (parentTblInfo != null)
@@ -349,14 +355,14 @@ public class MultiView extends JPanel
                     DBTableChildIFace childInfo = parentTblInfo.getItemByName(cellName);
                     if (childInfo != null)
                     {
-                        title = childInfo.getTitle();
+                        titleStr = childInfo.getTitle();
                     }
                 }
             }
             this.cardPanel = new JPanel(cardLayout);
             this.cardPanel.setVisible(!isOptionOn(options, COLLAPSE_SEPARATOR));
             
-            this.separator = new CollapsableSeparator(title, !isOptionOn(options, NO_MORE_BTN_FOR_SEP));
+            this.separator = new CollapsableSeparator(titleStr, !isOptionOn(options, NO_MORE_BTN_FOR_SEP));
             this.separator.setInnerComp(this.cardPanel);
             this.cardPanel.setOpaque(false);
             

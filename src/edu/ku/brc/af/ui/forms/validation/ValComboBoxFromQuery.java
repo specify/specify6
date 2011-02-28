@@ -495,21 +495,21 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
         boolean hasAddBtn = (btnMask & CREATE_NEW_BTN) != 0;
         
-        if (hasAddBtn && (perm == null || (perm != null && perm.canAdd())))
+        if (hasAddBtn && (perm == null || perm.canAdd()))
         {
             createBtn = createBtn("CreateObj", "NewRecordTT", objTitle); 
             pb.add(createBtn, cc.xy(x,1));
             x += 2;
         }
 
-        if (hasCloneBtn && (perm == null || (perm != null && perm.canAdd())))
+        if (hasCloneBtn && (perm == null || perm.canAdd()))
         {
             cloneBtn = createBtn("CloneObj", "CloneRecordTT", objTitle); 
             pb.add(cloneBtn, cc.xy(x,1));
             x += 2;
         }
 
-        if (hasSearchBtn && ((btnMask & CREATE_SEARCH_BTN) != 0) && (perm == null || (perm != null && perm.canAdd())))
+        if (hasSearchBtn && ((btnMask & CREATE_SEARCH_BTN) != 0) && (perm == null || perm.canAdd()))
         {
             textWithQuery.setAddAddItem(hasAddBtn); // set to true if there is an add btn
             searchBtn = createBtn("Search", "SearchForRecordTT", objTitle); 
@@ -1049,10 +1049,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 }
             } else
             {
-                DataProviderSessionIFace session = null;
+                DataProviderSessionIFace localSession = null;
                 try
                 {
-                    session = DataProviderFactory.getInstance().createSession();
+                    localSession = DataProviderFactory.getInstance().createSession();
                     newVal = DataObjFieldFormatMgr.getInstance().format(this.dataObj, dataObjFormatterName);
                     
                 } catch (Exception ex)
@@ -1062,9 +1062,9 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                     ex.printStackTrace();
                 } finally
                 {
-                    if (session != null)
+                    if (localSession != null)
                     {
-                        session.close();
+                        localSession.close();
                     }
                 }
             }
@@ -1416,11 +1416,11 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             
         } else
         {
-            if (value != null && Set.class.isAssignableFrom(value.getClass()))
+            if (Set.class.isAssignableFrom(value.getClass()))
             {
                 UIRegistry.showError("The QueryComboBox cannot handle Sets! field name["+cellName+"]");   
             }
-            throw new RuntimeException("Data does not extend FormDataObjIFace ["+ value + "] " + (value != null ? value.getClass() : ""));
+            throw new RuntimeException("Data does not extend FormDataObjIFace ["+ value + "] " + value.getClass());
         }
     }
 
@@ -1440,37 +1440,33 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             return dataObj;
         }
         
-        if (id != null)
+        DataProviderSessionIFace localSession = null;
+        try
         {
-            DataProviderSessionIFace session = null;
-            try
+            localSession = DataProviderFactory.getInstance().createSession();
+            log.debug(tableInfo.getClassObj()+" " +tableInfo.getIdFieldName()+" " +id);
+            List<?> list = localSession.getDataList(tableInfo.getClassObj(), tableInfo.getIdFieldName(), id, DataProviderSessionIFace.CompareType.Restriction);
+            if (list.size() != 0)
             {
-                session = DataProviderFactory.getInstance().createSession();
-                log.debug(tableInfo.getClassObj()+" " +tableInfo.getIdFieldName()+" " +id);
-                List<?> list = session.getDataList(tableInfo.getClassObj(), tableInfo.getIdFieldName(), id, DataProviderSessionIFace.CompareType.Restriction);
-                if (list.size() != 0)
-                {
-                    dataObj = (FormDataObjIFace)list.get(0);
-                    dataObj.forceLoad();
-                    
-                } else
-                {
-                    log.error("**** Can't find the Object "+tableInfo.getClassObj()+" with ID: "+id);
-                }
+                dataObj = (FormDataObjIFace)list.get(0);
+                dataObj.forceLoad();
                 
-            } catch (Exception ex)
+            } else
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ValComboBoxFromQuery.class, ex);
-                ex.printStackTrace();
-            } finally 
-            {
-                if (session != null)
-                {
-                    session.close();
-                }
+                log.error("**** Can't find the Object "+tableInfo.getClassObj()+" with ID: "+id);
             }
-
+            
+        } catch (Exception ex)
+        {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ValComboBoxFromQuery.class, ex);
+            ex.printStackTrace();
+        } finally 
+        {
+            if (localSession != null)
+            {
+                localSession.close();
+            }
         }
 
         return dataObj;

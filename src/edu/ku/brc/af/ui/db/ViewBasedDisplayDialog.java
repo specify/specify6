@@ -250,7 +250,7 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
         
         viewBasedPanel.setOkCancelBtns(okBtn, cancelBtn); 
         
-        if (UIHelper.isWindows())
+        if (!UIHelper.isMacOS())
         {
 	        Integer width = (Integer)UIManager.get("ScrollBar.width");
 	        if (width == null)

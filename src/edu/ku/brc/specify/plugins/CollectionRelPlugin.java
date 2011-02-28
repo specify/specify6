@@ -19,15 +19,16 @@
 */
 package edu.ku.brc.specify.plugins;
 
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -36,6 +37,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -52,7 +54,7 @@ import edu.ku.brc.specify.datamodel.CollectionRelationship;
  * Apr 3, 2008
  *
  */
-public class CollectionRelPlugin extends UIPluginBase
+public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
 {
     protected boolean                isLeftSide    = false;
     protected CollectionRelType      colRelType    = null;
@@ -63,7 +65,8 @@ public class CollectionRelPlugin extends UIPluginBase
     protected CollectionObject       otherSide     = null;
     
     protected ValComboBoxFromQuery   cbx;
-    
+    protected boolean                isRequired    = false;
+
     /**
      * 
      */
@@ -76,7 +79,7 @@ public class CollectionRelPlugin extends UIPluginBase
      * @see edu.ku.brc.specify.plugins.UIPluginBase#initialize(java.util.Properties, boolean)
      */
     @Override
-    public void initialize(Properties propertiesArg, boolean isViewModeArg)
+    public void initialize(final Properties propertiesArg, final boolean isViewModeArg)
     {
         super.initialize(propertiesArg, isViewModeArg);
         
@@ -116,7 +119,7 @@ public class CollectionRelPlugin extends UIPluginBase
             CellConstraints cc = new CellConstraints();
             PanelBuilder pb = new PanelBuilder(new FormLayout("p",  "p"), this);
             
-            int btnOpts = ValComboBoxFromQuery.CREATE_EDIT_BTN | ValComboBoxFromQuery.CREATE_NEW_BTN | ValComboBoxFromQuery.CREATE_SEARCH_BTN;
+            int btnOpts = ValComboBoxFromQuery.CREATE_EDIT_BTN | ValComboBoxFromQuery.CREATE_SEARCH_BTN;
             cbx = new ValComboBoxFromQuery(DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()),
                                     "catalogNumber",
                                     "catalogNumber",
@@ -137,6 +140,7 @@ public class CollectionRelPlugin extends UIPluginBase
                 public void valueChanged(ListSelectionEvent e)
                 {
                     itemSelected();
+                    notifyChangeListeners(new ChangeEvent(CollectionRelPlugin.this));
                 }
             });
             
@@ -144,9 +148,8 @@ public class CollectionRelPlugin extends UIPluginBase
         {
             // no Relationship name
         }
-             
     }
-    
+
     /**
      * @return will return a list or empty list, but not NULL
      */
@@ -179,7 +182,7 @@ public class CollectionRelPlugin extends UIPluginBase
     @Override
     public boolean isNotEmpty()
     {
-        throw new NotImplementedException("isNotEmpty not implement!");
+        return cbx.isNotEmpty();
     }
     
     /**
@@ -272,7 +275,6 @@ public class CollectionRelPlugin extends UIPluginBase
         }
     }
     
-
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.UIPluginable#getFieldNames()
      */
@@ -280,6 +282,131 @@ public class CollectionRelPlugin extends UIPluginBase
     public String[] getFieldNames()
     {
         return new String[] {"catalogNumber", "rightSide", "leftSide"};
+    }
+
+    //---------------------------------------------------------------------------------------------
+    //-- edu.ku.brc.af.ui.forms.UIPluginable
+    //---------------------------------------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#cleanUp()
+     */
+    @Override
+    public void cleanUp()
+    {
+        cbx.cleanUp();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#getReason()
+     */
+    @Override
+    public String getReason()
+    {
+        return cbx.getReason();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#getState()
+     */
+    @Override
+    public ErrorType getState()
+    {
+        return cbx.getState();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#getValidatableUIComp()
+     */
+    @Override
+    public Component getValidatableUIComp()
+    {
+        return cbx;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#isChanged()
+     */
+    @Override
+    public boolean isChanged()
+    {
+        return cbx.isChanged();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#isInError()
+     */
+    @Override
+    public boolean isInError()
+    {
+        return cbx.isInError();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#isRequired()
+     */
+    @Override
+    public boolean isRequired()
+    {
+        return this.isRequired;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#reset()
+     */
+    @Override
+    public void reset()
+    {
+        cbx.reset();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#setAsNew(boolean)
+     */
+    @Override
+    public void setAsNew(boolean isNew)
+    {
+        cbx.setAsNew(isNew);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#setChanged(boolean)
+     */
+    @Override
+    public void setChanged(boolean isChanged)
+    {
+        cbx.setChanged(isChanged);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#setRequired(boolean)
+     */
+    @Override
+    public void setRequired(boolean isRequired)
+    {
+        if (cbx != null)
+        {
+            cbx.setRequired(isRequired);
+        }
+        this.isRequired = isRequired;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#setState(edu.ku.brc.af.ui.forms.validation.UIValidatable.ErrorType)
+     */
+    @Override
+    public void setState(ErrorType state)
+    {
+        cbx.setState(state);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#validateState()
+     */
+    @Override
+    public ErrorType validateState()
+    {
+        return cbx.validateState();
     }
     
 }

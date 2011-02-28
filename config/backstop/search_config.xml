@@ -2115,8 +2115,8 @@ SELECT cn.ContainerID,
                     <![CDATA[SELECT c.ContainerID, c.Name FROM container c WHERE c.CollectionMemberID = COLMEMID AND (%s)]]>
                 </sql>
                 <captions>
-                    <caption tableid="31" col="c.ContainerID" visible="false"/>
-                    <caption tableid="31" col="c.Name"/>
+                    <caption tableid="31" col="ContainerID" visible="false"/>
+                    <caption tableid="31" col="Name"/>
                 </captions>
             </detailView>
         </table>
