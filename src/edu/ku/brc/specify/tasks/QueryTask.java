@@ -1496,7 +1496,12 @@ public class QueryTask extends BaseTask
         								.getRepeats());
         			} else
         			{
-        				src = rsm.getRecordSet(null, true);
+        				int[] selectedRows = rsm.getParentERTP().getSelectedRows();
+        				if (selectedRows != null && selectedRows.length == 0)
+        				{
+        					selectedRows = null;
+        				}
+        				src = rsm.getRecordSet(selectedRows, false);
         			}
         			final CommandAction cmd = new CommandAction(
         					ReportsBaseTask.REPORTS, ReportsBaseTask.PRINT_REPORT, src);
