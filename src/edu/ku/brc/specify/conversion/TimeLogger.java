@@ -19,17 +19,21 @@
 */
 package edu.ku.brc.specify.conversion;
 
+import org.apache.log4j.Logger;
+
 /**
  * Simple class that makes it easy to show elapsed time.
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Complete
  *
  * Oct 21, 2009
  *
  */
 public class TimeLogger
 {
+    private static final Logger log = Logger.getLogger(TimeLogger.class);
+    
     private String desc        = null;
     private long   startTime;
     private long   endTime;
@@ -96,7 +100,7 @@ public class TimeLogger
         int secs  = (int)(totalSeconds - (hours * 3600) - (mins * 60));
                
         String str = String.format("%sElapsed Time: %02d:%02d:%02d (%8.4f) (%d)", (desc != null ? (desc + " - ") : ""), hours, mins, secs, totalSeconds, endTime);
-        System.out.println(str);
+        log.debug(str);
         return str;
     }
 }

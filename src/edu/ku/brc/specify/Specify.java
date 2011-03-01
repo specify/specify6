@@ -626,7 +626,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             Date now = Calendar.getInstance().getTime();
             
             double elapsedMinutes = (now.getTime() - lastSaved) / 60000.0;
-            System.out.println(elapsedMinutes);
+            log.debug(elapsedMinutes);
             if (elapsedMinutes < 1.0)
             {
                 AppPreferences.setBlockTimer();
@@ -1559,6 +1559,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         } catch (Exception ex)
         {
             ex.printStackTrace();
+            log.error(ex);
             UIRegistry.showLocalizedError("Specify.UPDATE_CHK_ERROR");
             return;
         }
@@ -1569,12 +1570,12 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
            {
                public void exited(int exitValue)
                {
-                   System.err.println("exitValue: "+exitValue);
+                   log.error("exitValue: "+exitValue);
                    //startApp(doConfig);
                }
                public void prepareShutdown()
                {
-                   System.err.println("prepareShutdown");
+                   log.error("prepareShutdown");
                    
                }
             };
@@ -1582,7 +1583,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             
         } catch (Exception ex)
         {
-            System.err.println("EXPCEPTION");
+            log.error(ex);
+            log.error("EXPCEPTION");
         }
     }
     
@@ -1622,7 +1624,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         for (Storage node : parent.getChildren())
         {
-            System.out.println("["+node.getName()+"]["+nodeStr+"]");
+            //log.debug("["+node.getName()+"]["+nodeStr+"]");
             if (node.getName().equals(nodeStr))
             {
                 if (StringUtils.isNotEmpty(pathStr))
@@ -1818,11 +1820,11 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 {
                     String localityName = rs1.getString(2);
                     int    distance     = StringUtils.getLevenshteinDistance(currLocalityName, localityName);
-                    //System.err.println(rs.getInt(1) + "  "+ rs1.getInt(1) + "  "+ distance);
+                    //log.error(rs.getInt(1) + "  "+ rs1.getInt(1) + "  "+ distance);
                     if (distance < 6)
                     {
-                        System.err.println("----- "+distance+"\n"+currLocalityName+"\n"+localityName);
-                        System.err.println(rs.getBigDecimal(4)+","+rs.getBigDecimal(5)+"\n"+rs1.getBigDecimal(4)+","+rs1.getBigDecimal(5));
+                        log.error("----- "+distance+"\n"+currLocalityName+"\n"+localityName);
+                        log.error(rs.getBigDecimal(4)+","+rs.getBigDecimal(5)+"\n"+rs1.getBigDecimal(4)+","+rs1.getBigDecimal(5));
                     }
                 }
                 rs1.close();
@@ -2906,7 +2908,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                       }
                   } else
                   {
-                      System.err.println(msg);
+                      log.error(msg);
                   }
               }
               
@@ -3071,7 +3073,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                   
                   checkDebugLoggerSettings();
                   
-                  //System.err.println("LocalPrefs: "+(new File(UIRegistry.getAppDataDir())).getCanonicalPath());
+                  //log.error("LocalPrefs: "+(new File(UIRegistry.getAppDataDir())).getCanonicalPath());
                   
                   // Check to see if we should check for a new version
                   String VERSION_CHECK = "version_check.auto";
@@ -3127,6 +3129,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                       } catch (Exception ex)
                       {
                           ex.printStackTrace();
+                          log.error(ex);
                           startApp();
                       }
                   } else
@@ -3140,6 +3143,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
               } catch (Exception ex)
               {
                   ex.printStackTrace();
+                  log.error(ex);
               }
           }
       });
