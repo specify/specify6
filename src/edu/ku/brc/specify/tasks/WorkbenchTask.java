@@ -2649,6 +2649,9 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 {
                     UIRegistry.getStatusBar().setText(String.format(getResourceString("WB_DEL_BACKED_UP"), new Object[] { workbench.getName(), backupName }));
                 }
+               AppPreferences.getLocalPrefs().remove(WorkbenchPaneSS.wbAutoValidatePrefName + "." + workbench.getId());
+               AppPreferences.getLocalPrefs().remove(WorkbenchPaneSS.wbAutoMatchPrefName + "." + workbench.getId());
+               
             }
         };
         worker.start();

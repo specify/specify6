@@ -31,6 +31,8 @@ public class WorkbenchValidator
 	
 	/**
 	 * @param wbPane
+	 * @throws WorkbenchValidatorException
+	 * @throws UploaderException
 	 */
 	public WorkbenchValidator(WorkbenchPaneSS wbPane) throws WorkbenchValidatorException, UploaderException
 	{
@@ -39,6 +41,11 @@ public class WorkbenchValidator
 		this.uploader = createUploader();
 	}
 	
+	/**
+	 * @param wb
+	 * @throws WorkbenchValidatorException
+	 * @throws UploaderException
+	 */
 	public WorkbenchValidator(Workbench wb ) throws WorkbenchValidatorException, UploaderException
 	{
 		this.wbPane = null;
@@ -78,13 +85,6 @@ public class WorkbenchValidator
 	public List<UploadTableInvalidValue> endCellEdit(int row, int col)
 	{
 		Vector<UploadTableInvalidValue> issues = uploader.validateData(row, col);
-//		if (issues.size() > 0)
-//		{
-//			for (UploadTableInvalidValue i : issues)
-//			{
-//				System.out.println(i.getMsg());
-//			}
-//		}
 		return issues;
 	}
 	
@@ -127,6 +127,9 @@ public class WorkbenchValidator
 		}
 	}
 	
+	/**
+	 * @return the uploader
+	 */
 	public Uploader getUploader()
 	{
 		return uploader;

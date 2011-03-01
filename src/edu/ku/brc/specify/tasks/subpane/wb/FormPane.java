@@ -23,7 +23,6 @@ import static edu.ku.brc.ui.UIHelper.createIconBtn;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.AWTKeyStroke;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -50,8 +49,10 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -101,6 +102,7 @@ import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
  * Mar 8, 2007
  *
  */
+@SuppressWarnings("serial")
 public class FormPane extends JPanel implements ResultSetControllerListener, 
                                                 GhostActionable
 {
@@ -350,7 +352,8 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
      */
     protected void selectControl(final Object uiObj)
     {
-        selectedInputPanel = getInputPanel(uiObj); // NOTE: This also requests the focus if it finds one
+        //System.out.println("!!!!!!!!!FOCUS GAINED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    	selectedInputPanel = getInputPanel(uiObj); // NOTE: This also requests the focus if it finds one
         controlPropsBtn.setEnabled(true);
         
         if (controlPropsDlg != null)
@@ -637,6 +640,49 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             focusComp = comp;
             uiType = WorkbenchTemplateMappingItem.CHECKBOX;
         }
+        else if (useComboBox(wbtmi))
+        {
+        	//ValComboBox comboBox = new ValComboBox(getValues(wbtmi), true);
+        	
+        	JComboBox comboBox = new JComboBox(getValues(wbtmi));
+        	comboBox.setEditable(true);
+        	comboBox.addActionListener(new ActionListener() {
+
+				/* (non-Javadoc)
+				 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+				 */
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					//System.out.println("ComboBox Action!");
+					stateChange();
+				}
+        		
+        	});
+//        	comboBox.getEditor().getEditorComponent().addFocusListener(new FocusListener() {
+//
+//				/* (non-Javadoc)
+//				 * @see java.awt.event.FocusListener#focusGained(java.awt.event.FocusEvent)
+//				 */
+//				@Override
+//				public void focusGained(FocusEvent arg0) {
+//					System.out.println("FOCUS GAINED");
+//					
+//				}
+//
+//				/* (non-Javadoc)
+//				 * @see java.awt.event.FocusListener#focusLost(java.awt.event.FocusEvent)
+//				 */
+//				@Override
+//				public void focusLost(FocusEvent arg0) {
+//					System.out.println("FOCUS LOST");
+//					
+//				}
+//        		
+//        	});
+        	comp = comboBox;
+        	focusComp = comp;
+        	uiType = WorkbenchTemplateMappingItem.COMBOBOX;        	
+        }
         else if (useTextField(fieldName, fieldType, fieldLength))
         {
             ValTextField txt = new ValTextField(columns);
@@ -663,7 +709,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             {
                 selectControl(e.getSource());
             }
-            public void focusLost(FocusEvent e) {}
+            public void focusLost(FocusEvent e) {stateChange();}
         });
         
         
@@ -686,6 +732,35 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             
         });
         return comp;
+    }
+    
+    protected ComboBoxModel getValues(final WorkbenchTemplateMappingItem wbtmi)
+    {
+        Vector<WorkbenchTemplateMappingItem> wbtmis = new Vector<WorkbenchTemplateMappingItem>();
+        wbtmis.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
+        Collections.sort(wbtmis);
+        int wbCol = -1;
+    	for (int c = 0; c < wbtmis.size(); c++)
+    	{
+    		if (wbtmis.get(c) == wbtmi)
+    		{
+    			wbCol = c;
+    			break;
+    		}
+    	}
+    	if (wbCol != -1)
+    	{
+    		if (workbenchPane.getSpreadSheet().getColumnModel().getColumn(wbCol).getCellEditor() instanceof WorkbenchPaneSS.GridCellListEditor)
+    		{
+    			return ((WorkbenchPaneSS.GridCellListEditor )workbenchPane.getSpreadSheet().getColumnModel().getColumn(wbCol).getCellEditor()).getList();
+    		}
+    	}
+    	return null;
+    }
+    
+    protected boolean useComboBox(final WorkbenchTemplateMappingItem wbtmi)
+    {
+    	return getValues(wbtmi) != null;
     }
     
     /**
@@ -875,7 +950,12 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             {
                 wbRow.setData(((JTextArea)comp).getText(), col, true);
             }
-        } else
+        } else if (p.getComp() instanceof JComboBox)
+        {
+        	JComboBox cb = (JComboBox )p.getComp();
+        	wbRow.setData(cb.getSelectedItem().toString(), col, true);
+        }
+        else
         {
            log.error("Can't get data from control["+p.getLabelText()+"]");
         }
@@ -969,7 +1049,11 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             {
                 ((GetSetValueIFace)p.getComp()).setValue(wbRow.getData(col), wbRow.getData(col));
                 
-            } else if (p.getComp() instanceof JScrollPane)
+            } else if (p.getComp() instanceof JComboBox)
+            {
+            	((JComboBox )p.getComp()).setSelectedItem(wbRow.getData(col));
+            }
+            else if (p.getComp() instanceof JScrollPane)
             {
                 JScrollPane sc = (JScrollPane)p.getComp();
                 Component comp = sc.getViewport().getView();
@@ -1157,16 +1241,19 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
      */
     protected void stateChange()
     {
-        if (!ignoreChanges)
+        //System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!STATE CHANGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    	if (!ignoreChanges)
         {
             changesInForm = true;
             workbenchPane.setChanged(true);
             if (workbenchPane.isDoIncremental())
             {
-                WorkbenchRow wbRow = workbench.getWorkbenchRowsAsList().get(currentIndex);
-            	copyDataFromForm(selectedInputPanel, wbRow);
+                ignoreChanges = true;
+            	WorkbenchRow wbRow = workbench.getWorkbenchRowsAsList().get(currentIndex);
+            	copyDataFromForm();
             	workbenchPane.updateRowValidationStatus(currentIndex, -1);
             	updateValidationUI(wbRow);
+            	ignoreChanges = false;
             }
         }
     }
@@ -1197,15 +1284,29 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
      */
     protected void updateValidationUI(InputPanel ip, WorkbenchRow wbRow)
     {
-		String toolTip = null;
+		//for some reason addAttributes() is not working on the form pane.
+//		workbenchPane.getCellDecorator().addAttributes(ip.getLabel(), wbCell, 
+//				workbenchPane.isDoIncrementalValidation(),
+//				workbenchPane.isDoIncrementalMatching());			
+		//System.out.println("Updating validation UI for " + ip.getLabelText());
+    	String toolTip = null;
 		LineBorder border = null;
 		WorkbenchDataItem wbCell = wbRow.getItems().get(ip.getWbtmi().getViewOrder());
-		if (wbCell != null && wbCell.getEditorValidationStatus() == WorkbenchDataItem.VAL_ERROR)
-		{
+		if (wbCell != null)
+		{ 
 			toolTip = wbCell.getStatusText();
-			border = new LineBorder(Color.RED);
-		} 	
-		ip.setToolTipText(toolTip);
-		ip.setBorder(border);
+			if( wbCell.getEditorValidationStatus() == WorkbenchDataItem.VAL_ERROR && workbenchPane.isDoIncrementalValidation())
+			{				
+				border = new LineBorder(workbenchPane.getCellDecorator().errorBorder);
+			} else if (wbCell.getEditorValidationStatus() == WorkbenchDataItem.VAL_NEW_DATA && workbenchPane.isDoIncrementalMatching())
+			{
+				border = new LineBorder(workbenchPane.getCellDecorator().newDataBorder);
+			} else
+			{
+				toolTip = null;
+			}
+		} 			
+		ip.getLabel().setToolTipText(toolTip);
+		ip.getLabel().setBorder(border);
     }
  }

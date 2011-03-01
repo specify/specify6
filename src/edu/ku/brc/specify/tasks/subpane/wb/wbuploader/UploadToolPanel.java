@@ -27,6 +27,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -93,7 +94,8 @@ public class UploadToolPanel extends JPanel implements TimingTarget
                 wbSS.goToInvalidCell(false);
             }
         }, 0);
-        prevInvalidCellBtn = UIHelper.createIconBtn("UpArrow", "WB_PREV_ERROR", prevErrAction);
+        prevInvalidCellBtn = UIHelper.createIconBtn("UpArrow", IconManager.IconSize.Std24,
+        		"WB_PREV_ERROR", false, prevErrAction);
         Action nextErrAction = wbSS.addRecordKeyMappings(wbSS.getSpreadSheet(), KeyEvent.VK_F6, "NextErr", new AbstractAction()
         {
             public void actionPerformed(ActionEvent ae)
@@ -101,7 +103,8 @@ public class UploadToolPanel extends JPanel implements TimingTarget
                 wbSS.goToInvalidCell(true);
             }
         }, 0);
-        nextInvalidCellBtn = UIHelper.createIconBtn("DownArrow", "WB_NEXT_ERROR", nextErrAction);
+        nextInvalidCellBtn = UIHelper.createIconBtn("DownArrow", IconManager.IconSize.Std24, 
+        		"WB_NEXT_ERROR", false, nextErrAction);
         invalidCellCountLbl = UIHelper.createLabel(String.format(UIRegistry.getResourceString("WB_INVALID_CELL_COUNT"), 0));
         
         prevInvalidCellBtn.setVisible(wbSS.isDoIncrementalValidation());
@@ -141,7 +144,8 @@ public class UploadToolPanel extends JPanel implements TimingTarget
                 wbSS.goToUnmatchedCell(false);
             }
         }, 0);
-        prevUnmatchedCellBtn = UIHelper.createIconBtn("UpArrow", "WB_PREV_UNMATCHED", prevUnmatchedAction);
+        prevUnmatchedCellBtn = UIHelper.createIconBtn("UpArrow", IconManager.IconSize.Std24, 
+        		"WB_PREV_UNMATCHED", false, prevUnmatchedAction);
         Action nextUnMatchedAction = wbSS.addRecordKeyMappings(wbSS.getSpreadSheet(), KeyEvent.VK_F8, "NextUnMatched", new AbstractAction()
         {
             public void actionPerformed(ActionEvent ae)
@@ -149,7 +153,8 @@ public class UploadToolPanel extends JPanel implements TimingTarget
                 wbSS.goToUnmatchedCell(true);
             }
         }, 0);
-        nextUnmatchedCellBtn = UIHelper.createIconBtn("DownArrow", "WB_NEXT_UNMATCHED", nextUnMatchedAction);
+        nextUnmatchedCellBtn = UIHelper.createIconBtn("DownArrow", IconManager.IconSize.Std24, 
+        		"WB_NEXT_UNMATCHED", false, nextUnMatchedAction);
         unmatchedCellCountLbl = UIHelper.createLabel(String.format(UIRegistry.getResourceString("WB_UNMATCHED_CELL_COUNT"), 0));
         
 		prevUnmatchedCellBtn.setVisible(wbSS.isDoIncrementalMatching());
@@ -157,9 +162,11 @@ public class UploadToolPanel extends JPanel implements TimingTarget
 		unmatchedCellCountLbl.setVisible(wbSS.isDoIncrementalMatching());
 
         CellConstraints cc = new CellConstraints();
+        
+        JLabel sep1 = new JLabel(IconManager.getIcon("Separator"));
 
         JComponent[] compsArray = {autoValidateChk,
-                                   prevInvalidCellBtn, invalidCellCountLbl, nextInvalidCellBtn, autoMatchChk,
+                                   prevInvalidCellBtn, invalidCellCountLbl, nextInvalidCellBtn, sep1, autoMatchChk,
                                    prevUnmatchedCellBtn, unmatchedCellCountLbl, nextUnmatchedCellBtn};
         Vector<JComponent> availableComps = new Vector<JComponent>(compsArray.length);
         for (JComponent c : compsArray)

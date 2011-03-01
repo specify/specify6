@@ -29,12 +29,12 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
-import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.ui.db.PickListDBAdapterFactory;
+import edu.ku.brc.specify.ui.db.PickListTableAdapter;
 
 /**
  * @author timbo
@@ -87,6 +87,16 @@ public class UploadField
      */
     protected Map<String, PickListItemIFace> validValues        = null;
 
+    /**
+     * True if field has a read-only picklist
+     */
+    protected boolean readOnlyValidValues = false;
+    
+    /**
+     * True if warnings should be made about values not contained in picklist.
+     */
+    protected boolean picklistWarn = false;
+    
     /**
      * True if associated pick list has been searched for.
      */
@@ -338,10 +348,10 @@ public class UploadField
             {
                 pickList = RecordTypeCodeBuilder.getTypeCode(getField().getFieldInfo());
             } 
-//            else 
-//            {
-//            	pickList = checkForSpecialCasePicklist();
-//            }
+            else 
+            {
+            	pickList = checkForSpecialCasePicklist();
+            }
             if (pickList != null)
             {
                 TreeMap<String, PickListItemIFace> pickListItems = new TreeMap<String, PickListItemIFace>();                
@@ -349,6 +359,8 @@ public class UploadField
                 {
                     pickListItems.put(item.getTitle(), item);
                 }
+                readOnlyValidValues = pickList.isReadOnly() && !(pickList instanceof PickListTableAdapter);
+                picklistWarn = !readOnlyValidValues && pickList instanceof PickListTableAdapter;
                 return pickListItems;
             }
         }
@@ -366,16 +378,31 @@ public class UploadField
     	{
     		if (fldInfo.getName().equals("name") && fldInfo.getTableInfo().getClassObj().equals(PrepType.class))
     		{
-    			//XXX add condition for discipline
-    			//XXX need to do this for query builder
-    			//XXX and for column control step in wbpaneSS
-    			String pickListName = BasicSQLUtils.querySingleObj("select spli.picklistname from splocalecontaineritem spli inner join splocalecontainer spl on spl.splocalecontainerid = spli.splocalecontainerid where spli.name = 'prepType' and spl.name = 'preparation'");
-    			if (StringUtils.isNotBlank(pickListName))
-    			{
-    				result = PickListDBAdapterFactory.getInstance().create(pickListName, false);
-    			}
+            	PickListDBAdapterIFace pl = PickListDBAdapterFactory.getInstance().create(fldInfo.getTableInfo().getName(), false);
+            	if (pl instanceof PickListTableAdapter)
+            	{
+            		result =  pl;
+            	}
     		}
     	}
     	return result;
     }
+
+	/**
+	 * @return the readOnlyValidValues
+	 */
+	public boolean isReadOnlyValidValues() 
+	{
+		return readOnlyValidValues;
+	}
+
+	/**
+	 * @return the picklistWarn
+	 */
+	public boolean isPicklistWarn() 
+	{
+		return picklistWarn;
+	}
+    
+	
 }

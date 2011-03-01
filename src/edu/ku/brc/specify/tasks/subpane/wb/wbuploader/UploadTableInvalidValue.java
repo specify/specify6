@@ -33,6 +33,7 @@ public class UploadTableInvalidValue extends BaseUploadMessage implements Compar
     protected final List<UploadField> uploadFlds = new Vector<UploadField>();
     protected final Integer     rowNum;
     protected final Exception   cause;
+    protected final boolean		warn;
 
     /**
      * @param baseMsg
@@ -44,7 +45,7 @@ public class UploadTableInvalidValue extends BaseUploadMessage implements Compar
     public UploadTableInvalidValue(final String baseMsg, final UploadTable uploadTbl, final UploadField uploadFld, int rowNum,
             final Exception cause) 
     {
-        this(baseMsg, uploadTbl, uploadFld, null, rowNum, cause);
+        this(baseMsg, uploadTbl, uploadFld, null, rowNum, cause, false);
     }
 
     /**
@@ -57,7 +58,7 @@ public class UploadTableInvalidValue extends BaseUploadMessage implements Compar
     public UploadTableInvalidValue(final String baseMsg, final UploadTable uploadTbl, List<UploadField> uploadFlds, int rowNum,
             final Exception cause) 
     {
-        this(baseMsg, uploadTbl, null, uploadFlds, rowNum, cause);
+        this(baseMsg, uploadTbl, null, uploadFlds, rowNum, cause, false);
     }
 
     /**
@@ -69,7 +70,7 @@ public class UploadTableInvalidValue extends BaseUploadMessage implements Compar
     public UploadTableInvalidValue(final String baseMsg, final UploadTable uploadTbl, int rowNum,
             final Exception cause) 
     {
-        this(baseMsg, uploadTbl, null, null, rowNum, cause);
+        this(baseMsg, uploadTbl, null, null, rowNum, cause, false);
     }
     
     /**
@@ -81,7 +82,7 @@ public class UploadTableInvalidValue extends BaseUploadMessage implements Compar
      * @param cause
      */
     protected UploadTableInvalidValue(final String baseMsg, final UploadTable uploadTbl, UploadField uploadFld, List<UploadField> uploadFlds, int rowNum,
-            final Exception cause)
+            final Exception cause, boolean warn)
     {
     	super(baseMsg);
         this.uploadTbl = uploadTbl;
@@ -95,6 +96,7 @@ public class UploadTableInvalidValue extends BaseUploadMessage implements Compar
         }
         this.rowNum = new Integer(rowNum);
         this.cause = cause;    	
+        this.warn = warn;
     }
     
     /**
@@ -260,4 +262,14 @@ public class UploadTableInvalidValue extends BaseUploadMessage implements Compar
     {
     	return cause != null && cause.getMessage().equals(UIRegistry.getResourceString("WB_UPLOAD_FIELD_MUST_CONTAIN_DATA"));
     }
+
+	/**
+	 * @return the warn
+	 */
+	public boolean isWarn() 
+	{
+		return warn;
+	}
+    
+    
 }

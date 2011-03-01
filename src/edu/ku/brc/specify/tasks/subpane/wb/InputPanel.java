@@ -65,6 +65,7 @@ import edu.ku.brc.ui.dnd.ShadowFactory;
  * Created Date: Mar 9, 2007
  *
  */
+@SuppressWarnings("serial")
 public class InputPanel extends JPanel implements GhostActionable
 {
     public static final DataFlavor INPUTPANEL_FLAVOR = new DataFlavor(InputPanel.class, "InputPanel");

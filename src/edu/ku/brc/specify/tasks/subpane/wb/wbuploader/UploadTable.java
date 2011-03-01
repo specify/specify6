@@ -2590,7 +2590,7 @@ public class UploadTable implements Comparable<UploadTable>
      * @throws NoSuchMethodException
      */
     protected List<ParentMatchInfo> getMatchInfoInternal(int row, int recNum, 
-    		Set<Integer> invalidColNums, HashMap<UploadTable, DataModelObjBase> mactchChildrenParents) throws UploaderException,
+    		Set<Integer> invalidColNums, HashMap<UploadTable, DataModelObjBase> matchChildrenParents) throws UploaderException,
 		InvocationTargetException, IllegalAccessException, ParseException,
 		NoSuchMethodException
     {
@@ -2620,7 +2620,7 @@ public class UploadTable implements Comparable<UploadTable>
     				} else
     				{
     					parentMatches.add(pte.getImportTable().getMatchInfoInternal(row, adjustedRecNum, invalidColNums, 
-    							mactchChildrenParents));
+    							matchChildrenParents));
     				}
     			}
     		}
@@ -2682,7 +2682,7 @@ public class UploadTable implements Comparable<UploadTable>
 		}
 		
 		//XXX add this table to matchChildrenParents
-		if (mactchChildrenParents == null)
+		if (matchChildrenParents == null)
 		{
 			
 		}
@@ -2690,7 +2690,7 @@ public class UploadTable implements Comparable<UploadTable>
     	{
     		for (int rc = 0; rc < ut.getUploadFields().size(); rc++)
     		{
-    			childMatches.add(ut.getMatchInfoInternal(row, rc, invalidColNums, mactchChildrenParents));
+    			childMatches.add(ut.getMatchInfoInternal(row, rc, invalidColNums, matchChildrenParents));
     		}
     	}
     	//XXX what the hell to do with childMatches??? Need to add them to result to get Agent, taxon matches, but how to 
@@ -2709,6 +2709,7 @@ public class UploadTable implements Comparable<UploadTable>
     	{
     		result.add(new ParentMatchInfo(matches, this, blank && blankParentage, !matched, recNum));
     	}
+    	
     	return result;
     }
     
@@ -3029,6 +3030,12 @@ public class UploadTable implements Comparable<UploadTable>
             return true;
         }
         
+        if (!fld.isPicklistWarn() && !fld.isReadOnlyValidValues())
+        {
+        	return true;
+        }
+        
+        
         return validValues.containsKey(fld.getValue());
    }
     
@@ -3050,7 +3057,11 @@ public class UploadTable implements Comparable<UploadTable>
                 }
                 valList += "'" + val + "'";
             }
-            return String.format(UIRegistry.getResourceString("WB_UPLOAD_VALID_VALS"), valList);
+            if (fld.isReadOnlyValidValues())
+            {
+            	return String.format(UIRegistry.getResourceString("WB_UPLOAD_VALID_VALS"), valList);
+            } 
+            return String.format(UIRegistry.getResourceString("WB_UPLOAD_VALID_VALS_WARN"), valList);
         }
         // this should never happen
         log.error("Could not find picklist values for "
@@ -3263,7 +3274,15 @@ public class UploadTable implements Comparable<UploadTable>
                         }       
                         if (!pickListCheck(fld))
                         {
-                            throw new Exception(getInvalidPicklistValErrMsg(fld));
+                        	if (!fld.isReadOnlyValidValues())
+                        	{
+                        		invalidValues.add(new UploadTableInvalidValue(null, this, fld, null, row,
+                        			new Exception(getInvalidPicklistValErrMsg(fld)), true));
+                        		continue;
+                        	} else 
+                        	{
+                        		throw new Exception(getInvalidPicklistValErrMsg(fld));
+                        	}
                         }
                         getArgForSetter(fld);
                     }
