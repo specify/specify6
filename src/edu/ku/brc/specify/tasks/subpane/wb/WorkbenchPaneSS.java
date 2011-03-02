@@ -304,6 +304,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected AtomicInteger			invalidCellCount		   = new AtomicInteger(0);
     protected AtomicInteger			unmatchedCellCount		   = new AtomicInteger(0);
     protected CellRenderingAttributes cellRenderAtts           = new CellRenderingAttributes();
+    protected boolean				restoreUploadToolPanel	   = false;
     
     //Single thread executor to ensure that rows are not validated concurrently as a result of batch operations
     //protected final ExecutorService validationExecutor		   = Executors.newSingleThreadExecutor(Executors.defaultThreadFactory());
@@ -582,7 +583,6 @@ public class WorkbenchPaneSS extends BaseSubPane
                 }
             });
             showHideUploadToolBtn.setEnabled(true);
-            
         }
 
 
@@ -4048,7 +4048,13 @@ public class WorkbenchPaneSS extends BaseSubPane
 			// ?????
 			spreadSheet.setEnabled(false);
 			setToolBarBtnsEnabled(false);
-			if (imageFrame != null && imageFrame.isVisible())
+            if (uploadToolPanel.isExpanded())
+            {
+            	hideUploadToolPanel();
+            	showHideUploadToolBtn.setToolTipText(getResourceString("WB_SHOW_UPLOADTOOLPANEL"));
+            	restoreUploadToolPanel = true;
+            }			
+            if (imageFrame != null && imageFrame.isVisible())
 			{
 				imageFrame.setVisible(false);
 			}
@@ -4108,6 +4114,12 @@ public class WorkbenchPaneSS extends BaseSubPane
         ssFormSwitcher.setEnabled(true);
         spreadSheet.setEnabled(true);
         setToolBarBtnsEnabled(true);
+        if (restoreUploadToolPanel)
+        {
+        	showUploadToolPanel();
+        	showHideUploadToolBtn.setToolTipText(getResourceString("WB_HIDE_UPLOADTOOLPANEL"));
+        	restoreUploadToolPanel = false;
+        }
         setAllUploadDatasetBtnEnabled(true);
     }
         
@@ -4173,6 +4185,11 @@ public class WorkbenchPaneSS extends BaseSubPane
     		exportExcelCsvBtn.setEnabled(enabled);
     	}
     	
+        if (showHideUploadToolBtn != null)
+        {
+        	showHideUploadToolBtn.setEnabled(enabled);
+        }
+
     	for (JButton btn : workBenchPluginBtns)
     	{
     	    btn.setEnabled(enabled);

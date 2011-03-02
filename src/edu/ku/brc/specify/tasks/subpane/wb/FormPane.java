@@ -644,7 +644,8 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         {
         	//ValComboBox comboBox = new ValComboBox(getValues(wbtmi), true);
         	
-        	JComboBox comboBox = new JComboBox(getValues(wbtmi));
+        	final JComboBox comboBox = new JComboBox(getValues(wbtmi));
+        	comboBox.setName("Form Combo");
         	comboBox.setEditable(true);
         	comboBox.addActionListener(new ActionListener() {
 
@@ -653,8 +654,11 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
 				 */
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					//System.out.println("ComboBox Action!");
-					stateChange();
+					if (arg0.getSource() == comboBox)
+					{
+						System.out.println("ComboBox Action!" + ((JComboBox )arg0.getSource()).getName());
+						stateChange();
+					}
 				}
         		
         	});
@@ -709,7 +713,10 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             {
                 selectControl(e.getSource());
             }
-            public void focusLost(FocusEvent e) {stateChange();}
+            public void focusLost(FocusEvent e) 
+            {
+            	//stateChange();
+            }
         });
         
         
@@ -734,7 +741,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         return comp;
     }
     
-    protected ComboBoxModel getValues(final WorkbenchTemplateMappingItem wbtmi)
+    protected Vector<Object> getValues(final WorkbenchTemplateMappingItem wbtmi)
     {
         Vector<WorkbenchTemplateMappingItem> wbtmis = new Vector<WorkbenchTemplateMappingItem>();
         wbtmis.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
@@ -752,7 +759,13 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
     	{
     		if (workbenchPane.getSpreadSheet().getColumnModel().getColumn(wbCol).getCellEditor() instanceof WorkbenchPaneSS.GridCellListEditor)
     		{
-    			return ((WorkbenchPaneSS.GridCellListEditor )workbenchPane.getSpreadSheet().getColumnModel().getColumn(wbCol).getCellEditor()).getList();
+    			ComboBoxModel model = ((WorkbenchPaneSS.GridCellListEditor )workbenchPane.getSpreadSheet().getColumnModel().getColumn(wbCol).getCellEditor()).getList();
+    			Vector<Object> result = new Vector<Object>();
+    			for (int i = 0; i < model.getSize(); i++)
+    			{
+    				result.add(model.getElementAt(i));
+    			}
+    			return result;
     		}
     	}
     	return null;

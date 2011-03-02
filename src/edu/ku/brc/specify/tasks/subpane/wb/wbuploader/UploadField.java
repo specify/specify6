@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
@@ -195,12 +196,23 @@ public class UploadField
         PickListItemIFace item = validValues.get(value);
         if (item != null)
         {
-            return item.getValueObject().toString();
+            Object valObj = item.getValueObject();
+            if (valObj instanceof DataModelObjBase)
+            {
+            	//this means its a table picklist, but, with current code, all we need is the item 'name'
+            	return value;
+            }
+        	return valObj.toString();
         }
         if (!StringUtils.isBlank(value))
         {
-        	//this should have already been caught.
-        	log.error("Invalid value '" + value + "' for field '" + wbFldName + "'");
+        	if (readOnlyValidValues)
+        	{
+        		//this should have already been caught.
+        		log.error("Invalid value '" + value + "' for field '" + wbFldName + "'");
+        		return null;
+        	} 
+        	return value;
         }
         return null;
     }

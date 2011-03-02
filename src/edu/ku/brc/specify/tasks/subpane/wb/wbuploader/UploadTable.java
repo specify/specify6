@@ -3145,7 +3145,7 @@ public class UploadTable implements Comparable<UploadTable>
     	//then there is no need to enforce not-null constraints.
     	if (tblClass.equals(PrepType.class)) 
     	{
-    		return !Uploader.currentUpload.getUploadTableByName("Preparation").isBlankRow(row, uploadData, seq);
+    		return !uploader.getUploadTableByName("Preparation").isBlankRow(row, uploadData, seq);
     	}
     	if (hasChildren &&
     			(tblClass.equals(Accession.class) || tblClass.equals(Permit.class) || tblClass.equals(Locality.class) 
@@ -3155,7 +3155,7 @@ public class UploadTable implements Comparable<UploadTable>
         	//XXX Really need to access the upload graph to do this correctly - what about (CO-COAttribute, CE-CEAttr, ...
     		if (isBlank && tblClass.equals(Locality.class))
     		{
-    			UploadTable locDetail = Uploader.currentUpload.getUploadTableByName("LocalityDetail");
+    			UploadTable locDetail = uploader.getUploadTableByName("LocalityDetail");
     			if (locDetail != null)
     			{
     				isBlank = locDetail.isBlankRow(row, uploadData, seq);
@@ -3581,7 +3581,7 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected void readFromDataSet(int wbRow, boolean restore)
     {
-    	Uploader.currentUpload.loadRow(this, wbRow);
+    	uploader.loadRow(this, wbRow);
 		for (Vector<ParentTableEntry> ptes : parentTables)
 		{
 			for (ParentTableEntry pt : ptes)
@@ -3617,7 +3617,7 @@ public class UploadTable implements Comparable<UploadTable>
     {
         int recNum = 0;
         logDebug("writeRowOrNot: " + this.table.getName());
-        System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
+        //System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
         autoAssignedVal = null;  //assumes one autoassign field per table.
         for (Vector<UploadField> seq : uploadFields)
         {
