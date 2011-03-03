@@ -268,7 +268,6 @@ public class WorkbenchTask extends BaseTask
                 enableNavBoxList.add((NavBoxItemIFace)roc);
                 
                 //makeDnDNavBtn(navBox, getResourceString("WB_EXPORTFROMDBTOWB"), "Export16", getResourceString("WB_EXPORTFROMDBTOWB_TT"), new CommandAction(WORKBENCH, EXPORT_RS_TO_WB, wbTblId), null, false, false);// true means make it draggable
-                
             }  
             
             navBoxes.add(navBox);

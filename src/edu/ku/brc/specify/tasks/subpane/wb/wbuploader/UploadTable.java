@@ -966,7 +966,7 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * @return the uploadedKeys
      */
-    public final Set<UploadedRecordInfo> getUploadedRecs()
+    public SortedSet<UploadedRecordInfo> getUploadedRecs()
     {
         return uploadedRecs;
     }
@@ -1618,28 +1618,72 @@ public class UploadTable implements Comparable<UploadTable>
     }
 
     /**
+     * @param fld
+     * @param rec
+     * @param newVal
+     * @return true if fields value has changed.
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
+	@SuppressWarnings("unchecked")
+    protected boolean valueChange(UploadField fld, DataModelObjBase rec, Object[] newVal) 
+    	throws InvocationTargetException, IllegalAccessException
+    {
+		boolean result = false;
+    	Method getter = fld.getGetter();
+		if (getter != null)
+		{
+			Object currentVal = getter.invoke(rec);
+			Object newValObj = newVal[0]; 
+			if (currentVal == null ^ newValObj == null)
+			{
+				result = true;
+			} else if (currentVal != null && newValObj != null)
+			{
+				if (currentVal instanceof Comparable<?>)
+				{
+					result = ((Comparable )currentVal).compareTo((Comparable )newValObj) != 0;
+				}
+				else
+				{
+					result = !currentVal.equals(newValObj); //how well will this work?
+				}
+			}
+		}
+    	return result;
+    }
+	
+    /**
      * @param rec
      * @param flds
+     * @return true if rec was modified else false.
      * @throws NoSuchMethodException
      * @throws InvocationTargetException
-     * @throws IllegalArgumentException
      * @throws IllegalAccessException
-     * @throws ParseException
+     * @throws UploaderException
      * 
      * Calls each upload field's setter for values in current row of uploading dataset.
      */
-    protected void setFields(DataModelObjBase rec, Vector<UploadField> flds)
+    protected boolean setFields(DataModelObjBase rec, Vector<UploadField> flds)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException,
             UploaderException
     {
+        boolean result = false;
+        boolean isNewRecord = rec.getId() == null;    	
         for (UploadField fld : flds)
         {
             Method setter = fld.getSetter();
             if (setter != null)
             {
-                setter.invoke(rec, getArgForSetter(fld));
+            	Object[] arg = getArgForSetter(fld);
+            	if (!isNewRecord && !result)
+            	{
+            		result = valueChange(fld, rec, arg);
+            	}
+        		setter.invoke(rec, arg);
             }
         }
+    	return result;
     }
 
     /**
@@ -2276,12 +2320,16 @@ public class UploadTable implements Comparable<UploadTable>
 			final int recNum, Vector<MatchRestriction> restrictedVals,
 			HashMap<UploadTable, DataModelObjBase> overrideParentParams)
 			throws UploaderException, IllegalAccessException,
-			NoSuchMethodException, InvocationTargetException {
+			NoSuchMethodException, InvocationTargetException 
+	{
 		// XXX Updates
-		if (matchRecordId) {
-			if (exportedRecordId != null) {
+		if (matchRecordId) 
+		{
+			if (exportedRecordId != null) 
+			{
 				if (getTable().getTableInfo().getTableId() == uploader
-						.getUpdateTableId()) {
+						.getUpdateTableId()) 
+				{
 					// addRestriction(critter,
 					// deCapitalize(table.getTableInfo().getIdColumnName()),
 					// recordId, true);
@@ -2289,7 +2337,8 @@ public class UploadTable implements Comparable<UploadTable>
 				} else if (uploader.getUpdateTableId() == CollectionObject
 						.getClassTableId()
 						&& getTable().getTableInfo().getTableId() == CollectingEvent
-								.getClassTableId()) {
+								.getClassTableId()) 
+				{
 					addRestriction(critter, "id", exportedRecordId, true);
 				}
 
@@ -3633,13 +3682,14 @@ public class UploadTable implements Comparable<UploadTable>
                     				UploaderException.ABORT_ROW);
                     	}
                     	DataModelObjBase rec = getCurrentRecordForSave(recNum);
-                        if (rec.getId() == null)
+                        boolean isNewRecord = rec.getId() == null;
+                        if (isNewRecord)
                         {
                         	rec.initialize();
                         }                        
-                        setFields(rec, seq);
+                        boolean isUpdate = !isNewRecord && setFields(rec, seq);
                         boolean gotRequiredParents = setParents(rec, recNum);
-                        if (rec.getId() == null)
+                        if (isNewRecord)
                         {
                         	setRequiredFldDefaults(rec, recNum);
                         	setRelatedDefaults(rec, recNum);
@@ -3652,8 +3702,16 @@ public class UploadTable implements Comparable<UploadTable>
                         if (!doNotWrite)
                         {
                         	doWrite(rec);
-                            uploadedRecs.add(new UploadedRecordInfo(rec.getId(), wbCurrentRow,
-                            recNum, autoAssignedVal));
+                            if (isNewRecord)
+                            {
+                            	uploadedRecs.add(new UploadedRecordInfo(rec.getId(), wbCurrentRow,
+                            		recNum, autoAssignedVal));
+                            } else if (isUpdate)
+                            {
+                            	//System.out.println("UploadTable.writeRowOrNot: updated " + rec.getId() + " in " + rec.getClass().getSimpleName());
+                            	uploadedRecs.add(new UploadedRecordInfo(rec.getId(), wbCurrentRow, recNum, autoAssignedVal, true, 
+                            			null, null)); //could clone rec before setFields call and save it here?? Leaving tableName arg null as it seems irrelevant.	
+                            }
                         }
                         setCurrentRecord(rec, recNum);
                         finishMatching(rec);

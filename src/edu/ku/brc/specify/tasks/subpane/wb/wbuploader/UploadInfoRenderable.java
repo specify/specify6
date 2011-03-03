@@ -21,6 +21,7 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.util.SortedSet;
 import java.util.Vector;
 
 import edu.ku.brc.af.core.expresssearch.TableNameRendererIFace;
@@ -30,17 +31,21 @@ public class UploadInfoRenderable implements TableNameRendererIFace, Comparable<
     protected Class<?> tblClass;
     protected String title;
     protected Integer createdCnt;
-    protected boolean showCreatedCnt = false;
+    protected Integer updatedCnt;
+    protected boolean showCnt = false;
     protected boolean includeCreatedCntinTitle = false;
+    UploadedRecordInfo dummy = new UploadedRecordInfo(null, null, -1, null, true, null, null); 
     protected Vector<UploadTable> myTables;
     
     protected void refresh()
     {
-        createdCnt = 0;
         for (UploadTable ut : myTables)
         {
-            createdCnt += ut.getUploadedRecs().size();
+            SortedSet<UploadedRecordInfo> ups = ut.getUploadedRecs();
+        	createdCnt = ups.headSet(dummy).size();
+        	updatedCnt = ups.size() - createdCnt;
         }
+
     }
     
     public UploadInfoRenderable(final UploadTable ut)
@@ -48,6 +53,7 @@ public class UploadInfoRenderable implements TableNameRendererIFace, Comparable<
         this.tblClass = ut.getTblClass();
         this.title = ut.getTable().getTableInfo().getTitle();
         this.createdCnt = 0;
+        this.updatedCnt = 0;
         myTables = new Vector<UploadTable>();
         myTables.add(ut);
     }
@@ -70,7 +76,7 @@ public class UploadInfoRenderable implements TableNameRendererIFace, Comparable<
      */
     public String getTitle()
     {
-        if (!showCreatedCnt || includeCreatedCntinTitle)
+        if (!showCnt || includeCreatedCntinTitle)
         {
             return title;
         }
@@ -111,11 +117,11 @@ public class UploadInfoRenderable implements TableNameRendererIFace, Comparable<
     }
     
     /**
-     * @param showCreatedCnt the showCreatedCnt to set
+     * @param showCnt the showCreatedCnt to set
      */
-    public void setShowCreatedCnt(boolean showCreatedCnt)
+    public void setShowCnt(boolean showCnt)
     {
-        this.showCreatedCnt = showCreatedCnt;
+        this.showCnt = showCnt;
     }
     
     public String getTableName()
@@ -131,12 +137,22 @@ public class UploadInfoRenderable implements TableNameRendererIFace, Comparable<
         return createdCnt;
     }
     
+    
     /**
-     * sets createdCnt to 0 and sets showCreatedCnt to false.
+	 * @return the updatedCnt
+	 */
+	public Integer getUpdatedCnt() 
+	{
+		return updatedCnt;
+	}
+
+	/**
+     * sets Cnts to 0 and sets showCnts to false.
      */
     public void reset()
     {
         createdCnt = 0;
-        setShowCreatedCnt(false);
+        updatedCnt = 0;
+        setShowCnt(false);
     }
 }

@@ -188,13 +188,15 @@ public class UploadMainPanel extends JPanel
             Vector<Object> row = new Vector<Object>(2);
             row.add(ut);
             row.add(ut);
+            row.add(ut);
             cells.add(row);            
         }
     
         tableList.setModel(tbls);
-        Vector<String> heads = new Vector<String>(2);
+        Vector<String> heads = new Vector<String>(3);
         heads.add(getResourceString("ERD_TABLE")); 
         heads.add(getResourceString("WB_UPLOAD_RECORDS_ADDED"));
+        heads.add(getResourceString("WB_UPLOAD_RECORDS_UPDATED"));
         getUploadTblTbl().setModel(new DefaultTableModel(cells, heads));
         getUploadTblTbl().getColumnModel().getColumn(0).setCellRenderer(new DefaultTableCellRenderer()
         {
@@ -238,47 +240,66 @@ public class UploadMainPanel extends JPanel
                     return this;
                 }
             });
-            getUploadTblTbl().getColumnModel().getColumn(1).setCellRenderer(new DefaultTableCellRenderer()
+        	DefaultTableCellRenderer colRenderer = new DefaultTableCellRenderer()
             {
-              @Override
-              public Component getTableCellRendererComponent(JTable table,
-                                                             Object value,
-                                                             boolean isSelected,
-                                                             boolean hasFocus,
-                                                             int row,
-                                                             int column)
-              {
-                  super
-                          .getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
-                                  column);
-  
-                  UploadInfoRenderable ti = (UploadInfoRenderable) value;
-                  setIcon(null);
-                  if (isSelected)
-                  {
-                      setOpaque(true);
-                      setBackground(table.getSelectionBackground());
-                      setForeground(table.getSelectionForeground());
-  
-                  }
-                  else
-                  {
-                      setBackground(table.getBackground());
-                      setForeground(table.getForeground());
-                  }
-  
-                  if (ti.getCreatedCnt() != null)
-                  {
-                      if (getHorizontalAlignment() != SwingConstants.CENTER)
-                      {
-                          setHorizontalAlignment(SwingConstants.CENTER);
-                      }
-                      setText(ti.getCreatedCnt().toString());
-                  }
-                  return this;
-              }
-          });
-        }
+                @Override
+                public Component getTableCellRendererComponent(JTable table,
+                                                               Object value,
+                                                               boolean isSelected,
+                                                               boolean hasFocus,
+                                                               int row,
+                                                               int column)
+                {
+                    super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
+                                    column);
+    
+                    UploadInfoRenderable ti = (UploadInfoRenderable) value;
+                    setIcon(null);
+                    if (isSelected)
+                    {
+                        setOpaque(true);
+                        setBackground(table.getSelectionBackground());
+                        setForeground(table.getSelectionForeground());
+    
+                    }
+                    else
+                    {
+                        setBackground(table.getBackground());
+                        setForeground(table.getForeground());
+                    }
+    
+                    System.out.println("column = " + column);
+                    if (column == 1)
+                    {
+                  	  if (ti.getCreatedCnt() != null)
+                  	  {
+                  		  if (getHorizontalAlignment() != SwingConstants.CENTER)
+                  		  {
+                  			  setHorizontalAlignment(SwingConstants.CENTER);
+                  		  }
+                  		  setText(ti.getCreatedCnt().toString());
+                  	  }
+                    } else if (column == 2)
+                    {
+                  	    if (ti == null)
+                  	    {
+                  	    	System.out.println("NULL TI!?");
+                  	    } else
+                    	if (ti.getUpdatedCnt() != null)
+                  	  	{
+                  		  	if (getHorizontalAlignment() != SwingConstants.CENTER)
+                  		  	{
+                  		  		setHorizontalAlignment(SwingConstants.CENTER);
+                  		  	}
+                  		  	setText(ti.getUpdatedCnt().toString());
+                  	  	}
+                    }
+                    return this;
+                }
+            };
+            getUploadTblTbl().getColumnModel().getColumn(1).setCellRenderer(colRenderer);
+            getUploadTblTbl().getColumnModel().getColumn(2).setCellRenderer(colRenderer);
+       }
 
     
     public void buildUI()

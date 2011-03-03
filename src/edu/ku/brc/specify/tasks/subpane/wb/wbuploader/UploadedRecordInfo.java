@@ -35,7 +35,7 @@ public class UploadedRecordInfo extends Pair<Integer, Integer> implements Compar
 {
     protected final int seq;
     protected final Object autoAssignedVal; //value of auto-assigned field for the record. (Assuming there will never be more than one)
-    protected final boolean isUpdate;
+    protected final Boolean isUpdate;
     protected final DataModelObjBase originalData;
     protected final String tblName;
     
@@ -93,14 +93,26 @@ public class UploadedRecordInfo extends Pair<Integer, Integer> implements Compar
         return seq;
     }
 
-    /* (non-Javadoc)
+    
+    /**
+	 * @return the isUpdate
+	 */
+	public Boolean getIsUpdate() {
+		return isUpdate;
+	}
+
+	/* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     //@Override
     public int compareTo(UploadedRecordInfo o)
     {
         //return getKey().compareTo(o.getKey());
-        int result = getWbRow().compareTo(o.getWbRow());
+    	int result = getIsUpdate().compareTo(o.getIsUpdate());
+    	if (result == 0 && getWbRow() != null && o.getWbRow() != null)
+    	{
+    		result = getWbRow().compareTo(o.getWbRow());
+    	}
         if (result == 0 && getKey() != null && o.getKey() != null)
         {
             result = getKey().compareTo(o.getKey());
