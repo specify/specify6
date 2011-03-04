@@ -59,8 +59,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL
     protected Vector<Vector<Object>>                          cache = null;
     protected boolean                                         recIdsLoaded = false;
     protected boolean                                         hasIds = true;
-    protected int											  maxTableRows = ExpressSearchTask.RESULTS_THRESHOLD;
-
+    protected int											  maxTableRows = 20000;
         
     /**
      * @param bannerColor
