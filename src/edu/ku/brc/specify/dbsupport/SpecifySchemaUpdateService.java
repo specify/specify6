@@ -19,6 +19,11 @@
 */
 package edu.ku.brc.specify.dbsupport;
 
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.query;
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.queryForInts;
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.querySingleCol;
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.querySingleObj;
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.update;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
@@ -70,23 +75,31 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
 import edu.ku.brc.specify.conversion.IdTableMapper;
 import edu.ku.brc.specify.conversion.TableWriter;
+import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttribute;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
 import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.specify.datamodel.ConservEvent;
+import edu.ku.brc.specify.datamodel.DNASequencingRun;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.FieldNotebookPage;
+import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.Institution;
+import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.LocalityDetail;
 import edu.ku.brc.specify.datamodel.PaleoContext;
 import edu.ku.brc.specify.datamodel.PreparationAttribute;
+import edu.ku.brc.specify.datamodel.SpExportSchema;
+import edu.ku.brc.specify.datamodel.SpExportSchemaItem;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.datamodel.SpVersion;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.subpane.security.NavigationTreeMgr;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
@@ -113,11 +126,17 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     
     private final int OVERALL_TOTAL = 18;
     
-    private static final String APP          = "App";
-    private static final String APP_REQ_EXIT = "AppReqExit";
+    private static final String APP                     = "App";
+    private static final String APP_REQ_EXIT            = "AppReqExit";
+    private static final String SCHEMA_VERSION_FILENAME = "schema_version.xml";
+    
+    private static final String UPD_CNT_NO_MATCH  = "Update count didn't match for update to table: %s";
+    private static final String COL_TYP_NO_DET    = "Column type couldn't be determined for update to table %s";
+    private static final String ERR_ADDING_FIELDS = "For table %s error adding fields %s";
 
-    private Pair<String, String> itUserNamePassword = null;
+    private Pair<String, String> itUserNamePassword     = null;
     private ProgressFrame        frame;
+    private String               errMsgStr              = null;
     
     /**
      * 
@@ -136,14 +155,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         Element root;
         try
         {
-            root = XMLHelper.readFileToDOM4J(new FileInputStream(XMLHelper.getConfigDirPath("schema_version.xml")));//$NON-NLS-1$
+            root = XMLHelper.readFileToDOM4J(new FileInputStream(XMLHelper.getConfigDirPath(SCHEMA_VERSION_FILENAME)));//$NON-NLS-1$
             if (root != null)
             {
-                Element dbElement = (Element)root;
-                if (dbElement != null)
-                {
-                    dbVersion = dbElement.getTextTrim();
-                }
+                dbVersion = ((Element)root).getTextTrim();
             }
         } catch (FileNotFoundException e)
         {
@@ -179,6 +194,15 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         return false;
     }
     
+    /**
+     * Makes L10N Key
+     * @param shortKey
+     * @return L10N Key
+     */
+    private static String mkKey(final String shortKey)
+    {
+        return "SpecifySchemaUpdateService." + shortKey;
+    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.SchemaUpdateService#updateSchema(java.lang.String)
@@ -212,7 +236,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 
                 if (dbMgr.doesDBHaveTable("spversion"))
                 {
-                    Vector<Object[]> rows = BasicSQLUtils.query(dbConn.getConnection(), "SELECT AppVersion, SchemaVersion, SpVersionID, Version FROM spversion ORDER BY TimestampCreated DESC");
+                    Vector<Object[]> rows = query(dbConn.getConnection(), "SELECT AppVersion, SchemaVersion, SpVersionID, Version FROM spversion ORDER BY TimestampCreated DESC");
                     if (rows.size() > 0)
                     {
                         Object[] row  = (Object[])rows.get(rows.size()-1);
@@ -234,9 +258,9 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             
                         } else if (!appVerFromDB.equals(appVerNum))
                         {
-                            if (checkVersion(appVerFromDB, appVerNum, "SpecifySchemaUpdateService.APP_VER_ERR", 
-                                                                      "SpecifySchemaUpdateService.APP_VER_NEQ_OLD", 
-                                                                      "SpecifySchemaUpdateService.APP_VER_NEQ_NEW",
+                            if (checkVersion(appVerFromDB, appVerNum, mkKey("APP_VER_ERR"), 
+                                                                      mkKey("APP_VER_NEQ_OLD"), 
+                                                                      mkKey("APP_VER_NEQ_NEW"),
                                                                       false))
                             {
                                 doUpdateAppVer = true;
@@ -247,11 +271,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             }
                         }
                         
-                        if (dbVersion != null && !schemaVerFromDB.equals(dbVersion))
+                        if (dbVersion != null && schemaVerFromDB != null && !schemaVerFromDB.equals(dbVersion))
                         {
-                            String errKey = "SpecifySchemaUpdateService.DB_VER_NEQ";
+                            String errKey = mkKey("DB_VER_NEQ");
                             if (checkVersion(schemaVerFromDB, dbVersion, 
-                                             "SpecifySchemaUpdateService.DB_VER_ERR", errKey, errKey, false))
+                                             mkKey("DB_VER_ERR"), errKey, errKey, false))
                             {
                                 doSchemaUpdate = true;
                             } else
@@ -470,7 +494,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     private Integer getFieldLength(final Connection conn, final String databaseName, final String tableName, final String fieldName)
     {
         //XXX portability. This is MySQL -specific.
-        Vector<Object[]> rows = BasicSQLUtils.query(conn, "SELECT CHARACTER_MAXIMUM_LENGTH FROM `information_schema`.`COLUMNS` where TABLE_SCHEMA = '" +
+        Vector<Object[]> rows = query(conn, "SELECT CHARACTER_MAXIMUM_LENGTH FROM `information_schema`.`COLUMNS` where TABLE_SCHEMA = '" +
                 databaseName + "' and TABLE_NAME = '" + tableName + "' and COLUMN_NAME = '" + fieldName + "'");                    
         if (rows.size() == 0)
         {
@@ -491,7 +515,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     private String getFieldColumnType(final Connection conn, final String databaseName, final String tableName, final String fieldName)
     {
         //XXX portability. This is MySQL -specific.
-        Vector<Object[]> rows = BasicSQLUtils.query(conn, "SELECT COLUMN_TYPE FROM `information_schema`.`COLUMNS` where TABLE_SCHEMA = '" +
+        Vector<Object[]> rows = query(conn, "SELECT COLUMN_TYPE FROM `information_schema`.`COLUMNS` where TABLE_SCHEMA = '" +
                 databaseName + "' and TABLE_NAME = '" + tableName + "' and COLUMN_NAME = '" + fieldName + "'");                    
         if (rows.size() == 0)
         {
@@ -516,6 +540,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                   final String             userName,
                                   final String             password) throws SQLException
     {
+        frame.setOverall(0, 30); // 23 + 7
+        
         String connectionStr = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName, true, true,
                                                              userName, password, dbdriverInfo.getName());
         log.debug("generateSchema connectionStr: " + connectionStr);
@@ -533,14 +559,19 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 Statement  stmt = null;
                 try
                 {
-                    Integer count = null;
                     stmt = conn.createStatement();
-                    int rv = 0;
-                    Integer len = getFieldLength(conn, databaseName, "localitydetail", "UtmDatum");
+                    Integer count   = null;
+                    int     rv      = 0;
+                    
+                    //---------------------------------------------------------------------------
+                    //-- LocalityDetail
+                    //---------------------------------------------------------------------------
+                    String  tblName = getTableTitleForFrame(LocalityDetail.getClassTableId());
+                    Integer len     = getFieldLength(conn, databaseName, tblName, "UtmDatum");
                     if (len == null)
                     {
-                        count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM localitydetail");
-                        rv = BasicSQLUtils.update(conn, "ALTER TABLE localitydetail CHANGE getUtmDatum UtmDatum varchar(255)");
+                        count = getCount(tblName);
+                        rv = update(conn, "ALTER TABLE localitydetail CHANGE getUtmDatum UtmDatum varchar(255)");
                         if (rv != count)
                         {
                             errMsgList.add("Unable to alter table: localitydetail");
@@ -550,8 +581,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     {
                         if (len.intValue() != 255) 
                         {
-                            count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM localitydetail");
-                            rv = BasicSQLUtils.update(conn, "ALTER TABLE localitydetail MODIFY UtmDatum varchar(255)");
+                            count = getCount(tblName);
+                            rv = update(conn, "ALTER TABLE localitydetail MODIFY UtmDatum varchar(255)");
                             if (rv != count)
                             {
                                 errMsgList.add("Unable to alter table: localitydetail");
@@ -561,96 +592,115 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     frame.incOverall();
                     
-                    len = getFieldLength(conn, databaseName, "specifyuser", "Password");
+                    //---------------------------------------------------------------------------
+                    //-- SpecifyUser
+                    //---------------------------------------------------------------------------
+                    tblName = getTableTitleForFrame(SpecifyUser.getClassTableId());
+                    len     = getFieldLength(conn, databaseName, tblName, "Password");
                     if (len == null)
                     {
-                        errMsgList.add("Unable to update table: specifyuser");
+                        errMsgList.add(String.format("Unable to update table: %", tblName));
                         return false;
                     }
                     if (len.intValue() != 255)
                     {
-                        count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM specifyuser");
-                        rv = BasicSQLUtils.update(conn, "ALTER TABLE specifyuser MODIFY Password varchar(255)");
+                        count = getCount(tblName);
+                        rv = update(conn, "ALTER TABLE specifyuser MODIFY Password varchar(255)");
                         if (rv != count)
                         {
-                            errMsgList.add("Update count didn't match for update to table: specifyuser");
+                            errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
                             return false;
                         }
                     }
                     frame.incOverall();
                     
-                    len = getFieldLength(conn, databaseName, "spexportschemaitem", "FieldName");
+                    //---------------------------------------------------------------------------
+                    //-- SpExportSchemaItem
+                    //---------------------------------------------------------------------------
+                    tblName = getTableTitleForFrame(SpExportSchemaItem.getClassTableId());
+                    len     = getFieldLength(conn, databaseName, tblName, "FieldName");
                     if (len == null)
                     {
-                        errMsgList.add("Update count didn't match for update to table: spexportschemaitem");
+                        errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
                         return false;
                     }
                     if (len.intValue() != 64)
                     {
                         count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM spexportschemaitem");
-                        rv = BasicSQLUtils.update(conn, "ALTER TABLE spexportschemaitem MODIFY FieldName varchar(64)");
+                        rv = update(conn, "ALTER TABLE spexportschemaitem MODIFY FieldName varchar(64)");
                         if (rv != count)
                         {
-                            errMsgList.add("Update count didn't match for update to table: spexportschemaitem");
+                            errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
                             return false;
                         }
                     }
                     frame.incOverall();
                     
-                    len = getFieldLength(conn, databaseName, "agent", "LastName");
+                    //---------------------------------------------------------------------------
+                    //-- Agent
+                    //---------------------------------------------------------------------------
+                    tblName = getTableTitleForFrame(Agent.getClassTableId());
+                    len     = getFieldLength(conn, databaseName, tblName, "LastName");
                     if (len == null)
                     {
-                        errMsgList.add("Update count didn't match for update to table: agent");
+                        errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
                         return false;
                     }
                     if (len.intValue() != 128)
                     {
-                        count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM agent");
-                        rv = BasicSQLUtils.update(conn, "ALTER TABLE agent MODIFY LastName varchar(128)");
+                        count = getCount(tblName);
+                        rv = update(conn, "ALTER TABLE agent MODIFY LastName varchar(128)");
                         if (rv != count)
                         {
-                            errMsgList.add("Update count didn't match for update to table: agent");
+                            errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
                             return false;
                         }
                     }
                     frame.incOverall();
                     
-                    len = getFieldLength(conn, databaseName, "spexportschema", "SchemaName");
+                    //---------------------------------------------------------------------------
+                    //-- SpExportSchema
+                    //---------------------------------------------------------------------------
+                    tblName = getTableTitleForFrame(SpExportSchema.getClassTableId());
+                    len     = getFieldLength(conn, databaseName, tblName, "SchemaName");
                     if (len == null)
                     {
-                        errMsgList.add("Update count didn't match for update to table: spexportschema");
+                        errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
                         return false;
                     }
                     if (len.intValue() != 80)
                     {
-                        count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM spexportschema");
-                        rv = BasicSQLUtils.update(conn, "ALTER TABLE spexportschema MODIFY SchemaName varchar(80)");
+                        count = getCount(tblName);
+                        rv = update(conn, "ALTER TABLE spexportschema MODIFY SchemaName varchar(80)");
                         if (rv != count)
                         {
-                            errMsgList.add("Update count didn't match for update to table: spexportschema");
+                            errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
                             return false;
                         }
                     }
                     frame.incOverall();
                     
-                    len = getFieldLength(conn, databaseName, "spexportschema", "SchemaVersion");
+                    len = getFieldLength(conn, databaseName, tblName, "SchemaVersion");
                     if (len == null)
                     {
-                        errMsgList.add("Update count didn't match for update to table: spexportschema");
+                        errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
                         return false;
                     }
                     if (len.intValue() != 80)
                     {
-                        count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM spexportschema");
-                        rv = BasicSQLUtils.update(conn, "ALTER TABLE spexportschema MODIFY SchemaVersion varchar(80)");
+                        count = getCount(tblName);
+                        rv = update(conn, "ALTER TABLE spexportschema MODIFY SchemaVersion varchar(80)");
                         if (rv != count)
                         {
-                            errMsgList.add("Update count didn't match for update to table: spexportschema");
+                            errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
                             return false;
                         }
                     }
                     frame.incOverall();
                     
+                    //---------------------------------------------------------------------------
+                    //-- SpecifySchemaUpdateScopeFixer
+                    //---------------------------------------------------------------------------
                     SpecifySchemaUpdateScopeFixer collectionMemberFixer = new SpecifySchemaUpdateScopeFixer(databaseName);
                     if (!collectionMemberFixer.fix(conn))
                     {
@@ -659,7 +709,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     }
                     
                     // Do updates for Schema 1.2
-                    doFixesForDBSchemaVersions(conn, databaseName);
+                    doFixesForDBSchemaVersions(conn, databaseName);  // increments 7 times
                     
                     // Find Accession NumberingSchemes that 'attached' to Collections
                     String postfix = " FROM autonumsch_coll ac Inner Join autonumberingscheme ans ON ac.AutoNumberingSchemeID = ans.AutoNumberingSchemeID WHERE ans.TableNumber = '7'";
@@ -673,7 +723,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                      "Inner Join splocalecontainer cn ON d.UserGroupScopeId = cn.DisciplineID " +
                                      "Inner Join splocalecontaineritem ci ON cn.SpLocaleContainerID = ci.SpLocaleContainerID " + 
                                      "WHERE ci.Name =  'accessionNumber'";
-                        for (Object[] row : BasicSQLUtils.query(conn, sql))
+                        for (Object[] row : query(conn, sql))
                         {
                             collIdToFormatHash.put((Integer)row[0], row[1].toString());  // Key -> CollId, Value -> Format
                         }
@@ -681,11 +731,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         String ansSQL = "SELECT ac.CollectionID, ac.AutoNumberingSchemeID " + postfix;
                         log.debug(ansSQL);
                         int totCnt = 0;
-                        for (Object[] row : BasicSQLUtils.query(conn, ansSQL))
+                        for (Object[] row : query(conn, ansSQL))
                         {
                             sql = "DELETE FROM autonumsch_coll WHERE CollectionID = " + ((Integer)row[0]) + " AND AutoNumberingSchemeID = " + ((Integer)row[1]);
                             log.debug(sql);
-                            rv = BasicSQLUtils.update(conn, sql);
+                            rv = update(conn, sql);
                             if (rv != 1)
                             {
                                 errMsgList.add("There was an error fixing the table: autonumsch_coll for CollectionID = " + ((Integer)row[0]) + " AND AutoNumberingSchemeID = " + ((Integer)row[1]));
@@ -711,10 +761,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         return false;
                     }
                     
+                    //---------------------------------------------------------------------------
+                    //-- Fixing
+                    //---------------------------------------------------------------------------
                     String sql = "SELECT COUNT(d.UserGroupScopeId) CNT, d.UserGroupScopeId FROM division d INNER JOIN autonumsch_div ad ON d.UserGroupScopeId = ad.DivisionID " +
                                  "INNER JOIN autonumberingscheme ans ON ad.AutoNumberingSchemeID = ans.AutoNumberingSchemeID GROUP BY d.UserGroupScopeId";
                     log.debug(sql);
-                    for (Object[] row : BasicSQLUtils.query(conn, sql))
+                    for (Object[] row : query(conn, sql))
                     {
                         Integer divId = ((Integer)row[1]);
                         if (((Long)row[0]) > 1)
@@ -726,7 +779,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                   "WHERE ci.Name = 'accessionNumber' AND dv.UserGroupScopeId = " + divId;
                             Vector<String>             namesList = new Vector<String>();
                             Hashtable<String, Integer> formatNames = new Hashtable<String, Integer>();
-                            for (Object[] innerRow : BasicSQLUtils.query(conn, sql))
+                            for (Object[] innerRow : query(conn, sql))
                             {
                                 String  formatName = innerRow[3].toString();
                                 Integer dsid       = (Integer)innerRow[1];
@@ -750,20 +803,20 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                   "INNER JOIN autonumberingscheme ans ON ad.AutoNumberingSchemeID = ans.AutoNumberingSchemeID WHERE d.UserGroupScopeId = " + divId;
                             log.debug(sql);
                             int cnt = 0;
-                            for (Object idAnsObj : BasicSQLUtils.querySingleCol(conn, sql))
+                            for (Object idAnsObj : querySingleCol(conn, sql))
                             {
                                 Integer ansId = (Integer)idAnsObj;
                                 if (cnt > 0)
                                 {
                                     sql = "DELETE FROM autonumsch_div WHERE DivisionID = " + divId + " AND AutoNumberingSchemeID = " + ansId;
-                                    if (BasicSQLUtils.update(conn, sql) != 1)
+                                    if (update(conn, sql) != 1)
                                     {
                                         errMsgList.add("There was an error fixing the table: autonumsch_div for DivisionID = " + divId + " AND AutoNumberingSchemeID = " + ansId);
                                         return false;
                                     }
                                     
                                     sql = "DELETE FROM autonumberingscheme WHERE AutoNumberingSchemeID = " + ansId;
-                                    if (BasicSQLUtils.update(conn, sql) != 1)
+                                    if (update(conn, sql) != 1)
                                     {
                                         errMsgList.add("There was an error fixing the table: autonumberingscheme; removing AutoNumberingSchemeID = " + ansId);
                                         return false;
@@ -776,14 +829,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                     
                                     log.debug(sql);
                                     
-                                    for (Object[] idRow : BasicSQLUtils.query(conn, sql))
+                                    for (Object[] idRow : query(conn, sql))
                                     {
                                         Integer spItemId = (Integer)idRow[0];
                                         String  dispName = idRow[1].toString();
                                         
                                         sql = "UPDATE splocalecontaineritem SET `Format`='"+newFormatName+"' WHERE SpLocaleContainerItemID  = " + spItemId;
                                         log.debug(sql);
-                                        if (BasicSQLUtils.update(conn, sql) == 1)
+                                        if (update(conn, sql) == 1)
                                         {
                                             disciplineNameList.add(dispName);
                                         } else
@@ -823,50 +876,278 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     
                     //fixLocaleSchema();
                     
-                    //for schema 1.6
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    //                                                                                                              //
+                    // Schema Changes 1.4                                                                                          //
+                    //                                                                                                              //
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                     
-                    //change column types for UTMEasting, UTMNorthing and UTMScale
-                    String columnType = getFieldColumnType(conn, databaseName, "localitydetail", "UTMEasting");
-                    if (columnType == null)
+                    if (BasicSQLUtils.doesTableExist(conn, "agent_discipline"))
                     {
-                        errMsgList.add("Column type couldn't be determined for update to table: localitydetail");
+                        PreparedStatement pStmt    = null;
+                        try
+                        {
+                            pStmt    = conn.prepareStatement("UPDATE agent SET DivisionID=? WHERE AgentID = ?");
+                        
+                            sql = "SELECT a.AgentID, d.DivisionID FROM agent AS a " +
+                                  "Inner Join agent_discipline AS ad ON a.AgentID = ad.AgentID " +
+                                  "Inner Join discipline AS d ON ad.DisciplineID = d.UserGroupScopeId " +    
+                                  "WHERE a.DivisionID IS NULL";
+        
+                            for (Object[] row : query(conn, sql))
+                            {
+                                int agtId = (Integer)row[0];
+                                int divId = (Integer)row[1];
+                                pStmt.setInt(1, divId);
+                                pStmt.setInt(2, agtId);
+                                pStmt.executeUpdate();
+                            }
+                        } catch (Exception e1)
+                        {
+                            e1.printStackTrace();
+                        } finally
+                        {
+                            try
+                            {
+                                if (pStmt != null)
+                                {
+                                    pStmt.close();
+                                }
+                            } catch (Exception ex) {}
+                        }
+                    
+
+                        update(conn, "DROP TABLE agent_discipline");
+                    }
+                    frame.incOverall();
+
+                    //-----------------------------------------------------------------------------
+                    //-- Agent
+                    //-----------------------------------------------------------------------------
+                    // Add New Fields to Address
+                    tblName = getTableTitleForFrame(Agent.getClassTableId());
+                    String[] addrCols = {"DateType", "TINYINT(4)", "Title", 
+                                         "DateOfBirthPrecision", "TINYINT(4)", "DateOfBirth", 
+                                         "DateOfDeathPrecision", "TINYINT(4)", "DateOfDeath"};
+                    if (!checkAndAddColumns(conn, databaseName, tblName, addrCols))
+                    {
                         return false;
                     }
-                    if (!columnType.trim().equalsIgnoreCase("decimal(20,10)"))
+                    frame.incOverall();
+
+                    //-----------------------------------------------------------------------------
+                    //-- Address
+                    //-----------------------------------------------------------------------------
+                    tblName = getTableTitleForFrame(Address.getClassTableId());
+                    if (!doesColumnExist(databaseName, tblName, "Address3"))
                     {
-                        count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM localitydetail");
-                        rv = BasicSQLUtils.update(conn, "ALTER TABLE localitydetail CHANGE COLUMN `UtmEasting` `UtmEasting` DECIMAL(20,10) NULL DEFAULT NULL  , CHANGE COLUMN `UtmNorthing` `UtmNorthing` DECIMAL(20,10) NULL DEFAULT NULL , CHANGE COLUMN `UtmScale` `UtmScale` DECIMAL(20,10) NULL DEFAULT NULL");
+                        frame.setDesc("Updating Address Fields...");
+                        String fmtStr = "ALTER TABLE address ADD COLUMN Address%d VARCHAR(64) AFTER Address%d";
+                        for (int i=3;i<6;i++)
+                        {
+                            update(conn, String.format(fmtStr, i, i-1));
+                        }
+                    }
+                    frame.incOverall();
+
+                    //-----------------------------------------------------------------------------
+                    //-- LocalityDetail
+                    //-----------------------------------------------------------------------------
+                    tblName = getTableTitleForFrame(LocalityDetail.getClassTableId());
+                    String[] locDetCols = {"StartDepth",         "Double",      "Drainage", 
+                                           "StartDepthUnit",     "TINYINT(4)",  "StartDepth",
+                                           "StartDepthVerbatim", "VARCHAR(32)", "StartDepthUnit",
+                                           "EndDepth",           "Double",      "StartDepthVerbatim", 
+                                           "EndDepthUnit",       "TINYINT(4)",  "EndDepth",
+                                           "EndDepthVerbatim",   "VARCHAR(32)", "EndDepthUnit"};
+                    if (!checkAndAddColumns(conn, databaseName, tblName, locDetCols))
+                    {
+                        return false;
+                    }
+                    frame.incOverall();
+
+                    //-----------------------------------------------------------------------------
+                    //-- Locality
+                    //-----------------------------------------------------------------------------
+                    tblName = getTableTitleForFrame(Locality.getClassTableId());
+                    String[] locCols = {"Text1", "VARCHAR(255)", "SrcLatLongUnit", 
+                                        "Text2", "VARCHAR(255)", "Text1"};
+                    if (!checkAndAddColumns(conn, databaseName, tblName, locCols))
+                    {
+                        return false;
+                    }
+                    frame.incOverall();
+
+                    //-----------------------------------------------------------------------------
+                    //-- CollectionObjectAttribute
+                    //-----------------------------------------------------------------------------
+                    tblName = getTableTitleForFrame(CollectionObjectAttribute.getClassTableId());
+                    if (!addColumn(conn, databaseName, tblName, "Text15",  "VARCHAR(64)", "Text14"))
+                    {
+                        return false;
+                    }
+                    frame.incOverall();
+
+                    //-----------------------------------------------------------------------------
+                    //-- PaleoContext
+                    //-----------------------------------------------------------------------------
+                    tblName = getTableTitleForFrame(PaleoContext.getClassTableId());
+                    if (!addColumn(conn, databaseName, tblName, "ChronosStratEndID",  "INT", "ChronosStratID"))
+                    {
+                        return false;
+                    }
+                    frame.incOverall();
+
+                    //-----------------------------------------------------------------------------
+                    //-- Institution
+                    //-----------------------------------------------------------------------------
+                    tblName = getTableTitleForFrame(Institution.getClassTableId());
+                    String[] instCols = {"IsSingleGeographyTree",  "BIT(1)", "IsServerBased", 
+                                         "IsSharingLocalities",    "BIT(1)", "IsSingleGeographyTree"};
+                    if (checkAndAddColumns(conn, databaseName, tblName, instCols))
+                    {
+                        update(conn, "UPDATE institution SET IsSingleGeographyTree=0, IsSharingLocalities=0");
+                    } else
+                    {
+                        return false;
+                    }
+                    frame.incOverall();
+
+                    //-----------------------------------------------------------------------------
+                    //-- GeologicTimePeriod
+                    //-----------------------------------------------------------------------------
+                    tblName = getTableTitleForFrame(GeologicTimePeriod.getClassTableId());
+                    String[] gtpCols = {"Text1", "VARCHAR(64)", "EndUncertainty", 
+                                        "Text2", "VARCHAR(64)", "Text1"};
+                    if (!checkAndAddColumns(conn, databaseName, tblName, gtpCols))
+                    {
+                        return false;
+                    }
+                    frame.incOverall();
+
+                    //-----------------------------------------------------------------------------
+                    //-- PreparationAttribute
+                    //-----------------------------------------------------------------------------
+                    // Fix Field Length
+                    tblName = getTableTitleForFrame(PreparationAttribute.getClassTableId());
+                    String prepAttrFld = "Text22";
+                    len = getFieldLength(conn, databaseName, tblName, prepAttrFld);
+                    if (len != null && len == 10)
+                    {
+                        alterFieldLength(conn, databaseName, tblName, prepAttrFld, 10, 50);
+                    }
+                    frame.incOverall(); // #19
+
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    //                                                                                                              //
+                    // Schema Changes 1.5                                                                                           //
+                    //                                                                                                              //
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    
+                    //-----------------------------------------------------------------------------
+                    //-- LocalityDetail
+                    //-----------------------------------------------------------------------------
+                    // Change column types for UTMEasting, UTMNorthing and UTMScale
+                    tblName = getTableTitleForFrame(LocalityDetail.getClassTableId());
+                    String columnType = getFieldColumnType(conn, databaseName, tblName, "UTMEasting");
+                    if (columnType == null)
+                    {
+                        errMsgList.add(String.format(COL_TYP_NO_DET, tblName));
+                        return false;
+                    }
+                    if (!columnType.trim().equalsIgnoreCase("DECIMAL(20,10)"))
+                    {
+                        count = getCount(tblName);
+                        rv = update(conn, "ALTER TABLE localitydetail CHANGE COLUMN `UtmEasting` `UtmEasting` DECIMAL(20,10) NULL DEFAULT NULL, " +
+                        		                        "CHANGE COLUMN `UtmNorthing` `UtmNorthing` DECIMAL(20,10) NULL DEFAULT NULL, " +
+                        		                        "CHANGE COLUMN `UtmScale` `UtmScale` DECIMAL(20,10) NULL DEFAULT NULL");
                         if (rv != count)
                         {
-                            errMsgList.add("Update count didn't match for update to table: localitydetail");
+                            errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
+                            return false;
+                        }
+                    }
+                    frame.incOverall();
+
+                    //-----------------------------------------------------------------------------
+                    //-- GeoCoordDetail
+                    //-----------------------------------------------------------------------------
+                    // Change column types for MaxUncertaintityEst and NamedPlaceExtent
+                    tblName    = getTableTitleForFrame(GeoCoordDetail.getClassTableId());
+                    columnType = getFieldColumnType(conn, databaseName, tblName, "MaxUncertaintyEst");
+                    if (columnType == null)
+                    {
+                        errMsgList.add(String.format(COL_TYP_NO_DET, tblName));
+                        return false;
+                    }
+                    if (!columnType.trim().equalsIgnoreCase("DECIMAL(20,10)"))
+                    {
+                        count = getCount(tblName);
+                        rv = update(conn, "ALTER TABLE geocoorddetail CHANGE COLUMN `MaxUncertaintyEst` `MaxUncertaintyEst` DECIMAL(20,10) NULL DEFAULT NULL, " +
+                                                        "CHANGE COLUMN `NamedPlaceExtent` `NamedPlaceExtent` DECIMAL(20,10) NULL DEFAULT NULL");
+                        if (rv != count)
+                        {
+                            errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
                             return false;
                         }
                     }
                     frame.incOverall();
                     
-
-                    //change column types for MaxUncertaintityEst and NamedPlaceExtent
-                    columnType = getFieldColumnType(conn, databaseName, "geocoorddetail", "MaxUncertaintyEst");
-                    if (columnType == null)
+                    //-----------------------------------------------------------------------------
+                    //-- LoanPreparation
+                    //-----------------------------------------------------------------------------
+                    tblName = getTableTitleForFrame(LoanPreparation.getClassTableId());
+                    count   = getCount(tblName);
+                    rv      = update(conn, String.format("ALTER TABLE %s MODIFY DescriptionOfMaterial TEXT", tblName));
+                    if (rv != count)
                     {
-                        errMsgList.add("Column type couldn't be determined for update to table: geocoorddetail");
+                        errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
                         return false;
                     }
-                    if (!columnType.trim().equalsIgnoreCase("decimal(20,10)"))
+                    frame.incOverall();
+                    
+                    //-----------------------------------------------------------------------------
+                    //-- ConservEvent
+                    //-----------------------------------------------------------------------------
+                    tblName = getTableTitleForFrame(ConservEvent.getClassTableId());
+                    String[] consrvEvCols = {"Text1",  "VARCHAR(64)", "Remarks",
+                                             "Text2",  "VARCHAR(64)", "Text1",
+                                             "Number1",  "INT(11)",   "Text2",
+                                             "Number2",  "INT(11)",   "Number1",
+                                             "YesNo1", "BIT(1)",      "Number2",
+                                             "YesNo2", "BIT(1)",      "YesNo1",};
+                    if (!checkAndAddColumns(conn, databaseName, tblName, consrvEvCols))
                     {
-                        count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM geocoorddetail");
-                        rv = BasicSQLUtils.update(conn, "ALTER TABLE geocoorddetail CHANGE COLUMN `MaxUncertaintyEst` `MaxUncertaintyEst` DECIMAL(20,10) NULL DEFAULT NULL  , CHANGE COLUMN `NamedPlaceExtent` `NamedPlaceExtent` DECIMAL(20,10) NULL DEFAULT NULL");
-                        if (rv != count)
+                        return false;
+                    }
+                    frame.incOverall(); // #23
+                    
+                    //-----------------------------------------------------------------------------
+                    //-- DNASequencingRun
+                    //-----------------------------------------------------------------------------
+                    tblName = getTableTitleForFrame(DNASequencingRun.getClassTableId());
+                    if (addColumn(conn, databaseName, tblName, "RunByAgentID",  "INT(11)", "DNASequenceID"))
+                    {
+                        update(conn, "ALTER TABLE dnasequencingrun ADD KEY `FKDNASEQRUNRUNBYAGT` (`RunByAgentID`)");
+                        update(conn, "ALTER TABLE dnasequencingrun ADD CONSTRAINT `FKDNASEQRUNRUNBYAGT` FOREIGN KEY (`RunByAgentID`) REFERENCES `agent` (`AgentID`)");
+                        
+                        if (addColumn(conn, databaseName, tblName, "PreparedByAgentID",  "INT(11)", "RunByAgentID"))
                         {
-                            errMsgList.add("Update count didn't match for update to table: geocoorddetail");
+                            update(conn, "ALTER TABLE dnasequencingrun ADD KEY `FKDNASEQRUNPREPBYAGT` (`PreparedByAgentID`)");
+                            update(conn, "ALTER TABLE dnasequencingrun ADD CONSTRAINT `FKDNASEQRUNPREPBYAGT` FOREIGN KEY (`PreparedByAgentID`) REFERENCES `agent` (`AgentID`)");
+                        } else
+                        {
                             return false;
                         }
+                    } else
+                    {
+                        return false;
                     }
                     frame.incOverall();
 
                     return true;
                     
-                } catch (SQLException ex)
+                } catch (Exception ex)
                 {
                     ex.printStackTrace();
                     
@@ -885,9 +1166,39 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             
         } finally
         {
-            dbConn.close();
+            if (dbConn != null) dbConn.close();
         }
         return false;
+    }
+    
+    /**
+     * Creates error message with all the field names and adds it to the error list.
+     * @param tableName table name
+     * @param fieldNames list of fields
+     * @return error msg
+     */
+    private String generateErrFieldsMsg(final String tableName, final String[] fieldNames)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (String nm : fieldNames)
+        {
+            sb.append(nm);
+            sb.append(",\n");
+        }
+        sb.setLength(sb.length()-2);
+        String msg = String.format(ERR_ADDING_FIELDS, tableName, sb.toString());
+        errMsgList.add(msg);
+        return msg;
+    }
+    
+    /**
+     * Returns number of records in table.
+     * @param tableName unique table name
+     * @return count
+     */
+    private int getCount(final String tableName)
+    {
+        return BasicSQLUtils.getCountAsInt(String.format("SELECT COUNT(*) FROM %s", tableName));
     }
     
     /**
@@ -901,7 +1212,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             //String sql = "SELECT SpecifyUserID FROM specifyuser";
             log.debug(sql);
             
-            Vector<Integer> rows = BasicSQLUtils.queryForInts(conn, sql);
+            Vector<Integer> rows = queryForInts(conn, sql);
             if (rows.size() == 0)
             {
                 return;
@@ -927,7 +1238,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 HashMap<Integer, Integer> divToAgentToFixHash = new HashMap<Integer, Integer>();
                 
                 log.debug(sql);
-                for (Object[] row : BasicSQLUtils.query(conn, sql))
+                for (Object[] row : query(conn, sql))
                 {
                     Integer agtId = (Integer)row[0];
                     Integer divId = (Integer)row[1];
@@ -970,7 +1281,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 
                 // Gets all the Divisions that this SpecifyUser is assigned to
                 // and make sure there is an Agent for that Division
-                for (Integer divId : BasicSQLUtils.queryForInts(conn, sql))
+                for (Integer divId : queryForInts(conn, sql))
                 {
                     divsForSpecifyUserList.add(divId);
                     log.debug(String.format("spId: %d  div: %d", spId, divId));
@@ -1337,7 +1648,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     try
                     {
                         System.out.println("Delete Agent: "+ agtId);
-                        BasicSQLUtils.update(conn, "DELETE FROM agent WHERE AgentID = "+agtId);
+                        update(conn, "DELETE FROM agent WHERE AgentID = "+agtId);
                         
                     } catch (Exception ex)
                     {
@@ -1364,7 +1675,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         for (Integer id : ids)
         {
             String sql = String.format("DELETE FROM %s WHERE AgentID = %d", tableName, id);
-            if (BasicSQLUtils.update(conn, sql) != 1)
+            if (update(conn, sql) != 1)
             {
                 errMsgList.add(String.format("Error deleting Agent %d Table %s\n", id, tableName));
             }
@@ -1380,19 +1691,19 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         for (Integer id : ids)
         {
             String sql = " SELECT aa.AgentAttachmentID, a.AttachmentID FROM agentattachment aa INNER JOIN attachment a ON aa.AttachmentID = a.AttachmentID WHERE aa.AgentID = " + id;
-            for (Object[] row  : BasicSQLUtils.query(sql))
+            for (Object[] row  : query(sql))
             {
                 Integer agtAtchId = (Integer)row[1];
                 Integer atchId    = (Integer)row[2];
                 
                 sql = String.format("DELETE FROM attachment WHERE AttachmentID = %d", atchId);
-                if (BasicSQLUtils.update(conn, sql) != 1)
+                if (update(conn, sql) != 1)
                 {
                     errMsgList.add(String.format("Error deleting Agent %d Table attachment\n", id));
                 }
                 
                 sql = String.format("DELETE FROM agentattachment WHERE AgentAttachmentID = %d", agtAtchId);
-                if (BasicSQLUtils.update(conn, sql) != 1)
+                if (update(conn, sql) != 1)
                 {
                     errMsgList.add(String.format("Error deleting Agent %d Table agentattachment\n", id));
                 }
@@ -1446,7 +1757,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         sql = String.format("SELECT %s FROM %s %s", primaryKey, ti.getName(), fullInClause);
                         //log.debug(sql);
                         int cnt = 0;
-                        for (Integer id : BasicSQLUtils.queryForInts(sql))
+                        for (Integer id : queryForInts(sql))
                         {
                             ps.setInt(1, firstAgentId);
                             ps.setInt(2, id);
@@ -1483,6 +1794,11 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         }
     }
     
+    /**
+     * @param sql
+     * @param inClause
+     * @return
+     */
     private String addInClause(final String sql, final String inClause)
     {
         final String ORDER_BY = "order by";
@@ -1627,7 +1943,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             BasicSQLUtils.setSkipTrackExceptions(false);
             try
             {
-                BasicSQLUtils.update(conn, String.format("ALTER TABLE %s MODIFY %s varchar(%d)", tblName, fldName, newLen));
+                update(conn, String.format("ALTER TABLE %s MODIFY %s varchar(%d)", tblName, fldName, newLen));
                 //log.debug(String.format("Updating %s %s.%s - %d -> %d rv= %d", databaseName, tblName, fldName, origLen, newLen, rv));
             } catch (Exception ex)
             {
@@ -1648,7 +1964,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         /////////////////////////////
         // PaleoContext
         /////////////////////////////
-        setTableTitleForFrame(PaleoContext.getClassTableId());
+        getTableTitleForFrame(PaleoContext.getClassTableId());
         Integer len = getFieldLength(conn, databaseName, "paleocontext", "Text1");
         alterFieldLength(conn, databaseName, "paleocontext", "Text1", 32, 64);
         alterFieldLength(conn, databaseName, "paleocontext", "Text2", 32, 64);
@@ -1657,7 +1973,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         if (len == null)
         {
             int count = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM paleocontext");
-            int rv    = BasicSQLUtils.update(conn, "ALTER TABLE paleocontext ADD Remarks VARCHAR(60)");
+            int rv    = update(conn, "ALTER TABLE paleocontext ADD Remarks VARCHAR(60)");
             if (rv != count)
             {
                 errMsgList.add("Error updating PaleoContext.Remarks");
@@ -1671,12 +1987,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         /////////////////////////////
         // FieldNotebookPage
         /////////////////////////////
-        setTableTitleForFrame(FieldNotebookPage.getClassTableId());
+        getTableTitleForFrame(FieldNotebookPage.getClassTableId());
         len = getFieldLength(conn, databaseName, "fieldnotebookpage", "PageNumber");
         if (len != null && len == 16)
         {
             alterFieldLength(conn, databaseName, "fieldnotebookpage", "PageNumber", 16, 32);
-            BasicSQLUtils.update(conn, "ALTER TABLE fieldnotebookpage ALTER COLUMN ScanDate DROP DEFAULT");
+            update(conn, "ALTER TABLE fieldnotebookpage ALTER COLUMN ScanDate DROP DEFAULT");
         }
         frame.incOverall();
 
@@ -1690,17 +2006,17 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         // LocalityDetail
         /////////////////////////////
         
-        setTableTitleForFrame(LocalityDetail.getClassTableId());
+        getTableTitleForFrame(LocalityDetail.getClassTableId());
         
         boolean statusOK = true;
         String sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = 'localitydetail' AND COLUMN_NAME = 'UtmScale' AND DATA_TYPE = 'varchar'", dbc.getDatabaseName());
         int count = BasicSQLUtils.getCountAsInt(sql);
         if (count > 0)
         {
-            Vector<Object[]> values = BasicSQLUtils.query("SELECT ld.LocalityDetailID, ld.UtmScale, l.LocalityName " +
+            Vector<Object[]> values = query("SELECT ld.LocalityDetailID, ld.UtmScale, l.LocalityName " +
             	                                          "FROM localitydetail ld INNER JOIN locality l ON ld.LocalityID = l.LocalityID WHERE ld.UtmScale IS NOT NULL");
             
-            BasicSQLUtils.update(conn, "ALTER TABLE localitydetail DROP COLUMN UtmScale");
+            update(conn, "ALTER TABLE localitydetail DROP COLUMN UtmScale");
             String tblName = "localitydetail";
             addColumn(conn, databaseName, tblName, "UtmScale", "FLOAT",      "UtmOrigLongitude");
             addColumn(conn, databaseName, tblName, "MgrsZone", "VARCHAR(4)", "UtmScale");
@@ -1794,13 +2110,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         DBMSUserMgr  dbmsMgr = DBMSUserMgr.getInstance();
         if (dbmsMgr.connectToDBMS(itUserNamePassword.first, itUserNamePassword.second, dbc.getServerName()))
         {       
+            boolean status = true;
+            
             Connection connection = dbmsMgr.getConnection();
             try
             {
                 // Add New Fields to Determination
-                
-                setTableTitleForFrame(Determination.getClassTableId());
-                String tblName = "determination";
+                String tblName = getTableTitleForFrame(Determination.getClassTableId());
                 addColumn(conn, databaseName, tblName, "VarQualifer",    "ALTER TABLE %s ADD COLUMN %s VARCHAR(16) AFTER Qualifier");
                 addColumn(conn, databaseName, tblName, "SubSpQualifier", "ALTER TABLE %s ADD COLUMN %s VARCHAR(16) AFTER VarQualifer");
                 frame.incOverall();
@@ -1816,7 +2132,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 {
                     HashMap<Integer, Integer> collIdToDispIdHash = new HashMap<Integer, Integer>();
                     sql = "SELECT UserGroupScopeId, DisciplineID FROM collection";
-                    for (Object[] cols : BasicSQLUtils.query(sql))
+                    for (Object[] cols : query(sql))
                     {
                         Integer colId = (Integer)cols[0];
                         Integer dspId = (Integer)cols[1];
@@ -1833,13 +2149,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     Statement stmt = null;
                     try
                     {
-                        setTableTitleForFrame(CollectingEventAttribute.getClassTableId());
+                        getTableTitleForFrame(CollectingEventAttribute.getClassTableId());
                         
                         stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-                        BasicSQLUtils.update(conn, "DROP INDEX COLEVATSColMemIDX on collectingeventattribute");
-                        BasicSQLUtils.update(conn, "ALTER TABLE collectingeventattribute DROP COLUMN CollectionMemberID");
-                        BasicSQLUtils.update(conn, "ALTER TABLE collectingeventattribute ADD COLUMN DisciplineID int(11)");
-                        BasicSQLUtils.update(conn, "CREATE INDEX COLEVATSDispIDX ON collectingeventattribute(DisciplineID)");
+                        update(conn, "DROP INDEX COLEVATSColMemIDX on collectingeventattribute");
+                        update(conn, "ALTER TABLE collectingeventattribute DROP COLUMN CollectionMemberID");
+                        update(conn, "ALTER TABLE collectingeventattribute ADD COLUMN DisciplineID int(11)");
+                        update(conn, "CREATE INDEX COLEVATSDispIDX ON collectingeventattribute(DisciplineID)");
                         
                         double inc     = count > 0 ? (100.0 / (double)count) : 0;
                         double cnt     = 0;
@@ -1904,7 +2220,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 {
                     HashMap<Integer, Integer> collIdToDivIdHash = new HashMap<Integer, Integer>();
                     sql = "SELECT c.UserGroupScopeId, d.DivisionID FROM collection c INNER JOIN discipline d ON c.DisciplineID = d.UserGroupScopeId";
-                    for (Object[] cols : BasicSQLUtils.query(sql))
+                    for (Object[] cols : query(sql))
                     {
                         Integer colId = (Integer)cols[0];
                         Integer divId = (Integer)cols[1];
@@ -1918,15 +2234,15 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     mapper.setFrame(frame);
                     mapper.mapAllIdsNoIncrement(count > 0 ? count : null);
                     
-                    setTableTitleForFrame(Collector.getClassTableId());
+                    getTableTitleForFrame(Collector.getClassTableId());
                     Statement stmt = null;
                     try
                     {
                         stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-                        BasicSQLUtils.update(conn, "DROP INDEX COLTRColMemIDX on collector");
-                        BasicSQLUtils.update(conn, "ALTER TABLE collector DROP COLUMN CollectionMemberID");
-                        BasicSQLUtils.update(conn, "ALTER TABLE collector ADD COLUMN DivisionID INT(11)");
-                        BasicSQLUtils.update(conn, "CREATE INDEX COLTRDivIDX ON collector(DivisionID)");
+                        update(conn, "DROP INDEX COLTRColMemIDX on collector");
+                        update(conn, "ALTER TABLE collector DROP COLUMN CollectionMemberID");
+                        update(conn, "ALTER TABLE collector ADD COLUMN DivisionID INT(11)");
+                        update(conn, "CREATE INDEX COLTRDivIDX ON collector(DivisionID)");
                         
                         double inc     = count > 0 ? (100.0 / (double)count) : 0;
                         double cnt     = 0;
@@ -1983,131 +2299,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     frame.incOverall();
                 }
                 
-                //////////////////////////////////////////////
-                // Schema Changes 1.4
-                //////////////////////////////////////////////
-                
-                if (BasicSQLUtils.doesTableExist(conn, "agent_discipline"))
-                {
-                    PreparedStatement pStmt    = null;
-                    try
-                    {
-                        pStmt    = conn.prepareStatement("UPDATE agent SET DivisionID=? WHERE AgentID = ?");
-                    
-                        sql = "SELECT a.AgentID, d.DivisionID FROM agent AS a " +
-                              "Inner Join agent_discipline AS ad ON a.AgentID = ad.AgentID " +
-                              "Inner Join discipline AS d ON ad.DisciplineID = d.UserGroupScopeId " +    
-                              "WHERE a.DivisionID IS NULL";
-    
-                        for (Object[] row : BasicSQLUtils.query(conn, sql))
-                        {
-                            int agtId = (Integer)row[0];
-                            int divId = (Integer)row[1];
-                            pStmt.setInt(1, divId);
-                            pStmt.setInt(2, agtId);
-                            pStmt.executeUpdate();
-                        }
-                    } catch (Exception e1)
-                    {
-                        e1.printStackTrace();
-                    } finally
-                    {
-                        try
-                        {
-                            if (pStmt != null)
-                            {
-                                pStmt.close();
-                            }
-                        } catch (Exception ex) {}
-                    }
-                
-
-                    BasicSQLUtils.update(conn, "DROP TABLE agent_discipline");
-                }
-                
-                // Add New Fields to Address
-                tblName = setTableTitleForFrame(Agent.getClassTableId());
-                addColumn(conn, databaseName, tblName, "DateType",             "TINYINT(4)", "Title");
-                addColumn(conn, databaseName, tblName, "DateOfBirthPrecision", "TINYINT(4)", "DateOfBirth");
-                addColumn(conn, databaseName, tblName, "DateOfDeathPrecision", "TINYINT(4)", "DateOfDeath");
-                
-                if (!doesColumnExist(databaseName, "address", "Address3"))
-                {
-                    frame.setDesc("Updating Address Fields...");
-                    String fmtStr = "ALTER TABLE address ADD COLUMN Address%d VARCHAR(64) AFTER Address%d";
-                    for (int i=3;i<6;i++)
-                    {
-                        BasicSQLUtils.update(conn, String.format(fmtStr, i, i-1));
-                    }
-                }
-                
-                tblName = setTableTitleForFrame(LocalityDetail.getClassTableId());
-                addColumn(conn, databaseName, tblName, "StartDepth",         "Double",      "Drainage");
-                addColumn(conn, databaseName, tblName, "StartDepthUnit",     "TINYINT(4)",  "StartDepth");
-                addColumn(conn, databaseName, tblName, "StartDepthVerbatim", "VARCHAR(32)", "StartDepthUnit");
-
-                addColumn(conn, databaseName, tblName, "EndDepth",         "Double",      "StartDepthVerbatim");
-                addColumn(conn, databaseName, tblName, "EndDepthUnit",     "TINYINT(4)",  "EndDepth");
-                addColumn(conn, databaseName, tblName, "EndDepthVerbatim", "VARCHAR(32)", "EndDepthUnit");
-                
-                tblName = setTableTitleForFrame(Locality.getClassTableId());
-                addColumn(conn, databaseName, tblName, "Text1", "VARCHAR(255)", "SrcLatLongUnit");
-                addColumn(conn, databaseName, tblName, "Text2", "VARCHAR(255)", "Text1");
-                
-                tblName = setTableTitleForFrame(CollectionObjectAttribute.getClassTableId());
-                addColumn(conn, databaseName, tblName, "Text15",  "VARCHAR(64)", "Text14");
-                
-                tblName = setTableTitleForFrame(PaleoContext.getClassTableId());
-                addColumn(conn, databaseName, tblName, "ChronosStratEndID",  "INT", "ChronosStratID");
-                
-                tblName = setTableTitleForFrame(Institution.getClassTableId());
-                addColumn(conn, databaseName, tblName, "IsSingleGeographyTree",  "BIT(1)", "IsServerBased");
-                addColumn(conn, databaseName, tblName, "IsSharingLocalities",    "BIT(1)", "IsSingleGeographyTree");
-                BasicSQLUtils.update(conn, "UPDATE institution SET IsSingleGeographyTree=0, IsSharingLocalities=0");
-                
-                tblName = setTableTitleForFrame(GeologicTimePeriod.getClassTableId());
-                addColumn(conn, databaseName, tblName, "Text1", "VARCHAR(64)", "EndUncertainty");
-                addColumn(conn, databaseName, tblName, "Text2", "VARCHAR(64)", "Text1");
-                
-                tblName = setTableTitleForFrame(PreparationAttribute.getClassTableId());
-                // Fix Field Length
-                String prepAttrFld = "Text22";
-                len = getFieldLength(conn, databaseName, tblName, prepAttrFld);
-                if (len != null && len == 10)
-                {
-                    alterFieldLength(conn, databaseName, tblName, prepAttrFld, 10, 50);
-                }
-                
-                //////////////////////////////////////////////
-                // Schema Changes 1.5
-                //////////////////////////////////////////////
-                BasicSQLUtils.update(conn, "ALTER TABLE loanpreparation MODIFY DescriptionOfMaterial TEXT");
-                
-                tblName = "conservevent";
-                addColumn(conn, databaseName, tblName, "Text1",  "VARCHAR(64)", "Remarks");
-                addColumn(conn, databaseName, tblName, "Text2",  "VARCHAR(64)", "Text1");
-                addColumn(conn, databaseName, tblName, "Number1",  "INT(11)",   "Text2");
-                addColumn(conn, databaseName, tblName, "Number2",  "INT(11)",   "Number1");
-                addColumn(conn, databaseName, tblName, "YesNo1", "BIT(1)",      "Number2");
-                addColumn(conn, databaseName, tblName, "YesNo2", "BIT(1)",      "YesNo1");
-
-                tblName = "dnasequencingrun";
-                boolean rv = addColumn(conn, databaseName, tblName, "RunByAgentID",  "INT(11)", "DNASequenceID");
-                if (rv)
-                {
-                    BasicSQLUtils.update(conn, "ALTER TABLE dnasequencingrun ADD KEY `FKDNASEQRUNRUNBYAGT` (`RunByAgentID`)");
-                    BasicSQLUtils.update(conn, "ALTER TABLE dnasequencingrun ADD CONSTRAINT `FKDNASEQRUNRUNBYAGT` FOREIGN KEY (`RunByAgentID`) REFERENCES `agent` (`AgentID`)");
-                    
-                    rv = addColumn(conn, databaseName, tblName, "PreparedByAgentID",  "INT(11)", "RunByAgentID");
-                    if (rv)
-                    {
-                        BasicSQLUtils.update(conn, "ALTER TABLE dnasequencingrun ADD KEY `FKDNASEQRUNPREPBYAGT` (`PreparedByAgentID`)");
-                        BasicSQLUtils.update(conn, "ALTER TABLE dnasequencingrun ADD CONSTRAINT `FKDNASEQRUNPREPBYAGT` FOREIGN KEY (`PreparedByAgentID`) REFERENCES `agent` (`AgentID`)");
-                    }
-                }
-                
-                frame.getProcessProgress().setIndeterminate(true);
-                frame.setDesc("Loading updated schema...");
                 
             } catch (Exception ex)
             {
@@ -2115,6 +2306,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 
             } finally
             {
+                frame.getProcessProgress().setIndeterminate(true);
+                frame.setDesc("Loading updated schema...");
+                
+                if (!status)
+                {
+                    UIRegistry.showLocalizedError("SCHEMA_UPDATE_ERROR", errMsgStr);
+                }
+                
                 dbmsMgr.close();
             }
         }
@@ -2134,7 +2333,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         String sql = "SELECT su.SpecifyUserID, a.AgentID, a.DivisionID FROM specifyuser AS su Inner Join agent AS a ON su.SpecifyUserID = a.SpecifyUserID ";
         log.debug(sql);
         
-        for (Object[] row : BasicSQLUtils.query(sql))
+        for (Object[] row : query(sql))
         {
             int spUserID = (Integer)row[0];
             int agtId    = (Integer)row[1];
@@ -2159,7 +2358,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 "Inner Join discipline AS dsp ON cln.DisciplineID = dsp.UserGroupScopeId WHERE su_pr.SpecifyUserID IS NOT NULL";
         log.debug(sql);
         
-        for (Object[] row : BasicSQLUtils.query(sql))
+        for (Object[] row : query(sql))
         {
             int colDiv   = (Integer)row[0];
             int spUserID = (Integer)row[1];
@@ -2168,8 +2367,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             HashSet<Integer> divs = spUserToDivHash.get(spUserID);
             if (divs == null || !divs.contains(colDiv))
             {
-                String divName  = BasicSQLUtils.querySingleObj("SELECT Name FROM division WHERE DivisionID = "+colDiv);
-                String userName = BasicSQLUtils.querySingleObj("SELECT Name FROM specifyuser WHERE SpecifyUserID = "+spUserID);
+                String divName  = querySingleObj("SELECT Name FROM division WHERE DivisionID = "+colDiv);
+                String userName = querySingleObj("SELECT Name FROM specifyuser WHERE SpecifyUserID = "+spUserID);
                 
                 log.debug(String.format("*********** No Agent for User %d (%s) in Division %d (%s) - (Going to Duplicate)", spUserID, userName, colDiv, divName));
                 Integer agtId = spUserToAgentHash.get(spUserID);
@@ -2201,7 +2400,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, e1);
                     
-                    session.rollback();
+                    if (session != null) session.rollback();
                     
                     log.error("Exception caught: " + e1.toString());
                     
@@ -2221,15 +2420,47 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      * @param tableId the id of the table
      * @return the db table name
      */
-    private String setTableTitleForFrame(final int tableId)
+    private String getTableTitleForFrame(final int tableId)
     {
         DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
         if (ti != null)
         {
-            frame.setDesc(String.format("Updating %s Fields...", ti != null ? ti.getTitle() : "DB"));
+            frame.setDesc(String.format("Updating %s Fields...", ti.getTitle()));
             return ti.getName();
         }
         throw new RuntimeException("Couldn't find table in Mgr for Table Id " + tableId);
+    }
+    
+    /**
+     * @param conn
+     * @param dbName
+     * @param tableName
+     * @param columnInfo
+     * @return
+     */
+    protected boolean checkAndAddColumns(final Connection conn, 
+                                         final String dbName, 
+                                         final String tableName, 
+                                         final String[] columnInfo)
+    {
+        int inx = 0;
+        while (inx < columnInfo.length)
+        {
+            if (!doesColumnExist(dbName, tableName, columnInfo[inx]))
+            {
+                if (!addColumn(conn, dbName, tableName, columnInfo[inx],  columnInfo[inx+1], columnInfo[inx+2]))
+                {
+                    String msg = String.format("Error adding DB: %s  TBL: %s  Col:%s  Typ:%s  After: %s", dbName, tableName, columnInfo[inx],  columnInfo[inx+1], columnInfo[inx+2]);
+                    log.error(msg);
+                    errMsgList.add(msg);
+                    msg = generateErrFieldsMsg(tableName, columnInfo);
+                    log.error(msg);
+                    return false;
+                }
+            }
+            inx += 3;
+        }
+        return true;
     }
     
     /**
@@ -2267,8 +2498,19 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     {
         if (!doesColumnExist(dbName, tableName, colName))
         {
-            String fmtSQL = String.format(updateSQL, tableName, colName);
-            return BasicSQLUtils.update(conn, fmtSQL) == 1;
+            String  fmtSQL = String.format(updateSQL, tableName, colName);
+            int     rv     = update(conn, fmtSQL);
+            if (rv == 0 && updateSQL.trim().toLowerCase().startsWith("alter table"))
+            {
+                return true;
+            }
+            
+            if (rv != 1)
+            {
+                log.error(fmtSQL);
+                errMsgList.add(String.format("Error adding column '%s' to table '%s'", colName, tableName));
+                return false;
+            }
         }
         return true; // true means it was OK if it wasn't added
     }
@@ -2281,12 +2523,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      */
     protected boolean doesColumnExist(final String dbName, final String tableName, final String colName)
     {
-        String sql = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s' AND COLUMN_NAME = '%s'", dbName, tableName, colName);
+        String  sql  = String.format("SELECT COUNT(*) FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s' AND COLUMN_NAME = '%s'", dbName, tableName, colName);
+        //log.debug(sql);
         return BasicSQLUtils.getCountAsInt(sql) == 1;
     }
     
     /**
-     * @param sessionArg
+     * 
      */
     protected void fixLocaleSchema()
     {
@@ -2353,7 +2596,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             }
         } finally
         {
-            localFrame.setVisible(false);
+            if (localFrame != null) localFrame.setVisible(false);
             
             PostInsertEventListener.setAuditOn(true);
 
@@ -2371,8 +2614,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                                  getResourceString("CANCEL")  //$NON-NLS-1$
                   };
             return JOptionPane.YES_OPTION == JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                                                             getLocalizedMessage("SpecifySchemaUpdateService.DB_SCH_UP"),  //$NON-NLS-1$
-                                                             getResourceString("SpecifySchemaUpdateService.DB_SCH_UP_TITLE"),  //$NON-NLS-1$
+                                                             getLocalizedMessage(mkKey("DB_SCH_UP")),  //$NON-NLS-1$
+                                                             getResourceString(mkKey("DB_SCH_UP_TITLE")),  //$NON-NLS-1$
                                                              JOptionPane.YES_NO_OPTION,
                                                              JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         }
@@ -2461,10 +2704,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         prefProgFrame.setDesc(UIRegistry.getLocalizedMessage("UPDATE_GEO"));
         UIHelper.centerAndShow(prefProgFrame);
         
-        if (prefProgFrame!= null)
-        {
-            prefProgFrame.setProcess(0, 100);
-        }
+        prefProgFrame.setProcess(0, 100);
         
         SwingWorker<Boolean, Boolean> worker = new SwingWorker<Boolean, Boolean>()
         {
@@ -2547,35 +2787,15 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             
         };
         
-        if (prefProgFrame != null)
-        {
-            worker.addPropertyChangeListener(
-                    new PropertyChangeListener() {
-                        public void propertyChange(final PropertyChangeEvent evt) {
-                            if ("progress".equals(evt.getPropertyName())) 
-                            {
-                                prefProgFrame.setProcess((Integer)evt.getNewValue());
-                            }
+        worker.addPropertyChangeListener(
+                new PropertyChangeListener() {
+                    public void propertyChange(final PropertyChangeEvent evt) {
+                        if ("progress".equals(evt.getPropertyName())) 
+                        {
+                            prefProgFrame.setProcess((Integer)evt.getNewValue());
                         }
-                    });
-        }
-        
+                    }
+                });
         worker.execute();
-        
-        /*try
-        {
-            //worker.get();// Blocks GUI Thread
-            
-            frame.setVisible(false);
-            frame.dispose();
-            frame = null;
-            
-        } catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        } catch (ExecutionException e)
-        {
-            e.printStackTrace();
-        } */
     }
 }
