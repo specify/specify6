@@ -3351,11 +3351,14 @@ public class UploadTable implements Comparable<UploadTable>
                         }       
                         if (!pickListCheck(fld))
                         {
-                        	if (!fld.isReadOnlyValidValues())
+                        	if (!fld.isReadOnlyValidValues() )
                         	{
-                        		invalidValues.add(new UploadTableInvalidValue(null, this, fld, null, row,
-                        			new Exception(getInvalidPicklistValErrMsg(fld)), true));
-                        		continue;
+                        		if (uploader != Uploader.currentUpload)
+                        		{
+                        			invalidValues.add(new UploadTableInvalidValue(null, this, fld, null, row,
+                        					new Exception(getInvalidPicklistValErrMsg(fld)), true));
+                        			continue;
+                        		}
                         	} else 
                         	{
                         		throw new Exception(getInvalidPicklistValErrMsg(fld));
@@ -3694,7 +3697,7 @@ public class UploadTable implements Comparable<UploadTable>
     {
         int recNum = 0;
         logDebug("writeRowOrNot: " + this.table.getName());
-        System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
+        //System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
         autoAssignedVal = null;  //assumes one autoassign field per table.
         for (Vector<UploadField> seq : uploadFields)
         {
