@@ -47,6 +47,7 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -161,6 +162,9 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
         boolean               hasColMemID = ti.getFieldByColumnName("CollectionMemberID", true) != null;
         UIFieldFormatterIFace formatter   = fi.getFormatter();
         
+        // Check for a dash in the format
+        char rangeSeparator = formatter.hasDash() ? '/' : '-';
+        
         boolean isOK = true;
         
         String catNumbersStr = textArea.getText().trim();
@@ -175,11 +179,11 @@ public class AskForNumbersDlg extends CustomDialog implements ChangeListener
                 for (String catNumStr : toks)
                 {
                     String numToken = catNumStr.trim();
-                    if (StringUtils.contains(numToken, '-'))
+                    if (StringUtils.contains(numToken, rangeSeparator))
                     {
                         String   catNum    = null;
                         String   endCatNum = null;
-                        String[] tokens    =  StringUtils.split(numToken, '-');
+                        String[] tokens    =  StringUtils.split(numToken, rangeSeparator);
                         if (tokens.length == 2)
                         {
                             try

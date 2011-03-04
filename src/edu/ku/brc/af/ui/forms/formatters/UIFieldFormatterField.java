@@ -285,6 +285,22 @@ public class UIFieldFormatterField implements Cloneable
     {
         return byYear;
     }
+    
+    /**
+     * @return true if type is separator
+     */
+    public boolean isSeparator()
+    {
+        return type == FieldType.separator;
+    }
+    
+    /**
+     * @return true if type is separator
+     */
+    public boolean isConstant()
+    {
+        return type == FieldType.constant;
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#toString()

@@ -454,7 +454,14 @@ public abstract class ExportFieldFormatter implements UIFieldFormatterIFace
 	public void toXML(StringBuilder sb)
 	{
 		// TODO Auto-generated method stub
-
 	}
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace#hasDash()
+     */
+    @Override
+    public boolean hasDash()
+    {
+        return false;
+    }
 }

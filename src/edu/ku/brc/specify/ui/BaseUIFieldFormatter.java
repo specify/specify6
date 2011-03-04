@@ -63,6 +63,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     protected String                 pattern;
     protected boolean                isDefault             = false;
     protected PartialDateEnum        partialDateType       = PartialDateEnum.None;
+    protected Boolean                hasDash               = null;
 
     /**
      * @param type the name of the formatter, must be unique and not localized
@@ -469,6 +470,27 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
             }
         }
         return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace#hasDash()
+     */
+    @Override
+    public boolean hasDash()
+    {
+        if (hasDash == null)
+        {
+            hasDash = false;
+            for (UIFieldFormatterField fld : getFields())
+            {
+                if ((fld.isSeparator() || fld.isConstant()) && fld.getValue().equals("-"))
+                {
+                    hasDash = true;
+                    break;
+                }
+            }
+        }
+        return hasDash;
     }
 
     /* (non-Javadoc)

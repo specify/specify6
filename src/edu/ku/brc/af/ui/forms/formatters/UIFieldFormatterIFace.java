@@ -246,6 +246,14 @@ public interface UIFieldFormatterIFace
     // The Data Specific Methods
     //-----------------------------------------------------------------------
     
+    /**
+     * @return whether the format contains a dash character '-'
+     */
+    public abstract boolean hasDash();
+    
+    /**
+     * @param type
+     */
     public abstract void setType(FormatterType type);
     
     /**

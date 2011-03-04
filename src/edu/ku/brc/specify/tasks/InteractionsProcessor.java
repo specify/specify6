@@ -267,7 +267,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                 final JStatusBar statusBar = UIRegistry.getStatusBar();
                 statusBar.setIndeterminate(LOAN_LOADR, true);
                 
-                if (recordSet != null && recordSet.getNumItems() > 2)
+                if (recordSet.getNumItems() > 2)
                 {
                     UIRegistry.writeSimpleGlassPaneMsg(getResourceString("NEW_INTER_LOADING_PREP"), 24);
                 }
@@ -563,13 +563,16 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                                // error
                            }
                            
-                           PrepInfo prepInfo = colObjInfo.get(prepId);
-                           if (prepInfo != null)
+                           if (colObjInfo != null)
                            {
-                               prepInfo.add(qty, qtyRes);
-                           } else
-                           {
-                               colObjInfo.add(new PrepInfo(prepId, (Integer)row[5], pQty, qty, qtyRes));    
+                               PrepInfo prepInfo = colObjInfo.get(prepId);
+                               if (prepInfo != null)
+                               {
+                                   prepInfo.add(qty, qtyRes);
+                               } else
+                               {
+                                   colObjInfo.add(new PrepInfo(prepId, (Integer)row[5], pQty, qty, qtyRes));    
+                               }
                            }
                        }
                    }                   
@@ -684,13 +687,16 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                                // error
                            }
                            
-                           PrepInfo prepInfo = colObjInfo.get(prepId);
-                           if (prepInfo != null)
+                           if (colObjInfo != null)
                            {
-                               prepInfo.add(qty, qty);
-                           } else
-                           {
-                               colObjInfo.add(new PrepInfo(prepId, (Integer)row[4], pQty, qty, 0));    
+                               PrepInfo prepInfo = colObjInfo.get(prepId);
+                               if (prepInfo != null)
+                               {
+                                   prepInfo.add(qty, qty);
+                               } else
+                               {
+                                   colObjInfo.add(new PrepInfo(prepId, (Integer)row[4], pQty, qty, 0));    
+                               }
                            }
                        }
                    }                   

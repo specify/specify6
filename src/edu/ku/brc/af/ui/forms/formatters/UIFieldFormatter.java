@@ -79,6 +79,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     
     protected Number               minValue = null;
     protected Number               maxValue = null;
+    protected Boolean              hasDash  = null;
     
     // Transient
 
@@ -1038,6 +1039,27 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
 	{
 		this.type = type;
 	}
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace#hasDash()
+     */
+    @Override
+    public boolean hasDash()
+    {
+        if (hasDash == null)
+        {
+            hasDash = false;
+            for (UIFieldFormatterField fld : getFields())
+            {
+                if ((fld.isSeparator() || fld.isConstant()) && fld.getValue().equals("-"))
+                {
+                    hasDash = true;
+                    break;
+                }
+            }
+        }
+        return hasDash;
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
