@@ -89,10 +89,7 @@ import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.SoftBevelBorder;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -3835,7 +3832,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     			}
     			if (wvEx != null && wvEx.getStructureErrors().size() > 0)
     			{
-    				showStructureErrors(wvEx.getStructureErrors());
+    				Uploader.showStructureErrors(wvEx.getStructureErrors());
     			}
     		}
     		else {
@@ -3892,33 +3889,6 @@ public class WorkbenchPaneSS extends BaseSubPane
 		{
 			blockChanges = savedBlockChanges;
 		}
-    }
-
-    /**
-     * @param structureErrors
-     * 
-     * Display a dialog listing the 'structural' problems with the dataset
-     * that prevent uploading.
-     */
-    protected void showStructureErrors(Vector<UploadMessage> structureErrors)
-    {
-        JPanel pane = new JPanel(new BorderLayout());
-        JLabel lbl = createLabel(getResourceString("WB_UPLOAD_BAD_STRUCTURE_MSG") + ":");
-        lbl.setBorder(new EmptyBorder(3, 1, 2, 0));
-        pane.add(lbl, BorderLayout.NORTH);
-        JPanel lstPane = new JPanel(new BorderLayout());
-        JList lst = new JList(structureErrors);
-        lst.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
-        lstPane.setBorder(new EmptyBorder(1, 1, 10, 1));
-        lstPane.add(lst, BorderLayout.CENTER);
-        pane.add(lstPane, BorderLayout.CENTER);
-        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
-                getResourceString("WB_UPLOAD_BAD_STRUCTURE_DLG"),
-                true,
-                CustomDialog.OKHELP,
-                pane);
-        UIHelper.centerAndShow(dlg);
-        dlg.dispose();
     }
     
     public void doDatasetUpload()
@@ -4016,7 +3986,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             Vector<UploadMessage> structureErrors = datasetUploader.verifyUploadability();
             if (structureErrors.size() > 0) 
             { 
-                showStructureErrors(structureErrors);
+                Uploader.showStructureErrors(structureErrors);
                 uploadDone();
                 return;
             }

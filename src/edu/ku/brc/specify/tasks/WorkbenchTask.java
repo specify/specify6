@@ -129,6 +129,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchValidator;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
 import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
 import edu.ku.brc.specify.ui.ChooseRecordSetDlg;
 import edu.ku.brc.ui.ChooseFromListDlg;
@@ -267,7 +268,7 @@ public class WorkbenchTask extends BaseTask
                 roc.addDragDataFlavor(new DataFlavor(Workbench.class, EXPORT_TEMPLATE));
                 enableNavBoxList.add((NavBoxItemIFace)roc);
                 
-                //makeDnDNavBtn(navBox, getResourceString("WB_EXPORTFROMDBTOWB"), "Export16", getResourceString("WB_EXPORTFROMDBTOWB_TT"), new CommandAction(WORKBENCH, EXPORT_RS_TO_WB, wbTblId), null, false, false);// true means make it draggable
+                makeDnDNavBtn(navBox, getResourceString("WB_EXPORTFROMDBTOWB"), "Export16", getResourceString("WB_EXPORTFROMDBTOWB_TT"), new CommandAction(WORKBENCH, EXPORT_RS_TO_WB, wbTblId), null, false, false);// true means make it draggable
             }  
             
             navBoxes.add(navBox);
@@ -1905,13 +1906,40 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     	Class<?> cls = rs.getDataClassFormItems();
     	try
     	{
-        	WorkbenchValidator wbv = new WorkbenchValidator(wb);
-    		for (RecordSetItemIFace item : rs.getItems())
-    		{
-    			DataModelObjBase obj = (DataModelObjBase )session.get(cls, item.getRecordId());
-    			obj.forceLoad();
-    			wbv.getUploader().loadRecordToWb(obj, wb);
-    		}
+         	try
+        	{
+        		WorkbenchValidator wbv = new WorkbenchValidator(wb);
+        		for (RecordSetItemIFace item : rs.getItems())
+        		{
+        			DataModelObjBase obj = (DataModelObjBase )session.get(cls, item.getRecordId());
+        			if (obj != null)
+        			{
+        				obj.forceLoad();
+        				wbv.getUploader().loadRecordToWb(obj, wb);
+        			}
+        		}
+        	} catch (Exception ex)
+        	{
+        		if (ex instanceof WorkbenchValidator.WorkbenchValidatorException || ex instanceof UploaderException)
+        		{
+        			WorkbenchValidator.WorkbenchValidatorException wvEx = null;
+        			if (ex instanceof WorkbenchValidator.WorkbenchValidatorException)
+        			{
+        				wvEx = (WorkbenchValidator.WorkbenchValidatorException )ex;
+        			} else if (ex.getCause() instanceof WorkbenchValidator.WorkbenchValidatorException)
+        			{
+        				wvEx = (WorkbenchValidator.WorkbenchValidatorException )ex.getCause();
+        			}
+        			if (wvEx != null && wvEx.getStructureErrors().size() > 0)
+        			{
+        				Uploader.showStructureErrors(wvEx.getStructureErrors());
+        			}
+        		}
+        		else {
+        			throw ex;
+        		}
+        		UIRegistry.showLocalizedError("WorkbenchPaneSS.UnableToAutoValidate");
+        	}
     		result = true;
     	} catch (Exception ex)
     	{
@@ -3699,7 +3727,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      */
     protected void exportRStoDS(final CommandAction action)
     {
-    	UIRegistry.displayErrorDlg("Exporting to wb");
+    	//UIRegistry.displayErrorDlg("Exporting to wb");
     	
     	//Choose a recordset if the action is not a rs drop
     	Vector<Integer> tblIds = new Vector<Integer>();

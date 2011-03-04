@@ -1143,7 +1143,14 @@ public class UploadTable implements Comparable<UploadTable>
     		for (ParentTableEntry pte : ptes)
     		{
     			System.out.println("setting exported recordid " + pte.getImportTable());
-    			pte.getImportTable().setExportedRecordId((DataModelObjBase )pte.getGetter().invoke(rec, (Object[] )null));		
+    			if (rec == null)
+    			{
+    				pte.getImportTable().setExportedRecordId(null);
+    			}
+    			else
+    			{
+    				pte.getImportTable().setExportedRecordId((DataModelObjBase )pte.getGetter().invoke(rec, (Object[] )null));
+    			}
     		}
     	}
     }
@@ -1222,6 +1229,8 @@ public class UploadTable implements Comparable<UploadTable>
             IllegalArgumentException, IllegalAccessException, UploaderException
     {
         boolean requirementsMet = true;
+        boolean result = false;
+        boolean isNewRecord = rec.getId() == null;    	
         for (Vector<ParentTableEntry> ptes : parentTables)
         {
             for (ParentTableEntry pt : ptes)
@@ -1236,11 +1245,19 @@ public class UploadTable implements Comparable<UploadTable>
                 {
                     arg[0] = parentRec;
                 }
+            	if (!isNewRecord && !result)
+            	{
+            		result = valueChange(rec, pt.getGetter(), arg);
+            	}
                 pt.getSetter().invoke(rec, arg);
                 requirementsMet = requirementsMet && (arg[0] != null || !pt.isRequired());
             }
         }
-        return requirementsMet;
+        if (!requirementsMet)
+        {
+        	throw new UploaderException("MissingRequiredParent", UploaderException.ABORT_ROW);
+        }
+        return result;
     }
 
     /**
@@ -1626,11 +1643,10 @@ public class UploadTable implements Comparable<UploadTable>
      * @throws IllegalAccessException
      */
 	@SuppressWarnings("unchecked")
-    protected boolean valueChange(UploadField fld, DataModelObjBase rec, Object[] newVal) 
+    protected boolean valueChange(DataModelObjBase rec, Method getter, Object[] newVal) 
     	throws InvocationTargetException, IllegalAccessException
     {
 		boolean result = false;
-    	Method getter = fld.getGetter();
 		if (getter != null)
 		{
 			Object currentVal = getter.invoke(rec);
@@ -1640,7 +1656,19 @@ public class UploadTable implements Comparable<UploadTable>
 				result = true;
 			} else if (currentVal != null && newValObj != null)
 			{
-				if (currentVal instanceof Comparable<?>)
+				if (currentVal instanceof DataModelObjBase)
+				{
+					Integer currentValId = ((DataModelObjBase )currentVal).getId();
+					Integer newValObjId = ((DataModelObjBase )newValObj).getId();
+					if (currentValId == null ^ newValObjId == null)
+					{
+						result = true;
+					} else
+					{
+						result = currentValId.longValue() != newValObjId.longValue();
+					}
+				}
+				else if (currentVal instanceof Comparable<?>)
 				{
 					result = ((Comparable )currentVal).compareTo((Comparable )newValObj) != 0;
 				}
@@ -1678,7 +1706,7 @@ public class UploadTable implements Comparable<UploadTable>
             	Object[] arg = getArgForSetter(fld);
             	if (!isNewRecord && !result)
             	{
-            		result = valueChange(fld, rec, arg);
+            		result = valueChange(rec, fld.getGetter(), arg);
             	}
         		setter.invoke(rec, arg);
             }
@@ -3666,7 +3694,7 @@ public class UploadTable implements Comparable<UploadTable>
     {
         int recNum = 0;
         logDebug("writeRowOrNot: " + this.table.getName());
-        //System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
+        System.out.println("writeRowOrNot: " + this.table.getName() + " (" + wbCurrentRow + ")");
         autoAssignedVal = null;  //assumes one autoassign field per table.
         for (Vector<UploadField> seq : uploadFields)
         {
@@ -3687,8 +3715,25 @@ public class UploadTable implements Comparable<UploadTable>
                         {
                         	rec.initialize();
                         }                        
-                        boolean isUpdate = !isNewRecord && setFields(rec, seq);
-                        boolean gotRequiredParents = setParents(rec, recNum);
+                        boolean valuesChanged = setFields(rec, seq);
+                        boolean isUpdate = !isNewRecord && valuesChanged;
+                        boolean gotRequiredParents = true;
+                        try
+                        {
+                        	valuesChanged = setParents(rec, recNum);
+                        	{
+                        		isUpdate = !isNewRecord && valuesChanged;
+                        	}
+                        } catch (UploaderException ex)
+                        {
+                        	if ("MissingRequiredParent".equals(ex.getMessage()))
+                        	{
+                        		gotRequiredParents = false;
+                        	} else
+                        	{
+                        		throw ex;
+                        	}
+                        }
                         if (isNewRecord)
                         {
                         	setRequiredFldDefaults(rec, recNum);

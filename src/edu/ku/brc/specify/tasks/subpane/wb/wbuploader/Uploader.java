@@ -19,8 +19,10 @@
 */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.Rectangle;
@@ -48,10 +50,16 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.SoftBevelBorder;
 
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -74,6 +82,7 @@ import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
+import edu.ku.brc.specify.datamodel.AccessionAuthorization;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
@@ -81,9 +90,14 @@ import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.AttachmentOwnerIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
+import edu.ku.brc.specify.datamodel.CollectingEventAttribute;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
+import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
+import edu.ku.brc.specify.datamodel.CollectionObjectCitation;
+import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.specify.datamodel.DNASequence;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.FieldNotebook;
@@ -92,6 +106,7 @@ import edu.ku.brc.specify.datamodel.FieldNotebookPageSet;
 import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.LocalityAttachment;
+import edu.ku.brc.specify.datamodel.LocalityCitation;
 import edu.ku.brc.specify.datamodel.LocalityDetail;
 import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
 import edu.ku.brc.specify.datamodel.Preparation;
@@ -2015,6 +2030,47 @@ public class Uploader implements ActionListener, KeyListener
         }
         return result;
     }
+    
+    /**
+     * @return true if the upload is updating existing records
+     */
+    protected boolean isUpdateUpload()
+    {
+    	return wbSS.getWorkbench().getExportedFromTableName() != null;
+    }
+    
+    /**
+     * @return true if the update upload can be performed.
+     */
+    protected boolean isValidUpdateUpload()
+    {
+    	//currently this just checks for 1-many tables, which is a temporary restriction, but
+    	//it is possible that some tables just won't be updatable.
+    	for (UploadTable ut : uploadTables)
+    	{
+    		if (ut.getUploadFields().size() > 1)
+    		{
+    			return false;
+    		} else 
+    		{
+    			if (ut.getTblClass().equals(Determination.class)
+    					|| ut.getTblClass().equals(Collector.class)
+    					|| ut.getTblClass().equals(Preparation.class)
+    					|| ut.getTblClass().equals(CollectionObjectAttribute.class)
+    					|| ut.getTblClass().equals(CollectingEventAttribute.class)
+    					|| ut.getTblClass().equals(AccessionAuthorization.class)
+    					|| ut.getTblClass().equals(CollectionObjectCitation.class)
+    					|| ut.getTblClass().equals(LocalityCitation.class)
+    					|| ut.getTblClass().equals(DNASequence.class)
+    					)
+    			{
+    				return false;
+    			}		
+    		}
+    	}
+    	return true;
+    }
+    
     /**
      * @return groups tables that, if added to the dataset, will probably make the dataset
      *         structurally sufficient for upload.
@@ -2707,15 +2763,14 @@ public class Uploader implements ActionListener, KeyListener
     {
         //XXX What is the dbTableId field in workbench for? ExportedFromTableName may not even be necessary. Based on use of dbTableId in recordset
     	//it looks like it was designed to for exported records...
-    	boolean isUpdate = wbSS.getWorkbench().getExportedFromTableName() != null;
-        Integer updateTblId = isUpdate ? DBTableIdMgr.getInstance().getIdByClassName(wbSS.getWorkbench().getExportedFromTableName()) : null;
+        Integer updateTblId = isUpdateUpload() ? DBTableIdMgr.getInstance().getIdByClassName(wbSS.getWorkbench().getExportedFromTableName()) : null;
         setUpdateTableId(updateTblId);
     	if (currentOp != SUCCESS_PARTIAL)
         {
             for (UploadTable t : uploadTables)
             {
                 t.prepareToUpload();
-                t.setUpdateMatches(isUpdate);
+                t.setUpdateMatches(isUpdateUpload());
                 t.setMatchRecordId(updateTblId != null && updateTblId ==t.getTable().getTableInfo().getTableId());
                 if (updateTblId != null && updateTblId == CollectionObject.getClassTableId() 
                 		&& t.getTable().getTableInfo().getTableId() == CollectingEvent.getClassTableId()
@@ -3153,7 +3208,19 @@ public class Uploader implements ActionListener, KeyListener
         }
         else if (e.getActionCommand().equals(UploadMainPanel.DO_UPLOAD))
         {
-            uploadIt(true);
+            if (isUpdateUpload())
+            {
+            	if (!isValidUpdateUpload())
+            	{
+            		UIRegistry.showError("This dataset contains mappings which are not updateable");
+            		return;
+            	}
+            	if (!UIRegistry.displayConfirm("Ready to Update", "This update cannot be undone. Are you sure you want to continue?", "Yes", "No", JOptionPane.WARNING_MESSAGE))
+            	{
+            		return;
+            	}
+            }
+        	uploadIt(true);
         }
         else if (e.getActionCommand().equals(UploadMainPanel.VIEW_UPLOAD))
         {
@@ -3253,7 +3320,7 @@ public class Uploader implements ActionListener, KeyListener
         }
 
         if (result && shuttingDownSS == null && 
-        		(currentOp.equals(Uploader.SUCCESS)  || currentOp.equals(Uploader.SUCCESS_PARTIAL)) && getUploadedObjects() > 0)
+        		(currentOp.equals(Uploader.SUCCESS)  || currentOp.equals(Uploader.SUCCESS_PARTIAL)) && getUploadedObjects() > 0 && !isUpdateUpload())
         {
             result = false;
         	String msg = String.format(getResourceString("WB_UPLOAD_CONFIRM_SAVE"), wbSS.getWorkbench().getName());
@@ -3572,7 +3639,7 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected void buildMainUI()
     {
-        mainPanel = new UploadMainPanel();
+        mainPanel = new UploadMainPanel(isUpdateUpload());
 
         SortedSet<UploadInfoRenderable> uts = new TreeSet<UploadInfoRenderable>();
         for (UploadTable ut : uploadTables)
@@ -3635,7 +3702,7 @@ public class Uploader implements ActionListener, KeyListener
 
                if (op.equals(Uploader.SUCCESS) || op.equals(Uploader.SUCCESS_PARTIAL)) 
                {
-            	   if (uploadedObjects > 0)
+            	   if (uploadedObjects > 0 && !isUpdateUpload())
             	   {
             		   mainPanel.closeBtn.setText(getResourceString("WB_UPLOAD.COMMIT"));
             	   }
@@ -3811,7 +3878,8 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected boolean canUndo(final String op)
     {
-        return op.equals(Uploader.SUCCESS) || op.equals(Uploader.SUCCESS_PARTIAL);
+        return (op.equals(Uploader.SUCCESS) || op.equals(Uploader.SUCCESS_PARTIAL))
+         && !isUpdateUpload(); //can't currently undo update uploads
     }
 
     /**
@@ -3883,7 +3951,7 @@ public class Uploader implements ActionListener, KeyListener
     {
         try
         {
-            buildIdentifier();
+        	buildIdentifier();
             setOpKiller(null);
             prepareToUpload();
 
@@ -3927,7 +3995,10 @@ public class Uploader implements ActionListener, KeyListener
                 	try
                 	{
                 		DataModelObjBase obj = (DataModelObjBase )session.get(cls, getRowRecordId(rowUploading));
+                		if (obj != null)
+                		{
                 			obj.forceLoad();
+                		}
                 		exportedTable.setExportedRecordId(obj);
                 	} finally
                 	{
@@ -5351,5 +5422,32 @@ public class Uploader implements ActionListener, KeyListener
 	{
 		return currentOp;
 	}
+	
+     /* @param structureErrors
+     * 
+     * Display a dialog listing the 'structural' problems with the dataset
+     * that prevent uploading.
+     */
+    public static void showStructureErrors(Vector<UploadMessage> structureErrors)
+    {
+        JPanel pane = new JPanel(new BorderLayout());
+        JLabel lbl = createLabel(getResourceString("WB_UPLOAD_BAD_STRUCTURE_MSG") + ":");
+        lbl.setBorder(new EmptyBorder(3, 1, 2, 0));
+        pane.add(lbl, BorderLayout.NORTH);
+        JPanel lstPane = new JPanel(new BorderLayout());
+        JList lst = new JList(structureErrors);
+        lst.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
+        lstPane.setBorder(new EmptyBorder(1, 1, 10, 1));
+        lstPane.add(lst, BorderLayout.CENTER);
+        pane.add(lstPane, BorderLayout.CENTER);
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
+                getResourceString("WB_UPLOAD_BAD_STRUCTURE_DLG"),
+                true,
+                CustomDialog.OKHELP,
+                pane);
+        UIHelper.centerAndShow(dlg);
+        dlg.dispose();
+    }
+
     
 }

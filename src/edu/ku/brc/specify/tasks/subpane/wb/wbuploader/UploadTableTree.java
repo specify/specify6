@@ -812,8 +812,9 @@ public class UploadTableTree extends UploadTable
     protected boolean setParents(DataModelObjBase rec, int recNum)
             throws InvocationTargetException, IllegalArgumentException, IllegalAccessException, UploaderException
     {
-        super.setParents(rec, recNum);
-        return true; //don't worry. It will be OK in the end.
+        boolean result = super.setParents(rec, recNum);
+        //return true; //don't worry. It will be OK in the end.
+        return result;
     }
 
 	/* (non-Javadoc)
