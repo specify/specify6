@@ -66,7 +66,7 @@
 		<plugin name="LocalityGeoRef"         class="edu.ku.brc.specify.plugins.LocalityGeoRefPlugin"/>
 		<plugin name="FishBase"               class="edu.ku.brc.specify.plugins.FishBase"/>
         <plugin name="LatLonUI"               class="edu.ku.brc.specify.plugins.latlon.LatLonUI"/>
-        <plugin name="ContainerList"          class="edu.ku.brc.specify.plugins.ContainerListPlugin"/>
+		<plugin name="ContainerPlugin"          class="edu.ku.brc.specify.plugins.ContainerPlugin"/>
         <plugin name="ContainersColObjPlugin" class="edu.ku.brc.specify.plugins.ContainersColObjPlugin"/>
 		
 		

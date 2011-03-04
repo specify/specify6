@@ -140,18 +140,8 @@
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="12" initialize="btn=true;icon=CollectionObjectAttachment"/>
                 </row>
                 <row>
-                    <cell type="panel" id="containerPanel" name="outerPanel" coldef="115px,2px,p,2px,p,f:p:g,p,2px,p,2px,p" rowdef="p" colspan="12">
-                        <rows>
-                            <row>
-                                <cell type="label" labelfor="containerOwner"/>
-                                <cell type="field" id="containerOwner" name="containerOwner" uitype="querycbx" initialize="name=ContainerOwner;title=ContainerOwner;searchdlg=ContainerOwnerSearch" isrequired="false"/>
-                                <cell type="label" label="(The parent container)"/>
-                                <cell type="label" labelfor="container"/>
-                                <cell type="field" id="container" name="container" uitype="querycbx" initialize="name=Container;title=Container;searchdlg=ContainerSearch;addbtn=false;" isrequired="false"/>
-                                <cell type="label" label="(Associated with)"/>
-                            </row>
-                        </rows>
-                    </cell>
+                    <cell type="label" label="Container:" initialize="align=right;"/>
+                    <cell type="field" id="ContainerPlugin" uitype="plugin" name="this" initialize="name=ContainerPlugin"/>
                 </row>
                 <row>
                     <cell type="label" label="Eaten By:" initialize="align=right;"/>

@@ -50,7 +50,7 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class ContainerBusRules extends BaseBusRules
 {
-    private JButton containerTreeBtn = null;
+    //private JButton containerTreeBtn = null;
     
     /**
      * 
@@ -68,7 +68,7 @@ public class ContainerBusRules extends BaseBusRules
     {
         super.initialize(viewableArg);
         
-        if (formViewObj != null && formViewObj.isEditing())
+        /*if (formViewObj != null && formViewObj.isEditing())
         {
             Component comp = formViewObj.getControlByName("ContainerTreeBtn");
             if (comp instanceof JButton)
@@ -90,10 +90,10 @@ public class ContainerBusRules extends BaseBusRules
                     }
                 });
             }
-        }
+        }*/
     }
     
-    private void launch()
+    /*private void launch()
     {
         if (formViewObj != null)
         {
@@ -147,7 +147,7 @@ public class ContainerBusRules extends BaseBusRules
                 plugin.shutdown();
             }
         }
-    }
+    }*/
     
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#aboutToShutdown()
