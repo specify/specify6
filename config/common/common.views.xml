@@ -295,17 +295,6 @@
             </altviews>
         </view>
         
-        <view name="ContainerTree"
-            class="edu.ku.brc.specify.datamodel.Container"  
-            isinternal="false"
-            objtitle="Container Tree"
-            resourcelabels="false">
-            <desc><![CDATA[Conservation Description.]]></desc>
-            <altviews>
-                <altview name="Container Edit Tree" viewdef="ContainerTree" mode="view" />
-            </altviews>
-        </view>
-        
         <view name="ContainerBrief"
             class="edu.ku.brc.specify.datamodel.Container"  
              isinternal="true"
@@ -1877,38 +1866,7 @@
                 <row>
                     <cell type="subview" id="children" name="children" viewname="ContainerBriefTable" initialize="addsearch=true;addadd=true;title=Container Children of Container" defaulttype="table" colspan="8"/>               
                 </row>
-                <row>
-                  <cell type="panel" id="cppanel" name="cppanel" coldef="f:p:g,p,p" rowdef="p" colspan="8">
-                      <rows>
-                        <row>
-	                       <cell type="label" label=" "/>
-	                       <cell type="command" id="ContainerTreeBtn" name="ContainerTreeBtn" label="Container Tree" ignore="true"/>
-	                    </row>          
-                      </rows>
-                  </cell>
-                </row>
            </rows>
-        </viewdef>
-        
-        <viewdef
-            type="form"
-            name="ContainerTree"
-            objtitle="Container Tree"
-            class="edu.ku.brc.specify.datamodel.Container"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[Container Description]]></desc>
-            <enableRules/>
-            
-            <columnDef>0px,0px,f:p:g</columnDef>
-            <rowDef auto="true" cell="f:p:g" sep="2px"/>
-            <rows>
-                <row> 
-                    <cell type="label" label=" "/>
-                    <cell type="field" id="this" name="this" uitype="plugin" initialize="name=ContainerList"/>  
-                </row>
-            </rows>
         </viewdef>
         
         <viewdef

@@ -1925,7 +1925,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                         BasicSQLUtils.update(conn, "DROP INDEX COLTRColMemIDX on collector");
                         BasicSQLUtils.update(conn, "ALTER TABLE collector DROP COLUMN CollectionMemberID");
-                        BasicSQLUtils.update(conn, "ALTER TABLE collector ADD COLUMN DivisionID int(11)");
+                        BasicSQLUtils.update(conn, "ALTER TABLE collector ADD COLUMN DivisionID INT(11)");
                         BasicSQLUtils.update(conn, "CREATE INDEX COLTRDivIDX ON collector(DivisionID)");
                         
                         double inc     = count > 0 ? (100.0 / (double)count) : 0;
@@ -2076,6 +2076,34 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 if (len != null && len == 10)
                 {
                     alterFieldLength(conn, databaseName, tblName, prepAttrFld, 10, 50);
+                }
+                
+                //////////////////////////////////////////////
+                // Schema Changes 1.5
+                //////////////////////////////////////////////
+                BasicSQLUtils.update(conn, "ALTER TABLE loanpreparation MODIFY DescriptionOfMaterial TEXT");
+                
+                tblName = "conservevent";
+                addColumn(conn, databaseName, tblName, "Text1",  "VARCHAR(64)", "Remarks");
+                addColumn(conn, databaseName, tblName, "Text2",  "VARCHAR(64)", "Text1");
+                addColumn(conn, databaseName, tblName, "Number1",  "INT(11)",   "Text2");
+                addColumn(conn, databaseName, tblName, "Number2",  "INT(11)",   "Number1");
+                addColumn(conn, databaseName, tblName, "YesNo1", "BIT(1)",      "Number2");
+                addColumn(conn, databaseName, tblName, "YesNo2", "BIT(1)",      "YesNo1");
+
+                tblName = "dnasequencingrun";
+                boolean rv = addColumn(conn, databaseName, tblName, "RunByAgentID",  "INT(11)", "DNASequenceID");
+                if (rv)
+                {
+                    BasicSQLUtils.update(conn, "ALTER TABLE dnasequencingrun ADD KEY `FKDNASEQRUNRUNBYAGT` (`RunByAgentID`)");
+                    BasicSQLUtils.update(conn, "ALTER TABLE dnasequencingrun ADD CONSTRAINT `FKDNASEQRUNRUNBYAGT` FOREIGN KEY (`RunByAgentID`) REFERENCES `agent` (`AgentID`)");
+                    
+                    rv = addColumn(conn, databaseName, tblName, "PreparedByAgentID",  "INT(11)", "RunByAgentID");
+                    if (rv)
+                    {
+                        BasicSQLUtils.update(conn, "ALTER TABLE dnasequencingrun ADD KEY `FKDNASEQRUNPREPBYAGT` (`PreparedByAgentID`)");
+                        BasicSQLUtils.update(conn, "ALTER TABLE dnasequencingrun ADD CONSTRAINT `FKDNASEQRUNPREPBYAGT` FOREIGN KEY (`PreparedByAgentID`) REFERENCES `agent` (`AgentID`)");
+                    }
                 }
                 
                 frame.getProcessProgress().setIndeterminate(true);
