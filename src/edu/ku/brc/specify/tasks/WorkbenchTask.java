@@ -1954,7 +1954,108 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     	}
     	return result;
     }
-    
+ 
+//    protected boolean loadRsIntoWb(final RecordSetIFace rs, final Workbench wb)
+//    {
+//    	boolean result = false;
+//    	DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoById(rs.getDbTableId());
+//        //XXX What is the dbTableId field in workbench for? ExportedFromTableName may not even be necessary. Based on use of dbTableId in recordset
+//    	//it looks like it was designed to for exported records...
+//    	//wb.setDbTableId(rs.getTableId());
+//    	wb.setExportedFromTableName(tbl.getClassName());
+//    	final DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+//    	final Class<?> cls = rs.getDataClassFormItems();
+//    	try
+//    	{
+//    		WorkbenchValidator wbvalidator = null;
+//    		try
+//        	{
+//        		wbvalidator = new WorkbenchValidator(wb);
+//        	}
+//        	catch (Exception ex)
+//            {
+//            	if (ex instanceof WorkbenchValidator.WorkbenchValidatorException)
+//            	{
+//            		WorkbenchValidator.WorkbenchValidatorException wvEx = null;
+//            		if (ex instanceof WorkbenchValidator.WorkbenchValidatorException)
+//            		{
+//            			wvEx = (WorkbenchValidator.WorkbenchValidatorException )ex;
+//            		} else if (ex.getCause() instanceof WorkbenchValidator.WorkbenchValidatorException)
+//            		{
+//            			wvEx = (WorkbenchValidator.WorkbenchValidatorException )ex.getCause();
+//            		}
+//            		if (wvEx != null && wvEx.getStructureErrors().size() > 0)
+//            		{
+//            			Uploader.showStructureErrors(wvEx.getStructureErrors());
+//            		}
+//            	}
+//            	else 
+//            	{
+//            		throw ex;
+//            	}
+//            	UIRegistry.showLocalizedError("WorkbenchPaneSS.UnableToAutoValidate");
+//            	return false;
+//            }  		
+//        	final WorkbenchValidator wbv = wbvalidator;
+//        	UIRegistry.writeGlassPaneMsg(getResourceString("WB_LOADING_RS_TO_DB"), GLASSPANE_FONT_SIZE);
+//        	new javax.swing.SwingWorker<Object, Object> () {
+//        		
+//        		Exception killer = null;
+//        		
+//				/* (non-Javadoc)
+//				 * @see javax.swing.SwingWorker#doInBackground()
+//				 */
+//				@Override
+//				protected Object doInBackground() throws Exception {
+//	        		try
+//	        		{
+//					for (RecordSetItemIFace item : rs.getItems())
+//	        		{
+//	        			DataModelObjBase obj = (DataModelObjBase )session.get(cls, item.getRecordId());
+//	        			if (obj != null)
+//	        			{
+//	        				obj.forceLoad();
+//	        				wbv.getUploader().loadRecordToWb(obj, wb);
+//	        			}
+//	        		}
+//	        		} catch (Exception e)
+//	        		{
+//	        			killer = e;
+//	        			return null;
+//	        		}
+//	        		return null;
+//				}
+//
+//				/* (non-Javadoc)
+//				 * @see javax.swing.SwingWorker#done()
+//				 */
+//				@Override
+//				protected void done() {
+//					UIRegistry.clearGlassPaneMsg();
+//					if (killer != null)
+//					{
+//			            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+//			            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, killer);
+//			            killer.printStackTrace();
+//			            log.error(killer);
+//					}
+//				}
+//         		
+//         	}.execute();
+//    	} catch (Exception ex)
+//    	{
+//            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+//            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
+//            ex.printStackTrace();
+//            log.error(ex);
+//            
+//    	} finally
+//    	{
+//    		session.close();
+//    	}
+//    	return result;
+//    }
+
     /**
      * XXX FIX ME
      * @param contents the ImportDataFileInfo Object that contains all the information about the file
@@ -1966,7 +2067,10 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     {
         if (workbench != null)
         {
-            UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_IMPORTING_DATASET"), workbench.getName()), GLASSPANE_FONT_SIZE);
+            String msg = contents instanceof ImportDataFileInfo 
+            	? String.format(getResourceString("WB_IMPORTING_DATASET"), workbench.getName())
+            	: String.format(getResourceString("WB_LOADING_RS_TO_DB"), workbench.getName());		
+        	UIRegistry.writeGlassPaneMsg(msg, GLASSPANE_FONT_SIZE);
             
             final SwingWorker worker = new SwingWorker()
             {
