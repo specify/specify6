@@ -159,7 +159,7 @@ public class WorkbenchTask extends BaseTask
 {
 	private static final Logger log = Logger.getLogger(WorkbenchTask.class);
     
-    public static int              MAX_ROWS              = 2000;
+    public static int              MAX_ROWS              = 4000;
     
     public static final int        GLASSPANE_FONT_SIZE   = 20;
 
