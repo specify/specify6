@@ -508,6 +508,13 @@ public class UploadTable implements Comparable<UploadTable>
         uploadedRecs.clear();
         matchSetting.clear();
         isSecurityOn = AppContextMgr.isSecurityOn();
+        if (matchRecordId)
+        {
+        	for (UploadTable ut : specialChildren)
+        	{
+        		ut.setSkipMatching(false);
+        	}
+        }
     }
 
     /**
@@ -2895,7 +2902,7 @@ public class UploadTable implements Comparable<UploadTable>
             {
                 matches = matchList;
             }
-            if (needToMatchChildren())
+            if (!matchRecordId && needToMatchChildren())
             {
                 matches = matchChildren(matches, recNum);
             }
@@ -3725,7 +3732,7 @@ public class UploadTable implements Comparable<UploadTable>
                         {
                         	valuesChanged = setParents(rec, recNum);
                         	{
-                        		isUpdate = !isNewRecord && valuesChanged;
+                        		isUpdate |= !isNewRecord && valuesChanged;
                         	}
                         } catch (UploaderException ex)
                         {

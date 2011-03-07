@@ -2769,8 +2769,6 @@ public class Uploader implements ActionListener, KeyListener
         {
             for (UploadTable t : uploadTables)
             {
-                t.prepareToUpload();
-                t.setUpdateMatches(isUpdateUpload());
                 t.setMatchRecordId(updateTblId != null && updateTblId ==t.getTable().getTableInfo().getTableId());
                 if (updateTblId != null && updateTblId == CollectionObject.getClassTableId() 
                 		&& t.getTable().getTableInfo().getTableId() == CollectingEvent.getClassTableId()
@@ -2778,6 +2776,8 @@ public class Uploader implements ActionListener, KeyListener
                 {
                 	t.setMatchRecordId(true);
                 }
+                t.setUpdateMatches(isUpdateUpload());
+                t.prepareToUpload();
             }
             newAttachments.clear();
             // But may want option to ONLY upload rows that were skipped...
