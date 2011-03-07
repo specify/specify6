@@ -513,6 +513,7 @@ public class UploadTable implements Comparable<UploadTable>
         	for (UploadTable ut : specialChildren)
         	{
         		ut.setSkipMatching(false);
+        		ut.setMatchRecordId(true);
         	}
         }
     }
@@ -1149,7 +1150,7 @@ public class UploadTable implements Comparable<UploadTable>
     	{
     		for (ParentTableEntry pte : ptes)
     		{
-    			System.out.println("setting exported recordid " + pte.getImportTable());
+    			//System.out.println("setting exported recordid " + pte.getImportTable());
     			if (rec == null)
     			{
     				pte.getImportTable().setExportedRecordId(null);
@@ -1157,6 +1158,18 @@ public class UploadTable implements Comparable<UploadTable>
     			else
     			{
     				pte.getImportTable().setExportedRecordId((DataModelObjBase )pte.getGetter().invoke(rec, (Object[] )null));
+    			}
+    		}
+    	}
+    	if (matchRecordId)
+    	{
+    		for (UploadTable sut : specialChildren)
+    		{
+    			if (sut.matchRecordId)
+    			{
+    				//XXX this prevents needing to check for circularity in ParentTable loop above but what about children of children??
+    				//XXX also need to get another field besides id for Attribute tables --- for example.
+    				sut.exportedRecordId = rec.getId();
     			}
     		}
     	}
@@ -2341,6 +2354,41 @@ public class UploadTable implements Comparable<UploadTable>
 //    }
     
     
+    /**
+     * @param parents
+     * @param critter
+     * @param recNum
+     * @return true if a match condition was added
+     */
+    protected boolean checkParentsForMatchCriteria(Vector<Vector<ParentTableEntry>> parents, CriteriaIFace critter, int recNum, UploadTable child)
+    {
+		boolean gotIt = false;
+		for (Vector<ParentTableEntry> ptes : parents)
+		{
+			for (ParentTableEntry pte : ptes)
+			{
+				if (pte.getImportTable() == this || (child == null && pte.getImportTable().isMatchRecordId()))
+				{
+					if (child == null)
+					{
+						addRestriction(critter, pte.getPropertyName(), pte.getImportTable().getCurrentRecord(recNum), true);
+					} else
+					{
+						//Can use pte.getPropertyName because the propNames happen to be equal for all currently applicable cases 
+						addRestriction(critter, pte.getPropertyName(), getCurrentRecord(recNum), true);
+					}
+					gotIt = true;
+					break;
+				}
+			}
+			if (gotIt)
+			{
+				break;
+			}
+		}
+    	return gotIt;	
+    }
+    
 	/**
 	 * @param critter
 	 * @param recNum
@@ -2375,6 +2423,31 @@ public class UploadTable implements Comparable<UploadTable>
 								.getClassTableId()) 
 				{
 					addRestriction(critter, "id", exportedRecordId, true);
+				} else 
+				{
+					//must be a child of a table for which matchRecordid is true.
+					//Assuming that there is only parent table with matchRecordId true.
+					boolean gotIt = checkParentsForMatchCriteria(parentTables, critter, recNum, null);
+//					if (!gotIt && isOneToOneChild())
+//					{
+//						//This is SO lame...stinking Attribute tables.
+//						for (UploadTable ut : uploader.uploadTables)
+//						{
+//							for (UploadTable sc : ut.specialChildren)
+//							{
+//								if (sc == this)
+//								{
+//									checkParentsForMatchCriteria(ut.parentTables, critter, recNum, ut);
+//									gotIt = true;
+//									break;
+//								}
+//							}
+//							if (gotIt)
+//							{
+//								break;
+//							}
+//						}
+//					}
 				}
 
 			} // else an insert?

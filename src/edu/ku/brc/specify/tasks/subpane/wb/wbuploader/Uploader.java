@@ -2769,7 +2769,7 @@ public class Uploader implements ActionListener, KeyListener
         {
             for (UploadTable t : uploadTables)
             {
-                t.setMatchRecordId(updateTblId != null && updateTblId ==t.getTable().getTableInfo().getTableId());
+                t.setMatchRecordId(t.isMatchRecordId() || (updateTblId != null && updateTblId == t.getTable().getTableInfo().getTableId()));
                 if (updateTblId != null && updateTblId == CollectionObject.getClassTableId() 
                 		&& t.getTable().getTableInfo().getTableId() == CollectingEvent.getClassTableId()
                 		&& AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
