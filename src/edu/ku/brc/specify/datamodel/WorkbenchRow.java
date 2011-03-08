@@ -306,6 +306,34 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     }
     
     /**
+     * Adds a new image to the row.
+     * 
+     * @param orig the image file
+     * @param attachToTlbName the table to attach the image to
+     * @return the index of the new image
+     * @throws IOException if an error occurs while loading or scaling the image file
+     */
+    public synchronized int addImagePath(final String orig, final String attachToTblName)
+    {
+        if (workbenchRowImages == null)
+        {
+            workbenchRowImages = new HashSet<WorkbenchRowImage>();
+        }
+        
+        //byte[] imgData = readAndScaleCardImage(orig);
+            int order = workbenchRowImages.size();
+            WorkbenchRowImage newRowImage = new WorkbenchRowImage();
+            newRowImage.initialize();
+            newRowImage.setImageOrder(order);
+            newRowImage.setCardImageFullPath(orig);
+            newRowImage.setCardImageData(null);
+            newRowImage.setWorkbenchRow(this);
+            newRowImage.setAttachToTableName(attachToTblName);
+            workbenchRowImages.add(newRowImage);
+            return order;
+    }
+
+    /**
      * @param index
      */
     public synchronized void deleteImage(int index)
@@ -409,6 +437,14 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
             throw new NullPointerException("Provided File must be non-null");
         }
 
+        if (!imageFile.exists())
+        {
+            loadStatus = LoadStatus.Error;
+            loadException = new IOException();
+
+            throw (IOException )loadException;
+        }
+        
         if (imageFile.length() < this.maxImageSize)
         {
             byte[] imgBytes = null;
