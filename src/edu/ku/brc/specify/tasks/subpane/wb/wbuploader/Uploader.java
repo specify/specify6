@@ -389,7 +389,7 @@ public class Uploader implements ActionListener, KeyListener
         @Override
         public String getMsg()
         {
-            return String.format(getResourceString(WB_UPLOAD_ROW_SKIPPED), String.valueOf(getRow())) + ": " + cause.getMessage();
+            return String.format(getResourceString(WB_UPLOAD_ROW_SKIPPED), String.valueOf(getRow()+1)) + ": " + cause.getMessage();
         }
 
         /*
@@ -4754,7 +4754,7 @@ public class Uploader implements ActionListener, KeyListener
 		
 		if (rec /*still*/ == null)
 		{
-			String msg = String.format(UIRegistry.getResourceString("Uploader.AttachToRecordMissing"), getRow(), t.toString());
+			String msg = String.format(UIRegistry.getResourceString("Uploader.AttachToRecordMissing"), getRow() + 1, t.toString());
 			addMsg(new SkippedAttachment(msg, getRow()));
 			return; //maybe the row was not uploaded for some reason
 		}
@@ -4779,6 +4779,12 @@ public class Uploader implements ActionListener, KeyListener
 				attachment.initialize();
 				attachment.setOrigFilename(image.getCardImageFullPath());
 				File dummy = new File(image.getCardImageFullPath());
+				if (!dummy.exists())
+				{
+					addMsg(new SkippedAttachment(String.format(getResourceString("Uploader.AttachFileMissing"), getRow()+1, image.getCardImageFullPath()),
+									getRow()));
+					continue;
+				}
 				String title = dummy.getName();
 				if (title.length() > 64)
 				{
@@ -4850,7 +4856,13 @@ public class Uploader implements ActionListener, KeyListener
 			{
 				session.rollback();
 			}
-			throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+			if (!(ex instanceof UploaderException))
+			{
+				throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+			} else
+			{
+				throw (UploaderException )ex;
+			}
 		} finally
 		{
 			session.close();
