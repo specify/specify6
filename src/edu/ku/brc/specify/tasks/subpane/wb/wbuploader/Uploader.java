@@ -4214,7 +4214,11 @@ public class Uploader implements ActionListener, KeyListener
         }
         else
         {
-            wbSS.getWorkbench().getRow(rowUploading).setUploadStatus(WorkbenchRow.UPLD_FAILED);
+            WorkbenchRow wbr = wbSS.getWorkbench().getRow(rowUploading);
+            if (wbr.getUploadStatus() != WorkbenchRow.UPLD_SUCCESS)
+            {
+            	wbr.setUploadStatus(WorkbenchRow.UPLD_FAILED);
+            }
         }
         SkippedRow sr = new SkippedRow(cause, row);
         skippedRows.add(sr);
