@@ -262,12 +262,15 @@ public class DeterminationBusRules extends BaseBusRules
                 isCurrentCheckbox.isSelected())
             {
                 log.debug("Current: "+determination.getId());
-                for (Determination d : determination.getCollectionObject().getDeterminations())
+                if (determination.getCollectionObject() != null) //co can be null for batch-re-identify
                 {
-                    if (d != determination)
-                    {
-                        d.setIsCurrent(false);
-                    }
+                	for (Determination d : determination.getCollectionObject().getDeterminations())
+                	{
+                		if (d != determination)
+                		{
+                			d.setIsCurrent(false);
+                		}
+                	}
                 }
             }
         }
