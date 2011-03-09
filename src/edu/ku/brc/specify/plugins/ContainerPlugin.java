@@ -17,16 +17,17 @@
  */
 package edu.ku.brc.specify.plugins;
 
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Properties;
+import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.SwingUtilities;
@@ -40,12 +41,16 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.db.TextFieldWithInfo;
+import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Container;
+import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rods
@@ -61,10 +66,20 @@ public class ContainerPlugin extends UIPluginBase implements UIValidatable
     private Container                parentContainer        = null;
     private CollectionObject         collectionObject       = null;
     
-    private UIFieldFormatterIFace    containerFormatter     = null;
+    private UIFieldFormatterIFace    catalogNumberFormatter = null;
     
-    protected ValComboBoxFromQuery   parentContainerCBX     = null;       // This is used when a Container is child
+    protected ValComboBoxFromQuery   parentContainerCBX     = null;   // This is used when a Container is child
     protected ValComboBoxFromQuery   associatedContainerCBX = null;   // This is used when a container is cataloged
+    
+    protected TextFieldWithInfo      parentContainerTXTInfo     = null;   // This is used when a Container is child
+    protected TextFieldWithInfo      associatedContainerTXTInfo = null;   // This is used when a container is cataloged
+    
+    protected JLabel                 labelParentCon         = null;
+    protected JLabel                 labelAssocCon          = null;
+    protected String                 strParentCon           = null;
+    protected String                 strAssocCon            = null;
+
+    
     protected CardLayout             cardLayout             = new CardLayout();
     protected JPanel                 cardPanel;
     
@@ -72,9 +87,10 @@ public class ContainerPlugin extends UIPluginBase implements UIValidatable
     protected boolean                isRequired             = false;
     
     protected ButtonGroup            group                  = new ButtonGroup();
-    protected JRadioButton           isParentContainerRB    = new JRadioButton(getResourceString("IS_NET_BASED"));
-    protected JRadioButton           isAssociatedRB         = new JRadioButton(getResourceString("IS_ENCRYPTED_KEY"));
+    protected JRadioButton           isParentContainerRB    = null;
+    protected JRadioButton           isAssociatedRB         = null;
     
+    protected String                 errorMsg               = null;
     
     /**
      * 
@@ -92,79 +108,175 @@ public class ContainerPlugin extends UIPluginBase implements UIValidatable
     {
         super.initialize(propertiesArg, isViewModeArg);
         
-        setLayout(new BorderLayout());
-        
+        DBTableInfo     conTI = DBTableIdMgr.getInstance().getInfoById(Container.getClassTableId());
+        CellConstraints cc    = new CellConstraints();
         cardPanel = new JPanel(cardLayout);
         
-        group.add(isParentContainerRB);
-        group.add(isAssociatedRB);
+        UIRegistry.loadAndPushResourceBundle("specify_plugins");
         
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,10px,p,f:p:g", "p"));
-        pb.add(isParentContainerRB, cc.xy(1,1));
-        pb.add(isAssociatedRB,      cc.xy(3,1));
-        cardPanel.add(Integer.toString(isParentContainerRB.hashCode()), isParentContainerRB);
-        cardPanel.add(Integer.toString(isAssociatedRB.hashCode()), isAssociatedRB);
+        strParentCon = UIRegistry.getResourceString("PARENT_CONTAINER");
+        strAssocCon  = UIRegistry.getResourceString("CONTAINER");
+        errorMsg     = UIRegistry.getResourceString("ASSOC_CONTR_INUSE");
         
-        DBTableInfo conTI     = DBTableIdMgr.getInstance().getInfoById(Container.getClassTableId());
-        //DBFieldInfo catNumFld = conTI.getFieldByColumnName("CatalogNumber");
-        //containerFormatter = catNumFld.getFormatter();
-        
-        int btnOpts = ValComboBoxFromQuery.CREATE_EDIT_BTN | ValComboBoxFromQuery.CREATE_NEW_BTN | ValComboBoxFromQuery.CREATE_SEARCH_BTN;
-        parentContainerCBX = new ValComboBoxFromQuery(conTI,
-                                                        "name",
-                                                        "name",
-                                                        "name",
-                                                        null,
-                                                        "name",
-                                                        null,
-                                                        "",
-                                                        null, // helpContext
-                                                        btnOpts);
-        pb.add(parentContainerCBX, cc.xy(1, 1));
-        
-        parentContainerCBX.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e)
-            {
-                itemSelected();
-            }
-        });
-        
-        associatedContainerCBX = new ValComboBoxFromQuery(conTI,
-                "name",
-                "name",
-                "name",
-                null,
-                "name",
-                null,
-                "",
-                null, // helpContext
-                btnOpts);
-        pb.add(associatedContainerCBX, cc.xy(1, 1));
+        UIRegistry.popResourceBundle();
 
-        associatedContainerCBX.addListSelectionListener(new ListSelectionListener()
+        if (isViewModeArg)
         {
-            public void valueChanged(ListSelectionEvent e)
-            {
-                itemSelected();
-            }
-        });
+            labelParentCon = UIHelper.createLabel(strParentCon);
+            labelAssocCon  = UIHelper.createLabel(strAssocCon);
+            
+            PanelBuilder pbParent = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p"));
+            pbParent.add(labelParentCon, cc.xy(1,1));
+     
+            PanelBuilder pbAssoc = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p"));
+            pbAssoc.add(labelAssocCon, cc.xy(1,1));
+            
+            parentContainerTXTInfo = new TextFieldWithInfo(conTI.getClassName(),
+                                                            "name",
+                                                            "name",
+                                                            null,               // format
+                                                            null,               // uiFieldFormatterName
+                                                            null,               // dataObjFormatterName
+                                                            "ContainerDisplay", // displayInfoDialogName
+                                                            "");                // objTitle
+            
+            associatedContainerTXTInfo = new TextFieldWithInfo(conTI.getClassName(),
+                                                                "name",
+                                                                "name",
+                                                                null,               // format
+                                                                null,               // uiFieldFormatterName
+                                                                null,               // dataObjFormatterName
+                                                                "ContainerDisplay", // displayInfoDialogName
+                                                                "");                // objTitle
+           
+            ViewFactory.changeTextFieldUIForDisplay(parentContainerTXTInfo.getTextField(), false);
+            ViewFactory.changeTextFieldUIForDisplay(associatedContainerTXTInfo.getTextField(), false);
+            
+            pbParent.add(parentContainerTXTInfo,    cc.xy(1,3));
+            pbAssoc.add(associatedContainerTXTInfo, cc.xy(1,3));
+            
+            cardPanel.add(Integer.toString(parentContainerTXTInfo.hashCode()),     pbParent.getPanel());
+            cardPanel.add(Integer.toString(associatedContainerTXTInfo.hashCode()), pbAssoc.getPanel());
 
-        //group.getSelection().getSelectedObjects()
-        ActionListener rbAction = new ActionListener()
+            setLayout(new BorderLayout());
+            add(cardPanel, BorderLayout.CENTER);
+            
+        } else
         {
-            @Override
-            public void actionPerformed(ActionEvent e)
+            isParentContainerRB = new JRadioButton(strParentCon);
+            isAssociatedRB      = new JRadioButton(strAssocCon);
+            group.add(isParentContainerRB);
+            group.add(isAssociatedRB);
+            
+            PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g,p:g,10px,p:g,f:p:g", "p"));
+            pb.add(isParentContainerRB, cc.xy(2,1));
+            pb.add(isAssociatedRB,      cc.xy(4,1));
+            
+            catalogNumberFormatter = DBTableIdMgr.getFieldFormatterFor(CollectionObject.class, "CatalogNumber");
+            
+            int btnOpts = ValComboBoxFromQuery.CREATE_EDIT_BTN | ValComboBoxFromQuery.CREATE_NEW_BTN | ValComboBoxFromQuery.CREATE_SEARCH_BTN;
+            parentContainerCBX = new ValComboBoxFromQuery(conTI,
+                                                            "name",
+                                                            "name",
+                                                            "name",
+                                                            null,
+                                                            "name",
+                                                            null,
+                                                            "",
+                                                            null, // helpContext
+                                                            btnOpts);
+            
+            associatedContainerCBX = new ValComboBoxFromQuery(conTI,
+                    "name",
+                    "name",
+                    "name",
+                    null,
+                    "name",
+                    null,
+                    "",
+                    null, // helpContext
+                    btnOpts);
+            
+            PanelBuilder pbParent = new PanelBuilder(new FormLayout("f:p:g", "p"));
+            pbParent.add(parentContainerCBX, cc.xy(1,1));
+     
+            PanelBuilder pbAssoc = new PanelBuilder(new FormLayout("f:p:g", "p"));
+            pbAssoc.add(associatedContainerCBX, cc.xy(1,1));
+     
+            setOpaque(false);
+            cardPanel.setOpaque(false);
+            pbParent.getPanel().setOpaque(false);
+            pbAssoc.getPanel().setOpaque(false);
+            isParentContainerRB.setOpaque(false);
+            isAssociatedRB.setOpaque(false);
+            pb.getPanel().setOpaque(false);
+            
+            
+            cardPanel.add(Integer.toString(isParentContainerRB.hashCode()), pbParent.getPanel());
+            cardPanel.add(Integer.toString(isAssociatedRB.hashCode()),     pbAssoc.getPanel());
+    
+            PanelBuilder parent = new PanelBuilder(new FormLayout("f:p:g", "p,4px,p"), this);
+            parent.add(pb.getPanel(), cc.xy(1,1));
+            parent.add(cardPanel,     cc.xy(1,3));
+            
+            setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+    
+            associatedContainerCBX.addListSelectionListener(new ListSelectionListener()
             {
-                JRadioButton rb = (JRadioButton)e.getSource();
-                cardLayout.show(cardPanel, Integer.toString(rb.hashCode()));
-                
-                doingParent = rb.hashCode() == isParentContainerRB.hashCode();
-            }
-        };
-        isParentContainerRB.addActionListener(rbAction);
-        isAssociatedRB.addActionListener(rbAction);
-        
+                public void valueChanged(ListSelectionEvent e)
+                {
+                    itemSelected();
+                }
+            });
+    
+            
+            ActionListener rbAction = new ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    JRadioButton rb = (JRadioButton)e.getSource();
+                    if (rb.isSelected())
+                    {
+                        boolean oldDoingParent = doingParent;
+                        cardLayout.show(cardPanel, Integer.toString(rb.hashCode()));
+                        doingParent = rb.hashCode() == isParentContainerRB.hashCode();
+                        
+                        if (doingParent != oldDoingParent)
+                        {
+                            parentContainer     = null;
+                            associatedContainer = null;
+                            parentContainerCBX.setValue(null, null);
+                            associatedContainerCBX.setValue(null, null);
+                        }
+                    }
+                    ContainerPlugin.this.notifyChangeListeners(new ChangeEvent(rb));
+                }
+            };
+
+            isParentContainerRB.addActionListener(rbAction);
+            isAssociatedRB.addActionListener(rbAction);
+            
+            isParentContainerRB.setSelected(true);
+        }
+    }
+    
+    /**
+     * 
+     */
+    private void ensureCBXs()
+    {
+        if (collectionObject != null)
+        {
+            parentContainer     = collectionObject.getContainerOwner();
+            associatedContainer = collectionObject.getContainer();
+            doingParent         = associatedContainer == null;
+        } else
+        {
+            parentContainer     = null;
+            associatedContainer = null;
+            doingParent         = true;
+        }
     }
     
     /* (non-Javadoc)
@@ -173,21 +285,51 @@ public class ContainerPlugin extends UIPluginBase implements UIValidatable
     @Override
     public void setValue(final Object value, final String defaultValue)
     {
-        
-        
         if (value != null && value instanceof CollectionObject)
         {
             collectionObject = (CollectionObject)value;
-            if (doingParent == null)
-            {
-                associatedContainer = collectionObject.getContainerOwner();
-                parentContainer     = collectionObject.getContainer();
-                
-                doingParent = associatedContainer == null;
-            }
             
-            parentContainerCBX.setValue(parentContainer, null);
-            associatedContainerCBX.setValue(associatedContainer, null);
+            ensureCBXs();
+            
+            if (isViewMode)
+            {
+                parentContainerTXTInfo.setValue(parentContainer, null);
+                associatedContainerTXTInfo.setValue(associatedContainer, null);
+                if (doingParent != null)
+                {
+                    Component comp = doingParent ? parentContainerTXTInfo : associatedContainerTXTInfo;
+                    cardLayout.show(cardPanel, Integer.toString(comp.hashCode()));
+                }
+                
+            } else
+            {
+                if (parentContainerCBX != null)
+                {
+                    parentContainerCBX.setValue(parentContainer, null);
+                }
+                if (associatedContainerCBX != null)
+                {
+                    associatedContainerCBX.setValue(associatedContainer, null);
+                }
+                
+                if (doingParent != null)
+                {
+                    (doingParent ? isParentContainerRB : isAssociatedRB).setSelected(true);
+                }
+            }
+        }
+        
+        if (isViewMode)
+        {
+            if (parentContainer == null && associatedContainer == null)
+            {
+                cardLayout.show(cardPanel, Integer.toString(parentContainerTXTInfo.hashCode()));
+                labelParentCon.setText("       ");
+                
+            } else
+            {
+                labelParentCon.setText(strParentCon);
+            }
         }
     }
     
@@ -197,6 +339,18 @@ public class ContainerPlugin extends UIPluginBase implements UIValidatable
     @Override
     public Object getValue()
     {
+        if (doingParent != null)
+        {
+            if (doingParent)
+            {
+                collectionObject.setContainerOwner((Container)parentContainerCBX.getValue());
+                collectionObject.setContainer(null);
+            } else
+            {
+                collectionObject.setContainer((Container)associatedContainerCBX.getValue());
+                collectionObject.setContainerOwner(null);
+            }
+        }
         return collectionObject;
     }
 
@@ -205,7 +359,7 @@ public class ContainerPlugin extends UIPluginBase implements UIValidatable
      */
     private ValComboBoxFromQuery getCBX()
     {
-        return doingParent ? parentContainerCBX : associatedContainerCBX;
+        return doingParent == null ? null : doingParent ? parentContainerCBX : associatedContainerCBX;
     }
     
     /**
@@ -218,25 +372,22 @@ public class ContainerPlugin extends UIPluginBase implements UIValidatable
         Integer selectedId = qcbx.getTextWithQuery().getSelectedId();
         if (selectedId != null)
         {
-            final String clause = String.format(" FROM collectionobject WHERE CollectionObjectId = %d AND ContainerID IS NOT NULL", selectedId);
-            String sql = "SELECT COUNT(*)" + clause;
-            System.err.println("ContainersColObjPlugin: "+sql+" -> "+BasicSQLUtils.getCountAsInt(sql));
-            
-            if (BasicSQLUtils.getCountAsInt(sql) > 0)
+            String sql  = String.format("SELECT cn.Name, co.CatalogNumber FROM container AS cn " +
+		                                "Inner Join collectionobject AS co ON cn.ContainerID = co.ContainerID " +
+		                                "WHERE co.ContainerID = %d", selectedId);
+            Vector<Object[]> data = BasicSQLUtils.query(sql);
+            if (data.size() > 0)
             {
+                final Object[] row = data.get(0);
                 SwingUtilities.invokeLater(new Runnable()
                 {
                     @Override
                     public void run()
                     {
-                        /*String catNumStr = BasicSQLUtils.querySingleObj("SELECT CatalogNumber" + clause);
-                        catNumStr = containerFormatter != null ? (String)containerFormatter.formatToUI(catNumStr) : catNumStr;
-                        
-                        UIRegistry.loadAndPushResourceBundle("specify_plugins");
-                        UIRegistry.showLocalizedError("CNTR_CO_INUSE", catNumStr);
-                        UIRegistry.popResourceBundle();
-                        
-                        qcbx.setValue(null, null);*/
+                        qcbx.setValue(null, null);
+                        String conName   = (String)row[0];
+                        String catNumber = (String)catalogNumberFormatter.formatToUI(row[1]);
+                        UIRegistry.showError(String.format(errorMsg, conName, catNumber));
                     }
                 });
             }
@@ -273,8 +424,11 @@ public class ContainerPlugin extends UIPluginBase implements UIValidatable
     @Override
     public void cleanUp()
     {
-        parentContainerCBX.cleanUp();
-        associatedContainerCBX.cleanUp();
+        if (parentContainerCBX != null)
+        {
+            parentContainerCBX.cleanUp();
+            associatedContainerCBX.cleanUp();
+        }
     }
 
     /* (non-Javadoc)
@@ -283,7 +437,7 @@ public class ContainerPlugin extends UIPluginBase implements UIValidatable
     @Override
     public String getReason()
     {
-        return getCBX().getReason();
+        return getCBX() != null ? getCBX().getReason() : null;
     }
 
     /* (non-Javadoc)
@@ -292,7 +446,7 @@ public class ContainerPlugin extends UIPluginBase implements UIValidatable
     @Override
     public ErrorType getState()
     {
-        return getCBX().getState();
+        return getCBX() != null ? getCBX().getState() : ErrorType.Valid;
     }
 
     /* (non-Javadoc)
@@ -310,7 +464,7 @@ public class ContainerPlugin extends UIPluginBase implements UIValidatable
     @Override
     public boolean isChanged()
     {
-        return getCBX().isChanged();
+        return getCBX() != null ? getCBX().isChanged() : false;
     }
 
     /* (non-Javadoc)
@@ -319,7 +473,7 @@ public class ContainerPlugin extends UIPluginBase implements UIValidatable
     @Override
     public boolean isInError()
     {
-        return getCBX().isInError();
+        return getCBX() != null ? getCBX().isInError() : false;
     }
 
     /* (non-Javadoc)
@@ -337,8 +491,11 @@ public class ContainerPlugin extends UIPluginBase implements UIValidatable
     @Override
     public void reset()
     {
-        parentContainerCBX.reset();
-        associatedContainerCBX.reset();
+        if (parentContainerCBX != null)
+        {
+            parentContainerCBX.reset();
+            associatedContainerCBX.reset();
+        }
     }
 
     /* (non-Javadoc)
@@ -347,8 +504,11 @@ public class ContainerPlugin extends UIPluginBase implements UIValidatable
     @Override
     public void setAsNew(boolean isNew)
     {
-        parentContainerCBX.setAsNew(isNew);
-        associatedContainerCBX.setAsNew(isNew);
+        if (parentContainerCBX != null)
+        {
+            parentContainerCBX.setAsNew(isNew);
+            associatedContainerCBX.setAsNew(isNew);
+        }
     }
 
     /* (non-Javadoc)
@@ -357,7 +517,10 @@ public class ContainerPlugin extends UIPluginBase implements UIValidatable
     @Override
     public void setChanged(boolean isChanged)
     {
-        getCBX().setChanged(isChanged);
+        if (getCBX() != null)
+        {
+            getCBX().setChanged(isChanged);
+        }
     }
 
     /* (non-Javadoc)
@@ -383,7 +546,10 @@ public class ContainerPlugin extends UIPluginBase implements UIValidatable
     @Override
     public void setState(ErrorType state)
     {
-        getCBX().setState(state);
+        if (getCBX() != null)
+        {
+            getCBX().setState(state);
+        }
     }
 
     /* (non-Javadoc)
@@ -392,6 +558,6 @@ public class ContainerPlugin extends UIPluginBase implements UIValidatable
     @Override
     public ErrorType validateState()
     {
-        return getCBX().validateState();
+        return getCBX() != null ? getCBX().validateState() : ErrorType.Valid;
     }
 }

@@ -169,7 +169,6 @@ public class Container extends CollectionMember implements java.io.Serializable,
 
     public void setName(String name) 
     {
-        System.err.println(hashCode()+" SetName["+name+"]");
         this.name = name;
     }
 

@@ -55,7 +55,8 @@ public class ContainersColObjPlugin extends UIPluginBase implements SessionListe
     private Set<CollectionObject> coSet      = null;
     private Container             container  = null;
     
-    private UIFieldFormatterIFace colObjFmt = null;
+    private UIFieldFormatterIFace colObjFmt  = null;
+    private String                errorMsg   = null;
     
     /**
      * Constructor.
@@ -72,6 +73,10 @@ public class ContainersColObjPlugin extends UIPluginBase implements SessionListe
     public void initialize(Properties propertiesArg, boolean isViewModeArg)
     {
         super.initialize(propertiesArg, isViewModeArg);
+        
+        UIRegistry.loadAndPushResourceBundle("specify_plugins");
+        errorMsg = UIRegistry.getResourceString("CNTR_CO_INUSE");
+        UIRegistry.popResourceBundle();
         
         DBTableInfo coTI = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId());
         DBFieldInfo catNumFld = coTI.getFieldByColumnName("CatalogNumber");
@@ -93,50 +98,13 @@ public class ContainersColObjPlugin extends UIPluginBase implements SessionListe
                                         btnOpts);
         pb.add(qcbx, cc.xy(1, 1));
         
-        //adjustSQLTemplate();
-        
         qcbx.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e)
             {
                 itemSelected();
             }
         });
-        
-        /*qcbx.setExternalQueryProvider(new TextFieldWithQuery.ExternalQueryProviderIFace()
-        {
-            
-            @Override
-            public String getFullSQL(String newEntryStr, boolean isForCount)
-            {
-                String text = newEntryStr;
-                if (colObjFmt != null && StringUtils.isNotEmpty(text))
-                {
-                    text = (String)colObjFmt.formatFromUI(text);
-                }
-                
-                if (isForCount)
-                {
-                    Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
-                    StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM CollectionObject co ");
-                    sql.append("WHERE co.collectionMemberId = ");
-                    sql.append(collection.getId());
-                    sql.append(" AND catalogNumber = '");
-                    sql.append(text != null ? text : "");
-                    sql.append("' AND ContainerID IS NULL");
-                    
-                    return sql.toString();
-                }
-                
-                System.err.println(String.format("%s - %s", newEntryStr, isForCount ? "Y" : "N"));
-                return null;
-            }
-            
-            @Override
-            public String getExtraWhereClause()
-            {
-                return null;
-            }
-        });*/
+
     }
     
 
@@ -208,14 +176,12 @@ public class ContainersColObjPlugin extends UIPluginBase implements SessionListe
                     @Override
                     public void run()
                     {
+                        qcbx.setValue(null, null);
+                        
                         String catNumStr = BasicSQLUtils.querySingleObj("SELECT CatalogNumber" + clause);
                         catNumStr = colObjFmt != null ? (String)colObjFmt.formatToUI(catNumStr) : catNumStr;
                         
-                        UIRegistry.loadAndPushResourceBundle("specify_plugins");
-                        UIRegistry.showLocalizedError("CNTR_CO_INUSE", catNumStr);
-                        UIRegistry.popResourceBundle();
-                        
-                        qcbx.setValue(null, null);
+                        UIRegistry.showError(String.format(errorMsg, catNumStr));
                     }
                 });
             }

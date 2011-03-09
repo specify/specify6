@@ -118,7 +118,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     public static final int CREATE_NEW_BTN    =  2;
     public static final int CREATE_SEARCH_BTN =  4;
     public static final int CREATE_CLONE_BTN  =  8;
-    public static final int CREATE_ALL        = 15;
+    public static final int CREATE_VIEW_BTN   = 16;
+    public static final int CREATE_ALL        = 31;
     
     protected enum MODE {Unknown, Editting, NewAndEmpty, NewAndNotEmpty}
 
@@ -454,11 +455,15 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             }
         }
         
-        boolean hasSearchBtn = StringUtils.isNotEmpty(tableInfo.getSearchDialog());
-        boolean hasCloneBtn  = (btnMask & CREATE_CLONE_BTN) != 0;
+        boolean hasSearchDlg     = StringUtils.isNotEmpty(tableInfo.getSearchDialog());
+        boolean hasSearchBtn     = (btnMask & CREATE_SEARCH_BTN) != 0;
+        boolean hasCloneBtn      = (btnMask & CREATE_CLONE_BTN) != 0;
+        boolean hasEditBtn       = (btnMask & CREATE_EDIT_BTN) != 0;
+        boolean hasAddBtn        = (btnMask & CREATE_NEW_BTN) != 0;
+        final boolean hasViewBtn = (btnMask & CREATE_VIEW_BTN) != 0;
 
         StringBuilder sb = new StringBuilder("p:g,1px,p,1px,p");
-        if (hasSearchBtn)
+        if (hasSearchDlg)
         {
             sb.append(",1px,p");
         }
@@ -473,15 +478,17 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         
         PermissionSettings perm = AppContextMgr.isSecurityOn() ? tableInfo.getPermissions() : null;
         
+        
         int x = 3;
-        if ((btnMask & CREATE_EDIT_BTN) != 0)
+        if (hasEditBtn || hasViewBtn)
         {
             String iconName;
             String ttName;
-            if (perm == null || perm.canModify())
+            if (hasEditBtn && (perm == null || perm.canModify()))
             {
                 iconName = "EditIcon";
                 ttName   = "EditRecordTT";
+                
             } else
             {
                 iconName = "InfoIcon";
@@ -493,7 +500,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             x += 2;
         }
 
-        boolean hasAddBtn = (btnMask & CREATE_NEW_BTN) != 0;
         
         if (hasAddBtn && (perm == null || perm.canAdd()))
         {
@@ -509,7 +515,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             x += 2;
         }
 
-        if (hasSearchBtn && ((btnMask & CREATE_SEARCH_BTN) != 0) && (perm == null || perm.canAdd()))
+        if (hasSearchDlg && hasSearchBtn && (perm == null || perm.canAdd()))
         {
             textWithQuery.setAddAddItem(hasAddBtn); // set to true if there is an add btn
             searchBtn = createBtn("Search", "SearchForRecordTT", objTitle); 
@@ -551,7 +557,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 {
                     currentMode = MODE.Editting;
                     textWithQuery.setIgnoreFocusLost(true);
-                    createEditFrame(false, false);
+                    createEditFrame(false, false, hasViewBtn);
                 }
             };
             editBtn.addActionListener(defaultEditAction);
@@ -566,7 +572,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                     //currentMode = dataObj != null ? MODE.NewAndNotEmpty : MODE.NewAndEmpty;
                     currentMode = MODE.NewAndNotEmpty;
                     textWithQuery.setIgnoreFocusLost(true);
-                    createEditFrame(true, false);
+                    createEditFrame(true, false, false);
                 }
             };
             createBtn.addActionListener(defaultNewAction);
@@ -580,7 +586,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 {
                     currentMode = MODE.NewAndNotEmpty;
                     textWithQuery.setIgnoreFocusLost(true);
-                    createEditFrame(true, true);
+                    createEditFrame(true, true, false);
                 }
             };
             cloneBtn.addActionListener(defaultCloneAction);
@@ -760,15 +766,18 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     /**
      * Creates a Dialog (non-modal) that will display detail information
      * for the object in the text field.
-     * @param isNewObject
-     * @param isCloned
+     * @param isNewObject the data object is new
+     * @param isCloned the data object is cloned
+     * @param isViewOnly the data object is view only even when the form is in edit mode
      */
-    protected void createEditFrame(final boolean isNewObject, final boolean isCloned)
+    protected void createEditFrame(final boolean isNewObject, 
+                                   final boolean isCloned,
+                                   final boolean isViewOnly)
     {
-        boolean canModify = true;
+        boolean canModify = !isViewOnly;
         if (AppContextMgr.isSecurityOn() && tableInfo.getPermissions() != null)
         {
-            canModify = tableInfo.getPermissions() .canModify();
+            canModify = tableInfo.getPermissions().canModify() && !isViewOnly;
         }
         
         int options = (isNewObject ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) | 
@@ -776,7 +785,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                       (canModify ? (MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE) : MultiView.NO_OPTIONS);
         
         String dlgName       = StringUtils.isNotEmpty(displayDlgName) ? displayDlgName : tableInfo.getNewObjDialog();
-        String closeBtnTitle = getResourceString("SAVE");
+        String closeBtnTitle = getResourceString(canModify ? "SAVE" : "CLOSE"); 
         frame = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getWindow(this),
                                                                    dlgName,
                                                                    frameTitle,

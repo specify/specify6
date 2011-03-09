@@ -2024,6 +2024,14 @@ public class ViewFactory
 
                 panelViewable.setVisible(cellPanel.getPropertyAsBoolean("visible", true));
                 
+                setBorder(panelViewable, cellPanel.getProperties());
+                Color bgColor = getBackgroundColor(cellPanel.getProperties(), parent.getBackground());
+                if (bgColor != null && bgColor != parent.getBackground())
+                {
+                    panelViewable.setOpaque(true);
+                    panelViewable.setBackground(bgColor);
+                }
+                
                 bi.compToAdd        = panelViewable;
                 bi.doRegControl     = true;
                 bi.compToReg        = panelViewable;

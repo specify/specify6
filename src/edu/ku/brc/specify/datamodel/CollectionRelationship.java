@@ -179,13 +179,22 @@ public class CollectionRelationship extends DataModelObjBase implements java.io.
     {
         return collectionRelationshipId;
     }
-
+   
+    
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getTableId()
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
-    @Transient
     @Override
+    @Transient
     public int getTableId()
+    {
+        return getClassTableId();
+    }
+    
+    /**
+     * @return the Table ID for the class.
+     */
+    public static int getClassTableId()
     {
         return 99;
     }

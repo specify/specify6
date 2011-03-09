@@ -37,6 +37,8 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.db.TextFieldWithInfo;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -45,27 +47,33 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionRelType;
 import edu.ku.brc.specify.datamodel.CollectionRelationship;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rod
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Apr 3, 2008
  *
  */
 public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
 {
-    protected boolean                isLeftSide    = false;
-    protected CollectionRelType      colRelType    = null;
-    protected Collection             leftSideCol   = null;
-    protected Collection             rightSideCol  = null;
+    private final static String CATNUM_NAME    = "catalogNumber";
+    private final static String CATNUM_NAMECAP = "CatalogNumber";
+    private final static String COLOBJ_NAME    = "CollectionObject";
+
+    private boolean                isLeftSide    = false;
+    private CollectionRelType      colRelType    = null;
+    private Collection             leftSideCol   = null;
+    private Collection             rightSideCol  = null;
     
-    protected CollectionRelationship collectionRel = null;
-    protected CollectionObject       otherSide     = null;
+    private CollectionRelationship collectionRel = null;
+    private CollectionObject       otherSide     = null;
     
-    protected ValComboBoxFromQuery   cbx;
-    protected boolean                isRequired    = false;
+    private ValComboBoxFromQuery   cbx           = null;
+    private TextFieldWithInfo      textWithInfo  = null;
+    private boolean                isRequired    = false;
 
     /**
      * 
@@ -89,19 +97,23 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
             DataProviderSessionIFace tmpSession = null;
             try
             {
-                tmpSession   = DataProviderFactory.getInstance().createSession();
-                colRelType   = tmpSession.getData(CollectionRelType.class, "name", relName, DataProviderSessionIFace.CompareType.Equals);
+                tmpSession = DataProviderFactory.getInstance().createSession();
+                colRelType = tmpSession.getData(CollectionRelType.class, "name", relName, DataProviderSessionIFace.CompareType.Equals);
                 if (colRelType != null)
                 {
                     leftSideCol  = colRelType.getLeftSideCollection();
                     rightSideCol = colRelType.getRightSideCollection();
                     colRelType.getRelationships().size();
+                    rightSideCol.getCollectionId();
+                    leftSideCol.getCollectionId();
                     
-                    isLeftSide = AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId().equals(leftSideCol.getCollectionId());
+                    Collection currCollection = AppContextMgr.getInstance().getClassObject(Collection.class);
+                    isLeftSide = currCollection.getId().equals(leftSideCol.getId());
                     
                 } else
                 {
-                    // RelName not found.
+                    DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(CollectionRelationship.getClassTableId());
+                    UIRegistry.showError(String.format("The %s name '%s' doesn't exist (defined in the form for the plugin).", ti.getTitle(), relName));
                     
                 }
             } catch (Exception ex)
@@ -116,33 +128,49 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
                 }
             }
             
-            CellConstraints cc = new CellConstraints();
-            PanelBuilder pb = new PanelBuilder(new FormLayout("p",  "p"), this);
+            DBTableInfo     coTI = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId());
+            CellConstraints cc   = new CellConstraints();
+            PanelBuilder    pb   = new PanelBuilder(new FormLayout("p", "p"), this);
             
-            int btnOpts = ValComboBoxFromQuery.CREATE_EDIT_BTN | ValComboBoxFromQuery.CREATE_SEARCH_BTN;
-            cbx = new ValComboBoxFromQuery(DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()),
-                                    "catalogNumber",
-                                    "catalogNumber",
-                                    "catalogNumber",
-                                    null,
-                                    "CatalogNumber",
-                                    null,
-                                    "",
-                                    null, // helpContext
-                                    btnOpts);
-            pb.add(cbx, cc.xy(1, 1));
-            
-            cbx.setEnabled(colRelType != null);
-            
-            adjustSQLTemplate();
-            
-            cbx.addListSelectionListener(new ListSelectionListener() {
-                public void valueChanged(ListSelectionEvent e)
-                {
-                    itemSelected();
-                    notifyChangeListeners(new ChangeEvent(CollectionRelPlugin.this));
-                }
-            });
+            if (isViewModeArg)
+            {
+                textWithInfo = new TextFieldWithInfo(coTI.getClassName(),
+                                                     CATNUM_NAME,    // id name
+                                                     CATNUM_NAME,    // key name
+                                                     null,           // format
+                                                     CATNUM_NAMECAP, // uiFieldFormatterName
+                                                     COLOBJ_NAME,    // dataObjFormatterName
+                                                     COLOBJ_NAME,    // displayInfoDialogName
+                                                     "");            // objTitle  
+                pb.add(textWithInfo, cc.xy(1, 1));
+                
+            } else
+            {
+                int btnOpts = ValComboBoxFromQuery.CREATE_VIEW_BTN | ValComboBoxFromQuery.CREATE_SEARCH_BTN;
+                cbx = new ValComboBoxFromQuery(coTI,
+                                                CATNUM_NAME,
+                                                CATNUM_NAME,
+                                                CATNUM_NAME,
+                                                null,
+                                                CATNUM_NAMECAP,
+                                                COLOBJ_NAME,
+                                                "",
+                                                null, // helpContext
+                                                btnOpts);
+                pb.add(cbx, cc.xy(1, 1));
+                
+                cbx.setEnabled(colRelType != null);
+                
+                adjustSQLTemplate();
+                
+                cbx.addListSelectionListener(new ListSelectionListener() {
+                    public void valueChanged(ListSelectionEvent e)
+                    {
+                        itemSelected();
+                        notifyChangeListeners(new ChangeEvent(CollectionRelPlugin.this));
+                    }
+                });
+            }
             
         } else
         {
@@ -188,7 +216,7 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
     /**
      * 
      */
-    protected void itemSelected()
+    private void itemSelected()
     {
         CollectionObject newColObj = (CollectionObject)cbx.getValue();
         CollectionObject curColObj = (CollectionObject)dataObj;
@@ -197,7 +225,7 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
         tmpSession.attach(newColObj);
         
         boolean isNew = false;
-        if (collectionRel == null)
+        if (collectionRel == null && colRelType != null)
         {
             collectionRel = new CollectionRelationship();
             collectionRel.initialize();
@@ -232,7 +260,7 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
     /**
      * 
      */
-    protected void adjustSQLTemplate()
+    private void adjustSQLTemplate()
     {
         if (colRelType != null && ((!isLeftSide && rightSideCol != null) || (isLeftSide && leftSideCol != null)))
         {
@@ -253,11 +281,15 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
     {
         super.setValue(value, defaultValue);
         
-        if (value instanceof CollectionObject)
+        if (value instanceof CollectionObject && colRelType != null)
         {
+            Collection currCollection = AppContextMgr.getInstance().getClassObject(Collection.class);
+            
             otherSide = null;
             
             CollectionObject colObj = (CollectionObject)value;
+            
+            isLeftSide = currCollection.getId().equals(colObj.getCollectionMemberId());
             
             Set<CollectionRelationship> rels = isLeftSide ? colObj.getLeftSideRels() : colObj.getRightSideRels();
 
@@ -271,7 +303,13 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
                 }
             }
             
-            cbx.setValue(otherSide, null);
+            if (cbx != null)
+            {
+                cbx.setValue(otherSide, null);
+            } else
+            {
+                textWithInfo.setValue(otherSide, null);
+            }
         }
     }
     
@@ -281,7 +319,7 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
     @Override
     public String[] getFieldNames()
     {
-        return new String[] {"catalogNumber", "rightSide", "leftSide"};
+        return new String[] {CATNUM_NAME, "rightSide", "leftSide"};
     }
 
     //---------------------------------------------------------------------------------------------
@@ -294,7 +332,10 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
     @Override
     public void cleanUp()
     {
-        cbx.cleanUp();
+        if (cbx != null)
+        {
+            cbx.cleanUp();
+        }
     }
 
     /* (non-Javadoc)
@@ -303,7 +344,7 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
     @Override
     public String getReason()
     {
-        return cbx.getReason();
+        return cbx != null ? cbx.getReason() : null;
     }
 
     /* (non-Javadoc)
@@ -312,7 +353,7 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
     @Override
     public ErrorType getState()
     {
-        return cbx.getState();
+        return cbx != null ? cbx.getState() : ErrorType.Valid;
     }
 
     /* (non-Javadoc)
@@ -330,7 +371,7 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
     @Override
     public boolean isChanged()
     {
-        return cbx.isChanged();
+        return cbx != null ? cbx.isChanged() : false;
     }
 
     /* (non-Javadoc)
@@ -339,7 +380,7 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
     @Override
     public boolean isInError()
     {
-        return cbx.isInError();
+        return cbx != null ? cbx.isInError() : false;
     }
 
     /* (non-Javadoc)
@@ -366,7 +407,10 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
     @Override
     public void setAsNew(boolean isNew)
     {
-        cbx.setAsNew(isNew);
+        if (cbx != null)
+        {
+            cbx.setAsNew(isNew);
+        }
     }
 
     /* (non-Javadoc)
@@ -375,7 +419,10 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
     @Override
     public void setChanged(boolean isChanged)
     {
-        cbx.setChanged(isChanged);
+        if (cbx != null)
+        {
+            cbx.setChanged(isChanged);
+        }
     }
 
     /* (non-Javadoc)
@@ -397,7 +444,10 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
     @Override
     public void setState(ErrorType state)
     {
-        cbx.setState(state);
+        if (cbx != null)
+        {
+            cbx.setState(state);
+        }
     }
 
     /* (non-Javadoc)
@@ -406,7 +456,7 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
     @Override
     public ErrorType validateState()
     {
-        return cbx.validateState();
+        return cbx != null ? cbx.validateState() : ErrorType.Valid;
     }
     
 }

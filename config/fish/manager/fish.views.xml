@@ -137,11 +137,26 @@
                     <cell type="separator" label="Attachments" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="12" initialize="btn=true;icon=CollectionObjectAttachment"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="12" initialize="btn=true;icon=CollectionObjectAttachment;"/>
                 </row>
                 <row>
                     <cell type="label" label="Container:" initialize="align=right;"/>
-                    <cell type="field" id="ContainerPlugin" uitype="plugin" name="this" initialize="name=ContainerPlugin"/>
+                    <cell type="panel" id="ContainerPanel" name="ContainerPanel" coldef="p" rowdef="p" colspan="11">
+                        <rows>
+                            <row>
+                                <cell type="panel" id="CPInner" name="CPInner" coldef="p" rowdef="p" initialize="border=line;bordercolor=200,200,200;bgcolor=240,240,240">
+                                <rows>
+                                    <row>
+                                        <cell type="field" id="ContainerPlugin" uitype="plugin" name="this" initialize="name=ContainerPlugin"/>
+                                    </row>
+                                </rows>
+                            </cell>
+                            </row>
+                        </rows> 
+                    </cell>
+                </row>                
+                <row>
+                    
                 </row>
                 <row>
                     <cell type="label" label="Eaten By:" initialize="align=right;"/>
@@ -151,6 +166,7 @@
                     <cell type="separator" label="" colspan="12"/>
                 </row>
                 <row>
+                    
                     <cell type="label" labelfor="10"/>
                     <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent" colspan="3"/>
                     
