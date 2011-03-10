@@ -1,49 +1,42 @@
-/* This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-/**
+/* Copyright (C) 2005-2011, University of Kansas Center for Research
  * 
- */
+ * Specify Software Project, specify@ku.edu, Biodiversity Institute,
+ * 1345 Jayhawk Boulevard, Lawrence, Kansas, 66045, USA
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
 package edu.ku.brc.specify.datamodel.busrules;
 
 import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.Vector;
 
-import javax.swing.JButton;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
-import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.Viewable;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Container;
-import edu.ku.brc.specify.datamodel.Division;
-import edu.ku.brc.specify.plugins.ContainerListPlugin;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Created Date: Dec 16, 2010
  *
@@ -51,6 +44,8 @@ import edu.ku.brc.ui.UIRegistry;
 public class ContainerBusRules extends BaseBusRules
 {
     //private JButton containerTreeBtn = null;
+    
+    private ValComboBoxFromQuery parentQCBX = null;
     
     /**
      * 
@@ -64,90 +59,113 @@ public class ContainerBusRules extends BaseBusRules
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
      */
     @Override
-    public void initialize(Viewable viewableArg)
+    public void initialize(final Viewable viewableArg)
     {
         super.initialize(viewableArg);
         
-        /*if (formViewObj != null && formViewObj.isEditing())
+        if (parentQCBX == null && formViewObj != null)
         {
-            Component comp = formViewObj.getControlByName("ContainerTreeBtn");
-            if (comp instanceof JButton)
+            Component comp = formViewObj.getCompById("parent");
+            if (comp != null && comp instanceof ValComboBoxFromQuery)
             {
-                containerTreeBtn = (JButton)comp;
-                containerTreeBtn.addActionListener(new ActionListener()
+                parentQCBX = (ValComboBoxFromQuery)comp;
+                parentQCBX.addListSelectionListener(new ListSelectionListener()
                 {
-                    @Override
-                    public void actionPerformed(ActionEvent e)
+                    public void valueChanged(ListSelectionEvent e)
+                    {
+                        parentSelected();
+                    }
+                });
+            }
+        }
+    }
+    
+    /**
+     * 
+     */
+    private void parentSelected()
+    {
+        if (parentQCBX != null)
+        {
+            final Container parent = (Container)parentQCBX.getValue();
+            if (parent != null)
+            {
+                final Container currContainer = (Container)formViewObj.getDataObj();
+                if (currContainer.getId() != null)
+                {
+                    if (!searchContainerChildren(parent.getId(), currContainer.getId()))
                     {
                         SwingUtilities.invokeLater(new Runnable()
                         {
                             @Override
                             public void run()
                             {
-                                launch();
+                                String sql = "SELECT Name FROM container WHERE ContainerID = ";
+                                final String currName      = BasicSQLUtils.querySingleObj(sql + currContainer.getId());
+                                final String newParentName = BasicSQLUtils.querySingleObj(sql + parent.getId());
+
+                                UIRegistry.showLocalizedError("CONTAINER_BAD_PARENT", newParentName, currName);
+                                parentQCBX.setValue(null, null);
                             }
                         });
                     }
-                });
-            }
-        }*/
-    }
-    
-    /*private void launch()
-    {
-        if (formViewObj != null)
-        {
-            Container container = (Container)formViewObj.getDataObj();
-            if (container != null && container.getId() != null)
-            {
-               // SubPaneMgr.getInstance().closeCurrent();
-                
-                DataProviderSessionIFace session = null;
-                try
-                {
-                    session = DataProviderFactory.getInstance().createSession();
                     
-                    // Just in case the Discipline and Division aren't loaded
-                    // that should happen.
-                    session.refresh(container);
-                    container.forceLoad();
-
-                    
-                } catch (Exception ex)
-                {
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AccessionBusRules.class, ex);
-                    ex.printStackTrace();
-                    UsageTracker.incrNetworkUsageCount();
-                    
-                } finally
-                {
-                    if (session != null)
+                    if (!searchColObjChildren(parent.getId(), currContainer.getId()))
                     {
-                        session.close();
+                        
                     }
                 }
-                
-                ContainerListPlugin plugin = new ContainerListPlugin();
-                plugin.initialize(null, !formViewObj.isEditing());
-                
-                plugin.setValue(container, null);
-                
-                CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), "Container Tree", true, CustomDialog.OK_BTN, plugin);
-                dlg.setOkLabel(UIRegistry.getResourceString("CLOSE"));
-                
-                dlg.createUI();
-                dlg.pack();
-                
-                Dimension size = dlg.getPreferredSize();
-                size.width = 600;
-                dlg.setSize(size);
-                UIHelper.centerWindow(dlg);
-                dlg.setVisible(true);
-                
-                plugin.shutdown();
             }
         }
-    }*/
+    }
+    
+    /**
+     * Searches for pId in the children of currParentId
+     * @param pId
+     * @param currParentId
+     * @return true if not a child, false is bad
+     */
+    private boolean searchContainerChildren(final Integer pId, final Integer currParentId)
+    {
+        String sql = "SELECT ContainerID FROM container WHERE ParentID = " + currParentId;
+        Vector<Integer> childrenIds = BasicSQLUtils.queryForInts(sql);
+        for (Integer id : childrenIds)
+        {
+            if (pId.equals(id))
+            {
+                return false;
+            }
+            if (!searchContainerChildren(pId, id))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * Searches for pId in the children of currParentId
+     * @param pId
+     * @param currParentId
+     * @return true if not a child, false is bad
+     */
+    private boolean searchColObjChildren(final Integer pId, final Integer currParentId)
+    {
+        String sql = "SELECT ContainerID FROM container WHERE ParentID = " + currParentId;
+        Vector<Integer> childrenIds = BasicSQLUtils.queryForInts(sql);
+        for (Integer id : childrenIds)
+        {
+            if (pId.equals(id))
+            {
+                return false;
+            }
+            if (!searchColObjChildren(pId, id))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#aboutToShutdown()
@@ -166,6 +184,4 @@ public class ContainerBusRules extends BaseBusRules
     {
         super.formShutdown();
     }
-
-    
 }

@@ -210,7 +210,7 @@ public class MenuSwitcherPanel extends JPanel
                 // Override when Top Level Form
                 if (mvParentArg.isTopLevel())
                 {
-                    label = getResourceString(isEdit ? "Edit" : "View");
+                    label = getResourceString(isEdit ? "EDIT" : "View");
                 }
 
                 items.add(new DropDownMenuInfo(label, imgIcon, toolTip));
