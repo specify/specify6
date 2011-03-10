@@ -26,6 +26,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
@@ -56,6 +57,8 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.CollectionMember;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
@@ -303,7 +306,34 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
     }
     
     
-    @SuppressWarnings("unchecked")
+    @Override
+	protected String getExtraWhereColumns(DBTableInfo tableInfo) {
+		String result = super.getExtraWhereColumns(tableInfo);
+		if (CollectionMember.class.isAssignableFrom(tableInfo.getClassObj()))
+		{
+			Vector<Object> cols = BasicSQLUtils.querySingleCol("select distinct CollectionID from collection "
+					+ "where DisciplineID = " + AppContextMgr.getInstance().getClassObject(Discipline.class).getId());
+			if (cols != null)
+			{
+				String colList = "";
+				for (Object col : cols)
+				{
+					if (!"".equals(colList))
+					{
+						colList += ",";
+					}
+					colList += col;
+				}
+				if (!"".equals(colList))
+				{
+					result = "((" + result + ") or " + tableInfo.getAbbrev() + ".CollectionMemberID in(" + colList + "))";
+				}
+			}
+		}
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
     protected void rankChanged(final FormViewObj form,
             final ValComboBoxFromQuery parentComboBox, 
             final ValComboBox rankComboBox,
