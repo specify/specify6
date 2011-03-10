@@ -109,11 +109,6 @@ public class ContainerBusRules extends BaseBusRules
                             }
                         });
                     }
-                    
-                    if (!searchColObjChildren(parent.getId(), currContainer.getId()))
-                    {
-                        
-                    }
                 }
             }
         }
@@ -136,30 +131,6 @@ public class ContainerBusRules extends BaseBusRules
                 return false;
             }
             if (!searchContainerChildren(pId, id))
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    /**
-     * Searches for pId in the children of currParentId
-     * @param pId
-     * @param currParentId
-     * @return true if not a child, false is bad
-     */
-    private boolean searchColObjChildren(final Integer pId, final Integer currParentId)
-    {
-        String sql = "SELECT ContainerID FROM container WHERE ParentID = " + currParentId;
-        Vector<Integer> childrenIds = BasicSQLUtils.queryForInts(sql);
-        for (Integer id : childrenIds)
-        {
-            if (pId.equals(id))
-            {
-                return false;
-            }
-            if (!searchColObjChildren(pId, id))
             {
                 return false;
             }
