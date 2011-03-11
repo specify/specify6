@@ -458,7 +458,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="displayColumns" label="Display Columns"/>
-                    <cell type="field" id="displayColumns" name="displayColumns" uitype="text" isrequired="true" colspan="4"/>
+                    <cell type="field" id="displayColumns" name="displayColumns" uitype="textarea" isrequired="true" colspan="4"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="searchFieldName" label="Search Field Name"/>

@@ -171,6 +171,71 @@ public class TypeSearchInfo implements Comparable<TypeSearchInfo>
     {
         return str == null ? "" : str;
     }
+    
+    /**
+     * @return the isSystem
+     */
+    public Boolean getIsSystem()
+    {
+        return isSystem;
+    }
+
+    /**
+     * @param isSystem the isSystem to set
+     */
+    public void setIsSystem(Boolean isSystem)
+    {
+        this.isSystem = isSystem;
+    }
+
+    /**
+     * @param tableId the tableId to set
+     */
+    public void setTableId(int tableId)
+    {
+        this.tableId = tableId;
+    }
+
+    /**
+     * @param displayColumns the displayColumns to set
+     */
+    public void setDisplayColumns(String displayColumns)
+    {
+        this.displayColumns = displayColumns;
+    }
+
+    /**
+     * @param searchFieldName the searchFieldName to set
+     */
+    public void setSearchFieldName(String searchFieldName)
+    {
+        this.searchFieldName = searchFieldName;
+    }
+
+    /**
+     * @param format the format to set
+     */
+    public void setFormat(String format)
+    {
+        this.format = format;
+    }
+
+    /**
+     * @param uiFieldFormatterName the uiFieldFormatterName to set
+     */
+    public void setUiFieldFormatterName(String uiFieldFormatterName)
+    {
+        this.uiFieldFormatterName = uiFieldFormatterName;
+    }
+
+    /**
+     * @param dataObjFormatterName the dataObjFormatterName to set
+     */
+    public void setDataObjFormatterName(String dataObjFormatterName)
+    {
+        this.dataObjFormatterName = dataObjFormatterName;
+    }
+
     /**
      * @return
      */

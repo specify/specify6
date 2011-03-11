@@ -364,8 +364,11 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
                     appResDir.getSpAppResources().add(newAppRes);
                     newAppRes.setDataAsString(xml);
                     
-                    session.close();
-                    session = null;
+                    if (session != null) 
+                    {
+                        session.close();
+                        session = null;
+                    }
                     ((SpecifyAppContextMgr) AppContextMgr.getInstance()).saveResource(newAppRes);
                     
                 } else

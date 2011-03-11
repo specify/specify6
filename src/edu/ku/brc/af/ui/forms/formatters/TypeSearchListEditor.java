@@ -48,9 +48,11 @@ import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.af.ui.forms.validation.TypeSearchForQueryFactory;
 import edu.ku.brc.af.ui.forms.validation.TypeSearchInfo;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
+import edu.ku.brc.af.ui.forms.validation.ValTextArea;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.EditDeleteAddPanel;
@@ -122,6 +124,7 @@ public class TypeSearchListEditor extends CustomDialog
         list      = new JList(itemsList);
         
         edaPanel = new EditDeleteAddPanel(edtAL, delAL, addAL);
+        edaPanel.getAddBtn().setEnabled(true);
         
         CellConstraints cc = new CellConstraints();
         pb.add(UIHelper.createScrollPane(list), cc.xy(1,1));
@@ -246,6 +249,7 @@ public class TypeSearchListEditor extends CustomDialog
                 true,
                 MultiView.HIDE_SAVE_BTN | MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE |
                 MultiView.IS_EDITTING);
+        
         dlg.setHelpContext("CHANGE_PWD");
         dlg.setWhichBtns(CustomDialog.OK_BTN | CustomDialog.CANCEL_BTN);
         
@@ -259,7 +263,14 @@ public class TypeSearchListEditor extends CustomDialog
         dlg.setData(tsi);
         UIHelper.centerAndShow(dlg);
         
-        return !dlg.isCancelled();
+        boolean isOK = !dlg.isCancelled();
+        
+        if (isOK)
+        {
+            dlg.getMultiView().getCurrentViewAsFormViewObj().getDataFromUI();
+        }
+        
+        return isOK;
     }
     
     /**
@@ -268,10 +279,17 @@ public class TypeSearchListEditor extends CustomDialog
      * @param isNewItem whether it is a new item
      * @param fvo the form in the dlg
      */
-    private void adjustDlgForm(final TypeSearchInfo tsi, final boolean isNewItem, final FormViewObj fvo)
+    private void adjustDlgForm(final TypeSearchInfo tsi, 
+                               final boolean isNewItem, 
+                               final FormViewObj fvo)
     {
         final ValTextField nameTF      = fvo.getCompById("name");
-        final ValTextField dispColsTF  = fvo.getCompById("displayColumns");
+        final ValTextArea  dispColsTF  = fvo.getCompById("displayColumns");
+        
+        if (tsi.isSystem())
+        {
+            ViewFactory.changeTextFieldUIForDisplay(nameTF, false);
+        }
 
         //----------------------- Table List -----------------------------
         final ValComboBox         tableCBX  = fvo.getCompById("tableCBX");
@@ -364,9 +382,9 @@ public class TypeSearchListEditor extends CustomDialog
         if (tblId > 0)
         {
             Class<?> cls = DBTableIdMgr.getInstance().getInfoById(tblId).getClassObj();
-            List<DataObjSwitchFormatter>   list          = DataObjFieldFormatMgr.getInstance().getFormatterList(cls);
+            List<DataObjSwitchFormatter>   dofClsList    = DataObjFieldFormatMgr.getInstance().getFormatterList(cls); // Formatters per a Class
             final ValComboBox              dataObjFmtCbx = fvo.getCompById("dataObjFormatterNameCBX");
-            Vector<DataObjSwitchFormatter> dofList       = new Vector<DataObjSwitchFormatter>(list);
+            Vector<DataObjSwitchFormatter> dofList       = new Vector<DataObjSwitchFormatter>(dofClsList);
             dataObjFmtCbx.setModel(new DefaultComboBoxModel(dofList));
             
             if (dofList.size() > 0)

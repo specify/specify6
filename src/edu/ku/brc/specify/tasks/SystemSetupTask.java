@@ -1130,8 +1130,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
 	                    TypeSearchForQueryFactory.getInstance().save();
 	                    
 	                    TypeSearchListEditor tse = new TypeSearchListEditor();
-	                    tse.setVisible(true);
-	                    tse.pack();
+	                    UIHelper.centerAndShow(tse);
 	                }
 	            }); 
 	            mid = new MenuItemDesc(mi, SYSTEM_MENU);
