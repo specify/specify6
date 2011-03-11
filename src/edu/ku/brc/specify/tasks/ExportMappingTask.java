@@ -3,6 +3,11 @@
  */
 package edu.ku.brc.specify.tasks;
 
+import static edu.ku.brc.ui.UIHelper.centerAndShow;
+import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createLocalizedMenuItem;
+import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
@@ -20,7 +25,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -28,6 +32,8 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -46,6 +52,8 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
@@ -64,9 +72,10 @@ import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCallerIFace;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.USER_ACTION;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.ui.ChooseFromListDlg;
+import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -120,7 +129,7 @@ public class ExportMappingTask extends QueryTask
 	            String    menuTitle = "ExportMappingTask.ExMapMenu"; //$NON-NLS-1$
 	            String    mneu      = "ExportMappingTask.ExMapMneu"; //$NON-NLS-1$
 	            String    desc      = "ExportMappingTask.ExMapDesc"; //$NON-NLS-1$
-	            JMenuItem mi        = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null);
+	            JMenuItem mi        = createLocalizedMenuItem(menuTitle, mneu, desc, true, null);
 	            mi.addActionListener(new ActionListener()
 	            {
 	                public void actionPerformed(ActionEvent ae)
@@ -327,7 +336,7 @@ public class ExportMappingTask extends QueryTask
 				UIRegistry
 						.getResourceString("ExportSchemaMapEditor.ChooseSchemaTitle"),
 				getExportSchemas());
-		UIHelper.centerAndShow(dlg);
+		centerAndShow(dlg);
 		if (dlg.isCancelled()) return null;
 		return dlg.getSelectedObject();
 	}
@@ -549,9 +558,9 @@ public class ExportMappingTask extends QueryTask
 	{
 		List<SpExportSchema> exportSchemas = getExportSchemas(session);
 		Vector<SpQuery> result = new Vector<SpQuery>();
-		for (SpExportSchema exportSchema : exportSchemas)
+		for (SpExportSchema spExportSchema : exportSchemas)
 		{
-			for (SpExportSchemaMapping mapping : exportSchema
+			for (SpExportSchemaMapping mapping : spExportSchema
 					.getSpExportSchemaMappings())
 			{
 				result.add(mapping.getMappings().iterator().next()
@@ -626,18 +635,23 @@ public class ExportMappingTask extends QueryTask
 			{
 				theSession = DataProviderFactory.getInstance().createSession();
 			}
-			String hql = "from SpExportSchemaMapping sesm inner join sesm.mappings maps inner join maps.queryField qf inner join qf.query q where q.id = " + query.getId();
-			QueryIFace q = theSession.createQuery(hql, false);
-			if (q.list().size() == 0)
+			
+			if (theSession != null)
 			{
-				return null;
+    			String hql = "from SpExportSchemaMapping sesm inner join sesm.mappings maps inner join maps.queryField qf inner join qf.query q where q.id = " + query.getId();
+    			QueryIFace q = theSession.createQuery(hql, false);
+    			if (q.list().size() == 0)
+    			{
+    				return null;
+    			}
+    			Object x = q.list().get(0);
+    			return (SpExportSchemaMapping )((Object[] )x)[0];
 			}
-			Object x = q.list().get(0);
-			return (SpExportSchemaMapping )((Object[] )x)[0];
+			return null;
 		}
 		finally
 		{
-			if (createSession)
+			if (createSession && theSession != null)
 			{
 				theSession.close();
 			}
@@ -670,55 +684,51 @@ public class ExportMappingTask extends QueryTask
 		{
 			if (titleText == null && versionText == null)
 			{
-				PanelBuilder pb = new PanelBuilder(new FormLayout(
-						"5dlu, p, 2dlu, p, 5dlu", "p, 2dlu, p, 2dlu, p"));
+			    ColorWrapper requiredFieldColor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
+			    
+				PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, p, 2dlu, f:p:g", "p, 2dlu, p, 2dlu, p"));
 				CellConstraints cc = new CellConstraints();
-				JLabel lbl = new JLabel(
-						getResourceString("ExportMappingTask.SchemaDescTitle"));
-				lbl.setHorizontalAlignment(SwingConstants.RIGHT);
-				pb.add(lbl, cc.xy(2, 1));
-				lbl = new JLabel(
-						getResourceString("ExportMappingTask.SchemaTitleTitle"));
-				lbl.setHorizontalAlignment(SwingConstants.RIGHT);
-				pb.add(lbl, cc.xy(2, 3));
-				lbl = new JLabel(
-						getResourceString("ExportMappingTask.SchemaVersionTitle"));
-				lbl.setHorizontalAlignment(SwingConstants.RIGHT);
-				pb.add(lbl, cc.xy(2, 5));
-				JTextField namespace = new JTextField(xsd
-						.attributeValue("targetNamespace"));
+				pb.add(createI18NFormLabel("ExportMappingTask.SchemaDescTitle"),    cc.xy(2, 1));
+				pb.add(createI18NFormLabel("ExportMappingTask.SchemaTitleTitle"),   cc.xy(2, 3));
+				pb.add(createI18NFormLabel("ExportMappingTask.SchemaVersionTitle"), cc.xy(2, 5));
+				
+				JTextField namespace = createTextField(xsd.attributeValue("targetNamespace"));
 				namespace.setEditable(false);
 				pb.add(namespace, cc.xy(4, 1));
-				JTextField title = new JTextField();
+				
+				final JTextField title = createTextField(40);
+				title.setBackground(requiredFieldColor.getColor());
 				pb.add(title, cc.xy(4, 3));
-				JTextField version = new JTextField();
+				
+				final JTextField version = createTextField();
+				version.setBackground(requiredFieldColor.getColor());
 				pb.add(version, cc.xy(4, 5));
-				CustomDialog cd = new CustomDialog(
+				
+				pb.setDefaultDialogBorder();
+				
+				final CustomDialog dlg = new CustomDialog(
 						(Frame) UIRegistry.get(UIRegistry.FRAME),
-						UIRegistry
-								.getResourceString("ExportMappingTask.SchemaInfoTitle"),
+						UIRegistry.getResourceString("ExportMappingTask.SchemaInfoTitle"),
 						true, CustomDialog.OKCANCEL, pb.getPanel());
 
-				boolean tryAgain = true;
-				while (tryAgain)
+				DocumentListener dl = new DocumentAdaptor()
+		        {
+		            @Override
+		            protected void changed(DocumentEvent e)
+		            {
+		                dlg.getOkBtn().setEnabled(!title.getText().isEmpty() || !version.getText().isEmpty());
+		            }
+		        };
+		        title.getDocument().addDocumentListener(dl);
+		        version.getDocument().addDocumentListener(dl);
+		        
+				centerAndShow(dlg);
+				if (dlg.isCancelled())
 				{
-					UIHelper.centerAndShow(cd);
-					if (!cd.isCancelled())
-					{
-						tryAgain = StringUtils.isBlank(title.getText())
-								|| StringUtils.isBlank(version.getText());
-						if (tryAgain)
-						{
-							UIRegistry.displayInfoMsgDlgLocalized(
-									"ExportMappingTask.FillAllFlds",
-									(Object[]) null);
-						}
-					} else
-					{
-						return false;
-					}
+				    return false;
 				}
-				theTitle = title.getText();
+				
+				theTitle  = title.getText();
 				theVersion = version.getText();
 			}
 			boolean doRollback = false;
@@ -748,7 +758,7 @@ public class ExportMappingTask extends QueryTask
 			}
 			catch (Exception ex)
 			{
-				if (doRollback)
+				if (doRollback && session != null)
 				{
 					session.rollback();
 				}
@@ -762,11 +772,11 @@ public class ExportMappingTask extends QueryTask
 				}
 			}
 		}
-		UIRegistry.displayErrorDlg("Unable to import schema"); //XXX i18n
+		UIRegistry.displayErrorDlgLocalized("ExportMappingTask.MAPPING_ERR");
 		return false;
 	}
 	
-	protected boolean includeGroup(String substitutionGroupName)
+	protected boolean includeGroup(@SuppressWarnings("unused") String substitutionGroupName)
 	{
 		return true;
 	}
@@ -863,7 +873,7 @@ public class ExportMappingTask extends QueryTask
 				ChooseFromListDlg<SpExportSchema> dlg = new ChooseFromListDlg<SpExportSchema>((Frame )UIRegistry.getTopWindow(),
 						getResourceString("ExportMappingTask.DELETE_DLG_TITLE"), 
 						getResourceString("ExportMappingTask.DELETE_DLG_MSG"), -1, schemas);
-				UIHelper.centerAndShow(dlg);
+				centerAndShow(dlg);
 				if (!dlg.isCancelled() && dlg.getSelectedObject() != null)
 				{
 					SpExportSchema selected = dlg.getSelectedObject();
@@ -920,13 +930,13 @@ public class ExportMappingTask extends QueryTask
 		JList list = new JList(model);
 		PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, p:g, 5dlu", "5dlu, p, 3dlu"));
 		CellConstraints cc = new CellConstraints();
-		pb.add(new JLabel(msg), cc.xy(2, 2));
+		pb.add(createLabel(msg), cc.xy(2, 2));
 		JPanel pane = new JPanel(new BorderLayout());
 		pane.add(pb.getPanel(), BorderLayout.NORTH);
 		pane.add(list, BorderLayout.CENTER);
 		CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), UIRegistry.getResourceString("ExportMappingTask.MAPPINGS_TITLE"),
 				true, CustomDialog.OK_BTN, pane);
-		UIHelper.centerAndShow(cd);
+		centerAndShow(cd);
 	}
 	
 	/* (non-Javadoc)
@@ -940,26 +950,23 @@ public class ExportMappingTask extends QueryTask
 
 
 
-	protected JPanel bldSchemaImportPane(String schemaNamespace)
+	protected JPanel bldSchemaImportPane(String schemaNamespace) // I18N
 	{
-		PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, p, 2dlu, p, 5dlu", "p, 2dlu, p, 2dlu, p"));
+		PanelBuilder    pb = new PanelBuilder(new FormLayout("5dlu, p, 2dlu, p, 5dlu", "p, 2dlu, p, 2dlu, p"));
 		CellConstraints cc = new CellConstraints();
-		JLabel lbl = new JLabel("Schema:");
-		lbl.setHorizontalAlignment(SwingConstants.RIGHT);
-		pb.add(lbl, cc.xy(2, 1));
-		lbl = new JLabel("Schema Title:");
-		lbl.setHorizontalAlignment(SwingConstants.RIGHT);
-		pb.add(lbl, cc.xy(2, 3));
-		lbl = new JLabel("Schema Version:");
-		lbl.setHorizontalAlignment(SwingConstants.RIGHT);
-		pb.add(lbl, cc.xy(2, 5));
-		JTextField namespace = new JTextField(schemaNamespace);
-		namespace.setEditable(false);
+		
+		pb.add(createLabel("Schema:", SwingConstants.RIGHT), cc.xy(2, 1));
+		pb.add(createLabel("Schema Title:", SwingConstants.RIGHT), cc.xy(2, 3));
+		pb.add(createLabel("Schema Version:", SwingConstants.RIGHT), cc.xy(2, 5));
+		
+		JTextField namespace = createTextField(schemaNamespace);
+		ViewFactory.changeTextFieldUIForDisplay(namespace, false);
 		pb.add(namespace, cc.xy(4, 1));
-		JTextField title = new JTextField();
-		pb.add(title, cc.xy(4, 3));
-		JTextField version = new JTextField();
-		pb.add(version, cc.xy(4, 5));
+		
+		pb.add(createTextField(), cc.xy(4, 3));
+		
+		pb.add(createTextField(), cc.xy(4, 5));
+		
 		return pb.getPanel();
 	}
 	
@@ -1074,12 +1081,12 @@ public class ExportMappingTask extends QueryTask
 	{
 		Vector<Object[]> names = BasicSQLUtils.query(sql);
 		HashSet<String> nameSet = new HashSet<String>();
-		for (Object[] name : names)
+		for (Object[] nm : names)
 		{
-			nameSet.add((String )name[0]);
+			nameSet.add((String )nm[0]);
 		}
         int    cnt      = 0;
-        String objName    = currentName;
+        String objName  = currentName;
         while (nameSet.contains(objName))
         {
             cnt++;
