@@ -30,6 +30,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -57,6 +58,7 @@ import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.DeaccessionPreparation;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
@@ -88,6 +90,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     private JButton          generateLabelBtn = null;
     private JCheckBox        generateLabelChk = null;
     
+    private AtomicBoolean    processingSeries = new AtomicBoolean(false);
     /**
      * Constructor.
      */
@@ -491,26 +494,39 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
      */
     private void doSeriesProcessing()
     {
-        if (formViewObj != null)
-        {
-        	Component catNumComp = formViewObj.getControlByName(CATNUMNAME);
-        	if (catNumComp instanceof SeriesProcCatNumPlugin)
-        	{
-        		SeriesProcCatNumPlugin spCatNumPlugin = (SeriesProcCatNumPlugin)catNumComp;
-        		if (spCatNumPlugin.isExpanded())
-        		{
-        			DBTableInfo tblInfo       = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()); // don't need to check for null
-        			DBFieldInfo fieldInfo     = tblInfo.getFieldByName(CATNUMNAME);
-        			UIFieldFormatterIFace fmt = fieldInfo.getFormatter();
-        			if (fmt != null && fmt.getAutoNumber() != null && !formViewObj.isAutoNumberOn())
-        			{
-                    
-        				doCreateBatchOfColObj(spCatNumPlugin.getStartAndEndCatNumbers());
-        				spCatNumPlugin.clearEndTextField();
-        			}
-        		}
-        	}
-        }
+		if (!processingSeries.get())
+		{
+			if (formViewObj != null)
+			{
+				Component catNumComp = formViewObj.getControlByName(CATNUMNAME);
+				if (catNumComp instanceof SeriesProcCatNumPlugin)
+				{
+					SeriesProcCatNumPlugin spCatNumPlugin = (SeriesProcCatNumPlugin) catNumComp;
+					if (spCatNumPlugin.isExpanded())
+					{
+						DBTableInfo tblInfo = DBTableIdMgr
+								.getInstance()
+								.getInfoById(CollectionObject.getClassTableId()); // don't
+																					// need
+																					// to
+																					// check
+																					// for
+																					// null
+						DBFieldInfo fieldInfo = tblInfo
+								.getFieldByName(CATNUMNAME);
+						UIFieldFormatterIFace fmt = fieldInfo.getFormatter();
+						if (fmt != null && fmt.getAutoNumber() != null
+								&& !formViewObj.isAutoNumberOn())
+						{
+
+							doCreateBatchOfColObj(spCatNumPlugin
+									.getStartAndEndCatNumbers());
+							spCatNumPlugin.clearEndTextField();
+						}
+					}
+				}
+			}
+		}
     }
     
     
@@ -519,49 +535,92 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
      */
     public void doCreateBatchOfColObj(final Pair<String, String> catNumPair)
     {
-        final String GLASSKEY = "DOBATCHCREATE";
+        if (catNumPair.getFirst().equals(catNumPair.getSecond()))
+        {
+        	return;
+        }
         
-        final int totalItems = 10;
+    	final String GLASSKEY = "DOBATCHCREATE";
+        final String NonIncrementingCatNum = "NonIncrementingCatNum"; 
+        final String BatchSaveSuccess = "CollectionObjectBusRules.BatchSaveSuccess";
+        final String BatchSaveErrors = "CollectionObjectBusRules.BatchSaveErrors";
+        
+        DBFieldInfo CatNumFld = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()).getFieldByColumnName("CatalogNumber"); 
+        final UIFieldFormatterIFace formatter = CatNumFld.getFormatter();
+        if (!formatter.isIncrementer() || !formatter.isNumeric())
+        {
+        	//XXX this will have been checked earlier, right?
+        	UIRegistry.showLocalizedError(NonIncrementingCatNum);
+        	return;
+        }
+        final Vector<String> nums = new Vector<String>();
+        String currentCat = catNumPair.getFirst();
+        //XXX potential for infinite loop
+        //XXX check for second > first, etc...
+        //XXX comparing catnums ...
+        while (!currentCat.equals(catNumPair.getSecond()))
+        {
+        	//getNextNumber currently gets the number after highest existing number, regardless of the arg.
+        	//currentCat = formatter.getNextNumber(currentCat); 
+            currentCat = (String )formatter.formatFromUI(String.valueOf(Integer.valueOf(currentCat).intValue() + 1));
+            nums.add(currentCat);
+        }
         
         SwingWorker<Integer, Integer> worker = new SwingWorker<Integer, Integer>()
         {
-            @Override
+            private Vector<CollectionObject> objectsAdded = new Vector<CollectionObject>();
+            private Vector<CollectionObject> objectsNotAdded = new Vector<CollectionObject>();
+        	@Override
             protected Integer doInBackground() throws Exception
             {
                 int cnt = 0;
+                CollectionObject co = null;
+                //CollectionObject carryForwardCo = (CollectionObject )formViewObj.getCarryFwdDataObj();
+                CollectionObject carryForwardCo = (CollectionObject )formViewObj.getDataObj();
                 try
                 {
-                    for (int i=0;i<10;i++)
+                    DataProviderSessionIFace session = null;
+                    for (String currentCat : nums)
                     {
-                        DataProviderSessionIFace session = null;
                         try
                         {
-                            session = DataProviderFactory.getInstance().createSession();
-                            Thread.sleep(300);
+                            System.out.println(currentCat);
+                            Thread.sleep(300); //Perhaps this is unnecessary, but it seems
+                            //to prevent sporadic "illegal access to loading collection" errors...
                             
+                            co = new CollectionObject();
+                            co.initialize();
+                            
+                            //Collection doesn't get set in co.initialize(), or carryForward, but it needs to be set.
+                            co.setCollection(AppContextMgr.getInstance().getClassObject(Collection.class));
+                            //ditto, but doesn't so much need to be set
+                            co.setModifiedByAgent(carryForwardCo.getModifiedByAgent()); 
+                            
+                            //formViewObj.getCarryFwdInfo().carryForward(formViewObj.getBusinessRules(), formViewObj.getCarryFwdDataObj(), co);
+                            formViewObj.getCarryFwdInfo().carryForward(formViewObj.getBusinessRules(), carryForwardCo, co);
+                            co.setCatalogNumber(currentCat);
+                            formViewObj.setDataObj(co);
+                            formViewObj.saveObject();
+                            objectsAdded.add(co);
                         } catch (Exception ex)
                         {
                             ex.printStackTrace();
-
+                            objectsNotAdded.add(co);
                         } finally 
                         {
-                            if (session != null) session.close();
+                            if (session != null) session.close();                   
                         }
                         cnt++;
                         firePropertyChange(GLASSKEY, 0, cnt);
                     }
-                    firePropertyChange(GLASSKEY, 0, totalItems);
+                    firePropertyChange(GLASSKEY, 0, nums.size());
                     
                 } catch (Exception ex)
                 {
                     ex.printStackTrace();
                     //UIRegistry.showLocalizedError("MySQLBackupService.EXCP_BK");
                     
-                } finally
-                {
-                    
-                }
-                
+                }                
                 return null;
             }
 
@@ -569,8 +628,21 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             protected void done()
             {
                 super.done();
-                
+                processingSeries.set(false);
                 UIRegistry.clearSimpleGlassPaneMsg();
+                if (objectsNotAdded.size() == 0)
+                {
+                	UIRegistry.displayLocalizedStatusBarText(BatchSaveSuccess, formatter.formatToUI(catNumPair.getFirst()), formatter.formatToUI(catNumPair.getSecond()));
+                } else
+                {
+                	String msg = UIRegistry.getResourceString(BatchSaveErrors) + "\n";
+                	//XXX this won't work for large, ento-style, batches
+                	for (CollectionObject na : objectsNotAdded)
+                	{
+                		msg += "\n" + formatter.formatToUI(na.getCatalogNumber());
+                	}
+                	UIRegistry.showError(msg);
+                }
             }
         };
         
@@ -582,11 +654,13 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                         if (GLASSKEY.equals(evt.getPropertyName())) 
                         {
                             double value   = (double)((Integer)evt.getNewValue()).intValue();
-                            int    percent = (int)(value / ((double)totalItems) * 100.0);
+                            int    percent = (int)(value / ((double)nums.size()) * 100.0);
                             gp.setProgress(percent);
+                            
                         }
                     }
                 });
+        processingSeries.set(true);
         worker.execute();
     }
 

@@ -617,6 +617,7 @@ public class Determination extends CollectionMember implements java.io.Serializa
 //        {
 //            ds.getId(); // make sure it is loaded;
 //        }
+    	determinationCitations.size();
     }
     
     /* (non-Javadoc)

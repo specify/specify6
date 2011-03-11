@@ -535,6 +535,7 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         collectingEventAttachments.size();
         //collectionObjects.size();
         collectors.size();
+        collectingEventAttrs.size();
     }
 
     /* (non-Javadoc)

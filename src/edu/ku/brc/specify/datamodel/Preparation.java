@@ -754,6 +754,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     public void forceLoad()
     {
         preparationAttachments.size();
+        preparationAttrs.size();
     }
     
     /* (non-Javadoc)

@@ -6118,11 +6118,27 @@ public class FormViewObj implements Viewable,
         }
     }
     
+    
+    
     //-----------------------------------------------------
     // ValidationListener
     //-----------------------------------------------------
 
-    /* (non-Javadoc)
+    /**
+	 * @return the carryFwdInfo
+	 */
+	public CarryForwardInfo getCarryFwdInfo() {
+		return carryFwdInfo;
+	}
+
+	/**
+	 * @return the carryFwdDataObj
+	 */
+	public Object getCarryFwdDataObj() {
+		return carryFwdDataObj;
+	}
+
+	/* (non-Javadoc)
      * @see ValidationListener#wasValidated(UIValidator)
      */
     public void wasValidated(final UIValidator validator)
