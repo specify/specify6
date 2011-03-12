@@ -220,7 +220,7 @@ public class WebSearchTask extends BaseTask
                 }
             });
             MenuItemDesc rsMI = new MenuItemDesc(mi, menuDesc);
-            rsMI.setPosition(MenuItemDesc.Position.After);
+            rsMI.setPosition(MenuItemDesc.Position.Bottom);
             menuItems.add(rsMI);
         }
         

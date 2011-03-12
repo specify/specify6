@@ -520,6 +520,7 @@ public class PluginsTask extends BaseTask
             JMenuItem mi        = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null);
             mi.addActionListener(new ActionListener()
             {
+                @Override
                 public void actionPerformed(ActionEvent ae)
                 {
                     PluginsTask.this.requestContext();
@@ -527,6 +528,7 @@ public class PluginsTask extends BaseTask
             });
             MenuItemDesc rsMI = new MenuItemDesc(mi, menuDesc);
             rsMI.setPosition(MenuItemDesc.Position.After);
+            rsMI.setSepPosition(MenuItemDesc.Position.Before);
             menuItems.add(rsMI);
         }
         

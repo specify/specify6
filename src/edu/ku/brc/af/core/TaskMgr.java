@@ -364,15 +364,22 @@ public class TaskMgr implements CommandListener
             {
                 Container menuComp = ((JMenu)parent).getPopupMenu();
                 boolean found     = false;
-                int     insertPos = menuComp.getComponentCount();
+                int     insertPos = menuComp.getComponentCount(); // last position
+                JMenu   menu      = (JMenu)parent;
                 
                 if (menuItemDesc.getPosition() == MenuItemDesc.Position.Top)
                 {
                     insertPos = 0;
+                    log.debug(String.format("0 Inserted: %s - %d", ((JMenuItem)me).getText(), insertPos));
+                    
+                } else if (menuItemDesc.getPosition() == MenuItemDesc.Position.Bottom)
+                {
+                    log.debug(String.format("1 Inserted: %s - %d", ((JMenuItem)me).getText(),insertPos));
                 }
                 
-                JMenu menu = (JMenu)parent;
-                if (menuItemDesc.getPosition() != MenuItemDesc.Position.None)
+                
+                if (menuItemDesc.getPosition() == MenuItemDesc.Position.Before || 
+                    menuItemDesc.getPosition() == MenuItemDesc.Position.After)
                 {
                     int inx = 0;
                     for (int i=0;i<menuComp.getComponentCount();i++)
@@ -400,6 +407,7 @@ public class TaskMgr implements CommandListener
                 } else
                 {
                     menu.add((JMenuItem)me, insertPos);
+                    log.debug(String.format("2 Inserted: %s - %d", ((JMenuItem)me).getText(),insertPos));
                     found = true;
                 }
                 
@@ -410,6 +418,8 @@ public class TaskMgr implements CommandListener
                     if (found)
                     {
                         menu.add(new JPopupMenu.Separator(), insertPos);
+                        log.debug(String.format("3 Inserted: Sep - %d", insertPos));
+
                     }
                 }
             } else if (parent instanceof JMenuItem)
@@ -426,6 +436,7 @@ public class TaskMgr implements CommandListener
                         break;
                     }
                 }
+                log.debug(String.format("4 Inserted: %s - %d", ((JMenuItem)me).getText(), menuItemDesc.getPosition() == MenuItemDesc.Position.After ? pos + 1 : pos));
                 menu.insert((JMenuItem)me, menuItemDesc.getPosition() == MenuItemDesc.Position.After ? pos + 1 : pos);
             }
             
@@ -434,6 +445,12 @@ public class TaskMgr implements CommandListener
             String label = getResourceString(menuPath[currIndex]);
 
             MenuElement menuElement = getMenuByName(parent, label);
+            
+            log.debug(menuPath[currIndex]+" -> "+label+ " "+menuElement);
+            if (parent instanceof JMenuItem) log.debug(((JMenuItem)parent).getText());
+            else if (parent instanceof JMenu) log.debug(((JMenu)parent).getText());
+            else if (parent instanceof JMenuBar) log.debug("MenuBar");
+            
             if (menuElement == null)
             {
                 UIRegistry.showError("Couldn't find menu element ["+label+"]"); //$NON-NLS-1$ //$NON-NLS-2$

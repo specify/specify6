@@ -1007,66 +1007,83 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      */
     public List<MenuItemDesc> getMenuItems()
     {
-        final String COLSETUP_MENU   = "Specify.COLSETUP_MENU";
+        final String COLSETUP_MENU    = "Specify.COLSETUP_MENU";
         final String TREES_MENU       = "Specify.TREES_MENU";
-        final String SYSTEM_MENU     = "Specify.SYSTEM_MENU";
-        final String FULL_SYSTEM_MENU = SYSTEM_MENU + "/" + COLSETUP_MENU;
-        final String FULL_TREE_MENU  = SYSTEM_MENU + "/" + TREES_MENU;
+        final String SYSTEM_MENU      = "Specify.SYSTEM_MENU";
+        final String FULL_SYSTEM_MENU  = SYSTEM_MENU + "/" + COLSETUP_MENU;
+        final String FULL_TREE_MENU   = SYSTEM_MENU + "/" + TREES_MENU;
         SecurityMgr secMgr = SecurityMgr.getInstance();
         
         menuItems = new Vector<MenuItemDesc>();
         
         MenuItemDesc mid;
-        /*mid = createDataObjEditMenu(edu.ku.brc.specify.datamodel.Collection.class, "", FULL_SYSTEM_MENU);
+        String       titleArg; 
+        String       mneu; 
+        JMenuItem    mi;
+        
+        String menuDesc = getResourceString(TREES_MENU);
+        
+        
+        JMenu formsMenu = UIHelper.createLocalizedMenu("Specify.FORMS_MENU", "Specify.FORMS_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
+        mid = new MenuItemDesc(formsMenu, SYSTEM_MENU);
+        mid.setPosition(MenuItemDesc.Position.Top, menuDesc);
         mid.setSepPosition(MenuItemDesc.Position.After);
         menuItems.add(mid);
-        menuItems.add(createDataObjEditMenu(Discipline.class,  "", FULL_SYSTEM_MENU));
-        menuItems.add(createDataObjEditMenu(Division.class,    "", FULL_SYSTEM_MENU));
-        menuItems.add(createDataObjEditMenu(Institution.class, "", FULL_SYSTEM_MENU));
-        */
         
-        String    titleArg; 
-        String    mneu; 
-        JMenuItem mi;
-        String    menuDesc = getResourceString(TREES_MENU);
+        JMenu treesMenu = UIHelper.createLocalizedMenu("Specify.TREES_MENU", "Specify.TREES_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
+        mid = new MenuItemDesc(treesMenu, SYSTEM_MENU);
+        mid.setPosition(MenuItemDesc.Position.Top, menuDesc);
+        menuItems.add(mid);
         
-        if (!AppContextMgr.isSecurityOn()
-				|| SpecifyUser.isCurrentUserType(UserType.Manager))
+        JMenu setupMenu = UIHelper.createLocalizedMenu("Specify.COLSETUP_MENU", "Specify.COLSETUP_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
+        mid = new MenuItemDesc(setupMenu, SYSTEM_MENU);
+        mid.setPosition(MenuItemDesc.Position.Top, menuDesc);
+        menuItems.add(mid);
+        
+        if (!AppContextMgr.isSecurityOn() ||
+            (getPermissions() != null && getPermissions().canAdd()))
+        {
+            titleArg = getI18NKey("COLL_CONFIG");
+            mneu = getI18NKey("COLL_CONFIG_MNEU");
+            mi = UIHelper.createLocalizedMenuItem(titleArg, mneu, titleArg, true, null);
+            mi.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    SystemSetupTask.this.requestContext();
+                }
+            });
+            mid = new MenuItemDesc(mi, FULL_SYSTEM_MENU);
+            mid.setPosition(MenuItemDesc.Position.Top, FULL_SYSTEM_MENU);
+            menuItems.add(mid);
+        }
+        
+        if (!AppContextMgr.isSecurityOn() || SpecifyUser.isCurrentUserType(UserType.Manager))
 		{
 			Vector<BaseTreeTask<?,?,?>> trees = new Vector<BaseTreeTask<?,?,?>>(TreeTaskMgr.getInstance().getTreeTasks());
 			Collections.sort(trees, new Comparator<BaseTreeTask<?,?,?>>(){
-
-				/* (non-Javadoc)
-				 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-				 */
 				@Override
 				public int compare(BaseTreeTask<?, ?, ?> arg0, BaseTreeTask<?, ?, ?> arg1)
 				{
 					return arg0.getTitle().compareTo(arg1.getTitle());
 				}
-				
 			});
+			
         	for (final BaseTreeTask<?, ?, ?> tree : trees)
 			{
 				titleArg = getResourceString(getI18NKey("Tree_MENU")) + " " + tree.getTitle(); //$NON-NLS-1$
-				mneu = getI18NKey("Trees_MNU"); //$NON-NLS-1$
-				mi = UIHelper.createMenuItemWithAction((JMenu) null, titleArg,
-						mneu, titleArg, true, null);
+				mneu     = getI18NKey("Trees_MNU"); //$NON-NLS-1$
+				mi       = UIHelper.createMenuItemWithAction((JMenu) null, titleArg, mneu, titleArg, true, null);
 				mi.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent ae)
 					{
-						SwingUtilities.invokeLater(new Runnable(){
-
-							/* (non-Javadoc)
-							 * @see java.lang.Runnable#run()
-							 */
+						SwingUtilities.invokeLater(new Runnable() {
 							@Override
 							public void run()
 							{
 								doTreeUpdate(tree);							
 							}
 						});
-						
 					}
 				});
 				mi.setVisible(tree.isTreeOnByDefault());
@@ -1087,14 +1104,16 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             mneu     = getI18NKey("RIE_MNU");  //$NON-NLS-1$
             mi       = UIHelper.createLocalizedMenuItem(titleArg, mneu, titleArg, true, null); 
             mi.addActionListener(new ActionListener()
-                    {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            doResourceImportExport();
-                        }
-                    });
+            {
+                @Override
+                public void actionPerformed(ActionEvent ae)
+                {
+                    doResourceImportExport();
+                }
+            });
             mid = new MenuItemDesc(mi, SYSTEM_MENU);
-            mid.setPosition(MenuItemDesc.Position.After, menuDesc);
+            mid.setPosition(MenuItemDesc.Position.Bottom, menuDesc);
+            mid.setSepPosition(MenuItemDesc.Position.After);
             menuItems.add(mid);
         }
         
@@ -1107,14 +1126,15 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             mneu     = getI18NKey("SCHEMA_CONFIG_MNU");  //$NON-NLS-1$
             mi       = UIHelper.createLocalizedMenuItem(titleArg, mneu, titleArg, true, null);
             mi.addActionListener(new ActionListener()
-                    {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                        	doSchemaConfig(SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
-                        }
-                    });
+            {
+                @Override
+                public void actionPerformed(ActionEvent ae)
+                {
+                	doSchemaConfig(SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
+                }
+            });
             mid = new MenuItemDesc(mi, SYSTEM_MENU);
-            mid.setPosition(MenuItemDesc.Position.After, menuDesc);
+            mid.setPosition(MenuItemDesc.Position.Bottom);
             menuItems.add(mid);
             
             if (AppPreferences.getLocalPrefs().getBoolean("TYPESEARCH.ENABLE", false))
@@ -1125,6 +1145,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
 	            mi = UIHelper.createLocalizedMenuItem(titleArg, mneu, titleArg, true, null);
 	            mi.addActionListener(new ActionListener()
 	            {
+	                @Override
 	                public void actionPerformed(ActionEvent ae)
 	                {
 	                    TypeSearchForQueryFactory.getInstance().save();
@@ -1134,7 +1155,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
 	                }
 	            }); 
 	            mid = new MenuItemDesc(mi, SYSTEM_MENU);
-	            mid.setPosition(MenuItemDesc.Position.After, menuDesc);
+	            mid.setPosition(MenuItemDesc.Position.Bottom);
 	            menuItems.add(mid);
             }
         }
@@ -1148,34 +1169,18 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             mneu     = getI18NKey("WBSCHEMA_CONFIG_MNU");  //$NON-NLS-1$
             mi       = UIHelper.createLocalizedMenuItem(titleArg, mneu, titleArg, true, null); 
             mi.addActionListener(new ActionListener()
-                    {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            doWorkBenchSchemaConfig();
-                        }
-                    });
+            {
+                @Override
+                public void actionPerformed(ActionEvent ae)
+                {
+                    doWorkBenchSchemaConfig();
+                }
+            });
             mid = new MenuItemDesc(mi, SYSTEM_MENU);
-            mid.setPosition(MenuItemDesc.Position.After, menuDesc);
+            mid.setPosition(MenuItemDesc.Position.Bottom, menuDesc);
             menuItems.add(mid);
         }
         
-        if (!AppContextMgr.isSecurityOn() || 
-             (getPermissions() != null && getPermissions().canAdd()))
-        {
-            titleArg = getI18NKey("COLL_CONFIG"); 
-            mneu     = getI18NKey("COLL_CONFIG_MNEU"); 
-            mi = UIHelper.createLocalizedMenuItem(titleArg, mneu, titleArg, true, null);
-            mi.addActionListener(new ActionListener()
-            {
-                public void actionPerformed(ActionEvent ae)
-                {
-                	SystemSetupTask.this.requestContext();
-                }
-            }); 
-            mid = new MenuItemDesc(mi, FULL_SYSTEM_MENU);
-            mid.setPosition(MenuItemDesc.Position.Top, FULL_SYSTEM_MENU);
-            menuItems.add(mid);
-        }
         return menuItems;
     }
     

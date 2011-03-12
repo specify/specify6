@@ -52,7 +52,7 @@ public class MenuItemDesc
     }
     
     /**
-     * Construct the info oject with the menuitem component
+     * Construct the info object with the menuitem component
      * @param menuItem the menuitem
      * @param menuPath the path to the item
      * @param position the position

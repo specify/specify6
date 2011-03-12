@@ -581,25 +581,22 @@ public class CollectionRelTask extends BaseTask
         
         menuItems = new Vector<MenuItemDesc>();
         
-        MenuItemDesc mid;
-        JMenuItem mi;
-        String    menuDesc = getResourceString(COLREL_MENU);
-
         String securityName = "Task." + COLREL_SECURITY;
         if (!AppContextMgr.isSecurityOn() || 
             (secMgr.getPermission(securityName) != null && 
              !secMgr.getPermission(securityName).hasNoPerm()))
         {
-            mi       = UIHelper.createLocalizedMenuItem(COLREL_MENU, COLREL_MNU, COLREL_TITLE, true, null); 
+            JMenuItem mi = UIHelper.createLocalizedMenuItem(COLREL_MENU, COLREL_MNU, COLREL_TITLE, true, null); 
             mi.addActionListener(new ActionListener()
-                    {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            createRelMgrUI();
-                        }
-                    });
-            mid = new MenuItemDesc(mi, SYSTEM_MENU);
-            mid.setPosition(MenuItemDesc.Position.After, menuDesc);
+            {
+                @Override
+                public void actionPerformed(ActionEvent ae)
+                {
+                    createRelMgrUI();
+                }
+            });
+            MenuItemDesc mid = new MenuItemDesc(mi, SYSTEM_MENU);
+            mid.setPosition(MenuItemDesc.Position.Bottom);
             menuItems.add(mid);
         }
         

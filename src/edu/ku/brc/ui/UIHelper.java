@@ -1305,10 +1305,22 @@ public final class UIHelper
      */
     public static JMenu createLocalizedMenu(final JMenuBar menuBar, final String labelKey, final String mneuKey)
     {
+        return menuBar.add(createLocalizedMenu(labelKey, mneuKey));
+    }
+    
+    /**
+     * Create a menu.
+     * @param menuBar the menubar
+     * @param labelKey the label key to be localized
+     * @param mneuKey the mneu key to be localized
+     * @return returns a menu
+     */
+    public static JMenu createLocalizedMenu(final String labelKey, final String mneuKey)
+    {
         JMenu menu = null;
         try
         {
-            menu = menuBar.add(new JMenu(getResourceString(labelKey)));
+            menu = new JMenu(getResourceString(labelKey));
             if (oSType != OSTYPE.MacOSX)
             {
                 setLocalizedMnemonic(menu, mneuKey);
