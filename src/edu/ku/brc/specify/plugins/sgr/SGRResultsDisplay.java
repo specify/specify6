@@ -430,27 +430,27 @@ public class SGRResultsDisplay extends BaseResultsDisplay
                     valRow[valRow.length-1] = (int)(((score  / maxScore) * 100.0) + 0.5);
                     
                     String[] colors   = analysis.getTDColorCodes();
-                    Color[]  colorRow = colorGrid.get(rowInx);
+                    Color[]  colorRow = rowInx < colorGrid.size() ? colorGrid.get(rowInx) : new Color[colorGrid.size()];
                     for (int i=0;i<colorRow.length-1;i++)
                     {
                         colorRow[i] = Color.GRAY;
                     }
                     colorRow[colorRow.length-1] = Color.BLACK;
                     
-                    for (String colName : wbNames)
+                    for (String colNm : wbNames)
                     {
-                        if (colName != null)
+                        if (colNm != null)
                         {
-                            boolean isStartDate = colName.equals("startdate");
-                            Integer dIndex = RawData.getIndex(colName);
-                            Integer sIndex = wbColToIndexHash.get(colName);
-                            System.out.println(colName+"  dIndex:"+dIndex+"  sIndex:"+sIndex+"  colorRow.length:"+colorRow.length+"  colors.length:"+colors.length+"  "+Color.GRAY.getBlue());
+                            boolean isStartDate = colNm.equals("startdate");
+                            Integer dIndex = RawData.getIndex(colNm);
+                            Integer sIndex = wbColToIndexHash.get(colNm);
+                            System.out.println(colNm+"  dIndex:"+dIndex+"  sIndex:"+sIndex+"  colorRow.length:"+colorRow.length+"  colors.length:"+colors.length+"  "+Color.GRAY.getBlue());
                             
                             if (dIndex != null && srcIndex != null && 
                                 (isStartDate || dIndex < colors.length) && sIndex < colorRow.length)
                             {
                                 String rgb = isStartDate ? colors[AnalysisBase.DAY_INX] : colors[dIndex];
-                                System.out.println(colName+"  colorStr:"+rgb+"  dIndex:"+dIndex+"  sIndex:"+sIndex);
+                                System.out.println(colNm+"  colorStr:"+rgb+"  dIndex:"+dIndex+"  sIndex:"+sIndex);
                                 if (rgb != null)
                                 {
                                     Color c = colorHash.get(rgb);

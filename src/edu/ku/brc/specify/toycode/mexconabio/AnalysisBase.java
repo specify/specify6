@@ -867,10 +867,15 @@ public class AnalysisBase
         
         int score = 0;
         
-         score += compareDate(year, mon, day, refYear, refMon, refDay);
+        score += compareDate(year, mon, day, refYear, refMon, refDay);
         
-        double ratingLoc   = longStringCompare(refLocality.toLowerCase(),  locality.toLowerCase(), false, true);
-        double ratingColtr = longStringCompare(refCollector.toLowerCase(), collector.toLowerCase(), false, true);
+        String refCollectorStr = refCollector != null ? refCollector.toLowerCase() : "";
+        String collectorStr    = collector != null ? collector.toLowerCase() : "";
+        String refLocStr       = refLocality != null ? refLocality.toLowerCase() : "";
+        String locStr          = locality != null ? locality.toLowerCase() : "";
+        
+        double ratingLoc   = longStringCompare(refLocStr,  locStr, false, true);
+        double ratingColtr = longStringCompare(refCollectorStr, collectorStr, false, true);
         
         if (ratingLoc > 50.0)
         {
