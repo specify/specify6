@@ -2116,8 +2116,10 @@ public class Uploader implements ActionListener, KeyListener
                         {
                             if (o1.containsAll(o2)) { return 0; }
                             // else
-                            return o1.size() == 0 ? 0 /* ?? */: o1.get(0).getName().compareTo(
-                                    o2.get(0).getName());
+                            if (o1.size() == 0) return 0;
+                            int id1 = o1.get(0).getTableInfo().getTableId();
+                            int id2 = o2.get(0).getTableInfo().getTableId();
+                            return id1 < id2 ? -1 : (id1 == id2 ? 0 : 1);
                         }
                         return o1.size() < o2.size() ? -1 : 1;
                         
@@ -2375,21 +2377,14 @@ public class Uploader implements ActionListener, KeyListener
             }
             if (missingTbls.size() > 0)
             {
-                boolean first = true;
+                Vector<Pair<String, Vector<Table>>> missingTblHints = new Vector<Pair<String, Vector<Table>>>();
+            	int h = 1;
                 for (Vector<Table> tbls : missingTbls)
                 {
                     String msg = "";
-                    if (first)
-                    {
-                        msg = getResourceString("WB_UPLOAD_MISSING_TBL");
-                    }
-                    else
-                    {
-                        msg += "    ";
-                    }
                     if (tbls != null && tbls.size() > 0)
                     {
-                        msg += " (";
+                        msg += " ";
                         for (int t=0; t<tbls.size(); t++)
                         {
                             if (t > 0)
@@ -2398,26 +2393,26 @@ public class Uploader implements ActionListener, KeyListener
                             }
                             msg += tbls.get(t).getTableInfo().getTitle();
                         }
-                        msg += ")";
-                    }
-                    else
-                    {
-                        if (first)
-                        {
-                            msg += " (" + getResourceString("WB_UPLOAD_UNKNOWN_MISSING_DATA") + ")";
-                        }
-                        else
-                        {
-                            msg = "";
-                        }
                     }
                     if (!msg.equals(""))
                     {
-                        errors.add(new InvalidStructure(msg, tbls));
+                    	missingTblHints.add(new Pair<String, Vector<Table>>(
+                    			String.format(getResourceString("WB_UPLOAD_MISSING_TBL_HINT"), h++, msg), 
+                    			tbls));
                     }
-                    first = false;
                 }
-
+                if (missingTblHints.size() > 0)
+                {
+                    errors.add(new BaseUploadMessage(getResourceString("WB_UPLOAD_MISSING_TBL_HINTS")));
+                    for (Pair<String, Vector<Table>> hint : missingTblHints)
+                    {
+                    	errors.add(new InvalidStructure("   " + hint.getFirst(), hint.getSecond()));
+                    }
+                }
+                else 
+                {
+                	errors.add(new BaseUploadMessage(getResourceString("WB_UPLOAD_MISSING_TBL_NO_HINTS")));
+                }
             }
         }
         catch (DirectedGraphException ex)
