@@ -76,6 +76,7 @@ public class AttachmentBusRules extends BaseBusRules
     private ValBrowseBtnPanel browser = null;
     private Component morphbankPanel = null;
     private Component origComp = null;
+    private MultiView imageAttributeMultiView = null;
     
     /**
      * 
@@ -96,7 +97,10 @@ public class AttachmentBusRules extends BaseBusRules
         if (formViewObj != null)
         {
             morphbankPanel = formViewObj.getCompById("morphbankpanel");
-        	
+
+            imageAttributeMultiView = formViewObj.getKids() != null && formViewObj.getKids().size() > 0 
+            	? formViewObj.getKids().get(0) : null;
+
             origComp  = formViewObj.getCompById("origFilename");
             final Component titleComp = formViewObj.getCompById("title");
             
@@ -243,11 +247,8 @@ public class AttachmentBusRules extends BaseBusRules
            		}
            	}
            	//MultiView mvobj = formViewObj.getKids().get(0);
-            FormViewObj aiafv = null;
-            if (formViewObj.getKids() != null && formViewObj.getKids().size() > 0)
-            {
-            	formViewObj.getKids().get(0).getCurrentViewAsFormViewObj();
-            }
+            FormViewObj aiafv = imageAttributeMultiView == null ? null
+            		: imageAttributeMultiView.getCurrentViewAsFormViewObj();
             if (aiafv != null)
             {
                 //hide add/delete buttons. 
@@ -371,6 +372,9 @@ public class AttachmentBusRules extends BaseBusRules
         setupImageAttributeView();
 	}
 
+	/**
+	 * shows/hides image attribute view based on type of attachment 
+	 */
 	private void setupImageAttributeView()
 	{
         if (origComp != null) 
@@ -379,13 +383,12 @@ public class AttachmentBusRules extends BaseBusRules
            		 browser.getValue().toString();
            	if (fileName != null && !fileName.isEmpty())
            	{
-           		MultiView mvobj = formViewObj.getKids() != null && formViewObj.getKids().size() > 0 ? formViewObj.getKids().get(0) : null;
            		String mimeType = fileName == null ? null : AttachmentUtils.getMimeType(fileName);
            		boolean isImage = mimeType != null && mimeType.startsWith("image");
-           		if (mvobj != null)
+           		if (imageAttributeMultiView != null)
            		{
-               		mvobj.setVisible(isImage);
-           			Dialog dlg = UIHelper.getDialog(mvobj);
+           			imageAttributeMultiView.setVisible(isImage);
+           			Dialog dlg = UIHelper.getDialog(imageAttributeMultiView);
            			if (dlg != null)
            			{
            				dlg.pack();
