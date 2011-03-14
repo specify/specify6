@@ -243,7 +243,11 @@ public class AttachmentBusRules extends BaseBusRules
            		}
            	}
            	//MultiView mvobj = formViewObj.getKids().get(0);
-            FormViewObj aiafv = formViewObj.getKids().get(0).getCurrentViewAsFormViewObj();
+            FormViewObj aiafv = null;
+            if (formViewObj.getKids() != null && formViewObj.getKids().size() > 0)
+            {
+            	formViewObj.getKids().get(0).getCurrentViewAsFormViewObj();
+            }
             if (aiafv != null)
             {
                 //hide add/delete buttons. 
@@ -375,14 +379,17 @@ public class AttachmentBusRules extends BaseBusRules
            		 browser.getValue().toString();
            	if (fileName != null && !fileName.isEmpty())
            	{
-           		MultiView mvobj = formViewObj.getKids().get(0);
+           		MultiView mvobj = formViewObj.getKids() != null && formViewObj.getKids().size() > 0 ? formViewObj.getKids().get(0) : null;
            		String mimeType = fileName == null ? null : AttachmentUtils.getMimeType(fileName);
            		boolean isImage = mimeType != null && mimeType.startsWith("image");
-           		mvobj.setVisible(isImage);
-           		Dialog dlg = UIHelper.getDialog(mvobj);
-           		if (dlg != null)
+           		if (mvobj != null)
            		{
-           			dlg.pack();
+               		mvobj.setVisible(isImage);
+           			Dialog dlg = UIHelper.getDialog(mvobj);
+           			if (dlg != null)
+           			{
+           				dlg.pack();
+           			}
            		}
            	}
         }
