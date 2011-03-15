@@ -4973,7 +4973,6 @@ public class Uploader implements ActionListener, KeyListener
 					edu.ku.brc.exceptions.ExceptionTracker.getInstance()
 							.capture(Uploader.class, ex);
 					session.rollback();
-					throw new RuntimeException(ex);
 				}
 			}
         }

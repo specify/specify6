@@ -273,5 +273,7 @@
     <!-- ImportFileSlicer -->
     <icon name="Splicer"               file="data_split.png" sizes="all"/>
     
+    <!-- ViewMorphBankPage -->
+    <icon name="MorphBankLogo"		  file="mbLogoHeader.png" sizes="all"/>
     
 </icons>

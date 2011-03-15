@@ -28,6 +28,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -44,6 +45,7 @@ import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.MultiView;
@@ -58,14 +60,17 @@ import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
-import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.DeaccessionPreparation;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.Project;
+import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.plugins.SeriesProcCatNumPlugin;
+import edu.ku.brc.specify.tasks.RecordSetTask;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.UIRegistry;
@@ -544,6 +549,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         final String NonIncrementingCatNum = "NonIncrementingCatNum"; 
         final String BatchSaveSuccess = "CollectionObjectBusRules.BatchSaveSuccess";
         final String BatchSaveErrors = "CollectionObjectBusRules.BatchSaveErrors";
+        final String BatchRSBaseName = "CollectionObjectBusRules.BatchRSBaseName";
         
         DBFieldInfo CatNumFld = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()).getFieldByColumnName("CatalogNumber"); 
         final UIFieldFormatterIFace formatter = CatNumFld.getFormatter();
@@ -553,30 +559,42 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         	UIRegistry.showLocalizedError(NonIncrementingCatNum);
         	return;
         }
+
         final Vector<String> nums = new Vector<String>();
-        String currentCat = catNumPair.getFirst();
-        //XXX potential for infinite loop
-        //XXX check for second > first, etc...
-        //XXX comparing catnums ...
-        while (!currentCat.equals(catNumPair.getSecond()))
-        {
-        	//getNextNumber currently gets the number after highest existing number, regardless of the arg.
-        	//currentCat = formatter.getNextNumber(currentCat); 
-            currentCat = (String )formatter.formatFromUI(String.valueOf(Integer.valueOf(currentCat).intValue() + 1));
-            nums.add(currentCat);
-        }
-        
+
         SwingWorker<Integer, Integer> worker = new SwingWorker<Integer, Integer>()
         {
-            private Vector<CollectionObject> objectsAdded = new Vector<CollectionObject>();
-            private Vector<CollectionObject> objectsNotAdded = new Vector<CollectionObject>();
-        	@Override
+            private Vector<Pair<Integer, String>> objectsAdded = new Vector<Pair<Integer, String>>();
+            private Vector<String> objectsNotAdded = new Vector<String>();
+        	private RecordSet batchRS;
+        	
+            @Override
             protected Integer doInBackground() throws Exception
             {
-                int cnt = 0;
+ 
+                String catNum = catNumPair.getFirst();
+                Integer collId = AppContextMgr.getInstance().getClassObject(Collection.class).getId(); 
+                String coIdSql = "select CollectionObjectID from collectionobject where CollectionMemberID = " + collId
+        			+ " and CatalogNumber = '";
+                objectsAdded.add(new Pair<Integer, String>(
+                		(Integer )BasicSQLUtils.querySingleObj(coIdSql + catNum + "'"), catNum));
+                //XXX potential for infinite loop
+                //XXX check for second > first, etc...
+                //XXX comparing catnums ...
+                while (!catNum.equals(catNumPair.getSecond()))
+                {
+                	//getNextNumber currently gets the number after highest existing number, regardless of the arg.
+                	//currentCat = formatter.getNextNumber(currentCat); 
+                	catNum = (String )formatter.formatFromUI(String.valueOf(Integer.valueOf(catNum).intValue() + 1));
+                    nums.add(catNum);
+                }
+
+            	int cnt = 0;
                 CollectionObject co = null;
-                //CollectionObject carryForwardCo = (CollectionObject )formViewObj.getCarryFwdDataObj();
                 CollectionObject carryForwardCo = (CollectionObject )formViewObj.getDataObj();
+                
+                Thread.sleep(300); //Perhaps this is unnecessary, but it seems
+                //to prevent sporadic "illegal access to loading collection" hibernate errors.
                 try
                 {
                     DataProviderSessionIFace session = null;
@@ -585,8 +603,6 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                         try
                         {
                             System.out.println(currentCat);
-                            Thread.sleep(300); //Perhaps this is unnecessary, but it seems
-                            //to prevent sporadic "illegal access to loading collection" errors...
                             
                             co = new CollectionObject();
                             co.initialize();
@@ -596,16 +612,16 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                             //ditto, but doesn't so much need to be set
                             co.setModifiedByAgent(carryForwardCo.getModifiedByAgent()); 
                             
-                            //formViewObj.getCarryFwdInfo().carryForward(formViewObj.getBusinessRules(), formViewObj.getCarryFwdDataObj(), co);
                             formViewObj.getCarryFwdInfo().carryForward(formViewObj.getBusinessRules(), carryForwardCo, co);
                             co.setCatalogNumber(currentCat);
                             formViewObj.setDataObj(co);
                             formViewObj.saveObject();
-                            objectsAdded.add(co);
+                            objectsAdded.add(new Pair<Integer, String>(
+                            		(Integer )BasicSQLUtils.querySingleObj(coIdSql + co.getCatalogNumber() + "'"), co.getCatalogNumber()));
                         } catch (Exception ex)
                         {
                             ex.printStackTrace();
-                            objectsNotAdded.add(co);
+                            objectsNotAdded.add(co.getCatalogNumber());
                         } finally 
                         {
                             if (session != null) session.close();                   
@@ -620,15 +636,87 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                     ex.printStackTrace();
                     //UIRegistry.showLocalizedError("MySQLBackupService.EXCP_BK");
                     
-                }                
+                }
+                saveBatchObjectsToRS();
                 return null;
             }
 
+        	protected void saveBatchObjectsToRS()
+        	{
+        		batchRS = new RecordSet();
+        		batchRS.initialize();
+        		batchRS.setDbTableId(CollectionObject.getClassTableId());
+        		batchRS.setName(getResourceString(BatchRSBaseName) + " " 
+        			+ formatter.formatToUI(catNumPair.getFirst()) + "-" 
+        			+ formatter.formatToUI(objectsAdded.get(objectsAdded.size()-1).getSecond()));
+        		for (Pair<Integer, String> obj : objectsAdded)
+        		{
+        			batchRS.addItem(obj.getFirst());
+        		}
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                boolean transOpen = false;
+                try
+                {
+    				BusinessRulesIFace busRule = DBTableIdMgr.getInstance().getBusinessRule(RecordSet.class);
+    				if (busRule != null)
+    				{
+    					busRule.beforeSave(batchRS, session);
+    				}
+    				batchRS.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+    				batchRS.setOwner(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
+    				session.beginTransaction();
+    				transOpen = true;
+    				session.save(batchRS);
+    				if (busRule != null)
+    				{
+    					if (!busRule.beforeSaveCommit(batchRS, session))
+    					{
+    						session.rollback();
+    						throw new Exception(
+									"Business rules processing failed");
+    					}
+    				}
+    				session.commit();
+    				transOpen = false;
+    				if (busRule != null)
+    				{
+    					busRule.afterSaveCommit(batchRS, session);
+    				}
+                } catch (Exception ex)
+                {
+                	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                	edu.ku.brc.exceptions.ExceptionTracker.getInstance()
+						.capture(Uploader.class, ex);
+                	if (transOpen)
+                	{
+                		session.rollback();
+                	}
+                }
+        	}
+        	
+        	protected void addBatchRSToUI()
+        	{
+        		SwingUtilities.invokeLater(new Runnable() {
+
+					/* (non-Javadoc)
+					 * @see java.lang.Runnable#run()
+					 */
+					@Override
+					public void run() {
+						CommandAction cmd = new CommandAction(RecordSetTask.RECORD_SET, RecordSetTask.ADD_TO_NAV_BOX);
+						cmd.setData(batchRS);
+						CommandDispatcher.dispatch(cmd);
+					}
+        			
+        		});
+        	}
+        	
             @Override
             protected void done()
             {
                 super.done();
                 processingSeries.set(false);
+                addBatchRSToUI();
                 UIRegistry.clearSimpleGlassPaneMsg();
                 if (objectsNotAdded.size() == 0)
                 {
@@ -637,9 +725,9 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 {
                 	String msg = UIRegistry.getResourceString(BatchSaveErrors) + "\n";
                 	//XXX this won't work for large, ento-style, batches
-                	for (CollectionObject na : objectsNotAdded)
+                	for (String na : objectsNotAdded)
                 	{
-                		msg += "\n" + formatter.formatToUI(na.getCatalogNumber());
+                		msg += "\n" + formatter.formatToUI(na);
                 	}
                 	UIRegistry.showError(msg);
                 }

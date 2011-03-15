@@ -240,7 +240,7 @@ public class MorphBankPanel extends UIPluginBase
     	tpb.add(detailsBtn, cc.xy(4, 2));
     	
     	//intent is to use morphbank icon here
-    	viewMBBtn = createIconBtn("InfoIcon", IconManager.IconSize.Std24, null, false, new ActionListener() {
+    	viewMBBtn = createIconBtn("MorphBankLogo", IconManager.IconSize.Std24, null, false, new ActionListener() {
 
 			/* (non-Javadoc)
 			 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
