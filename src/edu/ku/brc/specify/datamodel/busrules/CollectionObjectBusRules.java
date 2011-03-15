@@ -620,7 +620,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                             		(Integer )BasicSQLUtils.querySingleObj(coIdSql + co.getCatalogNumber() + "'"), co.getCatalogNumber()));
                         } catch (Exception ex)
                         {
-                            ex.printStackTrace();
+                            log.error(ex);
                             objectsNotAdded.add(co.getCatalogNumber());
                         } finally 
                         {
@@ -633,9 +633,9 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                     
                 } catch (Exception ex)
                 {
-                    ex.printStackTrace();
-                    //UIRegistry.showLocalizedError("MySQLBackupService.EXCP_BK");
-                    
+					edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+					edu.ku.brc.exceptions.ExceptionTracker.getInstance()
+							.capture(Uploader.class, ex);
                 }
                 saveBatchObjectsToRS();
                 return null;
