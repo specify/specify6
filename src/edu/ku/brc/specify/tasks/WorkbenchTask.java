@@ -44,7 +44,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -1266,19 +1265,15 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             return false;
         }
         
-        
-        //File testFile = new File(path + File.separator + fileName);
-        //if (testFile.exists())
         if (file.exists())
         {
             PanelBuilder    builder = new PanelBuilder(new FormLayout("p:g", "c:p:g"));
             CellConstraints cc      = new CellConstraints();
 
-            builder.add(createLabel("<html>"
-                    +"<p>" + getResourceString("WB_FILE_EXISTS")
-                    +"<br><br>" + getResourceString("WB_OK_TO_OVERWRITE") + "<br>      "
-                    +"</p></html>"), cc.xy(1,1)); 
-            builder.setBorder(BorderFactory.createEmptyBorder(4, 4, 0, 4));
+            String msg = String.format("<html><p>%s<br><br>%s<br></p></html>", getResourceString("WB_FILE_EXISTS"), getResourceString("WB_OK_TO_OVERWRITE"));
+            builder.add(createLabel(msg), cc.xy(1,1)); 
+            builder.setDefaultDialogBorder();
+            
             CustomDialog confirmer = new CustomDialog((Frame)UIRegistry.get(UIRegistry.FRAME), 
                     getResourceString("WB_FILE_EXISTS_TITLE"), true, CustomDialog.OKCANCEL, builder.getPanel(), CustomDialog.CANCEL_BTN);
             UIHelper.centerAndShow(confirmer);
@@ -1289,7 +1284,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             }
         }
         props.setProperty("fileName", path + File.separator + fileName);
-        //props.setProperty("fileName", File.separator + path + fileName);
         return true;
     }
     

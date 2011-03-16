@@ -86,6 +86,9 @@ public class ConvertMiscData
                 if (number != null)
                 {
                     pStmt2.setInt(5, number);
+                } else
+                {
+                    pStmt2.setObject(5, null);
                 }
                 pStmt2.setTimestamp(6, (Timestamp)row[3]);
                 pStmt2.setTimestamp(7, (Timestamp)row[4]);

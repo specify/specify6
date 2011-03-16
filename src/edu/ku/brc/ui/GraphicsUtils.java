@@ -435,6 +435,33 @@ public class GraphicsUtils
      * @param scaledIconSize the new scaled size in pixels
      * @return the scaled icon
      */
+    public static BufferedImage getBufferedImage(final ImageIcon icon)
+    {
+        Image imgMemory = icon.getImage();
+        
+        //make sure all pixels in the image were loaded
+        imgMemory = new ImageIcon(imgMemory).getImage();
+        
+        int w = icon.getIconWidth();
+        int h = icon.getIconHeight();
+        BufferedImage bufferedImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        
+        Graphics2D    graphics2D = bufferedImage.createGraphics();
+        graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, 
+                                    RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        graphics2D.drawImage(imgMemory, 0, 0, w, h, 0, 0, w, h, null);
+        graphics2D.dispose();
+        
+        return bufferedImage;
+    }
+    
+    /**
+     * Gets a scaled icon and if it doesn't exist it creates one and scales it
+     * @param icon image to be scaled
+     * @param iconSize the icon size (Std)
+     * @param scaledIconSize the new scaled size in pixels
+     * @return the scaled icon
+     */
     public static Image getScaledImage(final ImageIcon icon, 
                                        final int     newMaxWidth, 
                                        final int     newMaxHeight, 

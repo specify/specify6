@@ -1903,7 +1903,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="desc"/>
-                    <cell type="field" id="desc" name="description" uitype="textareabrief" rows="2" colspan="6"/>                   
+                    <cell type="field" id="desc" name="description" uitype="textareabrief" rows="2" cols="45" colspan="6"/>                   
                 </row>
             </rows>
         </viewdef>

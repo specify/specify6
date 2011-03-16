@@ -41,26 +41,22 @@ import edu.ku.brc.ui.UIHelper;
 public class SGRResultsChooser extends CustomDialog
 {
     protected SGRResultsDisplay        resultsDisplayPanel;
-    protected List<GroupingColObjData> rowsAndResults;
+    protected List<DataResultsRow>     rowsAndResults;
     protected Vector<RawData>          chosenResults;
     protected boolean                  hasBeenShown;
     protected int                      rowIndex;
-    
-    protected List<RawData>            baseRows;
     
     /**
      * @param parent
      * @param rowsAndResults
      */
     public SGRResultsChooser(final Frame parent, 
-                             final List<RawData> baseRows,
-                             final List<GroupingColObjData> rowsAndResults)
+                             final List<DataResultsRow> rowsAndResults)
     {
         super(parent, "", true, CustomDialog.OKCANCELAPPLYHELP, null);
         
         this.rowsAndResults = rowsAndResults;
         this.hasBeenShown   = false;
-        this.baseRows       = baseRows;
         
         if (rowsAndResults.size() == 0)
         {
@@ -222,11 +218,15 @@ public class SGRResultsChooser extends CustomDialog
         rowIndex++;
         
         // skip any records with no results
-        GroupingColObjData groupObj = rowsAndResults.get(rowIndex);
+        DataResultsRow dataResRow = rowsAndResults.get(rowIndex);
+        if (dataResRow.getRawData() == null)
+        {
+            System.out.println("");
+        }
 
         setTitle(getLocalizedMessage("SGRResultsChooser.TITLE", (rowIndex+1), rowsAndResults.size())); //$NON-NLS-1$
         
-        resultsDisplayPanel.setGroupData(groupObj, baseRows.get(rowIndex));
+        resultsDisplayPanel.setGroupData(dataResRow);
     }
     
     /**

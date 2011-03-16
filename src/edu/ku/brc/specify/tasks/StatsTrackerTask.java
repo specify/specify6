@@ -277,7 +277,7 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
 
         if (discipline != null)
         {
-            stats.add(new NameValuePair("Disicpline_number",  fixParam(discipline.getRegNumber()))); //$NON-NLS-1$
+            stats.add(new NameValuePair("Discipline_number",  fixParam(discipline.getRegNumber()))); //$NON-NLS-1$
         }
 
         if (division != null)

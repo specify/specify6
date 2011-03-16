@@ -22,8 +22,10 @@ package edu.ku.brc.specify.plugins.sgr;
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -36,9 +38,9 @@ import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -48,11 +50,13 @@ import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBInfoBase;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.cleanuptools.DataObjTableModel;
 import edu.ku.brc.specify.dbsupport.cleanuptools.DataObjTableModelRowInfo;
 import edu.ku.brc.specify.plugins.sgr.RawData.DataIndexType;
 import edu.ku.brc.specify.toycode.mexconabio.AnalysisBase;
 import edu.ku.brc.ui.DateParser;
+import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 
@@ -66,39 +70,55 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class SGRResultsDisplay extends BaseResultsDisplay
 {
-    private static final Logger  log = Logger.getLogger(SGRResultsDisplay.class);
+    //private static final Logger  log = Logger.getLogger(SGRResultsDisplay.class);
     private static final HashMap<String, Color> colorHash = new HashMap<String, Color>();
-
     
-                //                       0          1                    2                3
-    private final String[] colNames = {"Id", "Institution Code", "Collection Code", "Catalog Number", 
-                //                       4          5           6            7 
-                                       "Genus", "Species", "Subspecies", "Latitude", 
-                //                       8                9               10              11
-                                       "Longitude", "Lat Long Prec", "Max altitude", "Min altitude", 
-                //                       12                 13          14            15 
+    /*
+     "id, institution_code, collection_code, collector_num, " +
+     "catalogue_number, collector_name, genus, species, " +
+     "subspecies, locality,  CONCAT_WS('-', year, month, day), latitude, " +
+      "longitude, country, state_province, county, " +
+      "continent_ocean, lat_long_precision, max_altitude, min_altitude, " +
+      "altitude_precision, min_depth, max_depth, depth_precision," +
+      "lat_long_precision
+    */
+    
+    private final String[] colNames = {"Id", "Institution Code", "Collection Code", "Collector Number", 
+                                       "Catalog Number", "Collector Name", "Genus", "Species", 
+                                       "Subspecies",  "Locality", "Date", "Latitude", 
+                                       "Longitude", "Country", "State", "County", 
+                                       "Continent Ocean", "Lat Long Prec", "Max altitude", "Min altitude", 
                                        "Alt Precision", "Min Depth", "Max Depth", "Depth Precision", 
-                //                       16                  17         18      19
-                                       "Continent Ocean", "Country", "State", "County", 
-                //                       20                  21         22            23
-                                       "Collector Name", "Locality", "Date", "Collector Number", 
-                //                       24         
                                        "Score"};
-    // Names that match a WorkBench
-                                     //  0          1                 2                3
-    private final String[] wbNames = {"id", "institutioncode", "collectioncode", "catalognumber", 
-            //                       4            5            6             7 
-                                   "genus1", "species1", "subspecies1", "latitude1", 
-            //                       8                9               10              11
-                                   "longitude1", "latlonprec", "maxaltitude", "minaltitude", 
-            //                       12                 13          14            15 
-                                   "altprecision", "minDepth", "maxdepth", "depthprecision", 
-            //                       16            17         18      19
-                                   "continent", "country", "state", "county", 
-            //                       20                  21         22            23
-                                   "collectorname", "localityname", "startdate", "fieldnumber", 
-            //                       24         
-                                   null};
+    
+             //                         0          1                 2                3
+    private final String[] wbNames = {"id", "institutioncode", "collectioncode", "fieldnumber", 
+            //                             4                  5            6             7 
+                                      "catalognumber", "collectorname", "genus1", "species1", 
+            //                           8                9               10          11
+                                      "subspecies1", "localityname", "startdate", "latitude1", 
+            //                            12            13       14      15
+                                      "longitude1", "country", "state", "county", 
+            //                            16             17           18                19
+                                      "continent", "latlonprec",  "maxaltitude", "minaltitude", 
+            //                            20             21         22                23
+                                      "altprecision", "minDepth", "maxdepth", "depthprecision", 
+            //                         24 
+                                      null};
+//--------------------------------------------------------------------------------------------------------------
+//    0              1               2           3           4               5               6
+//"fieldnumber", "catalognumber", "genus1", "species1", "subspecies1", "collectorname", "localityname",
+//  7              8           9        10     11        12        13      14    
+//"latitude1", "longitude1", "year", "month", "day", "country", "state", "county",
+// 15           16              17                18                      19          20          21 
+//"family1", "maxaltitude", "minaltitude", "institutioncode", "collectioncode", "author", "startdate",
+
+    private final Integer[] colIndex = {3, 4, 6, 7, 
+                                        8, 5, 9, 11, 
+                                        12, 10, null, null, 
+                                        13, 14, 15, 19, 
+                                        null, 18, 19, 1, 
+                                        null, 10};
     
     private HashMap<String, Integer> wbColToIndexHash = new HashMap<String, Integer>();
     
@@ -109,11 +129,11 @@ public class SGRResultsDisplay extends BaseResultsDisplay
                                             String.class, String.class, String.class, String.class, 
                                             String.class, String.class, String.class, String.class,
                                             Integer.class, Integer.class, };
-    private final Integer[] colIndex = {23, 1, 2, 3, null, null, 4, 5, 6, 7, 8, 10, 11, 17, 18, 19, 20, 21, 22, null, null};
-
-    protected List<Integer> idList    = new Vector<Integer>();
-    protected List<Integer> rowScores = new Vector<Integer>();
-    protected RawData       baseRow;
+    
+    protected List<Integer>  idList     = new Vector<Integer>();
+    protected List<Integer>  rowScores  = new Vector<Integer>();
+    protected RawData        baseRow;
+    protected DataResultsRow dataResRow;
     
     protected AnalysisBase  analysis  = new AnalysisBase();
     
@@ -131,18 +151,20 @@ public class SGRResultsDisplay extends BaseResultsDisplay
     }
     
     /**
-     * @param groupData
+     * @param dataResRow
      */
-    public void setGroupData(final GroupingColObjData groupData, final RawData baseRow)
+    public void setGroupData(final DataResultsRow dataResultRow)
     {
-        this.baseRow = baseRow;
-        
-        System.out.println(baseRow.toString());
+        this.dataResRow = dataResultRow;
+        this.baseRow    = dataResultRow.getRawData();
         
         hasData = false;
         
         idList.clear();
-        idList.addAll(groupData.getRawIds());
+        if (dataResRow.getGrpRawData() != null)
+        {
+            idList.addAll(dataResRow.getGrpRawData().getRawIds());
+        }
         
         createAndFillModels();
         
@@ -150,6 +172,51 @@ public class SGRResultsDisplay extends BaseResultsDisplay
         botTable.setModel(newModel);
         
         initColorGrid(model.getValues());
+        
+        if (imgView != null)
+        {
+            if (baseRow.getImgIcon() != null)
+            {
+                Dimension     size = imgView.getSize();
+                BufferedImage bi   = null;
+                if (baseRow.getImgIcon().getImage() instanceof BufferedImage)
+                {
+                    bi = (BufferedImage)baseRow.getImgIcon().getImage();
+                } else
+                {
+                    bi = GraphicsUtils.getBufferedImage(baseRow.getImgIcon());
+                }
+                
+                imgView.setJpg(bi);
+                
+                if (bi != null)
+                {
+                    float ratio;
+                    float w = bi.getWidth();
+                    float h = bi.getHeight();
+                    if (w > h)
+                    {
+                        ratio = size.width > w ? w / (float)size.width : (float)size.width / w;
+                    } else
+                    {
+                        ratio = size.height > h ? h / (float)size.height : (float)size.height / h;
+                    }
+                    final float ratioF = ratio;
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            imgView.setZoom(ratioF);
+                        }
+                    });
+                    
+                }
+            } else
+            {
+                imgView.setJpg((BufferedImage)null);
+            }
+        }
         
         /*
         Color CADETBLUE = new Color(166, 121, 0);
@@ -243,12 +310,15 @@ public class SGRResultsDisplay extends BaseResultsDisplay
                 colorGrid.add(colorRow);
             }
             
-            Color[] colors = new Color[colorGrid.get(0).length];
-            for (int i=0;i<colors.length;i++)
+            if (colorGrid != null && colorGrid.size() > 0)
             {
-                colors[i] = Color.BLACK;
+                Color[] colors = new Color[colorGrid.get(0).length];
+                for (int i=0;i<colors.length;i++)
+                {
+                    colors[i] = Color.BLACK;
+                }
+                colorGrid.insertElementAt(colors, 0);
             }
-            colorGrid.insertElementAt(colors, 0);
         }
 
     }
@@ -267,11 +337,13 @@ public class SGRResultsDisplay extends BaseResultsDisplay
             @Override
             protected String buildSQL()
             {
-                String sql = " SELECT id, institution_code, collection_code, " +
-                              "catalogue_number, genus, species, subspecies, latitude, longitude, " +
-                              "lat_long_precision, max_altitude, min_altitude, altitude_precision, min_depth, max_depth, depth_precision, " +
-                              "continent_ocean, country, state_province, county, collector_name, " + 
-                              "locality, CONCAT_WS('-', year, month, day), collector_num " +
+                String sql = "SELECT id, institution_code, collection_code, collector_num, " +
+                		     "catalogue_number, collector_name, genus, species, subspecies, locality, " +
+                		     "CONCAT_WS('-', year, SUBSTRING(CONCAT('0' , month), -2), SUBSTRING(CONCAT('0' , day), -2)), " +
+                              "latitude, longitude, country, state_province, county, " +
+                              "continent_ocean, lat_long_precision, max_altitude, min_altitude, " +
+                              "altitude_precision, min_depth, max_depth, depth_precision," +
+                              "lat_long_precision " +
                               "FROM raw WHERE ID in (%s)";
                 
                 StringBuilder sb = new StringBuilder();
@@ -284,7 +356,7 @@ public class SGRResultsDisplay extends BaseResultsDisplay
                 String fullSQL = String.format(sql, sb.toString());
                 log.debug(fullSQL);
                             
-                tableInfo = new DBTableInfo(100, this.getClass().getName(), "raw", "id", "r");
+                tableInfo = new DBTableInfo(100, this.getClass().getName(), "raw2", "id", "r");
                 
                 for (int i=0;i<colNames.length;i++)
                 {
@@ -295,7 +367,7 @@ public class SGRResultsDisplay extends BaseResultsDisplay
                     if (StringUtils.isNotEmpty(wbNames[i]))
                     {
                         wbColToIndexHash.put(wbNames[i], i);
-                        System.out.println("mappingv["+wbNames[i]+"]  i["+i+"]");
+                        //System.out.println("mappingv["+wbNames[i]+"]  i["+i+"]");
                     }
                 }
                 numColumns = colNames.length;
@@ -311,9 +383,13 @@ public class SGRResultsDisplay extends BaseResultsDisplay
                                              final ArrayList<DataObjTableModelRowInfo> rowInfoList)
             {
                 super.addAdditionalRows(colDefItems, rowInfoList);
+                if (baseRow == null)
+                {
+                    return;
+                }
                 
                 initColorGrid(values);
-
+                
                 Object[] row = new Object[colDefItems.size()];
                 for (String colName : wbNames)
                 {
@@ -358,6 +434,12 @@ public class SGRResultsDisplay extends BaseResultsDisplay
                 
                 values.insertElementAt(row, 0);
                 
+                if (dataResRow.getGrpSNIBData() != null)
+                {
+                    addSNIBRows(dataResRow, colDefItems.size(), values, rowInfoList);
+                }
+                
+                System.out.println("---------------- REF ROW ------------------");
                 Object[] refRow = new Object[AnalysisBase.NUM_FIELDS];
                 for (DataIndexType dit : DataIndexType.values())
                 {
@@ -371,10 +453,13 @@ public class SGRResultsDisplay extends BaseResultsDisplay
                 
                 row[row.length-1] = 100;
                 
-                Color[] cr = colorGrid.get(0);
-                for (int i=0;i<cr.length-1;i++)
+                if (colorGrid.size() > 0)
                 {
-                    cr[i] = Color.BLACK;
+                    Color[] cr = colorGrid.get(0);
+                    for (int i=0;i<cr.length-1;i++)
+                    {
+                        cr[i] = Color.BLACK;
+                    }
                 }
                 
                 Object[] cmpRow = new Object[AnalysisBase.NUM_FIELDS];
@@ -387,6 +472,7 @@ public class SGRResultsDisplay extends BaseResultsDisplay
                         cmpRow[ii] = null;
                     }
                         
+                    System.out.println("----- Compare Rows -------------");
                     for (String colName : wbNames)
                     {
                         if (colName != null)
@@ -408,15 +494,15 @@ public class SGRResultsDisplay extends BaseResultsDisplay
                     String  dateStr  = (String)valRow[srcIndex];
                     if (StringUtils.isNotEmpty(dateStr))
                     {
-                        DateParser dp = new DateParser("yyyy-MM-dd");
-                        Date date = dp.parseDate(dateStr);
+                        DateParser dp   = new DateParser("yyyy-MM-dd");
+                        Date       date = dp.parseDate(dateStr);
                         if (date != null)
                         {
                             Calendar cal = Calendar.getInstance();
                             cal.setTime(date);
-                            cmpRow[DataIndexType.eYear.ordinal()] = Integer.toString(cal.get(Calendar.YEAR));
+                            cmpRow[DataIndexType.eYear.ordinal()]  = Integer.toString(cal.get(Calendar.YEAR));
                             cmpRow[DataIndexType.eMonth.ordinal()] = Integer.toString(cal.get(Calendar.MONTH)+1);
-                            cmpRow[DataIndexType.eDay.ordinal()] = Integer.toString(cal.get(Calendar.DAY_OF_MONTH));
+                            cmpRow[DataIndexType.eDay.ordinal()]   = Integer.toString(cal.get(Calendar.DAY_OF_MONTH));
                         } else
                         {
                             log.error("Bad date["+dateStr+"]");
@@ -429,13 +515,20 @@ public class SGRResultsDisplay extends BaseResultsDisplay
                     double maxScore = analysis.getMaxScore();
                     valRow[valRow.length-1] = (int)(((score  / maxScore) * 100.0) + 0.5);
                     
+                    System.out.println(String.format("Score: %d,  Max: %5.2f,  Percent: %d", score, maxScore, valRow[valRow.length-1]));
+                    
+                    initColorGrid(values);
+                    
                     String[] colors   = analysis.getTDColorCodes();
                     Color[]  colorRow = rowInx < colorGrid.size() ? colorGrid.get(rowInx) : new Color[colorGrid.size()];
-                    for (int i=0;i<colorRow.length-1;i++)
+                    if (colorRow.length > 0)
                     {
-                        colorRow[i] = Color.GRAY;
+                        for (int i=0;i<colorRow.length-1;i++)
+                        {
+                            colorRow[i] = Color.GRAY;
+                        }
+                        colorRow[colorRow.length-1] = Color.BLACK;
                     }
-                    colorRow[colorRow.length-1] = Color.BLACK;
                     
                     for (String colNm : wbNames)
                     {
@@ -444,13 +537,13 @@ public class SGRResultsDisplay extends BaseResultsDisplay
                             boolean isStartDate = colNm.equals("startdate");
                             Integer dIndex = RawData.getIndex(colNm);
                             Integer sIndex = wbColToIndexHash.get(colNm);
-                            System.out.println(colNm+"  dIndex:"+dIndex+"  sIndex:"+sIndex+"  colorRow.length:"+colorRow.length+"  colors.length:"+colors.length+"  "+Color.GRAY.getBlue());
+                            //System.out.println(colNm+"  dIndex:"+dIndex+"  sIndex:"+sIndex+"  colorRow.length:"+colorRow.length+"  colors.length:"+colors.length+"  "+Color.GRAY.getBlue());
                             
                             if (dIndex != null && srcIndex != null && 
                                 (isStartDate || dIndex < colors.length) && sIndex < colorRow.length)
                             {
                                 String rgb = isStartDate ? colors[AnalysisBase.DAY_INX] : colors[dIndex];
-                                System.out.println(colNm+"  colorStr:"+rgb+"  dIndex:"+dIndex+"  sIndex:"+sIndex);
+                                //System.out.println(colNm+"  colorStr:"+rgb+"  dIndex:"+dIndex+"  sIndex:"+sIndex);
                                 if (rgb != null)
                                 {
                                     Color c = colorHash.get(rgb);
@@ -558,6 +651,72 @@ public class SGRResultsDisplay extends BaseResultsDisplay
         newModel = new DataObjTableModel(connection, 100, model.getItems(), model.getHasDataList(), 
                                          model.getSameValues(), model.getMapInx(), model.getIndexHash());
         newModel.setFirstColBool(false);
+    }
+    
+    private void addSNIBRows(final DataResultsRow dataResRow, 
+                             final int numColumns,
+                             Vector<Object[]>                          values,
+                             final ArrayList<DataObjTableModelRowInfo> rowInfoList)
+    {
+        String snibSQL = "SELECT IdSNIB, InstitutionAcronym, CollectorNumber, CatalogNumber, CONCAT_WS(',', LastNameFather, FirstName), " +
+                         "Genus, Species, Cataegoryinfraspecies, Locality, `Year`, `Month`, `Day`, Latitude, Longitude, " +
+                         "Country, State FROM angiospermas WHERE IdSNIB in (%s)";
+
+        
+        StringBuilder sb = new StringBuilder();
+        for (Integer id : dataResRow.getGrpSNIBData().getRawIds())
+        {
+            if (sb.length() > 0) sb.append(',');
+            sb.append(id);
+        }
+        
+        String fullSQL = String.format(snibSQL, sb.toString());
+        log.debug(fullSQL);      
+        
+       for (Object[] row : BasicSQLUtils.query(connection, fullSQL))
+       {
+           Object[] r = new Object[numColumns];
+           int i = 1;
+           for (int inx=1;inx<numColumns;inx++)
+           {
+               if (i < row.length)
+               {
+                   Object dataObj = row[i];
+                   //System.out.println("["+dataObj+"] "+(dataObj != null ? dataObj.getClass().getSimpleName() : ""));
+                   
+                   if (i == 9)
+                   {
+                       int yr = (Integer)dataObj;
+                       int mn = (Integer)row[++i];
+                       int dy = (Integer)row[++i];
+                       dataObj = String.format("%4d-%02d-%02d", yr, mn, dy);
+                   }
+                   
+                   if (dataObj != null && !(dataObj instanceof String))
+                   {
+                       dataObj = dataObj.toString();
+                   }
+                   System.out.println("["+dataObj+"]");
+                   
+                   r[inx] = dataObj;
+                   if (i == 1) // index '2' is for Collection Catalog Code
+                   {
+                       inx++;
+                       r[inx] = "SNIB";
+                   }
+                       
+               } else
+               {
+                   r[inx] = null;
+               }
+               i++;
+           }
+           r[0] = row[0];
+           rowInfoList.add(new DataObjTableModelRowInfo((Integer)r[0], false, false));
+           values.add(r);
+       }
+       
+       
     }
 
     /* (non-Javadoc)

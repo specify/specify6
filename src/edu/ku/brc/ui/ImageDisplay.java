@@ -58,15 +58,15 @@ import edu.ku.brc.util.FileCache;
 @SuppressWarnings("serial")
 public class ImageDisplay extends JPanel implements GetSetValueIFace
 {
-	protected ImageIcon imageIcon = null;
-	protected boolean isError = false;
-	protected String url;
-	protected boolean isEditMode = true;
-	protected JButton editBtn;
-	protected ImageGetter getter = null;
-	protected String noImageStr = getResourceString("noimage");
-	protected String loadingImageStr = getResourceString("loadingimage");
-	protected boolean isNoImage = true;
+	protected ImageIcon    imageIcon       = null;
+	protected boolean      isError         = false;
+	protected String       url;
+	protected boolean      isEditMode      = true;
+	protected JButton      editBtn;
+	protected ImageGetter  getter          = null;
+	protected String       noImageStr      = getResourceString("noimage");
+	protected String       loadingImageStr = getResourceString("loadingimage");
+	protected boolean      isNoImage       = true;
     protected JFileChooser chooser;
 
 	/**
@@ -173,26 +173,26 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 	/**
 	 *
 	 */
-	protected void simpleLoad()
-	{
-		try
-		{
-			setNoImage(false); // means it is loading it
+    protected void simpleLoad()
+    {
+        try
+        {
+            setNoImage(false); // means it is loading it
 
-			//imgIcon = new ImageIcon(new URL(url));
-			Image img = getToolkit().getImage(new URL(url));
+            // imgIcon = new ImageIcon(new URL(url));
+            Image img = getToolkit().getImage(new URL(url));
 
-			imageIcon = new ImageIcon(img);
-			setImage(imageIcon);
+            imageIcon = new ImageIcon(img);
+            setImage(imageIcon);
 
-		} catch (Exception e)
-		{
-    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImageDisplay.class, e);
-			//log.error(e);
-			e.printStackTrace();
-		}
-	}
+        } catch (Exception e)
+        {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImageDisplay.class, e);
+            // log.error(e);
+            e.printStackTrace();
+        }
+    }
 
 	/**
 	 *
@@ -218,11 +218,11 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 					setImage(icon);
 					repaint();
 					return;
+					
 				} catch (URISyntaxException e)
 				{
-    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImageDisplay.class, e);
-					// TODO Auto-generated catch block
+				    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+				    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImageDisplay.class, e);
 					e.printStackTrace();
 				}
 			}
@@ -237,6 +237,9 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 		repaint();
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
+	 */
 	@Override
 	protected void paintComponent(Graphics g)
 	{

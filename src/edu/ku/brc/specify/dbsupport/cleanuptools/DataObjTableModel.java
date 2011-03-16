@@ -209,15 +209,14 @@ public class DataObjTableModel extends DefaultTableModel
     {
         final String sqlStr = buildSQL();
         
+        TimeLogger tml  = new TimeLogger("Fetching Rows");
+        values = new Vector<Object[]>();
+        
         if (StringUtils.isNotEmpty(sqlStr))
         {
             log.debug(sqlStr);
-            
-            TimeLogger tml  = new TimeLogger("Fetching Rows");
             try
             {
-                values = new Vector<Object[]>();
-                
                 PreparedStatement pStmt = conn.prepareStatement(sqlStr);
                 if (searchValue != null)
                 {
@@ -250,6 +249,7 @@ public class DataObjTableModel extends DefaultTableModel
             {
                 ex.printStackTrace();
             }
+        }
             tml.restart("Step 2 - Addl Rows");
             addAdditionalRows(colDefItems, rowInfoList);
             
@@ -341,7 +341,6 @@ public class DataObjTableModel extends DefaultTableModel
             
             items = new ArrayList<DBInfoBase>(colDefItems);
             doneFillingModels(values);
-        }
     }
     
     /**

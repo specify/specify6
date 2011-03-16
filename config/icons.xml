@@ -94,7 +94,8 @@
     <icon name="Spreadsheet"   file="Grid32x32.png" sizes="all"/>
     <icon name="SpreadsheetEdit" file="GridEdit32x32.png" sizes="all"/>
     <icon name="Export"        file="ExportDataSet20x20.png" sizes="NonStd"/>
-    <icon name="Upload"        file="upload_data.gif" sizes="NonStd"/>    
+    <icon name="Upload"        file="upload_workbench20x20.png" sizes="NonStd"/>    
+    <icon name="ValidateWB"    file="validate_workbench20x20.png" sizes="NonStd"/>    
     <icon name="Eraser"        file="Clear20x20.png"   sizes="NonStd"/>
     <icon name="CardImage"     file="ImageWindow20x20.png" sizes="NonStd"/>
     <icon name="LocalityMapper" file="map20x20.png" sizes="NonStd"/>
@@ -106,7 +107,12 @@
     <icon name="Formatting"     file="formatting.png" sizes="32"/>
     <icon name="WebLink"        file="weblink.png" sizes="32"/>
     
-    <icon name="VisualQuery"   file="Search32x32.png" sizes="32"/>
+    <icon name="VisualQuery"    file="Search32x32.png" sizes="32"/>
+    
+    <icon name="ImageWindow"    file="ImageWindow20x20.png" sizes="NonStd"/>
+    <icon name="IWZoomIn"       file="ImageZoomIn20x20.png" sizes="NonStd"/>
+    <icon name="IWZoomOut"      file="ImageZoomOut20x20.png" sizes="NonStd"/>
+    
 
     <!-- Aliases -->
     <icon name="ShowMap"                   alias="LocalityMapper"/>

@@ -21,10 +21,12 @@ package edu.ku.brc.specify.plugins.sgr;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -38,7 +40,13 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
+import jexifviewer.JImgView;
+import jexifviewer.JSettings;
+import jexifviewer.Main;
+
 import org.apache.log4j.Logger;
+
+import shared.files.JPathHelper;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -48,6 +56,7 @@ import edu.ku.brc.specify.dbsupport.cleanuptools.DataObjTableModel;
 import edu.ku.brc.specify.dbsupport.cleanuptools.DataObjTableModelRowInfo;
 import edu.ku.brc.specify.dbsupport.cleanuptools.FindItemInfo;
 import edu.ku.brc.ui.BiColorTableCellRenderer;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.VerticalSeparator;
 import edu.ku.brc.util.Pair;
@@ -84,6 +93,12 @@ public abstract class BaseResultsDisplay extends JPanel
 
     protected JButton           acceptBtn = null;
     
+    // Image Viewer
+    protected JImgView          imgView;
+    protected JButton           zoomInBtn;
+    protected JButton           zoomOutBtn;
+    protected JButton           normalZoomBtn;
+    
     
     /**
      * 
@@ -92,6 +107,17 @@ public abstract class BaseResultsDisplay extends JPanel
     {
         super();
         this.connection = connection;
+        
+        if (Main.m_settings == null)
+        {
+            Main.m_settings = new JSettings(true);
+            Main.m_settings.load(JPathHelper.addSeparator(System.getProperty("user.home")) + JSettings.SETTINGS_FILE, "1.8");
+            Main.m_sysLocale = Locale.getDefault();
+            if ( Main.m_settings.getLocale().length() > 0)
+            {
+                Locale.setDefault(new Locale( Main.m_settings.getLocale()));
+            }
+        }
     }
     
     /**
@@ -195,8 +221,6 @@ public abstract class BaseResultsDisplay extends JPanel
         topTable.getSelectionModel().addListSelectionListener(lsl);
         botTable.getSelectionModel().addListSelectionListener(lsl);
         
-       
-        
         String colsDef = "f:p:g, p";
         if (hasTools())
         {
@@ -220,7 +244,7 @@ public abstract class BaseResultsDisplay extends JPanel
             outerMidPB.add(getToolsPanel(),                         cc.xy(6, 1));
         }
         
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "f:MAX(400px;p):g,10px,p,10px,200px"), this);
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "f:MAX(200px;p),10px,p,10px,100px,10px,f:p:g"), this);
         
         topTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         botTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -233,12 +257,63 @@ public abstract class BaseResultsDisplay extends JPanel
         //final JScrollPane botScrollPane = UIHelper.createScrollPane(botTable, true);
         final JScrollPane topScrollPane = new JScrollPane(topTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         final JScrollPane botScrollPane = new JScrollPane(botTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        final JScrollPane viewerScrollPane = new JScrollPane(imgView, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        
+        imgView = new JImgView(Main.m_settings.getImgCacheSize());
+        
+        viewerScrollPane.setViewportView(imgView);
+        
+        // Image View UI
+        zoomInBtn     = UIHelper.createButton(IconManager.getIcon("IWZoomIn"));
+        zoomOutBtn    = UIHelper.createButton(IconManager.getIcon("IWZoomOut"));
+        normalZoomBtn = UIHelper.createButton(IconManager.getIcon("ImageWindow"));
+        
+        // Right Vertical Control Panel
+        PanelBuilder rpb = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p,2px,p, f:p:g"));
+       
+        int y = 1;
+        rpb.add(zoomInBtn,     cc.xy(1,y)); y += 2;
+        rpb.add(zoomOutBtn,    cc.xy(1,y)); y += 2;
+        rpb.add(normalZoomBtn, cc.xy(1,y)); y += 2;
+
+        PanelBuilder pbImg = new PanelBuilder(new FormLayout("f:p:g,4px,p", "f:p:g"));
+        pbImg.add(viewerScrollPane,   cc.xy(1,1));
+        pbImg.add(rpb.getPanel(),     cc.xy(3,1));
         
         //UIHelper.calcColumnWidths(botTable, 3);
-        pb.add(topScrollPane, cc.xy(1,1));
-        pb.add(outerMidPB.getPanel(),                     cc.xy(1,3));
-        pb.add(botScrollPane,                             cc.xy(1,5));
+        pb.add(topScrollPane,         cc.xy(1,1));
+        pb.add(outerMidPB.getPanel(), cc.xy(1,3));
+        pb.add(botScrollPane,         cc.xy(1,5));
+        pb.add(pbImg.getPanel(),      cc.xy(1,7));
         pb.setDefaultDialogBorder();
+        
+        zoomInBtn.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                imgView.setZoomUp();
+            }
+        });
+        
+        zoomOutBtn.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                imgView.setZoomDown();
+            }
+        });
+        
+        normalZoomBtn.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                imgView.resetZoom();
+                imgView.setViewPosition(new Point(0,0));
+            }
+        });
         
         /*SwingUtilities.invokeLater(new Runnable()
         {

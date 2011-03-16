@@ -725,6 +725,8 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
         
         log.debug("addImages: " + imageFiles.length + " files selected");
         
+        loadImgBtn.setEnabled(false);
+        
         SwingWorker loadImagesTask = new SwingWorker()
         {
             private List<WorkbenchRowImage> rowImagesNeedingThumbnails = new Vector<WorkbenchRowImage>();
@@ -771,6 +773,8 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
             @Override
             public void finished()
             {
+                loadImgBtn.setEnabled(true);
+                
                 Object retVal = get();
                 
                 if (retVal != null && retVal instanceof List)

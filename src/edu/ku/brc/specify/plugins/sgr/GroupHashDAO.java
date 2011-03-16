@@ -23,17 +23,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import java.util.Stack;
-import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.specify.conversion.TimeLogger;
-import edu.ku.brc.specify.plugins.sgr.RawData.DataIndexType;
 
 /**
  * @author rods
@@ -47,26 +44,19 @@ public class GroupHashDAO
 {
     //private static final String sqlBase = "SELECT ID, mon, cnt, RawID FROM group_hash INNER JOIN group_hash_ids ON ID = GrpID WHERE ";
     
-    private static final DataIndexType[] indexes = {DataIndexType.eCollector_num, DataIndexType.eInstitution_code, DataIndexType.eCollection_code, 
+    /*private static final DataIndexType[] indexes = {DataIndexType.eCollector_num, DataIndexType.eInstitution_code, DataIndexType.eCollection_code, 
         DataIndexType.eCatalogue_number, DataIndexType.eAuthor, DataIndexType.eFamily, DataIndexType.eGenus, DataIndexType.eSpecies, 
         DataIndexType.eSubspecies, DataIndexType.eLatitude, DataIndexType.eLongitude, DataIndexType.eMax_altitude, DataIndexType.eMin_altitude, 
         DataIndexType.eCountry, DataIndexType.eState_province, DataIndexType.eCounty, DataIndexType.eCollector_name, DataIndexType.eLocality, 
         DataIndexType.eYear, DataIndexType.eMonth, DataIndexType.eDay};
     
-    @SuppressWarnings("unused")
-    private static final String sqlBaseOld = "SELECT r.collector_num, r.institution_code, r.collection_code, r.catalogue_number, r.author, " +
-    		                          "r.family, r.genus, r.species, r.subspecies, r.latitude, r.longitude, r.max_altitude, r.min_altitude, " +
-    		                          "r.country, r.state_province, r.county, r.collector_name, r.locality, r.year, r.month, r.day " +
-    		                          "FROM group_hash g INNER JOIN group_hash_ids gi ON g.ID = gi.GrpID " +
-                                      "INNER JOIN raw r ON gi.RawID = r.id ";
-    
     private static final String rawSQL = "SELECT collector_num, institution_code, collection_code, catalogue_number, author, " +
                                          "family, genus, species, subspecies, latitude, longitude, max_altitude, min_altitude, " +
                                          "country, state_province, county, collector_name, locality, year, month, day " +
-                                         "FROM raw WHERE ID IN (%s)";
-    
+                                         "FROM raw2 WHERE ID IN (%s)";
+    */
     private static final String sqlBase = "SELECT g.ID, g.mon, g.cnt, gi.RawID FROM group_hash g INNER JOIN group_hash_ids gi ON g.ID = gi.GrpID WHERE ";
-
+    
     private static GroupHashDAO   instance = new GroupHashDAO();
     private static Stack<RawData> recycler = new Stack<RawData>();
     
@@ -75,7 +65,8 @@ public class GroupHashDAO
     private PreparedStatement pStmtGrp     = null;
     private PreparedStatement pStmtGrpMon  = null;
     
-    private StringBuilder     sb           = new StringBuilder();
+    private PreparedStatement pStmtSNIBGrp     = null;
+    private PreparedStatement pStmtSNIBGrpMon  = null;
 
     /**
      * 
@@ -122,6 +113,10 @@ public class GroupHashDAO
      */
     public void recycle(final List<RawData> list)
     {
+        for (RawData rd : list)
+        {
+            rd.clear();
+        }
         recycler.addAll(list);
     }
     
@@ -139,6 +134,19 @@ public class GroupHashDAO
         {
             String fromClause = "collnum IS NULL AND genus = ? AND year = ? AND mon = ?";
             pStmtGrpMon = connection.prepareStatement(sqlBase + fromClause);
+        }
+        
+        String sql = "SELECT IdSNIB, `Month` FROM angiospermas WHERE ";
+        if (pStmtSNIBGrp == null)
+        {
+            String fromClause = "CollectorNumber = ? AND Genus = ? AND `Year` = ?";
+            pStmtSNIBGrp = connection.prepareStatement(sql + fromClause);
+        }
+        
+        if (pStmtSNIBGrpMon == null)
+        {
+            String fromClause = "CollectorNumber IS NULL AND Genus = ? AND `Year` = ? AND `Month` = ?";
+            pStmtSNIBGrpMon = connection.prepareStatement(sql + fromClause);
         }
     }
     
@@ -163,18 +171,29 @@ public class GroupHashDAO
             pStmtGrp.setString(2, genus);
             pStmtGrp.setString(3, year);
             
+            System.err.println(">"+pStmtGrp.toString());
+            int cnt = 0;
+            
             TimeLogger tmLogger = new TimeLogger("Fetching Groups");
             ResultSet  rs       = pStmtGrp.executeQuery();
             while (rs.next())
             {
+                cnt++;
                 if (grpData == null)
                 {
                     grpData = new GroupingColObjData(rs.getInt(1), collNum, genus, year, rs.getString(2), rs.getInt(3));
+                    //System.err.println("1*: "+rs.getInt(1)+", "+collNum+", "+genus+", "+year+", "+rs.getString(2)+", "+rs.getInt(3));
+                    //System.err.println("2*:     "+rs.getInt(4));
                 }
                 grpData.addRawId(rs.getInt(4));
             }
             rs.close();
             tmLogger.end();
+            
+            if (cnt > 0)
+            {
+                //System.err.println("Count: "+cnt+" "+collNum+" "+genus+" "+year);
+            }
             
             if (StringUtils.isNotEmpty(month))
             {
@@ -182,17 +201,27 @@ public class GroupHashDAO
                 pStmtGrpMon.setString(2, year);
                 pStmtGrpMon.setString(3, month);
                 
+                cnt= 0;
                 rs = pStmtGrpMon.executeQuery();
                 while (rs.next())
                 {
+                    cnt++;
                     if (grpData == null)
                     {
                         grpData = new GroupingColObjData(rs.getInt(1), collNum, genus, year, rs.getString(2), rs.getInt(3));
+                        System.err.println("2*: "+rs.getInt(1)+", "+collNum+", "+genus+", "+year+", "+rs.getString(2)+", "+rs.getInt(3));
                     }
                     grpData.addRawId(rs.getInt(4));
+                    System.err.println("2*:     "+rs.getInt(4));
                 }
                 rs.close();
+                
+                if (cnt > 0)
+                {
+                    System.err.println("Count: "+cnt+" "+genus+" "+year+" "+month);
+                }
             }
+
             return grpData;
             
         } catch (SQLException e)
@@ -203,10 +232,80 @@ public class GroupHashDAO
         return null;
     }
     
-    public void score(final Object[] refRow)
+    /**
+     * @param collNum
+     * @param genus
+     * @param year
+     * @param month
+     * @return
+     */
+    public GroupingColObjData getSNIBData(final String collNum,
+                                          final String genus,
+                                          final String year,
+                                          final String month)
     {
-        
+        GroupingColObjData grpData = null;
+        try
+        {
+            verifyPrepStmts();
+            
+            pStmtSNIBGrp.setString(1, collNum);
+            pStmtSNIBGrp.setString(2, genus);
+            pStmtSNIBGrp.setString(3, year);
+            
+            System.err.println(">"+pStmtSNIBGrp.toString());
+            
+            int        cnt      = 0;
+            TimeLogger tmLogger = new TimeLogger("Fetching Groups");
+            ResultSet  rs       = pStmtSNIBGrp.executeQuery();
+            while (rs.next())
+            {
+                cnt++;
+                if (grpData == null)
+                {
+                    grpData = new GroupingColObjData(null, collNum, genus, year, rs.getString(2), 0);
+                }
+                grpData.addRawId(rs.getInt(1));
+            }
+
+            rs.close();
+            tmLogger.end();
+            
+            if (StringUtils.isNotEmpty(month))
+            {
+                pStmtSNIBGrpMon.setString(1, genus);
+                pStmtSNIBGrpMon.setString(2, year);
+                pStmtSNIBGrpMon.setString(3, month);
+                
+                rs = pStmtSNIBGrpMon.executeQuery();
+                while (rs.next())
+                {
+                    cnt++;
+                    if (grpData == null)
+                    {
+                        grpData = new GroupingColObjData(null, collNum, genus, year, rs.getString(2), 0);
+                    }
+                    grpData.addRawId(rs.getInt(1));
+                }
+                rs.close();
+                
+                if (cnt > 0)
+                {
+                    grpData.setCnt(cnt);
+                }
+            }
+
+            return grpData;
+            
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return null;
     }
+    
+
     
     /**
      * @param collNum
@@ -215,7 +314,7 @@ public class GroupHashDAO
      * @param month
      * @return
      */
-    public List<RawData> getItems(final List<Integer> rawIds)
+    /*public List<RawData> getItems(final List<Integer> rawIds)
     {
         Vector<RawData> items = new Vector<RawData>();
         
@@ -261,7 +360,7 @@ public class GroupHashDAO
             }
         }
         return items;
-    }
+    }*/
     
     /**
      * @return a new or recycled data object
@@ -286,12 +385,17 @@ public class GroupHashDAO
         {
             if (pStmtGrp != null) pStmtGrp.close();
             if (pStmtGrpMon != null) pStmtGrpMon.close();
-            if (dbConn != null) dbConn.close();
-            
             pStmtGrp     = null;
             pStmtGrpMon  = null;
-            dbConn       = null;
             
+            if (pStmtSNIBGrp != null) pStmtSNIBGrp.close();
+            if (pStmtSNIBGrpMon != null) pStmtSNIBGrpMon.close();
+            pStmtSNIBGrp     = null;
+            pStmtSNIBGrpMon  = null;
+            
+            if (dbConn != null) dbConn.close();
+            
+            dbConn       = null;
             instance     = null;
             
         } catch (Exception ex) {}

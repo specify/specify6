@@ -21,6 +21,8 @@ package edu.ku.brc.specify.plugins.sgr;
 
 import java.util.HashMap;
 
+import javax.swing.ImageIcon;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -53,7 +55,8 @@ public class RawData
     private static HashMap<String, DataIndexType> dataColInxHash = new HashMap<String, DataIndexType>();
     
     // Non-Static data members
-    private HashMap<DataIndexType, Object>  values = new HashMap<DataIndexType, Object>();
+    private HashMap<DataIndexType, Object>  values  = new HashMap<DataIndexType, Object>();
+    private ImageIcon                       imgIcon = null;
 
     // Static initialization
     static
@@ -79,6 +82,7 @@ public class RawData
     public void clear()
     {
         values.clear();
+        imgIcon = null;
     }
 
     /**
@@ -165,6 +169,22 @@ public class RawData
         return values.get(map.get(index));
     }
     
+    /**
+     * @return the imgIcon
+     */
+    public ImageIcon getImgIcon()
+    {
+        return imgIcon;
+    }
+
+    /**
+     * @param imgIcon the imgIcon to set
+     */
+    public void setImgIcon(ImageIcon imgIcon)
+    {
+        this.imgIcon = imgIcon;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
