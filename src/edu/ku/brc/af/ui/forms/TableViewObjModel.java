@@ -39,10 +39,10 @@ public class TableViewObjModel extends AbstractTableModel
     public static final int TABLE_FIELDS = 0;
     public static final int QUERY_FIELDS = 1;
 
-    protected Vector<Object>        colInfo     = new Vector<Object>();
-    protected List<Object>          data        = null;
-    protected Class<?>         classObj       = null;
-    protected boolean       isAttr      = false;
+    protected Vector<Object> colInfo     = new Vector<Object>();
+    protected List<Object>   data        = null;
+    protected Class<?>       classObj    = null;
+    protected boolean        isAttr      = false;
 
     // protected DataGetter _dataGetter = null;
 

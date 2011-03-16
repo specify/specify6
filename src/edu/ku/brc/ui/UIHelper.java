@@ -2547,7 +2547,7 @@ public final class UIHelper
     }
 
     /**
-     * Get Property as boolean, if it is empty then it passes back the default value.
+     * Get Property as boolean, if it is empty then it passes back the default value. Returns 'false' when there are no props.
      * @param properties the properties
      * @param nameStr the name of the property
      * @param defVal the default value

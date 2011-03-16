@@ -1040,16 +1040,16 @@ public class FormViewObj implements Viewable,
                             // and we need to make sure the items in the set are clonable
                             // if they are not clonable then we can't include this in 
                             // the Carry Forward list
-                            Class<?> dataClass = ri.getDataClass();
+                            Class<?> dataCls = ri.getDataClass();
                             if (ri.getType() == DBRelationshipInfo.RelationshipType.OneToMany)
                             {
                                 try
                                 {
-                                    Method method = dataClass.getMethod("clone", new Class<?>[] {});
+                                    Method method = dataCls.getMethod("clone", new Class<?>[] {});
                                     // Pretty much every Object has a "clone" method but we need 
                                     // to check to make sure it is implemented by the same class of 
                                     // Object that is in the Set.
-                                    isOK = method.getDeclaringClass() == dataClass;
+                                    isOK = method.getDeclaringClass() == dataCls;
                                     
                                 } catch (Exception ex) 
                                 {
@@ -3085,7 +3085,7 @@ public class FormViewObj implements Viewable,
             
             // 09/23/08 - Bug 5996 When the dataObj fails to attach it is most likely
             // because it has been changed. Which we don't care about because we are deleting it
-            boolean attachFailed = false;
+            //boolean attachFailed = false;
             if (((FormDataObjIFace)dataObj).getId() != null)
             {
                 try
@@ -3123,7 +3123,7 @@ public class FormViewObj implements Viewable,
                 {
                     // we could check the type to make sure it was a "dirty colleciton" error
                     // but for now I am not.
-                    attachFailed = true;
+                    //attachFailed = true;
                 }
             }
             
@@ -5146,13 +5146,8 @@ public class FormViewObj implements Viewable,
                 
                 for (FVOFieldInfo fieldInfo : controlsById.values())
                 {
-                    String nm = fieldInfo.getFormCell().getName();
-                    System.out.println(nm);
-                    //if (nm.equals("collection.collectionName"))
-                    //{
-                    //    int x = 0;
-                    //    x++;
-                    //}
+                    //String nm = fieldInfo.getFormCell().getName();
+                    //System.out.println(nm);
                     
                     FormCellIFace fc = fieldInfo.getFormCell();
                     boolean isInoreGetSet = fc.isIgnoreSetGet();
