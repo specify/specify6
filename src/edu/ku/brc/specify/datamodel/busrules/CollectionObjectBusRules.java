@@ -637,6 +637,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
 					edu.ku.brc.exceptions.ExceptionTracker.getInstance()
 							.capture(Uploader.class, ex);
                 }
+                formViewObj.setDataObj(carryForwardCo);
                 saveBatchObjectsToRS();
                 return null;
             }
