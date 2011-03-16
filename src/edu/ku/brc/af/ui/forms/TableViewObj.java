@@ -393,7 +393,7 @@ public class TableViewObj implements Viewable,
                             });
                         }
                         
-                        if (doSpecialAdd)
+                        if (doSpecialAdd || !addSearch)
                         {
                             String newTTStr  = ResultSetController.createTooltip("NewRecordTT",    view.getObjTitle());
                             newButton = UIHelper.createIconBtnTT("CreateObj", IconManager.IconSize.Std16, newTTStr, false, new ActionListener() {
