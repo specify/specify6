@@ -41,20 +41,30 @@ import org.xml.sax.InputSource;
 
 public class UIControlTOHTML
 {
+    protected enum Langs {ePT, ePTBZ}
+    protected String[] fileExt = {"_pt", "_pt_bz"};
+    protected Langs    currentLang = Langs.ePT;
+    
     
     protected String englishXSLT = "specifyschema.xslt";
-    protected String germanXSLT  = "specifyschema_de.xslt";
+    protected String foreignXSLT  = String.format("specifyschema%s.xslt", fileExt[currentLang.ordinal()]);
     
     protected String englishOUT = "SpecifySchema.html";
-    protected String germanOUT  = "SpecifySchemaDE.html";
+    protected String foreignOUT  = String.format("SpecifySchema%s.html", fileExt[currentLang.ordinal()]);
     
+    /**
+     * @throws TransformerException
+     * @throws TransformerConfigurationException
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     protected void process() throws TransformerException,
                                     TransformerConfigurationException, 
                                     FileNotFoundException, 
                                     IOException
     {
-        boolean doUIControls = true;
-        boolean doGerman     = false;
+        boolean doUIControls = false;
+        boolean doForeign    = false;
         String  outFileName  = "UIControls.html";
         
         TransformerFactory tFactory = TransformerFactory.newInstance();
@@ -66,9 +76,9 @@ public class UIControlTOHTML
           
         } else
         {
-            String xsltFileName = doGerman ? germanXSLT : englishXSLT;
+            String xsltFileName = doForeign ? foreignXSLT : englishXSLT;
             
-            outFileName  = doGerman ? germanOUT : englishOUT;
+            outFileName  = doForeign ? foreignOUT : englishOUT;
             
             String filePath = "src/edu/ku/brc/specify/utilapps/" + xsltFileName;
             File transFile = new File(filePath);
@@ -77,6 +87,8 @@ public class UIControlTOHTML
                 System.err.println("File path["+filePath+"] doesn't exist!");
                 System.exit(1);
             }
+            System.out.println(filePath);
+            
             Transformer transformer = tFactory.newTransformer(new StreamSource(filePath));
             try
             {
@@ -101,6 +113,13 @@ public class UIControlTOHTML
 
     }
     
+    /**
+     * @param args
+     * @throws TransformerException
+     * @throws TransformerConfigurationException
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public static void main(String[] args) throws TransformerException,
                                                   TransformerConfigurationException, 
                                                   FileNotFoundException, 

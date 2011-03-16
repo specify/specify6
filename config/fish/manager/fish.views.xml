@@ -139,6 +139,9 @@
                 <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="12" initialize="btn=true;icon=CollectionObjectAttachment;"/>
                 </row>
+                 <row>
+                    <cell type="separator" label="Containers and Collection Relationships" colspan="12"/>
+                </row>
                 <row>
                     <cell type="label" label="Container:" initialize="align=right;"/>
                     <cell type="panel" id="ContainerPanel" name="ContainerPanel" coldef="p" rowdef="p" colspan="11">
@@ -155,9 +158,6 @@
                         </rows> 
                     </cell>
                 </row>                
-                <row>
-                    
-                </row>
                 <row>
                     <cell type="label" label="Eaten By:" initialize="align=right;"/>
                     <cell type="field" id="colrel" uitype="plugin" name="this" initialize="name=ColRelTypePlugin;relname=Eaten By;"/>

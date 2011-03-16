@@ -264,9 +264,12 @@ public abstract class BaseResultsDisplay extends JPanel
         viewerScrollPane.setViewportView(imgView);
         
         // Image View UI
-        zoomInBtn     = UIHelper.createButton(IconManager.getIcon("IWZoomIn"));
-        zoomOutBtn    = UIHelper.createButton(IconManager.getIcon("IWZoomOut"));
-        normalZoomBtn = UIHelper.createButton(IconManager.getIcon("ImageWindow"));
+        zoomInBtn     = UIHelper.createIconBtn("ZoomIn20", null, (ActionListener)null);
+        zoomOutBtn    = UIHelper.createIconBtn("ZoomOut20", null, (ActionListener)null);
+        normalZoomBtn = UIHelper.createIconBtn("ImageWindow", null, (ActionListener)null);
+        zoomInBtn.setEnabled(true);
+        zoomOutBtn.setEnabled(true);
+        normalZoomBtn.setEnabled(true);
         
         // Right Vertical Control Panel
         PanelBuilder rpb = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p,2px,p, f:p:g"));

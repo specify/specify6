@@ -63,7 +63,7 @@ import edu.ku.brc.util.DatamodelHelper;
  */
 public class CreateTextSchema
 {
-    private static Locale currLang  = new Locale("en");
+    private static Locale currLang  = new Locale("pt");
     
     private static byte SCHEMATYPE = SpLocaleContainer.CORE_SCHEMA;
     
@@ -77,7 +77,6 @@ public class CreateTextSchema
     protected String basePath = "src/edu/ku/brc/specify/utilapps/";
     
     protected PrintWriter po   = null;
-    protected String      lang = "en";
     
     /**
      * 
@@ -368,7 +367,7 @@ public class CreateTextSchema
         try
         {
             File oFile = new File(adjustFileNameForLocale(schemaOutputHTMLName));
-            po = new PrintWriter(oFile);
+            po = new PrintWriter(oFile, "UTF8");
             
             System.out.println("Opening "+XMLHelper.getConfigDirPath(DatamodelHelper.getOutputFileName()));
             System.out.println("Writing "+oFile.getAbsolutePath());

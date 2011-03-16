@@ -147,6 +147,7 @@ public class DataEntryTask extends BaseTask
     // Data Members
     protected Vector<NavBoxIFace> extendedNavBoxes = new Vector<NavBoxIFace>();
     protected NavBox              viewsNavBox      = null;
+    protected NavBox              containerNavBox  = null;
     
     protected Vector<DataEntryView> stdViews       = null;
     protected Vector<DataEntryView> miscViews      = null;
@@ -185,10 +186,10 @@ public class DataEntryTask extends BaseTask
             
             navBoxes.add(viewsNavBox);
             
-            // No Series Processing
-            //NavBox navBox = new NavBox(getResourceString("Actions"));
-            //navBox.add(NavBox.createBtn(getResourceString("Series_Processing"), name, IconManager.STD_ICON_SIZE));
-            //navBoxes.add(navBox);
+            // Container Tree
+            NavBox navBox = new NavBox(getResourceString("Actions"));
+            navBox.add(NavBox.createBtn(getResourceString("ContainerTree"), "Container", IconManager.STD_ICON_SIZE));
+            navBoxes.add(navBox);
         }
         isShowDefault = true;
     }

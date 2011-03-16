@@ -36,6 +36,7 @@ import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.JPAQuery;
 import edu.ku.brc.dbsupport.QueryExecutor;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.specify.conversion.TimeLogger;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace;
@@ -64,6 +65,8 @@ public class QBResultSetTableModel extends ResultSetTableModel
     
     protected boolean loadingCells = false;
     protected int bgTaskCount = 0;
+    
+    TimeLogger timeLogger = new TimeLogger();
     
     /**
      * @param parentERTP
@@ -122,6 +125,10 @@ public class QBResultSetTableModel extends ResultSetTableModel
                     cols.set(col, DataObjFieldFormatMgr.getInstance().aggregate(
                             jpa.getDataObjects(), cls));
                     bgTaskCount--;
+                    if (bgTaskCount < 10)
+                    {
+                        timeLogger.end();
+                    }
                 }
                 if (!isPostProcessed.get())
                 {
@@ -141,6 +148,8 @@ public class QBResultSetTableModel extends ResultSetTableModel
     	
         try 
         {
+            timeLogger.start();
+            
 			results.queryTaskDone(customQuery);
 			List<?> list = customQuery.getDataObjects();
 			boolean hasIds = ((QBQueryForIdResultsHQL) results).isHasIds();

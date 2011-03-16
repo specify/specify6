@@ -110,8 +110,8 @@
     <icon name="VisualQuery"    file="Search32x32.png" sizes="32"/>
     
     <icon name="ImageWindow"    file="ImageWindow20x20.png" sizes="NonStd"/>
-    <icon name="IWZoomIn"       file="ImageZoomIn20x20.png" sizes="NonStd"/>
-    <icon name="IWZoomOut"      file="ImageZoomOut20x20.png" sizes="NonStd"/>
+    <icon name="ZoomIn20"       file="ZoomIn20x20.png" sizes="NonStd"/>
+    <icon name="ZoomOut20"      file="ZoomOut20x20.png" sizes="NonStd"/>
     
 
     <!-- Aliases -->
