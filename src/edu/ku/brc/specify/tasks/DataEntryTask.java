@@ -187,9 +187,9 @@ public class DataEntryTask extends BaseTask
             navBoxes.add(viewsNavBox);
             
             // Container Tree
-            NavBox navBox = new NavBox(getResourceString("Actions"));
-            navBox.add(NavBox.createBtn(getResourceString("ContainerTree"), "Container", IconManager.STD_ICON_SIZE));
-            navBoxes.add(navBox);
+            //NavBox navBox = new NavBox(getResourceString("Actions"));
+            //navBox.add(NavBox.createBtn(getResourceString("ContainerTree"), "Container", IconManager.STD_ICON_SIZE));
+            //navBoxes.add(navBox);
         }
         isShowDefault = true;
     }
