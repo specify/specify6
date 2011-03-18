@@ -201,26 +201,27 @@ public class WorkbenchRowImage implements java.io.Serializable, Comparable<Workb
             if (fullSizeImage == null || fullSizeImage.getIconWidth() == -1)
             {
                 ImageIcon iconImage = null;
-                try
+                
+                File file = new File(cardImageFullPath);
+                if (file.exists())
                 {
-                    iconImage = new ImageIcon(cardImageData);
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
+                    iconImage = new ImageIcon(cardImageFullPath);
+                    if (iconImage == null || iconImage.getIconHeight() == -1)
+                    {
+                        try
+                        {
+                            iconImage = new ImageIcon(cardImageData);
+                        } catch (Exception ex)
+                        {
+                            ex.printStackTrace();
+                        }
+                    }
                 }
                 
                 if (iconImage == null || iconImage.getIconHeight() == -1)
                 {
-                    File file = new File(cardImageFullPath);
-                    if (file.exists())
-                    {
-                        iconImage = new ImageIcon(cardImageFullPath);
-                        if (iconImage == null || iconImage.getIconHeight() == -1)
-                        {
-                            fullSizeImageSR = null;
-                            return null;
-                        }
-                    }
+                    fullSizeImageSR = null;
+                    return null;
                 }
                 
                 fullSizeImageSR = new SoftReference<ImageIcon>(iconImage);
