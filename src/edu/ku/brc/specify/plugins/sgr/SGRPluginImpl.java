@@ -24,6 +24,7 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import java.awt.Frame;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -581,7 +582,8 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
             {
                 if (wbRow.getCardImage() == null)
                 {
-                    return new ImageIcon(GraphicsUtils.readImage(wbRow.getCardImageFullPath()));
+                    File imgFile = new File(wbRow.getCardImageFullPath());
+                    return imgFile.exists() ? new ImageIcon(GraphicsUtils.readImage(wbRow.getCardImageFullPath())) : null;
                 }
                 return wbRow.getCardImage();
                 
@@ -589,7 +591,7 @@ public class SGRPluginImpl implements WorkBenchPluginIFace
             {
                 for (WorkbenchRowImage wbi : wbRow.getWorkbenchRowImages())
                 {
-                    ImageIcon imgIcon = wbi.getFullSizeImage();
+                    ImageIcon imgIcon = wbi.getFullSizeImage(); 
                     if (imgIcon != null)
                     {
                         return imgIcon;

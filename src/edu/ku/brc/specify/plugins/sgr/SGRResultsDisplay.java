@@ -175,7 +175,7 @@ public class SGRResultsDisplay extends BaseResultsDisplay
         
         if (imgView != null)
         {
-            if (baseRow.getImgIcon() != null)
+            if (baseRow.getImgIcon() != null && baseRow.getImgIcon().getIconHeight() > 0)
             {
                 Dimension     size = imgView.getSize();
                 BufferedImage bi   = null;
@@ -210,7 +210,6 @@ public class SGRResultsDisplay extends BaseResultsDisplay
                             imgView.setZoom(ratioF);
                         }
                     });
-                    
                 }
             } else
             {

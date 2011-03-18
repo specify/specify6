@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.datamodel;
 
+import java.io.File;
 import java.lang.ref.SoftReference;
 
 import javax.persistence.Column;
@@ -186,7 +187,7 @@ public class WorkbenchRowImage implements java.io.Serializable, Comparable<Workb
     @Transient
     public ImageIcon getFullSizeImage()
     {
-        if (cardImageData != null && cardImageFullPath != null && cardImageFullPath.length()>0)
+        if (cardImageData != null && cardImageFullPath != null && cardImageFullPath.length() > 0)
         {
             ImageIcon fullSizeImage = null;
             
@@ -197,9 +198,31 @@ public class WorkbenchRowImage implements java.io.Serializable, Comparable<Workb
             }
             
             // if the image is still null, reload the SoftReference
-            if (fullSizeImage == null)
+            if (fullSizeImage == null || fullSizeImage.getIconWidth() == -1)
             {
-                ImageIcon iconImage = new ImageIcon(cardImageFullPath);
+                ImageIcon iconImage = null;
+                try
+                {
+                    iconImage = new ImageIcon(cardImageData);
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+                
+                if (iconImage == null || iconImage.getIconHeight() == -1)
+                {
+                    File file = new File(cardImageFullPath);
+                    if (file.exists())
+                    {
+                        iconImage = new ImageIcon(cardImageFullPath);
+                        if (iconImage == null || iconImage.getIconHeight() == -1)
+                        {
+                            fullSizeImageSR = null;
+                            return null;
+                        }
+                    }
+                }
+                
                 fullSizeImageSR = new SoftReference<ImageIcon>(iconImage);
             }
             
