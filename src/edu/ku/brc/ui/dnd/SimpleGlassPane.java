@@ -386,14 +386,15 @@ public class SimpleGlassPane extends ProgressGlassPane implements AWTEventListen
             
             int expand = 20;
             int arc    = expand * 2;
-            g2.setColor(Color.LIGHT_GRAY);
+            
+            g2.setColor(new Color(0, 0, 0, 50));
             
             int x = margin.left + tx - (expand / 2);
             int y = margin.top  + ty-fm.getAscent()-(expand / 2);
             
             drawBGContainer(g2, true, x+4, y+6, tw+expand, th+expand, arc, arc);
             
-            g2.setColor(Color.WHITE);
+            g2.setColor(new Color(255, 255, 255, 220));
             drawBGContainer(g2, true, x, y, tw+expand, th+expand, arc, arc);
             
             g2.setColor(Color.DARK_GRAY);

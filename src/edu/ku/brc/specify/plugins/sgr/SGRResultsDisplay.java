@@ -344,7 +344,7 @@ public class SGRResultsDisplay extends BaseResultsDisplay
                               "continent_ocean, lat_long_precision, max_altitude, min_altitude, " +
                               "altitude_precision, min_depth, max_depth, depth_precision," +
                               "lat_long_precision " +
-                              "FROM raw WHERE ID in (%s)";
+                              "FROM raw2 WHERE ID in (%s)";
                 
                 StringBuilder sb = new StringBuilder();
                 for (Integer id : idList)

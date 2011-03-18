@@ -166,6 +166,39 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
         }
     }
     
+    /**
+     * @return the progressBar
+     */
+    public JProgressBar getProgressBar()
+    {
+        return progressBar;
+    }
+
+    /**
+     * @return the progressLabel
+     */
+    public JLabel getProgressLabel()
+    {
+        return progressLabel;
+    }
+
+    /**
+     * @return the progressBarPanel
+     */
+    public JPanel getProgressBarPanel()
+    {
+        return progressBarPanel;
+    }
+
+    /**
+     * @return the progressCancelBtn
+     */
+    public JButton getProgressCancelBtn()
+    {
+        return progressCancelBtn;
+    }
+
+    
     //----------------------------------
     // Printable
     //----------------------------------
