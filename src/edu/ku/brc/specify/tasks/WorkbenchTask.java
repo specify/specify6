@@ -3837,7 +3837,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         	List<WorkbenchTemplate> choices = getTemplatesForExport(dlg.getSelectedRecordSet());
         	if (choices.size() > 0)
         	{
-        		ChooseFromListDlg<WorkbenchTemplate> wbtdlg = new ChooseFromListDlg<WorkbenchTemplate>((Frame )UIRegistry.getTopWindow(), "Untitled", choices);
+        		ChooseFromListDlg<WorkbenchTemplate> wbtdlg = new ChooseFromListDlg<WorkbenchTemplate>((Frame )UIRegistry.getTopWindow(), 
+        				UIRegistry.getResourceString("WB_CHOOSE_EXPORT_WB_TITLE"), choices);
         		wbtdlg.setVisible(true);
         		if (!wbtdlg.isCancelled())
         		{
@@ -3857,6 +3858,11 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         				log.error(ex);
         			}
         		}
+        	}
+        	else 
+        	{
+        		UIRegistry.showLocalizedMsg("WB_UNABLE_TO_EXPORT_RS", "WB_NO_TEMPLATES_TO_EXPORT_RS_TO", 
+        				DBTableIdMgr.getInstance().getInfoById(dlg.getSelectedRecordSet().getDbTableId()).getClassObj().getSimpleName());
         	}
         }
     }
