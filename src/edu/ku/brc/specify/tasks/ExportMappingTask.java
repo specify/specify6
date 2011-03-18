@@ -60,6 +60,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.helpers.UIFileFilter;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpExportSchema;
@@ -68,8 +69,8 @@ import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
-import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.USER_ACTION;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCallerIFace;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.USER_ACTION;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.ColorWrapper;
@@ -97,7 +98,7 @@ public class ExportMappingTask extends QueryTask
 	 */
 	public ExportMappingTask()
 	{
-		super("ExportMappingTask", getI18N("TaskTitle"));
+		super("ExportMappingTask", getResStr("TaskTitle"));
 	}
 
     /**
@@ -579,8 +580,11 @@ public class ExportMappingTask extends QueryTask
 			for (SpExportSchemaMapping mapping : spExportSchema
 					.getSpExportSchemaMappings())
 			{
-				result.add(mapping.getMappings().iterator().next()
+				if (mapping.getCollectionMemberId().equals(AppContextMgr.getInstance().getClassObject(Collection.class).getId()))
+				{
+					result.add(mapping.getMappings().iterator().next()
 						.getQueryField().getQuery());
+				}
 			}
 		}
 		return result;
@@ -654,7 +658,8 @@ public class ExportMappingTask extends QueryTask
 			
 			if (theSession != null)
 			{
-    			String hql = "from SpExportSchemaMapping sesm inner join sesm.mappings maps inner join maps.queryField qf inner join qf.query q where q.id = " + query.getId();
+    			String hql = "from SpExportSchemaMapping sesm inner join sesm.mappings maps inner join maps.queryField qf inner join qf.query q where q.id = " + query.getId()
+    				+ " and sesm.collectionMemberId = " + AppContextMgr.getInstance().getClassObject(Collection.class).getId();
     			QueryIFace q = theSession.createQuery(hql, false);
     			if (q.list().size() == 0)
     			{
@@ -944,7 +949,10 @@ public class ExportMappingTask extends QueryTask
 		int i = 0;
 		for (SpExportSchemaMapping mapping : schema.getSpExportSchemaMappings())
 		{
-			model.add(i++, mapping.getMappingName());
+			if (mapping.getCollectionMemberId().equals(AppContextMgr.getInstance().getClassObject(Collection.class).getId()))
+			{
+				model.add(i++, mapping.getMappingName());
+			}
 		}
 		JList list = new JList(model);
 		PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, p:g, 5dlu", "5dlu, p, 3dlu"));
