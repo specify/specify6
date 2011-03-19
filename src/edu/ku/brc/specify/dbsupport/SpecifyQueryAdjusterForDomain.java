@@ -26,6 +26,8 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.specify.SpecifyUserTypes.UserType;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -59,6 +61,7 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
 {
     protected static final Logger log = Logger.getLogger(SpecifyQueryAdjusterForDomain.class);
+    private static final String SEARCH_ALL = " OR 1 = 1";
     
     private static final String SPECIFYUSERID  = "SPECIFYUSERID";
     private static final String DIVID          = "DIVID";
@@ -72,10 +75,15 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
     private static final String LITHOTREEDEFID = "LITHOTREEDEFID";
     private static final String GTPTREEDEFID   = "GTPTREEDEFID";
     private static final String GEOTREEDEFID   = "GEOTREEDEFID";
+    
+    private boolean permsOKForGlobalSearch = false;
 
+    /**
+     * 
+     */
     public SpecifyQueryAdjusterForDomain()
     {
-        // no op
+        permsOKForGlobalSearch = !AppContextMgr.isSecurityOn() || SpecifyUser.isCurrentUserType(UserType.Manager);
     }
 
     /* (non-Javadoc)
@@ -209,7 +217,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 String sql;
                 if (adjustFldToSQL)
                 {
-                    sql = prefix + fld + " = " + criterion;
+                    sql = "(" + prefix + fld + " = " + criterion + ")";
                 }
                 else
                 {
@@ -313,6 +321,8 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
     @Override
     public String adjustSQL(final String sql)
     {
+        boolean doGlobalSearch = permsOKForGlobalSearch && AppPreferences.getLocalPrefs().getBoolean("GLOBAL_SEARCH", false);
+        
         // SpecifyUser should NEVER be null nor the Id !
         SpecifyUser user = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
         if (user != null)
@@ -340,7 +350,13 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                     
                     if (divId != null)
                     {
-                        adjSQL = StringUtils.replace(adjSQL, DIVID, Integer.toString(divId));
+                        String str = Integer.toString(divId);
+                        if (doGlobalSearch)
+                        {
+                            str += SEARCH_ALL;
+                        }
+                        adjSQL = StringUtils.replace(adjSQL, DIVID, str);
+                        System.out.println("["+str+"]["+adjSQL+"]");
                     }
                 }
                 
@@ -350,7 +366,12 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                     Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
                     if (collection != null)
                     {
-                        adjSQL = StringUtils.replace(adjSQL, COLMEMID, Integer.toString(collection.getCollectionId()));
+                        String str = Integer.toString(collection.getCollectionId());
+                        if (doGlobalSearch)
+                        {
+                            str += SEARCH_ALL;
+                        }
+                        adjSQL = StringUtils.replace(adjSQL, COLMEMID, str);
                     }
                 }
                 
@@ -359,7 +380,12 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                     Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
                     if (collection != null)
                     {
-                        adjSQL = StringUtils.replace(adjSQL, COLLID, Integer.toString(collection.getCollectionId()));
+                        String str = Integer.toString(collection.getCollectionId());
+                        if (doGlobalSearch)
+                        {
+                            str += SEARCH_ALL;
+                        }
+                        adjSQL = StringUtils.replace(adjSQL, COLLID, str);
                     }
                 }
                 
@@ -368,7 +394,12 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                     Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
                     if (discipline != null)
                     {
-                        adjSQL = StringUtils.replace(adjSQL, DSPLNID, Integer.toString(discipline.getDisciplineId()));
+                        String str = Integer.toString(discipline.getDisciplineId());
+                        if (doGlobalSearch)
+                        {
+                            str += SEARCH_ALL;
+                        }
+                        adjSQL = StringUtils.replace(adjSQL, DSPLNID, str);
                     }
                 }
                 

@@ -288,7 +288,15 @@ public class SearchBox extends JPanel implements ActionListener, PropertyChangeL
                 repaint();
             }
         }
-        
+    }
+    
+    /**
+     * Changes the left Icon to it's default state.
+     */
+    public void resetSearchIcon()
+    {
+        icon = searchIcon;
+        repaint();
     }
 
     /**
@@ -469,11 +477,11 @@ public class SearchBox extends JPanel implements ActionListener, PropertyChangeL
         /**
          * @return the list of menus to be displayed
          */
-        public List<JComponent> createPopupMenus();
+        public abstract List<JComponent> createPopupMenus();
         
         /**
          * Tells the creator to reset itself because of changes to the SearchConfig.
          */
-        public void reset();
+        public abstract void reset();
     }
 }

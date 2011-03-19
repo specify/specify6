@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -95,7 +96,9 @@ import edu.ku.brc.dbsupport.JPAQuery;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
+import edu.ku.brc.specify.SpecifyUserTypes.UserType;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.subpane.ESResultsSubPane;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
@@ -126,8 +129,10 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
 {
     // Static Data Members
     private static final Logger log = Logger.getLogger(ExpressSearchTask.class);
+    public static final  String GLOBAL_SEARCH = "GLOBAL_SEARCH";
+    
 
-    public static final int RESULTS_THRESHOLD   = 5000;
+    public static final int    RESULTS_THRESHOLD  = 20000;
     public static final String EXPRESSSEARCH      = "Express_Search";
     public static final String CHECK_INDEXER_PATH = "CheckIndexerPath";
     
@@ -142,6 +147,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     protected SearchBox                     searchBox;
     protected JAutoCompTextField            searchText;
     protected JButton                       searchBtn;
+    protected JCheckBoxMenuItem             globalSearchCheckBoxMI;
     protected Color                         textBGColor      = null;
     protected Color                         badSearchColor   = new Color(255,235,235);
     
@@ -1389,7 +1395,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         {
             if (menus == null)
             {
-                menus = new Vector<JComponent>();
+                menus       = new Vector<JComponent>();
                 allMenuItem = new JMenuItem(getResourceString("ALL"), SearchBox.getSearchIcon());
                 allMenuItem.addActionListener(action);
                 menus.add(allMenuItem);
@@ -1411,6 +1417,29 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                     menus.add(menu);
                 }
                 
+                if (!AppContextMgr.isSecurityOn() || SpecifyUser.isCurrentUserType(UserType.Manager))
+                {
+                    ActionListener globalSearchAL = new ActionListener()
+                    {
+                        @Override
+                        public void actionPerformed(ActionEvent e)
+                        {
+                            doGlobalSearchSetup();
+                        }
+                    };
+                    
+                    boolean doGlobalSearch = AppPreferences.getLocalPrefs().getBoolean(GLOBAL_SEARCH, false);
+                    globalSearchCheckBoxMI = new JCheckBoxMenuItem(getResourceString(GLOBAL_SEARCH), 
+                                                                   IconManager.getIcon("GlobalSearch", IconManager.IconSize.Std16),
+                                                                   doGlobalSearch);
+                    globalSearchCheckBoxMI.addActionListener(globalSearchAL);
+                } else
+                {
+                    AppPreferences.getLocalPrefs().remove(GLOBAL_SEARCH);
+                }
+
+                menus.add(globalSearchCheckBoxMI);
+                
                 configMenuItem = new JMenuItem(getResourceString("ESConfig"), IconManager.getIcon("SystemSetup", IconManager.IconSize.Std16));
                 configMenuItem.addActionListener(action);
                 menus.add(configMenuItem);
@@ -1425,6 +1454,18 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         public void reset()
         {
             this.menus = null;
+        }
+    }
+    
+    private void doGlobalSearchSetup()
+    {
+        if (globalSearchCheckBoxMI.isSelected())
+        {
+            AppPreferences.getLocalPrefs().putBoolean(GLOBAL_SEARCH, true);
+        } else
+        {
+            AppPreferences.getLocalPrefs().remove(GLOBAL_SEARCH);
+            searchBox.resetSearchIcon();
         }
     }
     
