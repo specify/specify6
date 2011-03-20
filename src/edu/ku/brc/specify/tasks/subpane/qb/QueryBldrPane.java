@@ -1210,8 +1210,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         		continue;
         	}
    
-        	System.out.println("Building Query:" + qfi.getFieldTitle());
-        	
         	qfi.updateQueryField();
 
             if (qfi.isForDisplay())
@@ -1390,8 +1388,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             	continue;
             }
  
-            System.out.println("Building query: " + qfi.getFieldTitle());
-
         	if (qfi.isForDisplay())
             {
                 visibleFldExists = true;
@@ -2429,7 +2425,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 	catch (Exception ex)
                 	{
                         String msg = StringUtils.isBlank(ex.getLocalizedMessage()) ? getResourceString("QB_RUN_ERROR") : ex.getLocalizedMessage();
-                    	ex.printStackTrace();
                         UIRegistry.getStatusBar().setErrorMessage(msg, ex);
                         UIRegistry.writeTimedSimpleGlassPaneMsg(msg, Color.RED);
                 		return;
