@@ -953,7 +953,7 @@ public class ExportMappingTask extends QueryTask
 		for (SpExportSchemaMapping mapping : schema.getSpExportSchemaMappings())
 		{
 			//XXX add condition after SpExportMapping is scoped to Collection
-			if (mapping.getCollectionMemberId().equals(AppContextMgr.getInstance().getClassObject(Collection.class).getId()))
+			//if (mapping.getCollectionMemberId().equals(AppContextMgr.getInstance().getClassObject(Collection.class).getId()))
 			{
 				model.add(i++, mapping.getMappingName());
 			}
