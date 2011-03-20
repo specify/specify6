@@ -1209,6 +1209,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         	{
         		continue;
         	}
+   
+        	System.out.println("Building Query:" + qfi.getFieldTitle());
         	
         	qfi.updateQueryField();
 
@@ -1387,7 +1389,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
             	continue;
             }
-            
+ 
+            System.out.println("Building query: " + qfi.getFieldTitle());
+
         	if (qfi.isForDisplay())
             {
                 visibleFldExists = true;
@@ -1739,6 +1743,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         catch (Exception ex)
         {
             String msg = StringUtils.isBlank(ex.getLocalizedMessage()) ? getResourceString("QB_RUN_ERROR") : ex.getLocalizedMessage();
+            ex.printStackTrace();
         	UIRegistry.getStatusBar().setErrorMessage(msg, ex);
             UIRegistry.writeTimedSimpleGlassPaneMsg(msg, Color.RED);
             runningResults.set(null);
@@ -1862,7 +1867,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     */
     protected static boolean isSynSearchable(final FieldQRI fld)
     {
-        //XXX It would be good to have a way of knowing if synonymy is actually supported for a tree or treeable class.    
+        //XXX It would be good to have a way of knowing if synonymy is actually supported for a tree or treeable class.   
+    	System.out.println("isSynSearchble " + fld.getTitle());
         if (!Treeable.class.isAssignableFrom(fld.getTableInfo().getClassObj()))
         {
             return false;
@@ -1931,10 +1937,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         boolean addSynJoin = false;
                         for (QueryFieldPanel qfp : fieldPanels)
                         {
-                        	if (isSynSearchable(qfp.getFieldQRI()) && qfp.hasCriteria())
+                        	if (qfp.getFieldQRI() != null)
                         	{
-                        		addSynJoin = true;
-                        		break;
+                        		if (isSynSearchable(qfp.getFieldQRI()) && qfp.hasCriteria())
+                        		{
+                        			addSynJoin = true;
+                        			break;
+                        		}
                         	}
                         }
                         if (addSynJoin)
@@ -1966,7 +1975,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 					|| formatter.getSingleField() == null)
 				{
 					ProcessNode newNode = new ProcessNode(relQRI);
-					processFormatter(formatter, newNode);
+					if (formatter != null)
+					{
+						processFormatter(formatter, newNode);
+					}
 					String rootAlias = tableAbbreviator.getAbbreviation(relQRI.getTableTree().getParent());
 					String formFrom = getTimestampFrom(rootAlias, newNode, fromTbls);
 					sqlStr.append(" ");
