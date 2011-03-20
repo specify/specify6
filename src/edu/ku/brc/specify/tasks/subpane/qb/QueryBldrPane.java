@@ -1810,9 +1810,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         for (QueryFieldPanel fldPanel : fieldPanels)
         {
-            if (fldPanel.getFieldQRI() == fld || fldPanel.getFieldQRI().getStringId().equals(fld.getStringId()))
+            if (fldPanel.getFieldQRI() != null)
             {
-                return fldPanel.hasCriteria();
+            	if (fldPanel.getFieldQRI() == fld || fldPanel.getFieldQRI().getStringId().equals(fld.getStringId()))
+            	{
+            		return fldPanel.hasCriteria();
+            	}
             }
         }
         return false;
