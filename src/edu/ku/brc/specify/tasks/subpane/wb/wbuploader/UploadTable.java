@@ -85,7 +85,6 @@ import edu.ku.brc.specify.datamodel.FieldNotebookPage;
 import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.LocalityDetail;
-import edu.ku.brc.specify.datamodel.PaleoContext;
 import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
@@ -388,8 +387,7 @@ public class UploadTable implements Comparable<UploadTable>
             || tblClass.equals(PreparationAttribute.class)
             || tblClass.equals(CollectingEventAttribute.class)
         	|| tblClass.equals(GeoCoordDetail.class)
-        	|| tblClass.equals(LocalityDetail.class)
-        	|| tblClass.equals(PaleoContext.class);
+        	|| tblClass.equals(LocalityDetail.class);
        
     }
     
@@ -3794,19 +3792,17 @@ public class UploadTable implements Comparable<UploadTable>
                     	}
                     	DataModelObjBase rec = getCurrentRecordForSave(recNum);
                         boolean isNewRecord = rec.getId() == null;
-                        if (isNewRecord)
+                        if (isNewRecord || !updateMatches)
                         {
                         	rec.initialize();
                         }                        
                         boolean valuesChanged = setFields(rec, seq);
-                        boolean isUpdate = !isNewRecord && valuesChanged;
+                        boolean isUpdate = updateMatches && !isNewRecord && valuesChanged;
                         boolean gotRequiredParents = true;
                         try
                         {
-                        	valuesChanged = setParents(rec, recNum);
-                        	{
-                        		isUpdate |= !isNewRecord && valuesChanged;
-                        	}
+                        	valuesChanged |= setParents(rec, recNum);
+                        	isUpdate |= updateMatches && !isNewRecord && valuesChanged;
                         } catch (UploaderException ex)
                         {
                         	if ("MissingRequiredParent".equals(ex.getMessage()))
@@ -3817,7 +3813,7 @@ public class UploadTable implements Comparable<UploadTable>
                         		throw ex;
                         	}
                         }
-                        if (isNewRecord)
+                        if (!updateMatches || isNewRecord)
                         {
                         	setRequiredFldDefaults(rec, recNum);
                         	setRelatedDefaults(rec, recNum);
@@ -3830,11 +3826,11 @@ public class UploadTable implements Comparable<UploadTable>
                         if (!doNotWrite)
                         {
                         	doWrite(rec);
-                            if (isNewRecord)
+                            if (!updateMatches || isNewRecord)
                             {
                             	uploadedRecs.add(new UploadedRecordInfo(rec.getId(), wbCurrentRow,
                             		recNum, autoAssignedVal));
-                            } else if (isUpdate)
+                            } else if (isUpdate && updateMatches)
                             {
                             	//System.out.println("UploadTable.writeRowOrNot: updated " + rec.getId() + " in " + rec.getClass().getSimpleName());
                             	uploadedRecs.add(new UploadedRecordInfo(rec.getId(), wbCurrentRow, recNum, autoAssignedVal, true, 
