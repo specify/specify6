@@ -369,22 +369,45 @@ public class UploadField
             {
                 readOnlyValidValues = pickList.isReadOnly() && !(pickList instanceof PickListTableAdapter);
                 picklistWarn = !readOnlyValidValues && pickList instanceof PickListTableAdapter;
-                TreeMap<String, PickListItemIFace> pickListItems = picklistWarn ?
-                		new TreeMap<String, PickListItemIFace>(new Comparator<String>(){
+                
+//                TreeMap<String, PickListItemIFace> pickListItems = picklistWarn ?
+//                		new TreeMap<String, PickListItemIFace>(new Comparator<String>(){
+//
+//							/* (non-Javadoc)
+//							 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+//							 */
+//							@Override
+//							public int compare(String arg0, String arg1) {
+//								if (arg0 == null && arg1 == null) return 0;
+//								if (arg0 == null) return 1;
+//								if (arg1 == null) return -1;
+//								return arg0.compareToIgnoreCase(arg1);
+//							}
+//                			
+//                		})
+//                		: new TreeMap<String, PickListItemIFace>();                
+				TreeMap<String, PickListItemIFace> pickListItems = new TreeMap<String, PickListItemIFace>(
+						new Comparator<String>() {
 
-							/* (non-Javadoc)
-							 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+							/*
+							 * (non-Javadoc)
+							 * 
+							 * @see
+							 * java.util.Comparator#compare(java.lang.Object,
+							 * java.lang.Object)
 							 */
 							@Override
 							public int compare(String arg0, String arg1) {
-								if (arg0 == null && arg1 == null) return 0;
-								if (arg0 == null) return 1;
-								if (arg1 == null) return -1;
+								if (arg0 == null && arg1 == null)
+									return 0;
+								if (arg0 == null)
+									return 1;
+								if (arg1 == null)
+									return -1;
 								return arg0.compareToIgnoreCase(arg1);
 							}
-                			
-                		})
-                		: new TreeMap<String, PickListItemIFace>();                
+
+						});
                 for (PickListItemIFace item : pickList.getList())
                 {
                     pickListItems.put(item.getTitle(), item);
