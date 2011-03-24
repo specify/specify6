@@ -553,7 +553,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         
         DBFieldInfo CatNumFld = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()).getFieldByColumnName("CatalogNumber"); 
         final UIFieldFormatterIFace formatter = CatNumFld.getFormatter();
-        if (!formatter.isIncrementer() || !formatter.isNumeric())
+        if (!formatter.isIncrementer())
         {
         	//XXX this will have been checked earlier, right?
         	UIRegistry.showLocalizedError(NonIncrementingCatNum);
