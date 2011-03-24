@@ -5467,7 +5467,7 @@ public class Uploader implements ActionListener, KeyListener
         lbl.setBorder(new EmptyBorder(3, 1, 2, 0));
         pane.add(lbl, BorderLayout.NORTH);
         JPanel lstPane = new JPanel(new BorderLayout());
-        JList lst = new JList(structureErrors);
+        JList lst = UIHelper.createList(structureErrors);
         lst.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
         lstPane.setBorder(new EmptyBorder(1, 1, 10, 1));
         lstPane.add(lst, BorderLayout.CENTER);

@@ -19,11 +19,15 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.showLocalizedMsg;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -35,8 +39,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.SoftBevelBorder;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -73,6 +84,8 @@ import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.util.Pair;
@@ -549,6 +562,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         final String NonIncrementingCatNum = "NonIncrementingCatNum"; 
         final String BatchSaveSuccess = "CollectionObjectBusRules.BatchSaveSuccess";
         final String BatchSaveErrors = "CollectionObjectBusRules.BatchSaveErrors";
+        final String BatchSaveErrorsTitle = "CollectionObjectBusRules.BatchSaveErrorsTitle";
         final String BatchRSBaseName = "CollectionObjectBusRules.BatchRSBaseName";
         
         DBFieldInfo CatNumFld = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()).getFieldByColumnName("CatalogNumber"); 
@@ -602,7 +616,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                     {
                         try
                         {
-                            System.out.println(currentCat);
+                            //System.out.println(currentCat);
                             
                             co = new CollectionObject();
                             co.initialize();
@@ -725,13 +739,26 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 	UIRegistry.displayLocalizedStatusBarText(BatchSaveSuccess, formatter.formatToUI(catNumPair.getFirst()), formatter.formatToUI(catNumPair.getSecond()));
                 } else
                 {
-                	String msg = UIRegistry.getResourceString(BatchSaveErrors) + "\n";
-                	//XXX this won't work for large, ento-style, batches
-                	for (String na : objectsNotAdded)
-                	{
-                		msg += "\n" + formatter.formatToUI(na);
-                	}
-                	UIRegistry.showError(msg);
+                	JPanel pane = new JPanel(new BorderLayout());
+                    JLabel lbl = createLabel(getResourceString(BatchSaveErrors));
+                    lbl.setBorder(new EmptyBorder(3, 1, 2, 0));
+                    pane.add(lbl, BorderLayout.NORTH);
+                    JPanel lstPane = new JPanel(new BorderLayout());
+                    JList lst = UIHelper.createList(objectsNotAdded);
+                    lst.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
+                    lstPane.setBorder(new EmptyBorder(1, 1, 10, 1));
+                    lstPane.add(lst, BorderLayout.CENTER);
+                    JScrollPane sp = new JScrollPane(lstPane);
+                    //pane.add(lstPane, BorderLayout.CENTER);
+                    pane.add(sp, BorderLayout.CENTER);
+                    pane.setPreferredSize(new Dimension((int )lbl.getPreferredSize().getWidth() + 5, (int )lst.getPreferredScrollableViewportSize().getHeight() + 5));
+                    CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
+                    		UIRegistry.getResourceString(BatchSaveErrorsTitle),
+                            true,
+                            CustomDialog.OKHELP,
+                            pane);
+                    UIHelper.centerAndShow(dlg);
+                    dlg.dispose();
                 }
             }
         };
