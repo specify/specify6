@@ -49,6 +49,14 @@ public interface AutoNumberIFace
     public abstract String getNextNumber(final UIFieldFormatterIFace formatter, String value);
     
     /**
+     * @param formatter the formatter to use
+     * @param value the current value
+     * @param incrementValue if true then increment the current value
+     * @return the fully expressed number
+     */
+    public abstract String getNextNumber(final UIFieldFormatterIFace formatter, final String value, final boolean incrementValue);
+
+    /**
      * @return true if using the defined 'generic' class for numbering, false if using an external class.
      */
     public abstract boolean isGeneric();

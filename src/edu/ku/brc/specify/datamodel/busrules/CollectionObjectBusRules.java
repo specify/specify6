@@ -584,8 +584,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 while (!catNum.equals(catNumPair.getSecond()))
                 {
                 	//getNextNumber currently gets the number after highest existing number, regardless of the arg.
-                	//currentCat = formatter.getNextNumber(currentCat); 
-                	catNum = (String )formatter.formatFromUI(String.valueOf(Integer.valueOf(catNum).intValue() + 1));
+                	catNum = formatter.getNextNumber(catNum, true); 
+                	//catNum = (String )formatter.formatFromUI(String.valueOf(Integer.valueOf(catNum).intValue() + 1));
                     nums.add(catNum);
                 }
 
@@ -638,6 +638,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
 							.capture(Uploader.class, ex);
                 }
                 formViewObj.setDataObj(carryForwardCo);
+                //formViewObj.getRsController().setIndex(formViewObj.getRsController().getLength()-1);
                 saveBatchObjectsToRS();
                 return null;
             }

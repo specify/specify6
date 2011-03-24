@@ -397,6 +397,14 @@ public class AutoNumberGeneric implements AutoNumberIFace
      */
     public String getNextNumber(final UIFieldFormatterIFace formatter, final String formValue)
     {
+    	return getNextNumber(formatter, formValue, false);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.db.AutoNumberIFace#getNextNumber(edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace, java.lang.String, boolean)
+     */
+    public String getNextNumber(final UIFieldFormatterIFace formatter, final String formValue, final boolean incrementValue)
+    {
         errorMsg = null;
             
         if (StringUtils.isNotEmpty(formValue) && formatter.isLengthOK(formValue.length()))
@@ -409,9 +417,10 @@ public class AutoNumberGeneric implements AutoNumberIFace
                 UIFieldFormatterField  yearField = formatter.getYear();
                 Pair<Integer, Integer> yrPos     = yearField != null ? formatter.getYearPosition() : null;
                 
-                String highestValue  = getHighestObject(formatter, session, formValue, yrPos, formatter.getIncPosition());
+                String valueToIncrement  = incrementValue ? formValue
+                		: getHighestObject(formatter, session, formValue, yrPos, formatter.getIncPosition());
                 
-                Pair<Integer, Integer> yearAndIncVal = getYearAndIncVal(formatter, highestValue, formValue);
+                Pair<Integer, Integer> yearAndIncVal = getYearAndIncVal(formatter, valueToIncrement, formValue);
                 
                 // Should NEVER be null
                 if (yearAndIncVal != null)

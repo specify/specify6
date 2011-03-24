@@ -55,6 +55,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
@@ -237,6 +238,7 @@ public class UploadTable implements Comparable<UploadTable>
 
     protected boolean                                   validatingValues             = false;
     protected Object                                    autoAssignedVal              = null; //Assuming only one per table.
+    protected Object									prevAutoAssignedVal			 = null; //For auto-incrementing. Assuming one per table.
     protected UploadField                               autoAssignedField            = null; //Assuming one per table.
     protected Collection                                collection                   = null;
     protected Discipline                                discipline                   = null;
@@ -1576,9 +1578,19 @@ public class UploadTable implements Comparable<UploadTable>
                             {
                                 if (!this.validatingValues || autoAssignedVal == null)
                                 {
-                                	val = formatter.getNextNumber(formatter.formatToUI("").toString());
-                                    // XXX timo - Need to check here for a null return value.
-                                    autoAssignedVal = formatter.formatToUI(val);
+                                	if (autoAssignedVal == null)
+                                	{
+                                		if (prevAutoAssignedVal != null) 
+                                		{
+                                			val = formatter.getNextNumber(formatter.formatFromUI(prevAutoAssignedVal.toString()).toString(), true);
+                                		} else
+                                		{
+                                			val = formatter.getNextNumber(formatter.formatToUI("").toString());
+                                		}
+                                		// XXX timo - Need to check here for a null return value.
+                                		autoAssignedVal = formatter.formatToUI(val);
+                                		prevAutoAssignedVal = autoAssignedVal;
+                                	}
                                 }
                                 if (autoAssignedField == null)
                                 {
@@ -3391,229 +3403,316 @@ public class UploadTable implements Comparable<UploadTable>
     		return;
     	}
     	
-    	
-    	int seq = 0;
-        boolean gotABlank = false;
-        
-        //for Locality table only
-        LatLonConverter.FORMAT llFmt1 = null; 
-        LatLonConverter.FORMAT llFmt2 = null;
-        //GeoRefConverter gc = new GeoRefConverter();
-        UploadField llFld = null; //for 'generic' latlon errors.
-        
-        Vector<UploadTableInvalidValue> invalidNulls = new Vector<UploadTableInvalidValue>();
-        Vector<Integer> blankSeqs = new Vector<Integer>();
-        for (Vector<UploadField> flds : uploadFields)
-        {
-            boolean isBlank = true;
-            UploadField currFirstFld = null;
-            for (UploadField fld : flds)
-            {
-                if (fld.getIndex() != -1)
-                {
-                    if (currFirstFld == null)
-                    {
-                        currFirstFld = fld;
-                    }
-                    fld.setValue(uploadData.get(row, fld.getIndex()));
-                    isBlank &= isBlankVal(fld, seq, row, uploadData);
-                    try
-                    {
-                        if (invalidNull(fld, uploadData, row, seq)) 
-                        { 
-                        	if (shouldEnforceNonNullConstraint(row, uploadData, seq))
-                        	{
-                        		throw new Exception(
-                        				getResourceString("WB_UPLOAD_FIELD_MUST_CONTAIN_DATA")); 
-                        	}
-                        }       
-                        if (!pickListCheck(fld))
-                        {
-                        	if (!fld.isReadOnlyValidValues() )
-                        	{
-                        		if (uploader != Uploader.currentUpload)
-                        		{
-                        			invalidValues.add(new UploadTableInvalidValue(null, this, fld, null, row,
-                        					new Exception(getInvalidPicklistValErrMsg(fld)), true));
-                        			continue;
-                        		}
-                        	} else 
-                        	{
-                        		throw new Exception(getInvalidPicklistValErrMsg(fld));
-                        	}
-                        }
-                        getArgForSetter(fld);
-                    }
-                    catch (Exception e)
-                    {
-                        if (hasChildren)
-                        {
-                            invalidValues.add(new UploadTableInvalidValue(null, this, fld, row, e));
-                        }
-                        else
-                        {
-                            invalidNulls.add(new UploadTableInvalidValue(null, this, fld, row, e));
-                        }
-                    }
-                }
-                if (tblClass.equals(Locality.class))
-                {
-                    //Check row to see that lat/long formats are the same.
-                	String fldName = fld.getField().getName();
-                    if (fldName.equalsIgnoreCase("latitude1") || fldName.equalsIgnoreCase("latitude2")
-                            || fldName.equalsIgnoreCase("longitude1") || fldName.equalsIgnoreCase("longitude2"))
-                    {
-                        llFld = fld;
-                    	LatLonConverter.FORMAT fmt = geoRefConverter.getLatLonFormat(StringUtils.stripToNull(fld.getValue()));
-                        LatLonConverter.FORMAT llFmt = fldName.endsWith("1") ? llFmt1 : llFmt2;
-                        if (llFmt == null)
-                        {
-                            llFmt = fmt;
-                            if (fldName.endsWith("1"))
-                            {
-                            	llFmt1 = fmt;
-                            } else 
-                            {
-                            	llFmt2 = fmt;
-                            }
-                        }
-                        else
-                        {
-                            if (!llFmt.equals(fmt))
-                            {
-                                invalidValues.add(new UploadTableInvalidValue(null, this, getLatLongFlds(), row, 
-                                        new Exception(UIRegistry.getResourceString("WB_UPLOADER_INVALID_LATLONG"))));
-                            }
-                        }
-                    }
-                }
-            }
-            
-            if (tblClass.equals(Locality.class) && llFmt1 != llFmt2 && llFmt2 != null && llFmt2 != LatLonConverter.FORMAT.None)
-            {
-                invalidValues.add(new UploadTableInvalidValue(null, this, llFld, row, 
-                        new Exception(UIRegistry.getResourceString("WB_UPLOADER_INVALID_LATLONG"))));
-            }
-            isBlank = isBlankSequence(isBlank, uploadData, row, seq/*, getSequedParentClasses()*/);
-            if (isBlank)
-            /* 
-             * Disallow situations where 1-many lists have 'holes' - eg. CollectorLastName2 is blank but CollectorLastName1 and -3 are not.
-             * 
-             */
-            {
-                gotABlank = true;
-                blankSeqs.add(seq);
-            }
-            else if (!isBlank && gotABlank)
-            {
-            	for (Integer blank : blankSeqs)
-            	{
-            		for (UploadField blankSeqFld : getBlankFields(blank, row, uploadData))
-            		{
-            			addInvalidValueMsgForOneToManySkip(invalidValues, blankSeqFld, toString(), row, blank);
-            		}
-            	}
-            	blankSeqs.clear();
-            }
-            
-            if (!hasChildren && !isBlank && invalidNulls.size() != 0)
-            {
-                invalidValues.addAll(invalidNulls);
-            }
-            invalidNulls.clear();
-                
-            seq++;
-        }
-        if (tblClass.equals(Determination.class))
-        {
-            // check that isCurrent is ok. 1 and only one true.
-            boolean isCurrentPresent = false;
-            UploadField anIsCurrentFld = null;
-//            for (int row = 0; row < uploadData.getRows(); row++)
-//            {
-                int trueCount = 0;
-                for (Vector<UploadField> flds : uploadFields)
-                {
-                    for (UploadField fld : flds)
-                    {
-                        if (fld.getField().getName().equalsIgnoreCase("iscurrent"))
-                        {
-                            isCurrentPresent = true;
-                            anIsCurrentFld = fld;
-                            fld.setValue(uploadData.get(row, fld.getIndex()));
-                            try
-                            {
-                                Object[] boolVal = getArgForSetter(fld);
-                                if (boolVal[0] != null && (Boolean) boolVal[0])
-                                {
-                                    trueCount++;
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                // ignore. assuming problem was already caught above.
-                            }
-                        }
-                    }
-                }
-                if (isCurrentPresent && trueCount != 1)
-                {
-                	invalidValues.add(new UploadTableInvalidValue(null, this, anIsCurrentFld, row,
-                            new Exception(
-                                    getResourceString("WB_UPLOAD_ONE_CURRENT_DETERMINATION"))));
-                }
-            //}
-        }
-        
-        if (tblClass.equals(Agent.class))
-        {
-            // check that isCurrent is ok. 1 and only one true.
-            boolean nonPersonNonEmpty = false;
-            boolean isNonPerson = false;
-            Vector<UploadField> personOnlyFlds = new Vector<UploadField>();
-            for (Vector<UploadField> flds : uploadFields)
-            {
-            	for (UploadField fld : flds)
-                {
-                    try
-                    {
-            		if (fld.getField().getName().equalsIgnoreCase("firstName")
-                        	|| fld.getField().getName().equalsIgnoreCase("middleInitial")
-                        	|| fld.getField().getName().equalsIgnoreCase("title"))
-            		{
-            			Object[] val = getArgForSetter(fld);
-            			nonPersonNonEmpty = StringUtils.isNotEmpty((String )val[0]);
-            			personOnlyFlds.add(fld);
-            		}
-            		if (fld.getField().getName().equalsIgnoreCase("agenttype"))
-            		{
-                        	Object[] val = getArgForSetter(fld);
-                        	isNonPerson = val[0] != null && !((Byte )val[0]).equals(Agent.PERSON);
-                        	if (!isNonPerson)
-                        	{
-                        		break;
-                        	}
-            		}
-                    }
-                    catch (Exception e)
-                    {
-                        // ignore. assuming problem was already caught above.
-                    }
-                }
-                if (isNonPerson && nonPersonNonEmpty)
-                {
-                	for (UploadField poFld: personOnlyFlds)
-                	{
-                    	invalidValues.add(new UploadTableInvalidValue(null, this, poFld, row,
-                                new Exception(
-                                        getResourceString("UploadTable.FieldNotApplicableForAgentType"))));
-                	}
-                }
-            }
-        }
+		try
+		{
+			validatingValues = true;
+
+			int seq = 0;
+			boolean gotABlank = false;
+
+			// for Locality table only
+			LatLonConverter.FORMAT llFmt1 = null;
+			LatLonConverter.FORMAT llFmt2 = null;
+			// GeoRefConverter gc = new GeoRefConverter();
+			UploadField llFld = null; // for 'generic' latlon errors.
+
+			Vector<UploadTableInvalidValue> invalidNulls = new Vector<UploadTableInvalidValue>();
+			Vector<Integer> blankSeqs = new Vector<Integer>();
+			for (Vector<UploadField> flds : uploadFields)
+			{
+				boolean isBlank = true;
+				UploadField currFirstFld = null;
+				for (UploadField fld : flds)
+				{
+					if (fld.getIndex() != -1)
+					{
+						if (currFirstFld == null)
+						{
+							currFirstFld = fld;
+						}
+						fld.setValue(uploadData.get(row, fld.getIndex()));
+						isBlank &= isBlankVal(fld, seq, row, uploadData);;
+						try
+						{
+							if (invalidNull(fld, uploadData, row, seq))
+							{
+								if (shouldEnforceNonNullConstraint(row,
+										uploadData, seq))
+								{
+									//throw new Exception(
+									//		getResourceString("WB_UPLOAD_FIELD_MUST_CONTAIN_DATA"));
+									invalidNulls.add(new UploadTableInvalidValue(
+											getResourceString("WB_UPLOAD_FIELD_MUST_CONTAIN_DATA"), this, fld, row, null));		
+									continue;
+								}
+							}
+							if (!pickListCheck(fld))
+							{
+								if (!fld.isReadOnlyValidValues())
+								{
+									if (uploader != Uploader.currentUpload)
+									{
+										invalidValues
+												.add(new UploadTableInvalidValue(
+														null,
+														this,
+														fld,
+														null,
+														row,
+														new Exception(
+																getInvalidPicklistValErrMsg(fld)),
+														true));
+										continue;
+									}
+								} else
+								{
+									throw new Exception(
+											getInvalidPicklistValErrMsg(fld));
+								}
+							}
+							Object[] finalVal = getArgForSetter(fld);
+							checkUniqueness(finalVal, fld);
+						} catch (Exception e)
+						{
+							invalidValues.add(new UploadTableInvalidValue(
+								null, this, fld, row, e));
+						}
+					}
+					if (tblClass.equals(Locality.class))
+					{
+						// Check row to see that lat/long formats are the same.
+						String fldName = fld.getField().getName();
+						if (fldName.equalsIgnoreCase("latitude1")
+								|| fldName.equalsIgnoreCase("latitude2")
+								|| fldName.equalsIgnoreCase("longitude1")
+								|| fldName.equalsIgnoreCase("longitude2"))
+						{
+							llFld = fld;
+							LatLonConverter.FORMAT fmt = geoRefConverter
+									.getLatLonFormat(StringUtils
+											.stripToNull(fld.getValue()));
+							LatLonConverter.FORMAT llFmt = fldName
+									.endsWith("1") ? llFmt1 : llFmt2;
+							if (llFmt == null)
+							{
+								llFmt = fmt;
+								if (fldName.endsWith("1"))
+								{
+									llFmt1 = fmt;
+								} else
+								{
+									llFmt2 = fmt;
+								}
+							} else
+							{
+								if (!llFmt.equals(fmt))
+								{
+									invalidValues
+											.add(new UploadTableInvalidValue(
+													null,
+													this,
+													getLatLongFlds(),
+													row,
+													new Exception(
+															UIRegistry
+																	.getResourceString("WB_UPLOADER_INVALID_LATLONG"))));
+								}
+							}
+						}
+					}
+				}
+
+				if (tblClass.equals(Locality.class) && llFmt1 != llFmt2
+						&& llFmt2 != null
+						&& llFmt2 != LatLonConverter.FORMAT.None)
+				{
+					invalidValues
+							.add(new UploadTableInvalidValue(
+									null,
+									this,
+									llFld,
+									row,
+									new Exception(
+											UIRegistry
+													.getResourceString("WB_UPLOADER_INVALID_LATLONG"))));
+				}
+				isBlank = isBlankSequence(isBlank, uploadData, row, seq/*
+																		 * ,
+																		 * getSequedParentClasses
+																		 * ()
+																		 */);
+				if (isBlank)
+				/*
+				 * Disallow situations where 1-many lists have 'holes' - eg.
+				 * CollectorLastName2 is blank but CollectorLastName1 and -3 are
+				 * not.
+				 */
+				{
+					gotABlank = true;
+					blankSeqs.add(seq);
+				} else if (!isBlank && gotABlank)
+				{
+					for (Integer blank : blankSeqs)
+					{
+						for (UploadField blankSeqFld : getBlankFields(blank,
+								row, uploadData))
+						{
+							addInvalidValueMsgForOneToManySkip(invalidValues,
+									blankSeqFld, toString(), row, blank);
+						}
+					}
+					blankSeqs.clear();
+				}
+
+				if (!hasChildren && !isBlank && invalidNulls.size() != 0)
+				{
+					invalidValues.addAll(invalidNulls);
+				}
+				invalidNulls.clear();
+
+				seq++;
+			}
+			if (tblClass.equals(Determination.class))
+			{
+				// check that isCurrent is ok. 1 and only one true.
+				boolean isCurrentPresent = false;
+				UploadField anIsCurrentFld = null;
+				// for (int row = 0; row < uploadData.getRows(); row++)
+				// {
+				int trueCount = 0;
+				for (Vector<UploadField> flds : uploadFields)
+				{
+					for (UploadField fld : flds)
+					{
+						if (fld.getField().getName().equalsIgnoreCase(
+								"iscurrent"))
+						{
+							isCurrentPresent = true;
+							anIsCurrentFld = fld;
+							fld.setValue(uploadData.get(row, fld.getIndex()));
+							try
+							{
+								Object[] boolVal = getArgForSetter(fld);
+								if (boolVal[0] != null && (Boolean) boolVal[0])
+								{
+									trueCount++;
+								}
+							} catch (Exception e)
+							{
+								// ignore. assuming problem was already caught
+								// above.
+							}
+						}
+					}
+				}
+				if (isCurrentPresent && trueCount != 1)
+				{
+					invalidValues
+							.add(new UploadTableInvalidValue(
+									null,
+									this,
+									anIsCurrentFld,
+									row,
+									new Exception(
+											getResourceString("WB_UPLOAD_ONE_CURRENT_DETERMINATION"))));
+				}
+				// }
+			}
+
+			if (tblClass.equals(Agent.class))
+			{
+				// check that isCurrent is ok. 1 and only one true.
+				boolean nonPersonNonEmpty = false;
+				boolean isNonPerson = false;
+				Vector<UploadField> personOnlyFlds = new Vector<UploadField>();
+				for (Vector<UploadField> flds : uploadFields)
+				{
+					for (UploadField fld : flds)
+					{
+						try
+						{
+							if (fld.getField().getName().equalsIgnoreCase(
+									"firstName")
+									|| fld.getField().getName()
+											.equalsIgnoreCase("middleInitial")
+									|| fld.getField().getName()
+											.equalsIgnoreCase("title"))
+							{
+								Object[] val = getArgForSetter(fld);
+								nonPersonNonEmpty = StringUtils
+										.isNotEmpty((String) val[0]);
+								personOnlyFlds.add(fld);
+							}
+							if (fld.getField().getName().equalsIgnoreCase(
+									"agenttype"))
+							{
+								Object[] val = getArgForSetter(fld);
+								isNonPerson = val[0] != null
+										&& !((Byte) val[0])
+												.equals(Agent.PERSON);
+								if (!isNonPerson)
+								{
+									break;
+								}
+							}
+						} catch (Exception e)
+						{
+							// ignore. assuming problem was already caught
+							// above.
+						}
+					}
+					if (isNonPerson && nonPersonNonEmpty)
+					{
+						for (UploadField poFld : personOnlyFlds)
+						{
+							invalidValues
+									.add(new UploadTableInvalidValue(
+											null,
+											this,
+											poFld,
+											row,
+											new Exception(
+													getResourceString("UploadTable.FieldNotApplicableForAgentType"))));
+						}
+					}
+				}
+			}
+		} finally
+		{
+			validatingValues = false;
+		}
 
     }
     
+    /**
+     * @param val
+     * @param fld
+     * @throws Exception if val for fld already exists
+     */
+    protected void checkUniqueness(final Object[] val, final UploadField fld) throws Exception
+    {
+		if (val != null && val[0] != null 
+				&& fld.getIndex() != -1
+				&& fld.getField() != null 
+				&& fld.getField().getFieldInfo() != null)
+		{
+			//assuming null values are ignored in uniqueness constraint
+			DBFieldInfo fldInfo = fld.getField().getFieldInfo();
+			DBTableInfo tblInfo = fldInfo.getTableInfo();
+			//Just doing this for catalognumber. There doesn't seem to be enough info in DBTableInfo
+			//and DBFieldInfo to do it generally.
+			if (fldInfo.getName().equalsIgnoreCase("catalognumber")  && tblInfo.getName().equals("collectionobject"))
+			{
+				if (BasicSQLUtils.getCount("select count(*) from collectionobject where CollectionMemberID = " 
+					+ AppContextMgr.getInstance().getClassObject(Collection.class).getId()
+					+ " and CatalogNumber = '" + val[0] + "'") != 0)
+				{
+					throw new Exception(getResourceString("UploadTable.UniquenessViolation"));
+				}
+			}
+		}
+
+    }
     /**
      * @param uploadTable
      * @param blankSeq
@@ -3696,24 +3795,15 @@ public class UploadTable implements Comparable<UploadTable>
      * 
      * Validates values in all workbench cells that are mapped to this table.
      */
-    public Vector<UploadTableInvalidValue> validateValues(final UploadData uploadData)
-    {
-        try
-        {
-            validatingValues = true;
-
-            Vector<UploadTableInvalidValue> result = new Vector<UploadTableInvalidValue>();
-            for (int row = 0; row < uploadData.getRows(); row++)
-            {
-                validateRowValues(row, uploadData, result);
-            }
-            return result;
-        }
-        finally
-        {
-            validatingValues = false;
-        }
-    }
+	public Vector<UploadTableInvalidValue> validateValues(
+			final UploadData uploadData) {
+		Vector<UploadTableInvalidValue> result = new Vector<UploadTableInvalidValue>();
+		for (int row = 0; row < uploadData.getRows(); row++)
+		{
+			validateRowValues(row, uploadData, result);
+		}
+		return result;
+	}
 
     /**
      * @throws UploaderException

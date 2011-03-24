@@ -3,6 +3,10 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import java.awt.Component;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -10,6 +14,10 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Vector;
 
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.swingx.table.TableColumnExt;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
@@ -21,6 +29,7 @@ import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.TableSearcher;
 import edu.ku.brc.ui.TableSearcherCell;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.tmanfe.SearchReplacePanel;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
 import edu.ku.brc.ui.tmanfe.SpreadSheetModel;
@@ -234,11 +243,61 @@ public class WorkbenchSpreadSheet extends SpreadSheet
 		super.toggleSortOrder(arg0);
 	}
     
+    /* (non-Javadoc)
+	 * @see edu.ku.brc.ui.tmanfe.SpreadSheet#createMenuForSelection(java.awt.Point)
+	 */
+	@Override
+	protected JPopupMenu createMenuForSelection(Point pnt) {
+		JPopupMenu result = super.createMenuForSelection(pnt);
+		final int modelCol = convertColumnIndexToModel(columnAtPoint(pnt));
+        if (getSelectedColumnCount() == 1 && getModel().getColumnClass(modelCol).equals(String.class))
+        {
+            final int[] rows = getSelectedRowModelIndexes();
+            if (rows.length > 1 && StringUtils.isNotBlank((String )getValueAt(rows[0], modelCol)))
+            {
+             	final UIFieldFormatterIFace fldFormatter = workbenchPaneSS.getFormatterForCol(modelCol);
+             	if (fldFormatter != null && fldFormatter.isIncrementer())
+             	{
+             		int insertPosition = -1;
+             		for (int i = 0; i < result.getComponentCount(); i++)
+             		{
+             			Component c = result.getComponent(i);
+             			if (c instanceof JMenuItem 
+             					&& ((JMenuItem)c).getText().equals(UIRegistry.getResourceString("SpreadSheet.FillDown")))
+             			{
+             				insertPosition = i;
+             				break;
+             			}
+             					
+             		}
+             		JMenuItem mi = new JMenuItem(UIRegistry.getResourceString("WorkbenchSpreadSheet.FillDownIncrement"));
+             		if (insertPosition == -1)
+             		{
+             			result.add(mi);
+             		} else
+             		{
+             			result.insert(mi, insertPosition);
+             		}
+             		mi.addActionListener(new ActionListener() {
+             			public void actionPerformed(ActionEvent ae)
+             			{
+             				((GridTableModel )model).fillAndIncrement(modelCol, rows[0], rows, fldFormatter);
+             				popupMenu.setVisible(false);
+             			}
+             		});
+             	}
+            }
+        }
+		return result;
+	}
+	
 	//------------------------------------------------------------------------------
     //-- Inner Classes
     //------------------------------------------------------------------------------
 
-    /**
+
+
+	/**
      * @author timbo
      *
      *Compares values in Calendar columns.

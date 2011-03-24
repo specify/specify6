@@ -42,6 +42,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -61,6 +62,7 @@ import java.util.Properties;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.AbstractAction;
@@ -136,6 +138,7 @@ import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.af.ui.forms.ResultSetController;
 import edu.ku.brc.af.ui.forms.ResultSetControllerListener;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.validation.FormValidator;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -4382,7 +4385,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
     	if (getIncremental())
 		{
-			validateRows(null, startRow, endRow, true, null);
+			validateRows(null, startRow, endRow, true, null, false);
 			return true;
 		}
     	return false;
@@ -4399,7 +4402,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
     	if (getIncremental())
 		{
-			validateRows(rows, -1, -1, rows.length <= 17, null);
+			validateRows(rows, -1, -1, rows.length <= 17, null, false);
 			//validateRows(rows, -1, -1, true, null);
     		return true;
 		}
@@ -4478,6 +4481,8 @@ public class WorkbenchPaneSS extends BaseSubPane
 		private final int endRow;
 		private final boolean useGlassPane;
 		private SimpleGlassPane glassPane;
+		private final boolean allowCancel;
+		private final AtomicBoolean cancelledByUser = new AtomicBoolean(false);
 		
 		//Vectors are thread safe?? Right??
 		private final Vector<Integer> deletedRows = new Vector<Integer>();
@@ -4489,13 +4494,14 @@ public class WorkbenchPaneSS extends BaseSubPane
 		 * @param endRow
 		 */
 		public ValidationWorker(int[] rows, int startRow, int endRow, 
-				boolean useGlassPane)
+				boolean useGlassPane, boolean allowCancel)
 		{
 			super();
 			this.rows = rows;
 			this.startRow = startRow;
 			this.endRow = endRow;
 			this.useGlassPane = useGlassPane;
+			this.allowCancel = allowCancel;
 		}
 
 		/**
@@ -4533,6 +4539,81 @@ public class WorkbenchPaneSS extends BaseSubPane
 			{
 	            this.glassPane = UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WorkbenchPaneSS.Validating"), new Object[] {workbench.getName()}), 
 	            		WorkbenchTask.GLASSPANE_FONT_SIZE);
+				if (allowCancel)
+				{
+					this.glassPane.addMouseListener(new MouseListener() {
+
+						/*
+						 * (non-Javadoc)
+						 * 
+						 * @see
+						 * java.awt.event.MouseListener#mouseClicked(java.awt
+						 * .event.MouseEvent)
+						 */
+						@Override
+						public void mouseClicked(MouseEvent arg0) {
+							System.out.println("Mouse Clicked: "
+									+ arg0.getClickCount());
+							if (arg0.getClickCount() == 2)
+							{
+								cancelledByUser.set(true);
+							}
+						}
+
+						/*
+						 * (non-Javadoc)
+						 * 
+						 * @see
+						 * java.awt.event.MouseListener#mouseEntered(java.awt
+						 * .event.MouseEvent)
+						 */
+						@Override
+						public void mouseEntered(MouseEvent arg0) {
+							// TODO Auto-generated method stub
+
+						}
+
+						/*
+						 * (non-Javadoc)
+						 * 
+						 * @see
+						 * java.awt.event.MouseListener#mouseExited(java.awt
+						 * .event.MouseEvent)
+						 */
+						@Override
+						public void mouseExited(MouseEvent arg0) {
+							// TODO Auto-generated method stub
+
+						}
+
+						/*
+						 * (non-Javadoc)
+						 * 
+						 * @see
+						 * java.awt.event.MouseListener#mousePressed(java.awt
+						 * .event.MouseEvent)
+						 */
+						@Override
+						public void mousePressed(MouseEvent arg0) {
+							// TODO Auto-generated method stub
+
+						}
+
+						/*
+						 * (non-Javadoc)
+						 * 
+						 * @see
+						 * java.awt.event.MouseListener#mouseReleased(java.awt
+						 * .event.MouseEvent)
+						 */
+						@Override
+						public void mouseReleased(MouseEvent arg0) {
+							// TODO Auto-generated method stub
+
+						}
+
+					});
+				}
 			} 			
 			if (rows != null)
 			{
@@ -4540,6 +4621,11 @@ public class WorkbenchPaneSS extends BaseSubPane
 				int rowCount = 0;
 				for (int row : rows)
 				{
+					if (cancelledByUser.get())
+					{
+						break;
+					}
+					
 					int adjustedRow = adjustRow(row);
 					if (adjustedRow != -1)
 					{
@@ -4557,21 +4643,24 @@ public class WorkbenchPaneSS extends BaseSubPane
 				int rowCount = 0;
 				try 
 				{
-				for (int row = startRow; row <= endRow; row++)
-				{
-					
-					int adjustedRow = adjustRow(row);
-					if (adjustedRow != -1)
+					for (int row = startRow; row <= endRow; row++)
 					{
-						updateRowValidationStatus(adjustedRow, -1);
+						if (cancelledByUser.get())
+						{
+							break;
+						}
+						int adjustedRow = adjustRow(row);
+						if (adjustedRow != -1)
+						{
+							updateRowValidationStatus(adjustedRow, -1);
+						}
+						if (useGlassPane)
+						{
+							int progress = (int)( (100.0 * ++rowCount) / count);
+							//System.out.println(progress);
+							glassPane.setProgress(progress);
+						}
 					}
-					if (useGlassPane)
-					{
-						int progress = (int)( (100.0 * ++rowCount) / count);
-						//System.out.println(progress);
-						glassPane.setProgress(progress);
-					}
-				}
 				} catch (Exception ex)
 				{
 					ex.printStackTrace();
@@ -4608,6 +4697,16 @@ public class WorkbenchPaneSS extends BaseSubPane
 				//System.out.println("done(): Clearing validationWorkerQueue");
 				validationWorkerQueue.clear();
 			}
+			if (cancelledByUser.get())
+			{
+				//XXX need to verify cancel. Inside the doInBackground loop.
+				turnOffIncrementalValidation();
+				turnOffIncrementalMatching();
+				uploadToolPanel.uncheckAutoMatching();
+				uploadToolPanel.uncheckAutoValidation();
+				uploadToolPanel.updateBtnUI();
+			}
+			
 //			System.out.println("done(): remove current validationWorker");
 //			validationWorkerQueue.remove(); //remove this worker
 //			
@@ -4665,7 +4764,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     public void validateAll(final SimpleGlassPane glassPane)
     {
     	//System.out.println("validating all " + spreadSheet.getRowCount() + " rows.");
-    	validateRows(null, 0, spreadSheet.getRowCount()-1, false, glassPane);
+    	validateRows(null, 0, spreadSheet.getRowCount()-1, false, glassPane, glassPane == null);
     }
     
     /**
@@ -4674,10 +4773,10 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param endRow
      * @param isDoInBackground
      */
-    protected void validateRows(final int[] rows, final int startRow, final int endRow, boolean doSecretly, final SimpleGlassPane glassPane)
+    protected void validateRows(final int[] rows, final int startRow, final int endRow, boolean doSecretly, final SimpleGlassPane glassPane, final boolean allowCancel)
     {
     	
-    	ValidationWorker newWorker = new ValidationWorker(rows, startRow, endRow, !doSecretly);
+    	ValidationWorker newWorker = new ValidationWorker(rows, startRow, endRow, !doSecretly, allowCancel);
 //    	if (doSecretly)
     	{
     		//System.out.println("validateRows(): adding worker to queue");
@@ -4709,6 +4808,25 @@ public class WorkbenchPaneSS extends BaseSubPane
 //    		}
 //    	}
     }
+    
+	/**
+	 * @param col
+	 * @return true if the field mapped to col has an incrementing formatter.
+	 */
+	public UIFieldFormatterIFace getFormatterForCol(int col)
+	{
+		if (workbenchValidator != null && workbenchValidator.getUploader() != null)
+		{
+			DBFieldInfo fldInfo = workbenchValidator.getUploader().getFieldInfoForCol(col);
+			if (fldInfo != null)
+			{
+				return fldInfo.getFormatter();
+			}
+		}
+		return null;
+	}
+
+    
     //------------------------------------------------------------
     // Inner Classes
     //------------------------------------------------------------

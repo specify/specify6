@@ -578,9 +578,19 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     @Override
     public String getNextNumber(String value)
     {
+        return getNextNumber(value, false);
+    }
+
+    
+    /* (non-Javadoc)
+	 * @see edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace#getNextNumber(java.lang.String, boolean)
+	 */
+	@Override
+	public String getNextNumber(String value, boolean incrementValue) 
+	{
         if (autoNumber != null)
         {
-            String number = autoNumber.getNextNumber(this, value);
+            String number = autoNumber.getNextNumber(this, value, incrementValue);
             if (number == null && autoNumber.isInError())
             {
                 UIRegistry.showError(autoNumber.getErrorMsg());
@@ -590,9 +600,9 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
             }
         }
         return null;
-    }
+	}
 
-    /* (non-Javadoc)
+	/* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#formatInBound(java.lang.Object)
      */
     @Override

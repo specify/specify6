@@ -72,6 +72,7 @@ import org.hibernate.HibernateException;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ServiceInfo;
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
@@ -1718,6 +1719,27 @@ public class Uploader implements ActionListener, KeyListener
 //    	return result;
     }
     
+    /**
+     * @param col
+     * @return
+     */
+    public DBFieldInfo getFieldInfoForCol(int col)
+    {
+    	for (UploadTable ut : uploadTables)
+    	{
+    		for (Vector<UploadField> ufs : ut.getUploadFields())
+    		{
+    			for (UploadField uf : ufs)
+    			{
+    				if (uf.getIndex() == col && uf.getField() != null)
+    				{
+    					return uf.getField().getFieldInfo();
+    				}
+    			}
+    		}
+    	}
+    	return null;
+    }
     /**
      * Sets default match status display settings.
      * 

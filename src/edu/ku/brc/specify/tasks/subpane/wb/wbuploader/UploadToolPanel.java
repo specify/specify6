@@ -336,6 +336,21 @@ public class UploadToolPanel extends JPanel implements TimingTarget
 
     }
     
+    public void uncheckAutoValidation()
+    {
+    	this.autoValidateChk.setSelected(false);
+		prevInvalidCellBtn.setVisible(false);
+		nextInvalidCellBtn.setVisible(false);
+		invalidCellCountLbl.setVisible(false);
+    }
+    
+    public void uncheckAutoMatching()
+    {
+    	this.autoMatchChk.setSelected(false);
+		prevUnmatchedCellBtn.setVisible(false);
+		nextUnmatchedCellBtn.setVisible(false);
+		unmatchedCellCountLbl.setVisible(false);
+    }
     /**
      * @return true if panel is expanded.
      */

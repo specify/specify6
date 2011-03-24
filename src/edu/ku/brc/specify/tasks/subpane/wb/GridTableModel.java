@@ -30,6 +30,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
@@ -379,6 +380,36 @@ public class GridTableModel extends SpreadSheetModel
         }        
     }
 
+    /**
+     * @param colInx
+     * @param valueRowInx
+     * @param rowInxs
+     * @param incrementer
+     */
+    public void fillAndIncrement(int colInx, int valueRowInx, int[] rowInxs, final UIFieldFormatterIFace incrementer)
+    {
+        Object value = getValueAt(valueRowInx, colInx);
+        try
+        {
+        	setBatchMode(rowInxs.length > 50); 
+        	for (int rowInx : rowInxs)
+        	{
+        		setValueAt(value, rowInx, colInx);
+        		value = incrementer.formatToUI(incrementer.getNextNumber(incrementer.formatFromUI(value).toString(), true).toString());
+        	}
+        	if (!workbenchPaneSS.validateRows(rowInxs) && isBatchMode())
+        	{
+        		fireDataChanged();
+        	}
+        } finally
+        {
+        	if (isBatchMode())
+        	{
+        		setBatchMode(false);
+        	}
+        }        
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.tmanfe.SpreadSheetModel#insertRow(int)
      */

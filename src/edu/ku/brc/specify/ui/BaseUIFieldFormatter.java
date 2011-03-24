@@ -424,6 +424,14 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     @Override
     public String getNextNumber(final String value)
     {
+    	return getNextNumber(value, false);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace#getNextNumber(java.lang.String, boolean)
+     */
+    public String getNextNumber(final String value, final boolean incrementValue)
+    {
         if (autoNumber != null)
         {
             String val = value;
@@ -435,7 +443,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
                 }
             }
             
-            String number = autoNumber.getNextNumber(this, val);
+            String number = autoNumber.getNextNumber(this, val, incrementValue);
             if (number == null && autoNumber.isInError())
             {
                 UIRegistry.showError(autoNumber.getErrorMsg());
