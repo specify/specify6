@@ -68,10 +68,11 @@ public class SimpleGlassPane extends ProgressGlassPane implements AWTEventListen
     private Color  fillColor    = new Color(0, 0, 0, 50);
     private Insets margin       = new Insets(0,0,0,0);
     
-    private  boolean          useBGImage       = false;
-    private  boolean          hideOnClick      = false;
-    private  BufferedImage    img              = null;
-    private  DelegateRenderer delegateRenderer = null;
+    private  boolean          useBGImage       		= false;
+    private  boolean          hideOnClick      		= false;
+    private  boolean		  dblClickProgBar		= true;
+    private  BufferedImage    img              		= null;
+    private  DelegateRenderer delegateRenderer 		= null;
     
     private JFrame frame = null; 
 
@@ -83,19 +84,35 @@ public class SimpleGlassPane extends ProgressGlassPane implements AWTEventListen
     public SimpleGlassPane(final String text, 
                            final int pointSize)
     {
-        this(text, pointSize, true);
+        this(text, pointSize, true, false);
     }
     
     /**
      * @param text
      * @param pointSize
+     * @param doBlockMouseEvents
      */
     public SimpleGlassPane(final String text, 
                            final int pointSize,
-                           @SuppressWarnings("unused") final boolean doBlockMouseEvents)
+                           final boolean doBlockMouseEvents)
+    {
+    	this(text, pointSize, doBlockMouseEvents, false);
+    }
+    
+    /**
+     * @param text
+     * @param pointSize
+     * @param doBlockMouseEvents
+     * @param dblClickProgBar
+     */
+    public SimpleGlassPane(final String text, 
+                           final int pointSize,
+                           final boolean doBlockMouseEvents,
+                           final boolean dblClickProgBar)
     {
         this.text      = text;
         this.pointSize = pointSize;
+        this.dblClickProgBar = dblClickProgBar;
         
         setBackground(fillColor);
         setOpaque(false);
@@ -259,7 +276,10 @@ public class SimpleGlassPane extends ProgressGlassPane implements AWTEventListen
         
         if (r.contains(p))
         {
-            e.consume();
+            if (!dblClickProgBar || !getProgressBarRect().contains(p))
+            {
+            	e.consume();
+            }
         }
     }
     /**
@@ -460,7 +480,7 @@ public class SimpleGlassPane extends ProgressGlassPane implements AWTEventListen
                     SimpleGlassPane.this.setVisible(false);
                 }
             });
-        } else
+        } else if (!dblClickProgBar || !getProgressBarRect().contains(e.getPoint()))
         {
             e.consume();
         }

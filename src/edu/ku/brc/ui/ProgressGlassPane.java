@@ -33,6 +33,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 
 import javax.swing.JComponent;
@@ -124,6 +125,19 @@ public class ProgressGlassPane extends JComponent
         }
     }
 
+    /**
+     * @return the bounds of the progress bar.
+     */
+    protected Rectangle getProgressBarRect()
+    {
+        int x = (getWidth() - barWidth) / 2;
+        int y = (getHeight() - barHeight) / 2;
+        FontMetrics metrics = getGraphics().getFontMetrics(getFont());
+        y += metrics.getDescent() / 2;
+        y += textOffset;
+        return new Rectangle(x, y, barWidth, barHeight+1);
+    	
+    }
     /* (non-Javadoc)
      * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
      */

@@ -4537,8 +4537,9 @@ public class WorkbenchPaneSS extends BaseSubPane
 		{
 			if (useGlassPane)
 			{
-	            this.glassPane = UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WorkbenchPaneSS.Validating"), new Object[] {workbench.getName()}), 
-	            		WorkbenchTask.GLASSPANE_FONT_SIZE);
+	            this.glassPane = UIRegistry.writeSimpleGlassPaneMsg(
+	            		String.format(getResourceString("WorkbenchPaneSS.Validating"), new Object[] {workbench.getName()}), 
+	            		WorkbenchTask.GLASSPANE_FONT_SIZE, true);
 				if (allowCancel)
 				{
 					this.glassPane.addMouseListener(new MouseListener() {
@@ -4552,12 +4553,30 @@ public class WorkbenchPaneSS extends BaseSubPane
 						 */
 						@Override
 						public void mouseClicked(MouseEvent arg0) {
-							System.out.println("Mouse Clicked: "
-									+ arg0.getClickCount());
-							if (arg0.getClickCount() == 2)
+							if (!arg0.isConsumed())
 							{
-								cancelledByUser.set(true);
-							}
+								if (arg0.getClickCount() == 2)
+								{
+									SwingUtilities.invokeLater(new Runnable() {
+
+										/* (non-Javadoc)
+										 * @see java.lang.Runnable#run()
+										 */
+										@Override
+										public void run() {
+											if (UIRegistry.displayConfirmLocalized(
+													"WorkbenchPaneSS.CancelValidationConfirmTitle",
+													"WorkbenchPaneSS.CancelValidationConfirmMsg", "YES", "NO", 
+													JOptionPane.QUESTION_MESSAGE))
+											{
+												cancelledByUser.set(true);
+											}
+										}
+										
+										
+									});
+								}
+							}						
 						}
 
 						/*

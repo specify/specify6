@@ -1732,7 +1732,18 @@ public class UIRegistry
      */
     public static SimpleGlassPane writeSimpleGlassPaneMsg(final String msg, final int pointSize)
     {
-        SimpleGlassPane glassPane = new SimpleGlassPane(msg, pointSize);
+    	return writeSimpleGlassPaneMsg(msg, pointSize, false);
+    }
+    
+    /**
+     * @param msg
+     * @param pointSize
+     * @param isDblClickProgBar
+     * @return
+     */
+    public static SimpleGlassPane writeSimpleGlassPaneMsg(final String msg, final int pointSize, final boolean isDblClickProgBar)
+    {
+        SimpleGlassPane glassPane = new SimpleGlassPane(msg, pointSize, false, isDblClickProgBar);
         
         JStatusBar statusBar = UIRegistry.getStatusBar();
         if (statusBar != null)
