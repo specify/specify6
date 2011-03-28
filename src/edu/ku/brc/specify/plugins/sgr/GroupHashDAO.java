@@ -26,6 +26,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Stack;
 
+import javax.swing.JOptionPane;
+
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.dbsupport.DBConnection;
@@ -83,9 +85,25 @@ public class GroupHashDAO
         DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("MySQL");
         String             connStr    = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, server, database, 
                                                                     username, password, driverInfo.getName());
-
-        dbConn     = new DBConnection("root", "root", connStr, driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), database);
-        connection = dbConn.getConnection();
+        boolean isFirst = true;
+        do 
+        {
+            if (!isFirst)
+            {
+                password = JOptionPane.showInputDialog("Enter MySQL's root password:");
+            }
+            if (StringUtils.isNotEmpty(password))
+            {
+                try
+                {
+                    dbConn     = new DBConnection("root", password, connStr, driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), database);
+                    connection = dbConn.getConnection();
+                } catch (Exception ex) {}
+            }
+            isFirst = false;
+        } while (dbConn == null || connection == null);
+        
+        
     }
     
     /**
