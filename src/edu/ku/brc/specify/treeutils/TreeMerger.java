@@ -66,7 +66,7 @@ public class TreeMerger<N extends Treeable<N,D,I>,
 	/**
 	 * @return tableInfo for Node type
 	 */
-	protected DBTableInfo getNodeTable()
+	public DBTableInfo getNodeTable()
 	{
 		return DBTableIdMgr.getInstance().getByClassName(treeDef.getNodeClass().getName());
 	}
@@ -90,9 +90,17 @@ public class TreeMerger<N extends Treeable<N,D,I>,
 	/**
 	 * @return name of the name field for node table
 	 */
-	protected String getNameFld()
+	public String getNameFld()
 	{
 		return "name";
+	}
+	
+	/**
+	 * @return
+	 */
+	public String getFullNameFld()
+	{
+		return "fullname";
 	}
 	
 	/**
@@ -115,7 +123,7 @@ public class TreeMerger<N extends Treeable<N,D,I>,
 	 * 
 	 * @throws Exception if more than matching child exists.
 	 */
-	protected Integer getMatch(final Object[] child, final Integer parentId) throws Exception
+	protected Integer getMatch(final Object[] child, final Integer parentId) throws TreeMergeException
 	{
 		Boolean isAccepted = (Boolean )child[2];
 		String sql = "select " + nodeTable.getIdFieldName() + " from " + nodeTable.getName() + " where "
@@ -132,7 +140,7 @@ public class TreeMerger<N extends Treeable<N,D,I>,
 			return (Integer )matches.get(0)[0];
 		}
 		//XXX prompt user???
-		throw new Exception("multiple matches. unable to merge."); //XXX i18n 
+		throw new TreeMergeException(this, (String )child[1], parentId);  
 	}
 	
 	/**
@@ -238,7 +246,7 @@ public class TreeMerger<N extends Treeable<N,D,I>,
 	 * @param mergeIntoId
 	 * @throws Exception
 	 */
-	protected void preMerge(final Integer toMergeId, final Integer mergeIntoId) throws Exception
+	protected void preMerge(final Integer toMergeId, final Integer mergeIntoId) throws TreeMergeException, Exception
 	{
 		//business rules??? Use hibernate here??
 		List<String> updaters = getPreMergeSql(toMergeId, mergeIntoId);
@@ -252,7 +260,7 @@ public class TreeMerger<N extends Treeable<N,D,I>,
 		}		
 		else 
 		{
-			throw new Exception("Unable to merge " + nodeTable.getName() + " objects");
+			throw new TreeMergeException(this, null, toMergeId, mergeIntoId, null, TreeMergeException.UNSPECIFIED);
 		}
 	}
 	

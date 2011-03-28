@@ -93,7 +93,6 @@ import edu.ku.brc.af.ui.forms.validation.UIValidator;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Taxon;
-import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -105,6 +104,7 @@ import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeHelper;
+import edu.ku.brc.specify.treeutils.TreeMergeException;
 import edu.ku.brc.specify.treeutils.TreeMerger;
 import edu.ku.brc.specify.treeutils.TreeMergerUIIFace;
 import edu.ku.brc.ui.CustomDialog;
@@ -2944,6 +2944,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	        final TreeMerger<T, D, I> merger = new TreeMerger<T, D, I>(treeDef);
 	        merger.addListener(face);
 	        new javax.swing.SwingWorker<Object, Object>() {
+	        	Boolean result = false;
+				Exception killer = null;
 
 				/* (non-Javadoc)
 				 * @see javax.swing.SwingWorker#doInBackground()
@@ -2973,11 +2975,14 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			        try
 			        {
 			        	merger.mergeTrees(draggedNode.getId(), droppedOnNode.getId());
+			        	result = true;
 			        } catch (Exception ex)
 			        {
-			        	ex.printStackTrace();
+			        	log.error(ex);
+			        	result = false;
+			        	killer = ex;
 			        }
-					return null;
+					return result;
 				}
 
 				@Override
@@ -2994,14 +2999,17 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 						}
 						
 					});
-					try
+					if (result)
 					{
-						treeDef.updateAllNodes(null, true, true);
-					} catch (Exception ex)
-					{
-						edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-						edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(
+						try
+						{
+							treeDef.updateAllNodes(null, true, true);
+						} catch (Exception ex)
+						{
+							edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+							edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(
 								TreeTableViewer.class, ex);
+						}
 					}
 			        SwingUtilities.invokeLater(new Runnable() {
 
@@ -3012,6 +3020,19 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 						}
 			        	
 			        });
+					if (!result && killer != null)
+					{
+						if (killer instanceof TreeMergeException)
+						{
+							UIRegistry.displayErrorDlg(killer.getMessage());
+						}
+						else 
+						{
+							edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+							edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(
+									TreeTableViewer.class, killer);
+						}
+					}
 				}
 	        	
 	        }.execute();
