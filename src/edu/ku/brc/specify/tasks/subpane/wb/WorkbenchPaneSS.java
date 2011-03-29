@@ -4542,6 +4542,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 	            		WorkbenchTask.GLASSPANE_FONT_SIZE, true);
 				if (allowCancel)
 				{
+					UIRegistry.displayStatusBarText("WorkbenchPaneSS.CancelValdationHint");
 					this.glassPane.addMouseListener(new MouseListener() {
 
 						/*
@@ -4706,6 +4707,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 		protected void done()
 		{
 			super.done();
+			UIRegistry.displayStatusBarText(null);
 			if (useGlassPane)
 			{
 				UIRegistry.clearSimpleGlassPaneMsg();
