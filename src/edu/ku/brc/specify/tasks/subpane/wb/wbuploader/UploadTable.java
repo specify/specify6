@@ -1590,8 +1590,12 @@ public class UploadTable implements Comparable<UploadTable>
                                 		// XXX timo - Need to check here for a null return value.
                                 		autoAssignedVal = formatter.formatToUI(val);
                                 		prevAutoAssignedVal = autoAssignedVal;
-                                	}
-                                }
+                                	} else if (!this.validatingValues)
+                                    {
+                                    	val = formatter.formatFromUI(autoAssignedVal);
+                                    }
+
+                                }                                 
                                 if (autoAssignedField == null)
                                 {
                                     autoAssignedField = ufld;
