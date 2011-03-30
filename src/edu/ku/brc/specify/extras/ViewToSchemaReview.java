@@ -37,12 +37,15 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.SwingUtilities;
+import javax.swing.border.EtchedBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
@@ -78,6 +81,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.ui.BiColorBooleanTableCellRenderer;
 import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.CustomDialog;
@@ -356,10 +360,14 @@ public class ViewToSchemaReview
         searchPB.add(UIHelper.createI18NFormLabel("Filter"), cc.xy(5, 1));
         searchPB.add(filterCBX,                              cc.xy(7, 1));
         
-        JLabel legend = UIHelper.createLabel("<HTML><li>Red - Not on form and not hidden</li><li>Magenta - On the form , but is hidden</li><li>Black - Correct</li>");
+        JLabel legend = UIHelper.createLabel("<HTML><li><font color=\"red\">Red</font> - Not on form and not hidden</li><li><font color=\"magenta\">Magenta</font> - On the form , but is hidden</li><li>Black - Correct</li>");
+        legend.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+        PanelBuilder legPB  = new PanelBuilder(new FormLayout("p,f:p:g", "p"));
+        legPB.add(legend, cc.xy(1, 1));
+        
         pb.add(searchPB.getPanel(),               cc.xy(1, 1));
         pb.add(UIHelper.createScrollPane(table),  cc.xy(1, 3));
-        pb.add(legend,                            cc.xy(1, 5));
+        pb.add(legPB.getPanel(),                  cc.xy(1, 5));
         pb.setDefaultDialogBorder();
         
         sorter.setRowFilter(null);
@@ -486,7 +494,7 @@ public class ViewToSchemaReview
             @Override
             protected void applyButtonPressed()
             {
-                fix();
+                fix(this);
             }
         };
         dlg.setApplyLabel("Fix All");
@@ -496,28 +504,59 @@ public class ViewToSchemaReview
         {
             updateSchema();
         }
-        
     }
     
     /**
      * 
      */
-    protected void fix()
+    protected void fix(final CustomDialog parentDlg)
     {
+        final Vector<String> fixedNames = new Vector<String>();
+        
+        int fixCnt = 0;
         for (Object[] rowData : modelList)
         {
+            boolean wasFixed = false;
             boolean isOnForm = (Boolean)rowData[3];
             boolean isHidden = (Boolean)rowData[4];
             if (!isOnForm && !isHidden)
             {
                 rowData[4] = true;
+                wasFixed   = true;
                 
             } else if (isOnForm && isHidden)
             {
                 rowData[4] = false;
+                wasFixed   = true;
+            }
+            
+            if (wasFixed)
+            {
+                fixCnt++;
+                fixedNames.add(String.format("%s / %s", rowData[0], rowData[1]));
             }
         }
         viewModel.fireTableRowsUpdated(0, modelList.size()-1);
+        
+        final int fixCount = fixCnt;
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "p,4px,f:p:g"));
+                CellConstraints cc = new CellConstraints();
+                
+                JList list = new JList(fixedNames);
+                
+                pb.add(UIHelper.createLabel(String.format("%d items fixed.", fixCount)), cc.xy(1,1));
+                pb.add(UIHelper.createScrollPane(list), cc.xy(1,3));
+                pb.setDefaultDialogBorder();
+                
+                CustomDialog dlg = new CustomDialog(parentDlg, "Fixed Items", true, CustomDialog.OK_BTN, pb.getPanel());
+                UIHelper.centerAndShow(dlg);
+            }
+        });
     }
     
     /**
@@ -679,7 +718,7 @@ public class ViewToSchemaReview
                     //System.out.println(row[0]+"  "+fieldName);
                     
                     Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
-                    String     srchSQL    = "SELECT SpLocaleContainerID FROM splocalecontainer WHERE Name = '"+ti.getName()+"' AND DisciplineID = " + discipline.getId();
+                    String     srchSQL    = String.format("SELECT SpLocaleContainerID FROM splocalecontainer WHERE Name = '%s' AND DisciplineID = %d AND SchemaType = %d", ti.getName(), discipline.getId(), SpLocaleContainer.CORE_SCHEMA);
                     Integer    id         = BasicSQLUtils.getCount(conn, srchSQL);
                     if (id != null)
                     {
