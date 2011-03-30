@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="5.0.5" transformSequenceNumber="3">
   <directoryPresets config="../InstallerFiles/images" />
-  <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../MediaUpdate" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Beta_update" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.2.75" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" installerName="" javaMinVersion="1.6" javaMaxVersion="1.6" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
+  <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../MediaUpdate" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Beta_update_64" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.2.75" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" installerName="" javaMinVersion="1.6" javaMaxVersion="1.6" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="./localization_en.utf8" />
       <additionalLanguages>
@@ -84,7 +84,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2010 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2011 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -121,7 +121,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2010 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2011 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -158,7 +158,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2010 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2011 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -195,7 +195,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2010 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2011 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -232,7 +232,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2010 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2011 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -269,7 +269,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2010 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2011 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -306,7 +306,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2010 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2011 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -343,7 +343,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2010 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2011 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -380,7 +380,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2010 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2011 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -417,7 +417,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2010 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2011 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -454,7 +454,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2010 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2011 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -491,7 +491,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2010 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2011 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -528,7 +528,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2010 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2011 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -565,7 +565,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2010 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2011 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -1835,34 +1835,15 @@ if (wizardContext != null) {
     </applications>
   </installerGui>
   <mediaSets>
-    <macosFolder name="Mac OS X Folder" id="24" customizedId="" mediaFileName="" installDir="Specify" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" customInstallBaseDir="" contentFilesType="1" downloadURL="">
+    <windows name="64_Windows" id="1873" customizedId="" mediaFileName="" installDir="Specify" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" downloadURL="" verifyIntegrity="true">
       <excludedLaunchers />
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
       <exclude>
-        <entry location="non-mac-application-adapter.jar" fileType="regular" />
-      </exclude>
-      <variables />
-      <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
-        <commentFiles />
-        <customAttributes />
-      </autoUpdate>
-      <excludedComponents />
-      <includedDownloadableComponents />
-    </macosFolder>
-    <windows name="Windows" id="176" customizedId="" mediaFileName="" installDir="Specify" overridePrincipalLanguage="false" jreBitType="32" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" downloadURL="" verifyIntegrity="true">
-      <excludedLaunchers />
-      <excludedBeans />
-      <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
-      <exclude>
-        <entry location="wwlib/libjogl_awt.so" fileType="regular" />
-        <entry location="wwlib/libjogl_cg.jnilib" fileType="regular" />
-        <entry location="wwlib/libjogl.jnilib" fileType="regular" />
-        <entry location="wwlib/libjogl_cg.so" fileType="regular" />
-        <entry location="wwlib/libjogl_awt.jnilib" fileType="regular" />
-        <entry location="wwlib/libgluegen-rt.jnilib" fileType="regular" />
-        <entry location="wwlib/libgluegen-rt.so" fileType="regular" />
-        <entry location="wwlib/libjogl.so" fileType="regular" />
+        <entry location="wwlib_64/libgluegen-rt.so" fileType="regular" />
+        <entry location="wwlib_64/libjogl_awt.so" fileType="regular" />
+        <entry location="wwlib_64/libjogl_cg.so" fileType="regular" />
+        <entry location="wwlib_64/libjogl.so" fileType="regular" />
       </exclude>
       <variables />
       <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
@@ -1872,19 +1853,15 @@ if (wizardContext != null) {
       <excludedComponents />
       <includedDownloadableComponents />
     </windows>
-    <unixInstaller name="Unix Installer" id="179" customizedId="" mediaFileName="" installDir="Specify" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" downloadURL="">
+    <unixInstaller name="64_Unix" id="1965" customizedId="" mediaFileName="" installDir="Specify" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" downloadURL="">
       <excludedLaunchers />
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
       <exclude>
-        <entry location="wwlib/libjogl_cg.jnilib" fileType="regular" />
-        <entry location="wwlib/gluegen-rt.dll" fileType="regular" />
-        <entry location="wwlib/libjogl.jnilib" fileType="regular" />
-        <entry location="wwlib/libjogl_awt.jnilib" fileType="regular" />
-        <entry location="wwlib/libgluegen-rt.jnilib" fileType="regular" />
-        <entry location="wwlib/jogl_cg.dll" fileType="regular" />
-        <entry location="wwlib/jogl.dll" fileType="regular" />
-        <entry location="wwlib/jogl_awt.dll" fileType="regular" />
+        <entry location="wwlib_64/jogl_awt.dll" fileType="regular" />
+        <entry location="wwlib_64/gluegen-rt.dll" fileType="regular" />
+        <entry location="wwlib_64/jogl_cg.dll" fileType="regular" />
+        <entry location="wwlib_64/jogl.dll" fileType="regular" />
       </exclude>
       <variables />
       <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
@@ -1897,28 +1874,6 @@ if (wizardContext != null) {
         <content />
       </installerScript>
     </unixInstaller>
-       <windows name="64_Windows" id="1873" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Beta_64" installDir="Specify" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" downloadURL="" verifyIntegrity="true">
-      <excludedLaunchers />
-      <excludedBeans />
-      <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
-      <exclude>
-        <entry location="wwlib/libjogl_awt.so" fileType="regular" />
-        <entry location="wwlib/libjogl_cg.jnilib" fileType="regular" />
-        <entry location="wwlib/libjogl.jnilib" fileType="regular" />
-        <entry location="wwlib/libjogl_cg.so" fileType="regular" />
-        <entry location="wwlib/libjogl_awt.jnilib" fileType="regular" />
-        <entry location="wwlib/libgluegen-rt.jnilib" fileType="regular" />
-        <entry location="wwlib/libgluegen-rt.so" fileType="regular" />
-        <entry location="wwlib/libjogl.so" fileType="regular" />
-      </exclude>
-      <variables />
-      <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
-        <commentFiles />
-        <customAttributes />
-      </autoUpdate>
-      <excludedComponents />
-      <includedDownloadableComponents />
-    </windows>
   </mediaSets>
   <buildIds buildAll="false">
     <mediaSet refId="176" />
