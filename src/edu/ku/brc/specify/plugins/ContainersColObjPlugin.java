@@ -17,6 +17,7 @@
  */
 package edu.ku.brc.specify.plugins;
 
+import java.awt.Component;
 import java.util.Properties;
 import java.util.Set;
 
@@ -32,8 +33,10 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.db.TextFieldWithInfo;
 import edu.ku.brc.af.ui.forms.SessionListenerIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
@@ -49,14 +52,20 @@ import edu.ku.brc.ui.UIRegistry;
  * Created Date: Dec 15, 2010
  *
  */
-public class ContainersColObjPlugin extends UIPluginBase implements SessionListenerIFace
+public class ContainersColObjPlugin extends UIPluginBase implements SessionListenerIFace, UIValidatable
 {
-    private ValComboBoxFromQuery  qcbx       = null;
-    private Set<CollectionObject> coSet      = null;
-    private Container             container  = null;
+    private final static String CATNUM_NAME    = "catalogNumber";
+    private final static String CATNUM_NAMECAP = "CatalogNumber";
+    private final static String COLOBJ_NAME    = "CollectionObject";
+
+    private ValComboBoxFromQuery  qcbx         = null;
+    private TextFieldWithInfo     textWithInfo = null;
+    private Set<CollectionObject> coSet        = null;
+    private Container             container    = null;
     
-    private UIFieldFormatterIFace colObjFmt  = null;
-    private String                errorMsg   = null;
+    private UIFieldFormatterIFace colObjFmt    = null;
+    private String                errorMsg     = null;
+    private boolean               isRequired   = false;
     
     /**
      * Constructor.
@@ -79,32 +88,46 @@ public class ContainersColObjPlugin extends UIPluginBase implements SessionListe
         UIRegistry.popResourceBundle();
         
         DBTableInfo coTI = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId());
-        DBFieldInfo catNumFld = coTI.getFieldByColumnName("CatalogNumber");
+        DBFieldInfo catNumFld = coTI.getFieldByColumnName(CATNUM_NAMECAP);
         colObjFmt = catNumFld.getFormatter();
         
         CellConstraints cc = new CellConstraints();
-        PanelBuilder pb = new PanelBuilder(new FormLayout("p",  "p"), this);
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("MAX(p;100px)",  "p"), this);
         
-        int btnOpts = ValComboBoxFromQuery.CREATE_EDIT_BTN | ValComboBoxFromQuery.CREATE_NEW_BTN | ValComboBoxFromQuery.CREATE_SEARCH_BTN;
-        qcbx = new ValComboBoxFromQuery(coTI,
-                                        "catalogNumber",
-                                        "catalogNumber",
-                                        "catalogNumber",
-                                        null,
-                                        "CatalogNumber",
-                                        null,
-                                        "",
-                                        null, // helpContext
-                                        btnOpts);
-        pb.add(qcbx, cc.xy(1, 1));
+        if (isViewModeArg)
+        {
+            textWithInfo = new TextFieldWithInfo(coTI.getClassName(),
+                                                 CATNUM_NAME,    // id name
+                                                 CATNUM_NAME,    // key name
+                                                 null,           // format
+                                                 CATNUM_NAMECAP, // uiFieldFormatterName
+                                                 COLOBJ_NAME,    // dataObjFormatterName
+                                                 COLOBJ_NAME,    // displayInfoDialogName
+                                                 "");            // objTitle  
+            pb.add(textWithInfo, cc.xy(1, 1));
+            
+        } else
+        {
+            int btnOpts = ValComboBoxFromQuery.CREATE_EDIT_BTN | ValComboBoxFromQuery.CREATE_NEW_BTN | ValComboBoxFromQuery.CREATE_SEARCH_BTN;
+            qcbx = new ValComboBoxFromQuery(coTI,
+                                            CATNUM_NAME,
+                                            CATNUM_NAME,
+                                            CATNUM_NAME,
+                                            null,
+                                            CATNUM_NAMECAP,
+                                            null,
+                                            "",
+                                            null, // helpContext
+                                            btnOpts);
+            pb.add(qcbx, cc.xy(1, 1));
         
-        qcbx.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e)
-            {
-                itemSelected();
-            }
-        });
-
+            qcbx.addListSelectionListener(new ListSelectionListener() {
+                public void valueChanged(ListSelectionEvent e)
+                {
+                    itemSelected();
+                }
+            });
+        }
     }
     
 
@@ -125,7 +148,15 @@ public class ContainersColObjPlugin extends UIPluginBase implements SessionListe
             {
                 colObj = coSet.iterator().next();
             }
-            qcbx.setValue(colObj, null);
+            
+            if (qcbx != null)
+            {
+                qcbx.setValue(colObj, null);
+                
+            } else if (textWithInfo != null)
+            {
+                textWithInfo.setValue(colObj, null);
+            }
         }
     }
     
@@ -143,15 +174,18 @@ public class ContainersColObjPlugin extends UIPluginBase implements SessionListe
             colObj = coSet.iterator().next();
         }
         
-        Object qcbxValue = qcbx.getValue();
-        if (qcbxValue != null)
+        if (qcbx != null)
         {
-            CollectionObject newColObj = (CollectionObject)qcbxValue;
-            if (colObj == null || !newColObj.getId().equals(colObj.getId()))
+            Object qcbxValue = qcbx.getValue();
+            if (qcbxValue != null)
             {
-                coSet.clear();
-                coSet.add(newColObj);
-                newColObj.setContainer(container);
+                CollectionObject newColObj = (CollectionObject)qcbxValue;
+                if (colObj == null || !newColObj.getId().equals(colObj.getId()))
+                {
+                    coSet.clear();
+                    coSet.add(newColObj);
+                    newColObj.setContainer(container);
+                }
             }
         }
         return container;
@@ -226,7 +260,7 @@ public class ContainersColObjPlugin extends UIPluginBase implements SessionListe
     @Override
     public String[] getFieldNames()
     {
-        return new String[] {"catalogNumber"};
+        return new String[] {CATNUM_NAME};
     }
 
     /* (non-Javadoc)
@@ -240,5 +274,143 @@ public class ContainersColObjPlugin extends UIPluginBase implements SessionListe
             qcbx.setSession(session);
         }
     }
+
+    //---------------------------------------------------------------------------------------------
+    //-- edu.ku.brc.af.ui.forms.UIPluginable
+    //---------------------------------------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#cleanUp()
+     */
+    @Override
+    public void cleanUp()
+    {
+        if (qcbx != null)
+        {
+            qcbx.cleanUp();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#getReason()
+     */
+    @Override
+    public String getReason()
+    {
+        return qcbx != null ? qcbx.getReason() : null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#getState()
+     */
+    @Override
+    public ErrorType getState()
+    {
+        return qcbx != null ? qcbx.getState() : ErrorType.Valid;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#getValidatableUIComp()
+     */
+    @Override
+    public Component getValidatableUIComp()
+    {
+        return qcbx;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#isChanged()
+     */
+    @Override
+    public boolean isChanged()
+    {
+        return qcbx != null ? qcbx.isChanged() : false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#isInError()
+     */
+    @Override
+    public boolean isInError()
+    {
+        return qcbx != null ? qcbx.isInError() : false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#isRequired()
+     */
+    @Override
+    public boolean isRequired()
+    {
+        return this.isRequired;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#reset()
+     */
+    @Override
+    public void reset()
+    {
+        qcbx.reset();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#setAsNew(boolean)
+     */
+    @Override
+    public void setAsNew(boolean isNew)
+    {
+        if (qcbx != null)
+        {
+            qcbx.setAsNew(isNew);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#setChanged(boolean)
+     */
+    @Override
+    public void setChanged(boolean isChanged)
+    {
+        if (qcbx != null)
+        {
+            qcbx.setChanged(isChanged);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#setRequired(boolean)
+     */
+    @Override
+    public void setRequired(boolean isRequired)
+    {
+        if (qcbx != null)
+        {
+            qcbx.setRequired(isRequired);
+        }
+        this.isRequired = isRequired;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#setState(edu.ku.brc.af.ui.forms.validation.UIValidatable.ErrorType)
+     */
+    @Override
+    public void setState(ErrorType state)
+    {
+        if (qcbx != null)
+        {
+            qcbx.setState(state);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#validateState()
+     */
+    @Override
+    public ErrorType validateState()
+    {
+        return qcbx != null ? qcbx.validateState() : ErrorType.Valid;
+    }
+    
 
 }

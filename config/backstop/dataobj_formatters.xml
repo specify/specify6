@@ -205,6 +205,19 @@
     </format>
 
     <format
+        name="Container"
+        title="Container"
+        class="edu.ku.brc.specify.datamodel.Container"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>name</field>
+            </fields>
+        </switch>
+    </format>
+
+    <format
         name="DataType"
         title="DataType"
         class="edu.ku.brc.specify.datamodel.DataType"

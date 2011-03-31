@@ -3539,7 +3539,7 @@ public class FormViewObj implements Viewable,
                                                    inEditMode && addSearch && canAdd,  // Add Search
                                                    view.getObjTitle(),                 // Object Title
                                                    0,                                  // current length
-                                                   !mvHasSeparator);                    // don't layout the btns
+                                                   !mvHasSeparator);                   // don't layout the btns
             rsController.getPanel().setBackground(bgColor);
             if (mvParent.isTopLevel())
             {

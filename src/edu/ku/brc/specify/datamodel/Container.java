@@ -357,6 +357,16 @@ public class Container extends CollectionMember implements java.io.Serializable,
         return name.compareTo(o.name);
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
+    @Transient
+    @Override
+    public String getIdentityTitle()
+    {
+        return StringUtils.isNotEmpty(name) ? name : super.getIdentityTitle();
+    }
+
     /**
      * @return the Table ID for the class.
      */
