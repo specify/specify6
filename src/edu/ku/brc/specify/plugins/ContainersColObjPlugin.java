@@ -167,7 +167,7 @@ public class ContainersColObjPlugin extends UIPluginBase implements SessionListe
         {
             final String clause = String.format(" FROM collectionobject WHERE CollectionObjectId = %d AND ContainerID IS NOT NULL", selectedId);
             String sql = "SELECT COUNT(*)" + clause;
-            System.err.println("ContainersColObjPlugin: "+sql+" -> "+BasicSQLUtils.getCountAsInt(sql));
+           //System.err.println("ContainersColObjPlugin: "+sql+" -> "+BasicSQLUtils.getCountAsInt(sql));
             
             if (BasicSQLUtils.getCountAsInt(sql) > 0)
             {
@@ -184,6 +184,15 @@ public class ContainersColObjPlugin extends UIPluginBase implements SessionListe
                         UIRegistry.showError(String.format(errorMsg, catNumStr));
                     }
                 });
+            }
+        } else
+        {
+            CollectionObject colObj = container.getCollectionObject();
+            if (colObj != null)
+            {
+                fvo.getMVParent().getTopLevel().addToBeSavedItem(colObj);
+                colObj.setContainer(null);
+                coSet.clear();
             }
         }
         notifyChangeListeners(new ChangeEvent(this));
