@@ -404,7 +404,7 @@ public class TableViewObj implements Viewable,
                             });
                         }
                         
-                        boolean isAbove = mvParent.getSeparator() != null;  
+                        boolean isAbove = mvParent != null && mvParent.getSeparator() != null;  
                         
                         int cnt = (deleteButton != null ? 1 : 0) + (searchButton != null ? 1 : 0) + (editButton != null ? 1 : 0) + (newButton != null ? 1 : 0);
                         
@@ -1082,7 +1082,7 @@ public class TableViewObj implements Viewable,
                 
                 dialog.createUI();
                 
-                if (addSearch && includeAddBtn && isEditing)
+                if (addSearch && includeAddBtn && isEditing && isNew)
                 {
                     dialog.setDoSave(true);
                     dialog.getOkBtn().setText(UIRegistry.getResourceString("SAVE"));
