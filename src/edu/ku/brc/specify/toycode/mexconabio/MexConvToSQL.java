@@ -807,24 +807,28 @@ public class MexConvToSQL
             FMPCreateTable fmpInfo = new FMPCreateTable(tableName, null, true);
             fmpInfo.process(xmlFileName);
             
-            processFieldSizes(fmpInfo, srcFileName);
-            
-            PrintWriter pw = new PrintWriter(new File("fields.txt"));
-            int i = 0;
-            for (FieldDef fd : fmpInfo.getFields())
+            boolean doCreateTable = true;
+            if (doCreateTable)
             {
-                pw.println(i+" "+fd.getName()+"\t"+fd.getType()+"\t"+fd.isDouble());
-                i++;
+                processFieldSizes(fmpInfo, srcFileName);
+                
+                PrintWriter pw = new PrintWriter(new File("fields.txt"));
+                int i = 0;
+                for (FieldDef fd : fmpInfo.getFields())
+                {
+                    pw.println(i+" "+fd.getName()+"\t"+fd.getType()+"\t"+fd.isDouble());
+                    i++;
+                }
+                pw.close();
+                
+                BasicSQLUtils.update(conn, fmpInfo.dropTableStr());
+                
+                String sqlCreateTable = fmpInfo.createTableStr();
+                
+                BasicSQLUtils.update(conn, sqlCreateTable);
+                
+                System.out.println(sqlCreateTable);
             }
-            pw.close();
-            
-            BasicSQLUtils.update(conn, fmpInfo.dropTableStr());
-            
-            String sqlCreateTable = fmpInfo.createTableStr();
-            
-            BasicSQLUtils.update(conn, sqlCreateTable);
-            
-            System.out.println(sqlCreateTable);
             
             String prepSQL = fmpInfo.getPrepareStmtStr(true, true);
             System.out.println(prepSQL);
@@ -874,7 +878,7 @@ public class MexConvToSQL
                                     pStmt.setString(col, value);
                                 } else
                                 {
-                                    System.err.println(String.format("The data for `%s` (%d) is too big %d", fd.getName(), fd.getMaxSize(), value.length()));
+                                    System.err.println(String.format("The data for `%s` max(%d) is too big %d", fd.getName(), fd.getMaxSize(), value.length()));
                                     pStmt.setString(col, null);
                                 }
                             } else
@@ -902,6 +906,12 @@ public class MexConvToSQL
                                     {
                                         pStmt.setInt(col, Integer.parseInt(val));
                                     }
+                                } else if (val.startsWith("ca. "))
+                                {
+                                    pStmt.setInt(col, Integer.parseInt(val.substring(4)));
+                                } else  if (val.startsWith("ca "))
+                                {
+                                    pStmt.setInt(col, Integer.parseInt(val.substring(3)));
                                 } else
                                 {
                                     System.err.println(col + " Bad Number val["+val+"] origValue["+origValue+"] "+ fieldDefs.get(col-1).getName());
@@ -944,7 +954,30 @@ public class MexConvToSQL
                                            value = String.format("%02d-%02d-%s", day, mon, year);
                                         } else
                                         {
-                                            System.err.println(col+" Bad Date#["+value+"]  ["+origValue+"]\n");
+                                            value = StringUtils.replaceChars(value, '.', ' ');
+                                            String[] toks = StringUtils.split(value, ' ');
+                                            if (toks.length == 3)
+                                            {
+                                                String  dyStr = toks[0];
+                                                String  mnStr = toks[1];
+                                                String  yrStr = toks[2];
+                                                if (StringUtils.isNumeric(mnStr) && StringUtils.isNumeric(dyStr) && StringUtils.isNumeric(yrStr))
+                                                {
+                                                    int day  = Integer.parseInt(dyStr);
+                                                    int mon  = Integer.parseInt(mnStr);
+                                                    int year = Integer.parseInt(yrStr);
+                                                    if (day == 0) day = 1;
+                                                    if (mon == 0) mon = 1;
+                                                    
+                                                   value = String.format("%02d-%02d-%04d", day, mon, year);
+                                                } else
+                                                {
+                                                    System.err.println(col+" Bad Date#["+value+"]  ["+origValue+"]\n");
+                                                }
+                                            } else
+                                            {
+                                                System.err.println(col+" Bad Date#["+value+"]  ["+origValue+"]\n");
+                                            }
                                         }
                                             
                                     } else if (len == 8 && (value.charAt(3) == '-' || value.charAt(3) == ' ')) // Apr-1886
@@ -957,7 +990,30 @@ public class MexConvToSQL
                                            value = String.format("01-%02d-%s", month, year);
                                         } else
                                         {
-                                            System.err.println(col+" Bad Date*["+value+"]  ["+origValue+"]\n");
+                                            value = StringUtils.replaceChars(value, '.', ' ');
+                                            String[] toks = StringUtils.split(value, ' ');
+                                            if (toks.length == 3)
+                                            {
+                                                String  dyStr = toks[0];
+                                                String  mnStr = toks[1];
+                                                String  yrStr = toks[2];
+                                                if (StringUtils.isNumeric(mnStr) && StringUtils.isNumeric(dyStr) && StringUtils.isNumeric(yrStr))
+                                                {
+                                                    int day  = Integer.parseInt(dyStr);
+                                                    int mon  = Integer.parseInt(mnStr);
+                                                    int yr   = Integer.parseInt(yrStr);
+                                                    if (day == 0) day = 1;
+                                                    if (mon == 0) mon = 1;
+                                                    
+                                                   value = String.format("%02d-%02d-%04d", day, mon, yr);
+                                                } else
+                                                {
+                                                    System.err.println(col+" Bad Date#["+value+"]  ["+origValue+"]\n");
+                                                }
+                                            } else
+                                            {
+                                                System.err.println(col+" Bad Date#["+value+"]  ["+origValue+"]\n");
+                                            }
                                         }
                                         
                                     } else if ((len == 11 && value.charAt(2) == '-' && value.charAt(6) == '-') || // 10-May-1898
@@ -1056,11 +1112,11 @@ public class MexConvToSQL
      */
     public static void main(String[] args)
     {
-        String path = "/Users/rods/Documents/";
+        String path = "/Users/rods/databases/SGR_CONABIO_data_files/";
         MexConvToSQL m = new MexConvToSQL();
         //m.convert("michigan", "conabio", path+"ConabioAll.mer", path+"OneRecordFMP.xml");
         //m.convert("michigan", "michagents", path+"MichAgents.mer", path+"MichAgents.xml");
-        m.convert("michigan", "michtaxon", path+"MichTaxon.mer", path+"MichTaxon.xml");
+        m.convert("michigan_data", "fmpdata", path+"MichData.mer", path+"MichiganData.xml");
         //m.process("michigan");
     }
     
