@@ -26,13 +26,22 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Stack;
 
-import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.apache.commons.lang.StringUtils;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.specify.conversion.TimeLogger;
+import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author rods
@@ -59,6 +68,7 @@ public class GroupHashDAO
     */
     private static final String sqlBase = "SELECT g.ID, g.mon, g.cnt, gi.RawID FROM group_hash g INNER JOIN group_hash_ids gi ON g.ID = gi.GrpID WHERE ";
     
+    private static String         dbPassword   = null;
     private static GroupHashDAO   instance = new GroupHashDAO();
     private static Stack<RawData> recycler = new Stack<RawData>();
     
@@ -80,23 +90,54 @@ public class GroupHashDAO
         String server   = "localhost";
         String database = "plants";
         String username = "root";
-        String password = "root";
+        
+        dbPassword = "root";
         
         DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("MySQL");
         String             connStr    = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, server, database, 
-                                                                    username, password, driverInfo.getName());
+                                                                    username, dbPassword, driverInfo.getName());
         boolean isFirst = true;
         do 
         {
             if (!isFirst)
             {
-                password = JOptionPane.showInputDialog("Enter MySQL's root password:");
+                final CustomDialog   dlg         = new CustomDialog(null, "IT Password", true, null);
+                final JPasswordField pwdTxt      = UIHelper.createPasswordField();
+                DocumentListener     docListener = new DocumentListener() {
+                    public void check()
+                    {
+                        boolean enable = !((JTextField)pwdTxt).getText().isEmpty();
+                        dlg.getOkBtn().setEnabled(enable);
+                    }
+                    @Override
+                    public void changedUpdate(DocumentEvent e) { check(); }
+                    @Override
+                    public void insertUpdate(DocumentEvent e) { check(); }
+                    @Override
+                    public void removeUpdate(DocumentEvent e) { check(); }
+                };
+                
+                pwdTxt.getDocument().addDocumentListener(docListener);
+                
+                CellConstraints cc     = new CellConstraints();
+                PanelBuilder    pb     = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p"));
+                pb.add(UIHelper.createFormLabel("Enter MySQL's root password:"), cc.xy(1,1));
+                pb.add(pwdTxt, cc.xy(3, 1));
+                pb.setDefaultDialogBorder();
+                
+                dlg.setContentPanel(pb.getPanel());
+                UIHelper.centerAndShow(dlg);
+                if (!dlg.isCancelled())
+                {
+                    dbPassword = ((JTextField)pwdTxt).getText();
+                }
             }
-            if (StringUtils.isNotEmpty(password))
+                
+            if (StringUtils.isNotEmpty(dbPassword))
             {
                 try
                 {
-                    dbConn     = new DBConnection("root", password, connStr, driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), database);
+                    dbConn     = new DBConnection("root", dbPassword, connStr, driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), database);
                     connection = dbConn.getConnection();
                 } catch (Exception ex) {}
             }

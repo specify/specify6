@@ -63,7 +63,7 @@ import edu.ku.brc.ui.tmanfe.SpreadSheet;
  */
 public class SGRPluginImpl implements WorkBenchPluginIFace
 {
-    private static final ArrayList<DateParser> sdFormats    = new ArrayList<DateParser>();
+    private static final ArrayList<DateParser> sdFormats  = new ArrayList<DateParser>();
     private static final Calendar            calender     = Calendar.getInstance();
     protected static String[]                dateArray    = new String[3];
 

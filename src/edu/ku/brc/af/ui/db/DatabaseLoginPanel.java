@@ -463,10 +463,25 @@ public class DatabaseLoginPanel extends JTiledPanel
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    if (masterUsrPwdProvider != null)
+                    if (masterUsrPwdProvider != null && databases != null)
                     {
-                        final PickListItemIFace pli = (PickListItemIFace)databases.getSelectedItem();
-                        masterUsrPwdProvider.editMasterInfo(username.getText(), pli.getValue(), false);
+                        String itemName = null;
+                        if (databases.getSelectedItem() instanceof String)
+                        {
+                            itemName = (String)databases.getSelectedItem();
+                        } else
+                        {
+                            PickListItemIFace pli = (PickListItemIFace)databases.getSelectedItem();
+                            if (pli != null && pli.getValue() != null)
+                            {
+                                itemName = pli.getValue();
+                            }
+                        }
+                        
+                        if (itemName != null)
+                        {
+                            masterUsrPwdProvider.editMasterInfo(username.getText(),itemName, false);
+                        }
                     }
                 }
             });
