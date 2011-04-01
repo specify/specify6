@@ -102,6 +102,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
 {
     private static final String CATNUMNAME = "catalogNumber";
     
+    public static final int MAXSERIESSIZE = 500;
+    
     //private static final Logger  log = Logger.getLogger(CollectionObjectBusRules.class);
     
     private CollectingEvent  cachedColEve     = null;
@@ -564,6 +566,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         final String BatchSaveErrors = "CollectionObjectBusRules.BatchSaveErrors";
         final String BatchSaveErrorsTitle = "CollectionObjectBusRules.BatchSaveErrorsTitle";
         final String BatchRSBaseName = "CollectionObjectBusRules.BatchRSBaseName";
+        final String InvalidEntryMsg = "CollectionObjectBusRules.InvalidEntryMsg";
         
         DBFieldInfo CatNumFld = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()).getFieldByColumnName("CatalogNumber"); 
         final UIFieldFormatterIFace formatter = CatNumFld.getFormatter();
@@ -581,6 +584,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             private Vector<Pair<Integer, String>> objectsAdded = new Vector<Pair<Integer, String>>();
             private Vector<String> objectsNotAdded = new Vector<String>();
         	private RecordSet batchRS;
+        	private boolean invalidEntry = false;
         	
             @Override
             protected Integer doInBackground() throws Exception
@@ -595,7 +599,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 //XXX potential for infinite loop
                 //XXX check for second > first, etc...
                 //XXX comparing catnums ...
-                while (!catNum.equals(catNumPair.getSecond()))
+                while (!catNum.equals(catNumPair.getSecond()) && nums.size() <= MAXSERIESSIZE)
                 {
                 	//getNextNumber currently gets the number after highest existing number, regardless of the arg.
                 	catNum = formatter.getNextNumber(catNum, true); 
@@ -603,6 +607,12 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                     nums.add(catNum);
                 }
 
+                if (nums.size() > MAXSERIESSIZE)
+                {
+                	invalidEntry = true;
+                	return 0;
+                }
+                
             	int cnt = 0;
                 CollectionObject co = null;
                 CollectionObject carryForwardCo = (CollectionObject )formViewObj.getDataObj();
@@ -654,7 +664,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 formViewObj.setDataObj(carryForwardCo);
                 //formViewObj.getRsController().setIndex(formViewObj.getRsController().getLength()-1);
                 saveBatchObjectsToRS();
-                return null;
+                return objectsAdded.size();
             }
 
         	protected void saveBatchObjectsToRS()
@@ -734,7 +744,11 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 processingSeries.set(false);
                 addBatchRSToUI();
                 UIRegistry.clearSimpleGlassPaneMsg();
-                if (objectsNotAdded.size() == 0)
+                if (invalidEntry)
+                {
+                	UIRegistry.displayErrorDlgLocalized(InvalidEntryMsg, MAXSERIESSIZE);
+                }
+                else if (objectsNotAdded.size() == 0)
                 {
                 	UIRegistry.displayLocalizedStatusBarText(BatchSaveSuccess, formatter.formatToUI(catNumPair.getFirst()), formatter.formatToUI(catNumPair.getSecond()));
                 } else
