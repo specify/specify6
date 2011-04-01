@@ -772,7 +772,7 @@ public class SpecifyDBSetupWizard extends JPanel
         String saUserName = props.getProperty("saUserName");
         String saPassword = props.getProperty("saPassword");
         
-        String encryptedMasterUP = UserAndMasterPasswordMgr.getInstance().encrypt(saUserName, saPassword, password);
+        String encryptedMasterUP = UserAndMasterPasswordMgr.encrypt(saUserName, saPassword, password);
 
         DatabaseDriverInfo driverInfo = dbPanel.getDriver();
         AppPreferences ap = AppPreferences.getLocalPrefs();

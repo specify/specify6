@@ -372,6 +372,7 @@ public class SpecifyDBSecurityWizard extends JPanel
             
         } else
         {
+            cancelBtn.setVisible(true);
             nextBtn.setEnabled(panels.get(step).isUIValid());
             nextBtn.setText(getResourceString("NEXT"));
         }
@@ -462,7 +463,7 @@ public class SpecifyDBSecurityWizard extends JPanel
         String saUserName = props.getProperty("saUserName");
         String saPassword = props.getProperty("saPassword");
         
-        String encryptedMasterUP = UserAndMasterPasswordMgr.getInstance().encrypt(saUserName, saPassword, password);
+        String encryptedMasterUP = UserAndMasterPasswordMgr.encrypt(saUserName, saPassword, password);
 
         DatabaseDriverInfo driverInfo = dbPanel.getDriver();
         AppPreferences ap = AppPreferences.getLocalPrefs();

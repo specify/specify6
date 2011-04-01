@@ -229,7 +229,7 @@ public class SecurityAdminTask extends BaseTask
                     {
                         Pair<String, String> masterPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
                         
-                        String encryptedMasterUP = UserAndMasterPasswordMgr.getInstance().encrypt(masterPwd.first, masterPwd.second, newPwd2);
+                        String encryptedMasterUP = UserAndMasterPasswordMgr.encrypt(masterPwd.first, masterPwd.second, newPwd2);
                         if (StringUtils.isNotEmpty(encryptedMasterUP))
                         {
                             AppPreferences.getLocalPrefs().put(UserAndMasterPasswordMgr.getInstance().getMasterPrefPath(true), encryptedMasterUP);

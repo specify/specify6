@@ -49,6 +49,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -62,6 +63,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.Encryption;
@@ -90,22 +92,25 @@ public class UserPanel extends BaseSetupPanel
     protected JLabel            label;
     protected JLabel            otherDBLbl;
     
-    protected JTable            userTable = null;
+    protected JTable            userTable     = null;
     protected UserTableModel    userModel;
     protected JScrollPane       userScrollPane;
 
-    protected JButton           saveBtn    = null;
-    protected JButton           mkKeysBtn    = null;
-    protected JButton           sendKeysBtn  = null;
-    protected JButton           showKeysBtn  = null;
-    protected JButton           printKeysBtn = null;
-    protected JButton[]         btns         = null;
+    protected JButton           saveBtn       = null;
+    protected JButton           mkKeysBtn     = null;
+    protected JButton           copyKeyBtn    = null;
+    protected JButton           sendKeysBtn   = null;
+    protected JButton           showKeysBtn   = null;
+    protected JButton           printKeysBtn  =  null;
+    protected JButton[]         btns          = null;
     protected JButton           gainAccessBtn = null;
     protected JButton           loseAccessBtn = null;
     
     protected MasterLoginPanel  masterPanel;
-    protected String            databaseName = null;
-    protected String            otherDBName  = null;
+    protected String            databaseName  = null;
+    protected String            otherDBName   = null;
+    
+    protected boolean           changedEMail  = false;
     
     /**
      * @param panelName
@@ -141,10 +146,11 @@ public class UserPanel extends BaseSetupPanel
         
         saveBtn      = UIHelper.createButton("Save");
         mkKeysBtn    = UIHelper.createButton("Make Keys");
+        copyKeyBtn   = UIHelper.createButton("Copy Master Key");
         sendKeysBtn  = UIHelper.createButton("Send Keys");
         showKeysBtn  = UIHelper.createButton("Show Summary");
         printKeysBtn = UIHelper.createButton("Print");
-        btns         = new JButton[] {saveBtn, sendKeysBtn, mkKeysBtn, showKeysBtn, printKeysBtn};
+        btns         = new JButton[] {saveBtn, sendKeysBtn, copyKeyBtn, showKeysBtn, printKeysBtn};
         
         String       colDef = UIHelper.createDuplicateJGoodiesDef("p", "8px", btns.length);
         PanelBuilder btnPB  = new PanelBuilder(new FormLayout("f:p:g,"+colDef, "p"));
@@ -155,6 +161,7 @@ public class UserPanel extends BaseSetupPanel
             x += 2;
         }
         saveBtn.setEnabled(false);
+        copyKeyBtn.setEnabled(false);
         
         label = UIHelper.createLabel("", SwingConstants.CENTER);
         
@@ -201,8 +208,6 @@ public class UserPanel extends BaseSetupPanel
             }
         });
         
-        dbScrollPane.setVisible(false);
-        odbScrollPane.setVisible(false);
         updateBtnUI(false);
         
         dbList.getSelectionModel().addListSelectionListener(new ListSelectionListener()
@@ -260,6 +265,20 @@ public class UserPanel extends BaseSetupPanel
             }
         });
         
+        copyKeyBtn.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                int inx = userTable.getSelectedRow();
+                if (inx > -1)
+                {
+                    String masterKey = userModel.getUserData().get(inx).getMasterKey();
+                    UIHelper.setTextToClipboard(masterKey);
+                }
+            }
+        });
+        
         showKeysBtn.addActionListener(new ActionListener()
         {
             @Override
@@ -308,6 +327,7 @@ public class UserPanel extends BaseSetupPanel
                 }
             }
         });
+
     }
     
     /**
@@ -317,6 +337,12 @@ public class UserPanel extends BaseSetupPanel
     {
         saveBtn.setEnabled(enabled && userModel.isChanged());
         mkKeysBtn.setEnabled(enabled && userModel.isPwdChanged());
+        
+        int inx = userTable.getSelectedRow();
+        if (inx > -1)
+        {
+            copyKeyBtn.setEnabled(enabled && userModel.getUserData().get(inx).isChanged());
+        }
     }
     
     /**
@@ -400,6 +426,21 @@ public class UserPanel extends BaseSetupPanel
             userModel.setChanged(false);
             saveBtn.setEnabled(false);
             mkKeysBtn.setEnabled(false);
+            
+            if (changedEMail)
+            {
+                changedEMail = false;
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        UIRegistry.loadAndPushResourceBundle("specifydbsetupwiz");
+                        UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "SEC_EML_TITLE", "SEC_EML_MSG");
+                        UIRegistry.popResourceBundle();
+                    }
+                });
+            }
         }
     }
     
@@ -527,7 +568,7 @@ public class UserPanel extends BaseSetupPanel
     {
         StringBuilder sb = new StringBuilder();
         
-        String[] headers = {"Username", "Passsword", "Last Name", "First Name", "EMail", "New Password"};
+        String[] headers = {"Username", "Passsword", "MasterKey", "Last Name", "First Name", "EMail", "New Password"};
         int i = 0;
         Object[][] pValueObjs = new Object[userModel.getUserData().size()][6];
         for (UserData ud : userModel.getUserData())
@@ -725,6 +766,11 @@ public class UserPanel extends BaseSetupPanel
         int index = 0;
         List<String>   dbNamesList    = masterPanel.getDbNamesForMaster();
         List<String>   otherNamesList = masterPanel.getDbNameList();
+        
+        //dbNamesList.clear();
+        //otherNamesList.clear();
+        //dbNamesList.add("testfish");
+        
         Vector<String> items       = new Vector<String>(dbNamesList);
         Collections.sort(items);
         
@@ -746,7 +792,6 @@ public class UserPanel extends BaseSetupPanel
             {
                 if (isInitial)
                 {
-                    dbScrollPane.setVisible(dbNamesList.size() > 0);
                     DefaultListModel model = new DefaultListModel();
                     for (String nm : items)
                     {
@@ -754,13 +799,6 @@ public class UserPanel extends BaseSetupPanel
                     }
                     dbList.setModel(model);
                     
-                    odbScrollPane.setVisible(otherNamesList.size() > 0);
-                    if (otherNamesList.size() == 0)
-                    {
-                    	gainAccessBtn.setVisible(false);
-                    	loseAccessBtn.setVisible(false);
-                    	otherDBLbl.setVisible(false);
-                    }
                     model = new DefaultListModel();
                     for (String nm : otherNamesList)
                     {
@@ -777,7 +815,7 @@ public class UserPanel extends BaseSetupPanel
                 
                 for (Object[] c : data)
                 {
-                    UserData ud = new UserData((Integer)c[0], (String)c[1], (String)c[2], (String)c[3]);
+                    UserData ud = new UserData((Integer)c[0], (String)c[1], (String)c[2], "(On user's machine)", (String)c[3]);
                     userDataList.add(ud);
                     
                     sql = String.format("SELECT LastName, FirstName, EMail FROM agent WHERE SpecifyUserID = %d ORDER BY TimestampModified, TimestampCreated LIMIT 0,1", ud.getId());
@@ -838,7 +876,6 @@ public class UserPanel extends BaseSetupPanel
                         public void run()
                         {
                             dbList.setSelectedIndex(0);
-                            
                         }
                     });
                 }
@@ -918,6 +955,22 @@ public class UserPanel extends BaseSetupPanel
         return null;
     }
 
+    /**
+     * @param ud
+     * @param newPwd
+     * @param row
+     */
+    private void makeNewMasterKey(final UserData ud, 
+                                  final String   newPwd,
+                                  final int      row)
+    {
+        String masterUsr = properties.getProperty("dbUserName");
+        String masterPwd = properties.getProperty("dbPassword");
+        String masterKey = UserAndMasterPasswordMgr.encrypt(masterUsr, masterPwd, newPwd);
+        ud.setMasterKey(masterKey);
+        
+        userModel.fireTableRowsUpdated(row, row);
+    }
     
     //-----------------------------------------------------------------------
     //--
@@ -928,6 +981,7 @@ public class UserPanel extends BaseSetupPanel
         protected int     id;
         protected String  userName;
         protected String  password;
+        protected String  masterKey;
         protected String  lastName;
         protected String  firstName;
         protected String  email;
@@ -943,13 +997,14 @@ public class UserPanel extends BaseSetupPanel
          * @param password
          * @param email
          */
-        public UserData(int id, String userName, String password, String email)
+        public UserData(int id, String userName, String password, String masterKey, String email)
         {
             super();
             this.isChanged = false;
             this.id        = id;
             this.userName  = userName;
             this.password  = password;
+            this.masterKey  = masterKey;
             this.lastName  = "";
             this.firstName = "";
             this.email     = email;
@@ -964,9 +1019,10 @@ public class UserPanel extends BaseSetupPanel
         public Object[] getData()
         {
             int i = 0;
-            Object[] data = new Object[6];
+            Object[] data = new Object[7];
             data[i++] = userName;
             data[i++] = password;
+            data[i++] = masterKey;
             data[i++] = lastName;
             data[i++] = firstName;
             data[i++] = email;
@@ -1093,7 +1149,22 @@ public class UserPanel extends BaseSetupPanel
         {
             this.clearTextPassword = clearTextPassword;
         }
-        
+
+        /**
+         * @return the masterKey
+         */
+        public String getMasterKey()
+        {
+            return masterKey;
+        }
+
+        /**
+         * @param masterKey the masterKey to set
+         */
+        public void setMasterKey(String masterKey)
+        {
+            this.masterKey = masterKey;
+        }
     }
     
     //-----------------------------------------------------------------------
@@ -1101,7 +1172,7 @@ public class UserPanel extends BaseSetupPanel
     //-----------------------------------------------------------------------
     class UserTableModel extends DefaultTableModel
     {
-        protected String[] headers = {"Changed", "Username", "Passsword", "Last Name", "First Name", "EMail"};
+        protected String[] headers = {"Changed", "Username", "Passsword", "Master Key", "Last Name", "First Name", "EMail"};
         
         protected Vector<UserData> items        = new Vector<UserData>();
         protected boolean          isChanged    = false;
@@ -1160,9 +1231,10 @@ public class UserPanel extends BaseSetupPanel
                     case 0: return ud.isChanged();
                     case 1: return ud.getUserName();
                     case 2: return ud.getPassword();
-                    case 3: return ud.getLastName();
-                    case 4: return ud.getFirstName();
-                    case 5: return ud.getEmail();
+                    case 3: return ud.getMasterKey();
+                    case 4: return ud.getLastName();
+                    case 5: return ud.getFirstName();
+                    case 6: return ud.getEmail();
                 }
             }
             return "";
@@ -1257,7 +1329,8 @@ public class UserPanel extends BaseSetupPanel
                 case 2: return true;
                 case 3: return false;
                 case 4: return false;
-                case 5: return true;
+                case 5: return false;
+                case 6: return true;
             }
             return false;
         }
@@ -1281,22 +1354,45 @@ public class UserPanel extends BaseSetupPanel
                         break;
                         
                     case 2: 
-                        ud.setPassword((String)aValue);
-                        ud.setChanged(true);
+                        changedPWD(ud, (String)aValue, row);
                         isPwdChanged = true;
+                        isChanged    = true;
+                        fireTableDataChanged();
+                        break;
+                        
+                    case 3: 
+                        ud.setMasterKey((String)aValue);
+                        ud.setChanged(true);
                         isChanged = true;
                         fireTableDataChanged();
                         break;
                         
-                    case 5: 
+                    case 6: 
                         isChanged = true;
                         ud.setEmail((String)aValue);
                         ud.setChanged(true);
                         fireTableDataChanged();
+                        changedEMail = true;
                         break;
                 }
             }
             updateBtnUI(true);
         }
+    }
+    
+    private void changedPWD(final UserData ud, 
+                            final String newPwd,
+                            final int row)
+    {
+        ud.setPassword(newPwd); // Clear Text
+        ud.setChanged(true);
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                UserPanel.this.makeNewMasterKey(ud, newPwd, row);
+            }
+        });
     }
 }

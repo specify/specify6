@@ -124,7 +124,7 @@ public class SpecifyDBSecurityWizardFrame extends JFrame implements FrameworkApp
         }
         UIRegistry.register(UIRegistry.MENUBAR, menuBar);
         
-        setIconImage(IconManager.getIcon(SpecifyDBSecurityWizard.getIconName(), IconManager.IconSize.Std16).getImage());
+        setIconImage(IconManager.getIcon(SpecifyDBSecurityWizard.getIconName(), IconManager.IconSize.NonStd).getImage());
         
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 

@@ -755,9 +755,9 @@ public class UserAndMasterPasswordMgr
      * @param encyptionKey
      * @return
      */
-    public String encrypt(final String username, 
-                          final String password,
-                          final String encyptionKey)
+    public static String encrypt(final String username, 
+                                 final String password,
+                                 final String encyptionKey)
     {
         return Encryption.encrypt(username+","+password, encyptionKey);
     }
@@ -870,7 +870,7 @@ public class UserAndMasterPasswordMgr
         SpecifyUser spUser    = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
         Pair<String, String> masterPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
         
-        String encryptedMasterUP = UserAndMasterPasswordMgr.getInstance().encrypt(masterPwd.first, masterPwd.second, newPwd);
+        String encryptedMasterUP = UserAndMasterPasswordMgr.encrypt(masterPwd.first, masterPwd.second, newPwd);
         if (StringUtils.isNotEmpty(encryptedMasterUP))
         {
             AppPreferences.getLocalPrefs().put(getMasterPrefPath(true), encryptedMasterUP);

@@ -37,11 +37,13 @@ import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -52,6 +54,7 @@ import edu.ku.brc.specify.config.init.DatabasePanel;
 import edu.ku.brc.specify.config.init.GenericFormPanel;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
+import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
@@ -280,9 +283,13 @@ public class MasterLoginPanel extends GenericFormPanel
     public List<String> getDatabaseList()
     {
         List<String> dbList = DBMSUserMgr.getInstance().getDatabaseList();
-        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)UIRegistry.getTopWindow(), "SEC_SELECT_DBS", dbList);
+        
+        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)UIRegistry.getTopWindow(), "SEC_SELECT_DBS", null, dbList, 
+                                                                                CustomDialog.OK_BTN, ToggleButtonChooserPanel.Type.Checkbox);
         dlg.setAddSelectAll(true);
         dlg.setUseScrollPane(true);
+        dlg.createUI();
+        dlg.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         UIHelper.centerAndShow(dlg);
         if (!dlg.isCancelled())
         {
@@ -292,6 +299,9 @@ public class MasterLoginPanel extends GenericFormPanel
     }
     
     
+    /**
+     * @return
+     */
     private boolean checkForPermissions()
     {
         getValues(properties);
@@ -408,10 +418,10 @@ public class MasterLoginPanel extends GenericFormPanel
         {
             if (mgr.connectToDBMS(dbUserName, dbPassword, hostName))
             {
-                if (mgr.dropUser(saUserName))
+                List<String> dbNames = databaseNames != null && databaseNames.size() > 0 ? databaseNames : getDatabaseList();
+                if (dbNames != null)
                 {
-                    List<String> dbNames = databaseNames != null && databaseNames.size() > 0 ? databaseNames : getDatabaseList();
-                    if (dbNames != null)
+                    if (mgr.dropUser(saUserName))
                     {
                         boolean rv = true;
                         for (String dbnm : dbNames)
@@ -449,12 +459,13 @@ public class MasterLoginPanel extends GenericFormPanel
                             return true;
                         }
                         advLabel.setText("There was an error setting the Master User's username and password."); // I18N
+                    } else
+                    {
+                        UIRegistry.showLocalizedError("SEC_ERR_DROP_USER");
                     }
-                } else
-                {
-                    UIRegistry.showLocalizedError("SEC_ERR_DROP_USER");
                 }
                 mgr.close();
+                
             } else
             {
                 UIRegistry.showLocalizedError("SEC_UNEX_ERR_LGN");

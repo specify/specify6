@@ -293,7 +293,7 @@ public class InstSetupPanel extends GenericFormPanel
      */
     protected boolean tryLogginIn(final String usrName, final String userPwd, final String databaseName)
     {
-        String encryptedMasterUP = UserAndMasterPasswordMgr.getInstance().encrypt(
+        String encryptedMasterUP = UserAndMasterPasswordMgr.encrypt(
                                         properties.getProperty("saUserName"), 
                                         properties.getProperty("saPassword"), 
                                         userPwd);
