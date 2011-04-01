@@ -68,7 +68,7 @@ public class GroupHashDAO
     */
     private static final String sqlBase = "SELECT g.ID, g.mon, g.cnt, gi.RawID FROM group_hash g INNER JOIN group_hash_ids gi ON g.ID = gi.GrpID WHERE ";
     
-    private static String         dbPassword   = null;
+    private static String         dbPassword   = "root";
     private static GroupHashDAO   instance = new GroupHashDAO();
     private static Stack<RawData> recycler = new Stack<RawData>();
     
@@ -91,8 +91,6 @@ public class GroupHashDAO
         String database = "plants";
         String username = "root";
         
-        dbPassword = "root";
-        
         DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("MySQL");
         String             connStr    = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, server, database, 
                                                                     username, dbPassword, driverInfo.getName());
@@ -102,7 +100,7 @@ public class GroupHashDAO
             if (!isFirst)
             {
                 final CustomDialog   dlg         = new CustomDialog(null, "IT Password", true, null);
-                final JPasswordField pwdTxt      = UIHelper.createPasswordField();
+                final JPasswordField pwdTxt      = UIHelper.createPasswordField(30);
                 DocumentListener     docListener = new DocumentListener() {
                     public void check()
                     {
@@ -121,7 +119,7 @@ public class GroupHashDAO
                 
                 CellConstraints cc     = new CellConstraints();
                 PanelBuilder    pb     = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p"));
-                pb.add(UIHelper.createFormLabel("Enter MySQL's root password:"), cc.xy(1,1));
+                pb.add(UIHelper.createFormLabel("Enter MySQL's root password"), cc.xy(1,1));
                 pb.add(pwdTxt, cc.xy(3, 1));
                 pb.setDefaultDialogBorder();
                 
