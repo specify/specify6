@@ -291,19 +291,16 @@ public class InstSetupPanel extends GenericFormPanel
      * @param databaseName is optional (can be null) 
      * @return
      */
-    protected boolean tryLogginIn(final String usrName, final String pwd, final String databaseName)
+    protected boolean tryLogginIn(final String usrName, final String userPwd, final String databaseName)
     {
-        String uUserName = properties.getProperty("usrUsername");
-        String uPassword = properties.getProperty("usrPassword");
-        
         String encryptedMasterUP = UserAndMasterPasswordMgr.getInstance().encrypt(
                                         properties.getProperty("saUserName"), 
                                         properties.getProperty("saPassword"), 
-                                        uPassword);
+                                        userPwd);
         
         AppPreferences ap = AppPreferences.getLocalPrefs();
-        ap.put(uUserName+"_master.islocal",  "true");
-        ap.put(uUserName+"_master.path",     encryptedMasterUP);
+        ap.put(UserAndMasterPasswordMgr.getIsLocalPrefPath(usrName, databaseName, true),  "true");
+        ap.put(UserAndMasterPasswordMgr.getMasterPrefPath(usrName, databaseName, true),     encryptedMasterUP);
         
         DatabaseLoginPanel.MasterPasswordProviderIFace usrPwdProvider = new DatabaseLoginPanel.MasterPasswordProviderIFace()
         {
@@ -336,9 +333,7 @@ public class InstSetupPanel extends GenericFormPanel
             }
         };
         
-        String dbName = properties.getProperty("dbName");
-
-        Pair<String, String> masterUsrPwd = usrPwdProvider.getUserNamePassword(usrName, pwd, dbName);
+        Pair<String, String> masterUsrPwd = usrPwdProvider.getUserNamePassword(usrName, userPwd, databaseName);
         
         if (masterUsrPwd != null)
         {
@@ -346,10 +341,10 @@ public class InstSetupPanel extends GenericFormPanel
             
             DatabaseDriverInfo driverInfo = (DatabaseDriverInfo)properties.get("driverObj");
             
-            String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, hostName, dbName);
+            String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, hostName, databaseName);
             if (connStr == null)
             {
-                connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName,  dbName);
+                connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName,  databaseName);
             }
             
             firePropertyChange(propName, 0, 2);
@@ -357,7 +352,7 @@ public class InstSetupPanel extends GenericFormPanel
             // tryLogin sets up DBConnection
             boolean isLoggedIn = UIHelper.tryLogin(driverInfo.getDriverClassName(), 
                                                     driverInfo.getDialectClassName(), 
-                                                    dbName, 
+                                                    databaseName, 
                                                     connStr, 
                                                     masterUsrPwd.first, 
                                                     masterUsrPwd.second);

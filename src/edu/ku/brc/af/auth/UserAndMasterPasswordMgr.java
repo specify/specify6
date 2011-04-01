@@ -144,7 +144,7 @@ public class UserAndMasterPasswordMgr
      * @param includeDBName
      * @return
      */
-    public String getIsLocalPrefPath(final String usrName, final String dbName, final boolean includeDBName)
+    public static String getIsLocalPrefPath(final String usrName, final String dbName, final boolean includeDBName)
     {
         return (StringUtils.isNotEmpty(dbName) && includeDBName? (dbName + '_') : "") + usrName + "_" + MASTER_LOCAL;
     }
@@ -164,7 +164,7 @@ public class UserAndMasterPasswordMgr
      * @param includeDBName
      * @return
      */
-    public String getMasterPrefPath(final String usrName, final String dbName, final boolean includeDBName)
+    public static String getMasterPrefPath(final String usrName, final String dbName, final boolean includeDBName)
     {
         return (StringUtils.isNotEmpty(dbName) && includeDBName? (dbName + '_') : "") + usrName + "_" + MASTER_PATH;
     }
