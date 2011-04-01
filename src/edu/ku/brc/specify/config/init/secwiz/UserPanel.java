@@ -88,6 +88,7 @@ public class UserPanel extends BaseSetupPanel
     protected JScrollPane       dbScrollPane;
     protected JScrollPane       odbScrollPane;
     protected JLabel            label;
+    protected JLabel            otherDBLbl;
     
     protected JTable            userTable = null;
     protected UserTableModel    userModel;
@@ -167,7 +168,7 @@ public class UserPanel extends BaseSetupPanel
         PanelBuilder tpb = new PanelBuilder(new FormLayout("f:p:g,10px,p,10px,f:p:g", "p,4px,f:p:g"));
         
         tpb.add(UIHelper.createI18NLabel("MSTR_HAS_PERM", SwingConstants.CENTER),   cc.xy(1, 1));
-        tpb.add(UIHelper.createI18NLabel("MSTR_HAS_NOPERM", SwingConstants.CENTER), cc.xy(5, 1));
+        tpb.add(otherDBLbl = UIHelper.createI18NLabel("MSTR_HAS_NOPERM", SwingConstants.CENTER), cc.xy(5, 1));
         
         tpb.add(dbScrollPane = UIHelper.createScrollPane(dbList),                   cc.xy(1, 3));
         tpb.add(bpb.getPanel(),                                                     cc.xy(3, 3));
@@ -745,7 +746,7 @@ public class UserPanel extends BaseSetupPanel
             {
                 if (isInitial)
                 {
-                    dbScrollPane.setVisible(dbNamesList.size() > 1);
+                    dbScrollPane.setVisible(dbNamesList.size() > 0);
                     DefaultListModel model = new DefaultListModel();
                     for (String nm : items)
                     {
@@ -753,7 +754,13 @@ public class UserPanel extends BaseSetupPanel
                     }
                     dbList.setModel(model);
                     
-                    odbScrollPane.setVisible(otherNamesList.size() > 1);
+                    odbScrollPane.setVisible(otherNamesList.size() > 0);
+                    if (otherNamesList.size() == 0)
+                    {
+                    	gainAccessBtn.setVisible(false);
+                    	loseAccessBtn.setVisible(false);
+                    	otherDBLbl.setVisible(false);
+                    }
                     model = new DefaultListModel();
                     for (String nm : otherNamesList)
                     {
