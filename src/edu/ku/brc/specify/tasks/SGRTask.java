@@ -264,10 +264,15 @@ public class SGRTask extends BaseTask
             String cat = "";
             DefaultCategoryDataset dataset = new DefaultCategoryDataset();
             
-            File histoDataFile = new File("demo_files/sgr_histo.dat");
+            String path = "demo_files/sgr_histo.dat";
+            File histoDataFile = new File(path); // dev path
             if (!histoDataFile.exists())
             {
-                return;
+                histoDataFile = new File("../"+path); // release path
+                if (!histoDataFile.exists())
+                {
+                    return;
+                }
             }
             
             int cnt = 0;
