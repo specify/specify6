@@ -631,22 +631,26 @@ public class UserAndMasterPasswordMgr
         
         popResourceBundle();
         
-        DocumentListener docListener = new DocumentListener() {
-            
-            public void check()
+        DocumentListener docListener = new DocumentAdaptor() {
+            @Override
+            protected void changed(DocumentEvent e)
             {
-                boolean enable = !dbUsrTxt.getText().isEmpty() &&
+                String dbUserStr = dbUsrTxt.getText();
+                
+                boolean enable = !dbUserStr.isEmpty() &&
                                  !((JTextField)dbPwdTxt).getText().isEmpty() &&
                                  !usrText.getText().isEmpty() &&
                                  !((JTextField)pwdText).getText().isEmpty();
+                System.err.println(dbUserStr);
+                if (enable && StringUtils.isNotEmpty(dbUserStr) && dbUserStr.equalsIgnoreCase("root"))
+                {
+                    loadAndPushResourceBundle("masterusrpwd");
+                    UIRegistry.showLocalizedError("MASTER_NO_ROOT");
+                    popResourceBundle();
+                    enable = false;
+                }
                 dlg.getOkBtn().setEnabled(enable);
             }
-            @Override
-            public void changedUpdate(DocumentEvent e) { check(); }
-            @Override
-            public void insertUpdate(DocumentEvent e) { check(); }
-            @Override
-            public void removeUpdate(DocumentEvent e) { check(); }
         };
         
         dbUsrTxt.getDocument().addDocumentListener(docListener);
