@@ -1199,10 +1199,11 @@ public class SecurityAdminPane extends BaseSubPane
            
         } catch (Exception ex)
         {
+            if (session != null) session.rollback();
+            
             ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SecurityAdminPane.class, ex);
-            session.rollback();
             
         } finally
         {
@@ -1211,7 +1212,6 @@ public class SecurityAdminPane extends BaseSubPane
                 session.close();
             }
         }
-            
     }
     
     /**

@@ -26,10 +26,13 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.af.auth.specify.permission.PermissionService;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
 import edu.ku.brc.af.ui.db.TextFieldWithInfo;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayPanel;
+import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -40,7 +43,6 @@ import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.busrules.SpecifyUserBusRules;
 
 /**
  * Wraps a JPanel with a permission editor (if panel for group or user) 
@@ -52,18 +54,20 @@ import edu.ku.brc.specify.datamodel.busrules.SpecifyUserBusRules;
  */
 public class AdminInfoSubPanelWrapper
 {
+    private static final Logger log = Logger.getLogger(AdminInfoSubPanelWrapper.class);
+    
     private JPanel                      displayPanel;
     private List<PermissionPanelEditor> permissionEditors; 
     private TextFieldWithInfo           agentTFWI   = null;
     
     private SpPrincipal                 principal      = null;     // first Principal
     private SpPrincipal                 principal2     = null;     // user  Principal
-    private SpPrincipal                 groupPrincipal = null;     // group Principal
+    //private SpPrincipal                 groupPrincipal = null;     // group Principal
     
     private SpecifyUser                 user           = null;
     private DataModelObjBaseWrapper     firstWrp       = null;
     private DataModelObjBaseWrapper     secondWrp      = null;
-    private DataModelObjBaseWrapper     collectionWrp  = null;
+    //private DataModelObjBaseWrapper     collectionWrp  = null;
     
     /**
      * Constructor taking only a JPanel as parameter
@@ -315,7 +319,7 @@ public class AdminInfoSubPanelWrapper
                 // first object is just a user group 
                 user            = null;
                 firstPrincipal  = session.get(SpPrincipal.class, ((SpPrincipal)firstObj).getId());
-                secondPrincipal = null;
+                //secondPrincipal = null;
                 panel.setData(firstPrincipal);
             }
             
@@ -371,40 +375,37 @@ public class AdminInfoSubPanelWrapper
         
         Object obj = mv.getData();
         
-        SpecifyUserBusRules busRules = new SpecifyUserBusRules();
-        busRules.initialize(mv.getCurrentView());
-        
-        // Couldn't call BuinessRules because of a double session
-        // need to look into it later
-        //BusinessRulesIFace br = mv.getCurrentViewAsFormViewObj().getBusinessRules();
-        
-        Agent toBeReleased = null;
+        BusinessRulesIFace busRules = null;
+        FormViewObj        fvo      = mv.getCurrentViewAsFormViewObj();
+        if (fvo != null && fvo.getBusinessRules() != null)
+        {
+            busRules = fvo.getBusinessRules();
+        }
         
         // We need to do this because we can't call the BusniessRules
-        if (obj instanceof SpecifyUser)
+        if (busRules != null)
         {
-            user = (SpecifyUser)obj;
-            
-            busRules.beforeMerge(user, session);
-            
-            user = session.merge(user);
-            busRules.beforeSave(user, session);
-            
+            if (obj instanceof SpecifyUser)
+            {
+                user = (SpecifyUser)obj;
+                
+                busRules.beforeMerge(user, session);
+                
+                user = session.merge(user);
+                busRules.beforeSave(user, session);
+                
+            } else
+            {
+                obj = session.merge(obj);
+                session.saveOrUpdate(obj);
+            }
         } else
         {
-            obj = session.merge(obj);
-            session.saveOrUpdate(obj);
+            log.error("Error - Can't get business rules for form.");
         }
         
         principal = session.merge(principal);
         session.saveOrUpdate(principal);
-        
-        if (toBeReleased != null)
-        {
-            toBeReleased = session.merge(toBeReleased);
-            toBeReleased.setSpecifyUser(null);
-            session.saveOrUpdate(toBeReleased);
-        }
         
         for (PermissionPanelEditor editor : permissionEditors)
         {

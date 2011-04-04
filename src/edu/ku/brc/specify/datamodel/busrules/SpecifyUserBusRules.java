@@ -22,6 +22,8 @@ package edu.ku.brc.specify.datamodel.busrules;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 import javax.swing.JButton;
 import javax.swing.JPasswordField;
@@ -56,7 +58,20 @@ import edu.ku.brc.util.Pair;
  */
 public class SpecifyUserBusRules extends BaseBusRules
 {
-    protected char currEcho;
+    private static final int PWD_LEN_THRESHOLD = 25; // supposedly anything less than 25 chars is not encrypted
+    
+    private char    currEcho;
+    private String  currentPlainTextPWD = null; // Not encrypted.
+    private Integer spUserId            = null;
+     
+    private JPasswordField     pwdTxt       = null;
+    private JTextField         keyTxt       = null;
+    private JButton            showPwdBtn   = null;
+    private PasswordStrengthUI pwdStrenthUI = null;
+
+    private JButton            genBtn       = null;
+    private JButton            copyBtn      = null;
+    
     /**
      * 
      */
@@ -69,16 +84,22 @@ public class SpecifyUserBusRules extends BaseBusRules
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
      */
     @Override
-    public void initialize(Viewable viewableArg)
+    public void initialize(final Viewable viewableArg)
     {
+        if (viewableArg == null || pwdTxt != null)
+        {
+            return;
+        }
+        
         super.initialize(viewableArg);
         
-        final JPasswordField     pwdTxt       = formViewObj.getCompById("3");
-        final JTextField         keyTxt       = formViewObj.getCompById("key");
-        final JButton            genBtn       = formViewObj.getCompById("GenerateKey");
-        final JButton            copyBtn      = formViewObj.getCompById("CopyToCB");
-        final JButton            showPwdBtn   = formViewObj.getCompById("ShowPwd");
-        final PasswordStrengthUI pwdStrenthUI = formViewObj.getCompById("6");
+        pwdTxt       = formViewObj.getCompById("3");
+        keyTxt       = formViewObj.getCompById("key");
+        showPwdBtn   = formViewObj.getCompById("ShowPwd");
+        pwdStrenthUI = formViewObj.getCompById("6");
+        
+        genBtn  = formViewObj.getCompById("GenerateKey");
+        copyBtn = formViewObj.getCompById("CopyToCB");
         
         // This is in case the BusRules are used without the form.
         if (pwdTxt == null)
@@ -88,10 +109,26 @@ public class SpecifyUserBusRules extends BaseBusRules
         
         final char echoChar = pwdTxt.getEchoChar();
         currEcho = echoChar;
-
         
-        // For now
-        //showPwdBtn.setVisible(false);
+        pwdTxt.addFocusListener(new FocusAdapter()
+        {
+            @Override
+            public void focusLost(FocusEvent e)
+            {
+                super.focusLost(e);
+                
+                String pwdStr = new String(pwdTxt.getPassword());
+                if (StringUtils.isNotEmpty(pwdStr) && pwdStr.length() < PWD_LEN_THRESHOLD)
+                {
+                    // make sure the password has changed
+                    if (currentPlainTextPWD == null || !currentPlainTextPWD.equals(pwdStr))
+                    {
+                        // this means the password is new
+                        currentPlainTextPWD = pwdStr;
+                    }
+                }
+            }
+        });
         
         if (showPwdBtn != null)
         {
@@ -124,19 +161,36 @@ public class SpecifyUserBusRules extends BaseBusRules
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    String key = createEncryptKey(pwdTxt);
-                    if (key != null)
+                    if (StringUtils.isNotEmpty(currentPlainTextPWD) && currentPlainTextPWD.length() > 0)
                     {
-                        if (keyTxt != null)
+                        String key = createEncryptMasterKey(currentPlainTextPWD);
+                        if (key != null)
                         {
-                            keyTxt.setText(key);
+                            if (keyTxt != null)
+                            {
+                                keyTxt.setText(key);
+                            }
+                            UIHelper.setTextToClipboard(key);
+                            UIRegistry.showLocalizedMsg("SPUSR_KEYGEN");
                         }
-                        UIHelper.setTextToClipboard(key);
-                        UIRegistry.showLocalizedMsg("SPUSR_KEYGEN");
                     }
                 }
             });
-            genBtn.setEnabled(true);
+            genBtn.setEnabled(false);
+            copyBtn.setEnabled(false);
+            
+            pwdTxt.getDocument().addDocumentListener(new DocumentAdaptor() {
+                @Override
+                protected void changed(DocumentEvent e)
+                {
+                    super.changed(e);
+                    
+                    char[] chars = pwdTxt.getPassword();
+                    boolean enable = chars != null && chars.length > 0;
+                    genBtn.setEnabled(enable);
+                    copyBtn.setEnabled(enable);
+                }
+            });
         }
         
         if (pwdStrenthUI == null)
@@ -167,15 +221,37 @@ public class SpecifyUserBusRules extends BaseBusRules
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
      */
     @Override
-    public void afterFillForm(Object dataObj)
+    public void afterFillForm(final Object dataObj)
     {
         super.afterFillForm(dataObj);
         
+        SpecifyUser spUser = (SpecifyUser)dataObj;
+        
+        boolean doReset = true;
+        if (spUser != null && spUser.getId() != null)
+        {
+            if (spUserId != null)
+            {
+                doReset = !spUserId.equals(spUser.getId());
+            } 
+            spUserId = spUser.getId();
+        }
+        
+        if (spUser != null && doReset)
+        {
+            currentPlainTextPWD = null;
+            
+            if (genBtn != null)
+            {
+                genBtn.setEnabled(false);
+                copyBtn.setEnabled(false);
+            }
+        }
+        
         if (formViewObj != null && formViewObj.getDataObj() instanceof SpecifyUser)
         {
-            SpecifyUser spUser  = (SpecifyUser)formViewObj.getDataObj();
             ValComboBoxFromQuery cbx = getAgentCBX();
-            if (cbx != null)
+            if (cbx != null && spUser != null)
             {
                 for (Agent agent : spUser.getAgents())
                 {
@@ -188,17 +264,26 @@ public class SpecifyUserBusRules extends BaseBusRules
     }
     
     /**
-     * @param txtFld
+     * Encrypt's the Master U/P with a plain text password string.
+     * @param pwdStr plain text password string
      */
-    protected String createEncryptKey(final JTextField password)
+    protected String createEncryptMasterKey(final String pwdStr)
     {
-        String pwdStr = password.getText();
+        String key = null;
         if (!pwdStr.isEmpty())
         {
-            Pair<String, String> usrPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
-            Encryption.setEncryptDecryptPassword(pwdStr);
-            String key = Encryption.encrypt(usrPwd.first+","+usrPwd.second, pwdStr);
-            Encryption.setEncryptDecryptPassword("Specify");
+            String oldPwd = Encryption.getEncryptDecryptPassword();
+            try
+            {
+                Pair<String, String> usrPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
+                
+                Encryption.setEncryptDecryptPassword(pwdStr);
+                key = Encryption.encrypt(usrPwd.first+","+usrPwd.second, pwdStr);
+                
+            } finally
+            {
+                Encryption.setEncryptDecryptPassword(oldPwd);
+            }
             
             return key;
         }
@@ -263,21 +348,20 @@ public class SpecifyUserBusRules extends BaseBusRules
         return nameStatus != STATUS.OK ? STATUS.Error : STATUS.OK;
     }
 
+    
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     @Override
-    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
+    public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
     {
-        super.beforeSave(dataObj, session);
-        
-        beforeMerge(dataObj, session);
+        super.beforeMerge(dataObj, session);
         
         if (formViewObj != null)
         {
             SpecifyUser spUser = (SpecifyUser)formViewObj.getDataObj();
             String      pwd    = spUser.getPassword();
-            if (pwd.length() < 30)
+            if (pwd.length() < PWD_LEN_THRESHOLD)
             {
                 spUser.setPassword(Encryption.encrypt(pwd, pwd));
             }
