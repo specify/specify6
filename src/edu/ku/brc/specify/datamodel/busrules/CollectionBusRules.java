@@ -541,13 +541,15 @@ public class CollectionBusRules extends BaseBusRules
         STATUS nameStatus = isCheckDuplicateNumberOK("collectionName", 
                                                       (FormDataObjIFace)dataObj, 
                                                       Collection.class, 
-                                                      "userGroupScopeId");
+                                                      "userGroupScopeId",
+                                                      false); // Use Special (check Discipline ID)
         
         STATUS titleStatus = isCheckDuplicateNumberOK("collectionPrefix", 
                                                     (FormDataObjIFace)dataObj, 
                                                     Collection.class, 
                                                     "userGroupScopeId",
-                                                    true);
+                                                    true,   // isEmptyOK
+                                                    false); // Use Special (check Discipline ID)
         
         return nameStatus != STATUS.OK || titleStatus != STATUS.OK ? STATUS.Error : STATUS.OK;
     }

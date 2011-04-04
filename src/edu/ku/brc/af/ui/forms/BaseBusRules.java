@@ -763,7 +763,27 @@ public class BaseBusRules implements BusinessRulesIFace
                                               final Class<?>         dataClass,
                                               final String           primaryFieldName)
     {
-        return isCheckDuplicateNumberOK(fieldName, dataObj, dataClass, primaryFieldName, false);
+        return isCheckDuplicateNumberOK(fieldName, dataObj, dataClass, primaryFieldName, true);
+    }
+    
+    /**
+     * Helper method for checking for a duplicate number in a field that is unique.
+     * @param fieldName the name of the field to be checked
+     * @param dataObj the data object containing the number
+     * @param dataClass the class of the object beng checked
+     * @param primaryFieldName the primary key field
+     * @param numberMissingKey the localization key for the error message
+     * @param numberInUseKey  the localization key for the error message
+     * @param useSpecial use Discipline or CollectionMemberID etc to constrain the search
+     * @return whether it is ok or in error
+     */
+    protected STATUS isCheckDuplicateNumberOK(final String           fieldName, 
+                                              final FormDataObjIFace dataObj,
+                                              final Class<?>         dataClass,
+                                              final String           primaryFieldName,
+                                              final boolean          useSpecial)
+    {
+        return isCheckDuplicateNumberOK(fieldName, dataObj, dataClass, primaryFieldName, false, useSpecial);
     }
 
     /**
@@ -773,13 +793,15 @@ public class BaseBusRules implements BusinessRulesIFace
      * @param dataClass the class of the object beng checked
      * @param primaryFieldName the primary key field
      * @param isEmptyOK is it ok for the field to be empty
+     * @param useSpecial use Discipline or CollectionMemberID etc to constrain the search
      * @return whether it is ok or in error
      */
     protected STATUS isCheckDuplicateNumberOK(final String           fieldName, 
                                               final FormDataObjIFace dataObj,
                                               final Class<?>         dataClass,
                                               final String           primaryFieldName,
-                                              final boolean          isEmptyOK)
+                                              final boolean          isEmptyOK,
+                                              final boolean          useSpecial)
     {
         String fieldValue = (String)FormHelper.getValue(dataObj, fieldName);
         
@@ -810,7 +832,7 @@ public class BaseBusRules implements BusinessRulesIFace
             {
                 sql += " AND " + colName + " <> " + id;
             }
-            sql += StringUtils.isNotEmpty(special) ? (" AND "+special) : "";
+            sql += StringUtils.isNotEmpty(special) && useSpecial ? (" AND "+special) : "";
             
             log.debug(sql);
             
