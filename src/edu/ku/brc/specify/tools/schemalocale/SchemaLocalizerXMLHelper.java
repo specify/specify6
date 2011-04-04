@@ -67,6 +67,7 @@ import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * THis is a helper class for reading and writing the Schema Description XML to a file.
@@ -861,13 +862,17 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                     }
                 }
             }*/
-            
         } catch (IOException ex)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerXMLHelper.class, ex);
             ex.printStackTrace();
+            
+        } catch (Exception ex)
+        {
+           UIRegistry.showError("There was a problem reading the XML in the file."); // I18N
         }
+           
         return containers;
     }
     

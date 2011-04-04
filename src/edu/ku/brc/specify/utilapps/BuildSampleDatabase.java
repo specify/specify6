@@ -8559,7 +8559,10 @@ public class BuildSampleDatabase
         SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(schemaType, tableMgr);
         
         // NOTE: For localization 'false' is passed in 
-        schemaLocalizer.loadWithExternalFile(externalFile, !isImportOrLocalize);
+        if (!schemaLocalizer.loadWithExternalFile(externalFile, !isImportOrLocalize))
+        {
+            return false;
+        }
         
         boolean hideGenericFields = true;
         
