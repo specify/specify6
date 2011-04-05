@@ -300,10 +300,10 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
         });
     }
 
-    /**
-     * Show a named panel.
-     * @param name the name of the panel to be shown
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.PrefsPanelMgrIFace#showPanel(java.lang.String)
      */
+    @Override
     public void showPanel(final String name)
     {
         if (StringUtils.isNotEmpty(name))
@@ -311,6 +311,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
             Component comp = compsHash.get(name);
             if (comp == currentComp)
             {
+                log.error(String.format("The pref pane by the name '%s' is was not found.", name));
                 return;
             }
     
@@ -413,14 +414,17 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
         }
     }
 
-    /**
-     * Added named sub panel to
-     * @param name the name of the panel
-     * @param comp the comp (Panel) to be added
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.PrefsPanelMgrIFace#addPanel(java.lang.String, java.awt.Component)
      */
+    @Override
     public boolean addPanel(final String name, final Component comp)
     {
-        // XXX need to check for duplicates
+        if (compsHash.get(name) != null)
+        {
+            log.error(String.format("PrePanel with name '%s'has already been added.", name));
+            return false;
+        }
 
         compsHash.put(name, comp);
 
@@ -433,6 +437,9 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
         {
             PrefsPanelIFace pp = (PrefsPanelIFace)comp;
             prefPanelsHash.put(name, pp);
+        } else
+        {
+            log.error(String.format("PrePanel with name '%s' doesn't implement the xxx interface.", name));
         }
 
         if (firstPanelName == null)
@@ -626,10 +633,26 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
         
         if (winDim.equals(oldWinDim)) // needed because JGoodies doesn't want to relayout when it is the same size.
         {
-            winDim.height +=2;
+            winDim.height += 2;
         }
         setSize(winDim);
         currentComp.setSize(new Dimension(currentComp.getPreferredSize().width, oldSize.height));
+        
+        // Not sure why this combination works
+        mainPanel.invalidate();
+        mainPanel.validate();
+        mainPanel.invalidate();
+        mainPanel.doLayout();
+        mainPanel.repaint();
+        
+        invalidate();
+        validate();
+        invalidate();
+        doLayout();
+
+        doLayout();
+        repaint();
+        // to here
         
         ((PrefsPanelIFace)comp).setShadeColor(null);
         
@@ -724,32 +747,39 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
          */
         public void actionPerformed(ActionEvent e)
         {
-            alpha += delta;
-            
-            if (startTime != null)
+            try
             {
-                int elapsedTime = (int)(System.currentTimeMillis() - startTime);
-                if (elapsedTime > MAX_DELAY)
-                {
-                    alpha = 255;
-                }
-            }
-            startTime = System.currentTimeMillis();
-            
-            Color bc = currentComp.getBackground();
-            ((PrefsPanelIFace)currentComp).setShadeColor(new Color(bc.getRed(), bc.getGreen(), bc.getBlue(), Math.min(alpha, 255)));
-            
-            if (alpha >= 255)
-            {
-                ((PrefsPanelIFace)currentComp).setShadeColor(null);
-                ((Timer)e.getSource()).stop();
+                alpha += delta;
                 
-                showAndResizePane(comp, oldSize);
+                if (startTime != null)
+                {
+                    int elapsedTime = (int)(System.currentTimeMillis() - startTime);
+                    if (elapsedTime > MAX_DELAY)
+                    {
+                        alpha = 255;
+                    }
+                }
+                startTime = System.currentTimeMillis();
+                
+                Color bc = currentComp.getBackground();
+                ((PrefsPanelIFace)currentComp).setShadeColor(new Color(bc.getRed(), bc.getGreen(), bc.getBlue(), Math.min(alpha, 255)));
+                
+                if (alpha >= 255)
+                {
+                    ((PrefsPanelIFace)currentComp).setShadeColor(null);
+                    ((Timer)e.getSource()).stop();
+                    
+                    showAndResizePane(comp, oldSize);
+                }
+                currentComp.validate();
+                currentComp.repaint();
+                comp.repaint();
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
             }
-            currentComp.validate();
-            currentComp.repaint();
-            comp.repaint();
-         }
+        }
     }
 
     private class SlideInOutAnimation implements ActionListener

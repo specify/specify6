@@ -298,8 +298,11 @@ public class PrefsToolbar extends JPanel
                 }
             }
             
-            prevBtn = (RolloverCommand)getComponent(0);
-            prevBtn.setActive(true);
+            if (getComponentCount() > 0)
+            {
+                prevBtn = (RolloverCommand)getComponent(0);
+                prevBtn.setActive(true);
+            }
             
             /*int aveWidth = totalWidth / btns.size();
             for (NavBoxButton nbb : btns)
@@ -323,9 +326,7 @@ public class PrefsToolbar extends JPanel
         } finally
         {
             RolloverCommand.setVertGap(0);
-
         }
-        
     }
 
     /**
