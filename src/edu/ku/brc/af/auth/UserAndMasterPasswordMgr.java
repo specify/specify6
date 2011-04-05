@@ -641,7 +641,6 @@ public class UserAndMasterPasswordMgr
                                  !((JTextField)dbPwdTxt).getText().isEmpty() &&
                                  !usrText.getText().isEmpty() &&
                                  !((JTextField)pwdText).getText().isEmpty();
-                System.err.println(dbUserStr);
                 if (enable && StringUtils.isNotEmpty(dbUserStr) && dbUserStr.equalsIgnoreCase("root"))
                 {
                     loadAndPushResourceBundle("masterusrpwd");

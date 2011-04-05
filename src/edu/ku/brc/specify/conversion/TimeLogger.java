@@ -91,6 +91,18 @@ public class TimeLogger
      */
     public String end()
     {
+        return end(null);
+    }
+    
+    /**
+     * @return a string with hrs:min:secs (total seconds) (milliseconds) and prints to System.out.
+     */
+    public String end(final String msg)
+    {
+        if (msg != null)
+        {
+            desc = msg;
+        }
         endTime = System.currentTimeMillis();
         
         double totalSeconds = ((double)(endTime - startTime)) / 1000.0;

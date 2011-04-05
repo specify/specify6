@@ -11,7 +11,7 @@
                 <tables>
 		          <id>79</id>
 		        </tables>            
-              	<statement><![CDATA[SELECT Name,WorkbenchID FROM workbench WHERE SpecifyUserID = SPECIFYUSERID]]></statement>
+              	<statement><![CDATA[SELECT Name, WorkbenchID FROM workbench WHERE SpecifyUserID = SPECIFYUSERID]]></statement>
               </sql>
               <command type="Workbench" action="WB.SelectedWorkbench" colid="2" class="edu.ku.brc.specify.datamodel.Workbench"/>
         </box>
@@ -23,7 +23,7 @@
 			      </tables>            
                   <statement><![CDATA[SELECT count(loanpreparationid) AS ItemsOnLoanCount FROM loanpreparation AS lpo 
                 INNER JOIN loan ON loan.loanid = lpo.loanid WHERE 
-                loan.DisciplineID = DSPLNID AND (IsClosed = 0 or IsClosed is null)]]></statement></sql>
+                (loan.DisciplineID = DSPLNID) AND (IsClosed = 0 or IsClosed is null)]]></statement></sql>
                 <link>ListOnLoan</link>
             </item>
             <item title="OVRDUE_LOANS">
@@ -35,8 +35,7 @@
 				      <tables>
 				        <id>52</id>
 				      </tables>            
-                    <statement><![CDATA[SELECT count(loanId) as OpenLoanCount FROM Loan l INNER JOIN l.discipline dsp WHERE (isClosed = 0 OR isClosed is null) AND 
- dsp.disciplineId = DSPLNID ]]></statement></sql>
+                    <statement><![CDATA[SELECT count(loanId) as OpenLoanCount FROM Loan l INNER JOIN l.discipline dsp WHERE (isClosed = 0 OR isClosed is null) AND (dsp.disciplineId = DSPLNID)]]></statement></sql>
                 <link>OpenLoans</link>
             </item>
         </box>

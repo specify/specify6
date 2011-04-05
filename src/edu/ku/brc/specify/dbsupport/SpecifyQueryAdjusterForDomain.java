@@ -61,7 +61,7 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
 {
     protected static final Logger log = Logger.getLogger(SpecifyQueryAdjusterForDomain.class);
-    private static final String SEARCH_ALL = " OR 1 = 1";
+    //private static final String CNT_TBL_SQL = "SELECT COUNT(*) FROM ";
     
     private static final String SPECIFYUSERID  = "SPECIFYUSERID";
     private static final String DIVID          = "DIVID";
@@ -77,6 +77,10 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
     private static final String GEOTREEDEFID   = "GEOTREEDEFID";
     
     private boolean permsOKForGlobalSearch = false;
+    
+    private int divisionCnt   = 0;
+    private int disciplineCnt = 0;
+    private int collectionCnt = 0;
 
     /**
      * 
@@ -84,8 +88,14 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
     public SpecifyQueryAdjusterForDomain()
     {
         permsOKForGlobalSearch = !AppContextMgr.isSecurityOn() || SpecifyUser.isCurrentUserType(UserType.Manager);
+        
+        // This kicks Global Search into gear if there is just one, but only for that one
+        //divisionCnt   = BasicSQLUtils.getCountAsInt(CNT_TBL_SQL+"division");
+        //disciplineCnt = BasicSQLUtils.getCountAsInt(CNT_TBL_SQL+"discipline");
+        //collectionCnt = BasicSQLUtils.getCountAsInt(CNT_TBL_SQL+"collection");
+        
     }
-
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain#getSpecialColumns(edu.ku.brc.dbsupport.DBTableInfo, boolean, boolean, java.lang.String)
      */
@@ -313,6 +323,116 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
         }
         return super.getJoinClause(tableInfo, isHQL, alias, useLeftJoin);
     }
+    
+    private int checkAhead(final String lowerSQL, final int startInx, final String key)
+    {
+        int bInx = lowerSQL.lastIndexOf(key, startInx);
+        int diff = startInx - bInx;
+        if (diff == key.length()+1)
+        {
+            return diff;
+        }
+        return 0;
+    }
+    
+    /**
+     * @param lowerSQL
+     * @param endInx
+     * @param key
+     * @return
+     */
+    private int checkAfter(final String lowerSQL, final int endInx, final String key)
+    {
+        int bInx = lowerSQL.indexOf(key, endInx);
+        if (bInx > -1)
+        {
+            int diff = bInx - endInx;
+            if (diff == 2)
+            {
+                return key.length()+1;
+            }
+        }
+        return 0;
+    }
+    
+    /**
+     * @param source
+     * @return
+     */
+    public static String itrim(String source) 
+    {
+        //return source.replaceAll("\\b\\s{2,}\\b", " ");
+        return source.replaceAll("\\s+", " ");   
+    }
+
+    /**
+     * @param specialSQL
+     * @param key
+     * @return
+     */
+    private String removeSpecialFilter(final String specialSQL, final String key)
+    {
+        String lowerSQL = specialSQL.toLowerCase();
+        
+        int whereInx = lowerSQL.indexOf("where");
+        if (whereInx == -1)
+        {
+            return null;
+        }
+        
+        String frontStr = specialSQL.substring(0, whereInx+6);
+        String whereStr = itrim(specialSQL.substring(whereInx+6, specialSQL.length()));//.replaceAll("\n", ""));
+        lowerSQL        = itrim(lowerSQL.substring(whereInx+6, specialSQL.length()));//.replaceAll("\n", ""));
+        
+        //System.out.println("["+lowerSQL+"]\n["+whereStr+"]");
+        
+        int inx = whereStr.indexOf(key);
+        if (inx > -1)
+        {
+            int endInx = inx + key.length();
+            if (endInx < whereStr.length() && lowerSQL.charAt(endInx) == ')')
+            {
+                int startInx = lowerSQL.lastIndexOf('(', inx);
+                if (startInx > -1) // here we have source.replaceAll("\\b\\s{2,}\\b", " ");the bounds of the '(' to ')'
+                {
+                    // Now check to see what is ahead of it
+                    int bInx = checkAhead(lowerSQL, startInx, "and");
+                    if (bInx > 0)
+                    {
+                        startInx -= bInx;
+                    } else 
+                    {
+                        bInx = checkAhead(lowerSQL, startInx, "or");
+                        if (bInx > 0)
+                        {
+                            startInx -= bInx;
+                        } else
+                        {
+                            // check after
+                            int eInx = checkAfter(lowerSQL, endInx, "and");
+                            if (eInx > 0)
+                            {
+                                endInx += eInx;
+                            } else
+                            {
+                                endInx += checkAfter(lowerSQL, endInx, "or");
+                            }
+                        }
+                    } 
+                    String segment = whereStr.substring(startInx, endInx+1);
+                    String newStr = frontStr + StringUtils.remove(whereStr, segment);
+                    
+                    //System.out.println("["+specialSQL+"]\n["+newStr+"]");
+                    return newStr;
+                }
+            }
+            //System.out.println("Skipped1["+specialSQL+"]");
+        }/* else
+        {
+            System.out.println("Skipped2["+specialSQL+"]");
+        }*/
+        return null;
+    }
 
 
     /* (non-Javadoc)
@@ -322,6 +442,10 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
     public String adjustSQL(final String sql)
     {
         boolean doGlobalSearch = permsOKForGlobalSearch && AppPreferences.getLocalPrefs().getBoolean("GLOBAL_SEARCH", false);
+        //divisionCnt++;
+        //disciplineCnt++;
+        //collectionCnt++;
+        doGlobalSearch = false;
         
         // SpecifyUser should NEVER be null nor the Id !
         SpecifyUser user = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
@@ -338,68 +462,95 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 
                 if (StringUtils.contains(adjSQL, DIVID))
                 {
-                    Integer  divId    = null;
-                    Division division = AppContextMgr.getInstance().getClassObject(Division.class);
-                    if (division != null)
+                    String adjustedSQL = null;
+                    if (doGlobalSearch || divisionCnt == 1)
                     {
-                        divId = division.getId();
-                    } else
-                    {
-                        divId = Agent.getUserAgent().getDivision() != null ? Agent.getUserAgent().getDivision().getDivisionId() : null;
+                        adjustedSQL = removeSpecialFilter(adjSQL, DIVID);
                     }
                     
-                    if (divId != null)
+                    if (adjustedSQL == null)
                     {
-                        String str = Integer.toString(divId);
-                        if (doGlobalSearch)
+                        Integer  divId    = null;
+                        Division division = AppContextMgr.getInstance().getClassObject(Division.class);
+                        if (division != null)
                         {
-                            str += SEARCH_ALL;
+                            divId = division.getId();
+                        } else
+                        {
+                            divId = Agent.getUserAgent().getDivision() != null ? Agent.getUserAgent().getDivision().getDivisionId() : null;
                         }
-                        adjSQL = StringUtils.replace(adjSQL, DIVID, str);
-                        System.out.println("["+str+"]["+adjSQL+"]");
+                        
+                        if (divId != null)
+                        {
+                            adjSQL = StringUtils.replace(adjSQL, DIVID, Integer.toString(divId));
+                        }
+                    } else
+                    {
+                        adjSQL = adjustedSQL;
                     }
                 }
                 
                 //System.out.println(adjSQL);
                 if (StringUtils.contains(adjSQL, COLMEMID))
                 {
-                    Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
-                    if (collection != null)
+                    String adjustedSQL = null;
+                    if (doGlobalSearch || collectionCnt == 1)
                     {
-                        String str = Integer.toString(collection.getCollectionId());
-                        if (doGlobalSearch)
+                        adjustedSQL = removeSpecialFilter(adjSQL, COLMEMID);
+                    }
+                    
+                    if (adjustedSQL == null)
+                    {
+                        Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+                        if (collection != null)
                         {
-                            str += SEARCH_ALL;
+                            adjSQL = StringUtils.replace(adjSQL, COLMEMID, Integer.toString(collection.getCollectionId()));
                         }
-                        adjSQL = StringUtils.replace(adjSQL, COLMEMID, str);
+                    } else
+                    {
+                        adjSQL = adjustedSQL;
                     }
                 }
                 
                 if (StringUtils.contains(adjSQL, COLLID))
                 {
-                    Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
-                    if (collection != null)
+                    String adjustedSQL = null;
+                    if (doGlobalSearch || collectionCnt == 1)
                     {
-                        String str = Integer.toString(collection.getCollectionId());
-                        if (doGlobalSearch)
+                        adjustedSQL = removeSpecialFilter(adjSQL, COLLID);
+                    }
+                    
+                    if (adjustedSQL == null)
+                    {
+                        Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+                        if (collection != null)
                         {
-                            str += SEARCH_ALL;
+                            adjSQL = StringUtils.replace(adjSQL, COLLID, Integer.toString(collection.getCollectionId()));
                         }
-                        adjSQL = StringUtils.replace(adjSQL, COLLID, str);
+                    } else
+                    {
+                        adjSQL = adjustedSQL;
                     }
                 }
                 
                 if (StringUtils.contains(adjSQL, DSPLNID))
                 {
-                    Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
-                    if (discipline != null)
+                    String adjustedSQL = null;
+                    if (doGlobalSearch || disciplineCnt == 1)
                     {
-                        String str = Integer.toString(discipline.getDisciplineId());
-                        if (doGlobalSearch)
+                        adjustedSQL = removeSpecialFilter(adjSQL, DSPLNID);
+                    }
+                    
+                    if (adjustedSQL == null)
+                    {
+                        Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+                        if (discipline != null)
                         {
-                            str += SEARCH_ALL;
+                            adjSQL = StringUtils.replace(adjSQL, DSPLNID, Integer.toString(discipline.getDisciplineId()));
                         }
-                        adjSQL = StringUtils.replace(adjSQL, DSPLNID, str);
+                    } else
+                    {
+                        adjSQL = adjustedSQL;
                     }
                 }
                 
@@ -464,4 +615,25 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
             throw new RuntimeException("The SpecifyUser cannot be null!");
         }
     }
-}
+    
+    /*
+    public static void main(String[] args)
+    {
+        String str = "1  2   3    4444     555      666666   4444";
+        System.err.println(str+"-"+itrim(str));
+        
+        str = "a  bbb  cc     ff  ggggggg     rr   d";
+        System.err.println(str+"-"+itrim(str));
+        
+        str = ")   OR  (isClosed";
+        System.err.println("["+str+"]["+itrim(str)+"]");
+        
+        SpecifyQueryAdjusterForDomain qa = new SpecifyQueryAdjusterForDomain(true);
+        //qa.removeSpecialFilter("SELECT count(loanId) as OpenLoanCount FROM Loan l INNER JOIN l.discipline dsp WHERE (isClosed = 0 OR isClosed is null) AND (dsp.disciplineId = DSPLNID)", DSPLNID);
+        //qa.removeSpecialFilter("SELECT count(loanId) as OpenLoanCount FROM Loan l INNER JOIN l.discipline dsp WHERE (isClosed = 0 OR isClosed is null) OR (dsp.disciplineId = DSPLNID)", DSPLNID);
+        //qa.removeSpecialFilter("SELECT count(loanId) as OpenLoanCount FROM Loan l INNER JOIN l.discipline dsp WHERE (dsp.disciplineId = DSPLNID)  AND   (isClosed = 0 OR isClosed is null)", DSPLNID);
+        qa.removeSpecialFilter("SELECT count(loanId) as OpenLoanCount FROM Loan l INNER JOIN l.discipline dsp WHERE (dsp.disciplineId = DSPLNID)   OR  (isClosed = 0 OR isClosed is null)", DSPLNID);
+        qa.removeSpecialFilter("SELECT count(loanId) as OpenLoanCount FROM Loan l INNER JOIN l.discipline dsp WHERE (dsp.disciplineId = DSPLNID)   OR\n  (isClosed = 0 OR isClosed is null)", DSPLNID);
+    }
+    */
+} 
