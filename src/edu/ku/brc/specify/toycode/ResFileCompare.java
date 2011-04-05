@@ -23,11 +23,14 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 /**
  * @author rods
@@ -39,7 +42,8 @@ import org.apache.commons.lang.StringUtils;
  */
 public class ResFileCompare
 {
-
+    private static final Logger log = Logger.getLogger(ResFileCompare.class);
+    
     /**
      * 
      */
@@ -49,123 +53,144 @@ public class ResFileCompare
     }
     
     @SuppressWarnings("unchecked")
-    public void compare(final String baseFileName, final String lang, final boolean doBranch)
+    public void fixPropertiesFiles(final String baseFileName, final String lang, final boolean doBranch)
     {
         boolean doWrite = false;
         System.out.println("-------------------- " + baseFileName + " --------------------");
         File engFile;
         File lngFile;
         
+        String engName  = String.format("src/%s_en.properties", baseFileName);
+        String langName = String.format("src/%s_%s.properties", baseFileName, lang);
+
         if (doBranch)
         {
             engFile = new File(String.format("/home/rods/workspace/Specify_6202SF/src/%s_en.properties", baseFileName));
             lngFile = new File(String.format("/home/rods/workspace/Specify_6202SF/src/%s_%s.properties", baseFileName, lang));
         } else
         {
-            engFile = new File(String.format("src/%s_en.properties", baseFileName));
-            lngFile = new File(String.format("src/%s_%s.properties", baseFileName, lang));
+            engFile = new File(engName);
+            lngFile = new File(langName);
         }
-        
+
         try
         {
-            List<String> engListTmp = (List<String>)FileUtils.readLines(engFile, "UTF8");
+            List<String> engList    = (List<String>)FileUtils.readLines(engFile, "UTF8");
             List<String> lngListTmp = (List<String>)FileUtils.readLines(lngFile, "UTF8");
             
-            Vector<String> engList = new Vector<String>(engListTmp);
-            Vector<String> lngList = new Vector<String>(lngListTmp);
-            
-            System.out.println(String.format("Lines Eng: %d;  Lines %s: %d", engList.size(), lang, lngList.size()));
-            
-            boolean isOK = true;
-            int numLines = Math.min(engList.size(), lngList.size());
-            int lineCnt  = 0;
-            while (lineCnt < numLines)
+            int lineCnt = -1;
+            HashMap<String, String> transHash = new HashMap<String, String>();
+            for (String line : lngListTmp)
             {
-                String eStr = engList.get(lineCnt);
-                String lStr = lngList.get(lineCnt);
-                
-                /*if ((StringUtils.isEmpty(eStr) && StringUtils.isNotEmpty(lStr)) ||
-                    (StringUtils.isNotEmpty(eStr) && StringUtils.isEmpty(lStr)))
-                {
-                    System.out.println(String.format("0 - Line: %d [%s][%s]", (lineCnt+1), eStr, lStr));
-                    isOK = false;
-                    break;
-                }*/
-                
-                int eInx = eStr.indexOf('=');
-                int lInx = lStr.indexOf('=');
-                if (eInx > -1 && lInx > -1)
-                {
-                    if (eInx != lInx)
-                    {
-                        System.out.println(String.format("1 - Line: %d [%s][%s]", (lineCnt+1), eStr, lStr));
-                        isOK = false;
-                        break;
-                        
-                    } else
-                    {
-                        String e = eStr.substring(0, eInx);
-                        String l = lStr.substring(0, lInx);
-                        if (!e.equals(l))
-                        {
-                            System.out.println(String.format("2 - Line: %d [%s][%s]  %d / %d", (lineCnt+1), e, l, eInx, lInx));
-                            isOK = false;
-                            break;
-                        }
-                    }
-                } else if (!eStr.equals(lStr))
-                {
-                    
-                    if (StringUtils.getLevenshteinDistance(eStr, lStr) < 5)
-                    {
-                        System.out.println(String.format("5 - Line: %d [%s][%s]", (lineCnt+1), eStr, lStr));
-                        isOK = false;
-                        break;
-                        
-                    } else
-                    {
-                        System.out.println(String.format("3 - Line: %d [%s][%s]", (lineCnt+1), eStr, lStr));
-                        lngList.insertElementAt(eStr, lineCnt);
-                        lineCnt--;
-                        numLines++;
-                        doWrite = true;
-                        break;
-                    }
-                }
-                
                 lineCnt++;
-                if (lineCnt % 100 == 0)
-                {
-                    System.out.println(lineCnt);
-                }
-            }
-            
-            /*if (isOK && engList.size() > lngList.size())
-            {
-                while (lineCnt < engList.size())
-                {
-                    lngList.add(engList.get(lineCnt));
-                    lineCnt++;
-                }
-                doWrite = true;
                 
-            } else*/ if (engList.size() != lngList.size())
+                if (line.startsWith("#") ||
+                    StringUtils.deleteWhitespace(line).length() < 3 ||
+                    line.indexOf('=') == -1)
+                {
+                    continue;
+                }
+                
+                String[] toks = StringUtils.split(line, '=');
+                if (toks.length > 1)
+                {
+                    if (toks.length == 2)
+                    {
+                        transHash.put(toks[0], toks[1]); 
+                        
+                    } else
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        for (int i=1;i<toks.length;i++)
+                        {
+                            sb.append(String.format("%s=", toks[i])); 
+                        }
+                        sb.setLength(sb.length()-1); // chomp extra '='
+                        transHash.put(toks[0], sb.toString()); 
+                    }
+                } else
+                {
+                    log.error("Skipping:["+line+"] Line:"+lineCnt);
+                }
+            }
+
+            log.info(String.format("Lines Eng: %d;  Terms Hash size: %s: %d", engList.size(), lang, transHash.size()));
+            
+            File dir = new File("translations");
+            if (!dir.exists())
             {
-                System.out.println(String.format("4 - File Lengths different: %d  - %d", engList.size(), lngList.size()));
-                isOK = false;
+                if (!dir.mkdir())
+                {
+                    log.error("Unable to create directory["+dir.getAbsolutePath()+"]");
+                    return;
+                }
             }
             
-            System.out.println(String.format("File %s is %s", baseFileName, isOK ? "OK" : "NOT ok ************"));
-            //System.out.println(String.format("Lines Eng: %d;  Lines %s: %d", engList.size(), lang, lngList.size()));
+            File        transFile       = new File(dir.getPath()+File.separator+langName.substring(4));
+            PrintWriter transFileOutput = new PrintWriter(transFile, "UTF8");
             
-            if (doWrite)
+            for (String line : engList)
             {
-                //save(lngFile, lngList);
+                if (line.startsWith("#") ||
+                    StringUtils.deleteWhitespace(line).length() < 3 ||
+                    line.indexOf('=') == -1)
+                {
+                    transFileOutput.println(line);
+                    continue;
+                }
+                
+                boolean  doMove = true;
+                String[] toks   = StringUtils.split(line, '=');
+                if (toks.length > 1)
+                {
+                    String key   = null;
+                    String value = null;
+                    if (toks.length == 2)
+                    {
+                        key   = toks[0]; 
+                        value = toks[1];
+                        
+                    } else
+                    {
+                        key   = toks[0]; 
+                        StringBuilder sb = new StringBuilder();
+                        for (int i=1;i<toks.length;i++)
+                        {
+                            sb.append(String.format("%s=", toks[i])); 
+                        }
+                        sb.setLength(sb.length()-1); // chomp extra '='
+                        value = sb.toString();
+                    }
+                    
+                    if (key != null)
+                    {
+                        String text = transHash.get(key);
+                        transFileOutput.println(String.format("%s=%s", key, text != null ? text : value));
+                        
+                        if (text == null)
+                        {
+                            log.info("Adding new term: "+key);
+                        }
+                        doMove = false;
+                    } else
+                    {
+                        log.info("Adding new term: "+key);
+                    }
+                }
+                
+                if (doMove)
+                {
+                    transFileOutput.println(line);
+                }
             }
+            
+            transFileOutput.flush();
+            transFileOutput.close();
+            
+            log.info(String.format("Write file: %s", transFile.getPath()));
             
         } catch (IOException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -211,10 +236,10 @@ public class ResFileCompare
         //String[] fileNamesX = {"preferences",};
         String lang = "pt";
         
-        ResFileCompare compare = new ResFileCompare();
+        ResFileCompare resFileFix = new ResFileCompare();
         for (String baseFileName : fileNames)
         {
-            compare.compare(baseFileName, lang, true);
+            resFileFix.fixPropertiesFiles(baseFileName, lang, false);
         }
     }
 }
