@@ -477,7 +477,7 @@ public class DBConnection
                 errMsg = sqlEx.getMessage();
             }
             
-            errMsg += " For ["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"]";
+            errMsg += " For ["+dbConnectionStr+"]["+dbUsername+"]";//["+dbPassword+"]";
                 
         } catch (Exception ex)
         {
@@ -485,7 +485,7 @@ public class DBConnection
 //            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBConnection.class, ex);
             log.error("Error in getConnection", ex);
             errMsg = ex.getMessage();
-            errMsg += " For ["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"]";
+            errMsg += " For ["+dbConnectionStr+"]["+dbUsername+"]";//["+dbPassword+"]";
         }
         return con;
     }
