@@ -637,6 +637,11 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
      */
     protected void showPopup()
     {
+        if (!isEnabled())
+        {
+            return;
+        }
+        
         if (hasNewText || currentText.length() == 0)
         {
             ActionListener al = new ActionListener()

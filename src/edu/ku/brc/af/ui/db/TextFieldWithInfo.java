@@ -44,8 +44,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.auth.PermissionSettings;
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -103,6 +101,9 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
     protected String[]           fieldNames;
     protected Object             dataObj     = null;
     protected String             frameTitle = null;
+    
+    protected boolean            isRestricted;
+    protected String             restrictedStr;
 
     protected ViewBasedDisplayIFace frame      = null;
     protected MultiView             multiView  = null;
@@ -137,10 +138,17 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
         textField = new JTextField();
 
         init(objTitle);
+
+        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(classObj.getSimpleName());
+        restrictedStr = FormHelper.checkForRestrictedValue(tableInfo);
+        if (restrictedStr != null)
+        {
+            isRestricted = true;
+        }
     }
 
     /**
-     * Sets the string that is preappended to the title.
+     * Sets the string that is pre-appended to the title.
      * @param frameTitle the string arg
      */
     public void setFrameTitle(final String frameTitle)
@@ -247,28 +255,20 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
     }
     
     /**
-     * @param enabled
+     * @param isEnabled
      */
     private void updateEnabled(final boolean enabled)
     {
-        boolean isSecurityEnabledForBtn = true;
-        if (enabled && AppContextMgr.isSecurityOn())
+        boolean isEnabled = enabled;
+        if (isRestricted)
         {
-            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(classObj.getSimpleName());
-            if (tblInfo != null)
-            {
-                PermissionSettings perm = tblInfo.getPermissions();
-                if (perm != null)
-                {
-                    isSecurityEnabledForBtn = perm.canView();
-                }
-            }
+            isEnabled = false;
         }
         
-        textField.setEnabled(enabled);
+        textField.setEnabled(isEnabled);
         if (infoBtn != null)
         {
-            infoBtn.setEnabled(enabled && isSecurityEnabledForBtn && dataObj != null);
+            infoBtn.setEnabled(isEnabled && dataObj != null);
         }
     }
 
@@ -354,8 +354,13 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
     public void setValue(Object value, String defaultValue)
     {
         dataObj = value;
-        
         updateEnabled(value != null);
+        
+        if (isRestricted)
+        {
+            textField.setText(restrictedStr);
+            return;
+        }
         
         if (value != null)
         {

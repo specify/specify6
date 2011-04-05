@@ -219,53 +219,57 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         this.frameTitle            = tableInfo.getTitle();
         this.helpContext           = helpContext;
         
-        restrictedStr = FormHelper.checkForRestrictedValue(tableInfo);
-        if (restrictedStr != null)
-        {
-            isRestricted = true;
-        }
-        
         textWithQuery = new TextFieldWithQuery(tableInfo, 
                                                keyFieldName, 
                                                displayColumn, 
                                                format, 
                                                uiFieldFormatterName,
                                                sqlTemplate);
-        textWithQuery.addListSelectionListener(this);
-        textWithQuery.setAddAddItem(true);
+        restrictedStr = FormHelper.checkForRestrictedValue(tableInfo);
+        if (restrictedStr != null)
+        {
+            isRestricted = true;
+            textWithQuery.setEnabled(false);
+            
+        } else
+        {
         
-        textWithQuery.getTextField().addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent e)
-            {
-                //log.debug("focusGained");
-                hasFocus = true;
-                super.focusGained(e);
-                validateState();
-                repaint();
-                
-                for (FocusListener l : focusListeners)
+            textWithQuery.addListSelectionListener(this);
+            textWithQuery.setAddAddItem(true);
+            
+            textWithQuery.getTextField().addFocusListener(new FocusAdapter() {
+                @Override
+                public void focusGained(FocusEvent e)
                 {
-                    l.focusGained(e);
+                    //log.debug("focusGained");
+                    hasFocus = true;
+                    super.focusGained(e);
+                    validateState();
+                    repaint();
+                    
+                    for (FocusListener l : focusListeners)
+                    {
+                        l.focusGained(e);
+                    }
                 }
-            }
-
-            @Override
-            public void focusLost(FocusEvent e)
-            {
-                //log.debug("focusLost");
-                hasFocus = false;
-                super.focusLost(e);
-                
-                validateState();
-                repaint();
-                
-                for (FocusListener l : focusListeners)
+    
+                @Override
+                public void focusLost(FocusEvent e)
                 {
-                    l.focusLost(e);
+                    //log.debug("focusLost");
+                    hasFocus = false;
+                    super.focusLost(e);
+                    
+                    validateState();
+                    repaint();
+                    
+                    for (FocusListener l : focusListeners)
+                    {
+                        l.focusLost(e);
+                    }
                 }
-            }
-        });
+            });
+        }
         
         init(tableInfo.getTitle(), btns);
         
@@ -358,27 +362,33 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     @Override
     public void setEnabled(boolean enabled)
     {
-        super.setEnabled(enabled);
+        boolean isEnabled = enabled;
+        if (isRestricted)
+        {
+            isEnabled = false;
+        }
+        
+        super.setEnabled(isEnabled);
         
         if (textWithQuery != null)
         {
-            textWithQuery.setEnabled(enabled);
+            textWithQuery.setEnabled(isEnabled);
         }
         if (searchBtn != null)
         {
-            searchBtn.setEnabled(enabled);
+            searchBtn.setEnabled(isEnabled);
         }
         if (editBtn != null)
         {
-            editBtn.setEnabled(enabled && (dataObj != null || textWithQuery.getSelectedId() != null));
+            editBtn.setEnabled(isEnabled && (dataObj != null || textWithQuery.getSelectedId() != null));
         }
         if (createBtn != null)
         {
-            createBtn.setEnabled(enabled);
+            createBtn.setEnabled(isEnabled);
         }
         if (cloneBtn != null)
         {
-            cloneBtn.setEnabled(enabled && (dataObj != null || textWithQuery.getSelectedId() != null));
+            cloneBtn.setEnabled(isEnabled && (dataObj != null || textWithQuery.getSelectedId() != null));
         }
         
         // Cheap easy way of setting the Combobox's Text Field to the proper BG Color
