@@ -418,7 +418,10 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
             if (cmdAction.isAction("Updated"))
             {
                 String geoRefTool = cmdAction.getPropertyAsString("georef_tool");
-                doGeoLocate = StringUtils.isNotEmpty(geoRefTool) && geoRefTool.equalsIgnoreCase("geolocate");
+                if (geoRefTool != null)
+                {
+                    doGeoLocate = geoRefTool.equalsIgnoreCase("geolocate");
+                }
                 adjustUIForTool();
             }
         }
