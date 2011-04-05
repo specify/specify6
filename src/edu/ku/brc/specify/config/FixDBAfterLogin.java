@@ -470,6 +470,7 @@ public class FixDBAfterLogin
             ta.setEditable(false);
             
             JEditorPane htmlPane   = new JEditorPane("text/html",  UIRegistry.getResourceString("FDBAL_PERMFIXEDDESC")); //$NON-NLS-1$
+            htmlPane.setEditable(false);
             htmlPane.setOpaque(false);
             
             CellConstraints cc = new CellConstraints();
