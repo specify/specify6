@@ -45,6 +45,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 
@@ -106,7 +107,6 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
     
     // UIPluginable
     protected String                        cellName       = null;
-    protected ChangeListener                changeListener = null;
     
     // UIValidatable && UIPluginable
     protected UIValidatable.ErrorType       valState  = UIValidatable.ErrorType.Valid;
@@ -176,11 +176,13 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
             
             textField.setRequired(isRequired);
             
-            DataChangeNotifier dcn = new DataChangeNotifier(null, textField, null);
-            dcn.addDataChangeListener(this);
-            textField.getDocument().addDocumentListener(dcn);
-            
-            if (isViewMode)
+            if (!isViewMode)
+            {
+                DataChangeNotifier dcn = new DataChangeNotifier(null, textField, null);
+                dcn.addDataChangeListener(this);
+                textField.getDocument().addDocumentListener(dcn);
+                
+            } else
             {
                 ViewFactory.changeTextFieldUIForDisplay(textField, false);
             }
@@ -188,6 +190,8 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
         {
             watchId = properties.getProperty("watch");
         }
+        
+        textField.setEnabled(true);
     }
 
     
@@ -560,7 +564,6 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
         
         if (value == null)
         {
-            this.setEnabled(false);
             dataObj  = null;
             provider = null;
             
@@ -734,10 +737,7 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
         validateState();
         
         isChanged = true;
-        if (changeListener != null)
-        {
-            changeListener.stateChanged(null);
-        }
+        notifyChangeListeners(new ChangeEvent(this));
         
         String text = textField.getText();
         if (dataObj == null && text != null)
@@ -745,7 +745,7 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
             launchBtn.setEnabled(true);
             dataObj = text;
             
-        } else if (dataObj != null && text.length() == 0)
+        } else if (dataObj != null && text != null && text.length() == 0)
         {
             launchBtn.setEnabled(false);
             dataObj = null;
