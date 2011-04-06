@@ -224,7 +224,8 @@ public class SGRResultsChooser extends CustomDialog
             System.out.println("");
         }
 
-        setTitle(getLocalizedMessage("SGRResultsChooser.TITLE", (rowIndex+1), rowsAndResults.size())); //$NON-NLS-1$
+        setTitle(String.format("Results %d / %d", (rowIndex+1), rowsAndResults.size()));
+        //setTitle(getLocalizedMessage("SGRResultsChooser.TITLE", (rowIndex+1), rowsAndResults.size())); //$NON-NLS-1$
         
         resultsDisplayPanel.setGroupData(dataResRow);
     }
