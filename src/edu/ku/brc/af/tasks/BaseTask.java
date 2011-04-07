@@ -1603,6 +1603,12 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
 	{
 		return name;
 	}
-    
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#shutdown()
+     */
+    @Override
+    public void shutdown()
+    {
+    }
 }

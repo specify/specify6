@@ -524,18 +524,22 @@ public class JStatusBar extends JPanel
     }
 
     /**
-     * Set the min, max on the GUI thread.
-     * @param min min value
-     * @param max max value
-     * @param value initial value
+     * @param name
+     * @param value
      */
     public synchronized void setValue(final String name, final int value)
     {
         if (progressBar != null)
         {
             ProgressItem item = getProgressItem(name);
-            item.setValue(value);
-            updateProgress(item);
+            if (item != null)
+            {
+                if (item.getValue() != value)
+                {
+                    item.setValue(value);
+                    updateProgress(item);
+                }
+            }
         }
     }
 

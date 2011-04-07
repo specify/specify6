@@ -78,6 +78,8 @@ public class TaskMgr implements CommandListener
     private static final Logger  log               = Logger.getLogger(TaskMgr.class);
     private static final TaskMgr instance          = new TaskMgr();
     private static final String  APP_RESTART_ACT   = "AppRestart"; //$NON-NLS-1$
+    private static final String  APP_SHUTDOWN_ACT  = "Shutdown"; //$NON-NLS-1$
+
 
     // Data Members
     protected Vector<Taskable>               toolbarTasks   = new Vector<Taskable>();
@@ -684,6 +686,17 @@ public class TaskMgr implements CommandListener
         return tasks.values();
     }
     
+    /**
+     * Tells all tasks they are shutting down.
+     */
+    private void shutdownTasks()
+    {
+        for (Taskable task : instance.tasks.values())
+        {
+            task.shutdown();
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CommandListener#doCommand(edu.ku.brc.ui.CommandAction)
      */
@@ -692,6 +705,8 @@ public class TaskMgr implements CommandListener
     {
         if (cmdAction.isAction(APP_RESTART_ACT))
         {
+            shutdownTasks();
+            
             for (Taskable task : instance.tasks.values())
             {
                 if (AppContextMgr.isSecurityOn())
@@ -704,6 +719,9 @@ public class TaskMgr implements CommandListener
                     }
                 }
             }
+        } else if (cmdAction.isAction(APP_SHUTDOWN_ACT))
+        {
+            shutdownTasks();
         }
     }
     

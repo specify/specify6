@@ -191,4 +191,10 @@ public interface Taskable extends SecurityOptionIFace
      */
     public abstract String getHelpTarget();
     
+    /**
+     * Tells the task that the app is shutting down,
+     * for good or for a restart.
+     */
+    public abstract void shutdown();
+    
 }
