@@ -330,11 +330,12 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         remotePrefs.load(); // Loads prefs from the database
         
-        try
+        /*try
         {
             remotePrefs.flush();
             
         } catch (BackingStoreException ex) {}
+        */
     }
     
     
@@ -522,7 +523,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 //            e1.printStackTrace();
 //        }
         
-        log.info("Creating Database configuration "); //$NON-NLS-1$
+        //log.info("Creating Database configuration "); //$NON-NLS-1$
 
         if (!isWorkbenchOnly)
         {
@@ -3015,7 +3016,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       // Set App Name, MUST be done very first thing!
       UIRegistry.setAppName("Specify");  //$NON-NLS-1$
 
-      log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+      //log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
       
       AppBase.processArgs(args);
       AppBase.setupTeeForStdErrStdOut(true, false);

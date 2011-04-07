@@ -370,11 +370,11 @@ public class TaskMgr implements CommandListener
                 if (menuItemDesc.getPosition() == MenuItemDesc.Position.Top)
                 {
                     insertPos = 0;
-                    log.debug(String.format("0 Inserted: %s - %d", ((JMenuItem)me).getText(), insertPos));
+                    //log.debug(String.format("0 Inserted: %s - %d", ((JMenuItem)me).getText(), insertPos));
                     
                 } else if (menuItemDesc.getPosition() == MenuItemDesc.Position.Bottom)
                 {
-                    log.debug(String.format("1 Inserted: %s - %d", ((JMenuItem)me).getText(),insertPos));
+                    //log.debug(String.format("1 Inserted: %s - %d", ((JMenuItem)me).getText(),insertPos));
                 }
                 
                 
@@ -407,7 +407,7 @@ public class TaskMgr implements CommandListener
                 } else
                 {
                     menu.add((JMenuItem)me, insertPos);
-                    log.debug(String.format("2 Inserted: %s - %d", ((JMenuItem)me).getText(),insertPos));
+                    //log.debug(String.format("2 Inserted: %s - %d", ((JMenuItem)me).getText(),insertPos));
                     found = true;
                 }
                 
@@ -418,7 +418,7 @@ public class TaskMgr implements CommandListener
                     if (found)
                     {
                         menu.add(new JPopupMenu.Separator(), insertPos);
-                        log.debug(String.format("3 Inserted: Sep - %d", insertPos));
+                        //log.debug(String.format("3 Inserted: Sep - %d", insertPos));
 
                     }
                 }
@@ -436,7 +436,7 @@ public class TaskMgr implements CommandListener
                         break;
                     }
                 }
-                log.debug(String.format("4 Inserted: %s - %d", ((JMenuItem)me).getText(), menuItemDesc.getPosition() == MenuItemDesc.Position.After ? pos + 1 : pos));
+                //log.debug(String.format("4 Inserted: %s - %d", ((JMenuItem)me).getText(), menuItemDesc.getPosition() == MenuItemDesc.Position.After ? pos + 1 : pos));
                 menu.insert((JMenuItem)me, menuItemDesc.getPosition() == MenuItemDesc.Position.After ? pos + 1 : pos);
             }
             
@@ -446,10 +446,10 @@ public class TaskMgr implements CommandListener
 
             MenuElement menuElement = getMenuByName(parent, label);
             
-            log.debug(menuPath[currIndex]+" -> "+label+ " "+menuElement);
-            if (parent instanceof JMenuItem) log.debug(((JMenuItem)parent).getText());
-            else if (parent instanceof JMenu) log.debug(((JMenu)parent).getText());
-            else if (parent instanceof JMenuBar) log.debug("MenuBar");
+            //log.debug(menuPath[currIndex]+" -> "+label+ " "+menuElement);
+            //if (parent instanceof JMenuItem) log.debug(((JMenuItem)parent).getText());
+            //else if (parent instanceof JMenu) log.debug(((JMenu)parent).getText());
+            //else if (parent instanceof JMenuBar) log.debug("MenuBar");
             
             if (menuElement == null)
             {
@@ -628,7 +628,7 @@ public class TaskMgr implements CommandListener
                         try
                         {
                             Class<?> cls = Class.forName(className).asSubclass(UIPluginable.class);
-                            log.debug("Registering ["+name+"] Class["+cls.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                            //log.debug("Registering ["+name+"] Class["+cls.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                             instance.uiPluginHash.put(name, cls);
         
                         } catch (Exception ex)

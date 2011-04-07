@@ -244,7 +244,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         
         TreeTaskMgr.getInstance().fillNavBoxes(treeNavBox, treeDefNavBox, unlockNavBox, browseNavBox);
         
-        log.debug(treeClass.getSimpleName()+"  skip "+skip+"  cnt: "+treeNavBox.getComponentCount());
+        //log.debug(treeClass.getSimpleName()+"  skip "+skip+"  cnt: "+treeNavBox.getComponentCount());
         if (!skip) //if (isTreeOnByDefault())
         {
             for (NavBoxItemIFace nbi : treeNavBox.getItems())
@@ -253,7 +253,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             }
         } 
         
-        log.debug(treeClass.getSimpleName()+"  skip "+skip+"  cnt: "+treeNavBox.getComponentCount());
+        //log.debug(treeClass.getSimpleName()+"  skip "+skip+"  cnt: "+treeNavBox.getComponentCount());
         treeNavBox.setVisible(treeNavBox.getComponentCount() > 0);
         treeDefNavBox.setVisible(treeDefNavBox.getComponentCount() > 0);
         unlockNavBox.setVisible(unlockNavBox.getComponentCount() > 0);
@@ -429,7 +429,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 String clsName   = treeClass.getSimpleName();
                 
                 String sql = String.format("SELECT %sID FROM %s WHERE RankID = 0 AND %sID = %d ", clsName, tableName, BaseTreeTask.this.currentDef.getClass().getSimpleName(), BaseTreeTask.this.currentDef.getTreeDefId());
-                log.debug(sql);
+                //log.debug(sql);
                 
                 Integer rootId = BasicSQLUtils.getCount(sql);
                 if (rootId != null)
@@ -807,7 +807,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         list.clear();
         
         String sql = QueryAdjusterForDomain.getInstance().adjustSQL(sqlStr);
-        log.debug(sql);
+        //log.debug(sql);
         
         Connection conn = null;        
         Statement  stmt = null;

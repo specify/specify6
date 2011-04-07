@@ -86,7 +86,7 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
         try
         {
             File permFile = new File(XMLHelper.getConfigDirPath("defaultperms" + File.separator + fileName)); //$NON-NLS-1$
-            baseLog.debug(permFile.getAbsoluteFile());
+            //baseLog.debug(permFile.getAbsoluteFile());
             if (permFile.exists())
             {
                 xmlStr = FileUtils.readFileToString(permFile);

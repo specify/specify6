@@ -461,7 +461,7 @@ public class FileCache implements DataCacheIFace
             return false;
         }
 
-        log.debug("Purging " + filename + " from cache");
+        //log.debug("Purging " + filename + " from cache");
         File f = new File(filename);
         long filesize = f.length();
         if( !f.delete() )
@@ -496,7 +496,7 @@ public class FileCache implements DataCacheIFace
 	{
         long currentTime = System.currentTimeMillis();
 		handleToAccessTimeHash.setProperty(key, Long.toString(currentTime));
-        log.debug("Caching " + key + " at " + currentTime);
+        //log.debug("Caching " + key + " at " + currentTime);
 		Object oldValue = handleToFilenameHash.setProperty(key, item.getAbsolutePath());
 		if( oldValue != null )
 		{

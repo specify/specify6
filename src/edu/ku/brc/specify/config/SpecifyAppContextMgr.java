@@ -518,7 +518,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                             "Inner Join specifyuser_spprincipal AS su_pr ON p.SpPrincipalID = su_pr.SpPrincipalID " +
                             "WHERE su_pr.SpecifyUserID = %d AND GroupSubClass = '%s'", spUser.getSpecifyUserId(), UserPrincipal.class.getName()); //$NON-NLS-1$
             
-            log.debug(sqlStr);
+            //log.debug(sqlStr);
             
             for (Object[] row : BasicSQLUtils.query(sqlStr))
             {
@@ -825,7 +825,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             sb.append(" AND userType is null"); //$NON-NLS-1$
         }
         
-        log.debug(sb.toString());
+        //log.debug(sb.toString());
         
         List<?> list = sessionArg.getDataList(sb.toString());
         if (list.size() == 1)
@@ -839,11 +839,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // forces load of resource
             for (SpAppResource appRes : appResDir.getSpPersistedAppResources())
             {
-                log.debug(appRes.getName());
+                appRes.forceLoad();
+                //log.debug(appRes.getName());
             }
             for (SpViewSetObj vso : appResDir.getSpPersistedViewSets())
             {
-                log.debug(vso.getName());
+                vso.forceLoad();
+                //log.debug(vso.getName());
             }
             appResDir.setTitle(localizedTitle);
             return appResDir;
