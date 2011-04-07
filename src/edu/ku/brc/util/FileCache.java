@@ -127,7 +127,7 @@ public class FileCache implements DataCacheIFace
 		{
             FileUtils.forceMkdir(cacheDir);
 		}
-		log.debug("Creating FileCache using " + dir + " directory");
+		//log.debug("Creating FileCache using " + dir + " directory");
 
 		handleToFilenameHash = new Properties();
 		handleToAccessTimeHash = new Properties();
@@ -270,7 +270,7 @@ public class FileCache implements DataCacheIFace
      */
     protected synchronized void loadCacheMappingFile()
 	{
-		log.debug("Loading old cache mapping data from " + mappingFilename);
+		//log.debug("Loading old cache mapping data from " + mappingFilename);
 		File mappingFile = new File(cacheDir, mappingFilename);
         if (!cacheDir.exists())
         {
@@ -302,7 +302,7 @@ public class FileCache implements DataCacheIFace
 	protected synchronized void loadCacheAccessTimesFile()
 	{
 		String accessTimeFilename = getAccessTimeFilename();
-		log.debug("Loading old cache access times from " + accessTimeFilename);
+		//log.debug("Loading old cache access times from " + accessTimeFilename);
 		File accessTimesFile = new File(cacheDir,accessTimeFilename);
 		if( accessTimesFile.exists() )
 		{

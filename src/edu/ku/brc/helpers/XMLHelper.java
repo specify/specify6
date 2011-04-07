@@ -175,7 +175,7 @@ public class XMLHelper
         {
         	// Check the working path.
             File cfgDir = new File(UIRegistry.getDefaultWorkingPath() + File.separator + "config"); //$NON-NLS-1$
-            log.debug("Checking Working Path["+cfgDir.getAbsolutePath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+            //log.debug("Checking Working Path["+cfgDir.getAbsolutePath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             if (!cfgDir.exists())
             {
             	// Second check to see if the config dir is a child directory

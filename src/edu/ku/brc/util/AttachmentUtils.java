@@ -125,7 +125,7 @@ public class AttachmentUtils
                 if (attachmentLocation.isDirectory())
                 {
                     File tmpFile = new File(attachmentLocation.getAbsoluteFile() + File.separator + System.currentTimeMillis() + System.getProperty("user.name"));
-                    log.debug(String.format("Trying to write a file to AttachmentLocation [%s]", tmpFile.getCanonicalPath()));
+                    //log.debug(String.format("Trying to write a file to AttachmentLocation [%s]", tmpFile.getCanonicalPath()));
                     if (tmpFile.createNewFile())
                     {
                         // I don't think I need this anymore
@@ -134,7 +134,7 @@ public class AttachmentUtils
                         fos.close();
                         tmpFile.delete();
                         
-                        log.debug(String.format(statsMsg, fullPath, "succeeded"));
+                        //log.debug(String.format(statsMsg, fullPath, "succeeded"));
                         
                         return true;
                         
