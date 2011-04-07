@@ -20,9 +20,9 @@
 package edu.ku.brc.specify.extras;
 
 /**
- 
- * @code_status Unknown (auto-generated)
- **
+ * 
+ * @code_status Complete
+ *
  * @author rods
  *
  */
@@ -32,11 +32,11 @@ public interface FishBaseInfoGetterListener
      * Notifies the consumer that the data has arrived ok
      * @param getter the getter that got the data
      */
-    public void infoArrived(FishBaseInfoGetter getter);
+    public abstract void infoArrived(FishBaseInfoGetter getter);
 
     /**
      * Notifies the consumer that the data was in error
      * @param getter the getter that got the data
      */
-    public void infoGetWasInError(FishBaseInfoGetter getter);
+    public abstract void infoGetWasInError(FishBaseInfoGetter getter);
 }

@@ -115,7 +115,7 @@ public class SpecifySchemaGenerator
                                                              userName, password, dbdriverInfo.getName());
         log.debug("generateSchema connectionStr: " + connectionStr);
         
-        log.debug("Creating database connection to: " + connectionStr);
+        //log.debug("Creating database connection to: " + connectionStr);
         // Now connect to other databases and "create" the Derby database
         DBConnection dbConn = null;
         try
@@ -123,7 +123,7 @@ public class SpecifySchemaGenerator
             dbConn = DBConnection.createInstance(dbdriverInfo.getDriverClassName(), dbdriverInfo.getDialectClassName(), databaseName, connectionStr, userName, password);
             if (dbConn != null && dbConn.getConnection() != null)
             {
-                log.debug("calling dropAndCreateDB(" + dbConn.toString() + ", " + databaseName +")");
+                //log.debug("calling dropAndCreateDB(" + dbConn.toString() + ", " + databaseName +")");
                 if (!doUpdate)
                 {
                     dropAndCreateDB(dbConn, databaseName);
@@ -131,7 +131,7 @@ public class SpecifySchemaGenerator
                 
                 connectionStr = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName, userName, password, dbdriverInfo.getName());
                 
-                log.debug("Preparing to doGenSchema: " + connectionStr);
+                //log.debug("Preparing to doGenSchema: " + connectionStr);
                 
                 // Generate the schema
                 doGenSchema(dbdriverInfo,

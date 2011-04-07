@@ -129,7 +129,7 @@ public class FishBaseInfoGetter extends HTTPGetter
         imageURL = url;
 
         String fullPath = tmpDir + File.separator + fileName;
-        //System.out.println(fullPath);
+        ////System.out.println(fullPath);
         File file = new File(fullPath);
         if (file.exists())
         {
@@ -178,7 +178,7 @@ public class FishBaseInfoGetter extends HTTPGetter
     {
         dom = null;
         String fileName = tmpDir + File.separator + genus + "_" + species + "_" + infoType.toString() + ".xml";
-        System.out.println(fileName);
+        //System.out.println(fileName);
         File file = new File(fileName);
         if (file.exists())
         {
@@ -196,8 +196,8 @@ public class FishBaseInfoGetter extends HTTPGetter
 
         } else
         {
-            //System.out.println("http://www.fishbase.org.ph/webservice/Species/SpeciesSummary.asp?Genus=Etheostoma&Species=ramseyi");
-            System.out.println(url);
+            ////System.out.println("http://www.fishbase.org.ph/webservice/Species/SpeciesSummary.asp?Genus=Etheostoma&Species=ramseyi");
+            //System.out.println(url);
             byte[] bytes = super.doHTTPRequest(url);
 
             data = new String(bytes);
@@ -206,7 +206,7 @@ public class FishBaseInfoGetter extends HTTPGetter
             {
                 data = data.substring(inx, data.length());
 
-                System.out.println(data);
+                //System.out.println(data);
                 try
                 {
                     Writer output = new BufferedWriter(new FileWriter(file));
@@ -263,7 +263,7 @@ public class FishBaseInfoGetter extends HTTPGetter
                             if (nameElement != null)
                             {
                                 String fileURL = nameElement.getTextTrim();
-                                System.out.println(fileURL);
+                                //System.out.println(fileURL);
                                 if (StringUtils.isNotEmpty(fileURL))
                                 {
                                     String shortName = "";
@@ -272,7 +272,7 @@ public class FishBaseInfoGetter extends HTTPGetter
                                     {
                                         shortName = fileURL.substring(inx+1, fileURL.length());
                                     }
-                                    System.out.println("*["+shortName+"]["+fileURL+"]");
+                                    //System.out.println("*["+shortName+"]["+fileURL+"]");
                                     image = getImage(shortName, fileURL);
                                     if (image != null)
                                     {

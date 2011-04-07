@@ -161,15 +161,15 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 CommandDispatcher.register(commandTypeString,this);
             }
             
-            treeNavBox    = new NavBox(getResourceString("BaseTreeTask.EditTrees"));
-            treeDefNavBox = new NavBox(getResourceString("BaseTreeTask.TreeDefs"));
-            unlockNavBox  = new NavBox(getResourceString("BaseTreeTask.UNLOCK"));
-            browseNavBox  = new NavBox(getResourceString("BaseTreeTask.BROWSE"));
+            treeNavBox     = new NavBox(getResourceString("BaseTreeTask.EditTrees"));
+            treeDefNavBox  = new NavBox(getResourceString("BaseTreeTask.TreeDefs"));
+            unlockNavBox   = new NavBox(getResourceString("BaseTreeTask.UNLOCK"));
+            browseNavBox   = new NavBox(getResourceString("BaseTreeTask.BROWSE"));
             
             navBoxes.add(treeNavBox);
+            navBoxes.add(browseNavBox);
             navBoxes.add(treeDefNavBox);
             navBoxes.add(unlockNavBox);
-            //navBoxes.add(browseNavBox);
             
             //if (isTreeOnByDefault())
             {
@@ -184,7 +184,11 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                     //System.out.println(treeTI.getTitle()+ " "+treePerms.toString());
                     if (treePerms.canView())
                     {
-                        treeEditAction = createActionForTreeEditing(treeTI.getTitle(), treePerms.canModify());                        
+                        browseAction = createActionForTreeEditing(treeTI.getTitle(), false);
+                        if (treePerms.canModify())
+                        {
+                            treeEditAction = createActionForTreeEditing(treeTI.getTitle(), treePerms.canModify());   
+                        }
                     } 
                     
                     if (tdPerms.canView())
@@ -201,7 +205,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                     treeEditAction    = createActionForTreeEditing(treeTI.getTitle(), true);
                     treeDefEditAction = createActionForTreeDefEditing(treeTI.getTitle());
                     unlockAction      = createActionForTreeUnlocking(treeTI.getTitle(), true);
-                    browseAction      = createActionForTreeBrowse(treeTI.getTitle());
+                    browseAction      = createActionForTreeEditing(treeTI.getTitle(), false);
                 }
                 
             }
@@ -254,6 +258,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         } 
         
         //log.debug(treeClass.getSimpleName()+"  skip "+skip+"  cnt: "+treeNavBox.getComponentCount());
+        browseNavBox.setVisible(browseNavBox.getComponentCount() > 0);
         treeNavBox.setVisible(treeNavBox.getComponentCount() > 0);
         treeDefNavBox.setVisible(treeDefNavBox.getComponentCount() > 0);
         unlockNavBox.setVisible(unlockNavBox.getComponentCount() > 0);
@@ -324,7 +329,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             final boolean isViewable = perms == null || perms.canView();
             final boolean isEditable = perms == null || perms.canModify();
             
-            final TaskSemaphoreMgr.USER_ACTION action = isViewOnly ? TaskSemaphoreMgr.USER_ACTION.ViewMode 
+            final TaskSemaphoreMgr.USER_ACTION action = isViewOnly || !isEditModeArg ? TaskSemaphoreMgr.USER_ACTION.ViewMode 
             		: TaskSemaphoreMgr.lock(titleArg, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, true, null, true);
             final boolean isViewMode = action == TaskSemaphoreMgr.USER_ACTION.ViewMode;
             
@@ -341,11 +346,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     	            {
     	                UsageTracker.incrUsageCount("TR.OPEN."+treeDefClass.getSimpleName());
     
-    	                long startTime = System.nanoTime();
     	                treeViewer = createTreeViewer(titleArg, !isViewMode && isEditable);
-    	                long endTime =  System.nanoTime();
-    	                //System.err.println("Tree opened in "+((endTime-startTime)/100000));
-    	                
     	                if (isViewMode)
     	                {
     	                    treeViewer.setDoUnlock(false);
@@ -451,7 +452,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     {
         return new AbstractAction()
         {
-            @SuppressWarnings("synthetic-access")
+            @Override
             public void actionPerformed(ActionEvent ae)
             {
                 if (!currentDefInUse)
