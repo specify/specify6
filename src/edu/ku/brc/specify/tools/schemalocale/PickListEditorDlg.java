@@ -38,7 +38,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.DefaultListModel;
@@ -57,7 +56,6 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
-import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.ui.db.PickListIFace;
@@ -74,6 +72,7 @@ import edu.ku.brc.specify.config.init.BldrPickList;
 import edu.ku.brc.specify.config.init.BldrPickListItem;
 import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PickListItem;
@@ -453,7 +452,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
      */
     protected PickList editPL(final PickList pickList)
     {
-        String tableName = pickList.getTableName();
+        /*String tableName = pickList.getTableName();
         String fieldName = pickList.getFieldName();
         if (StringUtils.isNotEmpty(tableName) && StringUtils.isNotEmpty(fieldName))
         {
@@ -465,6 +464,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         }
         plBusRules.setTableInfo(tableInfo);
         plBusRules.setFieldInfo(fieldInfo);
+        */
         
         ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UIRegistry.getTopWindow(),
                 "SystemSetup",
@@ -545,7 +545,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
             PickList pickList;
             if (selectedPL.getId() != null)
             {
-                pickList = PickList.getDataObj(PickList.class, selectedPL.getId());
+                pickList = DataModelObjBase.getDataObj(PickList.class, selectedPL.getId());
             } else
             {
                 pickList = selectedPL;
@@ -675,7 +675,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
             
         } catch (Exception ex)
         {
-            session.rollback();
+            if (session != null) session.rollback();
             
             ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
@@ -751,7 +751,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         Vector<PickListItem>     plis  = new Vector<PickListItem>(pl.getPickListItems());
         Vector<BldrPickListItem> bplis = bpl.getItems();
         
-        if ((plis == null || plis.size() == 0) && (bplis == null || bplis.size() == 0)) return true;
+        if ((plis.size() == 0) && (bplis == null || bplis.size() == 0)) return true;
         
         if (plis.size() != bplis.size()) return false;
         

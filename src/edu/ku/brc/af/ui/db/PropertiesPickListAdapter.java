@@ -22,10 +22,13 @@ package edu.ku.brc.af.ui.db;
 import java.util.Collections;
 import java.util.Vector;
 
+import javax.swing.JComboBox;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.specify.datamodel.PickList;
 /**
  * This implements the PickListDBAdapterIFaceand enables a PickList to have it's contents
@@ -46,13 +49,14 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
     protected static PickListItemIFace searchablePLI = null;
     
     // Data Memebers        
-    protected String            prefName;
-    protected String            prefSelectedName;
-    protected JEditComboBox     comboBox;
-    protected boolean           savePickList = true;
+    protected String                    prefName;
+    protected String                    prefSelectedName;
+    protected ValComboBox               comboBox;
+    protected boolean                   savePickList = true;
     
     protected Vector<PickListItemIFace> items    = new Vector<PickListItemIFace>(); // Make this Vector because the combobox can use it directly
     protected PickListIFace             pickList = null;
+    protected boolean                   doAutoSaveOnAdd = true;
     
     /**
      * Default Constructor.
@@ -74,12 +78,21 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
             readData();
         }
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.PickListDBAdapterIFace#setAutoSaveOnAdd(boolean)
+     */
+    @Override
+    public void setAutoSaveOnAdd(boolean doAutoSave)
+    {
+        doAutoSaveOnAdd = doAutoSave;
+    }
+    
     /**
      * Sets the combobox
      * @param comboBox the conboxbox being operated on
      */
-    public void setComboBox(JEditComboBox comboBox)
+    public void setComboBox(final ValComboBox comboBox)
     {
         this.comboBox = comboBox;
     }
@@ -203,8 +216,10 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
             }
             Collections.sort(items);
 
-            save();
-
+            if (doAutoSaveOnAdd)
+            {
+                save();
+            }
             return item;
             
         }
@@ -231,7 +246,7 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
             }
             i++;
         }
-        comboBox.setSelectedIndex(selectedIndex);
+        comboBox.getComboBox().setSelectedIndex(selectedIndex);
     }
 
     /**

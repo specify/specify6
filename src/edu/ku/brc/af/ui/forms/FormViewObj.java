@@ -5793,7 +5793,6 @@ public class FormViewObj implements Viewable,
             }
             compsList.add(fieldInfo);
             
-            //System.out.println(formCell.getName()+"  "+comp.getClass().getSimpleName());
             if (comp instanceof FormControlSaveable)
             {
                 saveableList.add((FormControlSaveable)comp);

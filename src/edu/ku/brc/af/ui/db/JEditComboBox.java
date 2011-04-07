@@ -28,6 +28,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.sql.Timestamp;
 import java.util.Vector;
 
 import javax.swing.ComboBoxEditor;
@@ -36,7 +37,10 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
+
+import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.ui.UIHelper;
@@ -63,6 +67,9 @@ public class JEditComboBox extends JComboBox
     protected boolean            askBeforeSave   = false;
     
     protected PickListDBAdapterIFace  dbAdapter  = null;
+    
+    public static final KeyStroke clearKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);//, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+
 
     /**
      * Constructor
@@ -245,7 +252,7 @@ public class JEditComboBox extends JComboBox
                     }
                 } else
                 {
-                    pli = new PickListItem(strArg, strArg, null); // this is ok because the items will not be saved.
+                    pli = new PickListItem(strArg, strArg, new Timestamp(System.currentTimeMillis())); // this is ok because the items will not be saved.
                 }
                 
                 if (pli != null)
@@ -266,20 +273,24 @@ public class JEditComboBox extends JComboBox
     /**
      * Check to see if it can add the the item that is in the combobox'es testfield
      */
-    protected void addNewItemFromTextField()
+    public void addNewItemFromTextField()
     {
         if (getSelectedIndex() != -1) // accepting value and setting the selection to null 
         {
-            textField.setSelectionStart(0);
-            textField.setSelectionEnd(0);
-            textField.moveCaretPosition(0);
+            if (textField != null)
+            {
+                textField.setSelectionStart(0);
+                textField.setSelectionEnd(0);
+                textField.moveCaretPosition(0);
+            }
             
         } else
         {
             // Need to add a new value
-            if (enableAdditions)
+            if (enableAdditions && textField != null)
             {
-                if (askToAdd(textField.getText()))
+                String str = textField.getText();
+                if (StringUtils.isNotEmpty(str) && askToAdd(str))
                 {
                     textField.setSelectionStart(0);
                     textField.setSelectionEnd(0);
@@ -301,7 +312,7 @@ public class JEditComboBox extends JComboBox
             {
                 char key = ev.getKeyChar();
                 
-                if (ev.getKeyCode() == KeyEvent.VK_BACK_SPACE || ev.getKeyCode() == KeyEvent.VK_DELETE)
+                if (ev.getKeyCode() == clearKeyStroke.getKeyCode())
                 {
                     int selectedIndex = getSelectedIndex();
                     if (selectedIndex > -1 && dbAdapter != null && 
@@ -324,8 +335,6 @@ public class JEditComboBox extends JComboBox
                 {
                     if (textField != null)
                     {
-                        System.out.println(getSelectedIndex());
-                        
                         if (getSelectedIndex() > -1)
                         {
                             int    pos         = textField.getCaretPosition();
@@ -366,7 +375,7 @@ public class JEditComboBox extends JComboBox
     {
         super.setEditor(anEditor);
         
-        if (anEditor.getEditorComponent() instanceof JTextField)
+        if (anEditor != null && anEditor.getEditorComponent() instanceof JTextField)
         {
             textField = (JTextField) anEditor.getEditorComponent();
             

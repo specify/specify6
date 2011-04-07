@@ -315,7 +315,8 @@ public class AppPrefsCache
             return colorEntry.getColorWrapper();
         }
         // else
-        throw new RuntimeException("Couldn't find Date Entry ["+fullName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+        //throw new RuntimeException("Couldn't find Date Entry ["+fullName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+        return null;
     }
 
 

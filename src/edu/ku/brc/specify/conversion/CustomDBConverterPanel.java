@@ -70,6 +70,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.JEditComboBox;
 import edu.ku.brc.af.ui.db.PropertiesPickListAdapter;
+import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.ui.HelpMgr;
@@ -113,10 +114,10 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
     protected JTextField                 usernameDest;
     protected JPasswordField             passwordDest;
 
-    protected JEditComboBox              databasesDest;
-    protected JEditComboBox              databasesSource;
-    protected JEditComboBox              serversDest;    
-    protected JEditComboBox              serversSource;
+    protected ValComboBox                databasesDest;
+    protected ValComboBox                databasesSource;
+    protected ValComboBox                serversDest;    
+    protected ValComboBox                serversSource;
 
     protected JCheckBox                  rememberUsernameDestCBX;
     protected JCheckBox                  rememberPasswordDestCBX;
@@ -266,11 +267,17 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
         usernameDest = createTextField(20);
         passwordDest = createPasswordField(20);
 
-        databasesSource = new JEditComboBox(dbPickList);
-        serversSource   = new JEditComboBox(svPickList);
+        databasesSource = new ValComboBox(dbPickList);
+        serversSource   = new ValComboBox(svPickList);
         
-        databasesDest = new JEditComboBox(dbDestPickList);
-        serversDest   = new JEditComboBox(svDestPickList);
+        databasesDest = new ValComboBox(dbDestPickList);
+        serversDest   = new ValComboBox(svDestPickList);
+        
+        dbPickList.setComboBox(databasesSource);
+        svPickList.setComboBox(serversSource);
+        
+        dbDestPickList.setComboBox(databasesDest);
+        svDestPickList.setComboBox(serversDest);
         
         setControlSize(passwordSource);
         setControlSize(passwordDest);
@@ -672,9 +679,9 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
 
         boolean shouldEnable = StringUtils.isNotEmpty(usernameSource.getText())
                 && StringUtils.isNotEmpty(new String(passwordSource.getPassword()))
-                && (serversSource.getSelectedIndex() != -1 || StringUtils.isNotEmpty(serversSource
+                && (serversSource.getComboBox().getSelectedIndex() != -1 || StringUtils.isNotEmpty(serversSource
                         .getTextField().getText())
-                        && (databasesSource.getSelectedIndex() != -1 || StringUtils.isNotEmpty(databasesSource
+                        && (databasesSource.getComboBox().getSelectedIndex() != -1 || StringUtils.isNotEmpty(databasesSource
                                 .getTextField().getText())));
 
         if (dbDriverCBX.getSelectedIndex() == -1)
@@ -732,8 +739,8 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
      */
     protected void save()
     {
-        databasesSource.getDBAdapter().save();
-        serversSource.getDBAdapter().save();
+        databasesSource.saveControlData();
+        serversSource.saveControlData();
 
         AppPreferences.getLocalPrefs().putBoolean("convert.rememberuserSource", rememberUsernameSourceCBX.isSelected());
         AppPreferences.getLocalPrefs().putBoolean("convert.rememberpasswordSource", rememberPasswordSourceCBX.isSelected());
@@ -795,19 +802,6 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
             {
                 AppPreferences.getLocalPrefs().remove("convert.passwordDest");
             }
-        //}
-        
-//        protected JEditComboBox              databasesDest;
-//        protected JEditComboBox              databasesSource;
-//        protected JEditComboBox              serversDest;    
-//        protected JEditComboBox              serversSource;
-
-       // AppPreferences.getLocalPrefs().put("convert.dbdriverSource_selected", dbDrivers.get(dbDriverCBX.getSelectedIndex()).getName());
-       // AppPreferences.getLocalPrefs().put("convert.dbdriverDest_selected", dbDrivers.get(dbDriverCBX2.getSelectedIndex()).getName());
-        
-        //databasesSource.getSelectedIndex()
-        //AppPreferences.getLocalPrefs().put("convert.databasesSource_selected", databasesDest.getTextField().getText());
-        //AppPreferences.getLocalPrefs().put("convert.databasesDest_selected", databasesSource.getTextField().getText());
     }
 
     /**

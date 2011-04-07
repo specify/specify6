@@ -33,6 +33,7 @@ import edu.ku.brc.af.ui.db.PickListIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.ui.AutoCompComboBoxModelIFace;
@@ -57,7 +58,8 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
     protected Vector<PickListItemIFace> items    = new Vector<PickListItemIFace>(); // Make this Vector because the combobox can use it directly
     protected PickList                  pickList = null;
     
-    protected Object                    selectedObject = null;
+    protected Object                    selectedObject  = null;
+    protected boolean                   doAutoSaveOnAdd = true;
      
     
     /**
@@ -98,9 +100,18 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
         pickList.initialize();                 
         pickList.setName(name);
         
-        PickList.save(pickList);
+        DataModelObjBase.save(pickList);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.PickListDBAdapterIFace#setAutoSaveOnAdd(boolean)
+     */
+    @Override
+    public void setAutoSaveOnAdd(boolean doAutoSave)
+    {
+        doAutoSaveOnAdd = doAutoSave;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.PickListDBAdapterIFace#getPickList()
      */
@@ -176,7 +187,10 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
             
             super.fireContentsChanged(this, 0, items.size()-1);
 
-            save();
+            if (doAutoSaveOnAdd)
+            {
+                save();
+            }
 
             return item;
             
@@ -328,7 +342,7 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
         }
         
         fireIntervalAdded(this, items.size()-1, items.size()-1);
-        if ( items.size() == 1 && selectedObject == null && anObject != null ) 
+        if ( items.size() == 1 && selectedObject == null) 
         {
             setSelectedItem( anObject );
         }
@@ -416,7 +430,7 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
      */
     public void add(Object item)
     {
-        addElement(item);
+        //addElement(item);
     }
 
     /* (non-Javadoc)

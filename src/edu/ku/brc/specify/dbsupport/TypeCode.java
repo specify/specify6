@@ -80,6 +80,10 @@ public class TypeCode implements PickListDBAdapterIFace, ComboBoxModel
         return null;
     }
     
+    /**
+     * @param value
+     * @return
+     */
     public PickListItemIFace getItemByValue(final Object value)
     {
         for (PickListItemIFace item : items)
@@ -95,6 +99,14 @@ public class TypeCode implements PickListDBAdapterIFace, ComboBoxModel
             }
         }
         return null;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.PickListDBAdapterIFace#setAutoSaveOnAdd(boolean)
+     */
+    @Override
+    public void setAutoSaveOnAdd(boolean doAutoSave)
+    {
     }
     
     /* (non-Javadoc)

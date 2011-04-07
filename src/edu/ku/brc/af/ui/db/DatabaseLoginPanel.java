@@ -71,6 +71,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.JaasContext;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -123,8 +124,8 @@ public class DatabaseLoginPanel extends JTiledPanel
     protected JTextField                 username;
     protected JPasswordField             password;
 
-    protected JEditComboBox              databases;
-    protected JEditComboBox              servers;
+    protected ValComboBox                databases;
+    protected ValComboBox                servers;
 
     protected JCheckBox                  rememberUsernameCBX;
     protected JButton                    editKeyInfoBtn;
@@ -170,6 +171,10 @@ public class DatabaseLoginPanel extends JTiledPanel
     
     protected boolean                     doSaveUPPrefs     = true;
     protected boolean                     checkForProcesses = true;
+    
+    protected PropertiesPickListAdapter   dbPickList        = null;
+    protected PropertiesPickListAdapter   svPickList        = null;
+
     
     //--------------------------------------------------------------------
     public interface MasterPasswordProviderIFace
@@ -412,9 +417,8 @@ public class DatabaseLoginPanel extends JTiledPanel
         }
         
         // First create the controls and hook up listeners
-
-        PropertiesPickListAdapter dbPickList = new PropertiesPickListAdapter("login.databases"); //$NON-NLS-1$
-        PropertiesPickListAdapter svPickList = new PropertiesPickListAdapter("login.servers"); //$NON-NLS-1$
+        dbPickList = new PropertiesPickListAdapter("login.databases"); //$NON-NLS-1$
+        svPickList = new PropertiesPickListAdapter("login.servers");   //$NON-NLS-1$
 
         username = createTextField(15);
         password = createPasswordField(15);
@@ -433,8 +437,9 @@ public class DatabaseLoginPanel extends JTiledPanel
         username.addFocusListener(focusAdp);
         password.addFocusListener(focusAdp);
 
-        databases = new JEditComboBox(dbPickList);
-        servers   = new JEditComboBox(svPickList);
+        databases = new ValComboBox(dbPickList);
+        servers   = new ValComboBox(svPickList);
+        
         dbPickList.setComboBox(databases);
         svPickList.setComboBox(servers);
         
@@ -444,19 +449,6 @@ public class DatabaseLoginPanel extends JTiledPanel
         
         if (masterUsrPwdProvider != null)
         {
-            /*editKeyInfoBtn = UIHelper.createIconBtn("Key", IconManager.IconSize.Std16, null, new ActionListener()
-            {
-                public void actionPerformed(ActionEvent e)
-                {
-                    if (masterUsrPwdProvider != null)
-                    {
-                        masterUsrPwdProvider.editMasterInfo(username.getText());
-                    }
-                }
-            });
-            editKeyInfoBtn.setText("Configure Master Key...");
-            editKeyInfoBtn.setEnabled(true);
-            */
             editKeyInfoBtn = UIHelper.createI18NButton("CONFIG_MSTR_KEY");
             editKeyInfoBtn.setIcon(IconManager.getIcon("Key", IconManager.IconSize.Std20));
             editKeyInfoBtn.addActionListener(new ActionListener()
@@ -466,12 +458,12 @@ public class DatabaseLoginPanel extends JTiledPanel
                     if (masterUsrPwdProvider != null && databases != null)
                     {
                         String itemName = null;
-                        if (databases.getSelectedItem() instanceof String)
+                        if (databases.getComboBox().getSelectedItem() instanceof String)
                         {
-                            itemName = (String)databases.getSelectedItem();
+                            itemName = (String)databases.getComboBox().getSelectedItem();
                         } else
                         {
-                            PickListItemIFace pli = (PickListItemIFace)databases.getSelectedItem();
+                            PickListItemIFace pli = (PickListItemIFace)databases.getComboBox().getSelectedItem();
                             if (pli != null && pli.getValue() != null)
                             {
                                 itemName = pli.getValue();
@@ -493,9 +485,9 @@ public class DatabaseLoginPanel extends JTiledPanel
         statusBar = new JStatusBar();
         statusBar.setErrorIcon(IconManager.getIcon("Error", IconManager.IconSize.Std16)); //$NON-NLS-1$
 
-        cancelBtn = createButton(getResourceString("CANCEL")); //$NON-NLS-1$
-        loginBtn  = createButton(getResourceString("Login")); //$NON-NLS-1$
-        helpBtn   = createButton(getResourceString("HELP")); //$NON-NLS-1$
+        cancelBtn      = createButton(getResourceString("CANCEL")); //$NON-NLS-1$
+        loginBtn       = createButton(getResourceString("Login")); //$NON-NLS-1$
+        helpBtn        = createButton(getResourceString("HELP")); //$NON-NLS-1$
         
         forwardImgIcon = IconManager.getIcon("Forward"); //$NON-NLS-1$
         downImgIcon    = IconManager.getIcon("Down"); //$NON-NLS-1$
@@ -617,12 +609,11 @@ public class DatabaseLoginPanel extends JTiledPanel
             }
         });
         
-        databases.addActionListener(new ActionListener()
+        /*databases.getComboBox().addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                System.out.println(e.getActionCommand() + " "+e.getSource());
                 SwingUtilities.invokeLater(new Runnable()
                 {
                     @Override
@@ -631,6 +622,15 @@ public class DatabaseLoginPanel extends JTiledPanel
                         setUsrPwdControlsFromPrefs(); 
                     }
                 });
+            }
+        });*/
+        
+        databases.getTextField().addFocusListener(new FocusAdapter()
+        {
+            @Override
+            public void focusLost(FocusEvent e)
+            {
+                setUsrPwdControlsFromPrefs(); 
             }
         });
         
@@ -706,7 +706,8 @@ public class DatabaseLoginPanel extends JTiledPanel
      */
     private String getSelectedDatabase()
     {
-        Object obj = databases.getSelectedItem();
+        String text = databases.getTextField().getText();
+        Object obj = databases.getComboBox().getSelectedItem();
         if (obj instanceof PickListItemIFace)
         {
             return ((PickListItemIFace)obj).getValue();
@@ -845,7 +846,7 @@ public class DatabaseLoginPanel extends JTiledPanel
         
         boolean shouldEnable = StringUtils.isNotEmpty(uName) &&
                                StringUtils.isNotEmpty(pwd) &&
-                               (servers.getSelectedIndex() != -1 || StringUtils.isNotEmpty(servers.getTextField().getText())) && 
+                               (servers.getComboBox().getSelectedIndex() != -1 || StringUtils.isNotEmpty(servers.getTextField().getText())) && 
                                StringUtils.isNotEmpty(dbName);
         
         if (shouldEnable && (StringUtils.contains(uName, ' ') || StringUtils.contains(uName, ',')))
@@ -907,22 +908,22 @@ public class DatabaseLoginPanel extends JTiledPanel
     {
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
 
-        databases.getDBAdapter().save();
-        servers.getDBAdapter().save();
+        databases.saveControlData();
+        servers.saveControlData();
 
         if (doSaveUPPrefs)
         {
             String dbName = null;
-            if (databases.getSelectedItem() instanceof PickListItemIFace)
+            if (databases.getComboBox().getSelectedItem() instanceof PickListItemIFace)
             {
-                PickListItemIFace pli = (PickListItemIFace)databases.getSelectedItem();
+                PickListItemIFace pli = (PickListItemIFace)databases.getComboBox().getSelectedItem();
                 if (pli != null)
                 {
                     dbName = pli.getValue();
                 }
             } else
             {
-                dbName = (String)databases.getSelectedItem();
+                dbName = (String)databases.getComboBox().getSelectedItem();
             }
             
             localPrefs.putBoolean("login.rememberuser", rememberUsernameCBX.isSelected()); //$NON-NLS-1$
@@ -1097,7 +1098,10 @@ public class DatabaseLoginPanel extends JTiledPanel
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, new RuntimeException("Couldn't get MobileTempDir"));
                     }
                     
-                    UIRegistry.setEmbeddedDBPath(mobileTmpDir.getAbsolutePath());
+                    if (mobileTmpDir != null)
+                    {
+                        UIRegistry.setEmbeddedDBPath(mobileTmpDir.getAbsolutePath());
+                    }
                     //log.debug(UIRegistry.getEmbeddedDBPath());
                     
                     if (UIRegistry.getMobileEmbeddedDBPath() == null)

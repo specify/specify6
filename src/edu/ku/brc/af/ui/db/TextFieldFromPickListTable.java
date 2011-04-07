@@ -123,6 +123,7 @@ public class TextFieldFromPickListTable extends JTextField implements GetSetValu
                 
             } else 
             {
+                boolean fnd = false;
                 setText("");
                 for (PickListItemIFace item : adapter.getList())
                 {
@@ -135,6 +136,11 @@ public class TextFieldFromPickListTable extends JTextField implements GetSetValu
                         setText(item.getTitle());
                         break;
                     }
+                }
+                
+                if (!fnd && !adapter.isReadOnly())
+                {
+                    setText(value != null ? value.toString() : defaultValue);
                 }
             }
 

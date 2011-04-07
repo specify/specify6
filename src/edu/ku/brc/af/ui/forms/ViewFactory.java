@@ -777,6 +777,7 @@ public class ViewFactory
                                                                cellField.isChangeListenerOnly());
             //cbx.getModel().addListDataListener(dcn);
             cbx.getComboBox().addActionListener(dcn);
+            cbx.addChangeListener(dcn);
 
             if (dcn.getValidationType() == UIValidator.Type.Focus) // returns None when no Validator
             {

@@ -37,6 +37,7 @@ import org.hibernate.annotations.CascadeType;
 
 import edu.ku.brc.af.ui.db.PickListIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
+import edu.ku.brc.ui.TitleValueIFace;
 import edu.ku.brc.util.Orderable;
 
 /**
@@ -54,7 +55,8 @@ import edu.ku.brc.util.Orderable;
 @Table(name = "picklistitem")
 public class PickListItem extends DataModelObjBase implements PickListItemIFace, 
                                                               Orderable,
-                                                              java.io.Serializable
+                                                              java.io.Serializable,
+                                                              TitleValueIFace
 {
     // Fields
     protected Integer  pickListItemId;

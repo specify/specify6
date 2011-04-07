@@ -62,20 +62,20 @@ public interface PickListDBAdapterIFace
      * Returns the picklist object.
      * @return Returns the picklist object
      */
-    public PickListIFace getPickList();
+    public abstract PickListIFace getPickList();
 
     /**
      * Returns the list of PickList items.
      * @return Returns the list of PickList items
      */
-    public Vector<PickListItemIFace> getList();
+    public abstract Vector<PickListItemIFace> getList();
     
     /**
      * Gets a pick list item by index.
      * @param index the index in question
      * @return pick list item by index
      */
-    public PickListItemIFace getItem(final int index);
+    public abstract PickListItemIFace getItem(final int index);
     
     /**
      * Adds a new item to a picklist.
@@ -83,30 +83,38 @@ public interface PickListDBAdapterIFace
      * @param value although currently no supported we may want to display one text string but save a different one
      * @return returns the new PickListItem
      */
-    public PickListItemIFace addItem(final String title, final String value);
+    public abstract PickListItemIFace addItem(final String title, final String value);
     
     /**
      * Persists the picklist and it's items.
      */
-    public void save();
+    public abstract void save();
+    
+    
+    /**
+     * Tells the adapter whether to save after an item has been added, or
+     * wait until 'save' has been called.
+     * @param doAutoSave true/false
+     */
+    public abstract void setAutoSaveOnAdd(boolean doAutoSave);
     
     
     /**
      * Returns whether the PickList is mutable.
      * @return whether the PickList is mutable.
      */
-    public boolean isReadOnly();
+    public abstract boolean isReadOnly();
     
     /**
      * When this returns true it means the PickListItems will be populated from other tables
      * in the Database schema.
      * @return true other tables, false not other tables
      */
-    public boolean isTabledBased();
+    public abstract boolean isTabledBased();
     
     /**
      * Returns the type of adapter.
      * @return the type of adapter.
      */
-    public Type getType();
+    public abstract Type getType();
 }

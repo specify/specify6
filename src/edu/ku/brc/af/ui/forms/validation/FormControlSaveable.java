@@ -22,9 +22,10 @@ package edu.ku.brc.af.ui.forms.validation;
 /**
  * This interface is used by controls that may need to save data when the form is saved.
  * This is called after the Business Rules 'afterSaveCommit' is called.
+ * 
  * @author rods
  *
- * @code_status complete
+ * @code_status omplete
  *
  * Jun 18, 2010
  *
@@ -35,5 +36,6 @@ public interface FormControlSaveable
     /**
      * @return true if saved correctly, otherwise false
      */
-    public boolean saveControlData();
+    public abstract boolean saveControlData();
+    
 }
