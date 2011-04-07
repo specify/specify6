@@ -160,16 +160,6 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
         table.clearSelection();
         table.setRowSelectionInterval(row, row);
         appPrefs.setChanged(true);
-        
-        try
-        {
-            appPrefs.flush();
-        } catch (BackingStoreException ex)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AppPrefsEditor.class, ex);
-            
-        }
     }
     
     public void tableChanged(TableModelEvent e)

@@ -22,8 +22,11 @@ package edu.ku.brc.specify.config;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Properties;
+import java.util.TreeSet;
+import java.util.Vector;
 import java.util.prefs.BackingStoreException;
 
 import org.apache.log4j.Logger;
@@ -37,6 +40,7 @@ import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpAppResourceData;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.treeutils.TreeHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -203,6 +207,14 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                     if (appData.getData() != null) // the very first time it might be null (empty)
                     {
                         properties.load(new ByteArrayInputStream(appData.getData()));
+                        
+                        /*System.out.println("--------------------------------------Loading--------------------------------------");
+                        TreeSet<Object> sortedKeys = new TreeSet<Object>(properties.keySet());
+                        for (Object key : sortedKeys)
+                        {
+                            System.out.println(String.format("[%s][%s]", key, properties.get(key)));
+                        }
+                        System.out.println("----------------------------------------------------------------------------------");*/
                     }
                 }
                 
@@ -227,9 +239,7 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
      * @see edu.ku.brc.af.prefs.AppPreferences.AppPrefsIOIFace#save(edu.ku.brc.af.prefs.AppPreferences)
      */
     public void flush() throws BackingStoreException
-    {
-        load(); // throws exception on error
-        
+    {        
         if (spAppResource != null && spAppResourceDir != null && appPrefsMgr.isChanged())
         {
             if (spAppResource.getSpAppResourceDatas().size() == 0)
@@ -239,11 +249,27 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
             
             try
             {
+                // Clone current Properties
+                Properties currentProps = (Properties)appPrefsMgr.getProperties().clone();
+                System.out.println(currentProps.getProperty("rodsx"));
+                
+                // Load existing.
+                spAppResource = null;
+                load();
+                Properties dbProps = (Properties)appPrefsMgr.getProperties();
+                
+                // Merge the properties
+                for (Object key : currentProps.keySet())
+                {
+                    dbProps.put(key, currentProps.get(key));
+                }
+                
                 ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-                appPrefsMgr.getProperties().store(byteOut, xmlTitle);
+                dbProps.store(byteOut, xmlTitle);
                 appPrefsMgr.setChanged(false);
                 
                 SpAppResourceData apData = spAppResource.getSpAppResourceDatas().iterator().next();
+
                 if (apData != null)
                 {
                     apData.setData(byteOut.toByteArray());
@@ -253,6 +279,15 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                     log.error("AppResourceData shouldn't be null!");
                 }
                 byteOut.close();
+                
+                /*System.out.println("--------------------------------------Saving--------------------------------------");
+                TreeSet<Object> sortedKeys = new TreeSet<Object>(dbProps.keySet());
+                for (Object key : sortedKeys)
+                {
+                    System.out.println(String.format("[%s][%s]", key, dbProps.get(key)));
+                }
+                System.out.println("----------------------------------------------------------------------------------");
+                */
                 
                 DataProviderSessionIFace session = null;
                 try
@@ -270,27 +305,18 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                         spAppResource.setSpecifyUser(globalPrefUser);
                     }
                     
-                    if (spAppResourceDir.getId() != null)
-                    {
-                        spAppResourceDir = session.merge(spAppResourceDir);
-                    }
                     session.saveOrUpdate(spAppResourceDir);
-                    
-                    if (spAppResource.getId() != null)
-                    {
-                        spAppResource = session.merge(spAppResource);
-                    }
-                    session.saveOrUpdate(spAppResourceDir);
+                    session.saveOrUpdate(spAppResource);
                     session.commit();
                     
                 } catch (Exception ex)
                 {
-                    session.rollback();
+                    if (session != null) session.rollback();
                     ex.printStackTrace();
                     
                 } finally
                 {
-                    session.close();
+                    if (session != null) session.close();
                 }
                 
                 //DataModelObjBase.save(true, spAppResourceDir, spAppResource);
