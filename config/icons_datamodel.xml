@@ -44,7 +44,9 @@
     <icon name="exsiccata"            file="exsiccata.png" sizes="all"/>
     <icon name="exsiccataitem"        file="exsiccata_item.png" sizes="all"/>
     <icon name="exchangein"           file="exchange_in.png" sizes="all"/>
+    <icon name="exchangeinprep"       file="exchange_in.png" sizes="all"/>
     <icon name="exchangeout"          file="exchange_out.png" sizes="all"/>
+    <icon name="exchangeoutprep"      file="exchange_out.png" sizes="all"/>
     <icon name="fieldnotebook"        file="field_notebook.png" sizes="all"/>
     <icon name="fieldnotebookpage"    file="field_notebook_page.png" sizes="all"/>
     <icon name="fieldnotebookpageset" file="field_notebook_page_set.png" sizes="all"/>

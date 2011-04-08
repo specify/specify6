@@ -924,6 +924,27 @@
     </hashtable>
   </entry>
   <entry>
+    <string>exchangeoutprep</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="exchangeoutprep" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="exchangeoutprep" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="exchangeoutprep" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="exchangeoutprep" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
     <string>spqueryfield</string>
     <hashtable>
       <entry>
@@ -1823,6 +1844,27 @@
       <entry>
         <string>FullAccess</string>
         <tp name="exchangein" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>exchangeinprep</string>
+    <hashtable>
+      <entry>
+        <string>Manager</string>
+        <tp name="exchangeinprep" type="Manager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>LimitedAccess</string>
+        <tp name="exchangeinprep" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>Guest</string>
+        <tp name="exchangeinprep" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>FullAccess</string>
+        <tp name="exchangeinprep" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>

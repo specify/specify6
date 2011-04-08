@@ -1277,6 +1277,67 @@ SELECT cn.ContainerID,
             </detailView>
         </table>
         
+        <table id="58" tableid="1" indexed="false" name="ExchangeInCO" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="1" primary="true">collectionobject.CollectionObjectID</join>
+                <join tableid="39">exchangein.ExchangeInID</join>
+            </joins>
+            <detailView icon="CollectionObject">
+                <sql>
+                    <![CDATA[SELECT 
+ collectionobject.CollectionObjectID,                   
+ collectionobject.CatalogNumber,
+ preptype.Name,
+ exchangein.ExchangeDate, 
+     %s 
+ FROM 
+ exchangein
+  INNER JOIN exchangeinprep ON exchangeinprep.ExchangeInID = exchangein.ExchangeInID 
+  INNER JOIN preparation on preparation.PreparationID = exchangeinprep.PreparationID
+  INNER JOIN preptype on preptype.preptypeid = preparation.preptypeid
+  INNER JOIN collectionobject on collectionobject.CollectionObjectID = preparation.CollectionObjectID
+ WHERE (collectionobject.CollectionMemberID = COLMEMID) AND %s ORDER BY ExchangeDate,CatalogNumber,Name]]>
+                </sql>
+                <captions>
+                    <caption tableid="1" col="CollectionObjectID" visible="false"/>
+                    <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
+                    <caption tableid="65" col="Name" />
+                    <caption tableid="39" col="ExchangeInDate" />
+                 </captions>
+            </detailView>
+        </table>
+       
+        <table id="59" tableid="1" indexed="false" name="ExchangeOutCO" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="1" primary="true">collectionobject.CollectionObjectID</join>
+                <join tableid="39">echangeout.ExchangeOutID</join>
+            </joins>
+            <detailView icon="CollectionObject">
+                <sql>
+                    <![CDATA[SELECT 
+ collectionobject.CollectionObjectID,                   
+ collectionobject.CatalogNumber,
+ preptype.Name,
+ exchangeout.ExchangeDate, 
+     %s 
+ FROM 
+ exchangeout
+  INNER JOIN exchangeoutprep ON exchangeoutprep.ExchangeOutID = exchangeout.ExchangeOutID 
+  INNER JOIN preparation on preparation.PreparationID = exchangeoutprep.PreparationID
+  INNER JOIN preptype on preptype.preptypeid = preparation.preptypeid
+  INNER JOIN collectionobject on collectionobject.CollectionObjectID = preparation.CollectionObjectID
+ WHERE (collectionobject.CollectionMemberID = COLMEMID) AND %s ORDER BY ExchangeDate,CatalogNumber,Name]]>
+                </sql>
+                <captions>
+                    <caption tableid="1" col="CollectionObjectID" visible="false"/>
+                    <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
+                    <caption tableid="65" col="Name" />
+                    <caption tableid="39" col="ExchangeOutDate" />
+                 </captions>
+            </detailView>
+        </table>
+        
+        
         <!-- ============================ -->
         <!--  Attachment Related Searches -->
         <!-- ============================ -->

@@ -195,6 +195,11 @@
      	<alias name="Agent" field="agentReceivedFrom"/>
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />    	
+        <table name="ExchangeInPrep" field="exchangeInPreps">
+                <alias name="Preparation"/>
+                <alias name="Agent" field="createdByAgent" />
+                <alias name="Agent" field="modifiedByAgent" />
+        </table>
     </table>
     
     <table name="ExchangeOut" >
@@ -204,7 +209,12 @@
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />    	
      	<alias name="Shipment" field="shipments" />    	
-    </table>
+        <table name="ExchangeOutPrep" field="exchangeOutPreps">
+                <alias name="Preparation"/>
+                <alias name="Agent" field="createdByAgent" />
+                <alias name="Agent" field="modifiedByAgent" />
+        </table>
+   </table>
     
     <table name="FieldNotebook" >
     	<table name="FieldNotebookAttachment" field="attachments" >	
