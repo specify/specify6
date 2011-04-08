@@ -371,7 +371,7 @@ public class FMPCreateTable extends DefaultHandler
             if (doAllFields || fd.getMaxSize() > 0)
             {
                 if (i > 0) sb.append(", ");
-                sb.append(fd.getName());
+                sb.append(convertToAcsii(fd.getName()));
                 i++;
             }
         }

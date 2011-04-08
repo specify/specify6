@@ -21,7 +21,6 @@ package edu.ku.brc.specify.tools;
 
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getAppDataDir;
-import static edu.ku.brc.ui.UIRegistry.getDefaultWorkingPath;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getStatusBar;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
@@ -34,9 +33,12 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.Comparator;
@@ -65,7 +67,9 @@ import edu.ku.brc.af.ui.forms.persist.ViewDefIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewSetIFace;
 import edu.ku.brc.af.ui.forms.validation.TypeSearchForQueryFactory;
+import edu.ku.brc.helpers.HTTPGetter;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.helpers.ZipFileHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
@@ -240,8 +244,9 @@ public class FormDisplayer
             size.width  += 30;
             frame.setSize(size);
             
-            System.out.println(viewInx + " of " + viewList.size()); //$NON-NLS-1$
-            getStatusBar().setText(viewInx + " of " + viewList.size()); //$NON-NLS-1$
+            String str = String.format("%d of %d", viewInx+1, viewList.size());
+            System.out.println(str); //$NON-NLS-1$
+            getStatusBar().setText(str); //$NON-NLS-1$
    
         } else if (frame != null)
         {
@@ -253,10 +258,7 @@ public class FormDisplayer
         if (viewInx < viewList.size()-1)
         {
             SwingUtilities.invokeLater(new Runnable() {
-
-                /* (non-Javadoc)
-                 * @see java.lang.Runnable#run()
-                 */
+                @Override
                 public void run()
                 {
                     try
@@ -454,6 +456,91 @@ public class FormDisplayer
     /**
      * 
      */
+    private File checkForTemplateFiles(final String dstDirPath)
+    {
+        String templatePath = dstDirPath + File.separator + "schema_template.html";
+        
+        File templateFile = new File(templatePath); //$NON-NLS-1$
+        if (templateFile.exists())
+        {
+            return templateFile;
+        }
+        
+        System.out.println(templatePath);
+        try
+        {
+            File dstDirFile = new File(dstDirPath);
+            if (!dstDirFile.exists())
+            {
+                if (!dstDirFile.mkdirs())
+                {
+                    JOptionPane.showMessageDialog(null, "Error creating the site directory.");
+                }
+            }
+            
+            String zipFilePath = dstDirPath + File.separator + "site.zip";
+            System.out.println("["+zipFilePath+"]");
+            
+            String           url    = "http://files.specifysoftware.org/site.zip";
+            HTTPGetter       getter = new HTTPGetter();
+            InputStream      ins    = getter.beginHTTPRequest(url);
+            //DataInputStream  dins   = new DataInputStream(ins);
+            DataOutputStream dos    = new DataOutputStream(new FileOutputStream(zipFilePath));
+            byte[]           bytes  = new byte[4096];
+            
+            int totalBytes = 0;
+            /*while (dins.available() > 0)
+            {
+                int len = dins.read(bytes);
+                dos.write(bytes, 0, len);
+                totalBytes += len;
+                System.out.println(len+" / "+totalBytes);
+            }*/
+            int numBytes = 0;
+            do 
+            {
+                numBytes = ins.read(bytes);
+                if (numBytes > 0)
+                {
+                    dos.write(bytes, 0, numBytes);
+                    totalBytes += numBytes;
+                    System.out.println(numBytes);
+                }
+                
+            } while (numBytes > 0);
+            
+            dos.flush();
+            dos.close();
+            //dins.close();
+            
+            System.out.println(totalBytes);
+            
+            
+            File       zipFile       = new File(zipFilePath);
+            System.out.println("zipFile: "+zipFile+" exists: "+zipFile.exists());
+            
+            List<File> unzippedFiles = ZipFileHelper.getInstance().unzipToFiles(zipFile);
+            for (File unzippedFile : unzippedFiles)
+            {
+                FileUtils.copyFileToDirectory(unzippedFile, dstDirFile);
+            }
+            
+            if (templateFile.exists())
+            {
+                return templateFile;
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "You are missing the template that is needed to run this tool.");
+        }
+        return null;
+    }
+    
+    /**
+     * 
+     */
     protected boolean setup()
     {
         String pathStr = AppContextMgr.getInstance().getClassObject(Discipline.class) != null ? AppContextMgr.getInstance().getClassObject(Discipline.class).getType() : ""; //$NON-NLS-1$
@@ -489,13 +576,14 @@ public class FormDisplayer
                 ex.printStackTrace();
             }
         }
-
+        
+        String dstDirPath   = UIRegistry.getDefaultUserHomeDir() + File.separator + "Specify/site";
         try
         {
-            File templateFile = new File(getDefaultWorkingPath() + File.separator + "site/schema_template.html"); //$NON-NLS-1$
-            mapTemplate = FileUtils.readFileToString(templateFile);
+            File tmplateFile = checkForTemplateFiles(dstDirPath);
+            mapTemplate = FileUtils.readFileToString(tmplateFile);
             mapTemplate = StringUtils.replace(mapTemplate, "Database Schema", getResourceString("FormDisplayer.FORMS")); //$NON-NLS-1$ //$NON-NLS-2$
-            
+
         } catch (IOException ex)
         {
             ex.printStackTrace();
@@ -510,7 +598,7 @@ public class FormDisplayer
         
         try
         {
-            File srcDir = new File(getDefaultWorkingPath() + File.separator + "site"); //$NON-NLS-1$
+            File srcDir = new File(dstDirPath); //$NON-NLS-1$
             for (File f : srcDir.listFiles())
             {
                 if (!f.getName().startsWith(".")) //$NON-NLS-1$
@@ -530,6 +618,7 @@ public class FormDisplayer
             }
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormDisplayer.class, ex);
             ex.printStackTrace();
