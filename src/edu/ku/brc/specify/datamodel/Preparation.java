@@ -103,6 +103,9 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     protected Set<PreparationAttr>        preparationAttrs;        // Generic Expandable Attributes
     protected Set<PreparationAttachment>  preparationAttachments;
     
+    protected Set<ExchangeInPrep>         exchangeInPreps;
+    protected Set<ExchangeOutPrep>        exchangeOutPreps;
+    
     // Transient
     protected Boolean                     isOnLoan = null;
     
@@ -157,6 +160,10 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         preparationAttribute   = null;
         preparationAttrs       = new HashSet<PreparationAttr>();
         preparationAttachments = new HashSet<PreparationAttachment>();
+        
+        exchangeInPreps  = new HashSet<ExchangeInPrep>();
+        exchangeOutPreps = new HashSet<ExchangeOutPrep>();
+
     }
     // End Initializer
 
@@ -567,6 +574,32 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     
     public void setGiftPreparations(Set<GiftPreparation> giftPreparations) {
         this.giftPreparations = giftPreparations;
+    }
+    
+    /**
+     * 
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "preparation")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<ExchangeInPrep> getExchangeInPreps() {
+        return this.exchangeInPreps;
+    }
+    
+    public void setExchangeInPreps(Set<ExchangeInPrep> exchangeInPreps) {
+        this.exchangeInPreps = exchangeInPreps;
+    }
+    
+    /**
+     * 
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "preparation")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<ExchangeOutPrep> getExchangeOutPreps() {
+        return this.exchangeOutPreps;
+    }
+    
+    public void setExchangeOutPreps(Set<ExchangeOutPrep> exchangeOutPreps) {
+        this.exchangeOutPreps = exchangeOutPreps;
     }
 
    /**

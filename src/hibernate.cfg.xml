@@ -92,8 +92,10 @@
 		<mapping class="edu.ku.brc.specify.datamodel.DNASequencingRun"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DNASequencingRunAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DNASequencingRunCitation"/>
-		<mapping class="edu.ku.brc.specify.datamodel.ExchangeIn"/>
-		<mapping class="edu.ku.brc.specify.datamodel.ExchangeOut"/>
+        <mapping class="edu.ku.brc.specify.datamodel.ExchangeIn"/>
+        <mapping class="edu.ku.brc.specify.datamodel.ExchangeInPrep"/>
+        <mapping class="edu.ku.brc.specify.datamodel.ExchangeOut"/>
+        <mapping class="edu.ku.brc.specify.datamodel.ExchangeOutPrep"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Exsiccata"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ExsiccataItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.FieldNotebook"/>

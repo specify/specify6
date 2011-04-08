@@ -20,6 +20,8 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,6 +31,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -73,6 +76,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     protected Agent           agentReceivedFrom;
     protected Agent           agentCatalogedBy;
     protected Division        division;
+    protected Set<ExchangeInPrep> exchangeInPreps;
 
 
     // Constructors
@@ -112,7 +116,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
         agentCatalogedBy  = null;
         addressOfRecord   = null;
         division          = null;
-
+        exchangeInPreps = new HashSet<ExchangeInPrep>();
     }
     // End Initializer
 
@@ -353,6 +357,19 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     public void setAddressOfRecord(AddressOfRecord addressOfRecord)
     {
         this.addressOfRecord = addressOfRecord;
+    }
+
+    /**
+     * 
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "exchangeIn")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public Set<ExchangeInPrep> getExchangeInPreps() {
+        return this.exchangeInPreps;
+    }
+    
+    public void setExchangeInPreps(Set<ExchangeInPrep> exchangeInPreps) {
+        this.exchangeInPreps = exchangeInPreps;
     }
     
     /**

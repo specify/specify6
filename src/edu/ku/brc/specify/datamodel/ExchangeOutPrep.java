@@ -38,53 +38,51 @@ import org.hibernate.annotations.Index;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "giftpreparation")
-@org.hibernate.annotations.Table(appliesTo="giftpreparation", indexes =
-    {   @Index (name="GiftPrepDspMemIDX", columnNames={"DisciplineID"})
+@Table(name = "exchangeoutprep")
+@org.hibernate.annotations.Table(appliesTo="exchangeoutprep", indexes =
+    {   @Index (name="ExchgOutPrepDspMemIDX", columnNames={"DisciplineID"})
     })
-public class GiftPreparation extends DisciplineMember implements java.io.Serializable, PreparationHolderIFace, Comparable<GiftPreparation>
+public class ExchangeOutPrep extends DisciplineMember implements java.io.Serializable, Comparable<ExchangeOutPrep>
 {
-
     // Fields    
-
-    protected Integer                       giftPreparationId;
+    protected Integer                       exchangeOutPrepId;
     protected Integer                       quantity;
     protected String                        descriptionOfMaterial;
-    protected String                        outComments;          // Shipped Comments
-    protected String                        inComments;           // Returned Comments
-    protected String                        receivedComments;     // Received Comments
+    protected String                        comments;          
+    protected String                        text1;           
+    protected String                        text2;   
+    protected Integer                       number1;
     protected Preparation                   preparation;
-    protected Gift                          gift;
+    protected ExchangeOut                   exchangeOut;
 
     // Constructors
 
     /** default constructor */
-    public GiftPreparation() {
+    public ExchangeOutPrep() {
         //
     }
     
     /** constructor with id */
-    public GiftPreparation(Integer giftPreparationId) 
+    public ExchangeOutPrep(Integer exchangeOutPrepId) 
     {
-        this.giftPreparationId = giftPreparationId;
+        this.exchangeOutPrepId = exchangeOutPrepId;
     }
    
-    
-    
-
     // Initializer
     @Override
     public void initialize()
     {
         super.init();
-        giftPreparationId = null;
+        exchangeOutPrepId = null;
         quantity = null;
         descriptionOfMaterial = null;
-        outComments = null;
-        inComments = null;
-        receivedComments = null;
+        comments = null;
+        text1 = null;
+        text2 = null;
         preparation = null;
-        gift = null;
+        exchangeOut = null;
+        exchangeOut = null;
+        number1 = null;
     }
     // End Initializer
 
@@ -93,9 +91,9 @@ public class GiftPreparation extends DisciplineMember implements java.io.Seriali
      */
     @Id
     @GeneratedValue
-    @Column(name = "GiftPreparationID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getGiftPreparationId() {
-        return this.giftPreparationId;
+    @Column(name = "ExchangeOutPrepID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Integer getExchangeOutPrepId() {
+        return this.exchangeOutPrepId;
     }
 
     /**
@@ -106,7 +104,7 @@ public class GiftPreparation extends DisciplineMember implements java.io.Seriali
     @Override
     public Integer getId()
     {
-        return this.giftPreparationId;
+        return this.exchangeOutPrepId;
     }
 
     /* (non-Javadoc)
@@ -116,15 +114,15 @@ public class GiftPreparation extends DisciplineMember implements java.io.Seriali
     @Override
     public Class<?> getDataClass()
     {
-        return GiftPreparation.class;
+        return ExchangeOutPrep.class;
     }
     
-    public void setGiftPreparationId(Integer giftPreparationId) {
-        this.giftPreparationId = giftPreparationId;
+    public void setExchangeOutPrepId(Integer exchangeOutPrepId) {
+        this.exchangeOutPrepId = exchangeOutPrepId;
     }
 
     /**
-     * The total number of specimens  gifted (necessary for lots)
+     * 
      */
     @Column(name = "Quantity", unique = false, nullable = true, insertable = true, updatable = true)
     public Integer getQuantity() 
@@ -138,7 +136,7 @@ public class GiftPreparation extends DisciplineMember implements java.io.Seriali
     }
 
     /**
-     * Description of gifted material (intended to be used for non-cataloged items, i.e. when PreparationID is null)
+     * Description of material (intended to be used for non-cataloged items, i.e. when PreparationID is null)
      */
     @Column(name = "DescriptionOfMaterial", unique = false, nullable = true, insertable = true, updatable = true)
     public String getDescriptionOfMaterial() {
@@ -150,58 +148,66 @@ public class GiftPreparation extends DisciplineMember implements java.io.Seriali
     }
 
     /**
-     * Comments on item when gifted
+     * Comments on item 
      */
     @Lob
-    @Column(name = "OutComments", unique = false, nullable = true, insertable = true, updatable = true, length = 1024)
-    public String getOutComments() {
-        return this.outComments;
+    @Column(name = "Comments", unique = false, nullable = true, insertable = true, updatable = true)
+    public String getComments() {
+        return this.comments;
     }
     
-    public void setOutComments(String outComments) {
-        this.outComments = outComments;
+    public void setComments(String outComments) {
+        this.comments = outComments;
     }
 
     /**
      * Comments on item when returned
      */
     @Lob
-    @Column(name = "InComments", unique = false, nullable = true, insertable = true, updatable = true, length = 1024)
-    public String getInComments() {
-        return this.inComments;
+    @Column(name = "Text1", unique = false, nullable = true, insertable = true, updatable = true)
+    public String getText1() {
+        return this.text1;
     }
     
-    public void setInComments(String inComments) {
-        this.inComments = inComments;
+    public void setText1(String inComments) {
+        this.text1 = inComments;
     }
 
     /**
      * @return the receivedComments
      */
     @Lob
-    @Column(name = "ReceivedComments", unique = false, nullable = true, insertable = true, updatable = true, length = 1024)
-    public String getReceivedComments()
+    @Column(name = "Text2", unique = false, nullable = true, insertable = true, updatable = true)
+    public String getText2()
     {
-        return receivedComments;
+        return text2;
     }
 
     /**
      * @param receivedComments the receivedComments to set
      */
-    public void setReceivedComments(String receivedComments)
+    public void setText2(String receivedComments)
     {
-        this.receivedComments = receivedComments;
+        this.text2 = receivedComments;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.PreparationHolderIFace#getQuantityReturned()
+    /**
+     * @return the number1
      */
-    @Transient
-    public Integer getQuantityReturned() 
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getNumber1()
     {
-        return 0;
+        return number1;
     }
-    
+
+    /**
+     * @param number1 the number1 to set
+     */
+    public void setNumber1(Integer number1)
+    {
+        this.number1 = number1;
+    }
+
     /**
      * 
      */
@@ -216,17 +222,17 @@ public class GiftPreparation extends DisciplineMember implements java.io.Seriali
     }
 
     /**
-     * Gift containing the Preparation
+     * ExchangeOut containing the Preparation
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "GiftID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Gift getGift() {
-        return this.gift;
+    @JoinColumn(name = "ExchangeOutID", unique = false, nullable = true, insertable = true, updatable = true)
+    public ExchangeOut getExchangeOut() {
+        return this.exchangeOut;
     }
     
-    public void setGift(Gift gift) 
+    public void setExchangeOut(ExchangeOut exchangeOut) 
     {
-        this.gift = gift;
+        this.exchangeOut = exchangeOut;
     }
     
     /* (non-Javadoc)
@@ -236,7 +242,7 @@ public class GiftPreparation extends DisciplineMember implements java.io.Seriali
     @Transient
     public Integer getParentTableId()
     {
-        return Gift.getClassTableId();
+        return ExchangeOut.getClassTableId();
     }
 
     /* (non-Javadoc)
@@ -246,7 +252,7 @@ public class GiftPreparation extends DisciplineMember implements java.io.Seriali
     @Transient
     public Integer getParentId()
     {
-        return gift != null ? gift.getId() : null;
+        return exchangeOut != null ? exchangeOut.getId() : null;
     }
     
     /* (non-Javadoc)
@@ -264,7 +270,7 @@ public class GiftPreparation extends DisciplineMember implements java.io.Seriali
      */
     public static int getClassTableId()
     {
-        return 54;
+        return 141;
     }
     
     //----------------------------------------------------------------------
@@ -274,7 +280,7 @@ public class GiftPreparation extends DisciplineMember implements java.io.Seriali
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(GiftPreparation obj)
+    public int compareTo(ExchangeOutPrep obj)
     {
         return timestampCreated != null && obj != null && obj.timestampCreated != null ? timestampCreated.compareTo(obj.timestampCreated) : 0;
     }
