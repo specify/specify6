@@ -178,8 +178,8 @@ public class Java2sAutoTextField extends JTextField
     class AutoDocument extends PlainDocument
     {
         private final byte NONE   = 0;
-        private final byte INSERT = 0;
-        private final byte REMOVE = 0;
+        private final byte INSERT = 1;
+        private final byte REMOVE = 2;
         
         private byte keyType = NONE;
         
@@ -220,8 +220,6 @@ public class Java2sAutoTextField extends JTextField
             super.insertString(0, s2, attributeset);
             setSelectionStart(j + 1);
             setSelectionEnd(getLength());
-            
-            
         }
 
         public void remove(int i, int j) throws BadLocationException
