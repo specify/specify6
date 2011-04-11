@@ -459,7 +459,7 @@ public class ValComboBox extends JPanel implements UIValidatable,
     @Override
     public boolean saveControlData()
     {
-        if (adapter != null && comboBox.getSelectedIndex() == -1)
+        if (adapter != null && comboBox.getSelectedIndex() == -1 && textEditor != null)
         {
             String newValue = textEditor.getText();
             if (StringUtils.isNotEmpty(newValue))
@@ -862,7 +862,7 @@ public class ValComboBox extends JPanel implements UIValidatable,
         
         comboBox.setSelectedIndex(fndInx);
         
-        if (fndInx == -1 && (value != null || defaultValue != null))
+        if (textEditor != null && fndInx == -1 && (value != null || defaultValue != null))
         {
             textEditor.setText(value != null ? value.toString() : defaultValue);
         }
