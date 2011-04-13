@@ -188,7 +188,7 @@ public class SpecifyWebLinkMgr extends WebLinkMgr implements CommandListener
                 
             } else
             {
-                SpecifyUIFieldFormatterMgr.saveDisciplineResource(WEBLINKS, convertToXML());
+                SpecifyUIFieldFormatterMgr.saveDisciplineResource(AppContextMgr.getInstance(), WEBLINKS, convertToXML());
                 hasChanged = false;
             }
         }

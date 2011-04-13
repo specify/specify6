@@ -664,7 +664,7 @@ public final class UIHelper
             }
         } else
         {
-            log.error("getFloat - Result Object is null for["+valObj+"]");
+            log.error("getFloat - Result Object is null");
         }
         return value;
     }
@@ -692,7 +692,7 @@ public final class UIHelper
             }
         } else
         {
-            log.error("getDouble - Result Object is null for["+valObj+"]");
+            log.error("getDouble - Result Object is null");
         }
         return value;
     }
@@ -720,7 +720,7 @@ public final class UIHelper
             }
         } else
         {
-            log.error("getInt - Result Object is null for["+valObj+"]");
+            log.error("getInt - Result Object is null");
         }
         return value;
     }
@@ -737,7 +737,7 @@ public final class UIHelper
             log.error("getString - Class type is "+valObj.getClass().getName()+" should be String");
         } else
         {
-            log.error("getString - Result Object is null for["+valObj+"] in getString");
+            log.error("getString - Result Object is null for in getString");
         }
         return "";
    }
@@ -896,10 +896,10 @@ public final class UIHelper
             if (valObj instanceof String)
             {
                 String valStr = ((String)valObj).toLowerCase();
-                if (valStr.equals("true"))
+                if (valStr.equalsIgnoreCase("true"))
                 {
                     return true;
-                } else if (valStr.equals("false"))
+                } else if (valStr.equalsIgnoreCase("false"))
                 {
                     return false;
                 } else
@@ -3900,5 +3900,38 @@ public final class UIHelper
         return true;
     }
     
+    /**
+     * Sizes the table to number of rows using getRowHeight
+     * @param table the table to be sized
+     * @param rows the number of rows
+     */
+    public static void setVisibleRowCount(final JTable table, final int rows)
+    {
+        if (table != null)
+        {
+            table.setPreferredScrollableViewportSize(new Dimension( 
+                    table.getPreferredScrollableViewportSize().width, 
+                    rows*table.getRowHeight()));
+        }
+    }
     
+    /**
+     * Sizes the table to number of rows using the height of actual rows.
+     * @param table the table to be sized
+     * @param rows the number of rows
+     */
+    public static void setVisibleRowCountForHeight(final JTable table, final int rows)
+    { 
+        if (table != null)
+        {
+            int height = 0; 
+            for(int row=0; row<rows; row++) 
+                height += table.getRowHeight(row); 
+         
+            table.setPreferredScrollableViewportSize(new Dimension( 
+                    table.getPreferredScrollableViewportSize().width, 
+                    height 
+            ));
+        }
+    }
 }

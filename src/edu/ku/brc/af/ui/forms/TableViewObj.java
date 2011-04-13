@@ -27,7 +27,6 @@ import static org.apache.commons.lang.StringUtils.split;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -701,12 +700,7 @@ public class TableViewObj implements Viewable,
      */
     public void setVisibleRowCount(int rows)
     {
-        if (table != null)
-        {
-            table.setPreferredScrollableViewportSize(new Dimension( 
-                    table.getPreferredScrollableViewportSize().width, 
-                    rows*table.getRowHeight()));
-        }
+        UIHelper.setVisibleRowCount(table, rows);
     }
     
     /**
@@ -716,19 +710,8 @@ public class TableViewObj implements Viewable,
      */
     public void setVisibleRowCountForHeight(int rows)
     { 
-        if (table != null)
-        {
-            int height = 0; 
-            for(int row=0; row<rows; row++) 
-                height += table.getRowHeight(row); 
-         
-            table.setPreferredScrollableViewportSize(new Dimension( 
-                    table.getPreferredScrollableViewportSize().width, 
-                    height 
-            ));
-        }
+        UIHelper.setVisibleRowCountForHeight(table, rows);
     }
-
 
     /**
      * Sets all the Columns to be center justified this COULD be set up in the table info.

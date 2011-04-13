@@ -2169,7 +2169,7 @@
             class="edu.ku.brc.specify.datamodel.CollectionObjectAttachment"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj"
-            useresourcelabels="true">
+            useresourcelabels="false">
             
             <desc><![CDATA[The CollectionObjectAttachment form.]]></desc>
             

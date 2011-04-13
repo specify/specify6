@@ -37,6 +37,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.AutoNumberIFace;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.prefs.AppPrefsCache;
@@ -55,17 +56,18 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class UIFieldFormatterMgr implements AppPrefsChangeListener
 {
-    public static final String                                 factoryName    = "edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr";
+    // Static Members
+    public static final String                                   factoryName     = "edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr";
+    private static final Logger                                  log             = Logger.getLogger(UIFieldFormatterMgr.class);
+    protected static UIFieldFormatterMgr                         instance        = null;
+    protected static boolean                                     doingLocal      = false;
 
-    private static final Logger                                log            = Logger.getLogger(UIFieldFormatterMgr.class);
-
-    protected static UIFieldFormatterMgr                       instance    = null;
-    protected static boolean                                   doingLocal    = false;
-
-    protected boolean                                          hasChanged  = false;
-    protected Hashtable<String, UIFieldFormatterIFace>         hash        = new Hashtable<String, UIFieldFormatterIFace>();
+    // Data Members
+    protected boolean                                            hasChanged      = false;
+    protected Hashtable<String, UIFieldFormatterIFace>           hash            = new Hashtable<String, UIFieldFormatterIFace>();
     protected Hashtable<Class<?>, Vector<UIFieldFormatterIFace>> classToListHash = new Hashtable<Class<?>, Vector<UIFieldFormatterIFace>>();
-
+    private   AppContextMgr                                      appContextMgr   = null;
+ 
     /**
      * Protected Constructor
      */
@@ -74,7 +76,26 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
         load();
     }
     
-    
+    /**
+     * @return the contextMgr
+     */
+    public AppContextMgr getAppContextMgr()
+    {
+        if (appContextMgr == null)
+        {
+            appContextMgr = AppContextMgr.getInstance();
+        }
+        return appContextMgr;
+    }
+
+    /**
+     * @param contextMgr the contextMgr to set
+     */
+    public void setAppContextMgr(final AppContextMgr appContextMgr)
+    {
+        this.appContextMgr = appContextMgr;
+    }
+
     /**
      * Resets the Mgr so it gets reloaded.
      */
@@ -1075,9 +1096,15 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
 
         } else if (fieldType != UIFieldFormatterField.FieldType.anychar)
         {
-            String key = "UIFieldFormatterMgr." + fieldType.toString();
-            String charPattern = UIRegistry.getResourceString(key);
-            pChar = charPattern.length() > 0 ? charPattern.charAt(0) : defChar;
+            if (fieldType != null)
+            {
+                String key = "UIFieldFormatterMgr." + fieldType.toString();
+                String charPattern = UIRegistry.getResourceString(key);
+                pChar = charPattern.length() > 0 ? charPattern.charAt(0) : defChar;
+            } else
+            {
+                pChar = defChar;
+            }
         } else
         {
             pChar = defChar;

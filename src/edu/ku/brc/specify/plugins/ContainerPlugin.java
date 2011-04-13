@@ -168,9 +168,9 @@ public class ContainerPlugin extends UIPluginBase implements UIValidatable
             group.add(isParentContainerRB);
             group.add(isAssociatedRB);
             
-            PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g,p:g,10px,p:g,f:p:g", "p"));
-            pb.add(isParentContainerRB, cc.xy(2,1));
-            pb.add(isAssociatedRB,      cc.xy(4,1));
+            PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p,4px,p"));
+            pb.add(isParentContainerRB, cc.xy(1,1));
+            pb.add(isAssociatedRB,      cc.xy(1,3));
             
             catalogNumberFormatter = DBTableIdMgr.getFieldFormatterFor(CollectionObject.class, "CatalogNumber");
             

@@ -60,6 +60,7 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.forms.validation.TypeSearchForQueryFactory;
 import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Factory that creates Views from ViewSet files. This class uses the singleton ViewSetMgr to verify the View Set Name is unique.
@@ -80,13 +81,19 @@ public class ViewLoader
     private static final Logger     log = Logger.getLogger(ViewLoader.class);
     private static final ViewLoader instance = new ViewLoader();
 
-    private static final String NAME       = "name";
-    private static final String TYPE       = "type";
-    private static final String LABEL      = "label";
-    private static final String DESC       = "desc";
-    private static final String CLASSNAME  = "class";
-    private static final String GETTABLE   = "gettable";
-    private static final String SETTABLE   = "settable";
+    private static final String ID             = "id";
+    private static final String NAME           = "name";
+    private static final String TYPE           = "type";
+    private static final String LABEL          = "label";
+    private static final String DESC           = "desc";
+    private static final String TITLE          = "title";
+    private static final String CLASSNAME      = "class";
+    private static final String GETTABLE       = "gettable";
+    private static final String SETTABLE       = "settable";
+    private static final String INITIALIZE     = "initialize";
+    private static final String DSPUITYPE      = "dspuitype";
+    private static final String VALIDATION     = "validation";
+    private static final String ISREQUIRED     = "isrequired";
     private static final String RESOURCELABELS = "useresourcelabels";
     
     // Data Members
@@ -184,7 +191,7 @@ public class ViewLoader
                 
                 String altName      = altElement.attributeValue(NAME);
                 String viewDefName  = altElement.attributeValue("viewdef");
-                String title        = altElement.attributeValue("title");
+                String title        = altElement.attributeValue(TITLE);
                 
                 boolean isValidated = getAttr(altElement, "validated", mode == AltViewIFace.CreationMode.EDIT);
                 boolean isDefault   = getAttr(altElement, "default", false);
@@ -490,7 +497,7 @@ public class ViewLoader
                 for ( Iterator<?> i = enableRules.elementIterator( "rule" ); i.hasNext(); )
                 {
                     Element ruleElement = (Element) i.next();
-                    String id = getAttr(ruleElement, "id", "");
+                    String id = getAttr(ruleElement, ID, "");
                     if (isNotEmpty(id))
                     {
                         rulesList.put(id, ruleElement.getTextTrim());
@@ -681,12 +688,12 @@ public class ViewLoader
                 for ( Iterator<?> cellIter = rowElement.elementIterator( "cell" ); cellIter.hasNext(); )
                 {
                     Element cellElement = (Element)cellIter.next();
-                    String  cellId      = getAttr(cellElement, "id", "");
+                    String  cellId      = getAttr(cellElement, ID, "");
                     String  cellName    = getAttr(cellElement, NAME, cellId); // let the name default to the id if it doesn't have a name
                     int     colspan     = getAttr(cellElement, "colspan", 1);
                     int     rowspan     = getAttr(cellElement, "rowspan", 1);
                     
-                    /*boolean isReq    = getAttr(cellElement, "isrequired", false);
+                    /*boolean isReq    = getAttr(cellElement, ISREQUIRED, false);
                     if (isReq)
                     {
                         System.err.println(String.format("%s\t%s\t%s\t%s", gViewDef.getName(), cellId, cellName, tableinfo != null ? tableinfo.getTitle() : "N/A"));
@@ -745,7 +752,7 @@ public class ViewLoader
                                                                      getAttr(cellElement, "icon", null),
                                                                      getAttr(cellElement, "recordobj", false), 
                                                                      colspan));
-                            String initialize = getAttr(cellElement, "initialize", null);
+                            String initialize = getAttr(cellElement, INITIALIZE, null);
                             if (StringUtils.isNotEmpty(initialize))
                             {
                                 cell.setProperties(UIHelper.parseProperties(initialize));
@@ -759,7 +766,7 @@ public class ViewLoader
                                                                          getLabel(cellElement), 
                                                                          getAttr(cellElement, "collapse", ""),
                                                                          colspan));
-                            String initialize = getAttr(cellElement, "initialize", null);
+                            String initialize = getAttr(cellElement, INITIALIZE, null);
                             if (StringUtils.isNotEmpty(initialize))
                             {
                                 cell.setProperties(UIHelper.parseProperties(initialize));
@@ -776,9 +783,9 @@ public class ViewLoader
                             int    cols           = getAttr(cellElement, "cols", DEFAULT_COLS); // XXX PREF for default width of text field
                             int    rows           = getAttr(cellElement, "rows", DEFAULT_ROWS);  // XXX PREF for default heightof text area
                             String validationType = getAttr(cellElement, "valtype", "Changed");
-                            String validationRule = getAttr(cellElement, "validation", "");
-                            String initialize     = getAttr(cellElement, "initialize", "");
-                            boolean isRequired    = getAttr(cellElement, "isrequired", false);
+                            String validationRule = getAttr(cellElement, VALIDATION, "");
+                            String initialize     = getAttr(cellElement, INITIALIZE, "");
+                            boolean isRequired    = getAttr(cellElement, ISREQUIRED, false);
                             String  pickListName  = getAttr(cellElement, "picklist", "");
                             
                             if (isNotEmpty(format) && isNotEmpty(formatName))
@@ -818,16 +825,16 @@ public class ViewLoader
                             switch (uitype)
                             {
                                 case textarea:
-                                    dspUITypeStr = getAttr(cellElement, "dspuitype", "dsptextarea");
+                                    dspUITypeStr = getAttr(cellElement, DSPUITYPE, "dsptextarea");
                                     break;
                                 
                                 case textareabrief:
-                                    dspUITypeStr = getAttr(cellElement, "dspuitype", "textareabrief");
+                                    dspUITypeStr = getAttr(cellElement, DSPUITYPE, "textareabrief");
                                     break;
                                 
                                 case  querycbx:
                                 {
-                                    dspUITypeStr = getAttr(cellElement, "dspuitype", "textfieldinfo");
+                                    dspUITypeStr = getAttr(cellElement, DSPUITYPE, "textfieldinfo");
                                     
                                     String fmtName = TypeSearchForQueryFactory.getInstance().getDataObjFormatterName(properties.getProperty("name"));
                                     if (isEmpty(formatName) && isNotEmpty(fmtName))
@@ -839,8 +846,8 @@ public class ViewLoader
 
                                 case formattedtext:
                                 {
-                                    validationRule = getAttr(cellElement, "validation", "formatted"); // XXX Is this OK?
-                                    dspUITypeStr   = getAttr(cellElement, "dspuitype", "formattedtext");
+                                    validationRule = getAttr(cellElement, VALIDATION, "formatted"); // XXX Is this OK?
+                                    dspUITypeStr   = getAttr(cellElement, DSPUITYPE, "formattedtext");
                                     
                                     //-------------------------------------------------------
                                     // This part should be moved to the ViewFactory
@@ -861,31 +868,34 @@ public class ViewLoader
                                         
                                     } else // ok now check the schema for the UI formatter
                                     {
-                                        DBFieldInfo fieldInfo = tableinfo.getFieldByName(cellName);
-                                        if (fieldInfo != null)
+                                        if (tableinfo != null)
                                         {
-                                            if (fieldInfo.getFormatter() != null)
+                                            DBFieldInfo fieldInfo = tableinfo.getFieldByName(cellName);
+                                            if (fieldInfo != null)
                                             {
-                                                uiFieldFormatterName = fieldInfo.getFormatter().getName();
-                                                
-                                            } else if (fieldInfo.getDataClass().isAssignableFrom(Date.class) ||
-                                                       fieldInfo.getDataClass().isAssignableFrom(Calendar.class))
-                                            {
-                                                String msg = "Missing Date Formatter for ["+cellName+"]";
-                                                log.error(msg);
-                                                FormDevHelper.appendFormDevError(msg);
-                                                
-                                                uiFieldFormatterName = "Date";
-                                                UIFieldFormatterIFace uiFormatter = UIFieldFormatterMgr.getInstance().getFormatter(uiFieldFormatterName);
-                                                if (uiFormatter == null)
+                                                if (fieldInfo.getFormatter() != null)
+                                                {
+                                                    uiFieldFormatterName = fieldInfo.getFormatter().getName();
+                                                    
+                                                } else if (fieldInfo.getDataClass().isAssignableFrom(Date.class) ||
+                                                           fieldInfo.getDataClass().isAssignableFrom(Calendar.class))
+                                                {
+                                                    String msg = "Missing Date Formatter for ["+cellName+"]";
+                                                    log.error(msg);
+                                                    FormDevHelper.appendFormDevError(msg);
+                                                    
+                                                    uiFieldFormatterName = "Date";
+                                                    UIFieldFormatterIFace uiFormatter = UIFieldFormatterMgr.getInstance().getFormatter(uiFieldFormatterName);
+                                                    if (uiFormatter == null)
+                                                    {
+                                                        uiFieldFormatterName = "";
+                                                        uitype = FormCellFieldIFace.FieldType.text;
+                                                    }
+                                                } else
                                                 {
                                                     uiFieldFormatterName = "";
                                                     uitype = FormCellFieldIFace.FieldType.text;
                                                 }
-                                            } else
-                                            {
-                                                uiFieldFormatterName = "";
-                                                uitype = FormCellFieldIFace.FieldType.text;
                                             }
                                         }
                                     }
@@ -894,7 +904,7 @@ public class ViewLoader
                                 }
 
                                 case url:
-                                    dspUITypeStr = getAttr(cellElement, "dspuitype", uitypeStr);
+                                    dspUITypeStr = getAttr(cellElement, DSPUITYPE, uitypeStr);
                                     properties = UIHelper.parseProperties(initialize);
                                     break;
                                     
@@ -903,27 +913,27 @@ public class ViewLoader
                                 case tristate:
                                 case checkbox:
                                 case password:
-                                    dspUITypeStr = getAttr(cellElement, "dspuitype", uitypeStr);
+                                    dspUITypeStr = getAttr(cellElement, DSPUITYPE, uitypeStr);
                                     break;
                                 
                                 case plugin:
                                 case button:
-                                    dspUITypeStr = getAttr(cellElement, "dspuitype", uitypeStr);
+                                    dspUITypeStr = getAttr(cellElement, DSPUITYPE, uitypeStr);
                                     properties   = UIHelper.parseProperties(initialize);
-                                    String ttl = properties.getProperty("title");
+                                    String ttl = properties.getProperty(TITLE);
                                     if (ttl != null)
                                     {
-                                        properties.put("title", getResourceLabel(ttl));
+                                        properties.put(TITLE, getResourceLabel(ttl));
                                     }
                                     break;
                                     
                                 case spinner:
-                                    dspUITypeStr = getAttr(cellElement, "dspuitype", "dsptextfield");
+                                    dspUITypeStr = getAttr(cellElement, DSPUITYPE, "dsptextfield");
                                     properties   = UIHelper.parseProperties(initialize);
                                     break;
                                     
                                 case combobox:
-                                    dspUITypeStr = getAttr(cellElement, "dspuitype", "textpl");
+                                    dspUITypeStr = getAttr(cellElement, DSPUITYPE, "textpl");
                                     if (tableinfo != null)
                                     {
                                         DBFieldInfo fieldInfo = tableinfo.getFieldByName(cellName);
@@ -941,7 +951,7 @@ public class ViewLoader
                                     break;
                                     
                                 default:
-                                    dspUITypeStr = getAttr(cellElement, "dspuitype", "dsptextfield");
+                                    dspUITypeStr = getAttr(cellElement, DSPUITYPE, "dsptextfield");
                                     break;
                                 
                             } //switch
@@ -962,7 +972,7 @@ public class ViewLoader
                             // check to see see if the validation is a node in the cell
                             if (isEmpty(validationRule))
                             {
-                                Element valNode = (Element)cellElement.selectSingleNode("validation");
+                                Element valNode = (Element)cellElement.selectSingleNode(VALIDATION);
                                 if (valNode != null)
                                 {
                                     String str = valNode.getTextTrim();
@@ -998,7 +1008,7 @@ public class ViewLoader
                                                                 getLabel(cellElement),
                                                                 getAttr(cellElement, "commandtype", ""),
                                                                 getAttr(cellElement, "action", "")));
-                            String initialize = getAttr(cellElement, "initialize", null);
+                            String initialize = getAttr(cellElement, INITIALIZE, null);
                             if (StringUtils.isNotEmpty(initialize))
                             {
                                 cell.setProperties(UIHelper.parseProperties(initialize));
@@ -1012,7 +1022,7 @@ public class ViewLoader
                                                                         getAttr(cellElement, "coldef", "p"),
                                                                         getAttr(cellElement, "rowdef", "p"),
                                                                         colspan, rowspan);
-                            String initialize = getAttr(cellElement, "initialize", null);
+                            String initialize = getAttr(cellElement, INITIALIZE, null);
                             if (StringUtils.isNotEmpty(initialize))
                             {
                                 cellPanel.setProperties(UIHelper.parseProperties(initialize));
@@ -1026,12 +1036,19 @@ public class ViewLoader
                         }
                         case subview:
                         {
-                            Properties properties = UIHelper.parseProperties(getAttr(cellElement, "initialize", null));
+                            Properties properties = UIHelper.parseProperties(getAttr(cellElement, INITIALIZE, null));
 
                             String svViewSetName = cellElement.attributeValue("viewsetname");
                             if (isEmpty(svViewSetName))
                             {
                                 svViewSetName = null;
+                            }
+                            
+                            if (instance.doingResourceLabels && properties != null)
+                            {
+                                String title = properties.getProperty(TITLE);
+                                properties.setProperty(TITLE, UIRegistry.getResourceString(title));
+                                
                             }
                             
                             String viewName = getAttr(cellElement, "viewname", null);

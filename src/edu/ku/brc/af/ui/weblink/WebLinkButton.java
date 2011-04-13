@@ -191,7 +191,13 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
             watchId = properties.getProperty("watch");
         }
         
-        textField.setEnabled(true);
+        if (textField != null)
+        {
+            textField.setEnabled(true);
+        } else
+        {
+            log.error("Error");
+        }
     }
 
     

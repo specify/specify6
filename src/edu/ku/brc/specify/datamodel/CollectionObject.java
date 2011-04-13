@@ -1041,7 +1041,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
      * 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "leftSide")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<CollectionRelationship> getLeftSideRels() 
     {
         return this.leftSideRels;
@@ -1056,7 +1056,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
      * 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "rightSide")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<CollectionRelationship> getRightSideRels() 
     {
         return this.rightSideRels;

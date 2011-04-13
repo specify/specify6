@@ -524,7 +524,7 @@ public class AppBase extends JPanel implements DatabaseLoginListener, CommandLis
     public static void displaySpecifyLogFiles()
     {
         File spLogFile  = getFullLogFilePath(AppBase.SPECIFY_LOG); //$NON-NLS-1$
-        File errLogFile = getFullLogFilePath(AppBase.ERROR_LOG); //$NON-NLS-1$
+        File errLogFile = getFullLogFilePath(AppBase.ERRORSYS_LOG); //$NON-NLS-1$
         
         JTabbedPane tabPane = new JTabbedPane();
         tabPane.add(getResourceString("Specify.ERROR"), getLogFilePanel(errLogFile, true)); //$NON-NLS-1$

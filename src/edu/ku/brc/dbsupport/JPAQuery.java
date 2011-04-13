@@ -189,7 +189,7 @@ public class JPAQuery implements CustomQueryIFace
         {
             try
             {
-                log.debug(sqlStr);
+                //log.debug(sqlStr);
                 Query qry = query != null ? query : session.createQuery(sqlStr);
                 
                 if (params != null)
@@ -234,10 +234,10 @@ public class JPAQuery implements CustomQueryIFace
             
         } catch (Exception ex)
         {
+            log.error(ex);
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JPAQuery.class, ex);
             log.error("** In Exception ["+sqlStr+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-            log.error(ex);
             ex.printStackTrace();
             inError = true;
             
@@ -273,7 +273,7 @@ public class JPAQuery implements CustomQueryIFace
                 }
             }
             
-            if (cql != null && cql != cqlArg)
+            if (cql != null && cqlArg != null && cql != cqlArg)
             {
                 if (inError)
                 {
@@ -295,7 +295,7 @@ public class JPAQuery implements CustomQueryIFace
      */
     protected void dumpResults()
     {
-        log.debug("-- Results Start -- Size: "+resultsList.size());
+        //log.debug("-- Results Start -- Size: "+resultsList.size());
         StringBuilder sb       = new StringBuilder();
         int           rowNum   = 0;
         boolean       firstRow = true;
@@ -317,7 +317,7 @@ public class JPAQuery implements CustomQueryIFace
                         }
                     }
                     sb.append('|');
-                    log.debug(" --- " + sb.toString()+" --- ");
+                    //log.debug(" --- " + sb.toString()+" --- ");
                 }
                 
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -337,14 +337,14 @@ public class JPAQuery implements CustomQueryIFace
                     
                 }
                 sb.append('|');
-                log.debug(rowNum+" - " + sb.toString());
+                //log.debug(rowNum+" - " + sb.toString());
             } else
             {
-                log.debug(rowNum+" - " + row);
+                //log.debug(rowNum+" - " + row);
             }
             rowNum++;
         }
-        log.debug("-- Results End --");
+        //log.debug("-- Results End --");
     }
     
     /* (non-Javadoc)

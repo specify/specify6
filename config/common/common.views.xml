@@ -6,7 +6,7 @@
         <view name="Accession"
               class="edu.ku.brc.specify.datamodel.Accession"
               busrules="edu.ku.brc.specify.datamodel.busrules.AccessionBusRules"
-              resourcelabels="false">
+              >
             <desc><![CDATA[The Accession form.]]></desc>
             <altviews>
                 <altview name="Accession View" viewdef="Accession" mode="view" default="true"/>
@@ -17,7 +17,7 @@
         <view name="AccessionCO"
             class="edu.ku.brc.specify.datamodel.Accession"
             busrules="edu.ku.brc.specify.datamodel.busrules.AccessionBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[The Accession form as seen in the CO form.]]></desc>
             <altviews>
                 <altview name="AccessionCO View" viewdef="AccessionCO" mode="view" default="true"/>
@@ -29,7 +29,7 @@
               objtitle="Accession Agent"
               class="edu.ku.brc.specify.datamodel.AccessionAgent"
               busrules="edu.ku.brc.specify.datamodel.busrules.AccessionAgentBusRules"
-              resourcelabels="false">
+              >
             <desc><![CDATA[Subform within the Accession form.]]></desc>
             <altviews>
                 <altview name="AccessionAgent View" viewdef="AccessionAgent" mode="view"/>
@@ -43,7 +43,7 @@
             objtitle="Accession Authorization"
             class="edu.ku.brc.specify.datamodel.AccessionAuthorization"
             busrules="edu.ku.brc.specify.datamodel.busrules.AccessionAuthorizationBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Permit subform within the Accession form.]]></desc>
             <altviews>
                 <altview name="AccessionAuthorization View" viewdef="AccessionAuthorization" mode="view" default="true"/>
@@ -54,7 +54,7 @@
         <view name="AgreementAgent"
               objtitle="Agreement Agent"
               class="edu.ku.brc.specify.datamodel.AccessionAgent"
-              resourcelabels="false">
+              >
             <desc><![CDATA[Subform within the Accession form.]]></desc>
             <altviews>
                 <altview name="AgreementAgent View" viewdef="AgreementAgent" mode="view"/>
@@ -65,7 +65,7 @@
        <view name="AgreementAuthorization"
             objtitle="Agreement Authorization"
             class="edu.ku.brc.specify.datamodel.AccessionAuthorization"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Permit subform within the Accession form.]]></desc>
             <altviews>
                 <altview name="AgreementAuthorization View" viewdef="AgreementAuthorization" mode="view" default="true"/>
@@ -75,7 +75,7 @@
                 
         <view name="AddressOfRecord"
             class="edu.ku.brc.specify.datamodel.AddressOfRecord"
-            resourcelabels="false">
+            >
             <desc><![CDATA[AddressOfRecord subform within the Accession form.]]></desc>
             <altviews>
                 <altview name="AddressOfRecord View" viewdef="AddressOfRecord" mode="view" default="true"/>
@@ -87,7 +87,7 @@
             class="edu.ku.brc.specify.datamodel.Appraisal"
             busrules="edu.ku.brc.specify.datamodel.busrules.AppraisalBusRules"
             isinternal="false"
-            resourcelabels="false">
+            >
             <desc><![CDATA[The appraisal subform.]]></desc>
             <altviews>
                 <altview name="Appraisal View" viewdef="Appraisal" mode="view" default="true"/>
@@ -98,7 +98,7 @@
         <view name="Borrow"
             class="edu.ku.brc.specify.datamodel.Borrow"
             busrules="edu.ku.brc.specify.datamodel.busrules.BorrowBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Borrow display form]]></desc>
             <altviews>
                 <altview name="Borrow View" viewdef="Borrow" mode="view" default="true"/>
@@ -109,7 +109,7 @@
         <view name="BorrowAgent"
             Objtitle="Borrow Agent"
             class="edu.ku.brc.specify.datamodel.BorrowAgent"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Agent subform for the Borrow form]]></desc>
             <altviews>
                 <altview name="BorrowAgent Table View" viewdef="BorrowAgent Table" mode="view"/>
@@ -121,7 +121,7 @@
         
         <view name="BorrowMaterial"
             class="edu.ku.brc.specify.datamodel.BorrowMaterial"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Borrow display form]]></desc>
             <altviews>
                 <!--    <altview name="BorrowMaterial Table View" viewdef="BorrowMaterial Table" mode="view"/>
@@ -134,7 +134,7 @@
         <view name="CollectingEventSubform"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
             busrules="edu.ku.brc.specify.datamodel.busrules.CollectingEventBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[CollectingEvent Form]]></desc>
             <altviews>
                 <altview name="CollectingEventSubform View" viewdef="CollectingEventSubform" mode="view" default="true"/>
@@ -169,7 +169,7 @@
         <view name="Collector"
             class="edu.ku.brc.specify.datamodel.Collector"
             busrules="edu.ku.brc.specify.datamodel.busrules.CollectorBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[The Collectors Form.]]></desc>
             <altviews>
                 <altview name="Collector View" viewdef="Collector" mode="view" validated="false" default="true"/>                
@@ -180,7 +180,7 @@
         <view name="Collectors"
             class="edu.ku.brc.specify.datamodel.Collector"
             busrules="edu.ku.brc.specify.datamodel.busrules.CollectorBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[The Collectors Subform.]]></desc>
             <altviews>
                 <!-- <altview name="Collectors Icon View"  viewdef="CollectorsIconView" mode="view"/>
@@ -193,7 +193,7 @@
         <view name="Collection Object Search"
             class="edu.ku.brc.specify.datamodel.CollectionObject"
             busrules="edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules"
-            resourcelabels="false"
+            
             >
             <desc><![CDATA[The Collection Object Search form.]]></desc>
             <altviews>
@@ -205,7 +205,7 @@
          <view name="AccessionItems"
               class="edu.ku.brc.specify.datamodel.CollectionObject"
               usedefbusrule="false"
-              resourcelabels="false">
+              >
               <desc><![CDATA[The Collection Object Subform for Accessions.]]></desc>
               <altviews>
                   <altview name="COS View"       viewdef="AccessionItems" mode="view"/>
@@ -218,7 +218,7 @@
          <view name="CollectionObjectSub"
               class="edu.ku.brc.specify.datamodel.CollectionObject"
               usedefbusrule="false"
-              resourcelabels="false">
+              >
               <desc><![CDATA[The Collection Object Subform for Accessions.]]></desc>
               <altviews>
                   <altview name="COS View"       viewdef="CollectionObjectSub" mode="view"/>
@@ -231,7 +231,7 @@
          <view name="CollectionObjectSubTable"
               class="edu.ku.brc.specify.datamodel.CollectionObject"
               usedefbusrule="false"
-              resourcelabels="false">
+              >
               <desc><![CDATA[The Collection Object Subform for Accessions.]]></desc>
               <altviews>
                   <altview name="COS Table Edit" viewdef="CollectionObjectSub Table" mode="edit"/>
@@ -241,7 +241,7 @@
         
         <view name="CommonNameTx"
             class="edu.ku.brc.specify.datamodel.CommonNameTx"
-            resourcelabels="false">
+            >
             <desc><![CDATA[The Common Name form.]]></desc>
             <altviews>
                 <altview name="CommonNameTx View" viewdef="CommonNameTx" mode="view" default="true"/>
@@ -253,7 +253,7 @@
             class="edu.ku.brc.specify.datamodel.ConservDescription"
             busrules="edu.ku.brc.specify.datamodel.busrules.ConservDescriptionBusRules"
             isinternal="false"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Conservation Description.]]></desc>
             <altviews>
                 <altview name="Conservation Description View" viewdef="ConservDescription" mode="view"/>
@@ -264,7 +264,7 @@
         <view name="ConservEvent"
             class="edu.ku.brc.specify.datamodel.ConservEvent"
             busrules="edu.ku.brc.specify.datamodel.busrules.ConservEventBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Conservation Event]]></desc>
             <altviews>
                 <altview name="Conservation Event View" viewdef="ConservEvent" mode="view"/>
@@ -275,7 +275,7 @@
         <view name="ConservDescriptionSub"
             class="edu.ku.brc.specify.datamodel.ConservDescription"
             busrules="edu.ku.brc.specify.datamodel.busrules.ConservDescriptionBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Conservation Description.]]></desc>
             <altviews>
                 <altview name="ConservDescriptionSub View" viewdef="ConservDescriptionSub" mode="view" default="true"/>
@@ -286,8 +286,7 @@
         <view name="Container"
             class="edu.ku.brc.specify.datamodel.Container"  
             isinternal="false"
-            busrules="edu.ku.brc.specify.datamodel.busrules.ContainerBusRules"
-            resourcelabels="false">
+            busrules="edu.ku.brc.specify.datamodel.busrules.ContainerBusRules">
             <desc><![CDATA[Conservation Description.]]></desc>
             <altviews>
                 <altview name="Container View" viewdef="Container" mode="view" default="true"/>
@@ -298,7 +297,7 @@
         <view name="ContainerBrief"
             class="edu.ku.brc.specify.datamodel.Container"  
              isinternal="true"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Conservation Description.]]></desc>
             <altviews>
                 <altview name="ContainerBrief View" viewdef="ContainerBrief" mode="view" default="true"/>
@@ -310,7 +309,7 @@
         <view name="ContainerBriefTable"
             class="edu.ku.brc.specify.datamodel.Container"  
              isinternal="true"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Conservation Description.]]></desc>
             <altviews>
                 <altview name="ContainerBrief Table View" viewdef="ContainerBrief Table" mode="view" default="true"/>
@@ -322,7 +321,7 @@
         <view name="ContainerCO"
             class="edu.ku.brc.specify.datamodel.Container"  
              isinternal="true"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Conservation Description.]]></desc>
             <altviews>
                 <altview name="ContainerCO View" viewdef="ContainerCO" mode="view" default="true"/>
@@ -332,7 +331,7 @@
         
         <view name="Deaccession"
               class="edu.ku.brc.specify.datamodel.Deaccession"
-              resourcelabels="false">
+              >
             <desc><![CDATA[The Deaccession form.]]></desc>
             <altviews>
                 <altview name="Deaccession View" viewdef="Deaccession" mode="view" default="true"/>
@@ -344,7 +343,7 @@
         <view name="Deaccession Agent"
               objtitle="Deaccession Agent"
               class="edu.ku.brc.specify.datamodel.DeaccessionAgent"
-              resourcelabels="false">
+              >
             <desc><![CDATA[Subform within the Deaccession form.]]></desc>
             <altviews>
                 <altview name="DeaccessionAgent View" viewdef="DeaccessionAgent" mode="view"/>
@@ -357,7 +356,7 @@
               class="edu.ku.brc.specify.datamodel.Determination"
               busrules="edu.ku.brc.specify.datamodel.busrules.DeterminationBusRules" 
               isexternal="true"
-              resourcelabels="false">
+              >
             <desc><![CDATA[Subform within the Collection Object form.]]></desc>
             <altviews>
                 <altview name="Determination View"       viewdef="Determination" mode="view"/>
@@ -370,7 +369,7 @@
         <view name="DeterminationViewOnly"
             class="edu.ku.brc.specify.datamodel.Determination"
             isexternal="true"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Subform within the Collection Object form.]]></desc>
             <altviews>
                 <altview name="Determination View"       viewdef="Determination" mode="view" default="true"/>
@@ -414,7 +413,7 @@
         
         <view name="ExchangeIn"
             class="edu.ku.brc.specify.datamodel.ExchangeIn"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Exchange In display form]]></desc>
             <altviews>
                 <altview name="ExchangeIn View" viewdef="ExchangeIn" mode="view" default="true"/>
@@ -424,7 +423,7 @@
         
         <view name="ExchangeOut"
             class="edu.ku.brc.specify.datamodel.ExchangeOut"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Exchange Out display form]]></desc>
             <altviews>
                 <altview name="ExchangeOut View" viewdef="ExchangeOut" mode="view" default="true"/>
@@ -436,7 +435,7 @@
             class="edu.ku.brc.specify.datamodel.FieldNotebook"
             busrules="edu.ku.brc.specify.datamodel.busrules.FieldNotebookBusRules"
             isinternal="false"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Field Notebook Form.]]></desc>
             <altviews>
                 <altview name="FieldNotebook Edit" viewdef="FieldNotebook" mode="edit"/>
@@ -470,7 +469,7 @@
         <view name="GeoCoordDetail"
             class="edu.ku.brc.specify.datamodel.GeoCoordDetail"
             isinternal="true"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Locality form.]]></desc>
             <altviews>
                 <altview name="GeoCoordDetail View" viewdef="GeoCoordDetail" mode="view"/>
@@ -481,7 +480,7 @@
         <view name="Gift"
             class="edu.ku.brc.specify.datamodel.Gift"
             busrules="edu.ku.brc.specify.datamodel.busrules.GiftBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Gift display form]]></desc>
             <altviews>
                 <altview name="Gift View" viewdef="Gift" mode="view" default="true"/>
@@ -492,7 +491,7 @@
         <view name="GiftAgent"
               objtitle="Gift Agent"
               class="edu.ku.brc.specify.datamodel.GiftAgent"
-              resourcelabels="false">
+              >
             <desc><![CDATA[Subform within the Accession form.]]></desc>
             <altviews>
                 <altview name="GiftAgent Table View" viewdef="GiftAgent Table" mode="view"/>
@@ -505,7 +504,7 @@
         <view name="GiftItems"
             class="edu.ku.brc.specify.datamodel.GiftPreparation"
             busrules="edu.ku.brc.specify.datamodel.busrules.GiftPreparationBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Gift display form]]></desc>
             <altviews>
                 <altview name="GiftItems Table View" viewdef="GiftItems Table" mode="view"/>
@@ -518,7 +517,7 @@
         <view name="Discipline"
             class="edu.ku.brc.specify.datamodel.Discipline"
             busrules="edu.ku.brc.specify.datamodel.busrules.DisciplineBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[The Discipline Object form.]]></desc>
             <altviews>
                 <altview name="Discipline View" viewdef="Discipline" mode="view" validated="false"/>
@@ -529,7 +528,7 @@
         <view name="DisciplineViewOnly"
             class="edu.ku.brc.specify.datamodel.Discipline"
             busrules="edu.ku.brc.specify.datamodel.busrules.DisciplineBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[The Discipline Object form.]]></desc>
             <altviews>
                 <altview name="Discipline View" viewdef="Discipline" mode="view" validated="false"/>
@@ -539,7 +538,7 @@
         <view name="DisciplineViewOnlyCollections"
             class="edu.ku.brc.specify.datamodel.Discipline"
             busrules="edu.ku.brc.specify.datamodel.busrules.DisciplineBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[The Discipline Object form without collections subform.]]></desc>
             <altviews>
                 <altview name="Discipline View" viewdef="DisciplineViewOnlyCollections" mode="view" validated="false"/>
@@ -550,7 +549,7 @@
         <view name="DisciplineWithoutCollections"
             class="edu.ku.brc.specify.datamodel.Discipline"
             busrules="edu.ku.brc.specify.datamodel.busrules.DisciplineBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[The Discipline Object form without collections subform.]]></desc>
             <altviews>
                 <altview name="Discipline Edit View" viewdef="DisciplineWithoutCollections" mode="view" validated="false"/>
@@ -561,7 +560,7 @@
         <view name="Collection"
             class="edu.ku.brc.specify.datamodel.Collection"
             busrules="edu.ku.brc.specify.datamodel.busrules.CollectionBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[The Collection Object form.]]></desc>
             <altviews>
                 <altview name="Collection View" viewdef="Collection" mode="view" validated="false"/>
@@ -572,7 +571,7 @@
         <view name="CollectionSub"
             class="edu.ku.brc.specify.datamodel.Collection"
             busrules="edu.ku.brc.specify.datamodel.busrules.CollectionBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[The Collection Object form.]]></desc>
             <altviews>
                 <altview name="CollectionSub View" viewdef="CollectionSub" mode="view" validated="false"/>
@@ -583,7 +582,7 @@
         <view name="CollectionGridViewOnly"
             class="edu.ku.brc.specify.datamodel.Collection"
             busrules="edu.ku.brc.specify.datamodel.busrules.CollectionBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[The Collection Object form.]]></desc>
             <altviews>
                 <altview name="Collection View" viewdef="CollectionGrid" mode="view" validated="false"/>
@@ -593,7 +592,7 @@
         <view name="CollectionGrid"
             class="edu.ku.brc.specify.datamodel.Collection"
             busrules="edu.ku.brc.specify.datamodel.busrules.CollectionBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[The Collection Object form.]]></desc>
             <altviews>
                 <altview name="CollectionGrid View" viewdef="CollectionGrid" mode="view" validated="false"/>
@@ -604,7 +603,7 @@
         <view name="CollectionForGrid"
             class="edu.ku.brc.specify.datamodel.Collection"
             busrules="edu.ku.brc.specify.datamodel.busrules.CollectionBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[The Collection Object form.]]></desc>
             <altviews>
                 <altview name="CollectionGrid View" viewdef="CollectionForGrid" mode="view" validated="false"/>
@@ -613,7 +612,7 @@
         
         <view name="Institution"
             class="edu.ku.brc.specify.datamodel.Institution"
-            resourcelabels="false">
+            >
             <desc><![CDATA[The Institution Object form.]]></desc>
             <altviews>
                 <altview name="Institution View" viewdef="Institution" mode="view" validated="false"/>
@@ -625,7 +624,7 @@
         <view name="AddressDiv"
             class="edu.ku.brc.specify.datamodel.Address"
              busrules="edu.ku.brc.specify.datamodel.busrules.AddressBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Address subform within the Accession form.]]></desc>
             <altviews>
                 <altview name="AddressDiv View" viewdef="AddressDiv" mode="view" validated="false" default="true"/>
@@ -636,7 +635,7 @@
         <view name="Division"
             class="edu.ku.brc.specify.datamodel.Division"
             busrules="edu.ku.brc.specify.datamodel.busrules.DivisionBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Subform within the Collection Object form.]]></desc>
             <altviews>
                 <altview name="Division View" viewdef="Division" mode="view"/>
@@ -647,7 +646,7 @@
         <view name="DivisionOnly"
             class="edu.ku.brc.specify.datamodel.Division"
             busrules="edu.ku.brc.specify.datamodel.busrules.DivisionBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Subform within the Collection Object form.]]></desc>
             <altviews>
                 <altview name="Division View" viewdef="DivisionOnly" mode="view"/>
@@ -658,7 +657,7 @@
         <view name="Loan"
             class="edu.ku.brc.specify.datamodel.Loan"
             busrules="edu.ku.brc.specify.datamodel.busrules.LoanBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Loan display form]]></desc>
             <altviews>
                 <altview name="Loan View" viewdef="Loan" mode="view" default="true"/>
@@ -670,7 +669,7 @@
         <view name="LoanAgent"
               objtitle="Loan Agent"
               class="edu.ku.brc.specify.datamodel.LoanAgent"
-              resourcelabels="false">
+              >
             <desc><![CDATA[Subform within the Accession form.]]></desc>
             <altviews>
                 <altview name="LoanAgent Table View" viewdef="LoanAgent Table" mode="view"/>
@@ -683,7 +682,7 @@
         <view name="LoanItems"
             class="edu.ku.brc.specify.datamodel.LoanPreparation"
             busrules="edu.ku.brc.specify.datamodel.busrules.LoanPreparationBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Loan display form]]></desc>
             <altviews>
                 <altview name="LoanItems Table View" viewdef="LoanItems Table" mode="view"/>
@@ -696,7 +695,7 @@
         <view name="LoanReturnPreparation"
             class="edu.ku.brc.specify.datamodel.LoanReturnPreparation"
             busrules="edu.ku.brc.specify.datamodel.busrules.LoanReturnPreparationBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[LoanReturnPreparation display form]]></desc>
             <altviews>
                 <altview name="LoanReturnPreparation View" viewdef="LoanReturnPreparation" mode="view" default="true"/>
@@ -708,7 +707,7 @@
             class="edu.ku.brc.specify.datamodel.Locality"
             busrules="edu.ku.brc.specify.datamodel.busrules.LocalityBusRules"
             isinternal="false"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Locality form.]]></desc>
             <altviews>
                 <altview name="Locality View" viewdef="Locality" mode="view"/>
@@ -718,7 +717,7 @@
         
         <view name="LocalityCitation"
             class="edu.ku.brc.specify.datamodel.LocalityCitation"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Locality form.]]></desc>
             <altviews>
                 <altview name="LocalityCitation View" viewdef="LocalityCitation" mode="view"/>
@@ -728,7 +727,7 @@
         
         <view name="LocalityDetail"
             class="edu.ku.brc.specify.datamodel.LocalityDetail"
-            resourcelabels="false">
+            >
             <desc><![CDATA[LocalityDetail form.]]></desc>
             <altviews>
                 <altview name="LocalityDetail View" viewdef="LocalityDetail" mode="view"/>
@@ -739,7 +738,7 @@
         <view name="LocalitySubForm"
             class="edu.ku.brc.specify.datamodel.Locality"
             busrules="edu.ku.brc.specify.datamodel.busrules.LocalityBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Locality SubForm form.]]></desc>
             <altviews>
                 <altview name="Locality SubForm View" viewdef="LocalitySubForm" mode="view"/>
@@ -750,7 +749,7 @@
         <view name="LocalityMapper"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
             busrules="edu.ku.brc.specify.datamodel.busrules.CollectingEventBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[CollectingEvent]]></desc>
             <altviews>
                 <altview name="LocalityMapper View" viewdef="LocalityMapper" mode="view" default="true"/>
@@ -760,7 +759,7 @@
         <view name="Permit"
             class="edu.ku.brc.specify.datamodel.Permit"
             busrules="edu.ku.brc.specify.datamodel.busrules.PermitBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Permit subform within the Accession form.]]></desc>
             <altviews  defaultmode="view">
                 <altview name="Permit View" viewdef="Permit" mode="view"/>
@@ -771,7 +770,7 @@
         <view name="PermitForAccessions"
             class="edu.ku.brc.specify.datamodel.Permit"
             busrules="edu.ku.brc.specify.datamodel.busrules.PermitBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Permit subform within the Accession form.]]></desc>
             <altviews>
                 <altview name="PermitForAccessions View" viewdef="PermitForAccessions" mode="view" default="true"/>
@@ -782,7 +781,7 @@
         <view name="Project"
             class="edu.ku.brc.specify.datamodel.Project"
             isinternal="false"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Project form.]]></desc>
             <altviews>
                 <altview name="Project View" viewdef="Project" mode="view" default="true"/>
@@ -792,7 +791,7 @@
         
         <view name="ProjectSub"
             class="edu.ku.brc.specify.datamodel.Project"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Project form.]]></desc>
             <altviews>
                 <altview name="ProjectSub Table View" viewdef="ProjectSub Table" mode="view" default="true"/>
@@ -802,7 +801,7 @@
         <view name="InfoRequest"
             class="edu.ku.brc.specify.datamodel.InfoRequest"
             busrules="edu.ku.brc.specify.datamodel.busrules.InfoRequestBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Subform within the InfoRequest form.]]></desc>
             <altviews>
                 <altview name="InfoRequest View" viewdef="InfoRequest" mode="view"/>
@@ -813,7 +812,7 @@
         <view name="InfoRequestColObj"
             class="edu.ku.brc.specify.datamodel.CollectionObject"
             busrules="edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Subform within the InfoRequestColObj Object form.]]></desc>
             <altviews>
                 <altview name="InfoRequestColObj View" viewdef="InfoRequestColObj" mode="view"/>
@@ -824,7 +823,7 @@
         <view name="Preparation"
               class="edu.ku.brc.specify.datamodel.Preparation"
               busrules="edu.ku.brc.specify.datamodel.busrules.PreparationBusRules"
-               resourcelabels="false">
+               >
             <desc><![CDATA[Subform within the Preparation form.]]></desc>
             <altviews>
                 <altview name="Preparation Table View" viewdef="Preparation Table" mode="view"/>
@@ -837,7 +836,7 @@
         <view name="RepositoryAgreement"
             class="edu.ku.brc.specify.datamodel.RepositoryAgreement"
             isinternal="false"
-            resourcelabels="false">
+            >
             <desc><![CDATA[The RepositoryAgreement form.]]></desc>
             <altviews>
                 <altview name="RepositoryAgreement View" viewdef="RepositoryAgreement" mode="view" default="true"/>
@@ -848,7 +847,7 @@
         <view name="Shipment"
             class="edu.ku.brc.specify.datamodel.Shipment"
             busrules="edu.ku.brc.specify.datamodel.busrules.LoanGiftShipmentBusRules"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Shipment Subform within the Loan Object form.]]></desc>
             <altviews>
                 <altview name="Shipment View" viewdef="Shipment" mode="view"/>
@@ -859,7 +858,7 @@
         <view name="SubPaleoContext"
             class="edu.ku.brc.specify.datamodel.PaleoContext"
             isinternal="true"
-            resourcelabels="false">
+            >
             <desc><![CDATA[PaleoContext subform within Collection Object form.]]></desc>
             <altviews>
                 <altview name="SubPaleoContext View" viewdef="SubPaleoContext" mode="view"/>
@@ -870,7 +869,7 @@
         <view name="TreatmentEvent"
             class="edu.ku.brc.specify.datamodel.TreatmentEvent"
             isinternal="false"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Treatment Event form.]]></desc>
             <altviews>
                 <altview name="TreatmentEvent View" viewdef="TreatmentEvent" mode="view" default="true"/>
@@ -880,7 +879,7 @@
         
         <view name="TreatmentEventForAccession"
             class="edu.ku.brc.specify.datamodel.TreatmentEvent"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Treatment Event form.]]></desc>
             <altviews>
                 <altview name="TreatmentEventForAccession View" viewdef="TreatmentEventForAccession" mode="view" default="true"/>
@@ -890,7 +889,7 @@
         
         <view name="TreatmentEventForCollObj"
             class="edu.ku.brc.specify.datamodel.TreatmentEvent"
-            resourcelabels="false">
+            >
             <desc><![CDATA[Treatment Event form.]]></desc>
             <altviews>
                 <altview name="TreatmentEventForCollObj View" viewdef="TreatmentEventForCollObj" mode="view" default="true"/>
@@ -1831,7 +1830,8 @@
             name="Container"
             class="edu.ku.brc.specify.datamodel.Container"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj"
+            useresourcelabels="true">
             
             <desc><![CDATA[Container Description]]></desc>
             <enableRules/>
@@ -1861,10 +1861,10 @@
                     <cell type="field" id="desc" name="description" uitype="textareabrief" rows="2" colspan="6"/> 
                 </row>
                 <row>
-                    <cell type="subview" id="collectionObjectKids" name="collectionObjectKids" viewname="CollectionObjectSubTable" initialize="addsearch=true;addadd=true;title=Collection Object Children of Container" defaulttype="table" colspan="8"/>               
+                    <cell type="subview" id="collectionObjectKids" name="collectionObjectKids" viewname="CollectionObjectSubTable" initialize="addsearch=true;title=COLOBJ_IN_CONTR" defaulttype="table" colspan="8"/>               
                 </row>
                 <row>
-                    <cell type="subview" id="children" name="children" viewname="ContainerBriefTable" initialize="addsearch=true;addadd=true;title=Container Children of Container" defaulttype="table" colspan="8"/>               
+                    <cell type="subview" id="children" name="children" viewname="ContainerBriefTable" initialize="addsearch=true;title=SUBCONTAINERS" defaulttype="table" colspan="8"/>               
                 </row>
            </rows>
         </viewdef>

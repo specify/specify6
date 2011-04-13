@@ -81,8 +81,9 @@ public class DataObjFieldFormatMgr
     
     protected static final Logger log = Logger.getLogger(DataObjFieldFormatMgr.class);
     
-    protected static DataObjFieldFormatMgr instance = null;
-    
+    protected static DataObjFieldFormatMgr instance   = null;
+    protected static boolean               doingLocal = false;
+
     protected boolean domFound = false;
 
     protected Hashtable<String,   DataObjSwitchFormatter> formatHash      = new Hashtable<String, DataObjSwitchFormatter>();
@@ -96,14 +97,23 @@ public class DataObjFieldFormatMgr
     
     protected String                                      localFileName   = null;
     protected boolean                                     hasChanged      = false;
-    
-    protected static boolean                              doingLocal      = false;
-    
+    protected AppContextMgr                               appContextMgr      = null;
+
     /**
      * Protected Constructor
      */
     protected DataObjFieldFormatMgr()
     {
+        init();
+        load();
+    }
+    
+    /**
+     * Constructor
+     */
+    public DataObjFieldFormatMgr(final AppContextMgr appContextMgr)
+    {
+        this.appContextMgr = appContextMgr;
         init();
         load();
     }
@@ -142,6 +152,26 @@ public class DataObjFieldFormatMgr
             typeHashRevMap.put((Class<?>)initTypeData[i+1], (String)initTypeData[i]);
             i++;
         }
+    }
+    
+    /**
+     * @return the contextMgr
+     */
+    public AppContextMgr getAppContextMgr()
+    {
+        if (appContextMgr == null)
+        {
+            appContextMgr = AppContextMgr.getInstance();
+        }
+        return appContextMgr;
+    }
+
+    /**
+     * @param contextMgr the contextMgr to set
+     */
+    public void setAppContextMgr(AppContextMgr appContextMgr)
+    {
+        this.appContextMgr = appContextMgr;
     }
     
     /**

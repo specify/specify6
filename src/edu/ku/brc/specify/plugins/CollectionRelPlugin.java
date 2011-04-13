@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -63,17 +64,18 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
     private final static String CATNUM_NAMECAP = "CatalogNumber";
     private final static String COLOBJ_NAME    = "CollectionObject";
 
-    private boolean                isLeftSide    = false;
-    private CollectionRelType      colRelType    = null;
-    private Collection             leftSideCol   = null;
-    private Collection             rightSideCol  = null;
+    private boolean                isLeftSide      = true;
+    private CollectionRelType      colRelType      = null;
+    private Collection             leftSideCol     = null;
+    private Collection             rightSideCol    = null;
     
-    private CollectionRelationship collectionRel = null;
-    private CollectionObject       otherSide     = null;
+    private CollectionObject       currentColObj   = null;
+    private CollectionRelationship collectionRel   = null;
+    private CollectionObject       otherSideColObj = null;
     
-    private ValComboBoxFromQuery   cbx           = null;
-    private TextFieldWithInfo      textWithInfo  = null;
-    private boolean                isRequired    = false;
+    private ValComboBoxFromQuery   cbx             = null;
+    private TextFieldWithInfo      textWithInfo    = null;
+    private boolean                isRequired      = false;
 
     /**
      * 
@@ -91,6 +93,8 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
     {
         super.initialize(propertiesArg, isViewModeArg);
         
+        //isUIReversed = UIHelper.getBoolean(properties.getProperty("reverseside"));
+
         String relName = propertiesArg.getProperty("relname");
         if (StringUtils.isNotEmpty(relName))
         {
@@ -130,7 +134,7 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
             
             DBTableInfo     coTI = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId());
             CellConstraints cc   = new CellConstraints();
-            PanelBuilder    pb   = new PanelBuilder(new FormLayout("p", "p"), this);
+            PanelBuilder    pb   = new PanelBuilder(new FormLayout("MAX(p;40px)", "p"), this);
             
             if (isViewModeArg)
             {
@@ -214,47 +218,152 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
     }
     
     /**
+     * @param collectionRels
+     * @param colRelToBeRemoved
+     */
+    public static  void removeFromCollectionRel(final Set<CollectionRelationship> collectionRels, 
+                                                final CollectionRelationship colRelToBeRemoved)
+    {
+        for (CollectionRelationship colRel : collectionRels)
+        {
+            if (colRel == colRelToBeRemoved || 
+                colRel.getId().equals(colRelToBeRemoved.getId()))
+            {
+                collectionRels.remove(colRel);
+                break;
+            }
+        }
+    }
+    
+    /**
      * 
      */
     private void itemSelected()
     {
-        CollectionObject newColObj = (CollectionObject)cbx.getValue();
-        CollectionObject curColObj = (CollectionObject)dataObj;
-        
-        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
-        tmpSession.attach(newColObj);
-        
-        boolean isNew = false;
-        if (collectionRel == null && colRelType != null)
+        SwingUtilities.invokeLater(new Runnable()
         {
-            collectionRel = new CollectionRelationship();
-            collectionRel.initialize();
-            collectionRel.setCollectionRelType(colRelType);
-            colRelType.getRelationships().add(collectionRel);
-            isNew = true;
-        }
-        
-        if (isLeftSide)
-        {
-            collectionRel.setLeftSide(curColObj);
-            collectionRel.setRightSide(newColObj);
-            if (isNew)
+            @Override
+            public void run()
             {
-                curColObj.getLeftSideRels().add(collectionRel);
-                newColObj.getRightSideRels().add(collectionRel);
+                itemSelectedInternal();
+                
             }
-        } else
+        });
+    }
+    
+    /**
+     * 
+     */
+    private void itemSelectedInternal()
+    {
+        CollectionObject newOtherSide = (CollectionObject)cbx.getValue();
+        if (newOtherSide != null)
         {
-            collectionRel.setLeftSide(newColObj);
-            collectionRel.setRightSide(curColObj);
-            if (isNew)
+            DataProviderSessionIFace tmpSession = null;
+            try
             {
-                newColObj.getLeftSideRels().add(collectionRel);
-                curColObj.getRightSideRels().add(collectionRel);
+                tmpSession = DataProviderFactory.getInstance().createSession();
+                tmpSession.attach(newOtherSide);
+                
+                boolean isNew = false;
+                if (collectionRel == null && colRelType != null)
+                {
+                    collectionRel = new CollectionRelationship();
+                    collectionRel.initialize();
+                    collectionRel.setCollectionRelType(colRelType);
+                    colRelType.getRelationships().add(collectionRel);
+                    isNew = true;
+                }
+                
+                // Force Load 
+                //tmpSession.attach(currentColObj);
+                currentColObj.getLeftSideRels().size();
+                currentColObj.getRightSideRels().size();
+                
+                // Is the other sidw already hooked up
+                // if it is a different ColObj then remove the link.
+                if (otherSideColObj != null && !newOtherSide.getId().equals(otherSideColObj.getId()))
+                {
+                    if (isLeftSide)
+                    {
+                        removeFromCollectionRel(otherSideColObj.getRightSideRels(), collectionRel);
+                        collectionRel.setRightSide(null);
+                        
+                    } else
+                    {
+                        removeFromCollectionRel(otherSideColObj.getLeftSideRels(), collectionRel);
+                        collectionRel.setLeftSide(null);
+                    }
+                }
+                
+                otherSideColObj = newOtherSide;
+                otherSideColObj.getLeftSideRels().size();
+                otherSideColObj.getRightSideRels().size();
+                
+                if (isLeftSide)
+                {
+                    collectionRel.setLeftSide(currentColObj);
+                    collectionRel.setRightSide(otherSideColObj);
+                    if (isNew)
+                    {
+                        currentColObj.getLeftSideRels().add(collectionRel);
+                        otherSideColObj.getRightSideRels().add(collectionRel);
+                    }
+                } else
+                {
+                    collectionRel.setLeftSide(otherSideColObj);
+                    collectionRel.setRightSide(currentColObj);
+                    if (isNew)
+                    {
+                        otherSideColObj.getLeftSideRels().add(collectionRel);
+                        currentColObj.getRightSideRels().add(collectionRel);
+                    }
+                }
+
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                
+            } finally
+            {
+                if (tmpSession != null) tmpSession.close();
+            }
+        } else if (dataObj != null && otherSideColObj != null)
+        {
+            DataProviderSessionIFace tmpSession = null;
+            try
+            {
+                tmpSession = DataProviderFactory.getInstance().createSession();
+                //tmpSession.attach(collectionRel);
+                //tmpSession.attach(currentColObj);
+                otherSideColObj = tmpSession.merge(otherSideColObj);
+                
+                if (isLeftSide)
+                {
+                    removeFromCollectionRel(currentColObj.getLeftSideRels(), collectionRel);
+                    removeFromCollectionRel(otherSideColObj.getRightSideRels(), collectionRel);
+                    
+                } else // right side
+                {
+                    removeFromCollectionRel(currentColObj.getRightSideRels(), collectionRel);
+                    removeFromCollectionRel(otherSideColObj.getLeftSideRels(), collectionRel);
+                }
+                collectionRel.setRightSide(null);
+                collectionRel.setLeftSide(null);
+                
+                if (collectionRel.getId() != null && fvo != null)
+                {
+                    fvo.getMVParent().getTopLevel().addDeletedItem(collectionRel);
+                }
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            } finally
+            {
+                if (tmpSession != null) tmpSession.close();
             }
         }
-        
-        tmpSession.close();
     }
     
     /**
@@ -277,42 +386,49 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
      * @see edu.ku.brc.specify.plugins.UIPluginBase#setValue(java.lang.Object, java.lang.String)
      */
     @Override
-    public void setValue(Object value, String defaultValue)
+    public void setValue(final Object value, final String defaultValue)
     {
-        super.setValue(value, defaultValue);
+        super.setValue(value, defaultValue); // sets 'dataObj'
         
         if (value instanceof CollectionObject && colRelType != null)
         {
-            Collection currCollection = AppContextMgr.getInstance().getClassObject(Collection.class);
+            currentColObj   = (CollectionObject)value;
+            otherSideColObj = null;
             
-            otherSide = null;
-            
-            CollectionObject colObj = (CollectionObject)value;
-            
-            isLeftSide = currCollection.getId().equals(colObj.getCollectionMemberId());
-            
-            Set<CollectionRelationship> rels = isLeftSide ? colObj.getLeftSideRels() : colObj.getRightSideRels();
-
-            for (CollectionRelationship colRel : rels)
+            Set<CollectionRelationship> collectionRels = isLeftSide ? currentColObj.getLeftSideRels() : currentColObj.getRightSideRels();
+            for (CollectionRelationship colRel : collectionRels)
             {
                 if (colRel.getCollectionRelType().getId().equals(colRelType.getId()))
                 {
-                    collectionRel = colRel;
-                    otherSide = isLeftSide ? colRel.getRightSide() : colRel.getLeftSide();
+                    collectionRel   = colRel;
+                    otherSideColObj = isLeftSide ? colRel.getRightSide() : colRel.getLeftSide();
+                    otherSideColObj.getLeftSideRels().size();
                     break;
                 }
             }
             
             if (cbx != null)
             {
-                cbx.setValue(otherSide, null);
+                cbx.setValue(otherSideColObj, null);
             } else
             {
-                textWithInfo.setValue(otherSide, null);
+                textWithInfo.setValue(otherSideColObj, null);
             }
+        } else
+        {
+            currentColObj = null;
         }
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.UIPluginBase#getValue()
+     */
+    @Override
+    public Object getValue()
+    {
+        return cbx != null ? cbx.getValue() : super.getValue();
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.UIPluginable#getFieldNames()
      */

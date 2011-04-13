@@ -621,13 +621,10 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 //to prevent sporadic "illegal access to loading collection" hibernate errors.
                 try
                 {
-                    DataProviderSessionIFace session = null;
                     for (String currentCat : nums)
                     {
                         try
                         {
-                            //System.out.println(currentCat);
-                            
                             co = new CollectionObject();
                             co.initialize();
                             
@@ -646,9 +643,6 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                         {
                             log.error(ex);
                             objectsNotAdded.add(co.getCatalogNumber());
-                        } finally 
-                        {
-                            if (session != null) session.close();                   
                         }
                         cnt++;
                         firePropertyChange(GLASSKEY, 0, cnt);

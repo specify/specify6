@@ -70,7 +70,7 @@
         <plugin name="LatLonUI"               class="edu.ku.brc.specify.plugins.latlon.LatLonUI"/>
 		<plugin name="ContainerPlugin"          class="edu.ku.brc.specify.plugins.ContainerPlugin"/>
         <plugin name="ContainersColObjPlugin" class="edu.ku.brc.specify.plugins.ContainersColObjPlugin"/>
-		
+        <plugin name="CollectionRelOneToManyPlugin" class="edu.ku.brc.specify.plugins.CollectionRelOneToManyPlugin"/>
 		
 		<!-- 
 		<plugin name="MorphBankPanel"       class="edu.ku.brc.specify.plugins.morphbank.MorphBankPanel"/>

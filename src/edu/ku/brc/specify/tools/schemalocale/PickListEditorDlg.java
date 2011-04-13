@@ -629,6 +629,11 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         final String path = dirStr + fileName;
         
         File file = new File(path);
+        if (!file.exists())
+        {
+            UIRegistry.showLocalizedError(getI18n("PL_FILE_NOT_EXIST"), file.getAbsoluteFile());
+            return;
+        }
         List<BldrPickList> bldrPickLists = DataBuilder.getBldrPickLists(null, file);
         
         Integer cnt = null;

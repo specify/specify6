@@ -84,7 +84,7 @@ public class CollectionRelTask extends BaseTask
     private static final String  COLREL_MENU      = "COLREL_MENU";
     private static final String  COLREL_MNU       = "COLREL_MNU";
     private static final String  COLREL_TITLE     = "COLREL_TITLE";
-    private static final String  COLREL_SECURITY   = "COLRELEDIT";
+    private static final String  COLREL_SECURITY  = "COLRELEDIT";
     
     
     

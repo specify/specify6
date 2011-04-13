@@ -189,7 +189,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     protected DataProviderSessionIFace globalSession    = null;
     protected int                      openSessionCount = 0;
     
-    protected Boolean         isSecurityOn         = null;
+    protected Boolean                  isSecurityOn     = null;
     
     /**
      * Singleton Constructor.
@@ -487,14 +487,14 @@ public class SpecifyAppContextMgr extends AppContextMgr
     
     /**
      * Sets up the "current" Collection by first checking prefs for the most recent primary key,
-     * if it can't get it then it asks the user to select one. (Note: if there is only one it automatically chooses it)
-     * @param sessionArg a session
      * @param userArg the user object of the current object
-     * @param alwaysAsk indicates the User should always be asked which Collection to use
+     * @param promptForCollection indicates the User should always be asked which Collection to use
+     * @param collectionName name of collection to choose (can be null)
      * @return the current Collection or null
      */
     protected Collection setupCurrentCollection(final SpecifyUser userArg,
-                                                final boolean     promptForCollection)
+                                                final boolean     promptForCollection,
+                                                final String      collectionName)
     {
         DataProviderSessionIFace session = null;
         try
@@ -540,25 +540,29 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
     
             Pair<String, Integer> currColl = null;
-            String         recentIds = askForColl || promptForCollection ? null : remotePrefs.get(prefName, null);
-            if (StringUtils.isNotEmpty(recentIds))
-            {
-                Vector<Object[]> rows = BasicSQLUtils.query("SELECT CollectionName, UserGroupScopeId FROM collection WHERE UserGroupScopeId = " + recentIds); //$NON-NLS-1$
-                if (rows.size() == 1)
-                {
-                    String  collName = rows.get(0)[0].toString();
-                    Integer collId   = (Integer)rows.get(0)[1];
-                    currColl = new Pair<String, Integer>(collName, collId);
-                    
-                } else
-                {
-                    log.debug("could NOT find recent ids"); //$NON-NLS-1$
-                }
-            }
             
-            if (currColl != null && collectionHash.get(currColl.first) == null)
+            if (collectionName == null)
             {
-                currColl = null;
+                String recentIds = askForColl || promptForCollection ? null : remotePrefs.get(prefName, null);
+                if (StringUtils.isNotEmpty(recentIds))
+                {
+                    Vector<Object[]> rows = BasicSQLUtils.query("SELECT CollectionName, UserGroupScopeId FROM collection WHERE UserGroupScopeId = " + recentIds); //$NON-NLS-1$
+                    if (rows.size() == 1)
+                    {
+                        String  collName = rows.get(0)[0].toString();
+                        Integer collId   = (Integer)rows.get(0)[1];
+                        currColl = new Pair<String, Integer>(collName, collId);
+                        
+                    } else
+                    {
+                        log.debug("could NOT find recent ids"); //$NON-NLS-1$
+                    }
+                }
+                
+                if (currColl != null && collectionHash.get(currColl.first) == null)
+                {
+                    currColl = null;
+                }
             }
             
             
@@ -570,38 +574,51 @@ public class SpecifyAppContextMgr extends AppContextMgr
     
                 } else if (collectionHash.size() > 0)
                 {
-                    List<Pair<String, Integer>> list = new Vector<Pair<String, Integer>>();
-                    list.addAll(collectionHash.values());
-                    Collections.sort(list, new Comparator<Pair<String, Integer>>() {
-                        @Override
-                        public int compare(Pair<String, Integer> o1, Pair<String, Integer> o2)
-                        {
-                            return o1.first.compareTo(o2.first);
-                        }
-                    });
-                    
-                    int selectColInx = -1;
-                    
-                    ChooseCollectionDlg colDlg = null;
-                    do {
-                        colDlg = new ChooseCollectionDlg(list);
-                        colDlg.setSelectedIndex(selectColInx);
-                        colDlg.createUI();
-                        colDlg.pack();
-                        Dimension size = colDlg.getSize();
-                        size.width  = Math.max(size.width, 300);
-                        if (size.height < 150)
-                        {
-                            size.height += 100;
-                        }
-                        colDlg.setSize(size);
+                    if (collectionName == null)
+                    {
+                        List<Pair<String, Integer>> list = new Vector<Pair<String, Integer>>();
+                        list.addAll(collectionHash.values());
+                        Collections.sort(list, new Comparator<Pair<String, Integer>>() {
+                            @Override
+                            public int compare(Pair<String, Integer> o1, Pair<String, Integer> o2)
+                            {
+                                return o1.first.compareTo(o2.first);
+                            }
+                        });
                         
-                        UIHelper.centerWindow(colDlg);
-                        colDlg.setVisible(true);
+                        int selectColInx = -1;
                         
-                    } while (colDlg.getSelectedObject() == null || colDlg.isCancelled());
-                    
-                    currColl = colDlg.getSelectedObject();
+                        ChooseCollectionDlg colDlg = null;
+                        do {
+                            colDlg = new ChooseCollectionDlg(list);
+                            colDlg.setSelectedIndex(selectColInx);
+                            colDlg.createUI();
+                            colDlg.pack();
+                            Dimension size = colDlg.getSize();
+                            size.width  = Math.max(size.width, 300);
+                            if (size.height < 150)
+                            {
+                                size.height += 100;
+                            }
+                            colDlg.setSize(size);
+                            
+                            UIHelper.centerWindow(colDlg);
+                            colDlg.setVisible(true);
+                            
+                        } while (colDlg.getSelectedObject() == null || colDlg.isCancelled());
+                        
+                        currColl = colDlg.getSelectedObject();
+                    } else
+                    {
+                        Integer colId = BasicSQLUtils.getCount(String.format("SELECT CollectionID FROM collection WHERE CollectionName = '%s'", collectionName));
+                        if (colId != null)
+                        {
+                            currColl = new Pair<String, Integer>(collectionName, colId);
+                        } else
+                        {
+                            return null;
+                        }
+                    }
                 }
             }
             
@@ -609,8 +626,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             if (currColl != null)
             {
-                //session = DataProviderFactory.getInstance().createSession();
-                
                 collection = (Collection)session.getData("FROM Collection WHERE id = " + currColl.second);
                 if (collection != null)
                 {
@@ -622,56 +637,48 @@ public class SpecifyAppContextMgr extends AppContextMgr
             if (collection == null)
             {
                 UIRegistry.showLocalizedError("SpecifyAppContextMgr.ERR_NO_COLL");
-                //CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit"));
                 return null;
             }
             
             setClassObject(Collection.class, collection);
             
-            String colObjStr = "CollectionObject"; //$NON-NLS-1$
-            String iconName = remotePrefs.get(FormattingPrefsPanel.getDisciplineImageName(), colObjStr);
-            if (StringUtils.isEmpty(iconName) || iconName.equals(colObjStr))
+            if (collectionName == null)
             {
-                iconName = "colobj_backstop"; //$NON-NLS-1$
-            }
-            
-            IconManager.aliasImages(iconName,                  // Source
-                                    colObjStr);                // Dest //$NON-NLS-1$
-
-            IconManager.aliasImages(iconName,                  // Source
-                                    colObjStr.toLowerCase());  // Dest //$NON-NLS-1$
-            
-            if (collection != null)
-            {
-                
-                Discipline discipline = collection.getDiscipline();
-                session.attach(discipline);
-                
-                Institution institution = discipline.getDivision().getInstitution();
-                session.attach(institution);
-                
-                setClassObject(Institution.class, institution);
-                
-                if (discipline != null)
+                String colObjStr = "CollectionObject"; //$NON-NLS-1$
+                String iconName = remotePrefs.get(FormattingPrefsPanel.getDisciplineImageName(), colObjStr);
+                if (StringUtils.isEmpty(iconName) || iconName.equals(colObjStr))
                 {
-                    Agent.setUserAgent(spUser, discipline.getDivision());
-                    
-                    AppContextMgr am = AppContextMgr.getInstance();
-                    discipline.getTaxonTreeDef().forceLoad();
-                    am.setClassObject(TaxonTreeDef.class,              discipline.getTaxonTreeDef());
-                    discipline.getGeologicTimePeriodTreeDef().forceLoad();
-                    am.setClassObject(GeologicTimePeriodTreeDef.class, discipline.getGeologicTimePeriodTreeDef());
-                    institution.getStorageTreeDef().forceLoad();
-                    am.setClassObject(StorageTreeDef.class,            institution.getStorageTreeDef());
-                    discipline.getLithoStratTreeDef().forceLoad();
-                    am.setClassObject(LithoStratTreeDef.class,         discipline.getLithoStratTreeDef());
-                    discipline.getGeographyTreeDef().forceLoad();
-                    am.setClassObject(GeographyTreeDef.class,          discipline.getGeographyTreeDef());
+                    iconName = "colobj_backstop"; //$NON-NLS-1$
                 }
-            } else
-            {
-                showLocalizedError("SpecifyAppContextMgr.COL_WAS_NULL"); //$NON-NLS-1$
+            
+                IconManager.aliasImages(iconName,                  // Source
+                                        colObjStr);                // Dest //$NON-NLS-1$
+    
+                IconManager.aliasImages(iconName,                  // Source
+                                        colObjStr.toLowerCase());  // Dest //$NON-NLS-1$
             }
+            
+            Discipline discipline = collection.getDiscipline();
+            session.attach(discipline);
+            
+            Institution institution = discipline.getDivision().getInstitution();
+            session.attach(institution);
+            
+            setClassObject(Institution.class, institution);
+            
+            Agent.setUserAgent(spUser, discipline.getDivision());
+            
+            AppContextMgr am = AppContextMgr.getInstance();
+            discipline.getTaxonTreeDef().forceLoad();
+            am.setClassObject(TaxonTreeDef.class,              discipline.getTaxonTreeDef());
+            discipline.getGeologicTimePeriodTreeDef().forceLoad();
+            am.setClassObject(GeologicTimePeriodTreeDef.class, discipline.getGeologicTimePeriodTreeDef());
+            institution.getStorageTreeDef().forceLoad();
+            am.setClassObject(StorageTreeDef.class,            institution.getStorageTreeDef());
+            discipline.getLithoStratTreeDef().forceLoad();
+            am.setClassObject(LithoStratTreeDef.class,         discipline.getLithoStratTreeDef());
+            discipline.getGeographyTreeDef().forceLoad();
+            am.setClassObject(GeographyTreeDef.class,          discipline.getGeographyTreeDef());
             
             return collection;
             
@@ -1211,13 +1218,35 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                      final boolean startingOver,
                                      final boolean doPrompt)
     {
+        return setContext(databaseName, userName, startingOver, doPrompt, null);
+    }
+
+    /**
+     * @param databaseName
+     * @param userName
+     * @param startingOver
+     * @param doPrompt
+     * @param collectionName
+     * @return
+     */
+    public CONTEXT_STATUS setContext(final String  databaseName,
+                                     final String  userName,
+                                     final boolean startingOver,
+                                     final boolean doPrompt,
+                                     final String collectionName)
+    {
+        boolean isFirstTime = collectionName == null;
+        
         if (debug)  log.debug("setting context - databaseName: [" + databaseName + "] userName: [" + userName + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         
         this.databaseName = databaseName;
         this.userName     = userName;
         this.hasContext   = true;
         
-        DBTableIdMgr.getInstance().clearPermissions();
+        if (isFirstTime)
+        {
+            DBTableIdMgr.getInstance().clearPermissions();
+        }
         
         // This is where we will read it in from the Database
         // but for now we don't need to do that.
@@ -1236,6 +1265,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
             showLocalizedError("SpecifyAppContextMgr.SCHEMA_OUTOF_SYNC"); //$NON-NLS-1$
             System.exit(0);
+        }
+        
+        if (session == null)
+        {
+            return CONTEXT_STATUS.Error;
         }
         
         try
@@ -1299,7 +1333,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // work with for this "Context" then we need to go get all the Default View and
             // additional XML Resources.
             
-            FixDBAfterLogin.fixUserPermissions(false);
+            if (isFirstTime)
+            {
+                FixDBAfterLogin.fixUserPermissions(false);
+            }
             
             Collection curColl = getClassObject(Collection.class);
             int prevCollectionId =  curColl != null ? curColl.getCollectionId() : -1;
@@ -1312,7 +1349,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             setClassObject(SpecifyUser.class, user);
 
             // Ask the User to choose which Collection they will be working with
-            Collection collection = setupCurrentCollection(user, doPrompt);
+            Collection collection = setupCurrentCollection(user, doPrompt, collectionName);
             if (collection == null)
             {
                 // Return false but don't mess with anything that has been set up so far
@@ -1360,132 +1397,135 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
             setClassObject(Agent.class, userAgent);
             
-            AppPreferences.startup();
-            
-            //--------------------------------------------------------------------------------
-            // Check for locks set on uploader, tree update, ...
-            //--------------------------------------------------------------------------------
-            
-            int uploadLockCheckResult = Uploader.checkUploadLock(null);
-            boolean noLocks = uploadLockCheckResult != Uploader.LOCKED;
-            boolean goodTrees = true;
-            if (uploadLockCheckResult != Uploader.LOCK_IGNORED)
+            if (isFirstTime)
             {
-                if (noLocks)
+                AppPreferences.startup();
+            
+                //--------------------------------------------------------------------------------
+                // Check for locks set on uploader, tree update, ...
+                //--------------------------------------------------------------------------------
+                
+                int uploadLockCheckResult = Uploader.checkUploadLock(null);
+                boolean noLocks = uploadLockCheckResult != Uploader.LOCKED;
+                boolean goodTrees = true;
+                if (uploadLockCheckResult != Uploader.LOCK_IGNORED)
                 {
-                    if (!discipline.getTaxonTreeDef()
-                            .checkNodeRenumberingLock())
+                    if (noLocks)
                     {
-                        noLocks = false;
-                        UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
-                                discipline.getTaxonTreeDef().getName());
+                        if (!discipline.getTaxonTreeDef()
+                                .checkNodeRenumberingLock())
+                        {
+                            noLocks = false;
+                            UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
+                                    discipline.getTaxonTreeDef().getName());
+                        }
                     }
-                }
-                if (noLocks)
-                {
-                    if (!discipline.getGeographyTreeDef()
-                            .checkNodeRenumberingLock())
+                    if (noLocks)
                     {
-                        noLocks = false;
-                        UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
-                                discipline.getGeographyTreeDef().getName());
+                        if (!discipline.getGeographyTreeDef()
+                                .checkNodeRenumberingLock())
+                        {
+                            noLocks = false;
+                            UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
+                                    discipline.getGeographyTreeDef().getName());
+                        }
                     }
-                }
-                if (noLocks)
-                {
-                    if (!division.getInstitution().getStorageTreeDef()
-                            .checkNodeRenumberingLock())
+                    if (noLocks)
                     {
-                        noLocks = false;
-                        UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
-                                division.getInstitution().getStorageTreeDef().getName());
+                        if (!division.getInstitution().getStorageTreeDef()
+                                .checkNodeRenumberingLock())
+                        {
+                            noLocks = false;
+                            UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
+                                    division.getInstitution().getStorageTreeDef().getName());
+                        }
                     }
-                }
-                if (noLocks
-                        && discipline.getGeologicTimePeriodTreeDef() != null)
-                {
-                    if (!discipline.getGeologicTimePeriodTreeDef()
-                            .checkNodeRenumberingLock())
-                    {
-                        noLocks = false;
-                        UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
-                                discipline.getGeologicTimePeriodTreeDef().getName());
-                    }
-                }
-                if (noLocks && discipline.getLithoStratTreeDef() != null)
-                {
-                    if (!discipline.getLithoStratTreeDef()
-                            .checkNodeRenumberingLock())
-                    {
-                        noLocks = false;
-                        UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
-                                discipline.getLithoStratTreeDef().getName());
-                    }
-                }
-
-                if (noLocks)
-                {
-                    // Now force node number updates for trees that are
-                    // out-of-date
-                    goodTrees = discipline.getTaxonTreeDef()
-                            .checkNodeNumbersUpToDate(true);
-                    if (goodTrees)
-                    {
-                        goodTrees = discipline.getGeographyTreeDef()
-                                .checkNodeNumbersUpToDate(true);
-                    }
-                    if (goodTrees)
-                    {
-                        goodTrees = division.getInstitution()
-                                .getStorageTreeDef().checkNodeNumbersUpToDate(true);
-                    }
-                    if (goodTrees
+                    if (noLocks
                             && discipline.getGeologicTimePeriodTreeDef() != null)
                     {
-                        goodTrees = discipline.getGeologicTimePeriodTreeDef()
-                                .checkNodeNumbersUpToDate(true);
+                        if (!discipline.getGeologicTimePeriodTreeDef()
+                                .checkNodeRenumberingLock())
+                        {
+                            noLocks = false;
+                            UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
+                                    discipline.getGeologicTimePeriodTreeDef().getName());
+                        }
                     }
-                    if (goodTrees && discipline.getLithoStratTreeDef() != null)
+                    if (noLocks && discipline.getLithoStratTreeDef() != null)
                     {
-                        goodTrees = discipline.getLithoStratTreeDef()
+                        if (!discipline.getLithoStratTreeDef()
+                                .checkNodeRenumberingLock())
+                        {
+                            noLocks = false;
+                            UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
+                                    discipline.getLithoStratTreeDef().getName());
+                        }
+                    }
+    
+                    if (noLocks)
+                    {
+                        // Now force node number updates for trees that are
+                        // out-of-date
+                        goodTrees = discipline.getTaxonTreeDef()
                                 .checkNodeNumbersUpToDate(true);
+                        if (goodTrees)
+                        {
+                            goodTrees = discipline.getGeographyTreeDef()
+                                    .checkNodeNumbersUpToDate(true);
+                        }
+                        if (goodTrees)
+                        {
+                            goodTrees = division.getInstitution()
+                                    .getStorageTreeDef().checkNodeNumbersUpToDate(true);
+                        }
+                        if (goodTrees
+                                && discipline.getGeologicTimePeriodTreeDef() != null)
+                        {
+                            goodTrees = discipline.getGeologicTimePeriodTreeDef()
+                                    .checkNodeNumbersUpToDate(true);
+                        }
+                        if (goodTrees && discipline.getLithoStratTreeDef() != null)
+                        {
+                            goodTrees = discipline.getLithoStratTreeDef()
+                                    .checkNodeNumbersUpToDate(true);
+                        }
                     }
                 }
-            }
-            
-            if (!noLocks || !goodTrees)
-            {
-                user.setIsLoggedIn(false);
-                user.setLoginOutTime(new Timestamp(System.currentTimeMillis()));
-                try
+                
+                if (!noLocks || !goodTrees)
                 {
-                    session.beginTransaction();
-                    session.saveOrUpdate(user);
-                    session.commit();
-                    
-                } catch (Exception ex)
-                {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
-                    log.error(ex);
+                    user.setIsLoggedIn(false);
+                    user.setLoginOutTime(new Timestamp(System.currentTimeMillis()));
+                    try
+                    {
+                        session.beginTransaction();
+                        session.saveOrUpdate(user);
+                        session.commit();
+                        
+                    } catch (Exception ex)
+                    {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
+                        log.error(ex);
+                    }
+                    System.exit(0);
                 }
-                System.exit(0);
-            }
-            else
-            {
-                user.setLoginCollectionName(collection.getCollectionName());
-                user.setLoginDisciplineName(discipline.getName());
-                try
+                else
                 {
-                    session.beginTransaction();
-                    session.saveOrUpdate(user);
-                    session.commit();
-                    
-                } catch (Exception ex)
-                {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
-                    log.error(ex);
+                    user.setLoginCollectionName(collection.getCollectionName());
+                    user.setLoginDisciplineName(discipline.getName());
+                    try
+                    {
+                        session.beginTransaction();
+                        session.saveOrUpdate(user);
+                        session.commit();
+                        
+                    } catch (Exception ex)
+                    {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
+                        log.error(ex);
+                    }
                 }
             }
             
@@ -1569,21 +1609,27 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 spAppResourceHash.put(BACKSTOPDIR, appResDir);
             }
             
-            SpecifyAppPrefs.initialPrefs();
+            if (isFirstTime)
+            {
+                SpecifyAppPrefs.initialPrefs();
+            }
             
             closeSession();
             session = null;
             
-            FixDBAfterLogin.fixDefaultDates();
-            
-            if (prevDisciplineId != -1)
+            if (isFirstTime)
             {
-                CommandDispatcher.dispatch(new CommandAction("Discipline", "Changed")); //$NON-NLS-1$ //$NON-NLS-2$
-            }
-            
-            if (prevCollectionId != -1)
-            {
-                CommandDispatcher.dispatch(new CommandAction("Collection", "Changed")); //$NON-NLS-1$ //$NON-NLS-2$
+                FixDBAfterLogin.fixDefaultDates();
+                
+                if (prevDisciplineId != -1)
+                {
+                    CommandDispatcher.dispatch(new CommandAction("Discipline", "Changed")); //$NON-NLS-1$ //$NON-NLS-2$
+                }
+                
+                if (prevCollectionId != -1)
+                {
+                    CommandDispatcher.dispatch(new CommandAction("Collection", "Changed")); //$NON-NLS-1$ //$NON-NLS-2$
+                }
             }
             
             // We must check here before we load the schema
@@ -1591,79 +1637,83 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             session = openSession();
             
-            // Now load the Schema, but make sure the Discipline has a localization.
-            // for the current locale.
-            int disciplineId = getClassObject(Discipline.class).getDisciplineId();
-            if (disciplineId != prevDisciplineId)
+            if (isFirstTime)
             {
-                Locale       engLocale  = null;
-                Locale       fndLocale  = null;
-                Locale       currLocale = SchemaI18NService.getCurrentLocale();
-                List<Locale> locales    = SchemaI18NService.getInstance().getLocalesFromData(SpLocaleContainer.CORE_SCHEMA, disciplineId);
-                for (Locale locale : locales)
+                // Now load the Schema, but make sure the Discipline has a localization.
+                // for the current locale.
+                int disciplineId = getClassObject(Discipline.class).getDisciplineId();
+                if (disciplineId != prevDisciplineId)
                 {
-                    if (locale.equals(currLocale))
+                    Locale       engLocale  = null;
+                    Locale       fndLocale  = null;
+                    Locale       currLocale = SchemaI18NService.getCurrentLocale();
+                    List<Locale> locales    = SchemaI18NService.getInstance().getLocalesFromData(SpLocaleContainer.CORE_SCHEMA, disciplineId);
+                    for (Locale locale : locales)
                     {
-                        fndLocale = currLocale;
-                    }
-                    if (locale.getLanguage().equals("en"))
-                    {
-                        engLocale = currLocale;
-                    }
-                }
-                if (fndLocale == null)
-                {
-                    if (engLocale != null)
-                    {
-                        fndLocale = engLocale;
-                        
-                    } else if (locales != null && locales.size() > 0)
-                    {
-                        fndLocale = locales.get(0);
-                    } else
-                    {
-                        currentStatus = CONTEXT_STATUS.Error;
-                        String msg = "Specify was unable to a Locale in the Schema Config for this discipline.\nPlease contact S[ecify support immediately.";
-                        UIRegistry.showError(msg);
-                        AppPreferences.shutdownAllPrefs();
-                        DataProviderFactory.getInstance().shutdown();
-                        DBConnection.shutdown();
-                        System.exit(0);
-                        return currentStatus;
-                    }
-                    
-                    fndLocale = engLocale != null ? engLocale : locales.get(0);
-                    SchemaI18NService.setCurrentLocale(fndLocale);
-                    Locale.setDefault(fndLocale);
-                    UIRegistry.displayErrorDlgLocalized("SpecifyAppContextMgr.NO_LOCALE", discipline.getName(), currLocale.getDisplayName(), fndLocale.getDisplayName());
-                }
-                SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineId, DBTableIdMgr.getInstance(), Locale.getDefault());
-            }
-            
-            UIFieldFormatterIFace catNumFmtr = UIFieldFormatterMgr.getInstance().getFormatter(collection.getCatalogNumFormatName());
-            if (catNumFmtr != null)
-            {
-                DBFieldInfo field = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()).getFieldByName("catalogNumber");
-                field.setFormatter(catNumFmtr);
-            }
-            
-            Institution institution = getClassObject(Institution.class);
-            if (!institution.getIsAccessionsGlobal())
-            {
-                for (AutoNumberingScheme ans : collection.getNumberingSchemes())
-                {
-                    if (ans.getTableNumber() != null && ans.getTableNumber().equals(Accession.getClassTableId()))
-                    {
-                        DBFieldInfo field = DBTableIdMgr.getInstance().getInfoById(Accession.getClassTableId()).getFieldByName("accessionNumber");
-                        if (field != null)
+                        if (locale.equals(currLocale))
                         {
-                            UIFieldFormatterIFace accNumFmtr = UIFieldFormatterMgr.getInstance().getFormatter(ans.getFormatName());
-                            if (accNumFmtr != null)
-                            {
-                                field.setFormatter(accNumFmtr);
-                            }
+                            fndLocale = currLocale;
                         }
-                        break;
+                        if (locale.getLanguage().equals("en"))
+                        {
+                            engLocale = currLocale;
+                        }
+                    }
+                    if (fndLocale == null)
+                    {
+                        if (engLocale != null)
+                        {
+                            fndLocale = engLocale;
+                            
+                        } else if (locales.size() > 0)
+                        {
+                            fndLocale = locales.get(0);
+                            
+                        } else
+                        {
+                            currentStatus = CONTEXT_STATUS.Error;
+                            String msg = "Specify was unable to a Locale in the Schema Config for this discipline.\nPlease contact S[ecify support immediately.";
+                            UIRegistry.showError(msg);
+                            AppPreferences.shutdownAllPrefs();
+                            DataProviderFactory.getInstance().shutdown();
+                            DBConnection.shutdown();
+                            System.exit(0);
+                            return currentStatus;
+                        }
+                        
+                        fndLocale = engLocale != null ? engLocale : locales.get(0);
+                        SchemaI18NService.setCurrentLocale(fndLocale);
+                        Locale.setDefault(fndLocale);
+                        UIRegistry.displayErrorDlgLocalized("SpecifyAppContextMgr.NO_LOCALE", discipline.getName(), currLocale.getDisplayName(), fndLocale.getDisplayName());
+                    }
+                    SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineId, DBTableIdMgr.getInstance(), Locale.getDefault());
+                }
+                
+                UIFieldFormatterIFace catNumFmtr = UIFieldFormatterMgr.getInstance().getFormatter(collection.getCatalogNumFormatName());
+                if (catNumFmtr != null)
+                {
+                    DBFieldInfo field = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()).getFieldByName("catalogNumber");
+                    field.setFormatter(catNumFmtr);
+                }
+                
+                Institution institution = getClassObject(Institution.class);
+                if (!institution.getIsAccessionsGlobal())
+                {
+                    for (AutoNumberingScheme ans : collection.getNumberingSchemes())
+                    {
+                        if (ans.getTableNumber() != null && ans.getTableNumber().equals(Accession.getClassTableId()))
+                        {
+                            DBFieldInfo field = DBTableIdMgr.getInstance().getInfoById(Accession.getClassTableId()).getFieldByName("accessionNumber");
+                            if (field != null)
+                            {
+                                UIFieldFormatterIFace accNumFmtr = UIFieldFormatterMgr.getInstance().getFormatter(ans.getFormatName());
+                                if (accNumFmtr != null)
+                                {
+                                    field.setFormatter(accNumFmtr);
+                                }
+                            }
+                            break;
+                        }
                     }
                 }
             }
@@ -1674,27 +1724,28 @@ public class SpecifyAppContextMgr extends AppContextMgr
             closeSession();
             session = null;
             
-            for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
+            if (isFirstTime)
             {
-                ti.setPermissions(SecurityMgr.getInstance().getPermission("DO."+ti.getName().toLowerCase()));
+                for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
+                {
+                    ti.setPermissions(SecurityMgr.getInstance().getPermission("DO."+ti.getName().toLowerCase()));
+                }
+                
+                // Here is where you turn on View/Viewdef re-use.
+                /*if (true)
+                {
+                    boolean cacheDoVerify = ViewLoader.isDoFieldVerification();
+                    ViewLoader.setDoFieldVerification(false);
+                    
+                    UIFieldFormatterMgr.getInstance();
+                    
+                    ViewLoader.setDoFieldVerification(cacheDoVerify);
+                }*/
+                
+                RegisterSpecify.register(false, 0);
             }
             
-            // Here is where you turn on View/Viewdef re-use.
-            if (true)
-            {
-                boolean cacheDoVerify = ViewLoader.isDoFieldVerification();
-                ViewLoader.setDoFieldVerification(false);
-                
-                UIFieldFormatterMgr.getInstance();
-                
-                ViewLoader.setDoFieldVerification(cacheDoVerify);
-            }
-            
-            currentStatus = CONTEXT_STATUS.OK;
-            
-            RegisterSpecify.register(false, 0);
-            
-            return currentStatus;
+            return currentStatus= CONTEXT_STATUS.OK;
             
         } catch (Exception ex)
         {

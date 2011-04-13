@@ -1475,7 +1475,7 @@ public class MultiView extends JPanel
             deletedItems = new Vector<Object>();
         }
         boolean addToList = true;
-        if (!(deletedItem instanceof Vector<?>))
+        if ((deletedItem instanceof Vector<?>))
         {
             addToList = false;
         }
