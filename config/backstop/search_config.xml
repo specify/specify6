@@ -1302,7 +1302,7 @@ SELECT cn.ContainerID,
                     <caption tableid="1" col="CollectionObjectID" visible="false"/>
                     <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
                     <caption tableid="65" col="Name" />
-                    <caption tableid="39" col="ExchangeInDate" />
+                    <caption tableid="39" col="ExchangeDate" />
                  </captions>
             </detailView>
         </table>
@@ -1332,7 +1332,7 @@ SELECT cn.ContainerID,
                     <caption tableid="1" col="CollectionObjectID" visible="false"/>
                     <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
                     <caption tableid="65" col="Name" />
-                    <caption tableid="39" col="ExchangeOutDate" />
+                    <caption tableid="39" col="ExchangeDate" />
                  </captions>
             </detailView>
         </table>
