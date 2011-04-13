@@ -466,8 +466,10 @@ public class ValComboBox extends JPanel implements UIValidatable,
             {
                 adapter.addItem(newValue, newValue);
                 adapter.save();
-                Java2sAutoComboBox cbx = (Java2sAutoComboBox)comboBox;
-                cbx.setDataList(adapter.getList());
+                
+                // Commented out as part of Bug 8321 - rods 04/13/11
+                //Java2sAutoComboBox cbx = (Java2sAutoComboBox)comboBox;
+                //cbx.setDataList(adapter.getList());
             }
         }
         return true;

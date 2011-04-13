@@ -609,28 +609,38 @@ public class DatabaseLoginPanel extends JTiledPanel
             }
         });
         
-        /*databases.getComboBox().addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                SwingUtilities.invokeLater(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        setUsrPwdControlsFromPrefs(); 
-                    }
-                });
-            }
-        });*/
-        
         databases.getTextField().addFocusListener(new FocusAdapter()
         {
+            String server = null;
+            
+            private String getServerStr()
+            {
+                String serverStr = null;
+                Object serverObj = servers.getValue();
+                if (serverObj != null)
+                {
+                    serverStr = serverObj.toString();
+                }
+                return serverStr;
+            }
+            
+            @Override
+            public void focusGained(FocusEvent e)
+            {
+                server = getServerStr();
+            }
+
             @Override
             public void focusLost(FocusEvent e)
             {
-                setUsrPwdControlsFromPrefs(); 
+                if (server != null)
+                {
+                    String newVal = getServerStr();
+                    if (newVal != null && !newVal.equals(server))
+                    {
+                        setUsrPwdControlsFromPrefs(); 
+                    }
+                }
             }
         });
         
@@ -706,7 +716,6 @@ public class DatabaseLoginPanel extends JTiledPanel
      */
     private String getSelectedDatabase()
     {
-        String text = databases.getTextField().getText();
         Object obj = databases.getComboBox().getSelectedItem();
         if (obj instanceof PickListItemIFace)
         {
