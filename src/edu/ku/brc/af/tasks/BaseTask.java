@@ -701,7 +701,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
             if (ti != null)
             {
-                FormPane fp = createFormPanel(tabName, null, ti.getShortClassName(), mode, null, MultiView.VIEW_SWITCHER, paneIcon);
+                FormPane fp = createFormPanel(tabName, null, ti.getShortClassName(), mode, null, MultiView.VIEW_SWITCHER | MultiView.RESULTSET_CONTROLLER, paneIcon);
                 fp.setRecordSet(recordSet);
                 return fp;
             }
