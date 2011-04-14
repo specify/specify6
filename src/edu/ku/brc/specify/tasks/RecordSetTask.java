@@ -49,6 +49,8 @@ import javax.swing.JPopupMenu;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.NavBox;
@@ -412,16 +414,27 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
      */
     public void saveNewRecordSet(final RecordSet recordSet)
     {
-        UsageTracker.incrUsageCount("RS.SAVENEW");
-         
-        recordSet.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        recordSet.setOwner(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
-        
-        if (persistRecordSet(recordSet))
+        boolean isOKToAdd = true;
+        /*
+         * This Don't work for some reason, and it should
+        if (AppContextMgr.isSecurityOn())
         {
-        	addRecordSetToNavBox(recordSet);
+            isOKToAdd = SecurityMgr.getInstance().checkPermission("Task.Record_Set", BasicSpPermission.add);
         }
-
+         */
+        
+        if (isOKToAdd)
+        {
+            UsageTracker.incrUsageCount("RS.SAVENEW");
+            
+            recordSet.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+            recordSet.setOwner(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
+            
+            if (persistRecordSet(recordSet))
+            {
+                addRecordSetToNavBox(recordSet);
+            }
+        }
     }
     
     /**

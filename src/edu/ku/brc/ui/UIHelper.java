@@ -3622,7 +3622,7 @@ public final class UIHelper
      */
     public static boolean isValidNameForDB(final String name)
     {
-        return name.matches("[a-zA-Z0-9\\-. '`]*");
+        return name.matches("^(?:\\p{L}\\p{M}*|[0-9\\-. '`])*$");
     }
     
     /**
