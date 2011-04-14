@@ -34,6 +34,7 @@ import edu.ku.brc.af.ui.forms.persist.AltViewIFace.CreationMode;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.config.DisciplineType;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
@@ -139,7 +140,12 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
     {
         if (dataObj instanceof Taxon)
         {
-            return super.okToDeleteNode((Taxon)dataObj);
+            Taxon taxon = (Taxon)dataObj;
+            int citCnt = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) FROM taxoncitation WHERE TaxonID = " + taxon.getId());
+            if (citCnt < 1)
+            {
+                return super.okToDeleteNode(taxon);
+            }
         }
         else if (dataObj instanceof TaxonTreeDefItem)
         {
