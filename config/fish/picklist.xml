@@ -1,5 +1,5 @@
 <list>
-  <picklist name="BiologicalSex" issystem="true" type="0" readonly="true" sizelimit="4">
+  <picklist name="Sex" issystem="true" type="0" readonly="true" sizelimit="4">
     <items>
       <picklistitem title="Unknown" value="Unknown"/>
       <picklistitem title="Both" value="Both"/>
