@@ -49,6 +49,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -741,7 +742,7 @@ public class FormViewObj implements Viewable,
         if (AppContextMgr.isSecurityOn())
         {
             PermissionSettings perm = MultiView.getPremissionFromView(viewArg, MultiView.getClassNameFromParentMV(dataClass, mvParentArg, cellName));
-            PermissionSettings.dumpPermissions(mvParentArg.getViewName(), perm.getOptions());
+            //PermissionSettings.dumpPermissions(mvParentArg.getViewName(), perm.getOptions());
             
             if (perm.hasNoPerm() && restrictableUI != null)
             {
@@ -4144,10 +4145,10 @@ public class FormViewObj implements Viewable,
         {
             if (resultSet.next())
             {
-                Hashtable<Integer, Boolean> availableIdList = new Hashtable<Integer, Boolean>();
+                HashSet<Integer> availableIdList = new HashSet<Integer>();
                 do
                 {
-                    availableIdList.put(resultSet.getInt(1), true);
+                    availableIdList.add(resultSet.getInt(1));
                     
                 } while (resultSet.next());
                 
@@ -4164,7 +4165,7 @@ public class FormViewObj implements Viewable,
                 recordSetItemList = new Vector<RecordSetItemIFace>(availableIdList.size());
                 for (RecordSetItemIFace rsi : rs.getOrderedItems())
                 {
-                    if (availableIdList.get(rsi.getRecordId().intValue()) != null)
+                    if (availableIdList.contains(rsi.getRecordId()))
                     {
                         recordSetItemList.add(rsi);
                         recordSet.addItem(rsi);

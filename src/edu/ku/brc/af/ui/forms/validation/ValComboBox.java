@@ -459,12 +459,16 @@ public class ValComboBox extends JPanel implements UIValidatable,
     @Override
     public boolean saveControlData()
     {
-        if (adapter != null && comboBox.getSelectedIndex() == -1 && textEditor != null)
+        int inx = comboBox.getSelectedIndex();
+        if (adapter != null && textEditor != null)
         {
             String newValue = textEditor.getText();
             if (StringUtils.isNotEmpty(newValue))
             {
-                adapter.addItem(newValue, newValue);
+                if (inx == -1)
+                {
+                    adapter.addItem(newValue, newValue);
+                }
                 adapter.save();
                 
                 // Commented out as part of Bug 8321 - rods 04/13/11
