@@ -35,6 +35,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.text.JTextComponent;
 
 import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.JexlContext;
@@ -593,7 +594,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      * @param valStr the validation rule where the subject is its name
      * @param changeListenerOnly indicates whether to create a validator
      */
-    public void hookupTextField(final JTextField       textField,
+    public void hookupTextField(final JTextComponent   textField,
                                 final String           id,
                                 final boolean          isRequiredArg,
                                 final UIValidator.Type valType,

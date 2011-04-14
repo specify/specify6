@@ -567,30 +567,27 @@ public class ViewFactory
      */
     public static JTextArea createTextArea(final FormValidator validator,
                                            final FormCellField cellField,
+                                           final boolean       isRequired,
                                            final DBFieldInfo   fieldInfo)
     {
-        ValTextArea textArea = new ValTextArea("", cellField.getTxtRows(), cellField.getTxtCols());
-        if (validator != null)
+        boolean doValidation = validator != null && (isRequired || isNotEmpty(cellField.getValidationRule()) || cellField.isChangeListenerOnly());
+        
+        ValTextArea textArea = new ValTextArea(cellField.getTxtRows(), cellField.getTxtCols());
+        if (doValidation && fieldInfo != null && fieldInfo.getLength() > 0)
         {
-            if (fieldInfo != null && fieldInfo.getLength() > 0)
-            {
-                textArea.setDocument(new ValPlainTextDocument(fieldInfo.getLength()));
-            }
-            
-            UIValidator.Type type = parseValidationType(cellField.getValidationType());
-            DataChangeNotifier dcn = validator.hookupComponent(textArea, cellField.getIdent(), type, null, true);
-            if (type == UIValidator.Type.Changed)
-            {
-                textArea.getDocument().addDocumentListener(dcn);
-
-            } else if (type == UIValidator.Type.Focus)
-            {
-                textArea.addFocusListener(dcn);
-
-            } else
-            {
-               // Do nothing for UIValidator.Type.OK
-            }
+            textArea.setDocument(new ValPlainTextDocument(fieldInfo.getLength()));
+        }
+        textArea.setRequired(isRequired);
+        textArea.setRows(cellField.getTxtRows());
+        
+        if (doValidation && validator != null)
+        {
+            validator.hookupTextField(textArea,
+                                      cellField.getIdent(),
+                                      isRequired,
+                                      parseValidationType(cellField.getValidationType()),
+                                      cellField.getValidationRule(),
+                                      cellField.isChangeListenerOnly() && !isRequired);
         }
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
@@ -608,33 +605,28 @@ public class ViewFactory
      */
     public static ValTextAreaBrief createTextAreaBrief(final FormValidator validator,
                                                        final FormCellField cellField,
+                                                       final boolean       isRequired,
                                                        final DBFieldInfo   fieldInfo)
     {
+        boolean doValidation = validator != null && (isRequired || isNotEmpty(cellField.getValidationRule()) || cellField.isChangeListenerOnly());
+        
         ValTextAreaBrief textArea = new ValTextAreaBrief(cellField.getTxtRows(), cellField.getTxtCols());
+        if (doValidation && fieldInfo != null && fieldInfo.getLength() > 0)
+        {
+            textArea.setDocument(new ValPlainTextDocument(fieldInfo.getLength()));
+        }
+        textArea.setRequired(isRequired);
         textArea.initialize(validator != null);
         textArea.setRows(cellField.getTxtRows());
         
-        if (validator != null)
+        if (doValidation && validator != null)
         {
-            if (fieldInfo != null && fieldInfo.getLength() > 0)
-            {
-                textArea.setDocument(new ValPlainTextDocument(fieldInfo.getLength()));
-            }
-            
-            UIValidator.Type type = parseValidationType(cellField.getValidationType());
-            DataChangeNotifier dcn = validator.hookupComponent(textArea, cellField.getIdent(), type, null, true);
-            if (type == UIValidator.Type.Changed)
-            {
-                textArea.getDocument().addDocumentListener(dcn);
-
-            } else if (type == UIValidator.Type.Focus)
-            {
-                textArea.addFocusListener(dcn);
-
-            } else
-            {
-               // Do nothing for UIValidator.Type.OK
-            }
+            validator.hookupTextField(textArea,
+                                      cellField.getIdent(),
+                                      isRequired,
+                                      parseValidationType(cellField.getValidationType()),
+                                      cellField.getValidationRule(),
+                                      cellField.isChangeListenerOnly() && !isRequired);
         }
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
@@ -1595,7 +1587,7 @@ public class ViewFactory
                 
                 case textarea:
                 {
-                    JTextArea ta = createTextArea(validator, cellField, fieldInfo);
+                    JTextArea ta = createTextArea(validator, cellField, isReq, fieldInfo);
                     JScrollPane scrollPane = new JScrollPane(ta);
                     scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
                     scrollPane.setVerticalScrollBarPolicy(UIHelper.isMacOS() ? ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS : ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -1621,7 +1613,7 @@ public class ViewFactory
                         }
                     }
 
-                    ValTextAreaBrief txBrief = createTextAreaBrief(validator, cellField, fieldInfo);
+                    ValTextAreaBrief txBrief = createTextAreaBrief(validator, cellField, isReq, fieldInfo);
                     txBrief.setTitle(title);
                     
                     bi.doAddToValidator = validator == null; // might already added to validator

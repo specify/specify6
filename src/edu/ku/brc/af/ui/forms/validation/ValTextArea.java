@@ -116,7 +116,6 @@ public class ValTextArea extends JTextArea implements UIValidatable,
      */
     public void init()
     {
-
         bgColor = getBackground();
         if (valTextColor == null || requiredFieldColor == null)
         {
@@ -125,15 +124,8 @@ public class ValTextArea extends JTextArea implements UIValidatable,
         }
         AppPrefsCache.addChangeListener("ui.formatting.requiredfieldcolor", this);
 
-        getDocument().addDocumentListener(new DocumentAdaptor() {
-            @Override
-            protected void changed(DocumentEvent e)
-            {
-                isChanged = true;
-            }
-        });
-
-
+        initDocument();
+        
         addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e)
@@ -161,6 +153,30 @@ public class ValTextArea extends JTextArea implements UIValidatable,
             }
         });
 
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.JAutoCompTextField#init()
+     */
+    public void initDocument()
+    {
+        getDocument().addDocumentListener(new DocumentAdaptor() {
+            @Override
+            protected void changed(DocumentEvent e)
+            {
+                isChanged = true;
+            }
+        });
+    }
+    
+    /* (non-Javadoc)
+     * @see javax.swing.text.JTextComponent#setDocument(javax.swing.text.Document)
+     */
+    @Override
+    public void setDocument(final Document doc)
+    {
+        super.setDocument(doc);
+        initDocument();
     }
 
     /* (non-Javadoc)
