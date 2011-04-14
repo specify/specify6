@@ -162,14 +162,14 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
         ValComboBox tablesCBX     = (ValComboBox)fvo.getControlByName("tablesCBX");
         ValComboBox fieldsCBX     = (ValComboBox)fvo.getControlByName("fieldsCBX");
         
-        formViewObj.getValidator().setHasChanged(true);
+        fvo.getValidator().setHasChanged(true);
         tablesCBX.setChanged(true);
 
         //int typeIndex = typesCBX.getComboBox().getSelectedIndex();
         
         String noneStr = getResourceString("NONE");
         
-        PickList pickList = (PickList)formViewObj.getDataObj();
+        PickList pickList = (PickList)fvo.getDataObj();
         if (pickList == null)
         {
             return;
