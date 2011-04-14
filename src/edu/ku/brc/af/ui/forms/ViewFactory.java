@@ -41,8 +41,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -211,10 +210,16 @@ public class ViewFactory
         {
             viewFieldColor = AppPrefsCache.getColorWrapper("ui", "formatting", "viewfieldcolor");
         }
-
+        
         ViewDefIFace viewDef = altView.getViewDef();
-
-        if (viewDef == null) return null;
+        if (viewDef == null)
+        {
+            // This error is bad enough to have it's own dialog
+            String msg = String.format("The ViewDef is null for View '%s' AltView '%s'", view.getName(), altView.getName());
+            FormDevHelper.appendFormDevError(msg);
+            UIRegistry.showError(msg);
+            return null;
+        }
 
         Class<?> dataClass = null;
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
@@ -527,7 +532,7 @@ public class ViewFactory
                     }
                 };
     
-                UIHelper.createlocalizedMenuItem(popupMenu, "ViewFactory.CURR_DATE", "", "", true, aa);
+                UIHelper.createLocalizedMenuItem(popupMenu, "ViewFactory.CURR_DATE", "", "", true, aa);
                 
                 KeyStroke ctrlShiftT = KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK);
                 textField.getInputMap().put(ctrlShiftT, "SetCurrentDate");
@@ -544,7 +549,7 @@ public class ViewFactory
                 }
             };
             
-            UIHelper.createlocalizedMenuItem(popupMenu, "ViewFactory.CLEAR", "", "", true, clearAction);
+            UIHelper.createLocalizedMenuItem(popupMenu, "ViewFactory.CLEAR", "", "", true, clearAction);
             
             textField.getInputMap().put(KeyStroke.getKeyStroke("F3"), clearField);
             textField.getActionMap().put(clearField, clearAction);
@@ -1171,7 +1176,7 @@ public class ViewFactory
     //----------------------------------------------------------------------------------------------------------------
     class BuildInfoStruct
     {
-        public Hashtable<CollapsableSeparator, String> collapseSepHash = null;
+        public HashMap<CollapsableSeparator, String> collapseSepHash = null;
         
         public int        curMaxRow        = 0;
         public JComponent compToAdd        = null;
@@ -1207,7 +1212,7 @@ public class ViewFactory
                                  final FormValidator               validator,
                                  final ViewBuilderIFace            viewBldObj,
                                  final AltViewIFace.CreationMode   mode,
-                                 final Hashtable<String, JLabel>   labelsForHash,
+                                 final HashMap<String, JLabel>     labelsForHash,
                                  final Object                      currDataObj,
                                  final FormCellIFace               cell,
                                  final boolean                     isEditOnCreateOnly,
@@ -1748,7 +1753,7 @@ public class ViewFactory
                 CollapsableSeparator collapseSep = new CollapsableSeparator(sep, false);
                 if (bi.collapseSepHash == null)
                 {
-                    bi.collapseSepHash = new Hashtable<CollapsableSeparator, String>();
+                    bi.collapseSepHash = new HashMap<CollapsableSeparator, String>();
                 }
                 bi.collapseSepHash.put(collapseSep, collapsableName);
                 sep = collapseSep;
@@ -1989,9 +1994,19 @@ public class ViewFactory
                     
                     AltViewIFace     altView        = subView.getDefaultAltView();
                     FormViewDefIFace subFormViewDef = (FormViewDefIFace)altView.getViewDef();
-                    DBTableInfo      sbTableInfo    = DBTableIdMgr.getInstance().getByClassName(subView.getClassName());  
-
-                    processRows(sbTableInfo, parent, formViewDef, validator, viewBldObj, altView.getMode(), labelsForHash, currDataObj, subFormViewDef.getRows());
+                    DBTableInfo      sbTableInfo    = DBTableIdMgr.getInstance().getByClassName(subView.getClassName());
+                    
+                    if (subFormViewDef != null)
+                    {
+                        processRows(sbTableInfo, parent, formViewDef, validator, viewBldObj, altView.getMode(), labelsForHash, currDataObj, subFormViewDef.getRows());
+                    } else
+                    {
+                        // This error is bad enough to have it's own dialog
+                        String msg = String.format("The Altview '%s' has a null ViewDef!", altView.getName());
+                        FormDevHelper.appendFormDevError(msg);
+                        UIRegistry.showError(msg);
+                    }
+                   
                     viewBldObj.closeSubView(cellSubView);
                     bi.colInx += cell.getColspan() + 1;
                 }
@@ -2080,7 +2095,7 @@ public class ViewFactory
                                final FormValidator             validator,
                                final ViewBuilderIFace          viewBldObj,
                                final AltViewIFace.CreationMode mode,
-                               final Hashtable<String, JLabel> labelsForHash,
+                               final HashMap<String, JLabel>   labelsForHash,
                                final Object                    currDataObj,
                                final List<FormRowIFace>        formRows)
     {
@@ -2172,10 +2187,9 @@ public class ViewFactory
 
         if (bi.collapseSepHash != null && bi.collapseSepHash.size() > 0)
         {
-            for (Enumeration<CollapsableSeparator> e=bi.collapseSepHash.keys();e.hasMoreElements();)
+            for (CollapsableSeparator collapseSep : bi.collapseSepHash.keySet())
             {
-                CollapsableSeparator collapseSep = e.nextElement();
-                Component            comp        = viewBldObj.getControlByName(bi.collapseSepHash.get(collapseSep));
+                Component comp = viewBldObj.getControlByName(bi.collapseSepHash.get(collapseSep));
                 if (comp != null)
                 {
                     collapseSep.setInnerComp(comp);
@@ -2483,7 +2497,7 @@ public class ViewFactory
         {
             FormViewDef formViewDef = (FormViewDef)altView.getViewDef();
 
-            Hashtable<String, JLabel> labelsForHash = new Hashtable<String, JLabel>();
+            HashMap<String, JLabel> labelsForHash = new HashMap<String, JLabel>();
             
             ValidatedJPanel validatedPanel = null;
             FormValidator   validator      = null;
@@ -2610,9 +2624,9 @@ public class ViewFactory
             // Special situation where we create a table from a Form Definition
             if (viewDef instanceof FormViewDef)
             {
-                FormViewDefIFace          formViewDef   = (FormViewDefIFace)viewDef;  
-                Hashtable<String, JLabel> labelsForHash = new Hashtable<String, JLabel>();
-                TableViewObj              tableViewObj  = new TableViewObj(view, altView, parentView, validator, options, cellName, dataClass, bgColor);
+                FormViewDefIFace        formViewDef   = (FormViewDefIFace)viewDef;  
+                HashMap<String, JLabel> labelsForHash = new HashMap<String, JLabel>();
+                TableViewObj            tableViewObj  = new TableViewObj(view, altView, parentView, validator, options, cellName, dataClass, bgColor);
 
 
                 processRows(tableInfo, parentView, formViewDef, null, tableViewObj, altView.getMode(), labelsForHash, validator, formViewDef.getRows());
@@ -2622,7 +2636,7 @@ public class ViewFactory
             // else
             FormViewDefIFace formViewDef = (FormViewDefIFace)altView.getViewDef();
             
-            Hashtable<String, JLabel> labelsForHash = new Hashtable<String, JLabel>();
+            HashMap<String, JLabel> labelsForHash = new HashMap<String, JLabel>();
             
             /*
             ValidatedJPanel validatedPanel = null;
@@ -2717,8 +2731,8 @@ public class ViewFactory
             // Special situation where we create a table from a Form Definition
             if (viewDef instanceof FormViewDef)
             {
-                FormViewDefIFace               formViewDef   = (FormViewDefIFace)viewDef;  
-                Hashtable<String, JLabel> labelsForHash = new Hashtable<String, JLabel>();
+                FormViewDefIFace        formViewDef   = (FormViewDefIFace)viewDef;  
+                HashMap<String, JLabel> labelsForHash = new HashMap<String, JLabel>();
                 
                 rsTableViewObj  = new RecordSetTableViewObj(view, altView, parentView, null, 0, cellName, dataClass, bgColor);
                 

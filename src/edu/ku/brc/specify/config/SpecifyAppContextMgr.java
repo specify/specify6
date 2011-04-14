@@ -75,7 +75,6 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.forms.persist.FormDevHelper;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
-import edu.ku.brc.af.ui.forms.persist.ViewLoader;
 import edu.ku.brc.af.ui.forms.persist.ViewSet;
 import edu.ku.brc.af.ui.forms.persist.ViewSetIFace;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -1831,6 +1830,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             long rightNow = (Calendar.getInstance().getTimeInMillis()/1000);
             if ((rightNow - lastLoadTime) > 10)
             {
+                FormDevHelper.clearErrors();
                 viewSetHash.clear();
                 lastLoadTime = rightNow;
             }

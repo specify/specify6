@@ -220,9 +220,7 @@ public class ViewLoader
                             
                         } else
                         {
-                            String msg = "Selector Value is missing for viewDefName["+viewDefName+"] altName["+altName+"]";
-                            FormDevHelper.appendFormDevError(msg);
-                            return null;
+                            FormDevHelper.appendFormDevError("Selector Value is missing for viewDefName["+viewDefName+"] altName["+altName+"]");
                         }
                     }
                     
@@ -381,7 +379,6 @@ public class ViewLoader
                         String msg = "View Set ["+instance.viewSetName+"] ["+view.getName()+"] is not unique.";
                         log.error(msg);
                         FormDevHelper.appendFormDevError(msg);
-                        return null;
                     }
                 }
             }
@@ -416,7 +413,6 @@ public class ViewLoader
                 ViewDef  viewDef = createViewDef(element);
                 if (viewDef != null)
                 {
-                    //log.debug("Loaded ViewDef["+viewDef.getName()+"]");
                     if (viewDefs.get(viewDef.getName()) == null)
                     {
                         viewDefs.put(viewDef.getName(), viewDef);
@@ -426,7 +422,6 @@ public class ViewLoader
                         String msg = "View Set ["+instance.viewSetName+"] the View Def Name ["+viewDef.getName()+"] is not unique.";
                         log.error(msg);
                         FormDevHelper.appendFormDevError(msg);
-                        return null;
                     }
                 }
             }
@@ -436,7 +431,7 @@ public class ViewLoader
                 mapDefinitionViewDefs(viewDefs);
             }
         }
-
+        
         return instance.viewSetName;
     }
     
@@ -471,7 +466,6 @@ public class ViewLoader
                         String msg = "Couldn't find the ViewDef for formtable definition name["+((FormViewDefIFace)viewDef).getDefinitionName()+"]";
                         log.error(msg);
                         FormDevHelper.appendFormDevError(msg);
-                        return;
                     }
                 }
             }

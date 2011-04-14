@@ -473,7 +473,7 @@ public class WorkbenchTask extends BaseTask
         JPopupMenu popupMenu = new JPopupMenu();
         String menuTitle = "WB_EDIT_PROPS";
         String mneu = "WB_EDIT_PROPS_MNEU";
-        UIHelper.createlocalizedMenuItem(popupMenu, menuTitle, mneu, null, true, new ActionListener() {
+        UIHelper.createLocalizedMenuItem(popupMenu, menuTitle, mneu, null, true, new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
                 editWorkbenchProps(roc);
@@ -482,7 +482,7 @@ public class WorkbenchTask extends BaseTask
         });
         menuTitle = "WB_EDIT_DATASET_MAPPING";
         mneu = "WB_EDIT_DATASET_MAPPING_MNEU";
-        UIHelper.createlocalizedMenuItem(popupMenu, menuTitle, mneu, null, true, new ActionListener() {
+        UIHelper.createLocalizedMenuItem(popupMenu, menuTitle, mneu, null, true, new ActionListener() {
             @SuppressWarnings("synthetic-access")
             public void actionPerformed(ActionEvent e)
             {
@@ -501,7 +501,7 @@ public class WorkbenchTask extends BaseTask
             popupMenu.addSeparator();
             menuTitle = "Delete";
             mneu = "DELETE_MNEU";
-            UIHelper.createlocalizedMenuItem(popupMenu, menuTitle, mneu, null, true,
+            UIHelper.createLocalizedMenuItem(popupMenu, menuTitle, mneu, null, true,
                     new ActionListener()
                     {
                         public void actionPerformed(ActionEvent e)

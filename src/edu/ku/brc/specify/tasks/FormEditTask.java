@@ -239,23 +239,38 @@ public class FormEditTask extends BaseTask
             mid = new MenuItemDesc(mi, FULL_SYSTEM_MENU);
             menuItems.add(mid);
             
-            if (FormDevHelper.isFormDevMode())
+            ttle = "Specify.FORM_DEV";//$NON-NLS-1$ 
+            mneu = "Specify.FORM_DEV_MNEU";//$NON-NLS-1$ 
+            desc = "Specify.FORM_DEV_DESC";//$NON-NLS-1$ 
+            final JCheckBoxMenuItem miCbx = UIHelper.createLocalizedCheckBoxMenuItem(ttle , mneu, desc, true, null);
+            miCbx.setSelected(FormDevHelper.isFormDevMode());
+            miCbx.addActionListener(new ActionListener()
             {
-                ttle = "Specify.SHOW_DEV_WIN";//$NON-NLS-1$ 
-                mneu = "Specify.SHOW_DEV_WIN_MNEU";//$NON-NLS-1$ 
-                desc = "Specify.SHOW_DEV_WIN";//$NON-NLS-1$ 
-                mi = UIHelper.createLocalizedMenuItem(ttle , mneu, desc, true, null);  
-                mi.addActionListener(new ActionListener()
+                @Override
+                public void actionPerformed(ActionEvent ae)
                 {
-                    @Override
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        FormDevHelper.getLogFrame().setVisible(true);
-                    }
-                });
-                mid = new MenuItemDesc(mi, FULL_SYSTEM_MENU);
-                menuItems.add(mid);
-            }
+                    FormDevHelper.setIsFormDevMode(miCbx.isSelected());
+                }
+            });
+            
+            mid = new MenuItemDesc(miCbx, FULL_SYSTEM_MENU);
+            mid.setSepPosition(MenuItemDesc.Position.Before);
+            menuItems.add(mid);
+            
+            ttle = "Specify.SHOW_DEV_WIN";//$NON-NLS-1$ 
+            mneu = "Specify.SHOW_DEV_WIN_MNEU";//$NON-NLS-1$ 
+            desc = "Specify.SHOW_DEV_WIN";//$NON-NLS-1$ 
+            mi = UIHelper.createLocalizedMenuItem(ttle , mneu, desc, true, null);  
+            mi.addActionListener(new ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent ae)
+                {
+                    FormDevHelper.getLogFrame().setVisible(true);
+                }
+            });
+            mid = new MenuItemDesc(mi, FULL_SYSTEM_MENU);
+            menuItems.add(mid);
         }
         
         return menuItems;

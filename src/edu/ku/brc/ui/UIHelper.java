@@ -1115,15 +1115,15 @@ public final class UIHelper
     
     /**
      * Creates a JMenuItem.
-     * @param menu parent menu
-     * @param text the label of the menu item
-     * @param mnemonic the mnemonic
-     * @param accessibleDescription the accessible Description
-     * @param enabled enabled
-     * @param action the aciton
-     * @return menu item
+     * @param popupMenu
+     * @param key
+     * @param mnemonic
+     * @param accessibleDescription
+     * @param enabled
+     * @param al
+     * @return
      */
-    public static JMenuItem createlocalizedMenuItem(final JPopupMenu     popupMenu,
+    public static JMenuItem createLocalizedMenuItem(final JPopupMenu     popupMenu,
                                                     final String         key,
                                                     final String         mnemonic,
                                                     final String         accessibleDescription,
@@ -1248,6 +1248,38 @@ public final class UIHelper
         if (isNotEmpty(accessibleDescription))
         {
             mi.getAccessibleContext().setAccessibleDescription(accessibleDescription);
+        }
+        if (action != null)
+        {
+            mi.addActionListener(action);
+            action.addPropertyChangeListener(new MenuItemPropertyChangeListener(mi));
+            action.setEnabled(enabled);
+        }
+
+        return mi;
+    }
+
+    /**
+     * Creates a Localized JCheckBoxMenuItem.
+     * @param labelKey
+     * @param mnemonicKey
+     * @param accessibleDescriptionKey
+     * @param enabled
+     * @param action
+     * @return
+     */
+    public static JCheckBoxMenuItem createLocalizedCheckBoxMenuItem(final String         labelKey,
+                                                                    final String         mnemonicKey,
+                                                                    final String         accessibleDescriptionKey,
+                                                                    final boolean        enabled,
+                                                                    final AbstractAction action)
+    {
+        JCheckBoxMenuItem mi = new JCheckBoxMenuItem(getResourceString(labelKey));
+        setLocalizedMnemonic(mi, getResourceString(mnemonicKey));
+        
+        if (isNotEmpty(accessibleDescriptionKey))
+        {
+            mi.getAccessibleContext().setAccessibleDescription(getResourceString(accessibleDescriptionKey));
         }
         if (action != null)
         {

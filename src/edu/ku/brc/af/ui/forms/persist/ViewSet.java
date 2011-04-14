@@ -416,7 +416,6 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
                     ex.printStackTrace();
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewSet.class, ex);
-                   
                     
                 } finally
                 {
@@ -453,9 +452,9 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
         {
             for (AltViewIFace av : view.getAltViews())
             {
+                String viewDefName = altViewsViewDefName.get(av);
                 if (av.getViewDef() == null)
                 {
-                    String viewDefName = altViewsViewDefName.get(av);
                     if (StringUtils.isNotEmpty(viewDefName))
                     {
                         ViewDefIFace referredToViewDef = viewDefs.get(viewDefName);
@@ -467,7 +466,6 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
                             String msg = "ViewSet["+name+"] View["+view+"] AltView ["+av.getName()+"] refers to a non-existent ViewDef with name["+av.getViewDefName()+"]";
                             log.error(msg);
                             FormDevHelper.appendFormDevError(msg);
-                            return;
                         }
                         
                     } else
@@ -475,7 +473,6 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
                         String msg = "ViewSet["+name+"] Couldn't find the ViewDef Name for the AltView!";
                         log.error(msg);
                         FormDevHelper.appendFormDevError(msg);
-                        return;
                     }
                 }
             }

@@ -24,6 +24,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.ui.CustomDialog;
@@ -73,9 +74,17 @@ public class FormDevHelper
             frame.setCancelLabel("Clear");
             
             frame.setSize(800, 600);
-            frame.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+            frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         }
         return frame;
+    }
+    
+    /**
+     * Clears all the errors.
+     */
+    public static void clearErrors()
+    {
+        buffer.setLength(0);
     }
     
     /**
@@ -96,6 +105,7 @@ public class FormDevHelper
     public static void setIsFormDevMode(Boolean isFormDevMode)
     {
         FormDevHelper.isFormDevMode = isFormDevMode;
+        AppPreferences.getLocalPrefs().putBoolean("form.devmode", isFormDevMode);
     }
     
     /**
