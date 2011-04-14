@@ -140,7 +140,7 @@ public class AccessionAgentBusRules extends BaseBusRules
         if (parentDataObj instanceof Accession)
         {
             Accession accession = (Accession)parentDataObj;
-            if (accession != null && agent != null && role != null && accession.getAccessionAgents() != null)
+            if (agent != null && role != null && accession.getAccessionAgents() != null)
             {
                 hash.clear();
                 for (AccessionAgent aa : accession.getAccessionAgents())
