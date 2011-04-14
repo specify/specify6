@@ -252,7 +252,11 @@ public class TaskSemaphoreMgr
             Collection collection = scope == SCOPE.Collection ? AppContextMgr.getInstance().getClassObject(Collection.class) : null;
 
             SpTaskSemaphore semaphore = getSemaphore(session, name, scope, discipline, collection);
-            semaphore.getOwner().getAgents().size(); // force Load
+            
+            if (semaphore != null && semaphore.getOwner() != null && semaphore.getOwner().getAgents() != null)
+            {
+                semaphore.getOwner().getAgents().size(); // force Load
+            }
             
             return semaphore;
             
