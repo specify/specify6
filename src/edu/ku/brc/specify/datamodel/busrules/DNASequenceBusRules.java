@@ -139,8 +139,10 @@ public class DNASequenceBusRules extends BaseBusRules implements CommandListener
      */
     private void adjustTotals()
     {
-        if (formViewObj != null&& barCodeUI != null)
+        JTextArea ta = (JTextArea)formViewObj.getCompById("4");
+        if (formViewObj != null&& barCodeUI != null && ta != null)
         {
+            barCodeUI.setSequence(ta.getText());
             setValue("residues", barCodeUI.getTotal('A')+barCodeUI.getTotal('G')+barCodeUI.getTotal('C')+barCodeUI.getTotal('T')+barCodeUI.getTotal('X'));
             setValue("compA", barCodeUI.getTotal('A'));
             setValue("compG", barCodeUI.getTotal('G'));
