@@ -515,7 +515,7 @@ public class UserPanel extends BaseSetupPanel
         Vector<UserData> items = userModel.getUserData();
         for (int inx : selectedIds)
         {
-            UserData ud  = items.get(inx);
+            //UserData ud  = items.get(inx);
             /*emailPrefs.put("to", toAgent.getEmail() != null ? toAgent.getEmail() : "");
             emailPrefs.put("from", emailPrefs.get("email"));
             emailPrefs.put("subject", String.format(getResourceString("SEC_WIZ"), new Object[] {infoRequest.getIdentityTitle()}));
@@ -765,11 +765,16 @@ public class UserPanel extends BaseSetupPanel
         List<String>   dbNamesList    = masterPanel.getDbNamesForMaster();
         List<String>   otherNamesList = masterPanel.getDbNameList();
         
+        if (dbNamesList == null || dbNamesList.size() == 0)
+        {
+            return;
+        }
+        
         //dbNamesList.clear();
         //otherNamesList.clear();
         //dbNamesList.add("testfish");
         
-        Vector<String> items       = new Vector<String>(dbNamesList);
+        Vector<String> items = new Vector<String>(dbNamesList);
         Collections.sort(items);
         
         if (!isInitial)

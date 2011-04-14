@@ -28,6 +28,8 @@ import java.awt.Color;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -142,6 +144,16 @@ public class MasterLoginPanel extends GenericFormPanel
         tstPB.add(resetMasterPermsBtn,  cc.xy(2, 5));
         resetMasterBtn.setVisible(false);
         resetMasterPermsBtn.setVisible(false);
+        
+        final JTextField pwdTF = (JTextField)comps.get("saPassword");
+        pwdTF.addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+                skipStepBtn.setEnabled(pwdTF.getText().length() > 0);
+            }
+        });
 
         builder.add(tstPB.getPanel(),   cc.xyw(3, row, 2)); row += 2;
         
@@ -285,11 +297,10 @@ public class MasterLoginPanel extends GenericFormPanel
         List<String> dbList = DBMSUserMgr.getInstance().getDatabaseList();
         
         ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)UIRegistry.getTopWindow(), "SEC_SELECT_DBS", null, dbList, 
-                                                                                CustomDialog.OK_BTN, ToggleButtonChooserPanel.Type.Checkbox);
+                                                                                CustomDialog.OKCANCEL, ToggleButtonChooserPanel.Type.Checkbox);
         dlg.setAddSelectAll(true);
         dlg.setUseScrollPane(true);
         dlg.createUI();
-        dlg.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         UIHelper.centerAndShow(dlg);
         if (!dlg.isCancelled())
         {
@@ -418,51 +429,59 @@ public class MasterLoginPanel extends GenericFormPanel
         {
             if (mgr.connectToDBMS(dbUserName, dbPassword, hostName))
             {
-                List<String> dbNames = databaseNames != null && databaseNames.size() > 0 ? databaseNames : getDatabaseList();
-                if (dbNames != null)
+                List<String> dbNames = databaseNames;
+                if (dbNames == null || dbNames.size() == 0)
                 {
-                    if (mgr.dropUser(saUserName))
+                    dbNames = getDatabaseList();
+                    if (dbNames == null || dbNames.size() == 0)
                     {
-                        boolean rv = true;
-                        for (String dbnm : dbNames)
-                        {
-                            if (!mgr.createUser(saUserName, saPassword, dbnm, DBMSUserMgr.PERM_ALL_BASIC))
-                            {
-                                rv = false;
-                                break;
-                            }
-                        }
-                        
-                        String key = rv ? "MSTR_PERMS_SET_OK" : "MSTR_PERMS_SET_ERR";
-                        advLabel.setText(getResourceString(key));
-                        /*boolean rv = false;
-                        if (mgr.createUser(saUserName, saPassword, dbNames.get(0), DBMSUserMgr.PERM_ALL_BASIC))
-                        {
-                            rv = true;
-                            for (int i=1;i<dbNames.size();i++)
-                            {
-                                rv = mgr.setPermissions(saUserName, dbNames.get(i), DBMSUserMgr.PERM_ALL_BASIC);
-                                if (!rv)
-                                {
-                                    advLabel.setText("Master User's username and password have been reset."); // I18N
-                                    break; 
-                                }
-                            }
-                        }*/
-                        
-                        if (rv)
-                        {
-                            nextBtn.setEnabled(true);
-                            skipStepBtn.setEnabled(true);
-                            resetMasterBtn.setVisible(false);
-                            mgr.close();
-                            return true;
-                        }
-                        advLabel.setText("There was an error setting the Master User's username and password."); // I18N
-                    } else
-                    {
-                        UIRegistry.showLocalizedError("SEC_ERR_DROP_USER");
+                        return false;
                     }
+                }
+                
+                if (mgr.dropUser(saUserName))
+                {
+                    int okCnt = 0;
+                    for (String dbnm : dbNames)
+                    {
+                        if (!mgr.createUser(saUserName, saPassword, dbnm, DBMSUserMgr.PERM_ALL_BASIC))
+                        {
+                            UIRegistry.showError(String.format("Unable to set permissions for your master user on database '%s'", dbnm));
+                        } else
+                        {
+                            okCnt++;
+                        }
+                    }
+                    
+                    String key = okCnt > 0 ? "MSTR_PERMS_SET_OK" : "MSTR_PERMS_SET_ERR";
+                    advLabel.setText(getResourceString(key));
+                    /*boolean rv = false;
+                    if (mgr.createUser(saUserName, saPassword, dbNames.get(0), DBMSUserMgr.PERM_ALL_BASIC))
+                    {
+                        rv = true;
+                        for (int i=1;i<dbNames.size();i++)
+                        {
+                            rv = mgr.setPermissions(saUserName, dbNames.get(i), DBMSUserMgr.PERM_ALL_BASIC);
+                            if (!rv)
+                            {
+                                advLabel.setText("Master User's username and password have been reset."); // I18N
+                                break; 
+                            }
+                        }
+                    }*/
+                    
+                    if (okCnt > 0)
+                    {
+                        nextBtn.setEnabled(true);
+                        skipStepBtn.setEnabled(true);
+                        resetMasterBtn.setVisible(false);
+                        mgr.close();
+                        return true;
+                    }
+                    advLabel.setText("There was an error setting the Master User's username and password."); // I18N
+                } else
+                {
+                    UIRegistry.showLocalizedError("SEC_ERR_DROP_USER");
                 }
                 mgr.close();
                 
