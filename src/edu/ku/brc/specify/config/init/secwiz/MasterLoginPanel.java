@@ -446,7 +446,7 @@ public class MasterLoginPanel extends GenericFormPanel
                     {
                         if (!mgr.createUser(saUserName, saPassword, dbnm, DBMSUserMgr.PERM_ALL_BASIC))
                         {
-                            UIRegistry.showError(String.format("Unable to set permissions for your master user on database '%s'", dbnm));
+                            UIRegistry.showLocalizedError("MSTR_ERR_SETDB", dbnm);
                         } else
                         {
                             okCnt++;
