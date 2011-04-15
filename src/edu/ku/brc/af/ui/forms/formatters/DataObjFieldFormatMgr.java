@@ -22,6 +22,8 @@ package edu.ku.brc.af.ui.forms.formatters;
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.security.AccessController;
 import java.util.Calendar;
@@ -946,6 +948,64 @@ public class DataObjFieldFormatMgr
             StringBuilder aggStr = new StringBuilder(128);
             
             Collection<?> itemsAsCol = items;
+//            if (StringUtils.isNotBlank(agg.getOrderFieldName()))
+//            {
+//            	try
+//            	{
+//            		String orderFld = agg.getOrderFieldName();
+//            		String methodName = "get" + orderFld.substring(0,1).toUpperCase() + orderFld.substring(1);
+//            		final Method orderFldGetter = agg.getDataClass().getMethod(methodName, (Class<?>[])null);
+//            		if (Comparable.class.isAssignableFrom(orderFldGetter.getReturnType()))
+//            		{
+//            			List<Object> itemsList = new Vector<Object>();
+//            			itemsList.addAll(itemsAsCol);
+//            			Comparator<Object> comp = new Comparator<Object>() {
+//
+//            				@Override
+//            				public int compare(Object o1, Object o2) {
+//            					if (agg.getDataClass().isAssignableFrom(o1.getClass()) && agg.getDataClass().isAssignableFrom(o2.getClass()))
+//            					{
+//            						try
+//            						{
+//            							Comparable<Object> f1 = (Comparable<Object>)orderFldGetter.invoke(agg.getDataClass().cast(o1), (Object[])null);
+//            							Comparable<Object> f2 = (Comparable<Object>)orderFldGetter.invoke(agg.getDataClass().cast(o2), (Object[])null);
+//            							if (f1 != null)
+//            							{
+//            								return f1.compareTo(f2);
+//            							}
+//            							else if (f2 != null)
+//            							{
+//            								return -1;
+//            							} 
+//            							else
+//            							{
+//            								return 0;
+//            							}
+//            						}  catch (InvocationTargetException tex)
+//            		            	{
+//            		            		return 0;
+//            		            	}catch (IllegalAccessException acex)
+//            		            	{
+//            		            		return 0;
+//            		            	}catch (IllegalArgumentException arex)
+//            		            	{
+//            		            		return 0;
+//            		            	}
+//            					}
+//            					return 0;
+//            				}
+//            			};
+//            			Collections.sort(itemsList, comp);
+//            			itemsAsCol = itemsList;
+//            		}
+//            	} catch (NoSuchMethodException mex)
+//            	{
+//            		//sorting was a bad idea
+//            	} catch (SecurityException sex)
+//            	{
+//            		//sorting was a bad idea
+//            	}            
+//            }
             /*if (items != null && items.size() > 0)
             {
                 if (items.iterator().next() instanceof Comparable<?>)
