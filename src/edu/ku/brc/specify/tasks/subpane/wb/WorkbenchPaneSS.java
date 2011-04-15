@@ -179,7 +179,9 @@ import edu.ku.brc.specify.tasks.PluginsTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.subpane.ESResultsSubPane;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DB;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UniquenessChecker;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadData;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadField;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDef;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
@@ -301,6 +303,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected WorkbenchValidator    workbenchValidator         = null;
     protected boolean 		        doIncrementalValidation    = false;
     protected boolean	            doIncrementalMatching      = false;
+    protected UniquenessChecker		catNumChecker	           = null;
+    protected int					catNumCol                  = -1;
     protected AtomicInteger			invalidCellCount		   = new AtomicInteger(0);
     protected AtomicInteger			unmatchedCellCount		   = new AtomicInteger(0);
     protected CellRenderingAttributes cellRenderAtts           = new CellRenderingAttributes();
@@ -3821,6 +3825,27 @@ public class WorkbenchPaneSS extends BaseSubPane
     	{
     		workbenchValidator = new WorkbenchValidator(this);
         	setMatchStatusForUploadTables();
+        	//set up catnum checker
+//        	UploadTable cout = workbenchValidator.getUploader().getUploadTableByName("collectionobject");
+//        	if (cout != null)
+//        	{
+//        		for (Vector<UploadField> ufs : cout.getUploadFields())
+//        		{
+//        			for (UploadField uf : ufs)
+//        			{
+//        				DBFieldInfo fi = uf.getField() != null ? uf.getField().getFieldInfo() : null;
+//        				if (fi != null && fi.getColumn().equalsIgnoreCase("CatalogNumber"))
+//        				{
+//        					catNumCol = uf.getIndex();
+//        					break;
+//        				}
+//        			}
+//        		}
+//        		if (catNumCol != -1)
+//        		{
+//        			catNumChecker = new UniquenessChecker();
+//        		}
+//        	}
     	} catch (Exception ex)
     	{
     		if (ex instanceof WorkbenchValidator.WorkbenchValidatorException || ex instanceof UploaderException)
@@ -3843,8 +3868,6 @@ public class WorkbenchPaneSS extends BaseSubPane
     		}
     		UIRegistry.showLocalizedError("WorkbenchPaneSS.UnableToAutoValidate");
     		uploadToolPanel.turnOffSelections();
-//    		this.autoValidateChk.setSelected(false);
-//    		this.autoMatchChk.setSelected(false);
     		turnOffIncrementalValidation();
     		turnOffIncrementalMatching();
 			workbenchValidator = null;
@@ -4294,11 +4317,16 @@ public class WorkbenchPaneSS extends BaseSubPane
 		return exceptionalItems;
     }
     
+    protected CellStatusInfo createDupCatNumEntryCellStatus(Integer badRow)
+    {
+    	return new CellStatusInfo(badRow);
+    }
+    
     /**
      * @param editRow
      * @param editCol (use -1 to validate entire row)
      */
-    protected void updateRowValidationStatus(int editRow, int editCol)
+    protected void updateRowValidationStatus(int editRow, int editCol, Vector<Integer> badCats)
     {
 		WorkbenchRow wbRow = workbench.getRow(editRow);
 		List<UploadTableInvalidValue> issues = getIncremental() ? workbenchValidator.endCellEdit(editRow, editCol) 
@@ -4326,7 +4354,10 @@ public class WorkbenchPaneSS extends BaseSubPane
 				ex.printStackTrace();
 			}
 		}
-		List<CellStatusInfo> csis = new Vector<CellStatusInfo>(issues.size() + (matchInfo == null ? 0 : matchInfo.size()));
+		
+		
+		List<CellStatusInfo> csis = new Vector<CellStatusInfo>(issues.size() + (matchInfo == null ? 0 : matchInfo.size()) 
+																+ (badCats == null ? 0 : badCats.size()));
 		for (UploadTableInvalidValue utiv : issues)
 		{
 				csis.add(new CellStatusInfo(utiv));
@@ -4339,6 +4370,13 @@ public class WorkbenchPaneSS extends BaseSubPane
 				{
 					csis.add(new CellStatusInfo(utmi));
 				}
+			}
+		} 
+		if (badCats != null)
+		{
+			for (Integer badCat : badCats)
+			{
+				csis.add(createDupCatNumEntryCellStatus(badCat));
 			}
 		}
 			
@@ -4634,7 +4672,8 @@ public class WorkbenchPaneSS extends BaseSubPane
 
 					});
 				}
-			} 			
+			} 		
+			boolean checkedCatNums = catNumChecker == null;
 			if (rows != null)
 			{
 				int count = rows.length;
@@ -4646,10 +4685,20 @@ public class WorkbenchPaneSS extends BaseSubPane
 						break;
 					}
 					
-					int adjustedRow = adjustRow(row);
-					if (adjustedRow != -1)
+					//int adjustedRow = adjustRow(row);
+					if (row != -1)
 					{
-						updateRowValidationStatus(adjustedRow, -1);
+
+						if (!checkedCatNums)
+						{
+							Vector<Integer> badCats = catNumChecker.checkValues(rows);
+							updateRowValidationStatus(row, -1, badCats);
+							checkedCatNums = true;
+						}
+						else
+						{
+							updateRowValidationStatus(row, -1, null);
+						}
 					}
 					if (useGlassPane)
 					{
@@ -4669,10 +4718,19 @@ public class WorkbenchPaneSS extends BaseSubPane
 						{
 							break;
 						}
-						int adjustedRow = adjustRow(row);
-						if (adjustedRow != -1)
+						//int adjustedRow = adjustRow(row);
+						if (row != -1)
 						{
-							updateRowValidationStatus(adjustedRow, -1);
+							if (!checkedCatNums)
+							{
+								Vector<Integer> badCats = catNumChecker.checkValues(rows);
+								updateRowValidationStatus(row, -1, badCats);
+								checkedCatNums = true;
+							}
+							else
+							{
+								updateRowValidationStatus(row, -1, null);
+							}
 						}
 						if (useGlassPane)
 						{
@@ -4785,6 +4843,15 @@ public class WorkbenchPaneSS extends BaseSubPane
     public void validateAll(final SimpleGlassPane glassPane)
     {
     	//System.out.println("validating all " + spreadSheet.getRowCount() + " rows.");
+    	if (catNumChecker != null)
+    	{
+    		//apparently this is pretty quick, but it might be necessary to have a glass pane for this step...
+    		catNumChecker.clear();
+    		for (int r = 0; r < spreadSheet.getRowCount(); r++)
+    		{
+    			catNumChecker.setValue(r, spreadSheet.getStringAt(r, catNumCol), false);
+    		}
+    	}
     	validateRows(null, 0, spreadSheet.getRowCount()-1, false, glassPane, glassPane == null);
     }
     
@@ -4848,6 +4915,38 @@ public class WorkbenchPaneSS extends BaseSubPane
 	}
 
     
+	protected List<Integer> setCatNumValues(int startRow, int endRow, int[] rows, boolean check)
+	{
+		List<Integer> result = check ? new Vector<Integer>() : null;
+		if (rows == null)
+		{
+			for (int row = startRow; row <= endRow; row++)
+			{
+				if (check)
+				{	
+					result.addAll(catNumChecker.setValue(row, spreadSheet.getStringAt(row, catNumCol), check));
+				} else
+				{
+					catNumChecker.setValue(row, spreadSheet.getStringAt(row, catNumCol), check);
+				}
+			}
+		} else
+		{
+			for (int row : rows)
+			{
+				if (check)
+				{
+					result.addAll(catNumChecker.setValue(row, spreadSheet.getStringAt(row, catNumCol), check));
+				} else
+				{
+					catNumChecker.setValue(row, spreadSheet.getStringAt(row, catNumCol), check);
+				}
+					
+			}
+		}
+		return result;
+	}
+	
     //------------------------------------------------------------
     // Inner Classes
     //------------------------------------------------------------
@@ -4949,7 +5048,12 @@ public class WorkbenchPaneSS extends BaseSubPane
             	}
             	if (getIncremental() && workbenchValidator != null)
             	{
-            		updateRowValidationStatus(spreadSheet.convertRowIndexToModel(editRow), spreadSheet.convertColumnIndexToModel(editCol));
+            		Vector<Integer> badCats = null;
+            		if (catNumChecker != null && editCol == catNumCol)
+            		{
+            			badCats = catNumChecker.setValue(editRow, ((JTextField )uiComponent).getText(), true);
+            		}
+            		updateRowValidationStatus(spreadSheet.convertRowIndexToModel(editRow), spreadSheet.convertColumnIndexToModel(editCol), badCats);
             		updateBtnUI();
             	}
             	endStopCellEditProcessing();
@@ -5431,7 +5535,15 @@ public class WorkbenchPaneSS extends BaseSubPane
 	{
 		return getIncremental();
 	}
-
+	
+	protected List<Integer> getCatNumCol()
+	{
+		if (workbenchValidator != null)
+		{
+			
+		}
+		return null;
+	}
 	/**
 	 * @author timo
 	 *
@@ -5475,6 +5587,14 @@ public class WorkbenchPaneSS extends BaseSubPane
 			}
 			statusText = matchInfo.getDescription(); 
 			columns = matchInfo.getColIdxs();			
+		}
+		
+		public CellStatusInfo(Integer dupCatNumRow)
+		{
+			status = WorkbenchDataItem.VAL_ERROR;
+			statusText = UIRegistry.getResourceString("WorkbenchPaneSS.DupCatNumEntry");
+			columns = new Vector<Integer>(1);
+			columns.add(catNumCol);
 		}
 		/**
 		 * @return the status
@@ -5540,7 +5660,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 			{
 				return false;
 			}
-			
+			((JLabel )arg0).setToolTipText(null);
 			int status = wbCell.getEditorValidationStatus();
 			if (activation == AnyPredicate)
 			{
@@ -5557,6 +5677,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 				{
 					if (condition == status)
 					{
+						System.out.println("pos: " + arg1.row + ", " + arg1.column + ": " + wbCell.getStatusText());
 						((JLabel )arg0).setToolTipText(wbCell.getStatusText());
 						return true;
 					}

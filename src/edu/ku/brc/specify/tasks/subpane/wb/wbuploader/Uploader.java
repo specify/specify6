@@ -535,7 +535,7 @@ public class Uploader implements ActionListener, KeyListener
     {
     	for (UploadTable result : uploadTables)
     	{
-    		if (result.getTable().getName().equals(name))
+    		if (result.getTable().getName().equalsIgnoreCase(name))
     		{
     			return result;
     		}

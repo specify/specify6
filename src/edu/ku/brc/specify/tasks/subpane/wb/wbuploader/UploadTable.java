@@ -251,6 +251,8 @@ public class UploadTable implements Comparable<UploadTable>
     
     protected GeoRefConverter                           geoRefConverter              = new GeoRefConverter();
     
+    protected boolean 									isUploadRoot = false;
+    
     /**
      * @author timbo
      *
@@ -505,6 +507,7 @@ public class UploadTable implements Comparable<UploadTable>
     	//			&& AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent());
     	//XXX
     	
+    	isUploadRoot = uploader.getRootTable() == this;
         uploadedRecs.clear();
         matchSetting.clear();
         isSecurityOn = AppContextMgr.isSecurityOn();
@@ -1574,7 +1577,7 @@ public class UploadTable implements Comparable<UploadTable>
                     {
                         if (formatter != null)
                         {
-                            if (StringUtils.isBlank(fldStr) && formatter.isIncrementer())
+                            if (isUploadRoot && StringUtils.isBlank(fldStr) && formatter.isIncrementer())
                             {
                                 if (!this.validatingValues || autoAssignedVal == null)
                                 {
@@ -1603,10 +1606,17 @@ public class UploadTable implements Comparable<UploadTable>
                             }
                             else
                             {
-                                val = formatter.formatFromUI(fldStr);
-                                if (!formatter.isValid((String)val))
+                                if (StringUtils.isBlank(fldStr))
                                 {
-                                    throw new UploaderException(UIRegistry.getResourceString("WB_UPLOAD_INVALID_FORMAT"), UploaderException.INVALID_DATA);
+                                	val = fldStr;
+                                }
+                                else
+                                {
+                                	val = formatter.formatFromUI(fldStr);
+                                	if (!formatter.isValid((String)val))
+                                	{
+                                		throw new UploaderException(UIRegistry.getResourceString("WB_UPLOAD_INVALID_FORMAT"), UploaderException.INVALID_DATA);
+                                	}
                                 }
                             }
                         }

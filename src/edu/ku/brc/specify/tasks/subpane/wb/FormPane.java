@@ -1264,7 +1264,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
                 ignoreChanges = true;
             	WorkbenchRow wbRow = workbench.getWorkbenchRowsAsList().get(currentIndex);
             	copyDataFromForm();
-            	workbenchPane.updateRowValidationStatus(currentIndex, -1);
+            	workbenchPane.updateRowValidationStatus(currentIndex, -1, null);
             	updateValidationUI(wbRow);
             	ignoreChanges = false;
             }
