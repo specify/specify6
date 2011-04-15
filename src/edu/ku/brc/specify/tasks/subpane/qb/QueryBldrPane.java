@@ -1134,19 +1134,20 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected boolean canSave()
     {
         boolean result = true;
-        if (AppContextMgr.isSecurityOn() && (!task.getPermissions().canAdd() || !task.getPermissions().canModify()))
-        {
-            if (!task.getPermissions().canAdd() && !task.getPermissions().canModify())
-            {
-                result = false;
-            }
-            else
-            {
-                boolean newQ = query == null || query.getId() == null;
-                //if canAdd but !canModify then some strange behavior may result
-                result = newQ ? task.getPermissions().canAdd() : task.getPermissions().canModify();
-            }
-        }
+        //if the query builder is enabled for a user then the user can save queries.
+//        if (AppContextMgr.isSecurityOn() && (!task.getPermissions().canAdd() || !task.getPermissions().canModify()))
+//        {
+//            if (!task.getPermissions().canAdd() && !task.getPermissions().canModify())
+//            {
+//                result = false;
+//            }
+//            else
+//            {
+//                boolean newQ = query == null || query.getId() == null;
+//                //if canAdd but !canModify then some strange behavior may result
+//                result = newQ ? task.getPermissions().canAdd() : task.getPermissions().canModify();
+//            }
+//        }
         return result;
     }
     /**
