@@ -20,10 +20,12 @@
 package edu.ku.brc.specify.tasks.subpane.qb;
 
 import java.util.Collection;
+import java.util.List;
 
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.forms.formatters.DataObjAggregator;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.DataObjSwitchFormatter;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
@@ -81,7 +83,18 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
             String otherSideCol = otherSideRel.getColName();
             otherSideCol = otherSideCol.substring(0, 1).toLowerCase().concat(otherSideCol.substring(1));
             otherSideCol = otherSideCol.substring(0, otherSideCol.length()-2) + "Id";
-            listHql = "from " + relationship.getDataClass().getName() + " where " + otherSideCol + " = ";
+            List<DataObjAggregator> aggs = DataObjFieldFormatMgr.getInstance().getAggregatorList(relationship.getDataClass());
+            String orderByFld = null;
+            for (DataObjAggregator agg : aggs)
+            {
+            	if (agg.isDefault())
+            	{
+            		orderByFld = agg.getOrderFieldName();
+            		break;
+            	}
+            }
+            listHql = "from " + relationship.getDataClass().getName() + " where " + otherSideCol + " = &id"
+             + (orderByFld != null ? " order by " + orderByFld : "");
         }
         else
         {
@@ -231,7 +244,8 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
      */
     public String getListHql(final Object key)
     {
-        return listHql + (key != null ? key.toString() : "");
+        //return listHql + (key != null ? key.toString() : "");
+        return listHql.replace("&id", key != null ? key.toString() : "");
     }
 
     /**
