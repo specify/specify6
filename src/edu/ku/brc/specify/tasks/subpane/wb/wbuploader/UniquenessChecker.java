@@ -11,22 +11,40 @@ import java.util.Vector;
 /**
  * @author timo
  *
+ *Status: alpha
+ *
+ *Not ready for use.
+ *
  */
 public class UniquenessChecker
 {
 
 	protected TreeMap<Integer, String> map = new TreeMap<Integer, String>();
 	
+	/**
+	 * 
+	 */
 	public UniquenessChecker()
 	{
-		
+		//nothing to do yet
 	}
 	
+	/**
+	 * clear all stored values
+	 */
 	public void clear()
 	{
 		map.clear();
 	}
 	
+	/**
+	 * @param row
+	 * @param value
+	 * @param check
+	 * @return if check is thre then list of rows with equal value else null
+	 * 
+	 * sets value for row and checks for equal rows if check is true
+	 */
 	public Vector<Integer> setValue(int row, String value, boolean check)
 	{
 		map.put(row, value);
@@ -39,6 +57,11 @@ public class UniquenessChecker
 		return null;
 	}
 
+	/**
+	 * @param row
+	 * @param sortedValues
+	 * @return list 
+	 */
 	public boolean checkValue(int row, Vector<String> sortedValues) {
 		String value = map.get(row);
 		int idx = Collections.binarySearch(sortedValues, value);
@@ -52,16 +75,31 @@ public class UniquenessChecker
 		return false;
 	}
 	
+	/**
+	 * @param rows
+	 * @return
+	 */
 	public Vector<Integer> checkValues(int[] rows)
 	{
 		return checkValues(-1, -1, rows);
 	}
 	
+	/**
+	 * @param startRow
+	 * @param endRow
+	 * @return
+	 */
 	public Vector<Integer> checkValues(int startRow, int endRow)
 	{
 		return checkValues(startRow, endRow, null);
 	}
 	
+	/**
+	 * @param startRow
+	 * @param endRow
+	 * @param rows
+	 * @return
+	 */
 	public Vector<Integer> checkValues(int startRow, int endRow, int[] rows)
 	{
 		Vector<Integer> result = new Vector<Integer>();
