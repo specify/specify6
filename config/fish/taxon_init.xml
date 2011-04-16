@@ -10,7 +10,7 @@
         <level name="Phylum" enforced="true" infullname="false" rank="30">
               <locale lang="pt" country="" var="" text="Filo"/>
         </level>
-        <level name="Subphylum" enforced="true" infullname="false" rank="40">
+        <level name="Subphylum" enforced="false" infullname="false" rank="40">
               <locale lang="pt" country="" var="" text="Subfilo"/>
         </level>
         <level name="Superclass" enforced="false" infullname="false" rank="50">
