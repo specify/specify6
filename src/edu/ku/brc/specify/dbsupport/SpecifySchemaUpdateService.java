@@ -1097,12 +1097,21 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-- LoanPreparation
                     //-----------------------------------------------------------------------------
                     tblName = getTableTitleForFrame(LoanPreparation.getClassTableId());
-                    count   = getCount(tblName);
-                    rv      = update(conn, String.format("ALTER TABLE %s MODIFY DescriptionOfMaterial TEXT", tblName));
-                    if (rv != count)
+                    columnType = getFieldColumnType(conn, databaseName, tblName, "DescriptionOfMaterial");
+                    if (columnType == null)
                     {
-                        errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
+                        errMsgList.add(String.format(COL_TYP_NO_DET, tblName));
                         return false;
+                    }
+                    if (!columnType.trim().equalsIgnoreCase("text"))
+                    {
+                        count   = getCount(tblName);
+                        rv      = update(conn, String.format("ALTER TABLE %s MODIFY DescriptionOfMaterial TEXT", tblName));
+                        if (rv != count)
+                        {
+                            errMsgList.add(String.format(UPD_CNT_NO_MATCH, tblName));
+                            return false;
+                        }
                     }
                     frame.incOverall();
                     
@@ -1125,26 +1134,30 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-----------------------------------------------------------------------------
                     //-- DNASequencingRun
                     //-----------------------------------------------------------------------------
+                    String runByAgentID = "RunByAgentID";
                     tblName = getTableTitleForFrame(DNASequencingRun.getClassTableId());
-                    if (addColumn(conn, databaseName, tblName, "RunByAgentID",  "INT(11)", "DNASequenceID"))
+                    if (!doesColumnExist(databaseName, tblName, runByAgentID))
                     {
-                        update(conn, "ALTER TABLE dnasequencingrun ADD KEY `FKDNASEQRUNRUNBYAGT` (`RunByAgentID`)");
-                        update(conn, "ALTER TABLE dnasequencingrun ADD CONSTRAINT `FKDNASEQRUNRUNBYAGT` FOREIGN KEY (`RunByAgentID`) REFERENCES `agent` (`AgentID`)");
-                        
-                        if (addColumn(conn, databaseName, tblName, "PreparedByAgentID",  "INT(11)", "RunByAgentID"))
+                        if (addColumn(conn, databaseName, tblName, runByAgentID,  "INT(11)", "DNASequenceID"))
                         {
-                            update(conn, "ALTER TABLE dnasequencingrun ADD KEY `FKDNASEQRUNPREPBYAGT` (`PreparedByAgentID`)");
-                            update(conn, "ALTER TABLE dnasequencingrun ADD CONSTRAINT `FKDNASEQRUNPREPBYAGT` FOREIGN KEY (`PreparedByAgentID`) REFERENCES `agent` (`AgentID`)");
+                            update(conn, "ALTER TABLE dnasequencingrun ADD KEY `FKDNASEQRUNRUNBYAGT` (`RunByAgentID`)");
+                            update(conn, "ALTER TABLE dnasequencingrun ADD CONSTRAINT `FKDNASEQRUNRUNBYAGT` FOREIGN KEY (`RunByAgentID`) REFERENCES `agent` (`AgentID`)");
+                            
+                            if (addColumn(conn, databaseName, tblName, "PreparedByAgentID",  "INT(11)", "RunByAgentID"))
+                            {
+                                update(conn, "ALTER TABLE dnasequencingrun ADD KEY `FKDNASEQRUNPREPBYAGT` (`PreparedByAgentID`)");
+                                update(conn, "ALTER TABLE dnasequencingrun ADD CONSTRAINT `FKDNASEQRUNPREPBYAGT` FOREIGN KEY (`PreparedByAgentID`) REFERENCES `agent` (`AgentID`)");
+                            } else
+                            {
+                                return false;
+                            }
                         } else
                         {
                             return false;
                         }
-                    } else
-                    {
-                        return false;
                     }
                     frame.incOverall();
-
+                    
                     return true;
                     
                 } catch (Exception ex)

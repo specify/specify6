@@ -26,22 +26,24 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
 import javax.swing.JButton;
-import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.PasswordStrengthUI;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.EditViewCompSwitcherPanel;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
+import edu.ku.brc.af.ui.forms.validation.ValPasswordField;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.UIHelper;
@@ -64,13 +66,15 @@ public class SpecifyUserBusRules extends BaseBusRules
     private String  currentPlainTextPWD = null; // Not encrypted.
     private Integer spUserId            = null;
      
-    private JPasswordField     pwdTxt       = null;
+    private ValPasswordField   pwdTxt       = null;
     private JTextField         keyTxt       = null;
     private JButton            showPwdBtn   = null;
     private PasswordStrengthUI pwdStrenthUI = null;
 
     private JButton            genBtn       = null;
     private JButton            copyBtn      = null;
+    
+    private int                minPwdLen;
     
     /**
      * 
@@ -106,6 +110,10 @@ public class SpecifyUserBusRules extends BaseBusRules
         {
             return;
         }
+        
+        Institution institution = AppContextMgr.getInstance().getClassObject(Institution.class);
+        minPwdLen = (int)institution.getMinimumPwdLength();
+        pwdTxt.setMinLen(minPwdLen);
         
         final char echoChar = pwdTxt.getEchoChar();
         currEcho = echoChar;
@@ -161,7 +169,7 @@ public class SpecifyUserBusRules extends BaseBusRules
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    if (StringUtils.isNotEmpty(currentPlainTextPWD) && currentPlainTextPWD.length() > 0)
+                    if (StringUtils.isNotEmpty(currentPlainTextPWD) && currentPlainTextPWD.length() > minPwdLen)
                     {
                         String key = createEncryptMasterKey(currentPlainTextPWD);
                         if (key != null)
@@ -185,8 +193,8 @@ public class SpecifyUserBusRules extends BaseBusRules
                 {
                     super.changed(e);
                     
-                    char[] chars = pwdTxt.getPassword();
-                    boolean enable = chars != null && chars.length > 0;
+                    char[]  chars  = pwdTxt.getPassword();
+                    boolean enable = chars != null && chars.length > minPwdLen;
                     genBtn.setEnabled(enable);
                     copyBtn.setEnabled(enable);
                 }
@@ -199,6 +207,26 @@ public class SpecifyUserBusRules extends BaseBusRules
         }
         
         pwdStrenthUI.setPasswordField(pwdTxt, null);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#isOkToSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public boolean isOkToSave(Object dataObj, DataProviderSessionIFace session)
+    {
+        return super.isOkToSave(dataObj, session);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object, java.lang.Object, boolean)
+     */
+    @Override
+    public STATUS processBusinessRules(Object parentDataObj,
+                                       Object dataObj,
+                                       boolean isExistingObject)
+    {
+        return super.processBusinessRules(parentDataObj, dataObj, isExistingObject);
     }
 
     /**

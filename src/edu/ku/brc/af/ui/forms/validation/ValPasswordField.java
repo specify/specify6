@@ -66,6 +66,7 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
     protected Color   bgColor     = null;
 
     protected String  defaultValue = null;
+    protected int     minLen       = 0;
 
     /**
      * Constructor.
@@ -241,6 +242,22 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
         return null;
     }
 
+    /**
+     * @return the minLen
+     */
+    public int getMinLen()
+    {
+        return minLen;
+    }
+
+    /**
+     * @param minLen the minLen to set
+     */
+    public void setMinLen(int minLen)
+    {
+        this.minLen = minLen;
+    }
+
     //--------------------------------------------------------
     // GetSetValueIFace
     //--------------------------------------------------------
@@ -359,7 +376,7 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
      */
     public UIValidatable.ErrorType validateState()
     {
-        valState = isRequired && getPassword().length == 0 ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
+        valState = getPassword().length < minLen ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
         return valState;
     }
 

@@ -68,7 +68,6 @@ import edu.ku.brc.ui.UIRegistry;
 public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetValueIFace
 {
     // Rules variables
-    private static final int PWD_MIN_LENGTH = 8;
     private static final int PWD_MAX_LENGTH = 40;
     private static final int PWD_MIXED_CASE = 1;
     private static final int PWD_NUMERIC    = 1;
@@ -86,13 +85,24 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
     protected int          score     = 0;
     protected String       errReason = null;
     protected String       scoreDesc = null;
-    
+    protected int          minPwdLen;
+
     /**
      * Constructor.
      */
     public PasswordStrengthUI()
     {
+        this(8);
+    }
+    
+    /**
+     * Constructor.
+     */
+    public PasswordStrengthUI(final int minPwdLen)
+    {
         super(new BorderLayout());
+        
+        this.minPwdLen = minPwdLen;
 
         progress = new JProgressBar(0, 100);
         //add(progress, BorderLayout.CENTER);
@@ -415,7 +425,7 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
             errReason = UIRegistry.getResourceString(getKey("PWD_MIN_LENGTH"));
             return false; 
         }*/
-        if (length < PWD_MIN_LENGTH)
+        if (length < minPwdLen)
         { 
             errReason = errorStrings[0];
             return false; 

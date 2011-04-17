@@ -81,6 +81,8 @@ public class Institution extends UserGroupScope implements java.io.Serializable
      protected String        currentManagedRelVersion;
      protected String        currentManagedSchemaVersion;
      
+     protected Byte          minimumPwdLength;
+     
      protected Address       address;
      protected Set<Agent>    technicalContacts;
      protected Set<Agent>    contentContacts;
@@ -131,6 +133,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
         isReleaseManagedGlobally = false;
         currentManagedRelVersion = null;
         currentManagedSchemaVersion = null;
+        minimumPwdLength   = null;
         
         technicalContacts = new HashSet<Agent>();
         contentContacts   = new HashSet<Agent>();
@@ -420,6 +423,15 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     }
 
     /**
+     * @return the minimumPwdLength
+     */
+    @Column(name = "MinimumPwdLength", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getMinimumPwdLength()
+    {
+        return minimumPwdLength ==  null ? 0 : minimumPwdLength;
+    }
+
+    /**
      * @param contentContacts the contentContacts to set
      */
     public void setContentContacts(Set<Agent> contentContacts)
@@ -617,6 +629,14 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     public void setCurrentManagedSchemaVersion(String currentManagedSchemaVersion)
     {
         this.currentManagedSchemaVersion = currentManagedSchemaVersion;
+    }
+
+    /**
+     * @param minimumPwdLength the minimumPwdLength to set
+     */
+    public void setMinimumPwdLength(Byte minimumPwdLength)
+    {
+        this.minimumPwdLength = minimumPwdLength;
     }
 
     /**
