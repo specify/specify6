@@ -19,7 +19,6 @@
 */
 package edu.ku.brc.af.ui.db;
 
-import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -243,7 +242,7 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
     public void createUI()
     {
         JScrollPane scrollPane = UIHelper.createScrollPane(viewBasedPanel, true);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        scrollPane.setBorder(BorderFactory.createLineBorder(getBackground(), 8));
         contentPanel = scrollPane;
         
         super.createUI();
