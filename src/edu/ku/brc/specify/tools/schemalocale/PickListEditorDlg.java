@@ -58,9 +58,11 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
 import edu.ku.brc.af.ui.db.PickListIFace;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
+import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField;
@@ -478,7 +480,11 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
                 MultiView.HIDE_SAVE_BTN);
         
         dlg.setHelpContext("PL_ITEM_EDITOR");
-        dlg.setFormAdjuster(plBusRules);
+        BusinessRulesIFace busRules = dlg.getMultiView().getCurrentViewAsFormViewObj().getBusinessRules();
+        if (busRules instanceof FormPaneAdjusterIFace)
+        {
+            dlg.setFormAdjuster((FormPaneAdjusterIFace)busRules);
+        }
         
         MultiView    multiView = dlg.getMultiView();
         ValTextField tf        = multiView.getKids().get(0).getCurrentViewAsFormViewObj().getCompById("value");

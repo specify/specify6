@@ -44,6 +44,7 @@ import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.DataObjSwitchFormatter;
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
@@ -131,25 +132,31 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
     }
     
     /**
-     * 
+     * This is an adjustment for PickLists with items (only)
      */
     protected void adjustSizeSpinner()
     {
-        if (formViewObj != null)
+        ValSpinner  sizeLimitSp = (ValSpinner)formViewObj.getControlByName("sizeLimit");
+        if (sizeLimitSp != null)
         {
-            final ValSpinner  sizeLimitSp = (ValSpinner)formViewObj.getControlByName("sizeLimit");
-            
-            PickListIFace    pl          = (PickListIFace)formViewObj.getDataObj();
-            int              min         = Math.max(pl.getNumItems(), 0);
-            int              max         = 500;
-            Integer          val         = pl.getSizeLimit();
-            formViewObj.getValidator().setHasChanged(true);
-
-            if (val == null || val == -1)
+            PickListIFace pickList = (PickListIFace)formViewObj.getDataObj();
+            if (pickList.getReadOnly())
             {
-                val = pl.getNumItems();
+                sizeLimitSp.setRange(0, 0, 0);
+                
+            } else if (formViewObj != null && pickList.getType() == PickListIFace.PL_WITH_ITEMS)
+            {
+                int           min         = Math.max(pickList.getNumItems(), 0);
+                int           max         = 500;
+                Integer       val         = pickList.getSizeLimit();
+                formViewObj.getValidator().setHasChanged(true);
+    
+                if (val == null || val == -1 || val < min)
+                {
+                    val = min;
+                }
+                sizeLimitSp.setRange(min, max, val);
             }
-            sizeLimitSp.setRange(min, max, val);
         }
     } 
     
@@ -429,8 +436,9 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
                     
                 } else
                 {
-                    sizeLimitSp.setEnabled(typeIndex == 0);
-                    if (typeIndex == 0)
+                    boolean plWithItems = typeIndex == PickListIFace.PL_WITH_ITEMS;
+                    sizeLimitSp.setEnabled(plWithItems);
+                    if (plWithItems)
                     {
                         adjustSizeSpinner();
                     }
@@ -580,7 +588,11 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
     @Override
     public boolean afterSaveCommit(final Object dataObj, final DataProviderSessionIFace session)
     {
-        adjustSizeSpinner();
+        PickListIFace rs = (PickListIFace)dataObj;
+        if (rs.getType() == PickListIFace.PL_WITH_ITEMS)
+        {
+            adjustSizeSpinner();
+        }
         return super.afterSaveCommit(dataObj, session);
     }
 
