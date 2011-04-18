@@ -8194,7 +8194,7 @@ public class BuildSampleDatabase
             if (!isFish && title.equals("Collecting Event"))
             {
                 title = "Collecting Information";
-            } else if (memBase.getName().equals("taxononly") && title.equals("Taxon"))
+            } else if (memBase.getName().equals("taxononly") /*&& title.equals("Taxon")*/)
             {
             	title = UIRegistry.getResourceString("WB_TAXONIMPORT_ONLY");
             }
