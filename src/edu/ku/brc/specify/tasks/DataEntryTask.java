@@ -1754,7 +1754,14 @@ public class DataEntryTask extends BaseTask
     {
         if (!processRecordSetCommand(cmdAction, stdViews))
         {
-            processRecordSetCommand(cmdAction, miscViews);
+            if (!processRecordSetCommand(cmdAction, miscViews) && cmdAction.getDstObj() instanceof RecordSetIFace)
+            {
+                FormPane formPane = createFormFor(this, "", null, null, (RecordSetIFace)cmdAction.getDstObj());
+                if (formPane != null)
+                {
+                    addSubPaneToMgr(formPane);
+                }
+            }
         }
         
         /*

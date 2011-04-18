@@ -699,27 +699,33 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      */
     public void displayRecordSet(final RecordSetIFace recordSet, final boolean isEditable)
     {
-        SearchConfig      config            = SearchConfigService.getInstance().getSearchConfig();
-        SearchTableConfig searchTableConfig = config.getSearchTableConfigById(recordSet.getDbTableId());
-        if (searchTableConfig != null)
+        if (recordSet.getNumItems() > 0)
         {
-            String rsName = UIRegistry.getLocalizedMessage("ES_RS_TAB_NM", recordSet.getName());
-            
-            SubPaneIFace sp = SubPaneMgr.getInstance().getSubPaneByName(rsName);
-            if (sp != null)
+            SearchConfig      config            = SearchConfigService.getInstance().getSearchConfig();
+            SearchTableConfig searchTableConfig = config.getSearchTableConfigById(recordSet.getDbTableId());
+            if (searchTableConfig != null)
             {
-                SubPaneMgr.getInstance().showPane(sp);
-            } else
-            {
-                ESResultsSubPane esrPane = new ESResultsSubPane(rsName, this, true);
-                esrPane.setIcon(IconManager.getIcon("Record_Set", IconManager.IconSize.Std16));
-                Hashtable<String, QueryForIdResultsSQL> resultsForJoinsHash = new Hashtable<String, QueryForIdResultsSQL>();
-                QueryForIdResultsHQL results = new QueryForIdResultsHQL(searchTableConfig, new Color(255, 158, 6), recordSet);
-                results.setEditable(isEditable);
-                results.setExpanded(true);
-                displayResults(esrPane, results, resultsForJoinsHash);
-                addSubPaneToMgr(esrPane);
+                String rsName = UIRegistry.getLocalizedMessage("ES_RS_TAB_NM", recordSet.getName());
+                
+                SubPaneIFace sp = SubPaneMgr.getInstance().getSubPaneByName(rsName);
+                if (sp != null)
+                {
+                    SubPaneMgr.getInstance().showPane(sp);
+                } else
+                {
+                    ESResultsSubPane esrPane = new ESResultsSubPane(rsName, this, true);
+                    esrPane.setIcon(IconManager.getIcon("Record_Set", IconManager.IconSize.Std16));
+                    Hashtable<String, QueryForIdResultsSQL> resultsForJoinsHash = new Hashtable<String, QueryForIdResultsSQL>();
+                    QueryForIdResultsHQL results = new QueryForIdResultsHQL(searchTableConfig, new Color(255, 158, 6), recordSet);
+                    results.setEditable(isEditable);
+                    results.setExpanded(true);
+                    displayResults(esrPane, results, resultsForJoinsHash);
+                    addSubPaneToMgr(esrPane);
+                }
             }
+        } else
+        {
+            UIRegistry.showLocalizedError("RS_HAS_NO_ITEMS", recordSet.getName());
         }
     }
 

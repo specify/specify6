@@ -4086,6 +4086,12 @@ public class FormViewObj implements Viewable,
         }
         sql.append(')');
         
+        if (cnt == 0)
+        {
+            UIRegistry.showLocalizedError("RS_HAS_NO_ITEMS", recordSet.getName());
+            return;
+        }
+        
         //log.debug(sql.toString());
         
         SQLExecutionListener listener = new SQLExecutionListener()
