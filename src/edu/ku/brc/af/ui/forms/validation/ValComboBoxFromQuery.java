@@ -657,13 +657,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
            
             valueHasChanged();
             
-            if (listSelectionListeners != null)
-            {
-                for (ListSelectionListener l : listSelectionListeners)
-                {
-                    l.valueChanged(null);
-                }
-            }
+            notifyListeners(null);
         }
     }
     
@@ -909,13 +903,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                     } 
                 }
                 valueHasChanged();
-                if (listSelectionListeners != null)
-                {
-                    for (ListSelectionListener l : listSelectionListeners)
-                    {
-                        l.valueChanged(null);
-                    }
-                }
+                notifyListeners(null);
             }
 
             currentMode = MODE.Unknown;
@@ -975,9 +963,9 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public void addListSelectionListener(ListSelectionListener listSelectionListener)
     {
-        if (listSelectionListeners == null)
+        if (this.listSelectionListeners == null)
         {
-            listSelectionListeners = new Vector<ListSelectionListener>();
+            this.listSelectionListeners = new Vector<ListSelectionListener>();
         }
         this.listSelectionListeners.add(listSelectionListener);
     }
@@ -1332,7 +1320,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public void valueChanged(final ListSelectionEvent e)
     {
-        //log.debug(e != null ? ((JMenuItem)e.getSource()).getText() : "null");
+        //log.debug("valueChanged: "+(e != null ? ((JMenuItem)e.getSource()).getText() : "null"));
+        //log.debug("valueChanged: "+(e != null ? e.getClass().getSimpleName() : "null")+" "+e.getSource().getClass().getSimpleName());
         if (e != null)
         {
             if (e.getSource() instanceof TextFieldWithQuery)
@@ -1384,6 +1373,16 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             editBtn.setEnabled(dataObj != null || (textWithQuery != null && textWithQuery.getSelectedId() != null));
         }
         
+        notifyListeners(e);
+        
+        repaint();
+    }
+    
+    /**
+     * @param e
+     */
+    private void notifyListeners(final ListSelectionEvent e)
+    {
         if (listSelectionListeners != null)
         {
             for (ListSelectionListener l : listSelectionListeners)
@@ -1391,7 +1390,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 l.valueChanged(e);
             }
         }
-        repaint();
     }
 
     //--------------------------------------------------------

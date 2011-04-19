@@ -229,6 +229,14 @@ public class ContainerPlugin extends UIPluginBase implements UIValidatable
                 }
             });
     
+            parentContainerCBX.addListSelectionListener(new ListSelectionListener()
+            {
+                public void valueChanged(ListSelectionEvent e)
+                {
+                    itemSelected();
+                }
+            });
+    
             
             ActionListener rbAction = new ActionListener()
             {
