@@ -5677,7 +5677,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 				{
 					if (condition == status)
 					{
-						System.out.println("pos: " + arg1.row + ", " + arg1.column + ": " + wbCell.getStatusText());
+						//System.out.println("pos: " + arg1.row + ", " + arg1.column + ": " + wbCell.getStatusText());
 						((JLabel )arg0).setToolTipText(wbCell.getStatusText());
 						return true;
 					}

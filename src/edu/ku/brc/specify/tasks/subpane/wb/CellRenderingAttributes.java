@@ -114,7 +114,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 				{
 					Atts atts = getAtts(cellStatus, cellStatusText, doIncrementalValidation,
 							doIncrementalMatching);
-					System.out.println("pos " + wbCell.getRowNumber() + ", "+ wbCell.getColumnNumber() + ":" + cellStatusText);
+					//System.out.println("pos " + wbCell.getRowNumber() + ", "+ wbCell.getColumnNumber() + ":" + cellStatusText);
 					lbl.setBorder(atts.border);
 					//Using ColorHighlighters to set background colors because
 					//they do not override the selection color

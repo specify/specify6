@@ -165,9 +165,9 @@ public class UploadToolPanel extends JPanel implements TimingTarget
         
         JLabel sep1 = new JLabel(IconManager.getIcon("Separator"));
 
-        JComponent[] compsArray = {autoValidateChk,
-                                   prevInvalidCellBtn, invalidCellCountLbl, nextInvalidCellBtn, sep1, autoMatchChk,
-                                   prevUnmatchedCellBtn, unmatchedCellCountLbl, nextUnmatchedCellBtn};
+        JComponent[] compsArray = {autoValidateChk, invalidCellCountLbl,
+                                   prevInvalidCellBtn,  nextInvalidCellBtn, sep1, autoMatchChk,
+                                   unmatchedCellCountLbl, prevUnmatchedCellBtn, nextUnmatchedCellBtn};
         Vector<JComponent> availableComps = new Vector<JComponent>(compsArray.length);
         for (JComponent c : compsArray)
         {

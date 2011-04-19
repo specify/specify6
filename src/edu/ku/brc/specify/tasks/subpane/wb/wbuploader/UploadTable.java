@@ -3230,13 +3230,19 @@ public class UploadTable implements Comparable<UploadTable>
         Map<String, PickListItemIFace> vals = fld.getValidValues();
         if (vals != null)
         {
-            for (String val : vals.keySet())
+            int valCount = 0;
+        	for (String val : vals.keySet())
             {
                 if (!StringUtils.isEmpty(valList))
                 {
                     valList += ", ";
                 }
                 valList += "'" + val + "'";
+                if (++valCount == 13)
+                {
+                	valList += " ...";
+                	break;
+                }
             }
             if (fld.isReadOnlyValidValues())
             {
