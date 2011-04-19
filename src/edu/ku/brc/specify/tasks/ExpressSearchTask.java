@@ -722,6 +722,10 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                     displayResults(esrPane, results, resultsForJoinsHash);
                     addSubPaneToMgr(esrPane);
                 }
+            } else
+            {
+                String tblTitle = DBTableIdMgr.getInstance().getTitleForId(recordSet.getDbTableId());
+                UIRegistry.showLocalizedError("RS_CONFIG_SEARCH", tblTitle);
             }
         } else
         {
