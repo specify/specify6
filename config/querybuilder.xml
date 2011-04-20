@@ -128,7 +128,6 @@
       	<alias name="ConservDescription" field="conservDescriptions" /> 
       	<!-- table name="Container" field="container" /-->
       	<!-- table name="Container" field="containerOwner" /-->
-      	<alias name="Agent" field="createdByAgent" />
       	<table name="DNASequence" field="dnaSequences">
       			<alias name="Agent" field="sequencer" /> 
       	</table>
@@ -138,12 +137,23 @@
       	
       	<alias name="FieldNotebookPage" field="fieldNotebookPage" />
       	
-      	<!-- <table name="CollectionRelationship" field="leftSideRels" /> -->
+      	<alias name="CollectionRelationship" field="leftSideRels" />
+      	<alias name="CollectionRelationship" field="rightSideRels"/>
+      	
+      	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />
+      	
       	<table name="OtherIdentifier" field="otherIdentifiers" />
       	<alias name="Project" field="projects" />
-      	<table name="CollectionRelationship" field="rightSideRels" />
       	<table name="TreatmentEvent" field="treatmentEvents" />
+    </table>
+    
+    <table name="CollectionRelationship">
+    	<alias name="CollectionObject" field="leftSide"/>
+    	<alias name="CollectionObject" field="rightSide"/>
+    	<table name="CollectionRelType" field="collectionRelType" />
+    	<alias name="Agent" field="modifiedByAgent"/>
+    	<alias name="Agent" field="createdByAgent"/>
     </table>
     
     <!-- 
