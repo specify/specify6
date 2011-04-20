@@ -54,10 +54,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JProgressBar;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.text.JTextComponent;
 
@@ -118,12 +123,14 @@ import edu.ku.brc.util.Pair;
 public class DatabaseLoginPanel extends JTiledPanel
 {
     private static final Logger          log            = Logger.getLogger(DatabaseLoginPanel.class);
-
+    private static final String LOGIN_PORT = "login.port";
+    
     // Form Stuff
 
     protected JTextField                 username;
     protected JPasswordField             password;
-
+    protected JSpinner                   portSpinner;
+    
     protected ValComboBox                databases;
     protected ValComboBox                servers;
 
@@ -257,7 +264,7 @@ public class DatabaseLoginPanel extends JTiledPanel
      * @param iconName name of icon to use
      * @param helpContext context for help btn on dialog
      */
-    public DatabaseLoginPanel(final MasterPasswordProviderIFace usrPwdProvider,
+    /*public DatabaseLoginPanel(final MasterPasswordProviderIFace usrPwdProvider,
                               final boolean               engageUPPrefs,
                               final DatabaseLoginListener dbListener,  
                               final boolean isDlg, 
@@ -267,7 +274,7 @@ public class DatabaseLoginPanel extends JTiledPanel
                               final String helpContext)
     {
         this(null, null, engageUPPrefs, usrPwdProvider, dbListener, isDlg, true, title, appName, iconName, helpContext);
-    }
+    }*/
 
     /**
      * Constructor that has the form created from the view system
@@ -407,13 +414,39 @@ public class DatabaseLoginPanel extends JTiledPanel
                             final String  iconName,
                             final String  helpContext)
     {
-        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        final boolean        isNotEmbedded = !DBConnection.getInstance().isEmbedded() && !UIRegistry.isMobile();
+        final AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         
         //Font cachedFont = UIManager.getFont("JLabel.font");
         SkinItem skinItem = SkinsMgr.getSkinItem("LoginPanel");
         if (skinItem != null)
         {
             skinItem.pushFG("Label.foreground");
+        }
+        
+        
+        if (isNotEmbedded)
+        {
+            SpinnerModel portModel = new SpinnerNumberModel(3306, //initial value
+                    0,     //min
+                    9999,  //max
+                    1);    //step
+            portSpinner = new JSpinner(portModel);
+            JSpinner.NumberEditor editor = new JSpinner.NumberEditor(portSpinner, "#");
+            portSpinner.setEditor(editor);
+            
+            portSpinner.addChangeListener(new ChangeListener()
+            {
+                @Override
+                public void stateChanged(ChangeEvent e)
+                {
+                    DatabaseDriverInfo drvInfo = dbDrivers.get(dbDriverCBX.getSelectedIndex());
+                    if (drvInfo != null && isNotEmbedded && portSpinner != null)
+                    {
+                        drvInfo.setPort((Integer)portSpinner.getValue());
+                    }
+                }
+            });
         }
         
         // First create the controls and hook up listeners
@@ -495,8 +528,27 @@ public class DatabaseLoginPanel extends JTiledPanel
         setControlSize(moreBtn);
 
         // Extra
-        dbDrivers = DatabaseDriverInfo.getDriversList();
+        dbDrivers   = DatabaseDriverInfo.getDriversList();
         dbDriverCBX = createComboBox(dbDrivers);
+        
+        dbDriverCBX.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                updateUIControls();
+                
+                DatabaseDriverInfo drvInfo = dbDrivers.get(dbDriverCBX.getSelectedIndex());
+                if (drvInfo != null && isNotEmbedded && portSpinner != null)
+                {
+                    Integer defPort      = drvInfo.getPortAsInt();
+                    int     portFromPref = localPrefs.getInt(LOGIN_PORT, defPort);
+                    
+                    portSpinner.setValue(portFromPref);
+                    drvInfo.setPort(portFromPref);
+                }
+            }
+        });
+
         if (dbDrivers.size() > 0)
         {
             if (dbDrivers.size() == 1)
@@ -517,14 +569,6 @@ public class DatabaseLoginPanel extends JTiledPanel
                     getResourceString("NO_DBDRIVERS_TITLE"), JOptionPane.CLOSED_OPTION); //$NON-NLS-1$
             System.exit(1);
         }
-
-        dbDriverCBX.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                updateUIControls();
-            }
-        });
 
         addFocusListenerForTextComp(username);
         addFocusListenerForTextComp(password);
@@ -656,8 +700,9 @@ public class DatabaseLoginPanel extends JTiledPanel
         addLine("password", password, formBuilder, cc, 5); //$NON-NLS-1$
         formBuilder.add(moreBtn,                   cc.xy(3, 7));
         
+       
         PanelBuilder extraPanelBlder = new PanelBuilder(new FormLayout("p,3dlu,p:g",//$NON-NLS-1$ 
-                UIHelper.createDuplicateJGoodiesDef("p", "2dlu", 9))); //$NON-NLS-1$ //$NON-NLS-2$
+                UIHelper.createDuplicateJGoodiesDef("p", "2dlu", isNotEmbedded ? 9 : 11))); //$NON-NLS-1$ //$NON-NLS-2$
         
         extraPanel = extraPanelBlder.getPanel();
         extraPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 4, 2));
@@ -669,6 +714,10 @@ public class DatabaseLoginPanel extends JTiledPanel
         y = addLine("servers",   servers,             extraPanelBlder, cc, y); //$NON-NLS-1$
         
         y = addLine("driver", dbDriverCBX, extraPanelBlder, cc, y); //$NON-NLS-1$
+        if (isNotEmbedded)
+        {
+            y = addLine("port", portSpinner, extraPanelBlder, cc, y); //$NON-NLS-1$
+        }
         if (editKeyInfoBtn != null)
         {
             PanelBuilder pb = new PanelBuilder(new FormLayout("p,f:p:g", "p"));
@@ -949,8 +998,10 @@ public class DatabaseLoginPanel extends JTiledPanel
         }
         
         localPrefs.put("login.dbdriver_selected", dbDrivers.get(dbDriverCBX.getSelectedIndex()).getName()); //$NON-NLS-1$
-
-
+        if (!DBConnection.getInstance().isEmbedded() && !UIRegistry.isMobile())
+        {
+            localPrefs.put(LOGIN_PORT, portSpinner.getValue().toString()); //$NON-NLS-1$
+        }
     }
 
     /**
@@ -1002,6 +1053,11 @@ public class DatabaseLoginPanel extends JTiledPanel
         rememberUsernameCBX.setEnabled(enable);
         dbDriverCBX.setEnabled(enable);
         moreBtn.setEnabled(enable);
+        
+        if (portSpinner != null)
+        {
+            portSpinner.setEnabled(enable);
+        }
         
         if (editKeyInfoBtn != null)
         {
@@ -1164,6 +1220,11 @@ public class DatabaseLoginPanel extends JTiledPanel
                     DatabaseDriverInfo drvInfo = dbDrivers.get(dbDriverCBX.getSelectedIndex());
                     if (drvInfo != null)
                     {
+                        if (!DBConnection.getInstance().isEmbedded() && !UIRegistry.isMobile())
+                        {
+                            drvInfo.setPort((Integer)portSpinner.getValue());
+                        }
+
                         DBConnection.getInstance().setDbCloseConnectionStr(drvInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Close, getServerName(), getDatabaseName()));
                         DBConnection.getInstance().setServerName(getServerName());
                         DBConnection.getInstance().setDriverName(((DatabaseDriverInfo)dbDriverCBX.getSelectedItem()).getName());
@@ -1440,14 +1501,19 @@ public class DatabaseLoginPanel extends JTiledPanel
     {
         if (dbDriverCBX.getSelectedIndex() > -1) 
         { 
-            return dbDrivers.get(dbDriverCBX.getSelectedIndex()).getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, getServerName(), getDatabaseName());
+            DatabaseDriverInfo drvInfo = dbDrivers.get(dbDriverCBX.getSelectedIndex());
+            if (!DBConnection.getInstance().isEmbedded() && !UIRegistry.isMobile())
+            {
+                drvInfo.setPort((Integer)portSpinner.getValue());
+            }
+            return drvInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, getServerName(), getDatabaseName());
         }
         // else
         return null; // we should never get here
     }
 
     /**
-     * @return dialect clas name
+     * @return dialect class name
      */
     public String getDialectClassName()
     {

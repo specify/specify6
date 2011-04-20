@@ -1551,35 +1551,6 @@ public final class UIHelper
     //-- Helpers for logging into the database
     //-------------------------------------------------------
 
-    /**
-     * Constructs the full connection string for JDBC
-     * @param dbProtocol the protocol
-     * @param dbServer the server name machine or IP address
-     * @param dbName the name of the database
-     * @return the full JDBC connection string
-     */
-    public static String constructJDBCConnectionString(final String dbProtocol,
-                                                       final String dbServer,
-                                                       final String dbName)
-    {
-        StringBuilder strBuf = new StringBuilder(64);
-        strBuf.append("jdbc:");
-        strBuf.append(dbProtocol);
-
-        if (isNotEmpty(dbServer))
-        {
-            strBuf.append("://");
-            strBuf.append(dbServer);
-            strBuf.append("/");
-            strBuf.append(dbName);
-
-        } else
-        {
-            strBuf.append(":");
-            strBuf.append(dbName);
-        }
-        return strBuf.toString();
-    }
 
     /**
      * Tries to login using the supplied params
