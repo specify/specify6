@@ -1261,16 +1261,16 @@ SELECT co.CollectionObjectID,
                 <sql>
                     <![CDATA[
 SELECT cn.ContainerID,
- cn.Name,
  p.Name, 
+ cn.Name,
   %s
  FROM container p INNER JOIN container cn ON p.ContainerID = cn.ParentID
  WHERE (cn.CollectionMemberID = COLMEMID) AND %s]]>
                 </sql>
                 <captions>
                     <caption tableid="31" col="cn.ContainerID" visible="false"/>
-                    <caption tableid="31" col="cn.Name"/>
                     <caption tableid="31" col="p.Name"  key="Name"/>
+                    <caption tableid="31" col="cn.Name"/>
                 </captions>
             </detailView>
         </table>
@@ -2168,6 +2168,7 @@ SELECT cn.ContainerID,
             </detailView>
         </table>
         
+        <!-- 
         <table id="129" tableid="31" name="ContainerSearch" priority="1" color="30, 144, 255">
             <detailView icon="Container">
                 <sql>
@@ -2183,15 +2184,16 @@ SELECT cn.ContainerID,
         <table id="130" tableid="31" name="ContainerOwnerSearch" priority="1" color="30, 144, 255">
             <detailView icon="Container">
                 <sql>
-                    <![CDATA[SELECT c.ContainerID, c.Name, co.CollectionObjectID FROM container AS c Left Join collectionobject AS co ON c.ContainerID = co.ContainerOwnerID WHERE co.CollectionObjectID IS NULL AND (c.CollectionMemberID = COLMEMID) AND (%s)]]>
+                    <![CDATA[SELECT c.ContainerID, c.Name, co.CatalogNumber FROM container AS c Left Join collectionobject AS co ON c.ContainerID = co.ContainerOwnerID WHERE co.CollectionObjectID IS NULL AND (c.CollectionMemberID = COLMEMID) AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="31" col="ContainerID" visible="false"/>
                     <caption tableid="31" col="Name"/>
+                    <caption tableid="1"  col="CatalogNumber"/>
                 </captions>
             </detailView>
         </table>
-        
+         -->
         
     </generic>
 </searches>

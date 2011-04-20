@@ -48,6 +48,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -97,8 +98,10 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.SpecifyUserTypes.UserType;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.dbsupport.SpecifyQueryAdjusterForDomain;
 import edu.ku.brc.specify.tasks.subpane.ESResultsSubPane;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
@@ -129,7 +132,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
 {
     // Static Data Members
     private static final Logger log = Logger.getLogger(ExpressSearchTask.class);
-    public static final  String GLOBAL_SEARCH = "GLOBAL_SEARCH";
+    public static final  String GLOBAL_SEARCH_AVAIL = "GLOBAL_SEARCH_AVAIL";
+    public static final  String GLOBAL_SEARCH       = "GLOBAL_SEARCH";
     
 
     public static final int    RESULTS_THRESHOLD  = 20000;
@@ -1429,27 +1433,38 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 
                 if (!AppContextMgr.isSecurityOn() || SpecifyUser.isCurrentUserType(UserType.Manager))
                 {
-                    ActionListener globalSearchAL = new ActionListener()
+                    boolean permsOKForGlobalSearch = ((SpecifyQueryAdjusterForDomain)QueryAdjusterForDomain.getInstance()).isPermsOKForGlobalSearch();
+                    boolean isGlobalSearchAvail    = permsOKForGlobalSearch && AppPreferences.getLocalPrefs().getBoolean("GLOBAL_SEARCH_AVAIL", false);
+                    if (isGlobalSearchAvail)
                     {
-                        @Override
-                        public void actionPerformed(ActionEvent e)
+                        boolean isGSOn = AppPreferences.getLocalPrefs().getBoolean("GLOBAL_SEARCH", false);
+                        
+                        ActionListener globalSearchAL = new ActionListener()
                         {
-                            doGlobalSearchSetup();
-                        }
-                    };
-                    
-                    boolean doGlobalSearch = AppPreferences.getLocalPrefs().getBoolean(GLOBAL_SEARCH, false);
-                    globalSearchCheckBoxMI = new JCheckBoxMenuItem(getResourceString(GLOBAL_SEARCH), 
-                                                                   IconManager.getIcon("GlobalSearch", IconManager.IconSize.Std16),
-                                                                   doGlobalSearch);
-                    globalSearchCheckBoxMI.addActionListener(globalSearchAL);
+                            @Override
+                            public void actionPerformed(ActionEvent e)
+                            {
+                                doGlobalSearchSetup();
+                            }
+                        };
+                        
+                        globalSearchCheckBoxMI = new JCheckBoxMenuItem(getResourceString(GLOBAL_SEARCH), 
+                                                                       IconManager.getIcon("GlobalSearch", IconManager.IconSize.Std16),
+                                                                       isGSOn);
+                        globalSearchCheckBoxMI.addActionListener(globalSearchAL);
+                        
+                        menus.add(new JSeparator());
+                        menus.add(globalSearchCheckBoxMI);
+                    }
                 } else
                 {
                     AppPreferences.getLocalPrefs().remove(GLOBAL_SEARCH);
                 }
 
-                menus.add(globalSearchCheckBoxMI);
-                
+                if (globalSearchCheckBoxMI == null)
+                {
+                    menus.add(new JSeparator());
+                }
                 configMenuItem = new JMenuItem(getResourceString("ESConfig"), IconManager.getIcon("SystemSetup", IconManager.IconSize.Std16));
                 configMenuItem.addActionListener(action);
                 menus.add(configMenuItem);
@@ -1467,6 +1482,9 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         }
     }
     
+    /**
+     * 
+     */
     private void doGlobalSearchSetup()
     {
         if (globalSearchCheckBoxMI.isSelected())

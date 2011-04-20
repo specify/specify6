@@ -448,7 +448,8 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
     @Override
     public String adjustSQL(final String sql)
     {
-        boolean doGlobalSearch = permsOKForGlobalSearch && AppPreferences.getLocalPrefs().getBoolean("GLOBAL_SEARCH", false);
+        AppPreferences locPrefs = AppPreferences.getLocalPrefs();
+        boolean doGlobalSearch = permsOKForGlobalSearch && locPrefs.getBoolean("GLOBAL_SEARCH_AVAIL", false) && locPrefs.getBoolean("GLOBAL_SEARCH", false);
         //divisionCnt++;
         //disciplineCnt++;
         //collectionCnt++;
@@ -620,6 +621,14 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
         {
             throw new RuntimeException("The SpecifyUser cannot be null!");
         }
+    }
+
+    /**
+     * @return the permsOKForGlobalSearch
+     */
+    public boolean isPermsOKForGlobalSearch()
+    {
+        return permsOKForGlobalSearch;
     }
     
     /*
