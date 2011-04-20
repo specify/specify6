@@ -347,8 +347,8 @@ public class TableViewObj implements Viewable,
                 {
                     if (isEditing) //|| addSearch) // rods 7/23/10 - removed 'addSearch' because it was showing up in View Mode
                     {
-                        String delTTStr = ResultSetController.createTooltip("RemoveRecordTT", view.getObjTitle());
-                        deleteButton = UIHelper.createIconBtnTT("DeleteRecord", IconManager.IconSize.Std16, delTTStr, false, new ActionListener() {
+                        String delTTStr = ResultSetController.createTooltip(addSearch ? "RemoveRecordTT" : "DeleteRecordTT", view.getObjTitle());
+                        deleteButton = UIHelper.createIconBtnTT(addSearch ? "Eraser16" : "DeleteRecord", IconManager.IconSize.Std16, delTTStr, false, new ActionListener() {
                             public void actionPerformed(ActionEvent e)
                             {
                                 deleteRow(table.getSelectedRow());
@@ -373,13 +373,15 @@ public class TableViewObj implements Viewable,
                                 log.error("Couldn't find TableInfo for class["+view.getClassName()+"]");
                             }
                             
-                            searchButton = UIHelper.createIconBtnTT("Search", IconManager.IconSize.Std16, srchTTStr, false, new ActionListener() {
+                            searchButton = UIHelper.createIconBtnTT(addSearch ? "SearchAdd" : "Search", IconManager.IconSize.Std16, srchTTStr, false, new ActionListener() {
                                 public void actionPerformed(ActionEvent e)
                                 {
                                     doSearch();
                                 }
                             });
                             searchButton.setEnabled(true);
+                            String saTTStr = ResultSetController.createTooltip("SearchAddRecordTT", view.getObjTitle());
+                            searchButton.setToolTipText(saTTStr);
                             
                         } else
                         {
@@ -1234,8 +1236,8 @@ public class TableViewObj implements Viewable,
         if (dObj != null)
         {
             Object[] delBtnLabels = {getResourceString(addSearch ? "Remove" : "Delete"), getResourceString("CANCEL")};
-            int rv = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), UIRegistry.getLocalizedMessage("ASK_DELETE", dObj.getIdentityTitle()),
-                                                  getResourceString("Delete"),
+            int rv = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), UIRegistry.getLocalizedMessage(addSearch ? "ASK_REMOVE" : "ASK_DELETE", dObj.getIdentityTitle()),
+                                                  getResourceString(addSearch ? "Remove" : "Delete"),
                                                   JOptionPane.YES_NO_OPTION,
                                                   JOptionPane.QUESTION_MESSAGE,
                                                   null,

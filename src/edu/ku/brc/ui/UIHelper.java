@@ -21,20 +21,20 @@ package edu.ku.brc.ui;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static java.awt.event.InputEvent.ALT_DOWN_MASK;
-import static java.awt.event.KeyEvent.VK_BRACELEFT;
-import static java.awt.event.KeyEvent.VK_BRACERIGHT;
 import static java.awt.event.KeyEvent.VK_C;
 import static java.awt.event.KeyEvent.VK_D;
+import static java.awt.event.KeyEvent.VK_DOWN;
 import static java.awt.event.KeyEvent.VK_END;
 import static java.awt.event.KeyEvent.VK_ENTER;
-import static java.awt.event.KeyEvent.VK_GREATER;
 import static java.awt.event.KeyEvent.VK_HOME;
-import static java.awt.event.KeyEvent.VK_LESS;
+import static java.awt.event.KeyEvent.VK_LEFT;
 import static java.awt.event.KeyEvent.VK_N;
 import static java.awt.event.KeyEvent.VK_PAGE_DOWN;
 import static java.awt.event.KeyEvent.VK_PAGE_UP;
+import static java.awt.event.KeyEvent.VK_RIGHT;
 import static java.awt.event.KeyEvent.VK_S;
 import static java.awt.event.KeyEvent.VK_TAB;
+import static java.awt.event.KeyEvent.VK_UP;
 import static java.awt.event.KeyEvent.VK_V;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
@@ -3549,7 +3549,7 @@ public final class UIHelper
         int alt = ALT_DOWN_MASK;
         
         //           First,         Previous,             Next,                 Last,          Save, NewItem, DelItem
-        int[] keys = {VK_BRACELEFT, VK_LESS,  VK_GREATER, VK_BRACERIGHT, VK_S, VK_N,     VK_D, };
+        int[] keys = {VK_UP,        VK_LEFT,              VK_RIGHT,             VK_DOWN,       VK_S, VK_N,     VK_D, };
         int[] mods = {alt,          alt,                  alt,                  alt,           alt,  alt,      alt, };
         
         buildKeyStrokeForCommandTypes(keys, mods);

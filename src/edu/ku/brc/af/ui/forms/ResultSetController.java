@@ -391,7 +391,7 @@ public class ResultSetController implements ValidationListener
             {
                 delRecBtn = UIHelper.createIconBtn("DeleteRecord", null, null);    
             }
-            delRecBtn.setToolTipText(createTooltip("RemoveRecordTT", objTitle));
+            delRecBtn.setToolTipText(createTooltip("DeleteRecordTT", objTitle));
             delRecBtn.setMargin(insets);
             btnsHash.put(CommandType.DelItem, delRecBtn);
             

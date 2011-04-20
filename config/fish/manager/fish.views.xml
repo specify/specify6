@@ -157,10 +157,10 @@
                         </rows> 
                     </cell>
                 </row>      
-                <row>
+                <!-- <row>
                     <cell type="label" label="Eaten By:" initialize="align=right;"/>
                     <cell type="field" id="colrel" uitype="plugin" name="this" initialize="name=CollectionRelOneToManyPlugin;relname=Eaten By;" colspan="10"/>
-                </row>
+                </row> -->
                 <row>
                     <cell type="separator" label="" colspan="12"/>
                 </row>

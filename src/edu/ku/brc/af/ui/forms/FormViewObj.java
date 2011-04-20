@@ -37,6 +37,8 @@ import java.awt.Insets;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -58,11 +60,13 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
@@ -78,6 +82,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.ListModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
@@ -188,7 +193,8 @@ public class FormViewObj implements Viewable,
                                     PropertyChangeListener
 {
     private static final Logger log = Logger.getLogger(FormViewObj.class);
-    
+    private static final String actionName = "SwitcherToggle";
+
     protected enum SAVE_STATE {Initial, NewObjSaveerror, StaleRecovery, SaveOK, Error}
     
 
@@ -309,7 +315,7 @@ public class FormViewObj implements Viewable,
     {
         this(view, altView, mvParent, formValidator, options, null, bgColor);
     }*/
-    
+
     /**
      * Constructor with FormView definition.
      * @param view the definition of the view
@@ -471,6 +477,17 @@ public class FormViewObj implements Viewable,
                 // This will return null if it isn't suppose to have a switcher
                 switcherUI = createMenuSwitcherPanel(mvParent, view, altView, altViewsList, restrictablePanel, cellName, dataClass);
                 
+                Action action = new AbstractAction()
+                {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        switcherUI.getSwitcherAL().actionPerformed(e);
+                    }
+                };
+                restrictablePanel.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control E"), actionName);
+                restrictablePanel.getActionMap().put(actionName, action); 
+                 
                 if (altViewsList.size() > 0)
                 {
                     if (altView.getMode() == AltViewIFace.CreationMode.EDIT && mvParent != null && mvParent.isTopLevel())
@@ -2983,7 +3000,7 @@ public class FormViewObj implements Viewable,
         String title = dataObj instanceof FormDataObjIFace ? ((FormDataObjIFace)dataObj).getIdentityTitle() : tableInfo.getTitle();
         
         int rv = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), UIRegistry.getLocalizedMessage(addSearch ? "ASK_REMOVE" : "ASK_DELETE", title),
-                                              getResourceString("Delete"),
+                                              getResourceString(addSearch ? "Remove" : "Delete"),
                                               JOptionPane.YES_NO_OPTION,
                                               JOptionPane.QUESTION_MESSAGE,
                                               null,
@@ -3554,6 +3571,24 @@ public class FormViewObj implements Viewable,
             newRecBtn = rsController.getNewRecBtn();
             delRecBtn = rsController.getDelRecBtn();
             
+            if (addSearch)
+            {
+                if (delRecBtn != null)
+                {
+                    String removeTTStr = ResultSetController.createTooltip("RemoveRecordTT", view.getObjTitle());
+                    delRecBtn.setIcon(IconManager.getIcon("Eraser16", IconManager.STD_ICON_SIZE.Std16));
+                    delRecBtn.setToolTipText(removeTTStr);
+                }
+                
+                JButton searchButton = rsController.getSearchRecBtn();
+                if (searchButton != null)
+                {
+                    searchButton.setIcon(IconManager.getIcon("SearchAdd", IconManager.STD_ICON_SIZE.Std16));
+                    String saTTStr = ResultSetController.createTooltip("SearchAddRecordTT", view.getObjTitle());
+                    searchButton.setToolTipText(saTTStr);
+                }
+            }
+            
             if (formValidator != null && newRecBtn != null)
             {
                 formValidator.addEnableItem(newRecBtn, FormValidator.EnableType.ValidItems);
@@ -3623,13 +3658,13 @@ public class FormViewObj implements Viewable,
             rowBuilder.add(newRecBtn, cc.xy(2,1));
     
             delRecBtn = UIHelper.createIconBtn("DeleteRecord", null, null);
-            delRecBtn.setToolTipText(ResultSetController.createTooltip("RemoveRecordTT", view.getObjTitle()));
+            delRecBtn.setToolTipText(ResultSetController.createTooltip("DeleteRecordTT", view.getObjTitle()));
             delRecBtn.setMargin(insets);
             rowBuilder.add(delRecBtn, cc.xy(4,1));
             
             if (doAddSearch)
             {
-                srchRecBtn = UIHelper.createIconBtn("Search", IconManager.IconSize.Std16, null, null);
+                srchRecBtn = UIHelper.createIconBtn("SearchAdd", IconManager.IconSize.Std16, null, null);
                 srchRecBtn.setToolTipText(ResultSetController.createTooltip("SearchForRecordTT", view.getObjTitle()));
                 srchRecBtn.setMargin(insets);
                 srchRecBtn.setOpaque(false);

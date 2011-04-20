@@ -55,6 +55,7 @@
     <icon name="MoreTables"       file="more_tables.png" sizes="all"/>
     <icon name="MoreForms"        file="more_forms.png" sizes="all"/>
     <icon name="Search"           file="Search32x32.png" sizes="all"/>
+    <icon name="SearchAdd"        file="SearchAdd32x32.png" sizes="all"/>
     <icon name="GlobalSearch"     file="global_search16x16.png" sizes="16"/>
     <icon name="SystemSetup"      file="System32x32.png" sizes="all"/>
     <icon name="PlaceHolder"      file="specify32faded.png" sizes="32"/>
@@ -98,6 +99,7 @@
     <icon name="Upload"        file="upload_workbench20x20.png" sizes="NonStd"/>    
     <icon name="ValidateWB"    file="validate_workbench20x20.png" sizes="NonStd"/>    
     <icon name="Eraser"        file="Clear20x20.png"   sizes="NonStd"/>
+    <icon name="Eraser16"      file="Clear16x16.png"   sizes="NonStd"/>
     <icon name="CardImage"     file="ImageWindow20x20.png" sizes="NonStd"/>
     <icon name="LocalityMapper" file="map20x20.png" sizes="NonStd"/>
     <icon name="MapIcon"        file="map.png" sizes="32"/>

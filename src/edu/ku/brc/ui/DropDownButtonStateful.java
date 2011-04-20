@@ -37,6 +37,7 @@ import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.MouseInputAdapter;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -183,22 +184,7 @@ public class DropDownButtonStateful extends DropDownButton
         ActionListener btnAL = new ActionListener() {
             public void actionPerformed(ActionEvent ae)
             {
-                if (doAdvance)
-                {
-                    currInx++;
-                    if (currInx >= menuInfoItems.size())
-                    {
-                        currInx = 0;
-                    }
-                }
-                //System.out.println("New Index: "+currInx);
-                setCurrentIndex(currInx);
-                cardLayout.show(cardPanel, Integer.toString(currInx));
-                
-                for (ActionListener al : listeners)
-                {
-                    al.actionPerformed(ae);
-                }
+                doAdvanceToNextState(ae);
             }
         };
         
@@ -253,6 +239,30 @@ public class DropDownButtonStateful extends DropDownButton
         setCurrentIndex(0);
     }
     
+    /**
+     * 
+     */
+    private void doAdvanceToNextState(ActionEvent ae)
+    {
+        if (doAdvance)
+        {
+            currInx++;
+            if (currInx >= menuInfoItems.size())
+            {
+                currInx = 0;
+            }
+        }
+        //System.out.println("New Index: "+currInx);
+        setCurrentIndex(currInx);
+        cardLayout.show(cardPanel, Integer.toString(currInx));
+        
+        for (ActionListener al : listeners)
+        {
+            al.actionPerformed(ae);
+        }
+
+    }
+    
     /* (non-Javadoc)
      * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
      */
@@ -266,7 +276,7 @@ public class DropDownButtonStateful extends DropDownButton
      * Returns the next index in the stateful button which means we wrap around to zero
      * @return he next index in the stateful button which means we wrap around to zero
      */
-    protected int getNextIndex()
+    public int getNextIndex()
     {
         return (currInx+ 1) % menuInfoItems.size();
     }
@@ -310,6 +320,21 @@ public class DropDownButtonStateful extends DropDownButton
                 i++;
             }
         }
+    }
+    
+    /**
+     * 
+     */
+    public void doAdvance(final ActionEvent ae)
+    {
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                doAdvanceToNextState(ae);            
+            }
+        });
     }
 
     /* (non-Javadoc)

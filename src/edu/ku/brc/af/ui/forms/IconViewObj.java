@@ -219,7 +219,7 @@ public class IconViewObj implements Viewable
     {
         if (isEditing)
         {
-            String delTTStr = ResultSetController.createTooltip("RemoveRecordTT", view.getObjTitle());
+            String delTTStr = ResultSetController.createTooltip("DeleteRecordTT", view.getObjTitle());
             String edtTTStr = ResultSetController.createTooltip("EditRecordTT",   view.getObjTitle());
             String newTTStr = ResultSetController.createTooltip("NewRecordTT",    view.getObjTitle());
 
