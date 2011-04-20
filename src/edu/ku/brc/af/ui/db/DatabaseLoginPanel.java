@@ -447,6 +447,7 @@ public class DatabaseLoginPanel extends JTiledPanel
                     }
                 }
             });
+            setControlSize(portSpinner);
         }
         
         // First create the controls and hook up listeners
