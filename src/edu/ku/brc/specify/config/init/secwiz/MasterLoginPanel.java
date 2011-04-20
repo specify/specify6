@@ -499,6 +499,9 @@ public class MasterLoginPanel extends GenericFormPanel
         return false;
     }
     
+    /**
+     * @return
+     */
     private boolean doResetMasterPerms()
     {
         getValues(properties);
@@ -645,6 +648,25 @@ public class MasterLoginPanel extends GenericFormPanel
      */
     public List<String> getDbNamesForMaster()
     {
+        if (dbNamesForMaster == null || dbNamesForMaster.size() == 0)
+        {
+            DBMSUserMgr mgr   = DBMSUserMgr.getInstance();
+            
+            String dbUserName = properties.getProperty("dbUserName");
+            String dbPassword = properties.getProperty("dbPassword");
+            String hostName   = properties.getProperty("hostName");
+            
+            if (mgr.connectToDBMS(dbUserName, dbPassword, hostName))
+            {
+                
+                String saUserName = properties.getProperty("saUserName");
+                if (saUserName != null)
+                {
+                    dbNamesForMaster = mgr.getDatabaseListForUser(saUserName);
+                }
+                mgr.close();
+            }
+        }
         return dbNamesForMaster;
     }
 
@@ -653,6 +675,20 @@ public class MasterLoginPanel extends GenericFormPanel
      */
     public List<String> getDbNameList()
     {
+        if (dbNameList == null || dbNameList.size() == 0)
+        {
+            DBMSUserMgr mgr   = DBMSUserMgr.getInstance();
+            
+            String dbUserName = properties.getProperty("dbUserName");
+            String dbPassword = properties.getProperty("dbPassword");
+            String hostName   = properties.getProperty("hostName");
+            
+            if (mgr.connectToDBMS(dbUserName, dbPassword, hostName))
+            {
+                dbNameList = mgr.getDatabaseList();
+                mgr.close();
+            }
+        }
         return dbNameList;
     }
     

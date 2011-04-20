@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.ui.UIRegistry;
@@ -46,7 +45,7 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class MySQLDMBSUserMgr extends DBMSUserMgr 
 {
-    private static final Logger log = Logger.getLogger(MySQLDMBSUserMgr.class);
+    //private static final Logger log = Logger.getLogger(MySQLDMBSUserMgr.class);
     
 	private DBConnection dbConnection = null;
 	private Connection   connection   = null;
@@ -157,7 +156,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
         ArrayList<String> names   = new ArrayList<String>();
         if (connection != null)
         {
-            Vector<Object>    dbNames = BasicSQLUtils.querySingleCol(connection, "SELECT DISTINCT Db FROM mysql.db ORDER BY Db");
+            Vector<Object> dbNames = BasicSQLUtils.querySingleCol(connection, "SELECT SCHEMA_NAME FROM information_schema.SCHEMATA ORDER BY SCHEMA_NAME");
             for (Object nm : dbNames)
             {
                 names.add(nm.toString());
@@ -170,48 +169,20 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
      * @see edu.ku.brc.dbsupport.DBMSUserMgr#getDatabaseListForUser(java.lang.String)
      */
     @Override
-    public List<String> getDatabaseListForUser(String username)
+    public List<String> getDatabaseListForUser(final String username)
     {
         ArrayList<String> dbNames = new ArrayList<String>();
-        PreparedStatement pStmt       = null;
-        PreparedStatement pStmt2      = null;
         try
         {
             if (connection != null)
             {
-                try
+                String sql = String.format("SELECT DISTINCT TABLE_SCHEMA FROM information_schema.SCHEMA_PRIVILEGES SP INNER JOIN information_schema.SCHEMATA S ON SP.TABLE_SCHEMA = S.SCHEMA_NAME " +
+                		                   "WHERE GRANTEE = \"'%s'@'%s'\" ORDER BY TABLE_SCHEMA", username, hostName);
+                for (Object obj : BasicSQLUtils.querySingleCol(connection, sql))
                 {
-                    pStmt  = connection.prepareStatement("SELECT Db FROM mysql.db WHERE User = ?");
-                    pStmt2 = connection.prepareStatement("SELECT * FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = ?");
-                    pStmt.setString(1, username);
-                    
-                    ResultSet rs = pStmt.executeQuery();
-                    while (rs.next())
-                    {
-                        String dbNm = rs.getString(1);
-                        pStmt2.setString(1, dbNm);
-                        ResultSet rs2 = pStmt2.executeQuery();
-                        if (rs2.next())
-                        {
-                            dbNames.add(dbNm);
-                        }
-                        rs2.close();
-                    }
-                    rs.close();
-                    
-                } catch (SQLException ex)
-                {
-                    ex.printStackTrace();
-                } finally
-                {
-                    try
-                    {
-                        if (pStmt != null) pStmt.close();
-                        if (pStmt2 != null) pStmt2.close();
-                    } catch (SQLException ex) {}
+                    dbNames.add(obj.toString());
                 }
             }
-            
         } catch (Exception ex)
         {
             ex.printStackTrace();
@@ -316,7 +287,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                 if (rv == 1)
                 {
                     String sql = String.format("GRANT ALL ON %s.* TO '%s'@'%s' IDENTIFIED BY '%s'@'%s'", dbName, itUsername, hostName, itPassword, hostName);
-                    log.debug(sql);
+                    //log.debug(sql);
                     rv = BasicSQLUtils.update(connection, sql);
                     return rv == 0;
                 }
@@ -419,6 +390,16 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                         }
                     }
                     rs.close();
+                    
+                    /*String[] tblNames = new String[] {"USER", "SCHEMA", "TABLE", "COLUMN"};
+                    for (String tblNm : tblNames)
+                    {
+                        String sql = String.format("DELETE FROM information_schema.%s_PRIVILEGES WHERE GRANTEE = \"'%s'@'%s'\"",  tblNm, username, hostName);
+                        BasicSQLUtils.update(connection, sql);
+                    }*/
+                    
+                    BasicSQLUtils.update(connection, "FLUSH PRIVILEGES");
+
                     
                 } catch (SQLException ex)
                 {
@@ -530,7 +511,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
             {
                 stmt = connection.createStatement();
                 String sql = String.format("SHOW GRANTS FOR '%s'@'%s'", username, serverName);
-                log.debug(sql);
+                //log.debug(sql);
                 Vector<Object[]> list = BasicSQLUtils.query(connection, sql);
                 if (list != null)
                 {
@@ -575,7 +556,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                             }
                         }
                     }
-                    log.debug("PERMS: "+perms);
+                    //log.debug("PERMS: "+perms);
                     
                     if (perms == 0 && username.equalsIgnoreCase("root"))
                     {
@@ -659,7 +640,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
             String sql = pre + " FROM mysql.db WHERE User = ? AND Db = ?";
             int perms = getPerms(permList, sql, username, dbName);
             
-            log.debug("PERMS: "+perms);
+            //log.debug("PERMS: "+perms);
             
             if (perms == PERM_NONE)
             {
@@ -771,7 +752,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                 StringBuilder sb = new StringBuilder("GRANT ");
                 appendPerms(sb, permissions);
                 sb.append(String.format(" ON %s.* TO '%s'@'%s'", dbName, username, hostName));
-                log.debug(sb.toString());
+                //log.debug(sb.toString());
                 
                 Statement stmt = null;
                 try
@@ -906,7 +887,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                 sb.append(String.format(" ON %s.* TO '%s'@'%s' IDENTIFIED BY '%s'",dbName, username, hostName, password));
 				
                 stmt = connection.createStatement();
-                log.debug(sb.toString());
+                //log.debug(sb.toString());
                 
                 int rv = stmt.executeUpdate(sb.toString());
 

@@ -33,7 +33,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
@@ -662,7 +664,7 @@ public class UserPanel extends BaseSetupPanel
     }
     
     /**
-     * 
+     * @param doGainAccess
      */
     private void changeMasterAccess(final boolean doGainAccess)
     {
@@ -679,39 +681,59 @@ public class UserPanel extends BaseSetupPanel
         {
             if (!mgr.connectToDBMS(dbUserName, dbPassword, hostName))
             {
-                
+                UIRegistry.showError("Unable to login.");
+                return;
             }
         }
-               
-        if (mgr.setPermissions(saUserName, dbName, doGainAccess ? DBMSUserMgr.PERM_ALL_BASIC : DBMSUserMgr.PERM_NONE))
+
+        ArrayList<String> changedNames  = new ArrayList<String>();
+        ArrayList<String> noChangeNames = new ArrayList<String>();
+        
+        JList list = doGainAccess ? otherDBList : dbList;
+        int[] inxs = list.getSelectedIndices();
+        for (int inx : inxs)
         {
-            int sInx = -1;
-            if (doGainAccess)
+            String databaseName = (String)list.getModel().getElementAt(inx);
+            if (mgr.setPermissions(saUserName, databaseName, doGainAccess ? DBMSUserMgr.PERM_ALL_BASIC : DBMSUserMgr.PERM_NONE))
             {
-                int inx = otherDBList.getSelectedIndex();
-                ((DefaultListModel)dbList.getModel()).addElement(otherDBList.getSelectedValue());
-                ((DefaultListModel)otherDBList.getModel()).remove(inx);
-                sInx = dbList.getModel().getSize() - 1;
-                
+                changedNames.add(databaseName);
             } else
             {
-                int inx = dbList.getSelectedIndex();
-                ((DefaultListModel)otherDBList.getModel()).addElement(dbList.getSelectedValue());
-                ((DefaultListModel)dbList.getModel()).remove(inx);
-                sInx = 0;
+                noChangeNames.add(databaseName);
             }
-            
-            final int selInx = sInx;
-            UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "MSTR_PERM_CHGED_TITLE", doGainAccess ? "MSTR_PERM_ADDED" : "MSTR_PERM_DEL", saUserName, dbName);
+        }
+        
+        for (String nm : changedNames)
+        {
+            if (doGainAccess)
+            {
+                ((DefaultListModel)otherDBList.getModel()).removeElement(nm);
+                ((DefaultListModel)dbList.getModel()).addElement(nm);
+            } else
+            {
+                ((DefaultListModel)otherDBList.getModel()).addElement(nm);
+                ((DefaultListModel)dbList.getModel()).removeElement(nm);
+            }
+        }
+                
+        if (inxs.length == 1)
+        {
+            UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "MSTR_PERM_CHGED_TITLE", 
+                                        doGainAccess ? "MSTR_PERM_ADDED" : "MSTR_PERM_DEL", saUserName, dbName);
+            final int selInx = inxs[0];
             SwingUtilities.invokeLater(new Runnable()
             {
                 @Override
                 public void run()
                 {
                     dbList.setSelectedIndex(selInx);
-                    
                 }
             });
+        } else
+        {
+            UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "MSTR_PERM_CHGED_TITLE", 
+                    doGainAccess ? "MSTR_NUM_PERM_ADDED" : "MSTR_NUM_PERM_DEL", 
+                            saUserName, changedNames.size());
         }
         
         mgr.close();
@@ -752,14 +774,9 @@ public class UserPanel extends BaseSetupPanel
     {
         label.setText("");
         
-        
         String hostName   = properties.getProperty("hostName");
-        
         String dbUserName = properties.getProperty("dbUserName");
         String dbPassword = properties.getProperty("dbPassword");
-        
-        //String saUserName = properties.getProperty("saUserName");
-        //String saPassword = properties.getProperty("saPassword");
         
         int index = 0;
         List<String>   dbNamesList    = masterPanel.getDbNamesForMaster();
@@ -795,17 +812,22 @@ public class UserPanel extends BaseSetupPanel
             {
                 if (isInitial)
                 {
+                    HashSet<String> dbNameHashSet = new HashSet<String>();
                     DefaultListModel model = new DefaultListModel();
                     for (String nm : items)
                     {
                         model.addElement(nm);
+                        dbNameHashSet.add(nm);
                     }
                     dbList.setModel(model);
                     
                     model = new DefaultListModel();
                     for (String nm : otherNamesList)
                     {
-                        model.addElement(nm);
+                        if (!dbNameHashSet.contains(nm))
+                        {
+                            model.addElement(nm);
+                        }
                     }
                     otherDBList.setModel(model);
                 }
