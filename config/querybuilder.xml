@@ -47,6 +47,7 @@
 	     
     <table name="Attachment">
         <table name="AttachmentMetadata" field="metadata"/>
+        <table name="AttachmentImageAttribute" />
     </table>
    
     <table name="Author">
@@ -132,6 +133,9 @@
       			<alias name="Agent" field="sequencer" /> 
       	</table>
       	
+      	<alias name="Container" field="container"/>
+      	<alias name="Container" field="containerOwner"/>
+      	
       	<alias name="FieldNotebookPage" field="fieldNotebookPage" />
       	
       	<!-- <table name="CollectionRelationship" field="leftSideRels" /> -->
@@ -157,10 +161,15 @@
     	<table name="ConservEvent" field="events" />
     </table>
     
-    <!-- table name="Container" >
+    <table name="Container" >
+    	<alias name="Container" field="parent" />    	
+    	<alias name="Container" field="children" />
+    	<alias name="CollectionObject" field="collectionObjectKids"/>
+    	<alias name="CollectionObject" field="collectionObjects"/>
+    	<alias name="Storage" field="storage"/>
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />
-    </table-->
+    </table>
     
     <table name="Deaccession">
       <table name="DeaccessionAgent" field="deaccessionAgents" >
