@@ -306,7 +306,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         
         boolean addParen = false;
         String sqlSnipet = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, isHQL, false, tableInfo.getAbbrev()); 
-        if (sqlSnipet != null)
+        if (StringUtils.isNotEmpty(sqlSnipet))
         {
             sqlStr.append(sqlSnipet);
             sqlStr.append(" AND (");

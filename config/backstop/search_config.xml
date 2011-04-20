@@ -357,8 +357,7 @@
  From collectionobject 
  INNER JOIN determination AS DT ON DT.CollectionObjectID = collectionobject.CollectionObjectID
  INNER JOIN taxon ON taxon.TaxonID = DT.TaxonID 
- WHERE (DT.CollectionMemberID = COLMEMID) AND 
- (collectionobject.CollectionMemberID = COLMEMID) AND 
+ WHERE (collectionobject.CollectionMemberID = COLMEMID) AND 
  taxon.TaxonTreeDefID = TAXTREEDEFID AND 
  DT.IsCurrent = true AND
  %s ORDER BY CatalogNumber ASC]]>
@@ -1184,8 +1183,7 @@ repositoryagreement.RepositoryAgreementNumber,
  From collectionobject 
  INNER JOIN determination AS DT ON DT.CollectionObjectID = collectionobject.CollectionObjectID
  INNER JOIN taxon ON taxon.TaxonID = DT.TaxonID 
- WHERE (DT.CollectionMemberID = COLMEMID) AND 
- (collectionobject.CollectionMemberID = COLMEMID) AND 
+ WHERE (collectionobject.CollectionMemberID = COLMEMID) AND 
  taxon.TaxonTreeDefID = TAXTREEDEFID AND 
  %s ORDER BY FullName, CatalogNumber]]>
                 </sql>

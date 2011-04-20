@@ -374,15 +374,22 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
     {
         String lowerSQL = specialSQL.toLowerCase();
         
+        String frontStr = "";
+        String whereStr = "";
+        
         int whereInx = lowerSQL.indexOf("where");
         if (whereInx == -1)
         {
-            return null;
+            whereInx = 0;
+            whereStr = specialSQL;
+        } else
+        {
+            whereInx += 6;
+            frontStr = specialSQL.substring(0, whereInx);
+            whereStr = itrim(specialSQL.substring(whereInx, specialSQL.length()));//.replaceAll("\n", ""));
+            lowerSQL = itrim(lowerSQL.substring(whereInx, specialSQL.length()));//.replaceAll("\n", ""));
         }
         
-        String frontStr = specialSQL.substring(0, whereInx+6);
-        String whereStr = itrim(specialSQL.substring(whereInx+6, specialSQL.length()));//.replaceAll("\n", ""));
-        lowerSQL        = itrim(lowerSQL.substring(whereInx+6, specialSQL.length()));//.replaceAll("\n", ""));
         
         //System.out.println("["+lowerSQL+"]\n["+whereStr+"]");
         
@@ -445,7 +452,6 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
         //divisionCnt++;
         //disciplineCnt++;
         //collectionCnt++;
-        doGlobalSearch = false;
         
         // SpecifyUser should NEVER be null nor the Id !
         SpecifyUser user = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
