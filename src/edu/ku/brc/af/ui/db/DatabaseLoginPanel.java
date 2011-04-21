@@ -39,6 +39,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
 
@@ -136,6 +137,7 @@ public class DatabaseLoginPanel extends JTiledPanel
 
     protected JCheckBox                  rememberUsernameCBX;
     protected JButton                    editKeyInfoBtn;
+    protected ArrayList<JLabel>          labels        = new ArrayList<JLabel>(); 
 
     protected JButton                    cancelBtn;
     protected JButton                    loginBtn;
@@ -372,9 +374,10 @@ public class DatabaseLoginPanel extends JTiledPanel
                           final CellConstraints cc,
                           final int y)
     {
-        int yy = y;
-        pb.add(createLabel(label != null ? getResourceString(label) + ":" : " ", //$NON-NLS-1$ //$NON-NLS-2$
-                SwingConstants.RIGHT), cc.xy(1, yy));
+        int    yy  = y;
+        JLabel lbl = createLabel(label != null ? getResourceString(label) + ":" : " ", SwingConstants.RIGHT);//$NON-NLS-1$ //$NON-NLS-2$
+        labels.add(lbl);
+        pb.add(lbl,  cc.xy(1, yy));
         pb.add(comp, cc.xy(3, yy));
         yy += 2;
         return yy;
@@ -1063,6 +1066,11 @@ public class DatabaseLoginPanel extends JTiledPanel
         if (editKeyInfoBtn != null)
         {
             editKeyInfoBtn.setEnabled(enable);
+        }
+        
+        for (JLabel lbl : labels)
+        {
+            lbl.setEnabled(enable);
         }
     }
     
