@@ -4,6 +4,7 @@
 package edu.ku.brc.specify.tools.export;
 
 
+import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -25,6 +26,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -89,10 +91,12 @@ import edu.ku.brc.specify.tasks.subpane.qb.QueryParameterPanel;
 import edu.ku.brc.specify.tasks.subpane.qb.TableQRI;
 import edu.ku.brc.specify.tasks.subpane.qb.TableTree;
 import edu.ku.brc.specify.tools.ireportspecify.MainFrameSpecify;
+import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -111,6 +115,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	protected JButton exportToDbTblBtn;
 	protected JButton exportToTabDelimBtn;
 	protected JButton showIPTSQLBtn;
+	protected JButton helpBtn;
 	protected JLabel status;
 	protected JProgressBar prog;
 	protected JPanel progPane;
@@ -152,6 +157,12 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		}
 	}
 	
+	public static String getCacheTableName(String mappingName)
+	{
+		//return  ExportToMySQLDB.fixTblNameForMySQL(mappingName + AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionName());
+		return  ExportToMySQLDB.fixTblNameForMySQL(mappingName);
+	}
+	
 	/**
 	 * 
 	 */
@@ -169,7 +180,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
     	tblpb.add(sp, cc.xy(2, 2));
     	
     	add(tblpb.getPanel(), BorderLayout.CENTER);
-    	exportToDbTblBtn = new JButton(UIRegistry.getResourceString("ExportPanel.ExportToDBTbl"));
+    	exportToDbTblBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ExportToDBTbl"));
     	exportToDbTblBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0)
@@ -215,7 +226,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			}
     	});
     	
-    	this.exportToTabDelimBtn = new JButton(UIRegistry.getResourceString("ExportPanel.ExportTabDelimTxt"));
+    	this.exportToTabDelimBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ExportTabDelimTxt"));
     	this.exportToTabDelimBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.ExportTabDelimTxtHint"));
     	this.exportToTabDelimBtn.addActionListener(new ActionListener() {
 			@Override
@@ -250,7 +261,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					File file = save.getSelectedFile();
 					exportToDbTblBtn.setEnabled(false);
 					exportToTabDelimBtn.setEnabled(false);
-					dumper = ExportToMySQLDB.exportRowsToTabDelimitedText(file, null, ExportToMySQLDB.fixTblNameForMySQL(q.getName()), ls);
+					dumper = ExportToMySQLDB.exportRowsToTabDelimitedText(file, null, getCacheTableName(q.getName()), ls);
 					SwingUtilities.invokeLater(new Runnable() {
 
 						/* (non-Javadoc)
@@ -272,7 +283,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			}
     	});
 
-    	showIPTSQLBtn = new JButton(UIRegistry.getResourceString("ExportPanel.ShowSQLBtn"));
+    	showIPTSQLBtn = UIHelper.createButton(UIRegistry.getResourceString("ExportPanel.ShowSQLBtn"));
     	showIPTSQLBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.ShowSQLBtnTT"));
     	showIPTSQLBtn.addActionListener(new ActionListener() {
 			@Override
@@ -289,9 +300,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					{
 						SpExportSchemaMapping map = maps.get(row);
 						String iptSQL = ExportToMySQLDB
-								.getSelectForIPTDBSrc(ExportToMySQLDB
-										.fixTblNameForMySQL(map
-												.getMappingName()));
+								.getSelectForIPTDBSrc(getCacheTableName(map.getMappingName()));
 						JTextArea ta = new JTextArea(iptSQL);
 						ta.setLineWrap(true);
 						ta.setColumns(60);
@@ -312,7 +321,10 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			}
     	});
     	
-    	PanelBuilder pbb = new PanelBuilder(new FormLayout("2dlu, f:p:g, p, 2dlu, p, 2dlu, p, 2dlu", "p, p, 7dlu"));
+        helpBtn = createButton(getResourceString("HELP"));
+        HelpMgr.registerComponent(helpBtn, "schema_tool");
+    	
+        PanelBuilder pbb = new PanelBuilder(new FormLayout("2dlu, f:p:g, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu", "p, p, 7dlu"));
     	status = new JLabel(UIRegistry.getResourceString("ExportPanel.InitialStatus")); 
     	status.setFont(status.getFont().deriveFont(Font.ITALIC));
     	Dimension pref = status.getPreferredSize();
@@ -322,6 +334,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
     	pbb.add(this.showIPTSQLBtn, cc.xy(3, 1));
     	pbb.add(exportToTabDelimBtn, cc.xy(7, 1));
     	pbb.add(exportToDbTblBtn, cc.xy(5, 1));
+    	pbb.add(helpBtn, cc.xy(9, 1));
     	
     	progPane = new JPanel(new CardLayout());
     	progPane.add(new JPanel(), "blank");
@@ -330,6 +343,9 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
     	pbb.add(progPane, cc.xyw(2, 2, 6));
     	//prog.setVisible(false);
     	add(pbb.getPanel(), BorderLayout.SOUTH);
+
+        HelpMgr.setAppDefHelpId("schema_tool");
+
 	}
 	
 	/**
@@ -475,7 +491,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			try
 			{
 				//XXX "limit" keyword may be mySQL-specific 
-				ResultSet rs = stmt.executeQuery("select * from " + ExportToMySQLDB.fixTblNameForMySQL(map.getMappingName()) + " limit 1");
+				ResultSet rs = stmt.executeQuery("select * from " + getCacheTableName(map.getMappingName()) + " limit 1");
 				int result = rs.getMetaData().getColumnCount();
 				rs.close();
 				return result;
@@ -741,6 +757,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					String msg = getResourceString("ExportPanel.UpdateFailMsg");
 					if (killer != null)
 					{
+						killer.printStackTrace();
 						msg += " Error: " + killer.getClass().getSimpleName();
 						if (StringUtils.isNotBlank(killer.getLocalizedMessage()))
 						{
@@ -970,7 +987,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					try
 					{
 						MappingUpdateStatus result = null;
-						String tbl = ExportToMySQLDB.fixTblNameForMySQL(map.getMappingName());
+						String tbl = getCacheTableName(map.getMappingName());
 						String keyFld = tbl + "Id";
 						SpQuery q = map.getMappings().iterator().next().getQueryField().getQuery();
 						DBTableInfo rootTbl = DBTableIdMgr.getInstance().getInfoById(q.getContextTableId());
@@ -978,11 +995,14 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						String spKeyFld = rootTbl.getIdColumnName();
 						String sql = "select count(*) from " + tbl + " where " + keyFld 
 							+ " not in(select " + spKeyFld + " from " + spTbl;
+						
+						//XXX Collection Scoping Issue???
 						if (rootTbl.getFieldByName("collectionMemberId") != null)
 						{
 							sql += " where CollectionMemberId = " 
 								+ AppContextMgr.getInstance().getClassObject(Collection.class).getId();
 						}
+						
 						sql += ")";
 						int deletedRecs = BasicSQLUtils.getCountAsInt(conn, sql);
 						int otherRecs = 0; 
@@ -1203,7 +1223,10 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         HibernateUtil.setListener("post-commit-update", new edu.ku.brc.specify.dbsupport.PostUpdateEventListener()); //$NON-NLS-1$
         HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener()); //$NON-NLS-1$
         HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener()); //$NON-NLS-1$
-        
+ 
+        ImageIcon helpIcon = IconManager.getIcon(Specify.getIconName(),IconSize.Std16); //$NON-NLS-1$
+        HelpMgr.initializeHelp("SpecifyHelp", helpIcon.getImage()); //$NON-NLS-1$
+
         SwingUtilities.invokeLater(new Runnable() {
             @SuppressWarnings("synthetic-access") //$NON-NLS-1$
           public void run()

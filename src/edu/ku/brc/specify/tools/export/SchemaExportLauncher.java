@@ -91,9 +91,8 @@ public class SchemaExportLauncher implements DatabaseLoginListener
                                               getResourceString("Specify.LOGIN_USER_MISMATCH"),  //$NON-NLS-1$
                                               getResourceString("Specify.LOGIN_USER_MISMATCH_TITLE"),  //$NON-NLS-1$
                                               JOptionPane.ERROR_MESSAGE);
-                System.exit(0);
             }
-        
+            System.exit(0);
         }
         //...end specify.restartApp snatch
         
@@ -135,10 +134,12 @@ public class SchemaExportLauncher implements DatabaseLoginListener
                     {
                     	maps = session.getDataList(SpExportSchemaMapping.class);
                     	Discipline disc = AppContextMgr.getInstance().getClassObject(Discipline.class);
+                    	//XXX CollectionScoping Issue!!! Collection coll = AppContextMgr.getInstance().getClassObject(Collection.class);
                     	for (int m = maps.size() - 1; m >= 0; m--)
                     	{
                     		SpExportSchemaMapping map = maps.get(m);
                     		if (!map.getSpExportSchema().getDiscipline().getId().equals(disc.getId()))
+                        	//XXX CollectionScoping Issue!!! if (!map.getCollectionMemberId().equals(coll.getId()))
                     		{
                     			maps.remove(m);
                     		}
