@@ -239,7 +239,7 @@ public class TaskMgr implements CommandListener
     }
 
     /**
-     * Registers the plugin's UI compontents with the various parts of the UI. If the requested poxition
+     * Registers the plugin's UI components with the various parts of the UI. If the requested position
      * is 'Position.AppendNextToLast' then it is appended and the ToolBar is set to adjust the last item to
      * the right. Note: If two items request Position.AppendNextToLast then the last one to do so is 
      * is adjusted right since they are appended.
@@ -448,14 +448,14 @@ public class TaskMgr implements CommandListener
 
             MenuElement menuElement = getMenuByName(parent, label);
             
-            //log.debug(menuPath[currIndex]+" -> "+label+ " "+menuElement);
-            //if (parent instanceof JMenuItem) log.debug(((JMenuItem)parent).getText());
-            //else if (parent instanceof JMenu) log.debug(((JMenu)parent).getText());
-            //else if (parent instanceof JMenuBar) log.debug("MenuBar");
+            log.debug(menuPath[currIndex]+" -> "+label+ " "+menuElement);
+            if (parent instanceof JMenuItem) log.debug(((JMenuItem)parent).getText());
+            else if (parent instanceof JMenu) log.debug(((JMenu)parent).getText());
+            else if (parent instanceof JMenuBar) log.debug("MenuBar");
             
             if (menuElement == null)
             {
-                UIRegistry.showError("Couldn't find menu element ["+label+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                //UIRegistry.showError("Couldn't find menu element ["+label+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             }
             buildMenuTree(menuElement, menuItemDesc, menuPath, currIndex+1);
         }
