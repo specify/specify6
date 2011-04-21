@@ -151,6 +151,7 @@ import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.plugins.SeriesProcCatNumPlugin;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.CommandAction;
@@ -946,7 +947,7 @@ public class FormViewObj implements Viewable,
         enableActionAndMenu("ConfigCarryForward", isVisible, null);
         
         boolean doAutoNum = isAutoNumberOn() && isEditing && isVisible;
-        enableActionAndMenu("AutoNumbering", doAutoNum, doAutoNum);
+        enableActionAndMenu("AutoNumbering", isEditing && isVisible, doAutoNum);
         
         enableActionAndMenu("SaveAndNew", isVisible, null);
     }
@@ -1161,6 +1162,7 @@ public class FormViewObj implements Viewable,
         {
             carryForwardInfo.add(dlg.getSelectedObjects());
         }
+        notifySeriesProcessingPlugin(true, null);
     }
     
     /**
@@ -1174,6 +1176,30 @@ public class FormViewObj implements Viewable,
         if (mi != null)
         {
             mi.setSelected(isDoCarryForward());
+        }
+    }
+    
+    /**
+     * 
+     */
+    private void notifySeriesProcessingPlugin(final boolean doStateUpdate, final Boolean isNewFormObj)
+    {
+        for (FVOFieldInfo fieldInfo : controlsById.values())
+        {
+            Component comp = fieldInfo.getComp();
+            if (comp instanceof SeriesProcCatNumPlugin)
+            {
+                SeriesProcCatNumPlugin plugin = ((SeriesProcCatNumPlugin)comp);
+                if (doStateUpdate)
+                {
+                    plugin.updateExpandState();
+                    
+                } else if (isNewFormObj != null)
+                {
+                    plugin.setNewObj(isNewFormObj);
+                }
+                break;
+            }
         }
     }
     
@@ -2182,6 +2208,8 @@ public class FormViewObj implements Viewable,
             formValidator.setNewObj(isNewlyCreatedDataObj);
         }
         
+        notifySeriesProcessingPlugin(false, isNewlyCreatedDataObj);
+
         // Not calling setHasNewData because we need to traverse and setHasNewData doesn't
         traverseToToSetAsNew(mvParent, true, false); // don't traverse deeper than our immediate children
         

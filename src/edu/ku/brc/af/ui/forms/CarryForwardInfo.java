@@ -67,21 +67,6 @@ public class CarryForwardInfo
     }
     
     /**
-     * @return
-     */
-    public boolean checkRequiredFieldsSet()
-    {
-        for (FVOFieldInfo ffi : fieldList)
-        {
-            if ( ffi.isRequired())
-            {
-                
-            }
-        }
-        return true;
-    }
-    
-    /**
      * Clears the internal list and adds a list of fields.
      * @param id the ID to be added
      */

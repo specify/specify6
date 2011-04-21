@@ -34,6 +34,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.ui.forms.CarryForwardInfo;
 import edu.ku.brc.af.ui.forms.validation.ValFormattedTextFieldIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
@@ -53,6 +54,7 @@ public class SeriesProcCatNumPlugin extends UIPluginBase implements ValFormatted
     private ValFormattedTextFieldIFace textFieldEnd;
     private JButton                    expandBtn;
     
+    private boolean                    isNewObj    = true;
     private boolean                    isAutoNumOn = false;
     private boolean                    isExpanded  = false;
     private PanelBuilder               pb;
@@ -63,8 +65,8 @@ public class SeriesProcCatNumPlugin extends UIPluginBase implements ValFormatted
      * @param textFieldStart
      * @param textFieldEnd
      */
-    public SeriesProcCatNumPlugin(ValFormattedTextFieldIFace textFieldStart,
-            ValFormattedTextFieldIFace textFieldEnd)
+    public SeriesProcCatNumPlugin(final ValFormattedTextFieldIFace textFieldStart,
+                                  final ValFormattedTextFieldIFace textFieldEnd)
     {
         super();
         this.textFieldStart = textFieldStart;
@@ -86,7 +88,7 @@ public class SeriesProcCatNumPlugin extends UIPluginBase implements ValFormatted
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                doExpandContract();
+                doToggleContract();
             }
         });
         
@@ -120,6 +122,15 @@ public class SeriesProcCatNumPlugin extends UIPluginBase implements ValFormatted
     }
     
     /**
+     * @param isNewObj the isNewObj to set
+     */
+    public void setNewObj(boolean isNewObj)
+    {
+        this.isNewObj = isNewObj;
+        updateExpandState();
+    }
+
+    /**
      * @return the isExpanded
      */
     public boolean isExpanded()
@@ -138,7 +149,31 @@ public class SeriesProcCatNumPlugin extends UIPluginBase implements ValFormatted
     /**
      * 
      */
-    private void doExpandContract()
+    public void checkToggleContract()
+    {
+        boolean          isCarryForwardOK = false;
+        CarryForwardInfo cfInfo           = fvo.getCarryFwdInfo();
+        if (cfInfo != null)
+        {
+            isCarryForwardOK = cfInfo.getFieldList().size() > 0;
+        }
+        
+        boolean isOKToExpand = isNewObj && !isAutoNumOn && isCarryForwardOK;
+        textFieldStart.setAutoNumberEnabled(!isOKToExpand);
+        expandBtn.setVisible(isOKToExpand);
+        
+        //System.err.println("isOKToExpand "+isOKToExpand+"  isExpanded "+isExpanded+"  isCarryForwardOK "+isCarryForwardOK+"  isNewObj "+isNewObj+"  isAutoNumOn "+isAutoNumOn);
+        if (!isOKToExpand)
+        {
+            isExpanded = true;
+            doToggleContract();
+        }
+    }
+    
+    /**
+     * 
+     */
+    private void doToggleContract()
     {
         isExpanded = !isExpanded;
         
@@ -203,12 +238,19 @@ public class SeriesProcCatNumPlugin extends UIPluginBase implements ValFormatted
     public void setAutoNumberEnabled(boolean turnOn)
     {
         isAutoNumOn = turnOn;
-        textFieldStart.setAutoNumberEnabled(turnOn);
-        if (isExpanded)
-        {
-            doExpandContract();
-        }
-        expandBtn.setVisible(!isAutoNumOn);
+        updateExpandState();
+    }
+    
+    /**
+     * 
+     */
+    public void updateExpandState()
+    {
+        checkToggleContract();
+        
+        //textFieldStart.setAutoNumberEnabled(isExpanded);
+
+        //expandBtn.setVisible(!isAutoNumOn);
         repaint();
         invalidate();
         revalidate();
