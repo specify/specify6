@@ -161,7 +161,7 @@ public class SeriesProcCatNumPlugin extends UIPluginBase implements ValFormatted
         textFieldStart.setAutoNumberEnabled(!isOKToExpand);
         expandBtn.setVisible(isOKToExpand);
         
-        //System.err.println("isOKToExpand "+isOKToExpand+"  isExpanded "+isExpanded+"  isCarryForwardOK "+isCarryForwardOK+"  isNewObj "+isNewObj+"  isAutoNumOn "+isAutoNumOn);
+        System.err.println("isOKToExpand "+isOKToExpand+"  isExpanded "+isExpanded+"  isCarryForwardOK "+isCarryForwardOK+"  isNewObj "+isNewObj+"  isAutoNumOn "+isAutoNumOn);
         if (!isOKToExpand)
         {
             isExpanded = true;

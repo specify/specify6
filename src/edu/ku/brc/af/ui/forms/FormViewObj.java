@@ -226,6 +226,7 @@ public class FormViewObj implements Viewable,
     protected Hashtable<String, FVOFieldInfo>  labels         = new Hashtable<String, FVOFieldInfo>(); // ID is the Key
     protected Hashtable<String, JLabel>        allLabels      = new Hashtable<String, JLabel>(); // ID is the Key
     protected ArrayList<FormControlSaveable>   saveableList   = new ArrayList<FormControlSaveable>();
+    protected ArrayList<UIPluginable>          uiPlugins      = new ArrayList<UIPluginable>();
     
     protected FormLayout                    formLayout;
     protected PanelBuilder                  builder;
@@ -1185,21 +1186,15 @@ public class FormViewObj implements Viewable,
     private void notifyUIPluginsOfChanges(final boolean doStateUpdate, 
                                           final Boolean isNewFormObj)
     {
-        for (FVOFieldInfo fieldInfo : controlsById.values())
+        for (UIPluginable plugin : uiPlugins)
         {
-            Component comp = fieldInfo.getComp();
-            if (comp instanceof UIPluginable)
+            if (doStateUpdate)
             {
-                UIPluginable plugin = ((UIPluginable)comp);
-                if (doStateUpdate)
-                {
-                    plugin.carryForwardStateChange();
-                    
-                } else if (isNewFormObj != null)
-                {
-                    plugin.setNewObj(isNewFormObj);
-                }
-                break;
+                plugin.carryForwardStateChange();
+                
+            } else if (isNewFormObj != null)
+            {
+                plugin.setNewObj(isNewFormObj);
             }
         }
     }
@@ -4094,6 +4089,8 @@ public class FormViewObj implements Viewable,
                 fi.getUiPlugin().setParent(this);
             }
         }
+        
+        notifyUIPluginsOfChanges(false, isNewlyCreatedDataObj);
     }
 
     /**
@@ -5795,6 +5792,8 @@ public class FormViewObj implements Viewable,
         }
 
         kids.clear();
+        
+        uiPlugins.clear();
 
         mvParent    = null;
         formViewDef = null;
@@ -5904,7 +5903,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.ViewBuilderIFace#registerPlugin(edu.ku.brc.ui.forms.persist.FormCellIFace, edu.ku.brc.af.ui.forms.UIPluginable)
      */
-    public void registerPlugin(FormCellIFace formCell, UIPluginable uip)
+    public void registerPlugin(final FormCellIFace formCell, final UIPluginable uip)
     {
         boolean isThis = formCell.getName().equals("this");
         
@@ -5932,6 +5931,8 @@ public class FormViewObj implements Viewable,
         {
             saveableList.add((FormControlSaveable)uip.getUIComponent());
         }
+        
+        uiPlugins.add(uip);
     }
 
     /* (non-Javadoc)
