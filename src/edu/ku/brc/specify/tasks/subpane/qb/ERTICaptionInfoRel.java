@@ -22,6 +22,8 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -94,7 +96,7 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
             	}
             }
             listHql = "from " + relationship.getDataClass().getName() + " where " + otherSideCol + " = &id"
-             + (orderByFld != null ? " order by " + orderByFld : "");
+             + (StringUtils.isNotEmpty(orderByFld) ? " order by " + orderByFld : "");
         }
         else
         {
@@ -229,7 +231,8 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
             {
-                return session.getDataList(listHql + key);
+                
+            	return session.getDataList(getListHql(key));
             }
             finally
             {
