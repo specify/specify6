@@ -450,6 +450,17 @@ public class ExportMappingTask extends QueryTask
 		return buildQb(query);
 	}
 
+	
+	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.tasks.BaseTask#getHelpTarget()
+	 */
+	@Override
+	public String getHelpTarget() 
+	{
+		return "export_data";
+	}
+
 	/**
 	 * @return TableInfo for the current exportSchema
 	 */
