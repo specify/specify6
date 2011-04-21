@@ -3606,14 +3606,14 @@ public class FormViewObj implements Viewable,
                 if (delRecBtn != null)
                 {
                     String removeTTStr = ResultSetController.createTooltip("RemoveRecordTT", view.getObjTitle());
-                    delRecBtn.setIcon(IconManager.getIcon("Eraser16", IconManager.STD_ICON_SIZE.Std16));
+                    delRecBtn.setIcon(IconManager.getIcon("Eraser16", IconManager.IconSize.Std16));
                     delRecBtn.setToolTipText(removeTTStr);
                 }
                 
                 JButton searchButton = rsController.getSearchRecBtn();
                 if (searchButton != null)
                 {
-                    searchButton.setIcon(IconManager.getIcon("SearchAdd", IconManager.STD_ICON_SIZE.Std16));
+                    searchButton.setIcon(IconManager.getIcon("SearchAdd", IconManager.IconSize.Std16));
                     String saTTStr = ResultSetController.createTooltip("SearchAddRecordTT", view.getObjTitle());
                     searchButton.setToolTipText(saTTStr);
                 }
