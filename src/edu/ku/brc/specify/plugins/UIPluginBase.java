@@ -45,6 +45,7 @@ public abstract class UIPluginBase extends JPanel implements GetSetValueIFace, U
     protected String         cellName          = null;
     protected String         title             = null;  // suppose to be localized
     protected boolean        isViewMode        = true;
+    protected boolean        isNewObj          = true;
     protected Properties     properties        = null;
     protected FormViewObj    fvo               = null;
     protected Vector<ChangeListener> listeners = null;
@@ -159,6 +160,24 @@ public abstract class UIPluginBase extends JPanel implements GetSetValueIFace, U
         dataObj = null;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#carryForwardStateChange()
+     */
+    @Override
+    public void carryForwardStateChange()
+    {
+        // no op
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#setNewObj(boolean)
+     */
+    @Override
+    public void setNewObj(boolean isNewObj)        // TODO Auto-generated method stub
+    {
+        this.isNewObj = isNewObj;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.UIPluginable#canCarryForward()
      */

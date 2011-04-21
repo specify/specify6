@@ -113,4 +113,16 @@ public interface UIPluginable
      */
     public abstract String[] getFieldNames();
     
+    /**
+     * Called telling plugin whether the current data obj is new.
+     * 
+     * @param isNewObj true is new
+     */
+    public abstract void setNewObj(boolean isNewObj);
+    
+    /**
+     * Called after CarryForward is Configured
+     */
+    public abstract void carryForwardStateChange();
+    
 }

@@ -54,7 +54,6 @@ public class SeriesProcCatNumPlugin extends UIPluginBase implements ValFormatted
     private ValFormattedTextFieldIFace textFieldEnd;
     private JButton                    expandBtn;
     
-    private boolean                    isNewObj    = true;
     private boolean                    isAutoNumOn = false;
     private boolean                    isExpanded  = false;
     private PanelBuilder               pb;
@@ -121,13 +120,13 @@ public class SeriesProcCatNumPlugin extends UIPluginBase implements ValFormatted
     	return new Pair<String, String>(start, end);
     }
     
-    /**
-     * @param isNewObj the isNewObj to set
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.UIPluginBase#setNewObj(boolean)
      */
     public void setNewObj(boolean isNewObj)
     {
-        this.isNewObj = isNewObj;
-        updateExpandState();
+        super.setNewObj(isNewObj);
+        carryForwardStateChange();
     }
 
     /**
@@ -149,7 +148,7 @@ public class SeriesProcCatNumPlugin extends UIPluginBase implements ValFormatted
     /**
      * 
      */
-    public void checkToggleContract()
+    private void checkToggleContract()
     {
         boolean          isCarryForwardOK = false;
         CarryForwardInfo cfInfo           = fvo.getCarryFwdInfo();
@@ -238,19 +237,17 @@ public class SeriesProcCatNumPlugin extends UIPluginBase implements ValFormatted
     public void setAutoNumberEnabled(boolean turnOn)
     {
         isAutoNumOn = turnOn;
-        updateExpandState();
+        carryForwardStateChange();
     }
     
-    /**
-     * 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.UIPluginBase#carryForwardStateChange()
      */
-    public void updateExpandState()
+    @Override
+    public void carryForwardStateChange()
     {
         checkToggleContract();
         
-        //textFieldStart.setAutoNumberEnabled(isExpanded);
-
-        //expandBtn.setVisible(!isAutoNumOn);
         repaint();
         invalidate();
         revalidate();

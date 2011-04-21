@@ -151,7 +151,6 @@ import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.specify.plugins.SeriesProcCatNumPlugin;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.CommandAction;
@@ -1162,7 +1161,7 @@ public class FormViewObj implements Viewable,
         {
             carryForwardInfo.add(dlg.getSelectedObjects());
         }
-        notifySeriesProcessingPlugin(true, null);
+        notifyUIPluginsOfChanges(true, null);
     }
     
     /**
@@ -1180,19 +1179,21 @@ public class FormViewObj implements Viewable,
     }
     
     /**
-     * 
+     * @param doStateUpdate
+     * @param isNewFormObj
      */
-    private void notifySeriesProcessingPlugin(final boolean doStateUpdate, final Boolean isNewFormObj)
+    private void notifyUIPluginsOfChanges(final boolean doStateUpdate, 
+                                          final Boolean isNewFormObj)
     {
         for (FVOFieldInfo fieldInfo : controlsById.values())
         {
             Component comp = fieldInfo.getComp();
-            if (comp instanceof SeriesProcCatNumPlugin)
+            if (comp instanceof UIPluginable)
             {
-                SeriesProcCatNumPlugin plugin = ((SeriesProcCatNumPlugin)comp);
+                UIPluginable plugin = ((UIPluginable)comp);
                 if (doStateUpdate)
                 {
-                    plugin.updateExpandState();
+                    plugin.carryForwardStateChange();
                     
                 } else if (isNewFormObj != null)
                 {
@@ -2208,7 +2209,7 @@ public class FormViewObj implements Viewable,
             formValidator.setNewObj(isNewlyCreatedDataObj);
         }
         
-        notifySeriesProcessingPlugin(false, isNewlyCreatedDataObj);
+        notifyUIPluginsOfChanges(false, isNewlyCreatedDataObj);
 
         // Not calling setHasNewData because we need to traverse and setHasNewData doesn't
         traverseToToSetAsNew(mvParent, true, false); // don't traverse deeper than our immediate children
