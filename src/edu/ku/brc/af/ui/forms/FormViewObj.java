@@ -37,8 +37,6 @@ import java.awt.Insets;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -51,6 +49,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -66,7 +65,6 @@ import javax.swing.ComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
-import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
@@ -82,6 +80,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.ListModel;
 import javax.swing.ScrollPaneConstants;
@@ -953,18 +952,11 @@ public class FormViewObj implements Viewable,
     }
     
     /**
-     * Shows a Dialog to setup Carry Forward. 
-     * The hard part is figuring out which fields are candidates for Carry Forward.
+     * @param itemLabels
+     * @param tblInfo
      */
-    public void configureCarryForward()
+    private void buildFieldInfoList(Vector<FVOFieldInfo> itemLabels, final DBTableInfo tblInfo)
     {
-        CarryForwardInfo carryForwardInfo = getCarryForwardInfo();
-        
-        DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
-        
-        Vector<FVOFieldInfo> itemLabels    = new Vector<FVOFieldInfo>();
-        Vector<FVOFieldInfo> selectedItems = new Vector<FVOFieldInfo>(carryForwardInfo.getFieldList());
-
         // This next section loops through all the UI components in the form that has an ID
         // It checks to make sure that it is a candidate for CF
         Vector<String> ids = new Vector<String>();
@@ -973,7 +965,7 @@ public class FormViewObj implements Viewable,
         {
             FVOFieldInfo fieldInfo = getFieldInfoForId(id);
             String       fieldName = fieldInfo.getFormCell().getName();
-            DBFieldInfo  fi        = ti != null ? ti.getFieldByName(fieldName) : null;
+            DBFieldInfo  fi        = tblInfo != null ? tblInfo.getFieldByName(fieldName) : null;
             
             fieldInfo.setFieldInfo(fi);
                     
@@ -1032,7 +1024,7 @@ public class FormViewObj implements Viewable,
                 // Now we go get the DBFieldInfo and DBRelationshipInfo and check to make
                 // that the field or Relationship is still a candidate for CF
                 DBInfoBase infoBase = null;
-                if (ti != null)
+                if (tblInfo != null)
                 {
                     if (fi != null)
                     {
@@ -1049,7 +1041,7 @@ public class FormViewObj implements Viewable,
                         
                     } else
                     {
-                        DBRelationshipInfo ri = ti.getRelationshipByName(fieldName);
+                        DBRelationshipInfo ri = tblInfo.getRelationshipByName(fieldName);
                         if (ri != null)
                         {
                             infoBase = ri;
@@ -1086,7 +1078,7 @@ public class FormViewObj implements Viewable,
                             isOK = fieldInfo.getUiPlugin().canCarryForward();
                         } else
                         {
-                            log.error("Couldn't find field ["+fieldName+"] in ["+ti.getTitle()+"]");
+                            log.error("Couldn't find field ["+fieldName+"] in ["+tblInfo.getTitle()+"]");
                             isOK = false;  
                         }
                     }
@@ -1102,7 +1094,7 @@ public class FormViewObj implements Viewable,
                         fieldInfo.setFieldInfo(infoBase);
                     } else
                     {
-                        log.error("Field NOT OK ["+fieldName+"] in ["+ti.getTitle()+"]");
+                        log.error("Field NOT OK ["+fieldName+"] in ["+tblInfo.getTitle()+"]");
                     }
                 }
             }
@@ -1119,11 +1111,49 @@ public class FormViewObj implements Viewable,
                 return o1.getLabel().compareTo(o2.getLabel());
             }
         });
+ 
+    }
+    
+    /**
+     * Shows a Dialog to setup Carry Forward. 
+     * The hard part is figuring out which fields are candidates for Carry Forward.
+     */
+    public void configureCarryForward()
+    {
+        CarryForwardInfo carryForwardInfo = getCarryForwardInfo();
+        
+        DBTableInfo          tblInfo       = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+        Vector<FVOFieldInfo> itemLabels    = new Vector<FVOFieldInfo>();
+        Vector<FVOFieldInfo> selectedItems = new Vector<FVOFieldInfo>(carryForwardInfo.getFieldList());
+
+        buildFieldInfoList(itemLabels, tblInfo);
         
         ToggleButtonChooserDlg<FVOFieldInfo> dlg = new ToggleButtonChooserDlg<FVOFieldInfo>((Frame)UIRegistry.getTopWindow(),
-                "CONFIG_CARRY_FORWARD_TITLE", itemLabels);
+                                                                    "CONFIG_CARRY_FORWARD_TITLE", itemLabels);
         dlg.setUseScrollPane(true);
         dlg.setAddSelectAll(true);
+        dlg.createUI();
+        
+        HashMap<String, JToggleButton> tgBtnHash = new HashMap<String, JToggleButton>();
+        Vector<JToggleButton>          btns      = dlg.getPanel().getButtons();
+        for (JToggleButton tb : btns)
+        {
+            tgBtnHash.put(tb.getText(), tb);
+        }
+        
+        for (FVOFieldInfo itm :  itemLabels)
+        {
+            if (itm.isRequired())
+            {
+                JToggleButton togBtn = tgBtnHash.get(itm.getLabel());
+                if (togBtn != null)
+                {
+                    togBtn.setEnabled(false);
+                    selectedItems.add(itm);
+                }
+            }
+        }
+        
         dlg.setSelectedObjects(selectedItems);
         UIHelper.centerAndShow(dlg);
         
@@ -6493,6 +6523,27 @@ public class FormViewObj implements Viewable,
             this.comp      = uiPlugin.getUIComponent();
             this.insertPos = insertPos;
             this.uiPlugin  = uiPlugin;
+        }
+        
+        /**
+         * @return
+         */
+        public boolean isRequired()
+        {
+            boolean isRequired = false;
+            if (fieldInfo instanceof DBFieldInfo)
+            {
+                isRequired = ((DBFieldInfo)fieldInfo).isRequired();
+            } else if (fieldInfo instanceof DBRelationshipInfo)
+            {
+                isRequired = ((DBRelationshipInfo)fieldInfo).isRequired();
+            }
+            
+            if (!isRequired && comp instanceof UIValidatable)
+            {
+                isRequired = ((UIValidatable)comp).isRequired();
+            }
+            return isRequired;
         }
         
         public boolean isOfType(final FormCell.CellType type)

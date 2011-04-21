@@ -272,4 +272,12 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog
     {
         return isCancelled;
     }
+
+    /**
+     * @return the panel
+     */
+    public ToggleButtonChooserPanel<T> getPanel()
+    {
+        return panel;
+    }
 }

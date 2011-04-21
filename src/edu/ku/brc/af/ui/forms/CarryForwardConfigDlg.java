@@ -203,12 +203,13 @@ public class CarryForwardConfigDlg extends CustomDialog
     //------------------------------------------------------------
     class CFWItem
     {
-        protected MultiView   mv;
-        protected FormViewObj fvo;
-        protected FVOFieldInfo   fieldInfo;
-        protected DBTableInfo ti;
-        protected Boolean     isChecked = false;
-        protected Color       color;
+        protected MultiView    mv;
+        protected FormViewObj  fvo;
+        protected FVOFieldInfo fieldInfo;
+        protected DBTableInfo  ti;
+        protected boolean      isChecked  = false;
+        protected boolean      isRequired = false;
+        protected Color        color;
         
         /**
          * @param mv
@@ -253,19 +254,34 @@ public class CarryForwardConfigDlg extends CustomDialog
         {
             return ti.getTitle();
         }
+        
         /**
          * @return the isChecked
          */
-        public Boolean getIsChecked()
+        public boolean isChecked()
         {
             return isChecked;
         }
         /**
          * @param isChecked the isChecked to set
          */
-        public void setIsChecked(Boolean isChecked)
+        public void setChecked(boolean isChecked)
         {
             this.isChecked = isChecked;
+        }
+        /**
+         * @return the isRequired
+         */
+        public boolean isRequired()
+        {
+            return isRequired;
+        }
+        /**
+         * @param isRequired the isRequired to set
+         */
+        public void setRequired(boolean isRequired)
+        {
+            this.isRequired = isRequired;
         }
         /**
          * @return the color
@@ -347,7 +363,7 @@ public class CarryForwardConfigDlg extends CustomDialog
                 
             } else if (col == 2)
             {
-                return item.getIsChecked();
+                return item.isChecked();
             }
             return item.getTableTitle();
         }
@@ -370,7 +386,7 @@ public class CarryForwardConfigDlg extends CustomDialog
             CFWItem item = items.get(row);
             if (col == 2)
             {
-                item.setIsChecked((Boolean)val);
+                item.setChecked((Boolean)val);
                 
             }
         }

@@ -378,6 +378,9 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 } catch (org.hibernate.LazyInitializationException ex)
                 {
                     //ex.printStackTrace();
+                } catch (Exception ex)
+                {
+                    //ex.printStackTrace();
                 }
             }
         }
@@ -526,12 +529,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
 					{
 						DBTableInfo tblInfo = DBTableIdMgr
 								.getInstance()
-								.getInfoById(CollectionObject.getClassTableId()); // don't
-																					// need
-																					// to
-																					// check
-																					// for
-																					// null
+								.getInfoById(CollectionObject.getClassTableId()); // don't need to check for null
 						DBFieldInfo fieldInfo = tblInfo
 								.getFieldByName(CATNUMNAME);
 						UIFieldFormatterIFace fmt = fieldInfo.getFormatter();
@@ -548,7 +546,6 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
 			}
 		}
     }
-    
     
     /**
      * 
