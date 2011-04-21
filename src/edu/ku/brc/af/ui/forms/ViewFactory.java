@@ -1465,10 +1465,12 @@ public class ViewFactory
                         JComponent tfEnd = createFormattedTextField(validator, cellField, tableClass, fieldInfo != null ? fieldInfo.getLength() : 0, uiFormatName, 
                                                mode == AltViewIFace.CreationMode.VIEW, isReq, cellField.getPropertyAsBoolean("alledit", false));
                         
-                        
+                        // Make sure we register it like a plugin not a regular control
                         SeriesProcCatNumPlugin plugin = new SeriesProcCatNumPlugin((ValFormattedTextFieldIFace)tfStart, 
                                                                                    (ValFormattedTextFieldIFace)tfEnd);
-                        bi.compToAdd = plugin;
+                        bi.compToAdd = plugin.getUIComponent();
+                        viewBldObj.registerPlugin(cell, plugin);
+                        bi.doRegControl = false;
                     }
                     bi.doAddToValidator = validator == null; // might already added to validator
                     break;
@@ -1705,8 +1707,7 @@ public class ViewFactory
                         bi.compToAdd = new JPanel();
                         log.error("Couldn't create UIPlugin ["+cellField.getName()+"] ID:"+cellField.getIdent());
                     }
-                    bi.doRegControl = false;                        
-
+                    bi.doRegControl = false;
                     break;
 
                 case textpl:
