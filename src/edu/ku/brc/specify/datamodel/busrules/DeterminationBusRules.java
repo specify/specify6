@@ -194,27 +194,34 @@ public class DeterminationBusRules extends BaseBusRules
                 if (!checkedBlankUsageItem)
                 {
                     boolean fnd = false;
-                    PickListDBAdapterIFace items = (PickListDBAdapterIFace) ((ValComboBox) nameUsageComp)
-                            .getComboBox().getModel();
-                    for (PickListItemIFace item : items.getPickList().getItems())
+                    
+                    if (nameUsageComp instanceof ValComboBox)
                     {
-                        if (StringUtils.isBlank(item.getValue()))
+                        ValComboBox cbx = (ValComboBox) nameUsageComp;
+                        if (cbx.getComboBox().getModel() instanceof PickListDBAdapterIFace)
                         {
-                            fnd = true;
-                            break;
-                        }
-                    }
-                    if (!fnd)
-                    {
-                        boolean readOnly = items.getPickList().getReadOnly();
-                        if (readOnly)
-                        {
-                            items.getPickList().setReadOnly(false);
-                        }
-                        items.addItem("", null);
-                        if (readOnly)
-                        {
-                            items.getPickList().setReadOnly(true);
+                            PickListDBAdapterIFace items = (PickListDBAdapterIFace) cbx.getComboBox().getModel();
+                            for (PickListItemIFace item : items.getPickList().getItems())
+                            {
+                                if (StringUtils.isBlank(item.getValue()))
+                                {
+                                    fnd = true;
+                                    break;
+                                }
+                            }
+                            if (!fnd)
+                            {
+                                boolean readOnly = items.getPickList().getReadOnly();
+                                if (readOnly)
+                                {
+                                    items.getPickList().setReadOnly(false);
+                                }
+                                items.addItem("", null);
+                                if (readOnly)
+                                {
+                                    items.getPickList().setReadOnly(true);
+                                }
+                            }
                         }
                     }
                     checkedBlankUsageItem = true;
