@@ -242,7 +242,7 @@ public class QueryComboboxEditor extends CustomDialog
                 "SystemSetup",
                 "TypeSearchInfo",
                 null,
-                getResourceString("EDIT"),
+                getResourceString(getResourceString("EDIT")),
                 "OK",
                 null,
                 null,
@@ -337,10 +337,7 @@ public class QueryComboboxEditor extends CustomDialog
                 }
             }
         });
-        
-        //----------------------- Data Obj Formatter -----------------------------
-        final ValTextField formatTF = fvo.getCompById("format");
-        
+
         //----------------------- UI Field Formatter -----------------------------
         final ValComboBox             uiFmtCbx = fvo.getCompById("uiFieldFormatterNameCBX");
         Vector<UIFieldFormatterIFace> uiffList = new Vector<UIFieldFormatterIFace>(UIFieldFormatterMgr.getInstance().getFormatters());
@@ -380,24 +377,13 @@ public class QueryComboboxEditor extends CustomDialog
             });
         }
         
-        uiFmtCbx.getComboBox().addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                boolean isSelected = uiFmtCbx.getComboBox().getSelectedIndex() > -1;
-                formatTF.setText("");
-                formatTF.setEnabled(!isSelected);
-            }
-        });
-        
         //----------------------- Data Obj Formatter -----------------------------
-        final ValComboBox dataObjFmtCbx = fvo.getCompById("dataObjFormatterNameCBX");
-        int   tblId = tsi.getTableId();
+        int tblId = tsi.getTableId();
         if (tblId > 0)
         {
             Class<?> cls = DBTableIdMgr.getInstance().getInfoById(tblId).getClassObj();
             List<DataObjSwitchFormatter>   dofClsList    = DataObjFieldFormatMgr.getInstance().getFormatterList(cls); // Formatters per a Class
+            final ValComboBox              dataObjFmtCbx = fvo.getCompById("dataObjFormatterNameCBX");
             Vector<DataObjSwitchFormatter> dofList       = new Vector<DataObjSwitchFormatter>(dofClsList);
             dataObjFmtCbx.setModel(new DefaultComboBoxModel(dofList));
             
@@ -427,20 +413,5 @@ public class QueryComboboxEditor extends CustomDialog
                 });
             }
         }
-        
-        dataObjFmtCbx.getComboBox().addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                boolean isSelected = dataObjFmtCbx.getComboBox().getSelectedIndex() > -1;
-                if (isSelected)
-                {
-                    uiFmtCbx.getComboBox().setSelectedIndex(-1);
-                }
-                uiFmtCbx.setEnabled(!isSelected);
-                formatTF.setEnabled(!isSelected);
-            }
-        });
     }
 }
