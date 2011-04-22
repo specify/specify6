@@ -54,7 +54,7 @@ public class SeriesProcCatNumPlugin extends UIPluginBase implements ValFormatted
     private ValFormattedTextFieldIFace textFieldEnd;
     private JButton                    expandBtn;
     
-    private boolean                    isAutoNumOn = false;
+    private boolean                    isAutoNumOn = true;
     private boolean                    isExpanded  = false;
     private PanelBuilder               pb;
     private CellConstraints            cc          = new CellConstraints();
