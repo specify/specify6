@@ -482,7 +482,10 @@ public class FormViewObj implements Viewable,
                     @Override
                     public void actionPerformed(ActionEvent e)
                     {
-                        switcherUI.getSwitcherAL().actionPerformed(e);
+                        if (switcherUI != null && switcherUI.getSwitcherAL() != null)
+                        {
+                            switcherUI.getSwitcherAL().actionPerformed(e);
+                        }
                     }
                 };
                 restrictablePanel.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control E"), actionName);
