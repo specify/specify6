@@ -1507,8 +1507,7 @@ public final class UIHelper
      * @param format the format mask
      * @return a string with the formatted values
      */
-    public static Object getFormattedValue(final Object[] valuesArg,
-                                           final String format)
+    public static Object getFormattedValue(final String format, final Object...valuesArg)
     {
         if (valuesArg == null)
         {
