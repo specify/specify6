@@ -111,7 +111,7 @@ public class BatchReidentifyPanel extends JPanel
     private EditDeleteAddPanel    edaPanel;
     private UIFieldFormatterIFace fmtr      = DBTableIdMgr.getFieldFormatterFor(CollectionObject.class, "catalogNumber");
     private ViewBasedDisplayPanel vbPanel;
-    private AtomicBoolean         updatingBtnUI = new AtomicBoolean(false);
+    private AtomicBoolean         handlingValidatorUpdate = new AtomicBoolean(false);
     /**
      * 
      */
@@ -135,10 +135,9 @@ public class BatchReidentifyPanel extends JPanel
 			 */
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-				if (!updatingBtnUI.get())
-				{
-					updateBtnUI();
-				}
+				handlingValidatorUpdate.set(true);
+				updateBtnUI();
+				handlingValidatorUpdate.set(false);
 			}
     		
     	});
@@ -257,12 +256,12 @@ public class BatchReidentifyPanel extends JPanel
         	Dialog parentDlg = UIHelper.getDialog(this);
         	if (parentDlg != null && (parentDlg instanceof CustomDialog))
         	{
-        		updatingBtnUI.set(true);
-        		vbPanel.getMultiView().getCurrentValidator().validateForm();
-        		//System.out.println((vbPanel.getMultiView().getCurrentValidator().getState() == UIValidatable.ErrorType.Valid ? "valid" : "invalid"));
+        		if (!handlingValidatorUpdate.get())
+        		{
+        			vbPanel.getMultiView().getCurrentValidator().validateForm();
+        		}
         		((CustomDialog )parentDlg).getOkBtn().setEnabled(model.getRowCount() > 0 
         				&& vbPanel.getMultiView().getCurrentValidator().getState() == UIValidatable.ErrorType.Valid);
-        		updatingBtnUI.set(false);
         	}
         }
     }
