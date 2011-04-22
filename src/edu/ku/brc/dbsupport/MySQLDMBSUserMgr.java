@@ -156,7 +156,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
         ArrayList<String> names   = new ArrayList<String>();
         if (connection != null)
         {
-            Vector<Object> dbNames = BasicSQLUtils.querySingleCol(connection, "SELECT SCHEMA_NAME FROM information_schema.SCHEMATA ORDER BY SCHEMA_NAME");
+            Vector<Object> dbNames = BasicSQLUtils.querySingleCol(connection, "SELECT SCHEMA_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME <> 'information_schema' AND SCHEMA_NAME <> 'mysql' ORDER BY SCHEMA_NAME");
             for (Object nm : dbNames)
             {
                 names.add(nm.toString());
@@ -177,7 +177,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
             if (connection != null)
             {
                 String sql = String.format("SELECT DISTINCT TABLE_SCHEMA FROM information_schema.SCHEMA_PRIVILEGES SP INNER JOIN information_schema.SCHEMATA S ON SP.TABLE_SCHEMA = S.SCHEMA_NAME " +
-                		                   "WHERE GRANTEE = \"'%s'@'%s'\" ORDER BY TABLE_SCHEMA", username, hostName);
+                		                   "WHERE SCHEMA_NAME <> 'information_schema' AND SCHEMA_NAME <> 'mysql' AND GRANTEE = \"'%s'@'%s'\" ORDER BY TABLE_SCHEMA", username, hostName);
                 for (Object obj : BasicSQLUtils.querySingleCol(connection, sql))
                 {
                     dbNames.add(obj.toString());

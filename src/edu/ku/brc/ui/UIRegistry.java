@@ -225,12 +225,14 @@ public class UIRegistry
                     /*
                     System.out.println(propName+"  "+
                             ( focusManager.getFocusOwner() != null ? focusManager.getFocusOwner().hashCode():"")+
-                            "  FO: "+focusManager.getFocusOwner()+
-                            " "+focusManager.getFocusedWindow()+" perm: "+permanentFocusOwner);
+                            "  FO: ["+(focusManager.getFocusOwner() != null ? focusManager.getFocusOwner().getClass().getSimpleName() : "NULL")+"]"+
+                            " PERM: ["+(permanentFocusOwner != null ? permanentFocusOwner.getClass().getSimpleName() : "NULL")+"]");//+" perm: "+permanentFocusOwner);
+                    
                     if (focusManager.getFocusOwner() instanceof GetSetValueIFace)
                     {
-                        System.out.println(((GetSetValueIFace)focusManager.getFocusOwner()).getValue());
-                    }*/
+                        System.out.println("-> "+((GetSetValueIFace)focusManager.getFocusOwner()).getValue());
+                    }
+                    */
                     if (("focusOwner".equals(propName)) && undoAction != null && redoAction != null) 
                     { 
                         if (focusManager.getFocusOwner() instanceof UndoableTextIFace)
@@ -600,8 +602,15 @@ public class UIRegistry
      */
     public static void setDefaultWorkingPath(final String defaultWorkingPath)
     {
-        dumpCanonicalPath("setDefaultWorkingPath", defaultWorkingPath);
-        instance.defaultWorkingPath = defaultWorkingPath;
+        File path = new File(defaultWorkingPath);
+        String defPath = defaultWorkingPath;
+        try
+        {
+            defPath = path.getCanonicalPath();
+        } catch (IOException e) {}
+        
+        dumpCanonicalPath("setDefaultWorkingPath", defPath);
+        instance.defaultWorkingPath = defPath;
     }
     
     /**
@@ -625,7 +634,7 @@ public class UIRegistry
         if (debugPaths)
         {
             try {
-                log.debug("************************ getDefaultWorkingPath: ["+(new File(instance.defaultWorkingPath).getCanonicalPath())+"]");
+                log.debug("************************ getDefaultWorkingPath: Canonical["+(new File(instance.defaultWorkingPath).getCanonicalPath())+"]");
             } catch (Exception ex) {}
         }
         return instance.defaultWorkingPath;

@@ -25,11 +25,15 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,17 +41,19 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
 
 import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBConnection;
@@ -138,10 +144,12 @@ public class MasterLoginPanel extends GenericFormPanel
         
         resetMasterBtn      = UIHelper.createI18NButton("SEC_RESET_BTN");
         resetMasterPermsBtn = UIHelper.createI18NButton("SEC_RESET_PERMS_BTN");
-        PanelBuilder tstPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p,4px,p,0px,p"));
+        PanelBuilder tstPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p,4px,p,0px,p,10px,f:p:g"));
         tstPB.add(skipStepBtn,          cc.xy(2, 1));
         tstPB.add(resetMasterBtn,       cc.xy(2, 3));
         tstPB.add(resetMasterPermsBtn,  cc.xy(2, 5));
+        tstPB.add(createHelpPanel(),    cc.xyw(1, 7, 3));
+        
         resetMasterBtn.setVisible(false);
         resetMasterPermsBtn.setVisible(false);
         
@@ -211,6 +219,51 @@ public class MasterLoginPanel extends GenericFormPanel
             skipStepBtn.setVisible(false);
             advLabel.setVisible(false);
         }
+    }
+    
+    /**
+     * @return
+     */
+    private JComponent createHelpPanel()
+    {
+        String helpMasterPath = "help/master.html";
+        
+        JEditorPane htmlPane = null;
+        
+        String helpPath = (new File(".")).getAbsolutePath() + File.separator + "../" + helpMasterPath;
+        try
+        {
+            File file = new File(helpPath);
+            if (!file.exists()) // for testing
+            {
+                helpPath = (new File(".")).getAbsolutePath() + File.separator + helpMasterPath;
+                file = new File(helpPath);
+            }
+            URI url = file.toURI();
+            
+            htmlPane = new JEditorPane(url.toURL()); //$NON-NLS-1$
+            htmlPane.setEditable(false);
+            htmlPane.setBackground(getBackground());
+
+        } catch (IOException ex) 
+        {
+            File file = new File(helpPath);
+            String htmlDesc = "";
+            try
+            {
+                htmlDesc = "Error loading help: "+ file.getCanonicalPath();
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            htmlPane   = new JEditorPane("text/plain", htmlDesc); //$NON-NLS-1$
+        }
+        
+        JScrollPane scrollPane = UIHelper.createScrollPane(htmlPane, true);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getViewport().setPreferredSize(new Dimension(400, 300));
+        
+        return scrollPane;
     }
     
     /* (non-Javadoc)

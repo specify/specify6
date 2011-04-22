@@ -854,7 +854,7 @@ public class ERDVisualizer extends JFrame
      * @param align
      * @return
      */
-    protected static JLabel mkLabel(final Font font, final String name, int align)
+    public static JLabel mkLabel(final Font font, final String name, int align)
     {
         JLabel lbl = new JLabel(name, align);
         lbl.setFont(font);
@@ -862,7 +862,7 @@ public class ERDVisualizer extends JFrame
         return lbl;
     }
     
-    protected void calcLoc(final Point p, final Component src, final Component stop)
+    public void calcLoc(final Point p, final Component src, final Component stop)
     {
         if (src != stop)
         {
