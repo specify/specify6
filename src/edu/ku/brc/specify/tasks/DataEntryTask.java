@@ -1164,6 +1164,8 @@ public class DataEntryTask extends BaseTask
         if (panel.askForColObjs())
         {
             CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), getResourceString("DET_BTCH_REIDENT_MENU"), true, panel);
+            dlg.createUI();
+            panel.setDlg(dlg);
             UIHelper.centerAndShow(dlg);
             if (!dlg.isCancelled())
             {

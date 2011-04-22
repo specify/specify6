@@ -38,6 +38,8 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -115,6 +117,27 @@ public class BatchReidentifyPanel extends JPanel
         super();
     }
 
+    /**
+     * @param dlg a CustomDialog with a created UI.
+     * 
+     * Connects ViewBasedDisplayPanel vbPanel to dlg's OK Cancel butttons.
+     */
+    public void setDlg(CustomDialog dlg)
+    {
+    	dlg.getOkBtn().setEnabled(false);
+    	dlg.getOkBtn().addChangeListener(new ChangeListener() {
+
+			/* (non-Javadoc)
+			 * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
+			 */
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				updateBtnUI();
+			}
+    		
+    	});
+    	vbPanel.setOkCancelBtns(dlg.getOkBtn(), dlg.getCancelBtn());
+    }
     /**
      * 
      */
