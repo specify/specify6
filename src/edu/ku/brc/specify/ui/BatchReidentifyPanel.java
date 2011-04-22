@@ -223,10 +223,13 @@ public class BatchReidentifyPanel extends JPanel
         edaPanel.getDelBtn().setEnabled(isRowSelected);
         edaPanel.getAddBtn().setEnabled(true);
         
-        Dialog parentDlg = UIHelper.getDialog(this);
-        if (parentDlg != null && (parentDlg instanceof CustomDialog))
+        if (getParent() != null)
         {
-        	((CustomDialog )parentDlg).getOkBtn().setEnabled(model.getRowCount() > 0);
+        	Dialog parentDlg = UIHelper.getDialog(this);
+        	if (parentDlg != null && (parentDlg instanceof CustomDialog))
+        	{
+        		((CustomDialog )parentDlg).getOkBtn().setEnabled(model.getRowCount() > 0);
+        	}
         }
     }
     
