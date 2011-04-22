@@ -47,7 +47,6 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Formatter;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -976,6 +975,10 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                         if (uiFieldFormatter != null)
                         {
                             value = uiFieldFormatter.formatToUI(value);
+                            
+                        } else if (StringUtils.isNotEmpty(format))
+                        {
+                            value = UIHelper.getFormattedValue(format, value);
                         }
                         list.addElement(value.toString());
                         
@@ -1003,12 +1006,11 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                                 }
                                 values[i] = val != null ? val : ""; //$NON-NLS-1$
                             }
-                            Formatter formatter = new Formatter();
-                            formatter.format(format, values);
+                            
+                            String valStr = (String)UIHelper.getFormattedValue(format, values);
                             
                             // Minor hack for Bug 5824 for names with no first name
                             // In the future we may want to do a strip of spaces form the end first
-                            String valStr = formatter.toString();
                             if (valStr.endsWith(", "))
                             {
                                 valStr = valStr.substring(0, valStr.length()-2);

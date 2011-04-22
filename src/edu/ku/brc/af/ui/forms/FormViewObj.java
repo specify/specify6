@@ -5026,7 +5026,7 @@ public class FormViewObj implements Viewable,
                             
                             if (isNotEmpty(format))
                             {
-                                setDataIntoUIComp(comp, UIHelper.getFormattedValue(values, format), defaultValue);
+                                setDataIntoUIComp(comp, UIHelper.getFormattedValue(format, values), defaultValue);
 
                             } else
                             {

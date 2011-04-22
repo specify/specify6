@@ -1048,7 +1048,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                     
                     if (StringUtils.isNotEmpty(textWithQuery.getFormat()))
                     {
-                        newVal = UIHelper.getFormattedValue(val, textWithQuery.getFormat());
+                        newVal = UIHelper.getFormattedValue(textWithQuery.getFormat(), val);
                     } else
                     {
                         newVal = this.dataObj;

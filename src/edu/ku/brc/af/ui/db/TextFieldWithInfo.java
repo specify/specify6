@@ -130,7 +130,6 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
         this.idName           = idName;
         this.keyName          = keyName;
         this.format           = format;
-        this.format           = format;
         this.uiFieldFormatterName  = uiFieldFormatterName;
         this.displayInfoDialogName = displayInfoDialogName;
         this.dataObjFormatterName  = dataObjFormatterName;
@@ -391,10 +390,9 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
                     newVal = uiFieldFormatter.formatFromUI(val[0]).toString();
                 } else
                 {
-                    
                     if (isNotEmpty(format))
                     {
-                        newVal = UIHelper.getFormattedValue(val, format);
+                        newVal = UIHelper.getFormattedValue(format, val);
                     } else
                     {
                         newVal = this.dataObj;
