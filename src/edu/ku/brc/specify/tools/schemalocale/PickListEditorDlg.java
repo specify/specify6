@@ -205,11 +205,34 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
      * @param isSystemPL
      * @return
      */
+    protected boolean loadList(final JList   list, final boolean isSystemPL)
+    {
+        List<PickList> items = getPickLists(false, isSystemPL);
+        if (items == null)
+        {
+            // catastrophic error
+            // need error dlg
+            return false;
+        }
+        
+        DefaultListModel model = new DefaultListModel();
+        for (PickList pl : items)
+        {
+            model.addElement(pl);
+        }
+        list.setModel(model);
+        return true;
+    }
+    
+    /**
+     * @param list
+     * @param isSystemPL
+     * @return
+     */
     protected EditDeleteAddPanel configureList(final JList   list, 
                                                final boolean isSystemPL,
                                                final boolean doImportExportArg)
     {
-        
         ActionListener addAL = null;
         ActionListener delAL = null;
         
@@ -271,20 +294,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
             edaPnl.getDelBtn().setIcon(IconManager.getIcon("Export16"));
         }*/
         
-        List<PickList> items = getPickLists(false, isSystemPL);
-        if (items == null)
-        {
-            // catastrophic error
-            // need error dlg
-            return null;
-        }
-        
-        DefaultListModel model = new DefaultListModel();
-        for (PickList pl : items)
-        {
-            model.addElement(pl);
-        }
-        list.setModel(model);
+        loadList(list, isSystemPL);
         
         list.addMouseListener(new MouseAdapter() {
             @Override
@@ -656,13 +666,13 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
             for (PickList pl : items)
             {
                 plHash.put(pl.getName(), pl);
-                System.out.println("["+pl.getName()+"]");
+                //System.out.println("["+pl.getName()+"]");
             }
             
             for (BldrPickList bpl : bldrPickLists)
             {
                 PickList pickList = plHash.get(bpl.getName());
-                System.out.println("["+bpl.getName()+"]["+(pickList != null ? pickList.getName() : "null") + "]");
+                //System.out.println("["+bpl.getName()+"]["+(pickList != null ? pickList.getName() : "null") + "]");
                 if (pickList == null)
                 {
                     // External PickList is new
@@ -699,6 +709,10 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
                 session.close();
             }
         }
+        
+        loadList(sysPLList, true);
+        loadList(plList, false);
+        
         UIRegistry.displayInfoMsgDlgLocalized(getI18n(cnt != null ? "PL_WASIMPORT" : "PL_ERR_IMP"), cnt);
     }
     
@@ -826,6 +840,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         ToggleButtonChooserDlg<PickList> pickDlg = new ToggleButtonChooserDlg<PickList>((Dialog)UIRegistry.getMostRecentWindow(), getI18n("PL_EXPORT"), items);
         pickDlg.setUseScrollPane(true);
         pickDlg.setAddSelectAll(true);
+        pickDlg.createUI();
         pickDlg.setSelectedObjects(selectedItems);
         UIHelper.centerAndShow(pickDlg);
         
@@ -836,7 +851,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
             
             FileDialog dlg = new FileDialog(this, getResourceString(getI18n("RIE_ExportResource")), FileDialog.SAVE); 
             dlg.setDirectory(UIRegistry.getUserHomeDir());
-            dlg.setFile(getPickListXMLName());
+            dlg.setFile(getPickListXMLName() + ".xml");
             
             UIHelper.centerAndShow(dlg);
             

@@ -253,6 +253,12 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog
     public void setSelectedObjects(final List<T> selectedItems)
     {
         panel.setSelectedObjects(selectedItems);
+        if (okBtn != null &&
+            selectedItems != null && 
+            selectedItems.size() > 0)
+        {
+            okBtn.setEnabled(true);
+        }
     }
 
     /**
