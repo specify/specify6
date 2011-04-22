@@ -92,7 +92,7 @@ public class BatchReidentifyPanel extends JPanel
 {
     private static final String LOOKUP_SQL = "SELECT co.CollectionObjectID, co.CatalogNumber, d.DeterminedDate,  d.TypeStatusName, t.FullName, d.DeterminationID " +
     	                                     "FROM collectionobject co LEFT JOIN determination d ON co.CollectionObjectID = d.CollectionObjectID " +
-    	                                     "LEFT JOIN taxon t ON d.TaxonID = t.TaxonID WHERE co.CollectionObjectID %s AND d.IsCurrent ORDER BY co.CatalogNumber";
+    	                                     "LEFT JOIN taxon t ON d.TaxonID = t.TaxonID WHERE co.CollectionObjectID %s AND (d.IsCurrent OR d.DeterminationID IS NULL) ORDER BY co.CatalogNumber";
     
     protected static DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
 
