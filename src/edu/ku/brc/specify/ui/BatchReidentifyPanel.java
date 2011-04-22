@@ -32,6 +32,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -65,6 +66,7 @@ import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.FormViewObj.FVOFieldInfo;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -109,6 +111,7 @@ public class BatchReidentifyPanel extends JPanel
     private EditDeleteAddPanel    edaPanel;
     private UIFieldFormatterIFace fmtr      = DBTableIdMgr.getFieldFormatterFor(CollectionObject.class, "catalogNumber");
     private ViewBasedDisplayPanel vbPanel;
+    private AtomicBoolean         updatingBtnUI = new AtomicBoolean(false);
     /**
      * 
      */
@@ -132,7 +135,10 @@ public class BatchReidentifyPanel extends JPanel
 			 */
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-				updateBtnUI();
+				if (!updatingBtnUI.get())
+				{
+					updateBtnUI();
+				}
 			}
     		
     	});
@@ -251,7 +257,12 @@ public class BatchReidentifyPanel extends JPanel
         	Dialog parentDlg = UIHelper.getDialog(this);
         	if (parentDlg != null && (parentDlg instanceof CustomDialog))
         	{
-        		((CustomDialog )parentDlg).getOkBtn().setEnabled(model.getRowCount() > 0);
+        		updatingBtnUI.set(true);
+        		vbPanel.getMultiView().getCurrentValidator().validateForm();
+        		//System.out.println((vbPanel.getMultiView().getCurrentValidator().getState() == UIValidatable.ErrorType.Valid ? "valid" : "invalid"));
+        		((CustomDialog )parentDlg).getOkBtn().setEnabled(model.getRowCount() > 0 
+        				&& vbPanel.getMultiView().getCurrentValidator().getState() == UIValidatable.ErrorType.Valid);
+        		updatingBtnUI.set(false);
         	}
         }
     }
@@ -421,7 +432,7 @@ public class BatchReidentifyPanel extends JPanel
     private int addItems(final String sql)
     {
         int cnt = 0;
-        System.out.println(sql);
+        //System.out.println(sql);
         for (Object[] cols : BasicSQLUtils.query(sql))
         {
             String catNumStr  = (String)fmtr.formatToUI(cols[1]);
