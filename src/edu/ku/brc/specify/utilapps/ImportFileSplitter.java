@@ -83,7 +83,7 @@ public class ImportFileSplitter extends CustomDialog
 {
 	private static final Logger log = Logger.getLogger(ImportFileSplitter.class);
 
-	protected final int defaultChunkSize = 2000;
+	protected final int defaultChunkSize = edu.ku.brc.specify.tasks.WorkbenchTask.MAX_ROWS;
 	protected JTextField fileName;
 	protected JCheckBox headerChk;
 	protected PosIntTextField fileSize;
