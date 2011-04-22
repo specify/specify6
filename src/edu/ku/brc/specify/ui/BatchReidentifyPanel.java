@@ -21,6 +21,7 @@ package edu.ku.brc.specify.ui;
 
 import static edu.ku.brc.ui.UIRegistry.getViewbasedFactory;
 
+import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,6 +40,8 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
@@ -195,6 +198,19 @@ public class BatchReidentifyPanel extends JPanel
                 updateBtnUI();
             }
         });
+        model.addTableModelListener(new TableModelListener()
+        {
+
+			/* (non-Javadoc)
+			 * @see javax.swing.event.TableModelListener#tableChanged(javax.swing.event.TableModelEvent)
+			 */
+			@Override
+			public void tableChanged(TableModelEvent arg0) 
+			{
+				updateBtnUI();
+			}
+        	
+        });
     }
     
     /**
@@ -206,6 +222,12 @@ public class BatchReidentifyPanel extends JPanel
         edaPanel.getEditBtn().setEnabled(isRowSelected);
         edaPanel.getDelBtn().setEnabled(isRowSelected);
         edaPanel.getAddBtn().setEnabled(true);
+        
+        Dialog parentDlg = UIHelper.getDialog(this);
+        if (parentDlg != null && (parentDlg instanceof CustomDialog))
+        {
+        	((CustomDialog )parentDlg).getOkBtn().setEnabled(model.getRowCount() > 0);
+        }
     }
     
     /**
