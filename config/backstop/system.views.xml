@@ -469,7 +469,7 @@
                     <cell type="field" id="format" name="format" uitype="text" isrequired="true"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="uiFieldFormatterNameCBX" label="UI Field Formatter Name"/>
+                    <cell type="label" labelfor="uiFieldFormatterNameCBX" label="UI Field Formatter"/>
                     <cell type="panel" id="uip" name="uip" coldef="p,f:p:g" rowdef="p" ignore="true" colspan="4">
                         <rows>
                             <row>
@@ -479,7 +479,7 @@
                     </cell>
                 </row>
                 <row>
-                    <cell type="label" labelfor="dataObjFormatterNameCBX" label="Data Obj Formatter Name"/>
+                    <cell type="label" labelfor="dataObjFormatterNameCBX" label="Data Obj Formatter"/>
                     <cell type="panel" id="dop" name="dop" coldef="p,f:p:g" rowdef="p" ignore="true" colspan="4">
                         <rows>
                             <row>

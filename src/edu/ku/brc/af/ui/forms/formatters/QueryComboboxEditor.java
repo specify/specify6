@@ -67,7 +67,7 @@ import edu.ku.brc.ui.UIRegistry;
  * Created Date: Jun 1, 2010
  *
  */
-public class TypeSearchListEditor extends CustomDialog
+public class QueryComboboxEditor extends CustomDialog
 {
     protected JList                  list;
     protected EditDeleteAddPanel     edaPanel;
@@ -76,7 +76,7 @@ public class TypeSearchListEditor extends CustomDialog
     /**
      * @throws HeadlessException
      */
-    public TypeSearchListEditor() throws HeadlessException
+    public QueryComboboxEditor() throws HeadlessException
     {
         super((Frame)UIRegistry.getTopWindow(), "Query Combobox Editor", true, CustomDialog.OK_BTN, null);
     }
@@ -242,7 +242,7 @@ public class TypeSearchListEditor extends CustomDialog
                 "SystemSetup",
                 "TypeSearchInfo",
                 null,
-                getResourceString(getResourceString("EDIT")),
+                getResourceString("EDIT"),
                 "OK",
                 null,
                 null,
@@ -337,7 +337,10 @@ public class TypeSearchListEditor extends CustomDialog
                 }
             }
         });
-
+        
+        //----------------------- Data Obj Formatter -----------------------------
+        final ValTextField formatTF = fvo.getCompById("format");
+        
         //----------------------- UI Field Formatter -----------------------------
         final ValComboBox             uiFmtCbx = fvo.getCompById("uiFieldFormatterNameCBX");
         Vector<UIFieldFormatterIFace> uiffList = new Vector<UIFieldFormatterIFace>(UIFieldFormatterMgr.getInstance().getFormatters());
@@ -377,13 +380,24 @@ public class TypeSearchListEditor extends CustomDialog
             });
         }
         
+        uiFmtCbx.getComboBox().addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                boolean isSelected = uiFmtCbx.getComboBox().getSelectedIndex() > -1;
+                formatTF.setText("");
+                formatTF.setEnabled(!isSelected);
+            }
+        });
+        
         //----------------------- Data Obj Formatter -----------------------------
-        int tblId = tsi.getTableId();
+        final ValComboBox dataObjFmtCbx = fvo.getCompById("dataObjFormatterNameCBX");
+        int   tblId = tsi.getTableId();
         if (tblId > 0)
         {
             Class<?> cls = DBTableIdMgr.getInstance().getInfoById(tblId).getClassObj();
             List<DataObjSwitchFormatter>   dofClsList    = DataObjFieldFormatMgr.getInstance().getFormatterList(cls); // Formatters per a Class
-            final ValComboBox              dataObjFmtCbx = fvo.getCompById("dataObjFormatterNameCBX");
             Vector<DataObjSwitchFormatter> dofList       = new Vector<DataObjSwitchFormatter>(dofClsList);
             dataObjFmtCbx.setModel(new DefaultComboBoxModel(dofList));
             
@@ -413,5 +427,20 @@ public class TypeSearchListEditor extends CustomDialog
                 });
             }
         }
+        
+        dataObjFmtCbx.getComboBox().addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                boolean isSelected = dataObjFmtCbx.getComboBox().getSelectedIndex() > -1;
+                if (isSelected)
+                {
+                    uiFmtCbx.getComboBox().setSelectedIndex(-1);
+                }
+                uiFmtCbx.setEnabled(!isSelected);
+                formatTF.setEnabled(!isSelected);
+            }
+        });
     }
 }

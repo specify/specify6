@@ -77,7 +77,7 @@ import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
-import edu.ku.brc.af.ui.forms.formatters.TypeSearchListEditor;
+import edu.ku.brc.af.ui.forms.formatters.QueryComboboxEditor;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.validation.TypeSearchForQueryFactory;
 import edu.ku.brc.af.ui.weblink.WebLinkConfigDlg;
@@ -1150,7 +1150,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
 	                {
 	                    TypeSearchForQueryFactory.getInstance().save();
 	                    
-	                    TypeSearchListEditor tse = new TypeSearchListEditor();
+	                    QueryComboboxEditor tse = new QueryComboboxEditor();
 	                    UIHelper.centerAndShow(tse);
 	                }
 	            }); 

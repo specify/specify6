@@ -448,13 +448,15 @@ public class TaskMgr implements CommandListener
 
             MenuElement menuElement = getMenuByName(parent, label);
             
-            log.debug(menuPath[currIndex]+" -> "+label+ " "+menuElement);
+            /*log.debug(menuPath[currIndex]+" -> "+label+ " "+menuElement);
             if (parent instanceof JMenuItem) log.debug(((JMenuItem)parent).getText());
             else if (parent instanceof JMenu) log.debug(((JMenu)parent).getText());
             else if (parent instanceof JMenuBar) log.debug("MenuBar");
+            */
             
             if (menuElement == null)
             {
+                log.error("Couldn't find menu element ["+label+"]");//$NON-NLS-1$ //$NON-NLS-2$
                 //UIRegistry.showError("Couldn't find menu element ["+label+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             }
             buildMenuTree(menuElement, menuItemDesc, menuPath, currIndex+1);

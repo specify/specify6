@@ -120,9 +120,9 @@ public class SpecifyTypeSearchForQueryFactory extends TypeSearchForQueryFactory
      */
     public void saveResource(final String resName, final String xml)
     {
-        System.out.println("Saved");
-        System.out.println(xml);
-        System.out.println();
+        //System.out.println("Saved");
+        //System.out.println(xml);
+        //System.out.println();
         
         SpecifyAppContextMgr acMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
         DataProviderSessionIFace session = null;

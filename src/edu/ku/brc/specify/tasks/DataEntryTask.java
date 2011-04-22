@@ -910,7 +910,8 @@ public class DataEntryTask extends BaseTask
                         }
                     } else
                     {
-                        dev.setToolTip(getLocalizedMessage(dev.getToolTip()));
+                        //dev.setToolTip(getLocalizedMessage(dev.getToolTip()));
+                        dev.setToolTip(dev.getToolTip());
                     }
                 }
                 
@@ -925,7 +926,8 @@ public class DataEntryTask extends BaseTask
                         }
                     } else
                     {
-                        dev.setToolTip(getLocalizedMessage(dev.getToolTip()));
+                        //dev.setToolTip(getLocalizedMessage(dev.getToolTip()));
+                        dev.setToolTip(dev.getToolTip());
                     }
                 }
                 
