@@ -679,7 +679,23 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
      * @see edu.ku.brc.dbsupport.DBMSUserMgr#doesDBHaveTable(java.lang.String)
      */
     @Override
-    public boolean doesDBHaveTable(String tableName)
+    public boolean doesDBHaveTable(final String tableName)
+    {
+        try
+        {
+            return doesDBHaveTable(connection.getCatalog(), tableName);
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DBMSUserMgr#doesDBHaveTable(java.lang.String)
+     */
+    @Override
+    public boolean doesDBHaveTable(final String databaseName, final String tableName)
     {
         if (tableName != null)
         {
@@ -691,7 +707,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                 stmt = connection.prepareStatement(sql);
                 if (stmt != null)
                 {
-                    stmt.setString(1, connection.getCatalog());
+                    stmt.setString(1, databaseName);
                     stmt.setString(2, tableName);
                     rs = stmt.executeQuery();
                     if (rs != null && rs.next())

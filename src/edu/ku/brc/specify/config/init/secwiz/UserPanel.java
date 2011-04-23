@@ -219,9 +219,8 @@ public class UserPanel extends BaseSetupPanel
                 {
                     loadData(false);
                     
-                    gainAccessBtn.setEnabled(false);
-                    loseAccessBtn.setEnabled(databaseName != null);
-
+                    gainAccessBtn.setEnabled(otherDBList.getSelectedIndex() > -1);
+                    loseAccessBtn.setEnabled(dbList.getSelectedIndex() > -1);
                 }
             }
         });
@@ -322,8 +321,8 @@ public class UserPanel extends BaseSetupPanel
                 if (!e.getValueIsAdjusting())
                 {
                     otherDBName = (String)otherDBList.getSelectedValue();
-                    gainAccessBtn.setEnabled(otherDBName != null);
-                    loseAccessBtn.setEnabled(false);
+                    gainAccessBtn.setEnabled(otherDBList.getSelectedIndex() > -1);
+                    loseAccessBtn.setEnabled(dbList.getSelectedIndex() > -1);
                 }
             }
         });
@@ -668,6 +667,12 @@ public class UserPanel extends BaseSetupPanel
      */
     private void changeMasterAccess(final boolean doGainAccess)
     {
+        String msg = UIRegistry.getResourceString(doGainAccess ? "DO_GAIN_ACCESS" : "DO_LOOSE_ACCESS");
+        if (UIRegistry.askYesNoLocalized("YES", "NO", msg, "WARNING") == JOptionPane.NO_OPTION)
+        {
+            return;
+        }
+        
         DBMSUserMgr mgr = DBMSUserMgr.getInstance();
         
         String dbUserName = properties.getProperty("dbUserName");

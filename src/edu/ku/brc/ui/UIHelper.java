@@ -3936,4 +3936,35 @@ public final class UIHelper
             ));
         }
     }
+    
+    /**
+     * @param locale
+     * @param fileName
+     * @return
+     */
+    public static String createLocaleName(final Locale locale, 
+                                          final String fileName,
+                                          final String ext)
+    {
+        String name = fileName + '_' + locale.getLanguage();
+        if (StringUtils.isNotEmpty(locale.getCountry()))
+        {
+            name += '_' + locale.getCountry();
+        }
+        
+        String fullPath = name + '.' + ext;
+        File file = new File(fullPath);
+        if (file.exists())
+        {
+            return name;
+        }
+        
+        fullPath = fileName + '_' + locale.getLanguage() + '.' + ext;
+        file = new File(name);
+        if (!file.exists())
+        {
+            fullPath = fileName + '.' + ext;
+        }
+        return fullPath;
+    }
 }

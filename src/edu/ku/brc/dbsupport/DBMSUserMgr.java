@@ -190,11 +190,19 @@ public abstract class DBMSUserMgr
     public abstract boolean doesDBHaveTables();
     
     /**
-     * Check to see if the table is in the schema
+     * Check to see if the table is in the current schema
      * @param dbName the database name
      * @return true if the table exists, false if not.
      */
     public abstract boolean doesDBHaveTable(final String tableName);
+    
+    /**
+     * Check to see if the table is in the database schema
+     * @param databaseName the database in question (not the current connection)
+     * @param dbName the database name
+     * @return true if the table exists, false if not.
+     */
+    public abstract boolean doesDBHaveTable(final String databaseName, final String tableName);
     
     /**
      * Some databases require a specific engine and also the charset needs to be checked (UTF-8).

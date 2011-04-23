@@ -25,15 +25,11 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -41,24 +37,19 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
-import edu.ku.brc.specify.config.init.DatabasePanel;
 import edu.ku.brc.specify.config.init.GenericFormPanel;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
@@ -142,13 +133,14 @@ public class MasterLoginPanel extends GenericFormPanel
         builder.add(advLabel, cc.xyw(3, row, 2)); row += 2;
         builder.add(advLabel, cc.xyw(3, row, 2)); row += 2;
         
+        JComponent helpComponent = DatabasePanel.createHelpPanel(getBackground(), "master");
         resetMasterBtn      = UIHelper.createI18NButton("SEC_RESET_BTN");
         resetMasterPermsBtn = UIHelper.createI18NButton("SEC_RESET_PERMS_BTN");
         PanelBuilder tstPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p,4px,p,0px,p,10px,f:p:g"));
         tstPB.add(skipStepBtn,          cc.xy(2, 1));
         tstPB.add(resetMasterBtn,       cc.xy(2, 3));
         tstPB.add(resetMasterPermsBtn,  cc.xy(2, 5));
-        tstPB.add(createHelpPanel(),    cc.xyw(1, 7, 3));
+        tstPB.add(helpComponent,        cc.xyw(1, 7, 3));
         
         resetMasterBtn.setVisible(false);
         resetMasterPermsBtn.setVisible(false);
@@ -219,51 +211,6 @@ public class MasterLoginPanel extends GenericFormPanel
             skipStepBtn.setVisible(false);
             advLabel.setVisible(false);
         }
-    }
-    
-    /**
-     * @return
-     */
-    private JComponent createHelpPanel()
-    {
-        String helpMasterPath = "help/master.html";
-        
-        JEditorPane htmlPane = null;
-        
-        String helpPath = (new File(".")).getAbsolutePath() + File.separator + "../" + helpMasterPath;
-        try
-        {
-            File file = new File(helpPath);
-            if (!file.exists()) // for testing
-            {
-                helpPath = (new File(".")).getAbsolutePath() + File.separator + helpMasterPath;
-                file = new File(helpPath);
-            }
-            URI url = file.toURI();
-            
-            htmlPane = new JEditorPane(url.toURL()); //$NON-NLS-1$
-            htmlPane.setEditable(false);
-            htmlPane.setBackground(getBackground());
-
-        } catch (IOException ex) 
-        {
-            File file = new File(helpPath);
-            String htmlDesc = "";
-            try
-            {
-                htmlDesc = "Error loading help: "+ file.getCanonicalPath();
-            } catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-            htmlPane   = new JEditorPane("text/plain", htmlDesc); //$NON-NLS-1$
-        }
-        
-        JScrollPane scrollPane = UIHelper.createScrollPane(htmlPane, true);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.getViewport().setPreferredSize(new Dimension(400, 300));
-        
-        return scrollPane;
     }
     
     /* (non-Javadoc)
@@ -343,13 +290,35 @@ public class MasterLoginPanel extends GenericFormPanel
     }
     
     /**
+     * @param dbNames
      * @return
      */
-    public List<String> getDatabaseList()
+    private List<String> getSpecifyDatabases(final DBMSUserMgr mgr, final List<String> dbNames)
     {
-        List<String> dbList = DBMSUserMgr.getInstance().getDatabaseList();
+        if (dbNames != null && dbNames.size() > 0)
+        {
+            ArrayList<String> specifyDBs = new ArrayList<String>(dbNames.size());
+            for (String dbName : dbNames)
+            {
+                if (mgr.doesDBHaveTable(dbName, "specifyuser"))
+                {
+                    specifyDBs.add(dbName);
+                }
+            }
+            return specifyDBs;
+        }
+        return new ArrayList<String>();
+    }
+    
+    /**
+     * @return
+     */
+    public List<String> getDatabaseList(final DBMSUserMgr mgr)
+    {
+        List<String> dbList = getSpecifyDatabases(mgr, mgr.getDatabaseList());
         
-        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)UIRegistry.getTopWindow(), "SEC_SELECT_DBS", null, dbList, 
+        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)UIRegistry.getTopWindow(), "SEC_SELECT_DBS", 
+                                                                                "SEC_SELECT_DBS_DESC", dbList, 
                                                                                 CustomDialog.OKCANCEL, ToggleButtonChooserPanel.Type.Checkbox);
         dlg.setAddSelectAll(true);
         dlg.setUseScrollPane(true);
@@ -384,12 +353,11 @@ public class MasterLoginPanel extends GenericFormPanel
             boolean doFix = false;
             dbNameList          = new ArrayList<String>();
             dbNamesForMaster    = mgr.getDatabaseListForUser(saUserName);
-            List<String> allDBs = mgr.getDatabaseList();
+            List<String> allDBs = getSpecifyDatabases(mgr, mgr.getDatabaseList());
             
             HashSet<String> hash = new HashSet<String>(dbNamesForMaster);
             for (String dbNm : allDBs)
             {
-                
                 if (!hash.contains(dbNm) && mgr.doesDBExists(dbNm))
                 {
                     try
@@ -468,6 +436,12 @@ public class MasterLoginPanel extends GenericFormPanel
      */
     protected boolean doResetMaster(final Vector<String> databaseNames)
     {
+        // Clear the database list associated with the Master user
+        if (dbNameList != null)
+        {
+            dbNameList.clear();
+        }
+        
         getValues(properties);
         DBMSUserMgr mgr   = DBMSUserMgr.getInstance();
         
@@ -485,14 +459,20 @@ public class MasterLoginPanel extends GenericFormPanel
                 List<String> dbNames = databaseNames;
                 if (dbNames == null || dbNames.size() == 0)
                 {
-                    dbNames = getDatabaseList();
+                    dbNames = getDatabaseList(mgr);
                     if (dbNames == null || dbNames.size() == 0)
                     {
                         return false;
                     }
                 }
                 
-                if (mgr.dropUser(saUserName))
+                boolean dropUserOK = true;
+                if (mgr.doesUserExists(saUserName))
+                {
+                    dropUserOK = mgr.dropUser(saUserName);
+                }
+                
+                if (dropUserOK)
                 {
                     int okCnt = 0;
                     for (String dbnm : dbNames)
@@ -573,7 +553,7 @@ public class MasterLoginPanel extends GenericFormPanel
             {
                 if (mgr.dropUser(saUserName))
                 {
-                    List<String> dbNames= getDatabaseList();
+                    List<String> dbNames= getDatabaseList(mgr);
                     if (dbNames != null)
                     {
                         boolean rv = false;
@@ -738,7 +718,7 @@ public class MasterLoginPanel extends GenericFormPanel
             
             if (mgr.connectToDBMS(dbUserName, dbPassword, hostName))
             {
-                dbNameList = mgr.getDatabaseList();
+                dbNameList = getSpecifyDatabases(mgr, mgr.getDatabaseList());
                 mgr.close();
             }
         }

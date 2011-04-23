@@ -34,20 +34,28 @@ import static edu.ku.brc.ui.UIRegistry.setMobileEmbeddedDBPath;
 import static edu.ku.brc.ui.UIRegistry.showLocalizedError;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -62,8 +70,8 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
-import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.DBMSUserMgr.DBSTATUS;
+import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.init.BaseSetupPanel;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
@@ -130,7 +138,7 @@ public class DatabasePanel extends BaseSetupPanel
 
         CellConstraints cc = new CellConstraints();
         
-        String rowDef = "p,2px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", isMobile() ? 5 : 4) + ",10px,p,10px,p,4px,p,4px,p";
+        String rowDef = "p,2px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", isMobile() ? 5 : 4) + ",10px,p,10px,p,4px,p,4px,p,10px,f:p:g";
         PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p:g", rowDef), this);
         int row = 1;
         
@@ -168,6 +176,9 @@ public class DatabasePanel extends BaseSetupPanel
         builder.add(panelPB.getPanel(), cc.xy(3, row));
         row += 2;
         
+        //panelPB.getPanel().setBackground(Color.RED);
+        //setBackground(Color.GREEN);
+        
         // Advance part of pane
         advLabel    = UIHelper.createI18NLabel("SEC_ADV_MU_DESC", SwingConstants.CENTER);
         skipStepBtn = UIHelper.createI18NButton("ADV_DB_TEST");
@@ -176,6 +187,9 @@ public class DatabasePanel extends BaseSetupPanel
         PanelBuilder tstPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p"));
         tstPB.add(skipStepBtn,          cc.xy(2, 1));
         builder.add(tstPB.getPanel(), cc.xyw(3, row, 1)); row += 2;
+        
+        JComponent helpComponent = createHelpPanel(getBackground(), "database");
+        builder.add(helpComponent, cc.xyw(3, row, 1)); row += 2;
         
         skipStepBtn.addActionListener(new ActionListener() {
             @Override
@@ -205,6 +219,57 @@ public class DatabasePanel extends BaseSetupPanel
 
         updateBtnUI();
     }
+    
+    /**
+     * @param bgColor
+     * @param htmlFileName
+     * @return
+     */
+    public static JComponent createHelpPanel(final Color bgColor, final String htmlFileName)
+    {
+        Locale currLocale = Locale.getDefault();
+        
+        String helpMasterPath = (new File(".")).getAbsolutePath() + File.separator + "../" + "help/securitywiz/" + htmlFileName;
+        String fullHelpMasterPath = UIHelper.createLocaleName(currLocale, helpMasterPath, "html");
+        
+        JEditorPane htmlPane = null;
+        try
+        {
+            File file = new File(fullHelpMasterPath);
+            if (!file.exists()) // for testing
+            {
+                helpMasterPath = (new File(".")).getAbsolutePath() + File.separator + "help/securitywiz/" + htmlFileName;
+                fullHelpMasterPath = UIHelper.createLocaleName(currLocale, helpMasterPath, "html");
+                file = new File(fullHelpMasterPath);
+                System.out.println(file.getCanonicalPath());
+            }
+            URI url = file.toURI();
+            
+            htmlPane = new JEditorPane(url.toURL()); //$NON-NLS-1$
+            htmlPane.setEditable(false);
+            htmlPane.setBackground(bgColor);
+
+        } catch (IOException ex) 
+        {
+            File file = new File(fullHelpMasterPath);
+            String htmlDesc = "";
+            try
+            {
+                htmlDesc = "Error loading help: "+ file.getCanonicalPath();
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            htmlPane   = new JEditorPane("text/plain", htmlDesc); //$NON-NLS-1$
+        }
+        
+        JScrollPane scrollPane = UIHelper.createScrollPane(htmlPane, true);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getViewport().setPreferredSize(new Dimension(400, 400));
+        
+        return scrollPane;
+    }
+
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.config.init.BaseSetupPanel#getValues()
