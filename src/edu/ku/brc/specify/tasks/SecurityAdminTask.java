@@ -419,18 +419,13 @@ public class SecurityAdminTask extends BaseTask
                                 {false, false, false, false}};
     }
     
-    class PwdDocAdapter extends DocumentAdaptor
+    /*class PwdDocAdapter extends DocumentAdaptor
     {
         private CustomDialog       dlg;
         private ValPasswordField   pwdField;
         private boolean            doCheckLen;
         private PasswordStrengthUI pwdStrenthUI;
         
-        /**
-         * @param dlg
-         * @param pwdField
-         * @param doCheckLen
-         */
         public PwdDocAdapter(final CustomDialog dlg, 
                              final ValPasswordField pwdField, 
                              final PasswordStrengthUI pwdStrenthUI,
@@ -443,9 +438,6 @@ public class SecurityAdminTask extends BaseTask
             this.doCheckLen   = doCheckLen;
         }
                 
-        /* (non-Javadoc)
-         * @see edu.ku.brc.ui.DocumentAdaptor#changed(javax.swing.event.DocumentEvent)
-         */
         @Override
         protected void changed(DocumentEvent e)
         {
@@ -456,15 +448,14 @@ public class SecurityAdminTask extends BaseTask
                 @Override
                 public void run()
                 {
-                    /*boolean enabled = dlg.getOkBtn().isEnabled();
-                    String  pwdStr  = new String(newPwdVTF.getPassword());
-                    boolean pwdOK   = pwdStrenthUI.checkStrength(pwdStr);
+                    //boolean enabled = dlg.getOkBtn().isEnabled();
+                    //String  pwdStr  = new String(newPwdVTF.getPassword());
+                    //boolean pwdOK   = pwdStrenthUI.checkStrength(pwdStr);
                     
-                    dlg.getOkBtn().setEnabled(enabled && pwdOK);
-                    pwdStrenthUI.repaint();
-                    */
+                    //dlg.getOkBtn().setEnabled(enabled && pwdOK);
+                    //pwdStrenthUI.repaint();
                 }
             });
         }
-    }
+    }*/
 }

@@ -22,7 +22,6 @@ package edu.ku.brc.af.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FontMetrics;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -37,6 +36,7 @@ import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -49,10 +49,15 @@ import javax.swing.event.DocumentListener;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.UIPluginable;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -68,24 +73,27 @@ import edu.ku.brc.ui.UIRegistry;
 public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetValueIFace
 {
     // Rules variables
-    private static final int PWD_MAX_LENGTH = 40;
     private static final int PWD_MIXED_CASE = 1;
     private static final int PWD_NUMERIC    = 1;
     private static final int PWD_SPECIAL    = 1;
     
     private String[] SCORE_KEYS = {"VERY_WEAK",      "WEAK",           "MEDIOCRE",    "STRONG",         "VERY_STRONG"};
-    private String[] ERR_KEYS   = {"PWD_MIN_LENGTH", "PWD_MAX_LENGTH", "PWD_NUMERIC", "PWD_MIXED_CASE", "PWD_SPECIAL"};
-    
+    private String[] ERR_KEYS   = {"PWD_MIN_LENGTH", "PWD_NUMERIC", "PWD_MIXED_CASE", "PWD_SPECIAL"};
+    private JCheckBox[] cbxs    = new JCheckBox[ERR_KEYS.length];
     private String[] scoreStrings;
     private String[] errorStrings;
     
     //private static final int PWD_STRENGTH   = 30;
+    
+    protected ColorPanel   colorPanel;
     
     protected JProgressBar progress; 
     protected int          score     = 0;
     protected String       errReason = null;
     protected String       scoreDesc = null;
     protected int          minPwdLen;
+    protected boolean      doPainting = false;
+    protected boolean      initialSet = true;
 
     /**
      * Constructor.
@@ -114,14 +122,26 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
             scoreStrings[i] = UIRegistry.getResourceString(getKey(SCORE_KEYS[i]));
         }
         
+        CellConstraints cc = new CellConstraints();
+        PanelBuilder    pbi = new PanelBuilder(new FormLayout(UIHelper.createDuplicateJGoodiesDef("p", "4px", cbxs.length), "p"));
         errorStrings = new String[ERR_KEYS.length];
+        int x = 1;
         for (int i=0;i<ERR_KEYS.length;i++)
         {
             errorStrings[i] = UIRegistry.getResourceString(getKey(ERR_KEYS[i]));
+            cbxs[i] = UIHelper.createCheckBox(errorStrings[i]);
+            pbi.add(cbxs[i], cc.xy(x, 1));
+            cbxs[i].setEnabled(false);
+            x += 2;
         }
         UIRegistry.popResourceBundle();
         
-        setBorder(BorderFactory.createLoweredBevelBorder());
+        colorPanel = new ColorPanel();
+        colorPanel.setBorder(BorderFactory.createLoweredBevelBorder());
+        
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "p,4px,p"), this);
+        pb.add(colorPanel, cc.xy(1,1));
+        pb.add(pbi.getPanel(), cc.xy(1,3));
     }
     
     /**
@@ -136,81 +156,47 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
             @Override
             protected void changed(DocumentEvent e)
             {
+                String txt = ((JTextField)pwdTF).getText();
+                
+                if (StringUtils.isEmpty(txt))
+                {
+                    initialSet = true;
+                    doPainting = false;
+                    for (JCheckBox cbx : cbxs)
+                    {
+                        cbx.setSelected(false);
+                    }
+                    
+                } else if (initialSet)
+                {
+                    initialSet = false;
+                } else
+                {
+                    doPainting = true;
+                }
+                
                 if (btn != null)
                 {
-                    btn.setEnabled(!((JTextField)pwdTF).getText().isEmpty());
+                    btn.setEnabled(!txt.isEmpty());
                 }
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run()
-                    {
-                        checkStrength(pwdTF.getText()); // ignore return boolean
-                        repaint();
-                    }
-                });
+                
+                if (doPainting)
+                {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run()
+                        {
+                            checkStrength(pwdTF.getText()); // ignore return boolean
+                            colorPanel.repaint();
+                        }
+                    });
+                }
             }
         };
         
         pwdTF.getDocument().addDocumentListener(listener);
     }
-    
-    /* (non-Javadoc)
-     * @see javax.swing.JComponent#getPreferredSize()
-     */
-    public Dimension getPreferredSize()
-    {
-        Insets ins = getInsets();
-        return new Dimension(200, (new JLabel("X")).getPreferredSize().height+ins.top+ins.bottom+4);
-    }
-    
-    /* (non-Javadoc)
-     * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
-     */
-    protected void paintComponent(final Graphics g)
-    {
-        super.paintComponent(g);
-        
-        if (isEnabled())
-        {
-            Graphics2D g2 = (Graphics2D)g;
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(this.getBackground());
-            
-            FontMetrics fm = g2.getFontMetrics();
-            
-            String    text      = errReason != null ? errReason : getScoreDesc();
-            int       textWidth = fm.stringWidth(text);
-            Dimension size      = getSize();
-            
-            Insets ins   = getInsets();
-            int barWidth = size.width - ins.left - ins.right;
-            int w        = (int)(barWidth * (getScore() / 100.0));
-            int h        = size.height-ins.top-ins.bottom;
-            
-            int halfBW = barWidth / 2;
-            GradientPaint bg = new GradientPaint(new Point(0, 0), Color.RED,
-                                                 new Point(halfBW/2,0), Color.YELLOW);
-            g2.setPaint(bg);
-            
-            Shape clipShape = g.getClip();
-            
-            g2.setClip(ins.left, ins.top, ins.left+w, h);
-            
-            g.fillRect(ins.left, ins.top, halfBW/2, h);
-            
-            // Second Half
-            bg = new GradientPaint(new Point(ins.left+halfBW/2,0), Color.YELLOW,
-                                   new Point(ins.left+barWidth,0), Color.GREEN);
-            g2.setPaint(bg);
-            g.fillRect(ins.left+halfBW/2, ins.top, halfBW*2, h);
-            g.setClip(clipShape);
-            
-            g.setColor(Color.BLACK);
-            //System.out.println(score+"  "+getScore()+"  w: "+w+"  BW: "+barWidth);
-            g.drawString(text, (size.width-textWidth)/2, size.height - ((size.height-fm.getAscent())/2) - ins.bottom);
-        }
-    }
-    
+
     /**
      * @return
      */
@@ -246,7 +232,7 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
      */
     public int getScore()
     {
-        return Math.min((int)(score / 71.0 * 100.0), 100);
+        return Math.min((int)(score / 50.0 * 100.0), 100);
     }
 
     /**
@@ -302,22 +288,21 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
         length = pwd.length();
         if (length < 5) // length 4 or less
         {
-            score = (score + 3);
+            score += 3;
             
         } else if (length > 4 && length < 8) // length between 5 and 7
         {
-            score = (score + 6);
+            score += 6;
             
         } else if (length > 7 && length < 16) // length between 8 and 15
         {
-            score = (score + 12);
+            score += 12;
             
         } else if (length > 15) // length 16 or more
         {
-            score = (score + 18);
+            score += 18;
         }
-        
-        // 36 sub-total
+        // 18 sub-total
         
         // Letters
         p = Pattern.compile(".??[a-z]");
@@ -329,7 +314,7 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
         
         if (lower > 0)
         {
-            score = (score + 1); // 37
+           score += 1; // 19
         }
         
         // Uppercase
@@ -337,12 +322,12 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
         m = p.matcher(pwd);
         while (m.find()) // at least one upper case letter
         {
-            upper += 1;
+            upper += 1; // 20
         }
         
         if (upper > 0)
         {
-            score = (score + 5); // 42
+            score += 5; // 21
         }
         
         // Includes Numbers
@@ -350,19 +335,19 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
         m = p.matcher(pwd);
         while (m.find()) // at least one number
         {
-            numbers += 1;
+            numbers += 1; // 22
         }
         if (numbers > 0)
         {
-            score = (score + 5); // 47
+            score += 5; // 27
             
             if (numbers > 1)
             {
-                score = (score + 2); // 49
+                score += 2; // 29
                 
                 if (numbers > 2)
                 {
-                    score = (score + 3);  // 53
+                    score += 3;  // 31
                 }
             }
         }
@@ -372,68 +357,73 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
         m = p.matcher(pwd);
         while (m.find()) // at least one special character
         {
-            special += 1;
+            special += 1; // 32
         }
         
         if (special > 0)
         {
-            score = (score + 5); // 58
+            score += 5; // 37
             
             if (special > 1)
             {
-                score += (score + 5); // 63
+                score += 5; // 42
             }
         }
         
         // Combinations
         if (upper > 0 && lower > 0) // both upper and lower case
         {
-            score = (score + 2); // 65
+            score += 2; // 44
         }
         if ((upper > 0 || lower > 0) && numbers > 0) // both letters and numbers
         {
-            score = (score + 2); // 67
+            score += 2; // 46
         }
         if ((upper > 0 || lower > 0) && numbers > 0 && special > 0) // letters, numbers, and special characters
         {
-            score = (score + 2); // 69
+            score += 2; // 48
         }
         if (upper > 0 && lower > 0 && numbers > 0 && special > 0) // upper, lower, numbers, and special characters
         {
-            score = (score + 2); // 71
+            score += 2; // 50
         }
         
+        for (JCheckBox cbx : cbxs)
+        {
+            cbx.setSelected(false);
+        }
         errReason = null;
-        // Does it meet the password policy?
-        if (upper < PWD_MIXED_CASE || lower < PWD_MIXED_CASE)
-        {
-            errReason = errorStrings[3];
-            return false; 
-        }
-        if (numbers < PWD_NUMERIC)
-        {
-            errReason = errorStrings[2];
-            return false; 
-        }
-        if (special < PWD_SPECIAL)
-        {
-            errReason = errorStrings[4];
-            return false; 
-        }
-        /*if (score < PWD_STRENGTH)
-        {
-            errReason = UIRegistry.getResourceString(getKey("PWD_MIN_LENGTH"));
-            return false; 
-        }*/
         if (length < minPwdLen)
         { 
             errReason = errorStrings[0];
-            return false; 
+        } else
+        {
+            cbxs[0].setSelected(true);
         }
-        if (length > PWD_MAX_LENGTH)
+        
+        if (numbers < PWD_NUMERIC)
         {
             errReason = errorStrings[1];
-            return false; 
+        } else
+        {
+            cbxs[1].setSelected(true);
+        }
+        
+        // Does it meet the password policy?
+        if (upper < PWD_MIXED_CASE || lower < PWD_MIXED_CASE)
+        {
+            errReason = errorStrings[2];
+        } else
+        {
+            cbxs[2].setSelected(true);
+        }
+        
+        if (special < PWD_SPECIAL)
+        {
+            errReason = errorStrings[3];
+        } else
+        {
+            cbxs[3].setSelected(true);
         }
 
         return true;
@@ -574,5 +564,78 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
     public void setNewObj(boolean isNewObj)
     {
         // no op
+    }
+    
+    //-----------------------------------------------------------------------
+    //-- 
+    //-----------------------------------------------------------------------
+    class ColorPanel extends JComponent
+    {
+        /**
+         * 
+         */
+        public ColorPanel()
+        {
+            super();
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.JComponent#getPreferredSize()
+         */
+        @Override
+        public Dimension getPreferredSize()
+        {
+            Insets ins = getInsets();
+            return new Dimension(200, (new JLabel("X")).getPreferredSize().height+ins.top+ins.bottom+4);
+        }
+        
+        /* (non-Javadoc)
+         * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
+         */
+        @Override
+        protected void paintComponent(final Graphics g)
+        {
+            super.paintComponent(g);
+            
+            if (isEnabled() && doPainting)
+            {
+                Graphics2D g2 = (Graphics2D)g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(this.getBackground());
+                
+                //FontMetrics fm = g2.getFontMetrics();
+                //String    text      = errReason != null ? errReason : getScoreDesc();
+                //int       textWidth = fm.stringWidth(text);
+                Dimension size      = getSize();
+                
+                Insets ins   = getInsets();
+                int barWidth = size.width - ins.left - ins.right;
+                int w        = (int)(barWidth * (getScore() / 100.0));
+                int h        = size.height-ins.top-ins.bottom;
+                
+                int halfBW = barWidth / 2;
+                GradientPaint bg = new GradientPaint(new Point(0, 0), Color.RED,
+                                                     new Point(halfBW,0), Color.YELLOW);
+                g2.setPaint(bg);
+                
+                Shape clipShape = g.getClip();
+                
+                g2.setClip(ins.left, ins.top, ins.left+w, h);
+                
+                g.fillRect(ins.left, ins.top, halfBW, h);
+                
+                // Second Half
+                bg = new GradientPaint(new Point(ins.left+halfBW,0), Color.YELLOW,
+                                       new Point(ins.left+barWidth,0), Color.GREEN);
+                g2.setPaint(bg);
+                g.fillRect(ins.left+halfBW, ins.top, halfBW*2, h);
+                g.setClip(clipShape);
+                
+                //g.setColor(Color.BLACK);
+                //System.out.println(score+"  "+getScore()+"  w: "+w+"  BW: "+barWidth);
+                //g.drawString(text, (size.width-textWidth)/2, size.height - ((size.height-fm.getAscent())/2) - ins.bottom);
+            }
+        }
+
     }
 }
