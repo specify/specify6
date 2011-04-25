@@ -115,7 +115,7 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
         
         Specify.adjustLocaleFromPrefs();
         
-        ImageIcon helpIcon = IconManager.getIcon(SpecifyDBSetupWizard.getIconName(), IconSize.Std16); //$NON-NLS-1$
+        ImageIcon helpIcon = IconManager.getIcon(SpecifyDBSetupWizard.getIconName(), IconSize.Std32); //$NON-NLS-1$
         HelpMgr.initializeHelp("SpecifyHelp", helpIcon.getImage()); //$NON-NLS-1$
         
         JMenuBar menuBar = createMenus();
@@ -125,7 +125,7 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
         }
         UIRegistry.register(UIRegistry.MENUBAR, menuBar);
         
-        setIconImage(IconManager.getIcon(SpecifyDBSetupWizard.getIconName(), IconManager.IconSize.Std16).getImage());
+        setIconImage(IconManager.getIcon(SpecifyDBSetupWizard.getIconName(), IconManager.IconSize.NonStd).getImage());
         
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
