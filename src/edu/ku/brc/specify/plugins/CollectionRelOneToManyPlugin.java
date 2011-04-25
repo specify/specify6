@@ -94,8 +94,6 @@ public class CollectionRelOneToManyPlugin extends UIPluginBase implements UIVali
     private UIFieldFormatterIFace  catNumFormatter = null;
     
     private CollectionObject       currentColObj   = null;
-    //private CollectionRelationship collectionRel   = null;
-    //private CollectionObject       otherSideColObj = null;
     
     private boolean                  isRequired      = false;
     private boolean                  isChanged       = false;
@@ -184,9 +182,9 @@ public class CollectionRelOneToManyPlugin extends UIPluginBase implements UIVali
             JScrollPane sp = UIHelper.createScrollPane(table, false);
             pb.add(sp, cc.xy(1,1));
             
-            searchAddBtn = UIHelper.createIconBtn("Search",       IconManager.IconSize.Std20, "", true, createSearchAL());
-            removeBtn    = UIHelper.createIconBtn("DeleteRecord", IconManager.IconSize.Std20, "", true, createRemoveAL());
-            infoBtn      = UIHelper.createIconBtn("InfoIcon",     IconManager.IconSize.Std20, "", true,   createInfoAL());
+            searchAddBtn = UIHelper.createIconBtn("SearchAdd", IconManager.IconSize.Std20,  "", true, createSearchAL());
+            removeBtn    = UIHelper.createIconBtn("Eraser",    IconManager.IconSize.NonStd, "", true, createRemoveAL());
+            infoBtn      = UIHelper.createIconBtn("InfoIcon",  IconManager.IconSize.Std20, "", true,   createInfoAL());
             
             PanelBuilder rpb = new PanelBuilder(new FormLayout("f:p:g", "p,4px,p,4px,p, f:p:g"));
     

@@ -106,7 +106,7 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
         {
             dataDir = new File(dataDir).getAbsolutePath();
             
-            log.debug(dataDir);
+            //log.debug(dataDir);
             return StringUtils.replace(connStr, "DATADIR",  dataDir); //$NON-NLS-1$
         }
         return connStr;

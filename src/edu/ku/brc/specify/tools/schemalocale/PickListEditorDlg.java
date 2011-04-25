@@ -110,7 +110,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
     
     // Transient
     protected JList              pickListCache = null; // needed when deleting a PL
-    protected boolean            doImportExport;
+    protected boolean            doAddRemove;
     
     protected DBTableInfo        tableInfo    = null;
     protected DBFieldInfo        fieldInfo    = null;
@@ -123,18 +123,21 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
      * @throws HeadlessException
      */
     public PickListEditorDlg(final LocalizableIOIFace localizableIO,
-                             final boolean doImportExport) throws HeadlessException
+                             final boolean doAddRemoveArg) throws HeadlessException
     {
         super((Frame)getTopWindow(), 
-              getResourceString("PICKLIST_EDITOR"), true, OKCANCELAPPLYHELP, null, OK_BTN);
+              getResourceString("PICKLIST_EDITOR"), true, doAddRemoveArg ? OKCANCELAPPLYHELP : OKHELP, null, OK_BTN);
         
         this.localizableIO = localizableIO;
         this.helpContext   = "PL_HELP_CONTEXT";
         this.okLabel       = getResourceString("CLOSE");
-        this.doImportExport = doImportExport;
+        this.doAddRemove   = doAddRemoveArg;
         
-        this.cancelLabel       = getResourceString("Export");
-        this.applyLabel        = getResourceString("Import");
+        if (doAddRemoveArg)
+        {
+            this.cancelLabel = getResourceString("Export");
+            this.applyLabel  = getResourceString("Import");
+        }
     }
 
     /* (non-Javadoc)
@@ -149,7 +152,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         CellConstraints cc = new CellConstraints();
         
         plList   = new JList();
-        edaPanel = configureList(plList, false, doImportExport);
+        edaPanel = configureList(plList, false, doAddRemove);
         
         sysPLList   = new JList();
         sysEDAPanel = configureList(sysPLList, true, false);
@@ -205,7 +208,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
      * @param isSystemPL
      * @return
      */
-    protected boolean loadList(final JList   list, final boolean isSystemPL)
+    protected boolean loadList(final JList list, final boolean isSystemPL)
     {
         List<PickList> items = getPickLists(false, isSystemPL);
         if (items == null)
@@ -227,35 +230,19 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
     /**
      * @param list
      * @param isSystemPL
+     * @param doAddRemoveArg
      * @return
      */
     protected EditDeleteAddPanel configureList(final JList   list, 
                                                final boolean isSystemPL,
-                                               final boolean doImportExportArg)
+                                               final boolean doAddRemoveArg)
     {
         ActionListener addAL = null;
         ActionListener delAL = null;
         
         if (!isSystemPL)
         {
-            if (doImportExportArg)
-            {
-                /*addAL = new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        importPL(list);
-                    }
-                    
-                };
-                
-                delAL = new ActionListener() {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        exportPL(list);
-                    }
-                }; */
-            } else
+            if (doAddRemoveArg)
             {
                 addAL = new ActionListener()
                 {
@@ -288,7 +275,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
             edaPnl.getAddBtn().setEnabled(true);
         }
         
-        /*if (doImportExport && addAL != null && delAL != null)
+        /*if (doAddRemove && addAL != null && delAL != null)
         {
             edaPnl.getAddBtn().setIcon(IconManager.getIcon("Import16"));
             edaPnl.getDelBtn().setIcon(IconManager.getIcon("Export16"));
@@ -442,8 +429,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
     /**
      * @return
      */
-    protected boolean importPL(@SuppressWarnings("unused")
-    final JList listArg)
+    protected boolean importPL(@SuppressWarnings("unused")final JList listArg)
     {
         isChanged = true;
         return true;

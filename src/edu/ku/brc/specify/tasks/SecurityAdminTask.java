@@ -54,10 +54,12 @@ import edu.ku.brc.af.ui.PasswordStrengthUI;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.ValPasswordField;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.subpane.security.SecurityAdminPane;
 import edu.ku.brc.specify.tasks.subpane.security.SecuritySummaryDlg;
@@ -161,9 +163,14 @@ public class SecurityAdminTask extends BaseTask
                 final ValPasswordField   verPwdVTF    = fvo.getCompById("3");
                 final PasswordStrengthUI pwdStrenthUI = fvo.getCompById("4");
                 
+                Institution institution = AppContextMgr.getInstance().getClassObject(Institution.class);
+                int minPwdLen = (int)institution.getMinimumPwdLength();
+                newPwdVTF.setMinLen(minPwdLen);
+                verPwdVTF.setMinLen(minPwdLen);
+                
                 DocumentAdaptor da = new DocumentAdaptor() {
                     @Override
-                    protected void changed(DocumentEvent e)
+                    protected void changed(final DocumentEvent e)
                     {
                         super.changed(e);
                         
@@ -172,11 +179,13 @@ public class SecurityAdminTask extends BaseTask
                             @Override
                             public void run()
                             {
-                                boolean enabled = dlg.getOkBtn().isEnabled();
-                                String  pwdStr  = new String(newPwdVTF.getPassword());
-                                boolean pwdOK   = pwdStrenthUI.checkStrength(pwdStr);
                                 
-                                dlg.getOkBtn().setEnabled(enabled && pwdOK);
+                                String  pwdStr  = new String(newPwdVTF.getPassword());
+                                String  verStr  = new String(verPwdVTF.getPassword());
+                                boolean pwdOK   = pwdStrenthUI.checkStrength(pwdStr) &&
+                                                  pwdStr.equals(verStr) &&
+                                                  newPwdVTF.getState() == UIValidatable.ErrorType.Valid;
+                                dlg.getOkBtn().setEnabled(pwdOK);
                                 pwdStrenthUI.repaint();
                             }
                         });
@@ -408,5 +417,54 @@ public class SecurityAdminTask extends BaseTask
                                 {false, false, false, false},
                                 {false, false, false, false},
                                 {false, false, false, false}};
+    }
+    
+    class PwdDocAdapter extends DocumentAdaptor
+    {
+        private CustomDialog       dlg;
+        private ValPasswordField   pwdField;
+        private boolean            doCheckLen;
+        private PasswordStrengthUI pwdStrenthUI;
+        
+        /**
+         * @param dlg
+         * @param pwdField
+         * @param doCheckLen
+         */
+        public PwdDocAdapter(final CustomDialog dlg, 
+                             final ValPasswordField pwdField, 
+                             final PasswordStrengthUI pwdStrenthUI,
+                             final boolean doCheckLen)
+        {
+            super();
+            this.dlg          = dlg;
+            this.pwdField     = pwdField;
+            this.pwdStrenthUI = pwdStrenthUI;
+            this.doCheckLen   = doCheckLen;
+        }
+                
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.DocumentAdaptor#changed(javax.swing.event.DocumentEvent)
+         */
+        @Override
+        protected void changed(DocumentEvent e)
+        {
+            super.changed(e);
+            
+            // Need to invoke later so the da gets to set the enabled state last.
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run()
+                {
+                    /*boolean enabled = dlg.getOkBtn().isEnabled();
+                    String  pwdStr  = new String(newPwdVTF.getPassword());
+                    boolean pwdOK   = pwdStrenthUI.checkStrength(pwdStr);
+                    
+                    dlg.getOkBtn().setEnabled(enabled && pwdOK);
+                    pwdStrenthUI.repaint();
+                    */
+                }
+            });
+        }
     }
 }

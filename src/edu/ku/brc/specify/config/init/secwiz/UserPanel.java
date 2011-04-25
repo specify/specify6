@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.config.init.secwiz;
 
+import static edu.ku.brc.ui.UIRegistry.getFormattedResStr;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 
@@ -837,7 +838,7 @@ public class UserPanel extends BaseSetupPanel
                     otherDBList.setModel(model);
                 }
                 
-                label.setText(databaseName);
+                label.setText(getFormattedResStr("MSTR_USR_DB", databaseName));
                 
                 Vector<UserData> userDataList = new Vector<UserData>();
                 String           sql          = "SELECT SpecifyUserId, Name, Password, EMail FROM specifyuser";

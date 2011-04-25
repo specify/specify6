@@ -210,7 +210,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             collNavBox.add(NavBox.createBtnWithTT(getResourceString("PICKLIST_EDITOR"), "PickList", "", IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    PickListEditorDlg dlg = new PickListEditorDlg(null, true);
+                    PickListEditorDlg dlg = new PickListEditorDlg(null, false);
                     dlg.createUI();
                     dlg.setSize(400,500);
                     dlg.setVisible(true);
