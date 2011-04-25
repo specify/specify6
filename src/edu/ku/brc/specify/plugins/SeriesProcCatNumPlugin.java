@@ -159,6 +159,7 @@ public class SeriesProcCatNumPlugin extends UIPluginBase implements ValFormatted
         
         boolean isOKToExpand = isNewObj && !isAutoNumOn && isCarryForwardOK;
         textFieldStart.setAutoNumberEnabled(!isOKToExpand);
+        textFieldEnd.setAutoNumberEnabled(!isOKToExpand);
         expandBtn.setVisible(isOKToExpand);
         
         //System.err.println("isOKToExpand "+isOKToExpand+"  isExpanded "+isExpanded+"  isCarryForwardOK "+isCarryForwardOK+"  isNewObj "+isNewObj+"  isAutoNumOn "+isAutoNumOn);
@@ -410,10 +411,7 @@ public class SeriesProcCatNumPlugin extends UIPluginBase implements ValFormatted
     public void setAsNew(boolean isNew)
     {
         textFieldStart.setAsNew(isNew);
-        if (isExpanded)
-        {
-            textFieldEnd.setAsNew(isNew);
-        }
+        textFieldEnd.setAsNew(isNew);
     }
 
     /* (non-Javadoc)
@@ -423,10 +421,7 @@ public class SeriesProcCatNumPlugin extends UIPluginBase implements ValFormatted
     public void setChanged(boolean isChanged)
     {
         textFieldStart.setChanged(isChanged);
-        if (isExpanded)
-        {
-            textFieldEnd.setChanged(isChanged);
-        }
+        textFieldEnd.setChanged(isChanged);
     }
 
     /* (non-Javadoc)
