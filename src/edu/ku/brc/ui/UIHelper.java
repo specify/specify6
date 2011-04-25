@@ -1715,7 +1715,7 @@ public final class UIHelper
                                              final String  helpContext) //frame's icon name
     {  
         
-        ImageIcon icon = IconManager.getIcon("AppIcon", IconManager.IconSize.Std16);
+        ImageIcon icon = IconManager.getIcon("AppIcon", IconManager.IconSize.Std32);
         if (StringUtils.isNotEmpty(appIconName))
         {
             ImageIcon imgIcon = IconManager.getIcon(appIconName);

@@ -98,6 +98,7 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame;
+import edu.ku.brc.specify.config.init.secwiz.SpecifyDBSecurityWizard;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.SpAppResource;
@@ -194,6 +195,8 @@ public class MainFrameSpecify extends MainFrame
         	helpPageItem.removeActionListener(als[l]);
         }
         HelpMgr.registerComponent(helpPageItem, "iReport");
+        
+        setIconImage(IconManager.getIcon("SPIReports", IconManager.IconSize.NonStd).getImage());
  
     }
     
