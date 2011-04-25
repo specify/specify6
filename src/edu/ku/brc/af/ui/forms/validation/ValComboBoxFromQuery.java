@@ -826,7 +826,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             DataObjectSettable ds = DataObjectSettableFactory.get(tableInfo.getClassObj().getName(), FormHelper.DATA_OBJ_SETTER);
             if (ds != null)
             {
-                log.info("ID: ["+textWithQuery.getSelectedId()+"]  PrevText["+textWithQuery.getPrevEnteredText()+"] Cached["+textWithQuery.getCachedPrevText()+"]");
+                //log.info("ID: ["+textWithQuery.getSelectedId()+"]  PrevText["+textWithQuery.getPrevEnteredText()+"] Cached["+textWithQuery.getCachedPrevText()+"]");
                 String value = textWithQuery.getSelectedId() == null ? textWithQuery.getPrevEnteredText() : "";
                 if (!isCloned)
                 {
@@ -1107,7 +1107,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 {
                     editBtn.setEnabled(true);
                 }
-                
+                if (cloneBtn != null)
+                {
+                    cloneBtn.setEnabled(false);
+                }
             } else
             {
                 if (textWithQuery != null)
@@ -1127,6 +1130,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             if (editBtn != null)
             {
                 editBtn.setEnabled(false);
+            }
+            if (cloneBtn != null)
+            {
+                cloneBtn.setEnabled(false);
             }
             if (textWithQuery != null && textWithQuery.getTextField() != null)
             {
@@ -1368,11 +1375,15 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         valueHasChanged();
         validateState();
         
+        boolean doEnable = dataObj != null || (textWithQuery != null && textWithQuery.getSelectedId() != null);
         if (editBtn != null)
         {
-            editBtn.setEnabled(dataObj != null || (textWithQuery != null && textWithQuery.getSelectedId() != null));
+            editBtn.setEnabled(doEnable);
         }
-        
+        if (cloneBtn != null)
+        {
+            cloneBtn.setEnabled(doEnable);
+        }
         notifyListeners(e);
         
         repaint();
