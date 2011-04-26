@@ -192,6 +192,9 @@
     <icon name="Down"             file="Down16x16.png" sizes="16"/>
     <icon name="Forward"          file="Forward16x16.png" sizes="16"/>
     
+    <icon name="WBValidatorDown"  file="down_32.png" sizes="all"/>
+    <icon name="WBValidatorUp"    file="up_32.png" sizes="all"/>
+    
     <icon name="ExclaimGreen"     file="exclaim_green.gif" sizes="NonStd"/>
     <icon name="ExclaimYellow"    file="exclaim_yellow.gif" sizes="NonStd"/>
     <icon name="ExclaimRed"       file="exclaim.gif" sizes="NonStd"/>

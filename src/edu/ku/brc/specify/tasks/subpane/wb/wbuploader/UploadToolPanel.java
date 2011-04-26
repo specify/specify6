@@ -94,7 +94,7 @@ public class UploadToolPanel extends JPanel implements TimingTarget
                 wbSS.goToInvalidCell(false);
             }
         }, 0);
-        prevInvalidCellBtn = UIHelper.createIconBtn("UpArrow", IconManager.IconSize.Std24,
+        prevInvalidCellBtn = UIHelper.createIconBtn("WBValidatorUp", IconManager.IconSize.Std24,
         		"WB_PREV_ERROR", false, prevErrAction);
         Action nextErrAction = wbSS.addRecordKeyMappings(wbSS.getSpreadSheet(), KeyEvent.VK_F6, "NextErr", new AbstractAction()
         {
@@ -103,7 +103,7 @@ public class UploadToolPanel extends JPanel implements TimingTarget
                 wbSS.goToInvalidCell(true);
             }
         }, 0);
-        nextInvalidCellBtn = UIHelper.createIconBtn("DownArrow", IconManager.IconSize.Std24, 
+        nextInvalidCellBtn = UIHelper.createIconBtn("WBValidatorDown", IconManager.IconSize.Std24, 
         		"WB_NEXT_ERROR", false, nextErrAction);
         invalidCellCountLbl = UIHelper.createLabel(String.format(UIRegistry.getResourceString("WB_INVALID_CELL_COUNT"), 0));
         
@@ -144,7 +144,7 @@ public class UploadToolPanel extends JPanel implements TimingTarget
                 wbSS.goToUnmatchedCell(false);
             }
         }, 0);
-        prevUnmatchedCellBtn = UIHelper.createIconBtn("UpArrow", IconManager.IconSize.Std24, 
+        prevUnmatchedCellBtn = UIHelper.createIconBtn("WBValidatorUp", IconManager.IconSize.Std24, 
         		"WB_PREV_UNMATCHED", false, prevUnmatchedAction);
         Action nextUnMatchedAction = wbSS.addRecordKeyMappings(wbSS.getSpreadSheet(), KeyEvent.VK_F8, "NextUnMatched", new AbstractAction()
         {
@@ -153,7 +153,7 @@ public class UploadToolPanel extends JPanel implements TimingTarget
                 wbSS.goToUnmatchedCell(true);
             }
         }, 0);
-        nextUnmatchedCellBtn = UIHelper.createIconBtn("DownArrow", IconManager.IconSize.Std24, 
+        nextUnmatchedCellBtn = UIHelper.createIconBtn("WBValidatorDown", IconManager.IconSize.Std24, 
         		"WB_NEXT_UNMATCHED", false, nextUnMatchedAction);
         unmatchedCellCountLbl = UIHelper.createLabel(String.format(UIRegistry.getResourceString("WB_UNMATCHED_CELL_COUNT"), 0));
         
