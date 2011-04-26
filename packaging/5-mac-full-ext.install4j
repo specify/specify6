@@ -324,7 +324,7 @@
         <file path="../src/edu/ku/brc/specify/images/specify32.png" />
       </iconImageFiles>
     </launcher>
-      <launcher name="SpecifyDBSecurityWizard" id="1876" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/specify.icns" swtApp="false" fileset="">
+      <launcher name="SpecifyDBSecurityWizard" id="1876" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="icns/spsecwizard.icns" swtApp="false" fileset="">
       <executable name="SpecifyDBSecurityWizard" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
@@ -334,7 +334,7 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.config.init.secwiz.SpecifyDBSecurityWizardFrame" vmParameters="-Xmx768m" arguments="-Dappdir=.. -Dcom.apple.macos.useSmallTabs=true -Dapple.laf.useScreenMenuBar=true -Xdock:icon=&quot;src/edu/ku/brc/specify/images/specify128.png&quot; -Dcom.apple.mrj.application.apple.menu.about.name=SpecifyDBSecurityWizard" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="edu.ku.brc.specify.config.init.secwiz.SpecifyDBSecurityWizardFrame" vmParameters="-Xmx768m" arguments="-Dappdir=.. -Dcom.apple.macos.useSmallTabs=true -Dapple.laf.useScreenMenuBar=true -Xdock:icon=&quot;src/edu/ku/brc/specify/images/spsecwizard128.png&quot; -Dcom.apple.mrj.application.apple.menu.about.name=SpecifyDBSecurityWizard" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
@@ -356,8 +356,8 @@
         <content />
       </customScript>
       <iconImageFiles>
-        <file path="../src/edu/ku/brc/specify/images/specify16.png" />
-        <file path="../src/edu/ku/brc/specify/images/specify32.png" />
+        <file path="../src/edu/ku/brc/specify/images/spsecwizard16.png" />
+        <file path="../src/edu/ku/brc/specify/images/spsecwizard32.png" />
       </iconImageFiles>
     </launcher>
 </launchers>
