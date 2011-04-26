@@ -419,53 +419,27 @@ public class ResultSetController implements ValidationListener
         firstBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
             {
-                if (notifyListenersAboutToChangeIndex(currentInx, 0))
-                {
-                    currentInx = 0;
-                    updateUI();
-                    notifyListeners();
-                }
+                firstRecord();
             }
         });
         prevBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
             {
-                if (notifyListenersAboutToChangeIndex(currentInx, currentInx-1))
-                {
-                    // Note: notifyListenersAboutToChangeIndex sometimes can call a method
-                    // that ends up setting the currentInx and therefore we should make
-                    // sure that by decrementing it will still have a good value
-                    if (currentInx > 0)
-                    {
-                        currentInx--;
-                        updateUI();
-                        notifyListeners();
-                    }
-                }
+                prevRecord();
             }
         });
         nextBtn.addActionListener(new ActionListener()
                 {
             public void actionPerformed(ActionEvent ae)
             {
-                if (notifyListenersAboutToChangeIndex(currentInx, currentInx+1))
-                {
-                    currentInx++;
-                    updateUI();
-                    notifyListeners();
-                }
+                nextRecord();
             }
         });
         lastBtn.addActionListener(new ActionListener()
                 {
             public void actionPerformed(ActionEvent ae)
             {
-                if (notifyListenersAboutToChangeIndex(currentInx, lastInx))
-                {
-                    currentInx = lastInx;
-                    updateUI();
-                    notifyListeners();
-                }
+                lastRecord();
             }
         });
         
@@ -492,6 +466,65 @@ public class ResultSetController implements ValidationListener
         });
         popupMenu.add(mi);
         return popupMenu;
+    }
+    
+    /**
+     * 
+     */
+    private void firstRecord()
+    {
+        if (notifyListenersAboutToChangeIndex(currentInx, 0))
+        {
+            currentInx = 0;
+            updateUI();
+            notifyListeners();
+        }
+
+    }
+    
+    /**
+     * 
+     */
+    private void lastRecord()
+    {
+        if (notifyListenersAboutToChangeIndex(currentInx, lastInx))
+        {
+            currentInx = lastInx;
+            updateUI();
+            notifyListeners();
+        }
+
+    }
+    
+    /**
+     * 
+     */
+    private void prevRecord()
+    {
+        if (notifyListenersAboutToChangeIndex(currentInx, currentInx-1))
+        {
+            // Note: notifyListenersAboutToChangeIndex sometimes can call a method
+            // that ends up setting the currentInx and therefore we should make
+            // sure that by decrementing it will still have a good value
+            if (currentInx > 0)
+            {
+                currentInx--;
+                updateUI();
+                notifyListeners();
+            }
+        }
+
+    }
+    
+    private void nextRecord()
+    {
+        if (notifyListenersAboutToChangeIndex(currentInx, currentInx+1))
+        {
+            System.out.println("NEXT");
+            currentInx++;
+            updateUI();
+            notifyListeners();
+        }
     }
     
     /**
@@ -983,13 +1016,35 @@ public class ResultSetController implements ValidationListener
         /* (non-Javadoc)
          * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
          */
+        @Override
         public void actionPerformed(ActionEvent e)
         {
-            if (rs != null)
+            if (rs != null && btn != null)
             {
-                if (btn != null)
+                // rods (04/26/11) NOTE: the 'doClick' on the button does not work.
+                // I think it has to do with the event being dispatched on the UI thread.
+                // With this change the call to change the index gets call directly
+                //btn.doClick();
+                switch (type)
                 {
-                    btn.doClick();
+                    case First:
+                        rs.firstRecord();
+                        break;
+                    case Previous:
+                        rs.prevRecord();
+                        break;
+                    case Next:
+                        rs.nextRecord();
+                        break;
+                    case Last:
+                        rs.lastRecord();
+                        break;
+                    case Save:
+                        break;
+                    case NewItem:
+                        break;
+                    case DelItem:
+                        break;
                 }
             }
         }

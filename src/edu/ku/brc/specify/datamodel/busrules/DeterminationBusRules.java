@@ -364,7 +364,16 @@ public class DeterminationBusRules extends BaseBusRules
         {
             for (Determination det : colObj.getDeterminations())
             {
-                if (det != deter && det.isCurrentDet())
+                boolean isSameDet;
+                if (det.getId() != null && deter.getId() != null)
+                {
+                    isSameDet = det.getId().equals(deter.getId());
+                } else
+                {
+                    isSameDet = det == deter;
+                }
+                
+                if (!isSameDet && det.isCurrentDet())
                 {
                     return false;
                 }

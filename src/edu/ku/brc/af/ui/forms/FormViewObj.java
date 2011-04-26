@@ -488,8 +488,12 @@ public class FormViewObj implements Viewable,
                         }
                     }
                 };
-                restrictablePanel.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control E"), actionName);
-                restrictablePanel.getActionMap().put(actionName, action); 
+                
+                if (restrictablePanel != null)
+                {
+                    restrictablePanel.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control E"), actionName);
+                    restrictablePanel.getActionMap().put(actionName, action); 
+                }
                  
                 if (altViewsList.size() > 0)
                 {
@@ -2895,7 +2899,11 @@ public class FormViewObj implements Viewable,
             
             setDataIntoUI();
             
-            formValidator.setHasChanged(false);
+            if (formValidator != null)
+            {
+                formValidator.setHasChanged(false);
+            }
+            
             if (mvParent != null)
             {
                 mvParent.clearValidators();
