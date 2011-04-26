@@ -122,7 +122,7 @@
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.Container" abbrev="con" id="31" searchable="true">
-            <display view="Container"  searchdlg="ContainerSearch" newobjdlg="ContainerDisplay"/>
+            <display view="Container" dataobjformatter="Container" searchdlg="ContainerSearch" newobjdlg="ContainerDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.DataType" abbrev="dt" id="33">
             <businessrule>edu.ku.brc.specify.datamodel.busrules.DataTypeBusRules</businessrule>          

@@ -311,18 +311,22 @@ public class ContainerPlugin extends UIPluginBase implements UIValidatable
                 
             } else
             {
-                if (parentContainerCBX != null)
+                if (doingParent)
                 {
-                    parentContainerCBX.setValue(parentContainer, null);
-                }
-                if (associatedContainerCBX != null)
+                    if (parentContainerCBX != null)
+                    {
+                        parentContainerCBX.setValue(parentContainer, null);
+                    }
+                } else if (associatedContainerCBX != null)
                 {
                     associatedContainerCBX.setValue(associatedContainer, null);
                 }
                 
                 if (doingParent != null)
                 {
-                    (doingParent ? isParentContainerRB : isAssociatedRB).setSelected(true);
+                    JRadioButton rb = doingParent ? isParentContainerRB : isAssociatedRB;
+                    rb.setSelected(true);
+                    cardLayout.show(cardPanel, Integer.toString(rb.hashCode()));
                 }
             }
         }

@@ -520,7 +520,6 @@ public class ResultSetController implements ValidationListener
     {
         if (notifyListenersAboutToChangeIndex(currentInx, currentInx+1))
         {
-            System.out.println("NEXT");
             currentInx++;
             updateUI();
             notifyListeners();
