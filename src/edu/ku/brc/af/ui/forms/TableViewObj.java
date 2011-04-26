@@ -151,6 +151,7 @@ public class TableViewObj implements Viewable,
 
     // Data Members
     protected DataProviderSessionIFace      session        = null;
+    protected boolean                       doingAction    = false;
     protected boolean                       isEditing      = false;
     protected boolean                       isSavable      = false;  // via the relationship
     protected boolean                       formIsInNewDataMode = false; // when this is true it means the form was cleared and new data is expected
@@ -351,7 +352,17 @@ public class TableViewObj implements Viewable,
                         deleteButton = UIHelper.createIconBtnTT(addSearch ? "Eraser16" : "DeleteRecord", IconManager.IconSize.Std16, delTTStr, false, new ActionListener() {
                             public void actionPerformed(ActionEvent e)
                             {
-                                deleteRow(table.getSelectedRow());
+                                if (deleteButton.isEnabled())
+                                {
+                                    deleteButton.setEnabled(false);
+                                    try
+                                    {
+                                        deleteRow(table.getSelectedRow());
+                                    } finally
+                                    {
+                                        deleteButton.setEnabled(true);
+                                    }
+                                }
                             }
                         });
                         
@@ -376,7 +387,18 @@ public class TableViewObj implements Viewable,
                             searchButton = UIHelper.createIconBtnTT(addSearch ? "SearchAdd" : "Search", IconManager.IconSize.Std16, srchTTStr, false, new ActionListener() {
                                 public void actionPerformed(ActionEvent e)
                                 {
-                                    doSearch();
+                                    if (searchButton.isEnabled())
+                                    {
+                                        searchButton.setEnabled(false);
+                                        try
+                                        {
+                                            doSearch();
+                                        } finally
+                                        {
+                                            searchButton.setEnabled(true);
+                                        }
+                                    }
+
                                 }
                             });
                             searchButton.setEnabled(true);
@@ -389,7 +411,17 @@ public class TableViewObj implements Viewable,
                             editButton   = UIHelper.createIconBtnTT("EditForm", IconManager.IconSize.Std16, edtTTStr, false, new ActionListener() {
                                 public void actionPerformed(ActionEvent e)
                                 {
-                                    editRow(table.getSelectedRow(), false);
+                                    if (editButton.isEnabled())
+                                    {
+                                        editButton.setEnabled(false);
+                                        try
+                                        {
+                                            editRow(table.getSelectedRow(), false);
+                                        } finally
+                                        {
+                                            editButton.setEnabled(true);
+                                        }
+                                    }
                                 }
                             });
                         }
@@ -400,7 +432,17 @@ public class TableViewObj implements Viewable,
                             newButton = UIHelper.createIconBtnTT("CreateObj", IconManager.IconSize.Std16, newTTStr, false, new ActionListener() {
                                 public void actionPerformed(ActionEvent e)
                                 {
-                                    editRow(table.getSelectedRow(), true);
+                                    if (newButton.isEnabled())
+                                    {
+                                        newButton.setEnabled(false);
+                                        try
+                                        {
+                                            editRow(table.getSelectedRow(), true);
+                                        } finally
+                                        {
+                                            newButton.setEnabled(true);
+                                        }
+                                    }
                                 }
                             });
                         }
@@ -457,12 +499,22 @@ public class TableViewObj implements Viewable,
                          editButton.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e)
                             {
-                                editRow(table.getSelectedRow(), false);
+                                if (editButton.isEnabled())
+                                {
+                                    editButton.setEnabled(false);
+                                    try
+                                    {
+                                        editRow(table.getSelectedRow(), false);
+                                    } finally
+                                    {
+                                        editButton.setEnabled(true);
+                                    }
+                                }
                             }
                         });
                          PanelBuilder builder = new PanelBuilder(new FormLayout("f:1px:g,p,10px", "p"));
                          builder.add(editButton, cc.xy(2,1));
-                         if (mvParent.getSeparator() != null)
+                         if (mvParent != null && mvParent.getSeparator() != null)
                          {
                              sepController = builder.getPanel();
                          } else
