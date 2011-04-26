@@ -185,12 +185,12 @@
     <field table="CollectionObjectAttribute" name="colObjAttributeNumber34" actualname="Number34"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeNumber35" actualname="Number35"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeNumber36" actualname="Number36"/>
-    <field table="CollectionObjectAttribute" name="colObjAttributeNumber37" actualname="Number36"/>
-    <field table="CollectionObjectAttribute" name="colObjAttributeNumber38" actualname="Number36"/>
-    <field table="CollectionObjectAttribute" name="colObjAttributeNumber39" actualname="Number36"/>
-    <field table="CollectionObjectAttribute" name="colObjAttributeNumber40" actualname="Number36"/>
-    <field table="CollectionObjectAttribute" name="colObjAttributeNumber41" actualname="Number36"/>
-    <field table="CollectionObjectAttribute" name="colObjAttributeNumber42" actualname="Number36"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeNumber37" actualname="Number37"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeNumber38" actualname="Number38"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeNumber39" actualname="Number39"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeNumber40" actualname="Number40"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeNumber41" actualname="Number41"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeNumber42" actualname="Number42"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeText1" actualname="Text1"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeText2" actualname="Text2"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeText3" actualname="Text3"/>
@@ -205,6 +205,7 @@
     <field table="CollectionObjectAttribute" name="colObjAttributeText12" actualname="Text12"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeText13" actualname="Text13"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeText14" actualname="Text14"/>
+    <field table="CollectionObjectAttribute" name="colObjAttributeText15" actualname="Text15"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeYesNo1" actualname="YesNo1"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeYesNo2" actualname="YesNo2"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeYesNo3" actualname="YesNo3"/>

@@ -258,6 +258,7 @@
     <field column="Text 12 (Col. Obj. Attribute)" name="colObjAttributeText12" type="java.lang.String" length="50"/>
     <field column="Text 13 (Col. Obj. Attribute)" name="colObjAttributeText13" type="java.lang.String" length="50"/>
     <field column="Text 14 (Col. Obj. Attribute)" name="colObjAttributeText14" type="java.lang.String" length="50"/>
+    <field column="Text 15 (Col. Obj. Attribute)" name="colObjAttributeText15" type="java.lang.String" length="64"/>
     <field column="YesNo 1 (Col. Obj. Attribute)" name="colObjAttributeYesNo1" type="boolean"/>
     <field column="YesNo 2 (Col. Obj. Attribute)" name="colObjAttributeYesNo2" type="boolean"/>
     <field column="YesNo 3 (Col. Obj. Attribute)" name="colObjAttributeYesNo3" type="boolean"/>
