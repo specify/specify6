@@ -1532,7 +1532,7 @@ public class ViewFactory
                         DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getIdent(), checkbox, 
                                                     validator.createValidator(checkbox, UIValidator.Type.Changed));
                         checkbox.addActionListener(dcn);
-                        checkbox.addChangeListener(dcn);
+                        checkbox.addItemListener(dcn);
                     }
                     bi.compToAdd = checkbox;
                     break;

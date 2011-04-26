@@ -26,6 +26,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.beans.PropertyChangeEvent;
@@ -65,7 +67,8 @@ public class DataChangeNotifier implements FocusListener,
                                            ListSelectionListener,
                                            PropertyChangeListener, 
                                            ActionListener,
-                                           DocumentListener
+                                           DocumentListener,
+                                           ItemListener
 {
     //private static final Logger log = Logger.getLogger(DataChangeNotifier.class);
     
@@ -334,6 +337,7 @@ public class DataChangeNotifier implements FocusListener,
     /* (non-Javadoc)
      * @see java.awt.event.FocusListener#focusGained(java.awt.event.FocusEvent)
      */
+    @Override
     public void focusGained(FocusEvent e)
     {
         if (!(comp instanceof UIValidatable))
@@ -345,6 +349,7 @@ public class DataChangeNotifier implements FocusListener,
     /* (non-Javadoc)
      * @see java.awt.event.FocusListener#focusLost(java.awt.event.FocusEvent)
      */
+    @Override
     public void focusLost(FocusEvent e)
     {
         //log.debug("["+((JTextComponent)comp).getText()+"]["+cachedData+"]");
@@ -377,8 +382,18 @@ public class DataChangeNotifier implements FocusListener,
     }
     
     //--------------------------------------------------------
+    // ItenListener
+    //--------------------------------------------------------
+    @Override
+    public void itemStateChanged(ItemEvent e)
+    {
+        doValidateOnChange();
+    }
+    
+    //--------------------------------------------------------
     // ChangeListener
     //--------------------------------------------------------
+    @Override
     public void stateChanged(ChangeEvent e) 
     {
         doValidateOnChange();
@@ -391,6 +406,7 @@ public class DataChangeNotifier implements FocusListener,
     /* (non-Javadoc)
      * @see java.awt.event.KeyListener#keyPressed(java.awt.event.KeyEvent)
      */
+    @Override
     public void keyPressed(KeyEvent e)    
     {
         // do nothing
@@ -399,6 +415,7 @@ public class DataChangeNotifier implements FocusListener,
     /* (non-Javadoc)
      * @see java.awt.event.KeyListener#keyReleased(java.awt.event.KeyEvent)
      */
+    @Override
     public void keyReleased(KeyEvent e)
     {
         notifyDataChangeListeners();
@@ -412,6 +429,7 @@ public class DataChangeNotifier implements FocusListener,
     /* (non-Javadoc)
      * @see java.awt.event.KeyListener#keyTyped(java.awt.event.KeyEvent)
      */
+    @Override
     public void keyTyped(KeyEvent e)
     {
         // do nothing
@@ -424,6 +442,7 @@ public class DataChangeNotifier implements FocusListener,
     /* (non-Javadoc)
      * @see javax.swing.event.ListDataListener#contentsChanged(javax.swing.event.ListDataEvent)
      */
+    @Override
     public void contentsChanged(ListDataEvent e)
     {
         doValidateOnChange();
@@ -432,6 +451,7 @@ public class DataChangeNotifier implements FocusListener,
     /* (non-Javadoc)
      * @see javax.swing.event.ListDataListener#intervalAdded(javax.swing.event.ListDataEvent)
      */
+    @Override
     public void intervalAdded(ListDataEvent e)
     {
         doValidateOnChange();
@@ -440,6 +460,7 @@ public class DataChangeNotifier implements FocusListener,
     /* (non-Javadoc)
      * @see javax.swing.event.ListDataListener#intervalRemoved(javax.swing.event.ListDataEvent)
      */
+    @Override
     public void intervalRemoved(ListDataEvent e)
     {
         doValidateOnChange();
@@ -448,6 +469,7 @@ public class DataChangeNotifier implements FocusListener,
     //--------------------------------------------------------
     // PropertyChangeListener
     //--------------------------------------------------------
+    @Override
     public void propertyChange(PropertyChangeEvent evt) 
     {
         doValidateOnChange();
@@ -456,6 +478,7 @@ public class DataChangeNotifier implements FocusListener,
     //--------------------------------------------------------
     // ActionListener
     //--------------------------------------------------------
+    @Override
     public void actionPerformed(ActionEvent e) 
     {
         doValidateOnChange();
@@ -464,6 +487,7 @@ public class DataChangeNotifier implements FocusListener,
     //--------------------------------------------------------
     // ListSelectionListener
     //--------------------------------------------------------
+    @Override
     public void valueChanged(ListSelectionEvent e) 
     {
         doValidateOnChange();
@@ -473,16 +497,19 @@ public class DataChangeNotifier implements FocusListener,
     // DocumentListener
     //--------------------------------------------------------
     
+    @Override
     public void changedUpdate(DocumentEvent e)
     {
         doValidateOnChange();
     }
     
+    @Override
     public void insertUpdate(DocumentEvent e)
     {
         doValidateOnChange();
     }
     
+    @Override
     public void removeUpdate(DocumentEvent e) 
     {
         doValidateOnChange();
