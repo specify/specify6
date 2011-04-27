@@ -124,6 +124,8 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.Container;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.SpExportSchema;
 import edu.ku.brc.specify.datamodel.SpExportSchemaItem;
@@ -2801,13 +2803,16 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         for (QueryFieldPanel qfp : queryFieldItems)
         {
             SpQueryField qf = qfp.getQueryField();
-            if (qf == null) { throw new RuntimeException("Shouldn't get here!"); }
-            SpQueryField newQf = new SpQueryField();
-            newQf.initialize();
-            newQf.setFieldName(qf.getFieldName());
-            newQf.setPosition(qf.getPosition());
-            qfp.updateQueryField(newQf);
-            result.addReference(newQf, "fields");
+            
+            if (qf != null) 
+            {
+            	SpQueryField newQf = new SpQueryField();
+            	newQf.initialize();
+            	newQf.setFieldName(qf.getFieldName());
+            	newQf.setPosition(qf.getPosition());
+            	qfp.updateQueryField(newQf);
+            	result.addReference(newQf, "fields");
+            }
         }
         return result;
     }
@@ -3241,7 +3246,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         		{
         			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == tblInfo.getTableId())
         			{
-        				if (parent.getField() != null && alias.getField().startsWith("accepted"))
+        				if (parent.getField() != null && parent.getField().startsWith("accepted"))
         				{
         					if(++loop > 1)
         					{
@@ -3258,7 +3263,86 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         	}
         	return true;
         }
-        
+        else if (Container.class.isAssignableFrom(tblInfo.getClassObj()))
+        {
+    		TableTree parent = alias.getParent();
+        	if (alias.getField().equals("parent"))
+        	{
+        		if (parent != null)
+        		{
+        			//prevent loop back to parent container from expansion of Container.children
+        			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == tblInfo.getTableId())
+        			{
+        				if (parent.getField() != null && parent.getField().equals("children"))
+        				{
+        					return false;
+        				}
+        			}
+        		}
+        	} else if (alias.getField().equals("container"))
+        	{
+        		if (parent != null)
+        		{
+        			//prevent loop back to container from expansion of Container.collectionObjects relationship
+        			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == CollectionObject.getClassTableId())
+        			{
+        				if (parent.getField() != null && parent.getField().equals("collectionObjects"))
+        				{
+        					return false;
+        				}
+        			}
+        			
+        			//prevent loop back to continer from expansion of Container.collectionObjectKids relationship
+        			//Assuming that a container's collectionobject can't be contained in another container. 
+        			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == CollectionObject.getClassTableId())
+        			{
+        				if (parent.getField() != null && parent.getField().equals("collectionObjectKids"))
+        				{
+        					return false;
+        				}
+        			}
+        		}
+        		
+        	} else if (alias.getField().equals("containerOwner"))
+        	{
+				// prevent loop back to container from expansion of Container.collectionObjects relationship
+				// Assuming that collectionobjects linked by this relationship won't be containers.
+				if (parent.getTableInfo() != null
+						&& parent.getTableInfo().getTableId() == CollectionObject
+								.getClassTableId())
+				{
+					if (parent.getField() != null
+							&& parent.getField().equals("collectionObjects"))
+					{
+						return false;
+					}
+				}
+				if (parent != null)
+        		{
+        			//prevent loop back to continer owner from expansion of Container.collectionObjectKids relationship
+        			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == CollectionObject.getClassTableId())
+        			{
+        				if (parent.getField() != null && parent.getField().equals("collectionObjectKids"))
+        				{
+        					return false;
+        				}
+        			}
+
+        		}
+        	}         		
+        	return true;
+        } else if (CollectionObject.class.isAssignableFrom(tblInfo.getClassObj()))
+    	{
+    		TableTree parent = alias.getParent();
+    		if (parent != null && parent.getTableInfo().getTableId() == Container.getClassTableId())
+    		{
+    			return true;
+    		}
+    		
+    		return true;
+    	}
+
+        	
         return false;
             //special conditions... (may be needed. For example for Determination and Taxon, but on the other hand
             //Determination <-> Taxon behavior seems ok for now.
@@ -4236,7 +4320,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         Map<String, List<QueryFieldPanel>> map = new HashMap<String, List<QueryFieldPanel>>();
         for (QueryFieldPanel qfp : queryFieldItems)
         {
-            if (qfp.getFieldTitle() != null) //this means tree levels won't get qualified.
+            if (qfp.getFieldQRI() != null && qfp.getFieldTitle() != null) //this means tree levels won't get qualified.
             {
                 if (!map.containsKey(qfp.getFieldTitle()))
                 {
@@ -4641,7 +4725,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
     	for (QueryFieldPanel qfp : this.queryFieldItems)
     	{
-    		if (qriClass.isAssignableFrom(qfp.getFieldQRI().getClass()))
+    		if (qfp.getFieldQRI() != null && qriClass.isAssignableFrom(qfp.getFieldQRI().getClass()))
     		{
     			return true;
     		}
