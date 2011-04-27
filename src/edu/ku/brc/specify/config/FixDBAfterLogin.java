@@ -385,7 +385,7 @@ public class FixDBAfterLogin
                 createdById = BasicSQLUtils.getCount(conn, "SELECT AgentID FROM agent ORDER BY AgentID ASC LIMIT 0,1");
                 if (createdById == null)
                 {
-                    UIRegistry.showError("The permissions could not be fixed because there were not agents.");
+                    UIRegistry.showError("The permissions could not be fixed because there were no agents.");
                     AppPreferences.shutdownAllPrefs();
                     DBConnection.shutdownFinalConnection(true, true);
                     return;
