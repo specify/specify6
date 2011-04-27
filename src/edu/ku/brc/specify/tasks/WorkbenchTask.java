@@ -36,6 +36,7 @@ import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -3816,6 +3817,17 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         {
         	session.close();
         }
+        Collections.sort(result, new Comparator<WorkbenchTemplate> () {
+
+			/* (non-Javadoc)
+			 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+			 */
+			@Override
+			public int compare(WorkbenchTemplate arg0, WorkbenchTemplate arg1) {
+				// TODO Auto-generated method stub
+				return arg0.getName().toLowerCase().compareTo(arg1.getName().toLowerCase());
+			}
+        });
     	return result;
     }
     /**

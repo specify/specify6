@@ -71,6 +71,7 @@ import org.hibernate.HibernateException;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ServiceInfo;
+import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -2058,7 +2059,8 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected boolean isUpdateUpload()
     {
-    	return wbSS.getWorkbench().getExportedFromTableName() != null;
+    	UploadTable root = getRootTable();
+    	return wbSS.getWorkbench().getExportedFromTableName() != null && root != null && root.isUpdateMatches();
     }
     
     /**
@@ -4917,9 +4919,10 @@ public class Uploader implements ActionListener, KeyListener
             recordSets = new Vector<RecordSet>(uploadTables.size());
         }
 
+        UploadTable root = getRootTable();
         for (UploadTable ut : uploadTables)
         {
-            RecordSet rs = ut.getRecordSet();
+            RecordSet rs = ut.getRecordSet(ut == root);
             if (rs.getNumItems() > 0)
             {
                 recordSets.add(rs);
@@ -4963,7 +4966,8 @@ public class Uploader implements ActionListener, KeyListener
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-            for (RecordSet rs : recordSets)
+            UploadTable root = getRootTable();
+        	for (RecordSet rs : recordSets)
 			{
 				BusinessRulesIFace busRule = DBTableIdMgr.getInstance()
 						.getBusinessRule(RecordSet.class);
@@ -4988,6 +4992,23 @@ public class Uploader implements ActionListener, KeyListener
 					if (busRule != null)
 					{
 						busRule.afterSaveCommit(rs, session);
+					}
+					if (rs.getDbTableId() == root.getTable().getTableInfo().getTableId())
+					{
+						final RecordSet mergedRs = session.merge(rs);
+		        		SwingUtilities.invokeLater(new Runnable() {
+
+							/* (non-Javadoc)
+							 * @see java.lang.Runnable#run()
+							 */
+							@Override
+							public void run() {
+								CommandAction cmd = new CommandAction(RecordSetTask.RECORD_SET, RecordSetTask.ADD_TO_NAV_BOX);
+								cmd.setData(mergedRs);
+								CommandDispatcher.dispatch(cmd);
+							}
+		        			
+		        		});
 					}
 				} catch (Exception ex)
 				{

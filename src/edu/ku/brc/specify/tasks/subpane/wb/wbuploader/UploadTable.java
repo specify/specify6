@@ -4580,10 +4580,10 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * @return a name for recordset of uploaded objects.
      */
-    protected String getRecordSetName()
+    protected String getRecordSetName(boolean showRecordSetInUI)
     {
         int maxNameLength = DBTableIdMgr.getInstance().getInfoByTableName("recordset").getFieldByColumnName("name").getLength();
-        String rsName = getFullRecordSetName();
+        String rsName = getFullRecordSetName(showRecordSetInUI);
         if (rsName.length() > maxNameLength)
         {
             //add as many pieces of the upload time as will fit...
@@ -4604,11 +4604,12 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * @return
      */
-    protected String getFullRecordSetName()
+    protected String getFullRecordSetName(boolean showRecordSetInUI)
     {
-        String tblName = DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTitle();
+        String tblName = showRecordSetInUI ? "" :
+        	DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTitle() + "_";
         String uploadName = uploader.getIdentifier();
-        return tblName + "_" + uploadName;
+        return tblName + uploadName;
     }
     
     /**
@@ -4622,13 +4623,13 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * @return a recordset containing the the objects created during last upload.
      */
-    public RecordSet getRecordSet()
+    public RecordSet getRecordSet(boolean showRecordSetInUI)
     {
         RecordSet result = new RecordSet();
         result.initialize();
-        result.set(getRecordSetName(), 
+        result.set(getRecordSetName(showRecordSetInUI), 
                    DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTableId(), 
-                   RecordSet.WB_UPLOAD);
+                   showRecordSetInUI ? RecordSet.GLOBAL : RecordSet.WB_UPLOAD);
         result.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
         for (UploadedRecordInfo rec : uploadedRecs)
         {

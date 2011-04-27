@@ -493,9 +493,14 @@ public class UploadTableTree extends UploadTable
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#getFullRecordSetName()
      */
     @Override
-    protected String getFullRecordSetName()
+    protected String getFullRecordSetName(boolean showRecordSetInUI)
     {
-        try
+        if (showRecordSetInUI)
+        {
+        	return super.getFullRecordSetName(showRecordSetInUI);
+        }
+        
+    	try
         {
             return getTreeDefItem().getName() + "_" + uploader.getIdentifier();
         }
