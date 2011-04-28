@@ -19,10 +19,13 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import javax.swing.SpinnerNumberModel;
+
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.ResultSetController;
 import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.af.ui.forms.validation.ValSpinner;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Institution;
 
@@ -60,6 +63,15 @@ public class InstitutionBusRules extends BaseBusRules
             {
                 if (rsc.getNewRecBtn() != null) rsc.getNewRecBtn().setVisible(false);
                 if (rsc.getDelRecBtn() != null) rsc.getDelRecBtn().setVisible(false);
+            }
+            
+            ValSpinner minPwdLenSpinner = (ValSpinner)formViewObj.getControlById("minimumPwdLength");
+            if (minPwdLenSpinner != null)
+            {
+                
+                minPwdLenSpinner.setRange(Institution.MIN_PASSWORD_LEN,  // min
+                                          30,                            // max
+                                          Institution.MIN_PASSWORD_LEN); // val
             }
         }
     }

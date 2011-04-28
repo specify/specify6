@@ -122,6 +122,9 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
                          final int maxVal,
                          final int val)
     {
+        this.minValue = minVal;
+        this.maxValue = maxVal;
+        
         setModel(new SpinnerNumberModel(val, // initial value
                 minVal, // min
                 maxVal, // max
@@ -355,22 +358,34 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
      */
     public void setValue(Object value, String defaultValue)
     {
+        Integer val = null;
+        
         if (value == null && StringUtils.isNotEmpty(defaultValue))
         {
-            this.setValue(Integer.parseInt(defaultValue));
+            val = Integer.parseInt(defaultValue);
             
-        } else if (value instanceof Byte || value instanceof Short || value instanceof Integer || value instanceof Long)
+        } else if (value instanceof Number)
         {
-            this.setValue(value);
+            Number num = (Number)value;
+            val = num.intValue();
             
         } else if (value instanceof String)
         {
-            this.setValue(Integer.parseInt((String)value));
+            val = Integer.parseInt((String)value);
             
         } else
         {
-            this.setValue(0);
+            val = 0;
         }
+        
+        if (val < minValue)
+        {
+            val = minValue;
+        } else if (val > maxValue)
+        {
+            val = maxValue;
+        }
+        this.setValue(val);
     }
 
     // JSpinner implments GetValue

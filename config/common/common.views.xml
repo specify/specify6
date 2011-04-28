@@ -3180,7 +3180,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="minimumPwdLength"/>
-                    <cell type="field" id="minimumPwdLength" name="minimumPwdLength" uitype="spinner" initialize="min=0;max=30"/> 
+                    <cell type="field" id="minimumPwdLength" name="minimumPwdLength" uitype="spinner" initialize="min=8;max=30"/> 
                 </row>
                  <row>
                     <cell type="label" labelfor="lsidAuthority"/>

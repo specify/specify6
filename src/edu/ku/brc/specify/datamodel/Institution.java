@@ -50,7 +50,8 @@ import org.hibernate.annotations.Index;
     })
 public class Institution extends UserGroupScope implements java.io.Serializable 
 {
-
+    public static final byte MIN_PASSWORD_LEN = 8;
+    
     // Fields    
 
      protected Integer       institutionId;
@@ -133,7 +134,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
         isReleaseManagedGlobally = false;
         currentManagedRelVersion = null;
         currentManagedSchemaVersion = null;
-        minimumPwdLength   = null;
+        minimumPwdLength   = MIN_PASSWORD_LEN;
         
         technicalContacts = new HashSet<Agent>();
         contentContacts   = new HashSet<Agent>();
