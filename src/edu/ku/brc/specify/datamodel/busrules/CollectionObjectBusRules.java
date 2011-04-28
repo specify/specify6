@@ -103,6 +103,19 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     private static final String CATNUMNAME = "catalogNumber";
     
     public static final int MAXSERIESSIZE = 500;
+
+    private static final String GLASSKEY = "DOBATCHCREATE";
+    private static final String NonIncrementingCatNum = "NonIncrementingCatNum"; 
+    private static final String BatchSaveSuccess = "CollectionObjectBusRules.BatchSaveSuccess";
+    private static final String BatchSaveErrors = "CollectionObjectBusRules.BatchSaveErrors";
+    private static final String BatchSaveErrorsTitle = "CollectionObjectBusRules.BatchSaveErrorsTitle";
+    private static final String BatchRSBaseName = "CollectionObjectBusRules.BatchRSBaseName";
+    private static final String InvalidEntryMsg = "CollectionObjectBusRules.InvalidEntryMsg";
+    private static final String InvalidEntryTitle = "CollectionObjectBusRules.InvalidEntryTitle";
+    private static final String InvalidBatchEntry = "CollectionObjectBusRules.InvalidBatchEntry";
+    private static final String CatNumInUse = "CollectionObjectBusRules.CatNumInUse";
+    private static final String IncompleteSaveFlag = "CollectionObjectBusRules.IncompleteSaveFlag";
+    private static final String InvalidBatchItems = "CollectionObjectBusRules.InvalidBatchItems";
     
     //private static final Logger  log = Logger.getLogger(CollectionObjectBusRules.class);
     
@@ -513,36 +526,159 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     }
     
     /**
+     * @param batchBeginIsDup
+     * @return
+     */
+    private STATUS isCheckDuplicateBatchNumbersOK(final boolean batchBeginIsDup)
+    {
+    	STATUS result = STATUS.OK;
+    	if (!processingSeries.get())
+    	{
+    		SeriesProcCatNumPlugin batchCtrl = getBatchPlugIn();
+    		if (batchCtrl != null)
+    		{
+    			result = processBatchContents(batchCtrl.getStartAndEndCatNumbers(), true, batchBeginIsDup, new Vector<String>());
+    			if (result.equals(STATUS.Error))
+    			{
+    				if (batchBeginIsDup)
+    				{
+    					reasonList.remove(reasonList.size()-1);
+    				}
+    				reasonList.add(UIRegistry.getResourceString(InvalidBatchEntry));
+    			}
+    		}
+    	}
+    	return result;
+    }
+    
+	/**
+	 * Show objects that were not added to the batch
+	 */
+	protected void showBatchErrorObjects(final Vector<String> badObjects, final String TitleKey, final String MsgKey)
+	{
+    	JPanel pane = new JPanel(new BorderLayout());
+        JLabel lbl = createLabel(getResourceString(MsgKey));
+        lbl.setBorder(new EmptyBorder(3, 1, 2, 0));
+        pane.add(lbl, BorderLayout.NORTH);
+        JPanel lstPane = new JPanel(new BorderLayout());
+        JList lst = UIHelper.createList(badObjects);
+        lst.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
+        lstPane.setBorder(new EmptyBorder(1, 1, 10, 1));
+        lstPane.add(lst, BorderLayout.CENTER);
+        JScrollPane sp = new JScrollPane(lstPane);
+        //pane.add(lstPane, BorderLayout.CENTER);
+        pane.add(sp, BorderLayout.CENTER);
+        //pane.setPreferredSize(new Dimension((int )lbl.getPreferredSize().getWidth() + 5, (int )lst.getPreferredScrollableViewportSize().getHeight() + 5));
+        //pane.setPreferredSize(new Dimension((int )lbl.getPreferredSize().getWidth() + 5, (int )lst.getPreferredScrollableViewportSize().getHeight() + 5));
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
+        		UIRegistry.getResourceString(TitleKey),
+                true,
+                CustomDialog.OKHELP,
+                pane);
+        UIHelper.centerAndShow(dlg);
+        dlg.dispose();
+	}
+
+    /**
+     * @param catNumPair
+     * @param validate
+     * @param invalidStart
+     * @param nums
+     * @return
+     */
+    private STATUS processBatchContents(Pair<String, String> catNumPair, boolean validate, boolean invalidStart, Vector<String> nums)
+    {
+        DBFieldInfo CatNumFld = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()).getFieldByColumnName("CatalogNumber"); 
+        final UIFieldFormatterIFace formatter = CatNumFld.getFormatter();
+        if (!formatter.isIncrementer())
+        {
+        	//XXX this will have been checked earlier, right?
+        	//UIRegistry.showLocalizedError(NonIncrementingCatNum);
+        	return STATUS.Error;
+        }
+
+        Vector<String> duplicates = new Vector<String>();
+        String catNum = catNumPair.getFirst();
+        if (invalidStart)
+        {
+        	duplicates.add(formatter.formatToUI(catNum) + " - " + getResourceString(CatNumInUse));
+        }
+        Integer collId = AppContextMgr.getInstance().getClassObject(Collection.class).getId(); 
+        String coIdSql = "select CollectionObjectID from collectionobject where CollectionMemberID = " + collId
+			+ " and CatalogNumber = '";
+        //XXX comparing catnums ...
+        while (!catNum.equals(catNumPair.getSecond()) && nums.size() <= MAXSERIESSIZE)
+        {
+        	catNum = formatter.getNextNumber(catNum, true); 
+        	//catNum = (String )formatter.formatFromUI(String.valueOf(Integer.valueOf(catNum).intValue() + 1));
+        	if (!validate || BasicSQLUtils.querySingleObj(coIdSql + catNum + "'") == null)
+        	{
+        		nums.add(catNum);
+        	} else  
+        	{
+        		duplicates.add(formatter.formatToUI(catNum) + " - " + getResourceString(CatNumInUse));
+        	}                
+        }
+
+        if (nums.size() > MAXSERIESSIZE || duplicates.size() > 0)
+        {
+        	if (nums.size() > MAXSERIESSIZE)
+        	{
+        		duplicates.clear(); //it may contain irrelevant cat nums
+        	}
+        	if (duplicates.size() == 0)
+        	{
+        		UIRegistry.displayErrorDlgLocalized(InvalidEntryMsg, MAXSERIESSIZE);
+        	} else
+        	{
+        		showBatchErrorObjects(duplicates, InvalidEntryTitle, InvalidBatchItems);
+        	}
+        	return STATUS.Error;
+        }
+    	return STATUS.OK;
+    }
+    /**
+     * @return the SeriesProcCatNumPlugin if the current entry is a batch.
+     * if the current entry is not a batch then return null.
+     */
+    private SeriesProcCatNumPlugin getBatchPlugIn()
+    {
+		if (formViewObj != null)
+		{
+			Component catNumComp = formViewObj.getControlByName(CATNUMNAME);
+			if (catNumComp instanceof SeriesProcCatNumPlugin)
+			{
+				SeriesProcCatNumPlugin spCatNumPlugin = (SeriesProcCatNumPlugin) catNumComp;
+				if (spCatNumPlugin.isExpanded())
+				{
+					DBTableInfo tblInfo = DBTableIdMgr
+							.getInstance()
+							.getInfoById(CollectionObject.getClassTableId()); // don't need to check for null
+					DBFieldInfo fieldInfo = tblInfo
+							.getFieldByName(CATNUMNAME);
+					UIFieldFormatterIFace fmt = fieldInfo.getFormatter();
+					if (fmt != null && fmt.getAutoNumber() != null
+							&& !formViewObj.isAutoNumberOn())
+					{
+
+						return spCatNumPlugin;
+					}
+				}
+			}
+		}
+		return null;
+    }
+    /**
      * 
      */
     private void doSeriesProcessing()
     {
 		if (!processingSeries.get())
 		{
-			if (formViewObj != null)
+			SeriesProcCatNumPlugin spCatNumPlugin = getBatchPlugIn();
+			if (spCatNumPlugin != null)
 			{
-				Component catNumComp = formViewObj.getControlByName(CATNUMNAME);
-				if (catNumComp instanceof SeriesProcCatNumPlugin)
-				{
-					SeriesProcCatNumPlugin spCatNumPlugin = (SeriesProcCatNumPlugin) catNumComp;
-					if (spCatNumPlugin.isExpanded())
-					{
-						DBTableInfo tblInfo = DBTableIdMgr
-								.getInstance()
-								.getInfoById(CollectionObject.getClassTableId()); // don't need to check for null
-						DBFieldInfo fieldInfo = tblInfo
-								.getFieldByName(CATNUMNAME);
-						UIFieldFormatterIFace fmt = fieldInfo.getFormatter();
-						if (fmt != null && fmt.getAutoNumber() != null
-								&& !formViewObj.isAutoNumberOn())
-						{
-
-							doCreateBatchOfColObj(spCatNumPlugin
-									.getStartAndEndCatNumbers());
-							spCatNumPlugin.clearEndTextField();
-						}
-					}
-				}
+				doCreateBatchOfColObj(spCatNumPlugin.getStartAndEndCatNumbers());
 			}
 		}
     }
@@ -556,15 +692,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         {
         	return;
         }
-        
-    	final String GLASSKEY = "DOBATCHCREATE";
-        final String NonIncrementingCatNum = "NonIncrementingCatNum"; 
-        final String BatchSaveSuccess = "CollectionObjectBusRules.BatchSaveSuccess";
-        final String BatchSaveErrors = "CollectionObjectBusRules.BatchSaveErrors";
-        final String BatchSaveErrorsTitle = "CollectionObjectBusRules.BatchSaveErrorsTitle";
-        final String BatchRSBaseName = "CollectionObjectBusRules.BatchRSBaseName";
-        final String InvalidEntryMsg = "CollectionObjectBusRules.InvalidEntryMsg";
-        
+                
         DBFieldInfo CatNumFld = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()).getFieldByColumnName("CatalogNumber"); 
         final UIFieldFormatterIFace formatter = CatNumFld.getFormatter();
         if (!formatter.isIncrementer())
@@ -575,14 +703,17 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         }
 
         final Vector<String> nums = new Vector<String>();
-
+        processBatchContents(catNumPair, false, false, nums);
         SwingWorker<Integer, Integer> worker = new SwingWorker<Integer, Integer>()
         {
             private Vector<Pair<Integer, String>> objectsAdded = new Vector<Pair<Integer, String>>();
             private Vector<String> objectsNotAdded = new Vector<String>();
         	private RecordSet batchRS;
-        	private boolean invalidEntry = false;
+        	//private boolean invalidEntry = false;
         	
+            /* (non-Javadoc)
+             * @see javax.swing.SwingWorker#doInBackground()
+             */
             @Override
             protected Integer doInBackground() throws Exception
             {
@@ -593,22 +724,6 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         			+ " and CatalogNumber = '";
                 objectsAdded.add(new Pair<Integer, String>(
                 		(Integer )BasicSQLUtils.querySingleObj(coIdSql + catNum + "'"), catNum));
-                //XXX potential for infinite loop
-                //XXX check for second > first, etc...
-                //XXX comparing catnums ...
-                while (!catNum.equals(catNumPair.getSecond()) && nums.size() <= MAXSERIESSIZE)
-                {
-                	//getNextNumber currently gets the number after highest existing number, regardless of the arg.
-                	catNum = formatter.getNextNumber(catNum, true); 
-                	//catNum = (String )formatter.formatFromUI(String.valueOf(Integer.valueOf(catNum).intValue() + 1));
-                    nums.add(catNum);
-                }
-
-                if (nums.size() > MAXSERIESSIZE)
-                {
-                	invalidEntry = true;
-                	return 0;
-                }
                 
             	int cnt = 0;
                 CollectionObject co = null;
@@ -620,7 +735,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 {
                     for (String currentCat : nums)
                     {
-                        try
+                    	try
                         {
                             co = new CollectionObject();
                             co.initialize();
@@ -633,13 +748,18 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                             formViewObj.getCarryFwdInfo().carryForward(formViewObj.getBusinessRules(), carryForwardCo, co);
                             co.setCatalogNumber(currentCat);
                             formViewObj.setDataObj(co);
-                            formViewObj.saveObject();
-                            objectsAdded.add(new Pair<Integer, String>(
+                            if (formViewObj.saveObject())
+                            {
+                            	objectsAdded.add(new Pair<Integer, String>(
                             		(Integer )BasicSQLUtils.querySingleObj(coIdSql + co.getCatalogNumber() + "'"), co.getCatalogNumber()));
+                            } else
+                            {
+                            	objectsNotAdded.add(formatter.formatToUI(co.getCatalogNumber()).toString());
+                            }
                         } catch (Exception ex)
                         {
                             log.error(ex);
-                            objectsNotAdded.add(co.getCatalogNumber());
+                            objectsNotAdded.add(formatter.formatToUI(co.getCatalogNumber()) + (ex.getLocalizedMessage() == null ? "" : ex.getLocalizedMessage()));
                         }
                         cnt++;
                         firePropertyChange(GLASSKEY, 0, cnt);
@@ -658,14 +778,22 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 return objectsAdded.size();
             }
 
+        	/**
+        	 * Save the objects added to a Recordset
+        	 */
         	protected void saveBatchObjectsToRS()
         	{
         		batchRS = new RecordSet();
         		batchRS.initialize();
         		batchRS.setDbTableId(CollectionObject.getClassTableId());
-        		batchRS.setName(getResourceString(BatchRSBaseName) + " " 
-        			+ formatter.formatToUI(catNumPair.getFirst()) + "-" 
-        			+ formatter.formatToUI(objectsAdded.get(objectsAdded.size()-1).getSecond()));
+        		String name = getResourceString(BatchRSBaseName) + " " 
+    				+ formatter.formatToUI(catNumPair.getFirst()) + "-" 
+    				+ formatter.formatToUI(objectsAdded.get(objectsAdded.size()-1).getSecond());
+        		if (objectsNotAdded.size() > 0)
+        		{
+        			name += "-" + UIRegistry.getResourceString(IncompleteSaveFlag); 
+        		}
+        		batchRS.setName(name);
         		for (Pair<Integer, String> obj : objectsAdded)
         		{
         			batchRS.addItem(obj.getFirst());
@@ -711,6 +839,9 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 }
         	}
         	
+        	/**
+        	 * Add the batch RS to the RecordSetTask UI
+        	 */
         	protected void addBatchRSToUI()
         	{
         		SwingUtilities.invokeLater(new Runnable() {
@@ -727,7 +858,10 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         			
         		});
         	}
-        	
+        	        	
+            /* (non-Javadoc)
+             * @see javax.swing.SwingWorker#done()
+             */
             @Override
             protected void done()
             {
@@ -735,35 +869,12 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 processingSeries.set(false);
                 addBatchRSToUI();
                 UIRegistry.clearSimpleGlassPaneMsg();
-                if (invalidEntry)
-                {
-                	UIRegistry.displayErrorDlgLocalized(InvalidEntryMsg, MAXSERIESSIZE);
-                }
-                else if (objectsNotAdded.size() == 0)
+                if (objectsNotAdded.size() == 0)
                 {
                 	UIRegistry.displayLocalizedStatusBarText(BatchSaveSuccess, formatter.formatToUI(catNumPair.getFirst()), formatter.formatToUI(catNumPair.getSecond()));
                 } else
                 {
-                	JPanel pane = new JPanel(new BorderLayout());
-                    JLabel lbl = createLabel(getResourceString(BatchSaveErrors));
-                    lbl.setBorder(new EmptyBorder(3, 1, 2, 0));
-                    pane.add(lbl, BorderLayout.NORTH);
-                    JPanel lstPane = new JPanel(new BorderLayout());
-                    JList lst = UIHelper.createList(objectsNotAdded);
-                    lst.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
-                    lstPane.setBorder(new EmptyBorder(1, 1, 10, 1));
-                    lstPane.add(lst, BorderLayout.CENTER);
-                    JScrollPane sp = new JScrollPane(lstPane);
-                    //pane.add(lstPane, BorderLayout.CENTER);
-                    pane.add(sp, BorderLayout.CENTER);
-                    pane.setPreferredSize(new Dimension((int )lbl.getPreferredSize().getWidth() + 5, (int )lst.getPreferredScrollableViewportSize().getHeight() + 5));
-                    CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
-                    		UIRegistry.getResourceString(BatchSaveErrorsTitle),
-                            true,
-                            CustomDialog.OKHELP,
-                            pane);
-                    UIHelper.centerAndShow(dlg);
-                    dlg.dispose();
+                	showBatchErrorObjects(objectsNotAdded, BatchSaveErrorsTitle, BatchSaveErrors);
                 }
             }
         };
@@ -916,8 +1027,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                                                                 (FormDataObjIFace)dataObj, 
                                                                 CollectionObject.class, 
                                                                 "collectionObjectId");
-        
-        return duplicateNumberStatus;
+       	//Now check series catnums, kind of awkward.
+        return  isCheckDuplicateBatchNumbersOK(!duplicateNumberStatus.equals(STATUS.OK));
     }
 
     
