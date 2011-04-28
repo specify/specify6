@@ -78,6 +78,7 @@ import org.apache.poi.hssf.record.formula.functions.T;
 import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -2448,13 +2449,15 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		if (nodeDropAction == NODE_DROPTYPE.SYNONIMIZE_NODE)
 		{
 			log.info("User requested new link be created between " + draggedNode.getName() + " and " + droppedOnNode.getName());
+            UsageTracker.incrUsageCount("TreeTableViewer.SynonomizeNode");
             
             if ((draggedNode.getAcceptedParentId() != null) && (droppedOnNode.getId() == draggedNode.getAcceptedParentId()))
             {
                 //log.info("User request to synonymize a node with it's current accepted parent.  Nothing to do.");
                 return false;
             }
-            
+
+
             new javax.swing.SwingWorker<Boolean, Object>() {
 
             	boolean result = false;
@@ -2709,13 +2712,17 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			final T newParent = droppedRecord;
             final TreeNode oldParentNode = listModel.getNodeById(draggedNode.getParentId());
             final TreeNode newParentNode = droppedOnNode;
-            
+
+            log.info("move requested: " + child.getFullName() + " to " + newParent.getFullName());
+            UsageTracker.incrUsageCount("TreeTableViewer.MoveNode");
+
 			if ( !TreeHelper.canChildBeReparentedToNode(child,newParent) )
 			{
 				log.info("Cannot reparent " + child.getName() + " to " + newParent.getName());
 				return false;
 			}
 			
+
 			new javax.swing.SwingWorker<Boolean, Object>() {
 
 				Boolean result = false;
@@ -2884,8 +2891,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 		else if (nodeDropAction == NODE_DROPTYPE.MERGE_NODE)
 		{
-	        final TreeNode oldParentNode = listModel.getNodeById(draggedNode.getParentId());
+            UsageTracker.incrUsageCount("WB.ShowWorkbenchProps");
+			final TreeNode oldParentNode = listModel.getNodeById(draggedNode.getParentId());
 	        final TreeNode newParentNode = droppedOnNode;
+	        log.info("merging " + oldParentNode.fullName + "(" + oldParentNode.id + ") into "
+	        		+ newParentNode.fullName + "(" + newParentNode.id + ")");
+            UsageTracker.incrUsageCount("TreeTableViewer.MergeNodes");
+	        
 	        SwingUtilities.invokeLater(new Runnable() {
 
 				@Override
