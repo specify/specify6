@@ -197,7 +197,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                         {
                             treeDefEditAction = createActionForTreeDefEditing(treeTI.getTitle());
                             unlockAction      = createActionForTreeUnlocking(treeTI.getTitle(), true);
-                            browseAction      = createActionForTreeBrowse(treeTI.getTitle());
+                            browseAction      = createActionForTreeEditing(treeTI.getTitle(), false);
                         } 
                     }
                 } else

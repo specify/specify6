@@ -187,6 +187,11 @@ public class CollectionBusRules extends BaseBusRules
      */
     private void addNewCollection()
     {
+        if (!DivisionBusRules.checkForParentSave(formViewObj, Discipline.getClassTableId()))
+        {
+            return;
+        }
+        
         UIRegistry.loadAndPushResourceBundle("specifydbsetupwiz");
         
         UIRegistry.writeSimpleGlassPaneMsg("Building Collection...", 20); // I18N

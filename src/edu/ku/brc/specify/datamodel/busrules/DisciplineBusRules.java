@@ -218,6 +218,11 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
      */
     private void addNewDiscipline()
     {
+        if (!DivisionBusRules.checkForParentSave(formViewObj, Division.getClassTableId()))
+        {
+            return;
+        }
+        
         if (!DivisionBusRules.askForExitonChange("ASK_TO_ADD_DISP"))
         {
             return;

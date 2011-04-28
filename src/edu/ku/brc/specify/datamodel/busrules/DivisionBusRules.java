@@ -44,6 +44,7 @@ import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.ResultSetController;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
@@ -198,10 +199,38 @@ public class DivisionBusRules extends BaseBusRules implements CommandListener
     }
     
     /**
+     * @param formViewObj
+     * @param tblId
+     * @return
+     */
+    public static boolean checkForParentSave(final FormViewObj formViewObj, final int tblId)
+    {
+        if (formViewObj != null && formViewObj.getMVParent() != null)
+        {
+            MultiView mv = formViewObj.getMVParent();
+            if (mv.getTopLevel() != null)
+            {
+                if (mv.getTopLevel().getCurrentValidator().hasChanged())
+                {
+                    UIRegistry.showLocalizedError(JOptionPane.WARNING_MESSAGE, "TOP_MV_SAVE", DBTableIdMgr.getInstance().getTitleForId(Institution.getClassTableId()));
+                    return false;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * 
      */
     private void addNewDivision()
     {
+        if (!checkForParentSave(formViewObj, Institution.getClassTableId()))
+        {
+            return;
+        }
+        
         if (!askForExitonChange("ASK_TO_ADD_DIV"))
         {
             return;

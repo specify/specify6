@@ -105,7 +105,9 @@ public class TreeBrowserPanel extends JPanel
         columns   = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, false);
 
 
-        String sql = String.format("select RankID, Name FROM %streedefitem WHERE TaxonTreeDefID = %d AND RankID > 0 ORDER BY RankID", clazz.getSimpleName().toLowerCase(), treeDefId);
+        String clsName = clazz.getSimpleName();
+        String sql = String.format("SELECT RankID, Name FROM %streedefitem WHERE %sTreeDefID = %d AND RankID > 0 ORDER BY RankID", clsName.toLowerCase(), clsName, treeDefId);
+        log.debug(sql);
         for (Object[] row : BasicSQLUtils.query(sql))
         {
             treeDefRankNamesHash.put((Integer)row[0], row[1].toString());

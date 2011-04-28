@@ -34,7 +34,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
 import org.apache.commons.jexl.Expression;
