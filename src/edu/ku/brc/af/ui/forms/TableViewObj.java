@@ -1008,7 +1008,6 @@ public class TableViewObj implements Viewable,
                     dObj = FormHelper.createAndNewDataObj(view.getClassName());
                 }
                 
-                
                 dObj = editRow(dObj, rowIndex, isNew);
             }
         } else
@@ -1109,6 +1108,18 @@ public class TableViewObj implements Viewable,
                     dialog.setSession(localSession);
                 }
                 
+                if (isNew)
+                {
+                    FormViewObj fvo = dialog.getMultiView().getCurrentViewAsFormViewObj();
+                    if (fvo != null)
+                    {
+                        fvo.setCreatingNewObject(true);
+                        if (fvo.getBusinessRules() != null)
+                        {
+                            fvo.getBusinessRules().afterCreateNewObj(dObj);
+                        }
+                    }
+                }
                 dialog.setData(dObj);
                 if (localSession != null)
                 {

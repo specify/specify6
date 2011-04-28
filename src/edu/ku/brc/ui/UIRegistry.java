@@ -1082,11 +1082,22 @@ public class UIRegistry
      */
     public static void showError(final String msg)
     {
+        showError(null, msg);
+    }
+
+    /**
+     * Displays an error dialog with a non-localized error message.
+     * @param dlgType Dialog type error or warning
+     * @param msg the message
+     */
+    public static void showError(final Integer dlgType, final String msg)
+    {
         log.error(msg);
         
+        String titleKey = dlgType != null && dlgType == JOptionPane.WARNING_MESSAGE ? "WARNING" : "UIRegistry.UNRECOVERABLE_ERROR_TITLE";
         JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
                 msg, 
-                getResourceString("UIRegistry.UNRECOVERABLE_ERROR_TITLE"), JOptionPane.ERROR_MESSAGE);
+                getResourceString(titleKey), dlgType == null ? JOptionPane.ERROR_MESSAGE : dlgType);
     }
 
     /**
@@ -1117,7 +1128,17 @@ public class UIRegistry
      */
     public static void showLocalizedError(final String key)
     {
-        showError(getResourceString(key));
+        showError(null, getResourceString(key));
+    }
+    
+    /**
+     * Displays an error dialog with a localized error message.
+     * @param dlgType Dialog type error or warning
+     * @param key the bundle key for the message
+     */
+    public static void showLocalizedError(final Integer dlgType, final String key)
+    {
+        showError(dlgType, getResourceString(key));
     }
     
     /**
@@ -1128,6 +1149,17 @@ public class UIRegistry
     public static void showLocalizedError(final String key, final Object ... args)
     {
         showError(String.format(getResourceString(key), args));
+    }
+    
+    /**
+     * Displays an error dialog with a localized error message.
+     * @param dlgType Dialog type error or warning
+     * @param key the bundle key for the message
+     * @param args args for the message
+     */
+    public static void showLocalizedError(final Integer dlgType, final String key, final Object ... args)
+    {
+        showError(dlgType, String.format(getResourceString(key), args));
     }
     
     /**
@@ -2217,7 +2249,7 @@ public class UIRegistry
      * @return
      */
     @SuppressWarnings("unchecked")
-    public Action makeAction(Class actionClass,
+    public Action makeAction(Class<?> actionClass,
                              Object owner,
                              String name,
                              ImageIcon icon,
@@ -2228,7 +2260,7 @@ public class UIRegistry
         Action a = null;
         try
         {
-            Constructor c;
+            Constructor<?> c;
             if (owner != null)
             {
                 // If the class is an inner class, its constuctor takes a hidden
@@ -2252,7 +2284,7 @@ public class UIRegistry
             try
             {
                 // Output a list of constructors available for this class.
-                Constructor[] cc = actionClass.getConstructors();
+                Constructor<?>[] cc = actionClass.getConstructors();
                 for (int i = 0; i < cc.length; i++)
                 {
                     System.err.println(cc[i].toString());
