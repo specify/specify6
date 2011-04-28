@@ -1239,7 +1239,8 @@ public class TableViewObj implements Viewable,
                     {
                         if (mvParent.getMultiViewParent().getCurrentValidator() != null)
                         {
-                            mvParent.getCurrentValidator().setHasChanged(true);
+                            // rods 04/28/11 - it shouldn't turn on the save btn on Cancel
+                            //mvParent.getCurrentValidator().setHasChanged(true);
                             mvParent.getMultiViewParent().getCurrentValidator().validateForm();
                         }
                         

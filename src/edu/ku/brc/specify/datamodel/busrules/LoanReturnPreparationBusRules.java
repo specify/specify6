@@ -191,7 +191,7 @@ public class LoanReturnPreparationBusRules extends BaseBusRules
      */
     protected void updateLoanPrepQuantities(final LoanReturnPreparation loanRetPrepArg, final ChangeEvent e)
     {
-        if (formViewObj != null)
+        if (formViewObj != null && formViewObj.getValidator().hasChanged())
         {
             loanPrepFVO = formViewObj.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
             loanFVO     = loanPrepFVO.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();

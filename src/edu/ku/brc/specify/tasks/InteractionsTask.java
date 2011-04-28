@@ -90,10 +90,10 @@ import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.dbsupport.TableModel2Excel;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
@@ -1718,19 +1718,21 @@ public class InteractionsTask extends BaseTask
     /**
      * Starts process to return a loan.
      * @param multiView the current form doing the return
-     * @param loansList the list of loans being returned
      * @param agent the agent doing the return
+     * @param returnedDate the date it was returned
      * @param returns the list of items being returned
+     * @param doingSingleItem whether it is a single item
      */
     protected void doReturnLoans(final MultiView            multiView,
                                  final Agent                agent, 
+                                 final Calendar             returnedDate, 
                                  final List<LoanReturnInfo> returns,
                                  final boolean              doingSingleItem)
     {
         final JStatusBar statusBar = UIRegistry.getStatusBar();
         statusBar.setIndeterminate(INTERACTIONS, true);
         
-        String msg = getResourceString("ReturningLoanItems");
+        String msg = getResourceString("InteractionsTask.ReturningLoanItems");
         statusBar.setText(msg);
         UIRegistry.writeSimpleGlassPaneMsg(msg, 24);
         
@@ -1775,7 +1777,9 @@ public class InteractionsTask extends BaseTask
                         loanRetPrep.initialize();
                         loanRetPrep.setReceivedBy(agent);
                         loanRetPrep.setModifiedByAgent(Agent.getUserAgent());
-                        loanRetPrep.setReturnedDate(Calendar.getInstance());
+                        loanRetPrep.setReturnedDate(returnedDate);
+                        loanRetPrep.setQuantityResolved(loanRetInfo.getResolvedQty());
+                        loanRetPrep.setQuantityReturned(loanRetInfo.getReturnedQty());
                         
                         loanPrep.setIsResolved(loanRetInfo.isResolved());
                         loanRetPrep.setRemarks(loanRetInfo.getRemarks());
@@ -1897,7 +1901,7 @@ public class InteractionsTask extends BaseTask
                     List<LoanReturnInfo> returns = dlg.getLoanReturnInfo();
                     if (returns.size() > 0)
                     {
-                        doReturnLoans(mv, dlg.getAgent(), returns, true);
+                        doReturnLoans(mv, dlg.getAgent(), dlg.getDate(), returns, true);
                     }
                 }
             }
@@ -2204,7 +2208,7 @@ public class InteractionsTask extends BaseTask
         if (lriList.size() > 0)
         {
             Agent currAgent = AppContextMgr.getInstance().getClassObject(Agent.class);
-            doReturnLoans(null, currAgent, lriList, false);
+            doReturnLoans(null, currAgent, Calendar.getInstance(), lriList, false);
         }
 
     }

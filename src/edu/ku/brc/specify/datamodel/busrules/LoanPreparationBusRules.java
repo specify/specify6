@@ -245,7 +245,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
             
             if (loanRetBtn != null)
             {
-                loanRetBtn.setEnabled(loanPrep.getId() != null);
+                loanRetBtn.setEnabled(loanPrep.getId() != null && !loanPrep.getIsResolved());
             }
             
             Component comp    = formViewObj.getControlByName("quantityResolved");

@@ -406,6 +406,14 @@ public class LoanReturnDlg extends JDialog
     }
     
     /**
+     * @return
+     */
+    public Calendar getDate()
+    {
+        return (Calendar)dateClosed.getValue();
+    }
+    
+    /**
      * Returns a Hastable of Preparation to Count.
      * @return a Hastable of Preparation to Count.
      */

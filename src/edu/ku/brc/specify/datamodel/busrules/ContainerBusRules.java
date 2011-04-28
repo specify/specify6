@@ -27,6 +27,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
@@ -136,6 +137,28 @@ public class ContainerBusRules extends BaseBusRules
             }
         }
         return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object)
+     */
+    @Override
+    public STATUS processBusinessRules(final Object dataObj)
+    {
+        reasonList.clear();
+        
+        if (!(dataObj instanceof Container))
+        {
+            reasonList.add("Object is of wrong Class.");
+            return STATUS.Error;
+        }
+        
+        STATUS nameStatus = isCheckDuplicateNumberOK("name",
+                                                    (FormDataObjIFace)dataObj, 
+                                                    Container.class, 
+                                                    "containerId");
+        
+        return nameStatus != STATUS.OK ? STATUS.Error : STATUS.OK;
     }
     
     /* (non-Javadoc)
