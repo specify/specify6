@@ -125,6 +125,7 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.CollectionRelationship;
 import edu.ku.brc.specify.datamodel.Container;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.SpExportSchema;
@@ -3334,14 +3335,33 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         } else if (CollectionObject.class.isAssignableFrom(tblInfo.getClassObj()))
     	{
     		TableTree parent = alias.getParent();
-    		if (parent != null && parent.getTableInfo().getTableId() == Container.getClassTableId())
+//    		if (parent != null && parent.getTableInfo().getTableId() == Container.getClassTableId())
+//    		{
+//    			return true;
+//    		}
+    		if (parent != null && parent.getTableInfo().getTableId() == CollectionRelationship.getClassTableId())
     		{
-    			return true;
+    			//prevent looping back to left side when leftSideRels has been opened from parent
+    			if (alias.getField().equals("leftSide") && 
+    					parent.getField() != null && parent.getField().equals("leftSideRels")) 
+    			{
+    				return false;
+    			}
+    			//prevent looping back to right side when rightSideRels has been opened from parent
+    			if (alias.getField().equals("rightSide") && 
+    					parent.getField() != null && parent.getField().equals("rightSideRels")) 
+    			{
+    				return false;
+    			}
     		}
     		
     		return true;
     	}
 
+        else if (CollectionRelationship.class.isAssignableFrom(tblInfo.getClassObj()))
+    	{
+    		return true;
+    	}
         	
         return false;
             //special conditions... (may be needed. For example for Determination and Taxon, but on the other hand
