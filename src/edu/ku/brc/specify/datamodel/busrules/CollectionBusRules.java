@@ -25,6 +25,7 @@ import java.awt.Component;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -69,6 +70,8 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.dbsupport.HibernateDataProviderSession;
 import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
+import edu.ku.brc.specify.ui.DisciplineBasedUIFieldFormatterMgr;
+import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -88,6 +91,7 @@ import edu.ku.brc.ui.UIRegistry;
 public class CollectionBusRules extends BaseBusRules
 {
     private boolean       isOKToCont    = false;
+    private HashMap<Integer, DisciplineBasedUIFieldFormatterMgr> fmtHash = new HashMap<Integer, DisciplineBasedUIFieldFormatterMgr>();
 
     /**
      * Constructor.
@@ -443,18 +447,43 @@ public class CollectionBusRules extends BaseBusRules
     {
         super.afterFillForm(dataObj);
         
-        Collection  collection = (Collection)dataObj;
+        Collection  collection         = (Collection)dataObj;
+        Discipline  appCntxtDiscipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        
         JTextField txt        = (JTextField)formViewObj.getControlById("4");
         if (txt != null && collection != null)
         {
+            
+            Discipline  discipline = collection.getDiscipline();
+            
             Set<AutoNumberingScheme> set = collection.getNumberingSchemes();
             if (set != null)
             {
                 if (set.size() > 0)
                 {
-                    AutoNumberingScheme   ans = set.iterator().next();
-                    UIFieldFormatterIFace fmt = UIFieldFormatterMgr.getInstance().getFormatter(ans.getFormatName());
-                    txt.setText(ans.getIdentityTitle()+ (fmt != null ? (" ("+fmt.toPattern()+")") : ""));
+                    UIFieldFormatterMgr ffMgr = null;
+                    if (discipline.getId().equals(appCntxtDiscipline.getId()))
+                    {
+                        ffMgr = UIFieldFormatterMgr.getInstance();
+                    } else
+                    {
+                        Integer dispId = collection.getDiscipline().getId();
+                        
+                        DisciplineBasedUIFieldFormatterMgr tempFFMgr = fmtHash.get(dispId);
+                        if (tempFFMgr == null)
+                        {
+                            tempFFMgr = new DisciplineBasedUIFieldFormatterMgr(dispId);
+                            tempFFMgr.load();
+                            fmtHash.put(dispId, tempFFMgr);
+                        }
+                        ffMgr = tempFFMgr;
+                    }
+                    AutoNumberingScheme ans = set.iterator().next();
+                    if (ans != null)
+                    {
+                        UIFieldFormatterIFace fmt = ffMgr.getFormatter(ans.getFormatName());
+                        txt.setText(ans.getIdentityTitle()+ (fmt != null ? (" ("+fmt.toPattern()+")") : ""));
+                    }
                 }
             }
         }
@@ -742,7 +771,8 @@ public class CollectionBusRules extends BaseBusRules
         {
             super.okToDelete(dataObj, session, deletable);
         }
-}
+    }
+    
     
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
@@ -754,4 +784,25 @@ public class CollectionBusRules extends BaseBusRules
         
         return super.afterSaveCommit(dataObj, session);
     }
+    
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#aboutToShutdown()
+     */
+    @Override
+    public void aboutToShutdown()
+    {
+        super.aboutToShutdown();
+        
+        for (DisciplineBasedUIFieldFormatterMgr mgr : fmtHash.values())
+        {
+            mgr.shutdown();
+        }
+    }
+
+    //--------------------------------------------------------------------------------------------
+    //-- 
+    //--------------------------------------------------------------------------------------------
+
 }

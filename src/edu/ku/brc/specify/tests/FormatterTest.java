@@ -65,6 +65,13 @@ public class FormatterTest extends TestCase
     //--------------------------------------------------
     class MyFmtMgr extends SpecifyUIFieldFormatterMgr
     {
+        
+        public MyFmtMgr()
+        {
+            super();
+            load();
+        }
+
         /**
          * Returns the DOM it is suppose to load the formatters from.
          * @return Returns the DOM it is suppose to load the formatters from.

@@ -428,6 +428,7 @@ public class CollectionRelOneToManyPlugin extends UIPluginBase implements UIVali
             if (status == AppContextMgr.CONTEXT_STATUS.OK)
             {
                 UIFieldFormatterMgr ffMgr = new SpecifyUIFieldFormatterMgr();
+                ffMgr.load();
                 ffMgr.setAppContextMgr(appContextMgr);
                 catNumFormatter = ffMgr.getFormatter(rightSideCol.getCatalogNumFormatName());
                 if (catNumFormatter != null)

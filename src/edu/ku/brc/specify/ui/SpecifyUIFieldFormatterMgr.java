@@ -140,12 +140,21 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
     }
     
     /**
-     * MEthod for getting a Resource for a Discipline from the Database or disk.
+     * @param contextMgr
+     * @return
+     */
+    protected Discipline getDiscipline(final AppContextMgr contextMgr)
+    {
+        return contextMgr.getClassObject(Discipline.class);
+    }
+    
+    /**
+     * Method for getting a Resource for a Discipline from the Database or disk.
      * @param name
      * @param localPath
      * @return
      */
-    public static Element getDisciplineDOMFromResource(final AppContextMgr contextMgr, final String name, final String localPath)
+    public Element getDisciplineDOMFromResource(final AppContextMgr contextMgr, final String name, final String localPath)
     {
         SpecifyAppContextMgr acMgr = (SpecifyAppContextMgr)contextMgr;
         DataProviderSessionIFace session = null;
@@ -153,8 +162,8 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
         {
             session = DataProviderFactory.getInstance().createSession();
             
-            SpecifyUser user       = acMgr.getClassObject(SpecifyUser.class);
-            Discipline  discipline = acMgr.getClassObject(Discipline.class);
+            SpecifyUser user       = contextMgr.getClassObject(SpecifyUser.class);
+            Discipline  discipline = getDiscipline(contextMgr);
             
             SpAppResourceDir appResDir = acMgr.getAppResDir(session, user, discipline, null, null, false, name, false);
             if (appResDir != null)

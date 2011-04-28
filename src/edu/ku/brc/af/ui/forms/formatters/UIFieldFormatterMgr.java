@@ -73,7 +73,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
      */
     protected UIFieldFormatterMgr()
     {
-        load();
+        
     }
     
     /**
@@ -96,6 +96,16 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
         this.appContextMgr = appContextMgr;
     }
 
+    /**
+     * Does cleanup.
+     */
+    public void shutdown()
+    {
+        hash.clear();
+        cleanClassToListHash();
+        appContextMgr = null;
+    }
+    
     /**
      * Resets the Mgr so it gets reloaded.
      */
@@ -157,8 +167,10 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
         {
             try
             {
-                return instance = (UIFieldFormatterMgr) Class.forName(factoryNameStr).newInstance();
-
+                instance = (UIFieldFormatterMgr) Class.forName(factoryNameStr).newInstance();
+                instance.load();
+                return instance;
+                
             } catch (Exception e)
             {
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
@@ -197,6 +209,8 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
         for (UIFieldFormatterIFace fmt : hash.values())
         {
             boolean isUIF = fmt instanceof UIFieldFormatter;
+            log.debug(fmt.getName());
+            
             if (!isUIF || ((UIFieldFormatter) fmt).getType() == UIFieldFormatter.FormatterType.generic)
             {
                 list.add(fmt);
@@ -729,7 +743,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
                 }
             } else
             {
-                log.debug("Couldn't open uiformatters.xml");
+                log.debug("Couldn't open DOM for uiformatters.xml");
             }
         } catch (Exception ex)
         {

@@ -26,6 +26,7 @@ import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
 import edu.ku.brc.ui.CommandAction;
@@ -82,7 +83,8 @@ public class SpecifyDataObjFieldFormatMgr extends DataObjFieldFormatMgr implemen
             return XMLHelper.readDOMFromConfigDir(localFileName);
         }
 
-        return SpecifyUIFieldFormatterMgr.getDisciplineDOMFromResource(getAppContextMgr(), DATAOBJFORMATTERS, localFileName);
+        SpecifyUIFieldFormatterMgr spUIFFMgr = (SpecifyUIFieldFormatterMgr)UIFieldFormatterMgr.getInstance();
+        return spUIFFMgr.getDisciplineDOMFromResource(getAppContextMgr(), DATAOBJFORMATTERS, localFileName);
     }
     
     /* (non-Javadoc)

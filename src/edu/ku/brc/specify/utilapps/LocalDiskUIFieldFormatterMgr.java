@@ -38,6 +38,7 @@ public class LocalDiskUIFieldFormatterMgr extends SpecifyUIFieldFormatterMgr
     public LocalDiskUIFieldFormatterMgr()
     {
         super();
+        load();
     }
     /**
      * Returns the DOM it is suppose to load the formatters from.
