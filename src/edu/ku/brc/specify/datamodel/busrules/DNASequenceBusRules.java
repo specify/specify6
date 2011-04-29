@@ -143,21 +143,30 @@ public class DNASequenceBusRules extends BaseBusRules implements CommandListener
         if (formViewObj != null&& barCodeUI != null && ta != null)
         {
             barCodeUI.setSequence(ta.getText());
-            setValue("residues", barCodeUI.getTotal('A')+barCodeUI.getTotal('G')+barCodeUI.getTotal('C')+barCodeUI.getTotal('T')+barCodeUI.getTotal('X'));
-            setValue("compA", barCodeUI.getTotal('A'));
-            setValue("compG", barCodeUI.getTotal('G'));
-            setValue("compT", barCodeUI.getTotal('T'));
-            setValue("compC", barCodeUI.getTotal('C'));
-            setValue("ambiguous", barCodeUI.getTotal('X'));
+            
+            int compA = barCodeUI.getTotal('A');
+            int compG = barCodeUI.getTotal('G');
+            int compT = barCodeUI.getTotal('T');
+            int compC = barCodeUI.getTotal('C');
+            int compX = barCodeUI.getTotal('X');
+            int total = compA + compG + compC + compT + compX;
+            
+            setValue("residues", total);
+            setValue("compA", compA);
+            setValue("compG", compG);
+            setValue("compT", compT);
+            setValue("compC", compC);
+            setValue("ambiguous", compX);
             
             DNASequence dnaSeq = (DNASequence)formViewObj.getDataObj();
             if (dnaSeq != null)
             {
-                dnaSeq.setCompA(barCodeUI.getTotal('A'));
-                dnaSeq.setCompG(barCodeUI.getTotal('G'));
-                dnaSeq.setCompT(barCodeUI.getTotal('T'));
-                dnaSeq.setCompC(barCodeUI.getTotal('C'));
-                dnaSeq.setAmbiguousResidues(barCodeUI.getTotal('X'));
+                dnaSeq.setCompA(compA);
+                dnaSeq.setCompG(compG);
+                dnaSeq.setCompT(compT);
+                dnaSeq.setCompC(compC);
+                dnaSeq.setTotalResidues(total);
+                dnaSeq.setAmbiguousResidues(compX);
             }
         }
     }
