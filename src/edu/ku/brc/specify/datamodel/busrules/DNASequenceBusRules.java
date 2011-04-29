@@ -149,6 +149,16 @@ public class DNASequenceBusRules extends BaseBusRules implements CommandListener
             setValue("compT", barCodeUI.getTotal('T'));
             setValue("compC", barCodeUI.getTotal('C'));
             setValue("ambiguous", barCodeUI.getTotal('X'));
+            
+            DNASequence dnaSeq = (DNASequence)formViewObj.getDataObj();
+            if (dnaSeq != null)
+            {
+                dnaSeq.setCompA(barCodeUI.getTotal('A'));
+                dnaSeq.setCompG(barCodeUI.getTotal('G'));
+                dnaSeq.setCompT(barCodeUI.getTotal('T'));
+                dnaSeq.setCompC(barCodeUI.getTotal('C'));
+                dnaSeq.setAmbiguousResidues(barCodeUI.getTotal('X'));
+            }
         }
     }
     
