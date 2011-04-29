@@ -287,6 +287,49 @@ public class FixDBAfterLogin
     }
     
     /**
+     * Creates empty CollectingEvents for CollectingEvent-less CollectionObjects in Collections 
+     * with embedded CollectingEvents 
+     */
+    public static void fixNullEmbeddedCollectingEvents()
+    {
+    	try
+    	{
+    		String checkSQL = "select count(co.CollectionObjectID) from collectionobject co inner join "
+    			+ "collection cln on cln.UserGroupScopeID = co.CollectionMemberID "
+    			+ "where co.CollectingEventID is null and cln.IsEmbeddedCollectingEvent";
+    		int cesToAdd = BasicSQLUtils.getCount(checkSQL);
+    		if (cesToAdd > 0)
+    		{
+    			String ceInsertSql = "insert into collectingevent (TimestampCreated, TimestampModified, Version, " +
+    				"Visibility, CreatedByAgentID, VisibilitySetByID, ModifiedByAgentID, DisciplineID)" +
+    				" select co.TimestampCreated, co.TimestampModified, co.CollectionObjectID, co.Visibility, " +
+    				"co.CreatedByAgentID, co.VisibilitySetByID, co.ModifiedByAgentID, " +
+    				"(select DisciplineID from collection cln2 where cln2.UserGroupScopeID = co.CollectionMemberID) " +
+    				"from collectionobject co inner join collection cln on cln.UserGroupScopeID = " +
+    				"co.CollectionMemberID where co.CollectingEventID is null and cln.IsEmbeddedCollectingEvent";
+    			int insertedCnt = BasicSQLUtils.update(ceInsertSql);
+    			if (insertedCnt != cesToAdd)
+    			{
+    				throw new Exception("fixNullEmbeddedCollectingEvents: error inserting colllectingevent records");
+    			}
+    			String ceIDUpdateSql = "update collectionobject co inner join collectingevent ce on ce.Version = "
+    				+ "co.CollectionObjectID inner join collection cln on cln.UserGroupScopeID = co.CollectionMemberID "
+    				+ "set co.CollectingEventID = ce.CollectingEventID, ce.Version = 0 "
+    				+ "where co.collectingeventid is null and cln.IsEmbeddedCollectingEvent";
+    			int updatedCnt = BasicSQLUtils.update(ceIDUpdateSql);
+    			if (updatedCnt != 2*insertedCnt)
+    			{
+    				throw new Exception("fixNullEmbeddedCollectingEvents: error updating colllectingevent IDs");
+    			}
+    			log.info("added " + insertedCnt + " collectingevent records");
+    	        AppPreferences.getGlobalPrefs().putBoolean("FixNullEmbeddedCollectingEvents", true);
+    	}
+		} catch (Exception ex)
+		{
+            ex.printStackTrace();
+		}
+    }
+    /**
      * 
      */
     public static void fixUserPermissions(final boolean doSilently)
