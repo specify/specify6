@@ -489,7 +489,7 @@
                     </cell>
                 </row>
                 <row>
-                    <cell type="label" labelfor="sqlTemplate" label="SQL Template"/>
+                    <cell type="label" labelfor="sqlTemplate" label="HQL Template"/>
                     <cell type="field" id="sqlTemplate" name="sqlTemplate" uitype="textarea" colspan="4"/>
                 </row>
             </rows>

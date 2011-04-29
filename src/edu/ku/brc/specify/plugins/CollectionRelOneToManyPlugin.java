@@ -712,11 +712,9 @@ public class CollectionRelOneToManyPlugin extends UIPluginBase implements UIVali
         public String buildSQL(Map<String, Object> dataMap, List<String> fieldNames)
         {
             String catNum = (String)dataMap.get("CatalogNumber");
-            if (catNumFormatter != null)
-            {
-                catNum = (String)catNumFormatter.formatFromUI(catNum);
-            }
-            String sql = String.format("SELECT CollectionObjectID, CatalogNumber FROM collectionobject WHERE CollectionMemberID = %d AND CatalogNumber LIKE '%c%s'", collection.getId(), '%', catNum);
+            catNum = StringUtils.remove(catNum, '#');
+            String sql = String.format("SELECT collectionObjectId, catalogNumber FROM CollectionObject WHERE collectionMemberId = %d AND catalogNumber LIKE '%s%c'", 
+                    collection.getId(), catNum, '%');
             return sql;
         }
 

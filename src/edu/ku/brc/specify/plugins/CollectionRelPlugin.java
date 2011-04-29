@@ -22,6 +22,7 @@ package edu.ku.brc.specify.plugins;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -39,7 +40,12 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.core.expresssearch.ExpressResultsTableInfo;
+import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigCache;
+import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.af.ui.db.TextFieldWithInfo;
+import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -48,6 +54,7 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionRelType;
 import edu.ku.brc.specify.datamodel.CollectionRelationship;
+import edu.ku.brc.specify.datamodel.busrules.TableSearchResults;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -76,6 +83,7 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
     private ValComboBoxFromQuery   cbx             = null;
     private TextFieldWithInfo      textWithInfo    = null;
     private boolean                isRequired      = false;
+    private UIFieldFormatterIFace  catNumFormatter = null;
 
     /**
      * 
@@ -113,6 +121,8 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
                     
                     Collection currCollection = AppContextMgr.getInstance().getClassObject(Collection.class);
                     isLeftSide = currCollection.getId().equals(leftSideCol.getId());
+                    
+                    catNumFormatter = CollectionRelOneToManyPlugin.getCatNumFormatter(leftSideCol, rightSideCol);
                     
                 } else
                 {
@@ -174,12 +184,62 @@ public class CollectionRelPlugin extends UIPluginBase implements UIValidatable
                         notifyChangeListeners(new ChangeEvent(CollectionRelPlugin.this));
                     }
                 });
+                
+                cbx.registerQueryBuilder(createSearchQueryBuilder());
             }
             
         } else
         {
             // no Relationship name
         }
+    }
+    
+    /**
+     * @return
+     */
+    private ViewBasedSearchQueryBuilderIFace createSearchQueryBuilder()
+    {
+        return new ViewBasedSearchQueryBuilderIFace()
+        {
+            /* (non-Javadoc)
+             * @see edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace#buildSQL(java.lang.String, boolean)
+             */
+            @Override
+            public String buildSQL(String searchText, boolean isForCount)
+            {
+                Collection collection = !isLeftSide ? leftSideCol : rightSideCol;
+                String cols = isForCount ? "COUNT(*)" : CATNUM_NAME+", collectionObjectId";
+                String sql = String.format("SELECT %s FROM CollectionObject WHERE collectionMemberId = %d AND %s LIKE '%s%c' ORDER BY catalogNumber", 
+                        cols, collection.getId(), CATNUM_NAME, searchText, '%');
+                return sql;
+            }
+
+            /* (non-Javadoc)
+             * @see edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace#buildSQL(java.util.Map, java.util.List)
+             */
+            @Override
+            public String buildSQL(Map<String, Object> dataMap, List<String> fieldNames)
+            {
+                
+                Collection collection = !isLeftSide ? leftSideCol : rightSideCol;
+                String catNum = (String)dataMap.get("CatalogNumber");
+                catNum = StringUtils.remove(catNum, '#');
+                String sql = String.format("SELECT collectionObjectId, catalogNumber FROM CollectionObject WHERE collectionMemberId = %d AND catalogNumber LIKE '%s%c'", 
+                        collection.getId(), catNum, '%');
+                return sql;
+            }
+
+            /* (non-Javadoc)
+             * @see edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace#createQueryForIdResults()
+             */
+            @Override
+            public QueryForIdResultsIFace createQueryForIdResults()
+            {
+                ExpressResultsTableInfo esTblInfo = ExpressSearchConfigCache.getTableInfoByName("CollectionObjectSearch");
+                return new TableSearchResults(DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()), esTblInfo.getCaptionInfo()); //true => is HQL
+            }
+            
+        };
     }
 
     /**
