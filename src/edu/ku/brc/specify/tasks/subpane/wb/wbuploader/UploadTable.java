@@ -4028,6 +4028,12 @@ public class UploadTable implements Comparable<UploadTable>
         	return true;
         }
         
+    	if (tblClass.equals(CollectingEvent.class) 
+    			&& AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
+    	{
+    		return true;
+    	}
+    	
         for (UploadTable child : specialChildren)
         {
         	if (needToMatchChild(child.tblClass))
