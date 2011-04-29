@@ -613,8 +613,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     /**
      * @return the technicalContacts
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collTechContact")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL })
+    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "collTechContact")
     public Set<Agent> getTechnicalContacts()
     {
         return technicalContacts;
@@ -623,8 +622,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     /**
      * @return the contentContacts
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collContentContact")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL })
+    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "collContentContact")
     public Set<Agent> getContentContacts()
     {
         return contentContacts;
@@ -684,8 +682,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     /**
      * @return the leftSideRelTypes
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "leftSideCollection")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL })
+    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "leftSideCollection")
     public Set<CollectionRelType> getLeftSideRelTypes()
     {
         return leftSideRelTypes;
@@ -702,8 +699,9 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     /**
      * @return the rightSideRelTypes
      */
+    //    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "leftSideCollection")
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "rightSideCollection")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL })
+    @Cascade( {CascadeType.ALL} )
     public Set<CollectionRelType> getRightSideRelTypes()
     {
         return rightSideRelTypes;

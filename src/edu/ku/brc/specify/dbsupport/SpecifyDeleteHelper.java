@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.Vector;
@@ -104,6 +105,8 @@ public class SpecifyDeleteHelper
     protected JLabel            titleLbl     = null;
     
     protected Connection        connection   = null;
+    
+    protected HashSet<Class<?>> classHash = new HashSet<Class<?>>();
     
     /**
      * 
@@ -255,6 +258,8 @@ public class SpecifyDeleteHelper
                                       final int         id,
                                       final boolean     doDeleteId) throws SQLException
     {
+        debugUpdate  = true;
+        //debug = true;
         StackItem root      = new StackItem(null, null, null);
         DBTableInfo tblInfo = tblMgr.getByShortClassName(cls.getSimpleName());
         
@@ -339,6 +344,12 @@ public class SpecifyDeleteHelper
                                      final int       level,
                                      final Hashtable<String, Boolean> inUseHashArg)
     {
+        if (classHash.contains(cls))
+        {
+            return null;
+        }
+        classHash.add(cls);
+        
         if (debug)
         {
             printLevel(level);
@@ -401,6 +412,7 @@ public class SpecifyDeleteHelper
                             }
                             if (treeClass == cls)
                             {
+                                classHash.remove(cls);
                                 return null;
                             }
                             
@@ -435,13 +447,32 @@ public class SpecifyDeleteHelper
             boolean isOKToDel = false;
             if (method.isAnnotationPresent(javax.persistence.OneToMany.class))
             {
+                String nm = method.getName();
+                boolean isAttachment = nm.indexOf("Attachment") > -1;
+                
                 boolean doDel = false;
                 javax.persistence.OneToMany oneToMany = (javax.persistence.OneToMany)method.getAnnotation(javax.persistence.OneToMany.class);
                 for (CascadeType ct : oneToMany.cascade())
                 {
                     if (ct == CascadeType.ALL || ct == CascadeType.REMOVE)
                     {
-                        //doDel = true;
+                        doDel = true;
+                        break;
+                    }
+                }
+                
+                if (!isAttachment && !doDel && method.isAnnotationPresent(org.hibernate.annotations.Cascade.class))
+                {
+                    org.hibernate.annotations.Cascade cascade = (org.hibernate.annotations.Cascade)method.getAnnotation(org.hibernate.annotations.Cascade.class);
+                    for (org.hibernate.annotations.CascadeType ct : cascade.value())
+                    {
+                        if (ct == org.hibernate.annotations.CascadeType.ALL ||
+                            ct == org.hibernate.annotations.CascadeType.DELETE ||
+                            ct == org.hibernate.annotations.CascadeType.REMOVE)
+                        {
+                            doDel = true;
+                            break;
+                        }
                     }
                 }
                 isOKToDel = !doDel ? isOKToDel(method) : true;
@@ -632,6 +663,7 @@ public class SpecifyDeleteHelper
         
         if (debug) System.out.println();
 
+        classHash.remove(cls);
         return child;
     }
     

@@ -209,8 +209,6 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
         for (UIFieldFormatterIFace fmt : hash.values())
         {
             boolean isUIF = fmt instanceof UIFieldFormatter;
-            log.debug(fmt.getName());
-            
             if (!isUIF || ((UIFieldFormatter) fmt).getType() == UIFieldFormatter.FormatterType.generic)
             {
                 list.add(fmt);

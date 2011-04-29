@@ -537,10 +537,17 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                             @Override
                             protected Integer doInBackground() throws Exception
                             {
-                                
-                                delHelper.delRecordFromTable(Discipline.class, dispId, true);
-                                delHelper.done(false);
-                                
+                                try
+                                {
+                                    delHelper.delRecordFromTable(Discipline.class, dispId, true);
+                                    delHelper.done(false);
+                                    
+                                } catch (Exception ex)
+                                {
+                                    ex.printStackTrace();
+                                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DivisionBusRules.class, ex);
+                                }
                                 return null;
                             }
 
