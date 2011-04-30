@@ -1439,12 +1439,12 @@
         <names>
           <str language="pt" country="" variant="">
             <version>0</version>
-            <text>Collecting Trip Name</text>
+            <text>Nome Sa√≠da Campo</text>
             <itemName reference="../../.."/>
           </str>
           <str language="en">
             <version>0</version>
-            <text>Nome Sa√≠da Campo</text>
+            <text>Collecting Trip Name</text>
             <itemName reference="../../.."/>
           </str>
         </names>
