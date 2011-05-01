@@ -98,7 +98,8 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.SpecifyUserTypes.UserType;
-import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.dbsupport.SpecifyQueryAdjusterForDomain;
@@ -115,6 +116,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.IconEntry;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.RolloverCommand;
@@ -1426,9 +1428,16 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                         }
                     }
                     
-                    JMenuItem menu = new JMenuItem(stc.getTitle(), IconManager.getIcon(stc.getIconName(), IconManager.IconSize.Std16));
-                    menu.addActionListener(action);
-                    menus.add(menu);
+                    JMenuItem menuItem = new JMenuItem(stc.getTitle(), IconManager.getIcon(stc.getIconName(), IconManager.IconSize.Std16));
+                    menuItem.addActionListener(action);
+                    menus.add(menuItem);
+                    
+                    if (stc.getTableInfo().getTableId() == CollectingEvent.getClassTableId())
+                    {
+                        boolean isEmbedded = AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent();
+                        IconEntry ciEntry = IconManager.getIconEntryByName(isEmbedded ? "collectinginformation" : "ce_restore");
+                        menuItem.setIcon(ciEntry.getIcon(IconManager.IconSize.Std16));
+                    }
                 }
                 
                 if (!AppContextMgr.isSecurityOn() || SpecifyUser.isCurrentUserType(UserType.Manager))

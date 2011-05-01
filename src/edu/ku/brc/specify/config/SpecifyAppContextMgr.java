@@ -122,6 +122,7 @@ import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.IconEntry;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -1395,6 +1396,17 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
             }
             setClassObject(Agent.class, userAgent);
+            
+            IconEntry ceEntry = IconManager.getIconEntryByName("CollectingEvent");
+            if (ceEntry != null)
+            {
+                boolean isEmbedded = collection.getIsEmbeddedCollectingEvent();
+                IconEntry ciEntry = IconManager.getIconEntryByName(isEmbedded ? "collectinginformation" : "ce_restore");
+                if (ciEntry != null)
+                {
+                    ceEntry.setIcon(ciEntry.getIcon());
+                }
+            }
             
             if (isFirstTime)
             {

@@ -22,6 +22,8 @@
     <icon name="borrowmaterial"       file="borrow_material.png" sizes="all"/>
     <icon name="borrowreturnmaterial" file="borrow_return_material.png" sizes="all"/>
     <icon name="collectingevent"      file="collecting_event.png" sizes="all"/>
+    <icon name="ce_restore"           file="collecting_event.png" sizes="all"/>
+    <icon name="collectinginformation" file="collecting_information.png" sizes="all"/>
     <icon name="collectingtrip"       file="collection_trip.png" sizes="all"/>
     <icon name="collection"           file="collection.png" sizes="all"/>
     <icon name="collectionrelationship" file="collection_relationship.png" sizes="all"/>
