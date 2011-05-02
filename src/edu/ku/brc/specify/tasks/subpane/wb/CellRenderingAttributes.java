@@ -28,7 +28,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 		public Color newDataBorder = Color.YELLOW;
 		public Color newDataForeground = Color.YELLOW;
 		public Color newDataBackground = new Color(newDataBorder.getRed(), newDataBorder.getGreen(), newDataBorder.getBlue(), 37);
-		public Color multipleMatchBorder = Color.ORANGE;
+		public Color multipleMatchBorder = Color.GREEN;
 		public Color multipleMatchBackground = new Color(multipleMatchBorder.getRed(), multipleMatchBorder.getGreen(), multipleMatchBorder.getBlue(), 37);
 		public Color multipleMatchForeground = multipleMatchBorder;
 		public Color notMatchedBorder = newDataBorder;
@@ -115,6 +115,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 					Atts atts = getAtts(cellStatus, cellStatusText, doIncrementalValidation,
 							doIncrementalMatching);
 					//System.out.println("pos " + wbCell.getRowNumber() + ", "+ wbCell.getColumnNumber() + ":" + cellStatusText);
+					//lbl.setToolTipText(atts.toolTip);
 					lbl.setBorder(atts.border);
 					//Using ColorHighlighters to set background colors because
 					//they do not override the selection color

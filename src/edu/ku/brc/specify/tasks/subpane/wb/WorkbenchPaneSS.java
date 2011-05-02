@@ -181,7 +181,6 @@ import edu.ku.brc.specify.tasks.subpane.ESResultsSubPane;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DB;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UniquenessChecker;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadData;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadField;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDef;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
@@ -5660,10 +5659,11 @@ public class WorkbenchPaneSS extends BaseSubPane
 			{
 				return false;
 			}
-			((JLabel )arg0).setToolTipText(null);
+			
 			int status = wbCell.getEditorValidationStatus();
 			if (activation == AnyPredicate)
 			{
+				((JLabel )arg0).setToolTipText(null);
 				//Seems like a good idea to try to be as efficient as possible
 				//but this will need to be recoded as new cell states are added
 				return status == WorkbenchDataItem.VAL_ERROR
@@ -5680,7 +5680,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 						//System.out.println("pos: " + arg1.row + ", " + arg1.column + ": " + wbCell.getStatusText());
 						((JLabel )arg0).setToolTipText(wbCell.getStatusText());
 						return true;
-					}
+					} 				
 				}
 			}
 			return false;
