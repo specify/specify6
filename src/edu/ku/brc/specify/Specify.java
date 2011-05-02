@@ -2506,6 +2506,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 });
             }
 
+            
             if (!AppPreferences.getGlobalPrefs().getBoolean("FixNullEmbeddedCollectingEvents", false))
             {
                 // Temp Code to Fix issues with Release 6.0.9 and below

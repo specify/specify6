@@ -33,9 +33,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import javax.swing.JEditorPane;
 import javax.swing.JTextArea;
@@ -60,9 +60,9 @@ import edu.ku.brc.af.ui.forms.persist.FormViewDef;
 import edu.ku.brc.af.ui.forms.persist.FormViewDefIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewDefIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
-import edu.ku.brc.af.ui.forms.persist.ViewSetIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.tools.export.ExportToMySQLDB;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -326,9 +326,11 @@ public class FixDBAfterLogin
     	}
 		} catch (Exception ex)
 		{
-            ex.printStackTrace();
+            log.error(ex);
+			ex.printStackTrace();
 		}
     }
+    
     /**
      * 
      */

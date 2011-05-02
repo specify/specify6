@@ -592,7 +592,7 @@ public class ExportMappingTask extends QueryTask
 					.getSpExportSchemaMappings())
 			{
 				//XXX add condition after SpExportMapping is scoped to Collection
-				//if (mapping.getCollectionMemberId().equals(AppContextMgr.getInstance().getClassObject(Collection.class).getId()))
+				if (mapping.getCollectionMemberId().equals(AppContextMgr.getInstance().getClassObject(Collection.class).getId()))
 				{
 					result.add(mapping.getMappings().iterator().next()
 						.getQueryField().getQuery());
@@ -671,9 +671,9 @@ public class ExportMappingTask extends QueryTask
 			if (theSession != null)
 			{
     			//XXX use query sith collectionMemberId condition after spexportmapping is scoped to Collection
-				//String hql = "from SpExportSchemaMapping sesm inner join sesm.mappings maps inner join maps.queryField qf inner join qf.query q where q.id = " + query.getId()
-    			//	+ " and sesm.collectionMemberId = " + AppContextMgr.getInstance().getClassObject(Collection.class).getId();
-    			String hql = "from SpExportSchemaMapping sesm inner join sesm.mappings maps inner join maps.queryField qf inner join qf.query q where q.id = " + query.getId();
+				String hql = "from SpExportSchemaMapping sesm inner join sesm.mappings maps inner join maps.queryField qf inner join qf.query q where q.id = " + query.getId()
+    				+ " and sesm.collectionMemberId = " + AppContextMgr.getInstance().getClassObject(Collection.class).getId();
+    			//String hql = "from SpExportSchemaMapping sesm inner join sesm.mappings maps inner join maps.queryField qf inner join qf.query q where q.id = " + query.getId();
     			QueryIFace q = theSession.createQuery(hql, false);
     			if (q.list().size() == 0)
     			{

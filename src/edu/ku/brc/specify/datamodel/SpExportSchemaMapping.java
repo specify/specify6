@@ -21,6 +21,7 @@ import javax.persistence.Transient;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
+import org.hibernate.annotations.Index;
 
 import edu.ku.brc.helpers.XMLHelper;
 
@@ -32,8 +33,11 @@ import edu.ku.brc.helpers.XMLHelper;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "spexportschemamapping")
-@org.hibernate.annotations.Table(appliesTo="spexportschemamapping")
-public class SpExportSchemaMapping extends DataModelObjBase
+@org.hibernate.annotations.Table(appliesTo="spexportschemamapping", indexes =
+    {   
+        @Index (name="SPEXPSCHMMAPColMemIDX", columnNames={"CollectionMemberID"})
+    })
+public class SpExportSchemaMapping extends CollectionMember
 {
     protected static final Logger				log	= Logger
 															.getLogger(SpExportSchemaMapping.class);
