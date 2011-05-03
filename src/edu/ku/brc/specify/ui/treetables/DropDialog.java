@@ -239,7 +239,8 @@ public class DropDialog extends CustomDialog
 						ta.setLineWrap(true);
 						ta.setWrapStyleWord(true);
 						CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), UIRegistry.getResourceString("DropDlg.TreeActionDetailTitle"), true, 
-								CustomDialog.OK_BTN, ta, CustomDialog.OK_BTN);
+								CustomDialog.OKHELP, ta, CustomDialog.OK_BTN);
+						//XXX find out help context --- cd.setHelpContext(helpContext);
 						cd.createUI();
 						
 						//the following size adjustments are a workaround for problems with height of cd defaulting to 9000.
