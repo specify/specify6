@@ -53,6 +53,7 @@ import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.plugins.PartialDateUI;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -153,10 +154,12 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
      * @param id the id of the control
      * @param enabled enable it
      * @param value the value it should set
+     * @param thisObj the main data object
      */
     protected void enableFieldAndLabel(final String      id, 
                                        final boolean     enabled,
-                                       final String      value)
+                                       final String      value,
+                                       final Agent       agent)
     {
         Component field  = formViewObj.getCompById(id);
         if (field != null)
@@ -218,6 +221,11 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
             {
                 ((JTextField)field).setText(value != null ? value : "");
                 
+            }  else if (field instanceof PartialDateUI)
+            {
+                PartialDateUI plugin = (PartialDateUI)field;
+                plugin.setValue(agent, null);
+                
             } else
             {
                 log.debug("******** unhandled component type: "+field);
@@ -244,9 +252,20 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
             agent.setFirstName(null);
             agent.setMiddleInitial(null);
         }
-        enableFieldAndLabel("1", isPerson, doSetOtherValues ? agent.getTitle() : null);           // Title
-        enableFieldAndLabel("5", isPerson, doSetOtherValues ? agent.getFirstName() : null);       // First Name
-        enableFieldAndLabel("4", isPerson, doSetOtherValues ? agent.getMiddleInitial() : null);       // First Name
+        enableFieldAndLabel("1", isPerson, doSetOtherValues ? agent.getTitle() : null, agent);              // Title
+        enableFieldAndLabel("5", isPerson, doSetOtherValues ? agent.getFirstName() : null, agent);          // First Name
+        enableFieldAndLabel("4", isPerson, doSetOtherValues ? agent.getMiddleInitial() : null, agent);      // First Name
+        
+        enableFieldAndLabel("19", isPerson, null, agent);                                                   // date Of Birth
+        enableFieldAndLabel("20", isPerson, null, agent);                                                   // date Of Death
+        enableFieldAndLabel("11", isPerson, doSetOtherValues ? agent.getGuid() :        null, agent);       // guid
+        enableFieldAndLabel("12", isPerson, doSetOtherValues ? agent.getInitials() :    null, agent);       // initials
+        enableFieldAndLabel("13", isPerson, doSetOtherValues ? agent.getInterests() :   null, agent);       // interests
+        enableFieldAndLabel("14", isPerson, doSetOtherValues ? agent.getJobTitle() :    null, agent);       // jobTitle
+        
+        enableFieldAndLabel("16", true, doSetOtherValues ? agent.getMiddleInitial() :   null, agent);       // remarks
+        enableFieldAndLabel("17", true, doSetOtherValues ? agent.getMiddleInitial() :   null, agent);       // url
+        
         
         // Last Name
         String lbl = UIRegistry.getResourceString(isPerson ? "AG_LASTNAME" : "AG_NAME");
