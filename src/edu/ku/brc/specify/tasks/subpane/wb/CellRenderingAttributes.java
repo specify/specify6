@@ -14,15 +14,18 @@ import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 @SuppressWarnings("unused")
 public class CellRenderingAttributes
 {
+	static public final Color HUNTER_ORANGE = new Color(250, 100, 41);
+	static public final Color LIGHT_SABRE_BLUE = new Color(4, 184, 252);
+	
 	static public Color errorBorder = Color.RED;
 	static public Color errorForeground = errorBorder;
 	static public Color errorBackground = new Color(errorBorder.getRed(),
 			errorBorder.getGreen(), errorBorder.getBlue(), 37);
-	static public Color newDataBorder = Color.ORANGE;
-	static public Color newDataForeground = Color.ORANGE;
+	static public Color newDataBorder = HUNTER_ORANGE;
+	static public Color newDataForeground = newDataBorder;
 	static public Color newDataBackground = new Color(newDataBorder.getRed(),
 			newDataBorder.getGreen(), newDataBorder.getBlue(), 37);
-	static public Color multipleMatchBorder = Color.CYAN;
+	static public Color multipleMatchBorder = LIGHT_SABRE_BLUE;
 	static public Color multipleMatchBackground = new Color(multipleMatchBorder
 			.getRed(), multipleMatchBorder.getGreen(), multipleMatchBorder
 			.getBlue(), 37);
