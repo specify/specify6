@@ -223,7 +223,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
         
         popupAnchorComponent = mainBtn;
 
-        PanelBuilder pb = new PanelBuilder(new FormLayout("p" + (addArrowBtn ? ",p" : ""), "f:p:g"), this);
+        PanelBuilder pb = new PanelBuilder(new FormLayout("p:g" + (addArrowBtn ? ",p" : ""), "f:p:g"), this);
         CellConstraints cc = new CellConstraints();
         
         pb.add(mainBtn, cc.xy(1, 1));
