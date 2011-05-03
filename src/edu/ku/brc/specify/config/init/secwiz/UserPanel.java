@@ -1355,7 +1355,7 @@ public class UserPanel extends BaseSetupPanel
             UserData ud = items.get(row);
             switch (column)
             {
-                case 0: return ud.isChanged();
+                case 0: return false;
                 case 1: return false;
                 case 2: return true;
                 case 3: return false;
