@@ -167,6 +167,7 @@ public class SecurityAdminTask extends BaseTask
                 int minPwdLen = (int)institution.getMinimumPwdLength();
                 newPwdVTF.setMinLen(minPwdLen);
                 verPwdVTF.setMinLen(minPwdLen);
+                pwdStrenthUI.setMinPwdLen(minPwdLen);
                 
                 DocumentAdaptor da = new DocumentAdaptor() {
                     @Override
