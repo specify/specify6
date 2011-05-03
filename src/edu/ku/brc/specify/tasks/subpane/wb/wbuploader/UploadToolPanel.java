@@ -26,10 +26,11 @@ import org.jdesktop.animation.timing.TimingTarget;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
+import edu.ku.brc.specify.tasks.subpane.wb.*;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+
 
 /**
  * @author timo
@@ -64,6 +65,7 @@ public class UploadToolPanel extends JPanel implements TimingTarget
     	this.wbSS = wbSS;
     	autoValidateChk = UIHelper.createI18NCheckBox("WorkbenchPaneSS.AutoValidateChk");
         autoValidateChk.setSelected(wbSS.isDoIncrementalValidation());
+        autoValidateChk.setBackground(CellRenderingAttributes.errorBackground);
         autoValidateChk.addActionListener(new ActionListener() {
         	
 			@Override
@@ -113,6 +115,7 @@ public class UploadToolPanel extends JPanel implements TimingTarget
 
     	autoMatchChk = UIHelper.createI18NCheckBox("WorkbenchPaneSS.AutoMatchChk");
     	autoMatchChk.setSelected(wbSS.isDoIncrementalMatching());
+    	autoMatchChk.setBackground(edu.ku.brc.specify.tasks.subpane.wb.CellRenderingAttributes.newDataBackground);
     	autoMatchChk.addActionListener(new ActionListener() {
         	
 			@Override
