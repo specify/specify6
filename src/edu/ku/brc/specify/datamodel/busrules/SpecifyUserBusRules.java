@@ -114,6 +114,7 @@ public class SpecifyUserBusRules extends BaseBusRules
         Institution institution = AppContextMgr.getInstance().getClassObject(Institution.class);
         minPwdLen = (int)institution.getMinimumPwdLength();
         pwdTxt.setMinLen(minPwdLen);
+        pwdStrenthUI.setMinPwdLen(minPwdLen);
         
         final char echoChar = pwdTxt.getEchoChar();
         currEcho = echoChar;

@@ -19,8 +19,6 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
-import javax.swing.SpinnerNumberModel;
-
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.ResultSetController;
