@@ -2545,42 +2545,42 @@
     		 	<!--<row>
     		        <cell type="subview" id="metadata" name="attachment.metadata" viewname="AttachmentMetadata" colspan="3"/>
     		    </row> -->
-    		        <row>
-    		            <cell type="label" labelfor="dateImaged" label="Date Imaged"/>
-    		            <cell type="field" id="dateImaged" name="attachment.dateImaged" uitype="formattedtext" uifieldformatter="Date" default="today" />
-    		        </row>
-    		        <row>
-    		            <cell type="label" labelfor="fileCreatedDate" label="File Created Date"/>
-    		            <cell type="field" id="fileCreatedDate" name="attachment.fileCreatedDate" uitype= "formattedtext" uifieldformatter="Date" default="today"/>
-    		        </row>
-    		        <row>
-    		            <cell type="label" labelfor="copyrightHolder" label="Copyright Holder"/>
-    		            <cell type="field" id="copyrightHolder" name="attachment.copyrightHolder" uitype="text"/>
-    		        </row>
-    		        <row>
-    		            <cell type="label" labelfor="copyrightDate" label="Copyright Date"/>
-    		            <cell type="field" id="copyrightDate" name="attachment.copyrightDate" uitype="formattedtext" uifieldformatter="Date"/>
-    		        </row>
-    		        <row>
-    		            <cell type="label" labelfor="attachmentLocation" label="Attachment Location"/>
-    		            <cell type="field" id="attachmentLocation" name="attachment.attachmentLocation" uitype="text"/>
-    		        </row>
-    		        <row>
-    		            <cell type="label" labelfor="license" label="License"/>
-    		            <cell type="field" id="license" name="attachment.license" uitype="text"/>
-    		        </row>
-    		        <row>
-    		            <cell type="label" labelfor="credit" label="Credit"/>
-    		            <cell type="field" id="credit" name="attachment.credit" uitype="text"/>
-    		        </row>
-    		        <row>
-    	    	        <cell type="label" labelfor="mimeType" label="Mime Type"/>
-    		            <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
-    		        </row>
-    		        <row>
-    		          	<cell type="label" labelfor="remarks" label="Remarks"/>
-    		           	<cell type="field" id="remarks" name="attachment.remarks" uitype="textareabrief" rows="2"/>
-    		        </row>
+    		    <row>
+    		        <cell type="label" labelfor="dateImaged" label="DATE_IMAGED"/>
+    		        <cell type="field" id="dateImaged" name="attachment.dateImaged" uitype="formattedtext" uifieldformatter="Date" default="today" />
+    		    </row>
+    		    <row>
+    		        <cell type="label" labelfor="fileCreatedDate" label="FILE_CREATED_DATE"/>
+    		        <cell type="field" id="fileCreatedDate" name="attachment.fileCreatedDate" uitype= "formattedtext" uifieldformatter="Date" default="today"/>
+    		    </row>
+    		    <row>
+    		        <cell type="label" labelfor="copyrightHolder" label="COPYRIGHT_HOLDER"/>
+    		        <cell type="field" id="copyrightHolder" name="attachment.copyrightHolder" uitype="text"/>
+    		    </row>
+    		    <row>
+    		        <cell type="label" labelfor="copyrightDate" label="COPYRIGHT_DATE"/>
+    		        <cell type="field" id="copyrightDate" name="attachment.copyrightDate" uitype="formattedtext" uifieldformatter="Date"/>
+    		    </row>
+    		    <row>
+    		        <cell type="label" labelfor="attachmentLocation" label="ATTACHMENT_LOCATION"/>
+    		        <cell type="field" id="attachmentLocation" name="attachment.attachmentLocation" uitype="text"/>
+    		    </row>
+    		    <row>
+    		        <cell type="label" labelfor="license" label="LICENSE"/>
+    		        <cell type="field" id="license" name="attachment.license" uitype="text"/>
+    		    </row>
+    		    <row>
+    		        <cell type="label" labelfor="credit" label="CREDIT"/>
+    		        <cell type="field" id="credit" name="attachment.credit" uitype="text"/>
+    		    </row>
+    		    <row>
+    		        <cell type="label" labelfor="mimeType" label="MIME_TYPE"/>
+    		        <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
+    		    </row>
+    		    <row>
+    		       	<cell type="label" labelfor="remarks" label="REMARKS"/>
+    		       	<cell type="field" id="remarks" name="attachment.remarks" uitype="textareabrief" rows="2"/>
+    		    </row>
                 <!--<row>
                    	<cell type="subview" id="imageatt" viewname="AttachmentImageAttribute" name="attachment.attachmentImageAttribute" colspan="3" />
                	</row>-->
