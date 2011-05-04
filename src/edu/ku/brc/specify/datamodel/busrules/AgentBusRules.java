@@ -89,7 +89,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
     {
         super(Agent.class);
         
-        String[] typeTitleKeys = {"AG_ORG", "AG_PERSON", "AG_OTHER", "AG_GROUP"};
+        String[] typeTitleKeys = {"Agent_ORG", "Agent_PERSON", "Agent_OTHER", "Agent_GROUP"};
         typeTitles = new String[typeTitleKeys.length];
         int i = 0;
         for (String key : typeTitleKeys)
