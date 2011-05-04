@@ -4822,8 +4822,11 @@ public class FormViewObj implements Viewable,
                 
                 try
                 {
-                    session.attach(dataObj);
-                    ((FormDataObjIFace)dataObj).forceLoad();
+                    if (mvParent == null || mvParent.isTopLevel())
+                    {
+                        session.attach(dataObj);
+                        ((FormDataObjIFace)dataObj).forceLoad();
+                    }
                 }
                 catch (HibernateException ex)
                 {
