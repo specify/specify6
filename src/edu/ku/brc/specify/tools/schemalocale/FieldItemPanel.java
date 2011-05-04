@@ -192,6 +192,9 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
     protected List<PickList>   pickLists      = new Vector<PickList>();
     protected DisciplineType   disciplineType = null;
     protected String           disciplineName = null;
+ 
+    protected Byte             schemaType;
+
     
     /**
      * @param schemaPanel
@@ -208,12 +211,34 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                           final boolean              isDBSchema,
                           final PropertyChangeListener pcl)
     {
+        this(schemaPanel, webLinkMgrCache, includeHiddenUI, includeFormatAndAutoNumUI, 
+        		isDBSchema, pcl, SpLocaleContainer.CORE_SCHEMA);
+    }
+
+    /**
+     * @param schemaPanel
+     * @param webLinkMgrCache
+     * @param includeHiddenUI
+     * @param includeFormatAndAutoNumUI
+     * @param isDBSchema
+     * @param pcl
+     * @param schemaType
+     */
+    public FieldItemPanel(final SchemaLocalizerPanel schemaPanel,
+                          final WebLinkMgr           webLinkMgrCache,
+                          final boolean              includeHiddenUI, 
+                          final boolean              includeFormatAndAutoNumUI, 
+                          final boolean              isDBSchema,
+                          final PropertyChangeListener pcl,
+                          final Byte schemaType)
+    {
         this.schemaPanel     = schemaPanel;
         this.webLinkMgrCache = webLinkMgrCache;
         this.includeHiddenUI = includeHiddenUI;
         this.includeFormatAndAutoNumUI = includeFormatAndAutoNumUI;
         this.isDBSchema      = isDBSchema;
         this.pcl             = pcl;
+        this.schemaType      = schemaType;
         
         init();
         
@@ -658,7 +683,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             }
         }
         
-        formatSwitcherCombo.setEnabled(formatSwitcherCombo.getModel().getSize() > 1);
+        formatSwitcherCombo.setEnabled(formatSwitcherCombo.getModel().getSize() > 1 && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
     }
 
     /**
@@ -884,9 +909,9 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         
         formatCombo.setSelectedIndex(selectedInx);
 
-        formatSwitcherCombo.setEnabled(enableFormatter);
-        formatCombo.setEnabled(enableFormatter);
-        formatMoreBtn.setEnabled(enableFormatter);
+        formatSwitcherCombo.setEnabled(enableFormatter && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
+        formatCombo.setEnabled(enableFormatter && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
+        formatMoreBtn.setEnabled(enableFormatter && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
         
         return selectedFmt;
     }
@@ -1010,29 +1035,29 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         
         fieldHideChk.setEnabled(enable);
         
-        fieldTypeLbl.setEnabled(enable);
-        fieldTypeTxt.setEnabled(enable);
+        fieldTypeLbl.setEnabled(enable && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
+        fieldTypeTxt.setEnabled(enable && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
         
-        fieldReqChk.setEnabled(!mustBeRequired && enable);
+        fieldReqChk.setEnabled(!mustBeRequired && enable && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
         //log.debug("mustBeRequired: "+mustBeRequired+" !mustBeRequired && enable: "+(!mustBeRequired && enable));
         
-        fieldLengthLbl.setEnabled(enable);
-        fieldLengthTxt.setEnabled(enable);
+        fieldLengthLbl.setEnabled(enable && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
+        fieldLengthTxt.setEnabled(enable && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
         
-        formatSwitcherCombo.setEnabled(enable);
+        formatSwitcherCombo.setEnabled(enable && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
         
         if (pickListLbl != null)
         {
-            pickListLbl.setEnabled(enable);
+            pickListLbl.setEnabled(enable && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
         }
-        pickListCBX.setEnabled(enable);
+        pickListCBX.setEnabled(enable && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
         
         if (formatLbl != null)
         {
-            formatLbl.setEnabled(enable);
-            formatCombo.setEnabled(enable);
-            formatMoreBtn.setEnabled(enable);
-            webLinkCombo.setEnabled(enable);
+            formatLbl.setEnabled(enable && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
+            formatCombo.setEnabled(enable && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
+            formatMoreBtn.setEnabled(enable && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
+            webLinkCombo.setEnabled(enable && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
         }
         
         if (!enable)

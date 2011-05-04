@@ -155,6 +155,8 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     
     protected PropertyChangeListener            listener    = null;
     
+    protected Byte                      schemaType;
+    
 
     /**
      * @param l
@@ -164,12 +166,14 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     public SchemaLocalizerPanel(final PropertyChangeListener pcListener, 
                                 final DataObjFieldFormatMgr  dataObjFieldFormatMgrCache,
                                 final UIFieldFormatterMgr    uiFieldFormatterMgrCache,
-                                final WebLinkMgr             webLinkMgrCache)
+                                final WebLinkMgr             webLinkMgrCache,
+                                final Byte schemaType)
     {
         this.listener                   = pcListener;
         this.dataObjFieldFormatMgrCache = dataObjFieldFormatMgrCache;
         this.uiFieldFormatterMgrCache   = uiFieldFormatterMgrCache;
         this.webLinkMgrCache            = webLinkMgrCache;
+        this.schemaType = schemaType;
         init();
     }
 
@@ -273,7 +277,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         JScrollPane tblsp = UIHelper.createScrollPane(tablesList);
         
         // LocalizableNameDescIFace
-        fieldPanel = new FieldItemPanel(this, webLinkMgrCache, includeHiddenUI, true, isDBSchema, this);
+        fieldPanel = new FieldItemPanel(this, webLinkMgrCache, includeHiddenUI, true, isDBSchema, this, schemaType);
         fieldPanel.setStatusBar(statusBar);
         fieldPanel.setLocalizableIO(localizableIO);
         
@@ -678,14 +682,14 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         }
 
         // formatter and aggregator controls
-        dataObjFmtLbl.setEnabled(enable);
-        dataObjFmtCbo.setEnabled(enable);
-        dataObjFmtBtn.setEnabled(enable);
-        aggregatorLbl.setEnabled(enable);
-        aggregatorCbo.setEnabled(enable);
-        aggregatorBtn.setEnabled(enable);
-        webLinkLbl.setEnabled(enable);
-        webLinkBtn.setEnabled(enable);
+        dataObjFmtLbl.setEnabled(enable && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
+        dataObjFmtCbo.setEnabled(enable && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
+        dataObjFmtBtn.setEnabled(enable && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
+        aggregatorLbl.setEnabled(enable && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
+        aggregatorCbo.setEnabled(enable && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
+        aggregatorBtn.setEnabled(enable && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
+        webLinkLbl.setEnabled(enable && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
+        webLinkBtn.setEnabled(enable && schemaType != SpLocaleContainer.WORKBENCH_SCHEMA);
     }
     
     /**

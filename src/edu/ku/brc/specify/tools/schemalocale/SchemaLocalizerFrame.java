@@ -181,7 +181,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         LocalizerBasePanel.setLocalizableStrFactory(localizableStrFactory);
         SchemaLocalizerXMLHelper.setLocalizableStrFactory(localizableStrFactory);
         
-        schemaLocPanel = new SchemaLocalizerPanel(null, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, webLinkMgrCache);
+        schemaLocPanel = new SchemaLocalizerPanel(null, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, webLinkMgrCache, schemaType);
         schemaLocPanel.setLocalizableIO(localizableIO);
         schemaLocPanel.setStatusBar(statusBar);
         // rods - for now 

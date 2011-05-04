@@ -166,7 +166,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         localizableIOIFace = this;
         localizableIOIFace.load(true);
         
-        schemaLocPanel = new SchemaLocalizerPanel(this, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, webLinkMgrCache);
+        schemaLocPanel = new SchemaLocalizerPanel(this, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, webLinkMgrCache, schemaType);
         schemaLocPanel.setLocalizableIO(localizableIOIFace);
         schemaLocPanel.setUseDisciplines(false);
         
