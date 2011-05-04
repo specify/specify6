@@ -14,7 +14,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 @SuppressWarnings("unused")
 public class CellRenderingAttributes
 {
-	static public final Color HUNTER_ORANGE = new Color(250, 100, 41);
+	static public final Color HUNTER_ORANGE = new Color(252, 144, 29);
 	static public final Color LIGHT_SABRE_BLUE = new Color(4, 184, 252);
 	
 	static public Color errorBorder = Color.RED;
