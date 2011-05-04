@@ -1041,7 +1041,10 @@ public class ViewLoader
                             if (instance.doingResourceLabels && properties != null)
                             {
                                 String title = properties.getProperty(TITLE);
-                                properties.setProperty(TITLE, UIRegistry.getResourceString(title));
+                                if (title != null)
+                                {
+                                    properties.setProperty(TITLE, UIRegistry.getResourceString(title));
+                                }
                                 
                             }
                             

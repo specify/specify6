@@ -1177,6 +1177,15 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             return false;
                         }
                     }
+                    
+                    sql = "SELECT COUNT(*) FROM geocoorddetail WHERE AgentID IS NULL";
+                    int total = BasicSQLUtils.getCountAsInt(conn, sql);
+                    if (total > 0)
+                    {
+                        sql = "UPDATE geocoorddetail SET AgentID=CreatedByAgentID WHERE AgentID IS NULL";
+                        rv  = update(conn, sql);
+                    }
+                    
                     frame.incOverall();
                     
                     //-----------------------------------------------------------------------------

@@ -17,7 +17,10 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import java.awt.Component;
 import java.util.Calendar;
+
+import javax.swing.SwingUtilities;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
@@ -61,23 +64,33 @@ public class GeoCoordDetailBusRules extends BaseBusRules
         
         if (formViewObj != null)
         {
-            geoRefDetByQCBX = formViewObj.getCompById("1");
+            Component comp = formViewObj.getCompById("1");
+            if (comp instanceof ValComboBoxFromQuery)
+            {
+                geoRefDetByQCBX = (ValComboBoxFromQuery)comp;
+            }
+            
             if (geoRefDetByQCBX == null)
             {
-                geoRefDetByQCBX = formViewObj.getCompById("geoRefDetBy");
-                if (geoRefDetByQCBX == null)
+                comp = formViewObj.getCompById("geoRefDetBy");
+                if (comp instanceof ValComboBoxFromQuery)
                 {
-                    return;
+                    geoRefDetByQCBX = (ValComboBoxFromQuery)comp;
                 }
             }
             
-            geoRefDetDateTF = formViewObj.getCompById("2");
+            comp = formViewObj.getCompById("2");
+            if (comp instanceof ValFormattedTextFieldSingle)
+            {
+                geoRefDetDateTF = (ValFormattedTextFieldSingle)comp;
+            }
+            
             if (geoRefDetDateTF == null)
             {
-                geoRefDetDateTF = formViewObj.getCompById("geoRefDetDate");
-                if (geoRefDetDateTF == null)
+                comp = formViewObj.getCompById("geoRefDetBy");
+                if (comp instanceof ValFormattedTextFieldSingle)
                 {
-                    return;
+                    geoRefDetDateTF = (ValFormattedTextFieldSingle)comp;
                 }
             }
         }
@@ -117,7 +130,16 @@ public class GeoCoordDetailBusRules extends BaseBusRules
                     }
                     if (userAgent != null)
                     {
-                        geoRefDetByQCBX.setValue(userAgent, null);
+                        final Agent usrAgt = userAgent;
+                        SwingUtilities.invokeLater(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                geoRefDetByQCBX.setValue(usrAgt, null);
+                                geoRefDetByQCBX.setChanged(true);
+                            }
+                        });
                     }
                 }
             }
@@ -125,8 +147,15 @@ public class GeoCoordDetailBusRules extends BaseBusRules
         
         if (geoRefDetDateTF != null && geoRefDetDateTF.isEnabled() && isEditMode() && isNewObject())
         {
-            geoRefDetDateTF.setValue(Calendar.getInstance(), null);
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    geoRefDetDateTF.setValue(Calendar.getInstance(), null);
+                    geoRefDetDateTF.setChanged(true);
+                }
+            });
         }
     }
-
 }
