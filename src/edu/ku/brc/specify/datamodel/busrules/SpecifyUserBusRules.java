@@ -170,7 +170,7 @@ public class SpecifyUserBusRules extends BaseBusRules
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    if (StringUtils.isNotEmpty(currentPlainTextPWD) && currentPlainTextPWD.length() > minPwdLen)
+                    if (StringUtils.isNotEmpty(currentPlainTextPWD) && currentPlainTextPWD.length() >= minPwdLen)
                     {
                         String key = createEncryptMasterKey(currentPlainTextPWD);
                         if (key != null)
@@ -195,7 +195,7 @@ public class SpecifyUserBusRules extends BaseBusRules
                     super.changed(e);
                     
                     char[]  chars  = pwdTxt.getPassword();
-                    boolean enable = chars != null && chars.length > minPwdLen;
+                    boolean enable = chars != null && chars.length >= minPwdLen;
                     genBtn.setEnabled(enable);
                     copyBtn.setEnabled(enable);
                 }
