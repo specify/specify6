@@ -2392,7 +2392,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             DropDialog dlg = new DropDialog((Frame)UIRegistry.getTopWindow(), 
                                                 isMoveOK, isSynonymizeOK, isMergeOK, draggedRecord.getFullName(),
                                                 droppedOnNode.getFullName(), getMoveTextKey(), getSynonymizeTextKey(), getMergeTextKey());
-            dlg.setHelpContext("SYNONIMIZE_NODE");
             dlg.createUI();
 //            if (treeDef.getNodeClass().equals(Taxon.class))
 //            {

@@ -51,7 +51,7 @@ public class DropDialog extends CustomDialog
 	private static final int mergeOption = 2;
     
     
-    protected JButton           mergeBtn         = null;
+    protected JButton mergeBtn = null;
     protected final boolean isMoveOK;
     protected final boolean isSynOK;
     protected final boolean isMergeOK;
@@ -195,6 +195,24 @@ public class DropDialog extends CustomDialog
     }
 
     /**
+     * @param option
+     * @return help context id for the option
+     */
+    protected static String getInfoDlgHelpContext(int option)
+    {
+		switch (option) 
+		{
+		case moveOption:
+			return "move_node";
+		case synOption:
+			return "synonymize_node";
+		case mergeOption:
+			return "merge_node";
+		default:
+			return "drag_drop";
+		}
+    }
+    /**
      * @param isMoveOK
      * @param isSynOK
      * @param isMergeOK
@@ -240,7 +258,7 @@ public class DropDialog extends CustomDialog
 						ta.setWrapStyleWord(true);
 						CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), UIRegistry.getResourceString("DropDlg.TreeActionDetailTitle"), true, 
 								CustomDialog.OKHELP, ta, CustomDialog.OK_BTN);
-						//XXX find out help context --- cd.setHelpContext(helpContext);
+						cd.setHelpContext(getInfoDlgHelpContext(optNo));
 						cd.createUI();
 						
 						//the following size adjustments are a workaround for problems with height of cd defaulting to 9000.
@@ -320,6 +338,7 @@ public class DropDialog extends CustomDialog
                 }
             });
         }
+        setHelpContext("drag_drop");
         setCloseOnApplyClk(applyBtn != null);
 	}
 
