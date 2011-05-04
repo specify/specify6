@@ -32,6 +32,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.text.JTextComponent;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -217,9 +218,9 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                 //System.err.println("AgentBusRules - id "+id+" setting to "+inx);
                 cbx.setSelectedIndex(inx);
                 
-            } else if (field instanceof JTextField)
+            } else if (field instanceof JTextComponent)
             {
-                ((JTextField)field).setText(value != null ? value : "");
+                ((JTextComponent)field).setText(value != null ? value : "");
                 
             }  else if (field instanceof PartialDateUI)
             {
