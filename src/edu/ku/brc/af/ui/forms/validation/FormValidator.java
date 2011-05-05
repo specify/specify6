@@ -1010,6 +1010,13 @@ public class FormValidator implements ValidationListener, DataChangeListener
         }
     }
     
+    /**
+     * IMPORTANT CHANGE: rods 05/04/11 will now only cascade upwards
+     * when the parent is false and the child is true. It use to 
+     * cascade false up through the parents.
+     * 
+     * @param changed true/false
+     */
     protected void cascadeHasChanged(final boolean changed)
     {
         hasChanged = changed;
@@ -1019,7 +1026,10 @@ public class FormValidator implements ValidationListener, DataChangeListener
             FormValidator parentFV = parent;
             while (parentFV != null)
             {
-                parentFV.hasChanged = changed;
+                if (!parentFV.hasChanged && changed)
+                {
+                    parentFV.hasChanged = changed;
+                }
                 //log.debug("Parent Val "+parentFV.getName()+" hasChanged "+changed);
                 parentFV = parentFV.parent;
             }
@@ -1436,7 +1446,10 @@ public class FormValidator implements ValidationListener, DataChangeListener
     }
 
     /**
-     * Sets whether the data in the form has changed
+     * Sets whether the data in the form has changed and cascades
+     * it up through the parents to the top. NOTE: It only cascades
+     * changes from false to true.
+     * 
      * @param hasChanged whether the data in the form has changed
      */
     public void setHasChanged(boolean hasChanged)
