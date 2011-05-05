@@ -252,7 +252,6 @@ public class SpecifySchemaI18NService extends SchemaI18NService
         String sql = String.format("SELECT i.Language, i.Country, i.Variant FROM splocalecontainer cn INNER JOIN splocaleitemstr i ON " +
                                    "cn.SpLocaleContainerID = i.SpLocaleContainerNameID WHERE cn.SchemaType = %d AND cn.DisciplineID = %d GROUP BY Language, Country, Variant",
                                    schemaType, disciplineId);
-        System.out.println(sql);
         for (Object[] row : BasicSQLUtils.query(sql))
         {
             String language = (String)row[0];

@@ -357,7 +357,7 @@ public class VisualQueryTask extends BaseTask
                 }
             });
             mid = new MenuItemDesc(mi, DATA_MENU);
-            mid.setPosition(MenuItemDesc.Position.After, menuDesc);
+            mid.setPosition(MenuItemDesc.Position.Bottom, menuDesc);
             menuItems.add(mid);
         }
         
