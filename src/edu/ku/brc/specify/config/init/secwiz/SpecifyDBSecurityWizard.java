@@ -24,8 +24,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Component;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -39,7 +37,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.apache.commons.io.FileUtils;
@@ -60,7 +57,6 @@ import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.config.init.BaseSetupPanel;
-import edu.ku.brc.specify.config.init.SummaryPanel;
 import edu.ku.brc.specify.config.init.UserInfoPanel;
 import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.ui.HelpMgr;
@@ -255,15 +251,20 @@ public class SpecifyDBSecurityWizard extends JPanel
                 if (step < lastStep-1)
                 {
                     panels.get(step).getValues(props);
-                    panels.get(step).aboutToLeave();
+                    if (!panels.get(step).aboutToLeave())
+                    {
+                        return;
+                    }
                     
                     advanceToNextPanel();
                     
                 } else
                 {
-                    nextBtn.setEnabled(false);
-
-                    SpecifyDBSecurityWizard.this.listener.finished();
+                    if (panels.get(step).aboutToLeave())
+                    {
+                        nextBtn.setEnabled(false);
+                        SpecifyDBSecurityWizard.this.listener.finished();
+                    }
                 }
             }
         });
@@ -362,7 +363,8 @@ public class SpecifyDBSecurityWizard extends JPanel
     protected void updateBtnBar()
     {
         progressBar.setValue(step);
-        progressBar.setString(String.format("%d", (int)(((step) * 100.0) / (lastStep-1)))+"% Complete"); // I18N
+        progressBar.setString(String.format("%d", (int)(((step) * 100.0) / (lastStep-1))) + 
+                              UIRegistry.getResourceString("MSTR_PERCENT_COMPLETE"));
 
         if (step == lastStep-1)
         {

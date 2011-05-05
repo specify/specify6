@@ -142,8 +142,9 @@ public class NumberingSchemeSetup extends JPanel implements SetupPanelIFace
      * @see edu.ku.brc.specify.config.init.SetupPanelIFace#aboutToLeave(java.beans.PropertyChangeListener)
      */
     @Override
-    public void aboutToLeave()
+    public boolean aboutToLeave()
     {
+        return true;
     }
     
     /* (non-Javadoc)

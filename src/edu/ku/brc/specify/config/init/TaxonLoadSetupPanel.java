@@ -435,7 +435,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
      * @see edu.ku.brc.specify.config.init.BaseSetupPanel#aboutToLeave()
      */
     @Override
-    public void aboutToLeave()
+    public boolean aboutToLeave()
     {
         if (preloadChk.isSelected())
         {
@@ -453,6 +453,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
                 }
             }
         }
+        return true;
     }
     
     /**

@@ -773,6 +773,20 @@ public class UserPanel extends BaseSetupPanel
         loadData(true);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.BaseSetupPanel#aboutToLeave()
+     */
+    @Override
+    public boolean aboutToLeave()
+    {
+        String msg = UIRegistry.getResourceString("MSTR_SAVE_CHANGES");
+        if (UIRegistry.askYesNoLocalized("SAVE", "EXIT", msg, "SAVE") == JOptionPane.YES_OPTION)
+        {
+            saveUserData();
+        }
+        return super.aboutToLeave();
+    }
+
     /**
      * @param isInitial
      */

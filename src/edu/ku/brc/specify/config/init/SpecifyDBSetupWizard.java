@@ -507,7 +507,10 @@ public class SpecifyDBSetupWizard extends JPanel
                     }
                     
                     panels.get(step).getValues(props);
-                    panels.get(step).aboutToLeave();
+                    if (panels.get(step).aboutToLeave())
+                    {
+                        return;
+                    }
                     
                     if (disciplineType != null && disciplineType.isPaleo() && 
                         panels.get(step) instanceof TreeDefSetupPanel &&
