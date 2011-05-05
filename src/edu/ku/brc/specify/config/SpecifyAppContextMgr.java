@@ -1405,6 +1405,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 if (ciEntry != null)
                 {
                     ceEntry.setIcon(ciEntry.getIcon());
+                    ceEntry.getIcons().clear();
                 }
             }
             

@@ -267,7 +267,7 @@ public class InteractionsTask extends BaseTask
                         {
                             tooltip = getLocalizedMessage("DET_OPEN_VIEW", view.getObjTitle());
                         }
-                    } else
+                    } else if (StringUtils.isNotEmpty(entry.getTooltip()))
                     {
                         tooltip = getLocalizedMessage(entry.getTooltip());
                     }
