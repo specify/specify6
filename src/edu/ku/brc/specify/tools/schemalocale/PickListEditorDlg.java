@@ -48,6 +48,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -837,7 +838,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
             
             FileDialog dlg = new FileDialog(this, getResourceString(getI18n("RIE_ExportResource")), FileDialog.SAVE); 
             dlg.setDirectory(UIRegistry.getUserHomeDir());
-            dlg.setFile(getPickListXMLName() + ".xml");
+            dlg.setFile(getPickListXMLName());
             
             UIHelper.centerAndShow(dlg);
             
@@ -846,6 +847,12 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
             
             if (StringUtils.isNotEmpty(dirStr) && StringUtils.isNotEmpty(fileName))
             {
+                String ext = FilenameUtils.getExtension(fileName);
+                if (StringUtils.isEmpty(ext) || !ext.equalsIgnoreCase("xml"))
+                {
+                    fileName += ".xml";
+                }
+
                 try
                 {
                     File xmlFile  = new File(dirStr + File.separator + fileName);
