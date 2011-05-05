@@ -19,8 +19,16 @@
 */
 package edu.ku.brc.specify.tasks;
 
+import static edu.ku.brc.ui.UIRegistry.askYesNoLocalized;
+import static edu.ku.brc.ui.UIRegistry.displayErrorDlgLocalized;
+import static edu.ku.brc.ui.UIRegistry.displayInfoMsgDlgLocalized;
+import static edu.ku.brc.ui.UIRegistry.forceTopFrameRepaint;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+import static edu.ku.brc.ui.UIRegistry.getMostRecentWindow;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getStatusBar;
+import static edu.ku.brc.ui.UIRegistry.getTopWindow;
+import static edu.ku.brc.ui.UIRegistry.showLocalizedMsg;
 
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
@@ -72,8 +80,8 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
-import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
+import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
@@ -82,7 +90,6 @@ import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.validation.TypeSearchForQueryFactory;
 import edu.ku.brc.af.ui.weblink.WebLinkConfigDlg;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
-import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
@@ -110,7 +117,6 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.util.Pair;
 
@@ -351,7 +357,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         {
             final JPopupMenu popupMenu = new JPopupMenu();
             
-            JMenuItem delMenuItem = new JMenuItem(UIRegistry.getResourceString("Delete"));
+            JMenuItem delMenuItem = new JMenuItem(getResourceString("Delete"));
             if (!pickList.getIsSystem())
             {
                 delMenuItem.addActionListener(new ActionListener() {
@@ -365,7 +371,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             }
             popupMenu.add(delMenuItem);
             
-            JMenuItem viewMenuItem = new JMenuItem(UIRegistry.getResourceString("EDIT"));
+            JMenuItem viewMenuItem = new JMenuItem(getResourceString("EDIT"));
             viewMenuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent actionEvent) {
                     startEditor(edu.ku.brc.specify.datamodel.PickList.class, "name",  roc.getName(), roc.getName(), "PickList");
@@ -677,7 +683,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 /*if (false)
                 {
                     //DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(clazz.getSimpleName());
-                    ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UIRegistry.getTopWindow(),
+                    ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)getTopWindow(),
                             "SystemSetup",
                             viewName,
                             null, // displayName
@@ -700,7 +706,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 } else*/
                 {
                     FormPane     pane = new FormPane(tableInfo.getTitle(), this, "SystemSetup", viewName, "edit", null, MultiView.RESULTSET_CONTROLLER, null); // not new data object
-                    CustomDialog dlg  = new CustomDialog((Frame)UIRegistry.getTopWindow(), tableInfo.getTitle(), true, pane);
+                    CustomDialog dlg  = new CustomDialog((Frame)getTopWindow(), tableInfo.getTitle(), true, pane);
                     dlg.setWhichBtns(CustomDialog.OK_BTN);
                     dlg.setOkLabel(getResourceString("CLOSE"));
                     pane.getMultiView().setData(dataItems);
@@ -789,7 +795,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             NavBoxMgr.getInstance().invalidate();
             NavBoxMgr.getInstance().doLayout();
             NavBoxMgr.getInstance().repaint();
-            UIRegistry.forceTopFrameRepaint();
+            forceTopFrameRepaint();
         }
     }
     
@@ -809,9 +815,9 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             
             UsageTracker.incrUsageCount("SS.SCHEMACFG");
             
-            UIRegistry.getStatusBar().setIndeterminate(SYSTEMSETUPTASK, true);
-            UIRegistry.getStatusBar().setText(getResourceString(getI18NKey("LOADING_LOCALES"))); //$NON-NLS-1$
-            UIRegistry.getStatusBar().repaint();
+            getStatusBar().setIndeterminate(SYSTEMSETUPTASK, true);
+            getStatusBar().setText(getResourceString(getI18NKey("LOADING_LOCALES"))); //$NON-NLS-1$
+            getStatusBar().repaint();
             
             SwingWorker workerThread = new SwingWorker()
             {
@@ -825,10 +831,10 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 @Override
                 public void finished()
                 {
-                    UIRegistry.getStatusBar().setText(""); //$NON-NLS-1$
-                    UIRegistry.getStatusBar().setProgressDone(SYSTEMSETUPTASK);
+                    getStatusBar().setText(""); //$NON-NLS-1$
+                    getStatusBar().setProgressDone(SYSTEMSETUPTASK);
                     
-                    SchemaToolsDlg dlg = new SchemaToolsDlg((Frame)UIRegistry.getTopWindow(), schemaType, tableMgr);
+                    SchemaToolsDlg dlg = new SchemaToolsDlg((Frame)getTopWindow(), schemaType, tableMgr);
                     dlg.setVisible(true);
                     if (!dlg.isCancelled())
                     {
@@ -856,7 +862,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             Object[] options = { getResourceString("CONTINUE"),  //$NON-NLS-1$
                                  getResourceString("CANCEL")  //$NON-NLS-1$
                   };
-            return JOptionPane.YES_OPTION == JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+            return JOptionPane.YES_OPTION == JOptionPane.showOptionDialog(getTopWindow(), 
                                                              getLocalizedMessage(getI18NKey("REI_MSG")),  //$NON-NLS-1$
                                                              getResourceString(getI18NKey("REI_TITLE")),  //$NON-NLS-1$
                                                              JOptionPane.YES_NO_OPTION,
@@ -865,10 +871,16 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         return false;
     }
     
+    /**
+     * @return the User Name who will get the resources imported into
+     */
     protected String pickUserName()
     {
+        Division division = AppContextMgr.getInstance().getClassObject(Division.class);
         String currUserName = (AppContextMgr.getInstance().getClassObject(SpecifyUser.class)).getName();
-        String postSQL      = String.format(" FROM specifyuser WHERE Name <> '%s'", currUserName);
+        String postSQL      = String.format(" FROM specifyuser su INNER JOIN agent a ON su.SpecifyUserID = a.SpecifyUserID " +
+                                            "INNER JOIN division d ON a.DivisionID = d.UserGroupScopeId " +
+                                            "WHERE su.Name <> '%s' AND d.UserGroupScopeId = %d", currUserName, division.getId());
         
         int count = BasicSQLUtils.getCountAsInt("SELECT COUNT(*) "+postSQL);
         if (count == 0)
@@ -876,19 +888,19 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             return null;
         }
         
-        int choice = UIRegistry.askYesNoLocalized("SYSSTP_CHSE_ME", "SYSSTP_CHSE_DIF", getResourceString("SYSSTP_CHSE_USER"), "SYSSTP_CHSE_USER_TITLE");
+        int choice = askYesNoLocalized("SYSSTP_CHSE_ME", "SYSSTP_CHSE_DIF", getResourceString("SYSSTP_CHSE_USER"), "SYSSTP_CHSE_USER_TITLE");
         if (choice == JOptionPane.YES_OPTION)
         {
             return null; // null means choose the current user
         }
         
-        Vector<Object> names = BasicSQLUtils.querySingleCol("SELECT Name " + postSQL); 
+        Vector<Object> names = BasicSQLUtils.querySingleCol("SELECT su.Name " + postSQL); 
         if (names.size() == 1)
         {
             return names.get(0).toString();
         }
         
-        ChooseFromListDlg<Object> dlg = new ChooseFromListDlg<Object>((Frame)UIRegistry.getMostRecentWindow(), "SYSSTP_CHSE_USER_TITLE", names);
+        ChooseFromListDlg<Object> dlg = new ChooseFromListDlg<Object>((Frame)getMostRecentWindow(), getResourceString("SYSSTP_CHSE_USER_TITLE"), names);
         UIHelper.centerAndShow(dlg);
         return !dlg.isCancelled() ? dlg.getSelectedObject().toString() : CANCELLED;
     }
@@ -911,19 +923,11 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 userName = AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getName();
             }
             
-            SpecifyAppContextMgr         contextMgr = new SpecifyAppContextMgr();
-            AppContextMgr.CONTEXT_STATUS status     = contextMgr.setContext(DBConnection.getInstance().getDatabaseName(), userName, true, false);
-            if (status != AppContextMgr.CONTEXT_STATUS.OK)
-            {
-                log.error("Status is bad: "+status);
-                contextMgr = null;
-            }
-            
-            ResourceImportExportDlg dlg = new ResourceImportExportDlg(contextMgr, userName);
+            ResourceImportExportDlg dlg = new ResourceImportExportDlg((SpecifyAppContextMgr)AppContextMgr.getInstance(), userName);
             dlg.setVisible(true);
             if (dlg.hasChanged())
             {
-                UIRegistry.showLocalizedMsg("Specify.ABT_EXIT");
+                showLocalizedMsg("Specify.ABT_EXIT");
                 CommandDispatcher.dispatch(new CommandAction(APP_CMD_TYPE, APP_REQ_EXIT));
                 
             } else
@@ -945,12 +949,12 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         															   //Currently can't get WriteGlassPane working in this context.(???)
         	if (success)
         	{
-        		UIRegistry.displayInfoMsgDlgLocalized("SystemSetupTask.TREE_UPDATE_SUCCESS", tree.getTitle());
+        		displayInfoMsgDlgLocalized("SystemSetupTask.TREE_UPDATE_SUCCESS", tree.getTitle());
         	}
         }
         catch (Exception ex)
         {
-        	UIRegistry.displayErrorDlgLocalized("SystemSetupTask.TREE_UPDATE_DISASTER", tree.getTitle());
+        	displayErrorDlgLocalized("SystemSetupTask.TREE_UPDATE_DISASTER", tree.getTitle());
             UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SystemSetupTask.class, ex);
         }
@@ -1197,7 +1201,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         int containerCnt = BasicSQLUtils.getCountAsInt(sql);
         if (containerCnt == 0)
         {
-            UIRegistry.getStatusBar().setIndeterminate(SYSTEMSETUPTASK, true);
+            getStatusBar().setIndeterminate(SYSTEMSETUPTASK, true);
             final SwingWorker worker = new SwingWorker()
             {
                 private boolean isOK = false;
@@ -1239,7 +1243,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 //Runs on the event-dispatching thread.
                 public void finished()
                 {
-                    UIRegistry.getStatusBar().setProgressDone(SYSTEMSETUPTASK);
+                    getStatusBar().setProgressDone(SYSTEMSETUPTASK);
                     
                     if (isOK)
                     {
@@ -1422,7 +1426,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             if (data instanceof Integer)
             {
                 final Integer id = (Integer) data;
-                UIRegistry.getStatusBar().setIndeterminate(SYSTEMSETUPTASK, true);
+                getStatusBar().setIndeterminate(SYSTEMSETUPTASK, true);
                 final SwingWorker worker = new SwingWorker()
                 {
                     public Object construct()
@@ -1455,7 +1459,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                     //Runs on the event-dispatching thread.
                     public void finished()
                     {
-                        UIRegistry.getStatusBar().setProgressDone(SYSTEMSETUPTASK);
+                        getStatusBar().setProgressDone(SYSTEMSETUPTASK);
                         
                     }
                 };
@@ -1534,7 +1538,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      */
     public void doDeleteDataObj(final Object dataObj, final DataProviderSessionIFace session, final boolean doDelete)
     {
-        UIRegistry.getStatusBar().setProgressDone(SYSTEMSETUPTASK);
+        getStatusBar().setProgressDone(SYSTEMSETUPTASK);
         
         if (dataObj instanceof PickList)
         {
@@ -1556,12 +1560,12 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                         }
                     } else
                     {
-                        UIRegistry.getStatusBar().setErrorMessage(getResourceString("PL_NO_DEL_SYSPL"));
+                        getStatusBar().setErrorMessage(getResourceString("PL_NO_DEL_SYSPL"));
                     }
                 }
             } else
             {
-                UIRegistry.getStatusBar().setErrorMessage(getResourceString("PL_NO_DEL_PL_INUSE"));
+                getStatusBar().setErrorMessage(getResourceString("PL_NO_DEL_PL_INUSE"));
             }
         }
     }
