@@ -45,6 +45,8 @@ import org.hibernate.Session;
 import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.auth.SecurityOptionIFace;
+import edu.ku.brc.af.auth.specify.permission.PermissionService;
+import edu.ku.brc.af.auth.specify.policy.DatabaseService;
 import edu.ku.brc.af.auth.specify.principal.AdminPrincipal;
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
@@ -57,6 +59,8 @@ import edu.ku.brc.af.ui.db.PickListIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.SpecifyUserTypes;
@@ -85,7 +89,6 @@ import edu.ku.brc.specify.datamodel.CollectionObjectCitation;
 import edu.ku.brc.specify.datamodel.CollectionRelType;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.Container;
-import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Deaccession;
 import edu.ku.brc.specify.datamodel.DeaccessionAgent;
@@ -116,7 +119,6 @@ import edu.ku.brc.specify.datamodel.LocalityDetail;
 import edu.ku.brc.specify.datamodel.OtherIdentifier;
 import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.PickList;
-import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttr;
@@ -253,7 +255,7 @@ public class DataBuilder
             agent.addReference(groupPerson, "members");
         }
         
-        System.out.println("Agent '"+agent.getLastName()+"' is in groups:");
+        /*System.out.println("Agent '"+agent.getLastName()+"' is in groups:");
         for (GroupPerson gp : agent.getGroups())
         {
             System.out.println("  Mem '"+gp.getGroup().getLastName()+"'  "+gp.getOrderIndex());
@@ -262,7 +264,7 @@ public class DataBuilder
         for (GroupPerson gp : group.getMembers())
         {
             System.out.println("  Mem '"+gp.getMember().getLastName()+"'  "+gp.getOrderIndex());
-        }
+        }*/
         return groupPerson;
     }
     
@@ -2664,8 +2666,7 @@ public class DataBuilder
      * Create default groups under the given scope.
      *
      */
-    public static Map<String, List<Integer>> mergeStandardGroups(final Session    sessionArg,
-                                                                 final Collection scope)
+    public static Map<String, List<Integer>> mergeStandardGroups(final Collection scope)
     {
         loadDefaultGroupDefinitions();
         
@@ -2677,7 +2678,7 @@ public class DataBuilder
             List<Integer> principleIds = getGroup(grpInfo.first, usertype, scope);
             groupMap.put(usertype, principleIds);
         }
-        mergeDefaultPermissions(sessionArg, groupMap);
+        mergeDefaultPermissions(groupMap);
 
         return groupMap;
     }
@@ -2702,13 +2703,12 @@ public class DataBuilder
     /**
      * @param groupMap
      */
-    private static void mergeDefaultPermissions(final Session sessionArg, final Map<String, List<Integer>> groupMap)
+    private static void mergeDefaultPermissions(final Map<String, List<Integer>> groupMap)
     {
 
-        
-        mergeDefaultPermissions(sessionArg, "dataobjs.xml",   "DO.",    groupMap, null);
-        mergeDefaultPermissions(sessionArg, "prefsperms.xml", "Prefs.", groupMap, null);
-        mergeDefaultPermissions(sessionArg, "tasks.xml",      "Task.",  groupMap, null);
+        mergeDefaultPermissions("dataobjs.xml",   "DO.",    groupMap);
+        mergeDefaultPermissions("prefsperms.xml", "Prefs.", groupMap);
+        mergeDefaultPermissions("tasks.xml",      "Task.",  groupMap);
     }
     
     /**
@@ -2762,11 +2762,9 @@ public class DataBuilder
      * @param prefix
      * @param groupMap
      */
-    public static void mergeDefaultPermissions(final Session     sessionArg,
-                                               final String      filename,
+    public static void mergeDefaultPermissions(final String      filename,
                                                final String      prefix,
-                                               final Map<String, List<Integer>> groupMap,
-                                               final List<SecurityOptionIFace> additionalSecOpts)
+                                               final Map<String, List<Integer>> groupMap)
     {
         Hashtable<String, Hashtable<String, PermissionOptionPersist>> mainHash = BaseTask.readDefaultPermsFromXML(filename);
         for (String permName : mainHash.keySet())
@@ -2805,7 +2803,9 @@ public class DataBuilder
                 }
             }
         }*/
-
+        
+        
+        HashMap<SpPermission, List<Integer>> prinPermHash = new HashMap<SpPermission, List<Integer>>();
         for (String permName : mainHash.keySet())
         {
             String fullPermName = prefix + permName;
@@ -2816,10 +2816,6 @@ public class DataBuilder
                 PermissionOptionPersist tp   = hash.get(userType);
                 SpPermission            perm = tp.getSpPermission();
                 
-                //sessionArg.saveOrUpdate(perm);
-                
-                //Set<SpPrincipal> groupSet = new HashSet<SpPrincipal>();
-                //groupSet.add(groupMap.get(userType));
                 for (Integer id : groupMap.get(userType))
                 {
                     String str = "SELECT p.SpPermissionID FROM sppermission AS p Inner Join spprincipal_sppermission AS pp ON p.SpPermissionID = pp.SpPermissionID " +
@@ -2828,16 +2824,70 @@ public class DataBuilder
                     Integer permId = BasicSQLUtils.getCount(sql);
                     if (permId == null)
                     {
-                        System.out.println(String.format("Need to create %s for Prin: %d", fullPermName, id));
+                        System.out.println(String.format("Going to create %s for Prin: %d", fullPermName, id));
+                        List<Integer> list = prinPermHash.get(perm);
+                        if (list == null)
+                        {
+                            perm.setName(fullPermName);
+                            list = new ArrayList<Integer>();
+                            prinPermHash.put(perm, list);
+                        }
+                        list.add(id);
                     }
-                    //perm.setPrincipals(groupSet);
-                    //perm.setName(prefix + permName);
                 }
             }
         }
+        
+        if (prinPermHash.size() > 0)
+        {
+            Connection        conn   = null;
+            PreparedStatement pstmt1 = null; 
+            PreparedStatement pstmt2 = null; 
+            try
+            {
+                conn = DatabaseService.getInstance().getConnection();            
+                pstmt1 = conn.prepareStatement("INSERT INTO sppermission (Actions, Name, PermissionClass) VALUES (?, ?, ?)");         //$NON-NLS-1$
+                pstmt2 = conn.prepareStatement("INSERT INTO spprincipal_sppermission (SpPermissionID, SpPrincipalID) VALUES (?, ?)"); //$NON-NLS-1$
+                for (SpPermission spPerm : prinPermHash.keySet())
+                {
+                    for (Integer prinId : prinPermHash.get(spPerm))
+                    {
+                        pstmt1.setString(1, spPerm.getActions());
+                        pstmt1.setString(2, spPerm.getName());
+                        pstmt1.setString(3, spPerm.getClass().getName());
+                        pstmt1.executeUpdate();
+                        
+                        Integer newPermId = BasicSQLUtils.getInsertedId(pstmt1);
+                        pstmt2.setInt(1, newPermId);
+                        pstmt2.setInt(2, prinId);
+                        pstmt2.executeUpdate();
+                    }
+                }
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionService.class, e);
+            } finally
+            {
+                try
+                {
+                    if (pstmt1 != null)  pstmt1.close(); 
+                    if (pstmt2 != null)  pstmt2.close(); 
+                    if (conn != null)  conn.close();
+                    
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                    edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionService.class, e);
+                }
+            } 
+        }
     }
-//------------------------------------------------------------------------
-
+    
+    //------------------------------------------------------------------------
     
     public static Workbench createWorkbench(final SpecifyUser user,
                                             final String name, 
@@ -3034,7 +3084,7 @@ public class DataBuilder
                 configXStream(xstream, true);
             }
             
-            if (pickListFile != null && pickListFile.exists())
+            if (pickListFile.exists())
             {
                 //System.out.println(FileUtils.readFileToString(pickListFile));
                 List<BldrPickList> list = (List<BldrPickList>)xstream.fromXML(FileUtils.readFileToString(pickListFile));

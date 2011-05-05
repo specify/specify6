@@ -251,20 +251,16 @@ public class SpecifyDBSecurityWizard extends JPanel
                 if (step < lastStep-1)
                 {
                     panels.get(step).getValues(props);
-                    if (!panels.get(step).aboutToLeave())
-                    {
-                        return;
-                    }
+                    panels.get(step).aboutToLeave();
                     
                     advanceToNextPanel();
                     
                 } else
                 {
-                    if (panels.get(step).aboutToLeave())
-                    {
-                        nextBtn.setEnabled(false);
-                        SpecifyDBSecurityWizard.this.listener.finished();
-                    }
+                    panels.get(step).aboutToLeave();
+                    nextBtn.setEnabled(false);
+                    SpecifyDBSecurityWizard.this.listener.finished();
+                    
                 }
             }
         });

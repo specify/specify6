@@ -140,9 +140,9 @@ public class FormSetupPanel extends ViewBasedDisplayPanel implements SetupPanelI
      * @see edu.ku.brc.specify.config.init.SetupPanelIFace#aboutToLeave(java.beans.PropertyChangeListener)
      */
     @Override
-    public boolean aboutToLeave()
+    public void aboutToLeave()
     {
-        return true;
+        // no op
     }
 
     /* (non-Javadoc)

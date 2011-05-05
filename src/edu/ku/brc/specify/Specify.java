@@ -207,7 +207,6 @@ import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.DefaultClassActionHandler;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.JTiledToolbar;
 import edu.ku.brc.ui.RolloverCommand;
@@ -215,6 +214,7 @@ import edu.ku.brc.ui.ToolbarLayoutManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.VerticalSeparator;
+import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.skin.SkinItem;
 import edu.ku.brc.ui.skin.SkinsMgr;
@@ -2532,7 +2532,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 }
             });
             
-            DataBuilder.mergeStandardGroups(null, AppContextMgr.getInstance().getClassObject(Collection.class));
+            DataBuilder.mergeStandardGroups(AppContextMgr.getInstance().getClassObject(Collection.class));
             
         } else if (status == AppContextMgr.CONTEXT_STATUS.Error)
         {

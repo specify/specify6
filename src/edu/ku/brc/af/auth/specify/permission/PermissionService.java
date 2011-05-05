@@ -213,6 +213,10 @@ public class PermissionService
         return hash;
     }
     
+    /**
+     * @param principals
+     * @return
+     */
     private static String getPrincipalSet(final List<SpPrincipal> principals) 
     {
         StringBuffer inClause = new StringBuffer();
@@ -604,7 +608,7 @@ public class PermissionService
      * @param sp
      * @param permission
      */
-    public static void giveSpPrincipalPermission(SpPrincipal sp, Permission permission)
+    public static void giveSpPrincipalPermission(final SpPrincipal sp, final Permission permission)
     {
         createPermission(permission);
         joinSpPrincipalPermission(sp, permission);
@@ -613,7 +617,7 @@ public class PermissionService
     /**
      * @param permission
      */
-    private static void createPermission(Permission permission) 
+    private static void createPermission(final Permission permission) 
     {
         Connection conn = null;
         PreparedStatement pstmt = null; 
@@ -626,7 +630,6 @@ public class PermissionService
             pstmt.setString(2, permission.getName());
             pstmt.setString(3, permission.getClass().getName());
             pstmt.executeUpdate();
-            conn.close();
         }
         catch (SQLException e)
         {
@@ -638,8 +641,8 @@ public class PermissionService
         {
             try
             {
-                if (conn != null)  conn.close();
                 if (pstmt != null)  pstmt.close(); 
+                if (conn != null)  conn.close();
             } catch (SQLException e)
             {
                 edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();

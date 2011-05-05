@@ -193,9 +193,9 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
      * @see edu.ku.brc.specify.config.init.SetupPanelIFace#aboutToLeave(java.beans.PropertyChangeListener)
      */
     @Override
-    public boolean aboutToLeave()
+    public void aboutToLeave()
     {
-        return true;
+        // no op
     }
 
     /**

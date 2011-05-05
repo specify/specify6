@@ -47,7 +47,7 @@ public interface SetupPanelIFace
     
     public abstract void doingPrev();
     
-    public abstract boolean aboutToLeave();
+    public abstract void aboutToLeave();
     
     public abstract void doingNext();
     
