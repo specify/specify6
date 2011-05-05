@@ -212,7 +212,7 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
                 cellName,
                 mvParent,
                 options | MultiView.NO_SCROLLBARS);
-
+        
         if (StringUtils.isNotEmpty(closeBtnTitle))
         {
             this.setOkLabel(closeBtnTitle);
@@ -241,6 +241,8 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
     @Override
     public void createUI()
     {
+        setBackground(viewBasedPanel.getBackground());
+
         JScrollPane scrollPane = UIHelper.createScrollPane(viewBasedPanel, true);
         scrollPane.setBorder(BorderFactory.createLineBorder(getBackground(), 8));
         contentPanel = scrollPane;
@@ -249,24 +251,25 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
         
         viewBasedPanel.setOkCancelBtns(okBtn, cancelBtn); 
         
+        Integer width = (Integer)UIManager.get("ScrollBar.width");
+        if (width == null)
+        {
+        	width = (new JScrollBar()).getPreferredSize().width;
+        }
+        
+        Dimension dim1 = getPreferredSize();
+        dim1.height += width * 2;
         if (!UIHelper.isMacOS())
         {
-	        Integer width = (Integer)UIManager.get("ScrollBar.width");
-	        if (width == null)
-	        {
-	        	width = (new JScrollBar()).getPreferredSize().width;
-	        }
-	        
-	        Dimension dim1 = getPreferredSize();
-	        dim1.height += width;
-	        dim1.width  += width;
-	        setSize(dim1);
+            dim1.width += width;
         }
+        setSize(dim1);
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.ViewBasedDisplayIFace#setParentData(java.lang.Object)
      */
+    @Override
     public void setParentData(Object parentDataObj)
     {
         this.parentDataObj = parentDataObj;
@@ -283,6 +286,7 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
         {
             viewBasedPanel.aboutToShow(visible);
         }
+        pack();
         super.setVisible(visible);
     }
     
