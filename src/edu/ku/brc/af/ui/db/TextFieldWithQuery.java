@@ -1193,7 +1193,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             
             inx = doAddAddItem ? inx-1 : inx;
 
-            if (!isDoingAdd)
+            if (!isDoingAdd && inx < idList.size())
             {
                 selectedId = idList.get(inx);
                 setText(list.get(inx));
