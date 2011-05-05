@@ -1065,7 +1065,7 @@ public class UploadTable implements Comparable<UploadTable>
     		{
     			if (shouldLoadParent(pte))
     			{
-    				System.out.println("loading " + pte.getImportTable());
+    				//System.out.println("loading " + pte.getImportTable());
     				if (rec != null)
     				{
     					pte.getImportTable().loadRecord((DataModelObjBase )pte.getGetter().invoke(rec, (Object[] )null), seq);
@@ -1077,13 +1077,16 @@ public class UploadTable implements Comparable<UploadTable>
     		}
     	}
     	
-    	for (UploadTable c : specialChildren)
+    	if (rec != null)
     	{
-    		System.out.println("loading " + c);
-    		int cSeq = 0; 
-    		for (DataModelObjBase childRec : getChildRecords(c, rec))
+    		for (UploadTable c : specialChildren)
     		{
-    			c.loadRecord(childRec, cSeq++);
+    			//System.out.println("loading " + c);
+    			int cSeq = 0; 
+    			for (DataModelObjBase childRec : getChildRecords(c, rec))
+    			{
+    					c.loadRecord(childRec, cSeq++);
+    			}
     		}
     	}
     }
@@ -1098,7 +1101,7 @@ public class UploadTable implements Comparable<UploadTable>
     	String name = "get" + child.getTblClass().getSimpleName() + "s";
     	try 
     	{
-    		System.out.println("getting method " + name);
+    		//System.out.println("getting method " + name);
     		return getTblClass().getMethod(name, (Class<?>[] )null);
     	} catch (NoSuchMethodException ex)
     	{
