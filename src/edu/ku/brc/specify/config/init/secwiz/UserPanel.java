@@ -86,6 +86,8 @@ import edu.ku.brc.util.Pair;
  */
 public class UserPanel extends BaseSetupPanel
 {
+    private static final String HELP_CONTEXT = "securitywiz_screen3";
+    
     protected JList             dbList      = null;
     protected JList             otherDBList = null;
     protected JScrollPane       dbScrollPane;
@@ -128,6 +130,7 @@ public class UserPanel extends BaseSetupPanel
                      MasterLoginPanel masterPanel)
     {
         super(panelName, helpContext, nextBtn, prevBtn, makeStretchy);
+        this.helpContext = HELP_CONTEXT;
         this.masterPanel = masterPanel;
         createUI();
     }

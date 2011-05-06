@@ -70,8 +70,8 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
-import edu.ku.brc.dbsupport.DBMSUserMgr.DBSTATUS;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
+import edu.ku.brc.dbsupport.DBMSUserMgr.DBSTATUS;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.init.BaseSetupPanel;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
@@ -96,6 +96,8 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
  */
 public class DatabasePanel extends BaseSetupPanel
 {
+    private static final String HELP_CONTEXT = "securitywiz_screen2";
+
     private enum VerifyStatus {OK, CANCELLED, ERROR}
     
     protected final String            PROPNAME    = "PROPNAME";
@@ -131,6 +133,7 @@ public class DatabasePanel extends BaseSetupPanel
                          final boolean doSetDefaultValues)
     {
         super("DATABASE", helpContext, nextBtn, prevBtn);
+        this.helpContext = HELP_CONTEXT;
         
         this.doSetDefaultValues = doSetDefaultValues;
         

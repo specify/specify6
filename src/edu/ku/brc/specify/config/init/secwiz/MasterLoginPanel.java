@@ -68,6 +68,8 @@ import edu.ku.brc.util.Pair;
  */
 public class MasterLoginPanel extends GenericFormPanel
 {
+    private static final String HELP_CONTEXT = "securitywiz_screen1";
+    
     protected String                  propName = "next";
     protected Boolean                 isOK     = null;
     protected JLabel                  label;
@@ -106,6 +108,7 @@ public class MasterLoginPanel extends GenericFormPanel
                            boolean makeStretchy)
     {
         super(name, title, helpContext, labels, fields, numColumns, nextBtn, prevBtn, makeStretchy);
+        this.helpContext = HELP_CONTEXT;
     }
 
     /* (non-Javadoc)
@@ -119,6 +122,7 @@ public class MasterLoginPanel extends GenericFormPanel
                         final Integer[] numColumns)
     {
         super.init(title, fields, required, types, numColumns);
+        this.helpContext = HELP_CONTEXT;
         
         PanelBuilder panelPB = new PanelBuilder(new FormLayout("f:p:g", "20px,p,2px,p"));
         panelPB.add(getProgressBar(), cc.xy(1, 2));
