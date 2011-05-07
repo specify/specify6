@@ -1,116 +1,337 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
-<title>Interactions Forms</title>
+  <head>
+    <meta content="text/html; charset=MacRoman" http-equiv="Content-Type">
+    <link type="text/css" media="screen" href="../../main.css" rel="stylesheet">
+    <meta name="generator" content="Helen">
 <style type="text/css">
 <!--
-..style8 {font-size: xx-large}
+..style8 {
+  font-size: xx-large;
+}
 -->
 </style>
-</head>
-
-<body bgcolor="#ffffff">
-<table width="100%" border="0" background="../../images/topbar.png">
-  <tr>
-    <td>&nbsp;</td>
-  </tr>
-</table><table border="0">
-<tr><td align="left" valign="middle"><img src="../../images/interactions.png" alt=""/></td>
-<td align="left" valign="middle"><h2>Interactions Forms</h2></td></tr>
-</table><a name="interactions_overview"></a>
-<p>The interactions forms in Specify help users create and manage loans, gifts, borrowed items, permits, shipments, accessions, and information requests. As an example, a collection manager may respond to a request for a loan of from an institution for research. By creating a new loan record in Specify.  This would include the list of specimens to be loaned, along with other required loan information. When the loan is returned, the manager would then update the loan record to note the date of the return and which specimens were returned.</p>
-<p> Access Interaction Forms by clicking the  <img src="../../images/interactions_20.png" width="20" height="20" /> Interactions button. A list of forms will appear in the side bar.</p>
-<p><strong><em>Note:</em></strong> If an Interactions button is not available on the task bar choose <em>Specify &gt; Preferences &gt; <img src="../../images/taskbar.png" width="32" height="32"/> Task Bar</em>, then click the <em>Interactions</em> checkbox.</p>
-<p>Specify 6 ships with the most frequently used forms listed on the side bar. </p>
-<p>A <strong><a name="interactions_config" id="interactions_sidebar"></a>Side Bar Interaction Form Configuration</strong> allows the available Interaction forms listed on the side bar to be rearranged and hidden:</p>
-<p>Right-button-click in the right side of the side bar to open the Form Configuration tool, then click on the <img src="../../images/configure_box.png" width="110" height="27" /> button.</p>
-<ul>
-  <li>Use the <img src="../../images/ReorderUp16x16.png" width="16" height="16" />, and <img src="../../images/ReorderDown16x16.png" width="16" height="16" /> (reorder) buttons to change the order in which the forms appear in the side bar and More Forms list.</li>
-  <li>Use the <img src="../../images/Map16x16.png" width="16" height="16" />, and <img src="../../images/Unmap16x16.png" width="16" height="16" />  (move) buttons to show or hide an available side bar item. </li>
-</ul>
-<p>Interactions forms can be activated by clicking them in the side bar. Gifts, Loans or Information Request are also activated by dropping a Collection Object record set onto them in the side bar.</p>
+    <title>Interactions Forms</title>
+  </head>
+  <body bgcolor="#ffffff">
+    <table border="0" width="100%" background="../../images/topbar.png">
+      <tr>
+        <td>&nbsp;        </td>
+      </tr>
+    </table>
+    <table border="0">
+      <tr>
+        <td align="left" valign="middle">
+          <img src="../../images/interactions.png" alt="">        </td>
+        <td align="left" valign="middle">
+          <h2>
+             Interactions Forms          </h2>        </td>
+      </tr>
+    </table>
+    <p>
+       <a name="interactions_overview"></a>    </p>
+    <p>
+       The interactions forms in Specify help users create and manage loans, gifts, borrowed items,
+      permits, shipments, accessions, and information requests. As an example, a collection manager
+      may respond to a request for a loan of from an institution for research. By creating a new
+      loan record in Specify. This would include the list of specimens to be loaned, along with
+      other required loan information. When the loan is returned, the manager would then update the
+      loan record to note the date of the return and which specimens were returned.    </p>
+    <p>
+       Access Interaction Forms by clicking the <img src="../../images/interactions_20.png" width=
+      "20" height="20">&nbsp;Interactions button. A list of forms will appear in the side bar.    </p>
+    <blockquote>
+      <p>
+        <strong><em>Note:</em></strong> If an Interactions button is not available on the task bar
+        choose <em>Specify &gt; Preferences &gt; <img height="32" src="../../images/taskbar.png"
+      width="32">&nbsp;Task Bar</em>, then click the <em>Interactions</em> checkbox.    </p>
+    </blockquote>
+<p>
+       Specify 6 ships with the most frequently used forms listed on the side bar.    </p>
 <p>&nbsp;</p>
-<h3><u><strong>Unique Forms</strong></u></h3>
-<h3><strong><a name="int_accessions" id="accessions"></a>Accession</strong>s</h3>
-<p> Accessioning is the formal process by which a specimen or object is legally accepted and recorded as a museum item and differs from cataloging.  This usually entails proof of ownership (in the form of a signed deed of gift) and legal collection (in the form of all associated permits - collecting, import and export).  Accessioning and its numbering system is usually a policy adopted as a museum wide policy but is not used by all museums.  An accession usually covers an entire field trip and multiple catalog items could be included within a single accession.  Within the database there is a one-to-many relationship between Accessions and Collection Objects.  Accessions can be created through the Interactions menu or directly from the Collection Object being entered.</p>
-  <p>Note:  Accession number is one of the fields that can be formatted through the schema localizer.  The accession numbering system can also be associated at the Collection level for individual collection use or the Institution level where a single numbering system is adopted by all collections within an Institution.</p>
-  <p><br />
-    All associated agents and permitting information can be entered in a one-to-many relationship within the accession.
-    </p>
-    <p></p>
-<h3><strong><a name="int_gifts_loans" id="int_gifts_loans"></a>Gifts and Loans</strong></h3>
-<p>Loans and Gifts document items leaving the Institution, and Collection Objects are linked to the Loan/Gift through preparations.&nbsp; The first step in creating a Loan or Gift is choosing the specimens (as preparations) to add to the transaction.</p>
-<ul>
-  <li>Click either Loan or Gift in the side bar to start the process.</li>
-</ul>
-<p>If any record sets have been saved, a dialog appears prompting the user to either <em>Enter Catalog Numbers</em> or use an existing <em>record set</em>. The Record set method would be easiest when using large sets of data.</p>
-<ul>
-  <li><strong>Enter Catalog Numbers</strong>  by typing the catalog numbers into the text dialog, separating multiple numbers with commas (100, 105, 152)<br />
-    <br />
-  </li><li>Select a <strong>record set</strong> from the list.&nbsp; If only one record set exists, it will be used by default. &nbsp;This can also be accomplished by dragging and dropping the record set onto the Information Request item in the sidebar.</li>
-</ul>
-<p><em><strong>Note:</strong></em> If a  non-loanable Preparation Type is selected  a warning dialog will appear informing the user that the chosen specimen(s) are not loanable.</p>
-<p>Next, a dialog listing all preparations for each Catalog number will appear.</p>
-<p align="center"><img src="../../images/loan_screen.png" width="305" height="257" /></p>
-<p align="center" class="imgcaption">Create Loan from Preparations</p>
-<p>Each checkbox represents a Collection Object and is labeled with Catalog Number and determination. Specimen counts reflect the number of specimens that are currently on available to be loaned.  An indication is also given if any additional specimens are associated with previous open loans or gifts.  In these cases the total number of available specimens would be reduced by this number.  The  <img src="../../images/info_20x20.png" width="20" height="20" />(information) button links to the loan or gift in question for further information.</p>
-<ul>
-  <li><strong>Select specimens</strong> by typing the number of specimens of each preparation being sent on loan into the dialog or use the arrow keys.&nbsp; If multiple preparations for a single Collection Object are present, they will be listed together under the same checkbox.&nbsp;All preparations can be selected at once by clicking the <em>Select All</em> button.</li>
-</ul>
-<p>All preparations can be selected at once by clicking the <em>Select All </em>button.&nbsp; The number of specimens available to be loaned is indicated next to the arrow keys to select a number.&nbsp; An indication is also given if any additional specimens are associated with previous open loans or gifts.&nbsp; In these cases the total number of available specimens would be reduced by this number.&nbsp; The <img src="../../images/info_20x20.png" width="20" height="20" />(information) links to the loan or gift in question for further information.</p>
-<p>Click the <em>OK</em> button to accept the preparations and progress to the Loan/Gift form where all additional information pertaining to the Loan or Gift can be added.</p>
-<p>Once preparations have been added to the Loan or Gift, a <em>Generate Invoice on Save</em> check box becomes available on the form.&nbsp; If checked and the necessary query and Report have been constructed, the Report associated with this Loan or Gift will be created automatically once the <em>Save</em> button has been clicked.</p>
-<p>A sample invoice for each Discipline is included with Specify and will print automatically if a custom invoice has not been created. When creating a custom invoice in SPiReport save the report/invoice as an 'invoice'. Once an invoice has been saved checking the <em>Generate Invoice on Save</em> check box will display your invoice in a list and allow you to print it.</p>
-<p>&nbsp;</p>
-<h3><a name="int_return_loans" id="int_return_loans"></a>Returning Loans</h3>
-<p>When returning loans, a Loan Return Prep record is created for each preparation loaned out.&nbsp; There are three values associated with each Loan Return preparation:</p>
-<p><strong>Quantity</strong> &ndash; the number of each preparation loaned out.</p>
-<p><strong>Quantity Returned</strong> &ndash; the number of preparations returned.&nbsp; This may not equal the quantity sent out in cases of partial returns and/or lost/damaged specimens not returned (see resolved below).</p>
-<p><strong>Quantity resolved</strong> &ndash; all returned preparations are resolved but in the case where specimens are lost or damaged and are no longer associated with the collection, the number resolved can be increased to correspond to the quantity loaned.&nbsp; In this case, the remarks field can be used to describe the circumstances of this discrepancy.&nbsp; </p>
-<p>For the loan to be closed, the quantity loaned must equal the quantity resolved.&nbsp; In the case of a full return of a loan all three numbers would be identical for each preparation.</p>
-<p>When returning all, or a large proportion of the items in a loan it is easiest to use the <em>Return Loan</em> button at the bottom of the loan form.&nbsp; This method offers a Select All feature for automatically returning all preparations.&nbsp; Clicking <em>Select All</em> will make the quantity returned and quantity resolved equal the quantity sent out for each preparation and automatically check the <em>Is Closed</em> checkbox in the loan, thereby closing the loan.&nbsp; The <em>Return Loan</em> button will also change to <em>All Returned</em>.&nbsp; If any of these numbers are altered at any stage, thereby reopening the loan, this button will revert back to Return Loan.&nbsp; For partial returns, or when some items are resolved but not returned, due to loss or damage, the quantity returned and quantity resolved can be manually manipulated and remarks inserted.</p>
-<p>Loan Return Prep&rsquo;s can also be individually altered using the Loan Return Prep button  <img src="../../images/loan_return_prep_20x20.png" width="20" height="20" /> on the Loan Preparation form.</p>
-<p><em><strong>Note:</strong></em>&nbsp; The quantity, quantity returned and quantity resolved cannot be manually edited on the Loan Preparation form.</p>
-<p><em><strong>Note:</strong></em>&nbsp; The <em>Is Closed</em> check box is editable only when quantity, quantity returned and quantity resolved do not equal each other i.e. when the loan is NOT closed.</p>
-<h3>&nbsp;</h3>
-<h3>Loan w/o Preps</h3>
-<p>There may be instances when specimens are loaned before they are cataloged. To create a loan that is not dependent on a Preparation Type choose the <em>Loan w/o Preps</em> button on the side bar. These loans function in much the same way as the regular loans described above. </p>
-<p>&nbsp;</p>
-<h3><strong><a name="int_info_request" id="int_info_request"></a>Information Request</strong>s</h3>
-<p>Collection Managers are often called upon to share data records with users of the collection, other collections or in house staff.&nbsp; In most cases this is accomplished by attaching an Excel spreadsheet to an email message.&nbsp; The information shared is usually in the form of Collection Objects. Specify 6 contains an automated function to handle this type of request electronically.</p>
-<p>Click Information Request in the side bar to start the process.</p>
-<p>If any record sets have been saved, a dialog appears prompting the user to either Enter Catalog Numbers or use an existing record set.&nbsp; The Record set method would be easiest when using large sets of data.</p>
-<ul>
-  <li><strong>Enter Catalog Numbers</strong>  by typing catalog numbers into the text dialog, separating multiple numbers with commas.</li><br /><li>
-    Select a <strong>record set</strong> from the list.&nbsp; If only one record set exists, it will be used by default.&nbsp; This can also be accomplished by dragging and dropping the record set onto the Information Request item in the sidebar.</li>
-</ul>
-<p>The Collection Objects will be added to the Information Request form.&nbsp; Once they are added, the <em>Send Email on Save</em> check box becomes available on the form.&nbsp; If checked and a) the recipient has an email address associated with their agent name in the database and b) the necessary email settings have been entered in <em>Preferences &gt; Email</em>, an email will automatically be sent to the designated recipient once the Save button has been clicked.&nbsp; The attached Collection Objects will appear in the main portion of the email and also attached as a CSV file.</p>
-<p>Unlike queries, Information Requests are only saved on the side bar and not in the database and are not searchable.&nbsp; Saved Information Requests listed on the side bars can be deleted by dragging and dropping them onto the trash can.&nbsp; No record will be kept in the database of an Information Request once it has been deleted.</p>
-<p>It is possible to send an information request via email at a later date or resend it if it has been saved. </p>
-<ul>
-  <li>Click on the <em>Information Request</em> button in the side bar to open it in the work space. </li>
-  <li>Click the <img src="../../images/form_editor20x20.png" width="20" height="20" /> (edit form) button at the bottom of the work space to edit the Information Request. </li>
-  <li>Make a change to the Information Request (this could simply be retyping part of the date).</li>
-  <li>Check the <em>Send Email on Save</em> button.</li>
-  <li>Click the <em>Save</em> button.</li>
-</ul>
-<p>&nbsp;</p>
-<h3 class="style3"><strong><a name="int_borrows" id="int_borrows"></a>Borrows</strong></h3>
-<p class="style2">Specimens that are on loan from another collection can be tracked in Specify by creating a Borrow. Borrows never become part of your collection and therefore the forms and data will not be entered into any Collection Object fields or related fields. Borrows must be given an Invoice Number. </p>
-<p class="style2">&nbsp;</p>
-<h3 class="style3"><strong><a name="int_exchange" id="int_exchange"></a>Exchange In / Exchange Out</strong></h3>
-<p class="style2">The Exchange In / Exchange Out feature of Specify 6 is intended to give certain disciplines the facility to track incoming and outgoing specimens against each other.  They are not linked to individual collection objects but allow the user to provide a general description of the materials being exchanged. The agent sending the exchange and the agent cataloging the exchange are the only fields that are required.</p>
-<p class="style2">&nbsp;</p>
-<h3 class="style2"><a name="repository_agreements" id="repository_agreements"></a>Repository Agreements</h3>
-<p>A repository agreement is similar to an accession but does not transfer ownership of the specimens.  This is most frequently entered into with countries that do not wish to lose claim to their biodiversity but will allow museums to house their specimens and is, in some cases, the only method of legally collecting in some countries.  Repository agreements can entail multiple accessions i.e. multiple field trips, and thus there is a one-to-many relationship in the database between repository agreements and accessions and a method for linking many accessions to a single repository agreement.</p>
-<p>All associated agents and permitting information can be entered in a one-to-many relationship within the repository agreement.
-  </p>
-<p></p>
-<p>&nbsp;</p>
-<h3 class="style2"><a name="deaccessions" id="deaccessions"></a>Deaccessions </h3>
-<p class="style2">Deaccessions are not implemented in the first release of Specify 6, but we are committed to providing this capability and will be including it a future release.</p>
-<p>&nbsp;</p>
-<p class="style2">&nbsp;</p>
-</body>
+<p>
+       A <strong><a name="interactions_config" id="interactions_sidebar"></a>Side Bar Interaction
+      Form Configuration</strong> allows the available Interaction forms listed on the side bar to
+      be rearranged and hidden:    </p>
+    <blockquote>
+      <p>
+        Choose <em>Tabs &gt; Configure Side Bar</em> in the main menu.    </p>
+      <ul>
+        <li>
+          Use the <img height="16" src="../../images/ReorderUp16x16.png" width="16">, and <img
+        height="16" src="../../images/ReorderDown16x16.png" width="16"> (reorder) buttons to change
+          the order in which the forms appear in the side bar and More Forms list. </li>
+        <li> Use the <img height="16" src="../../images/Map16x16.png" width="16">, and <img height="16"
+        src="../../images/Unmap16x16.png" width="16"> (move) buttons to show or hide an available
+          side bar item. </li>
+      </ul>
+      <p>
+        Interactions forms can be activated by clicking them in the side bar. Gifts, Loans or
+        Information Request are also activated by dropping a Collection Object record set onto them
+        in the side bar.    </p>
+      <blockquote>
+        <p><em><strong>Note:</strong></em> The Side Bar Configuration tool can also be opened by right-button-clicking in the right side of the side bar to open the Form Configuration tool,
+          then click on the <img src="../../images/configure_box.png" alt="configure" width=
+      "110" height="27" />&nbsp;button.</p>
+      </blockquote>
+    </blockquote>
+    <p>&nbsp;</p>
+    <h3>
+       <a name="int_accession" id="accessions"></a>Accessions    </h3>
+    <blockquote>
+      <p>
+        Accessioning is the formal process by which a specimen or object is legally accepted and
+        recorded as a museum item and differs from cataloging. This usually entails proof of
+        ownership (in the form of a signed deed of gift) and legal collection (in the form of all
+        associated permits - collecting, import and export). Accessioning and its numbering system is
+        usually a policy adopted as a museum wide policy but is not used by all museums. An accession
+        usually covers an entire field trip and multiple catalog items could be included within a
+        single accession. Within the database there is a one-to-many relationship between Accessions
+        and Collection Objects. Accessions can be created through the Interactions menu or directly
+        from the Collection Object being entered.    </p>
+      <p>
+        Note: Accession number is one of the fields that can be formatted through the schema
+        localizer. The accession numbering system can also be associated at the Collection level for
+        individual collection use or the Institution level where a single numbering system is adopted
+        by all collections within an Institution.    </p>
+      <p>
+        <br>
+        All associated agents and permitting information can be entered in a one-to-many
+        relationship within the accession.    </p>
+    </blockquote>
+  <p>&nbsp;    </p>
+    <h3>
+       <strong><a name="int_gifts_loans" id="int_gifts_loans"></a>Gifts and Loans</strong>    </h3>
+    <blockquote>
+      <p>Loans and Gifts document items leaving the Institution, and Collection Objects are linked to
+        the Loan/Gift through preparations.&nbsp; The first step in creating a Loan or Gift is
+        choosing the specimens (as preparations) to add to the transaction. </p>
+      <ul>
+        <li>
+          Click either Loan or Gift in the side bar to start the process.      </li>
+      </ul>
+      <p>
+        If any record sets have been saved, a dialog appears prompting the user to either <em>Enter
+          Catalog Numbers</em> or use an existing <em>record set</em>. The Record set method would be
+        easiest when using large sets of data.    </p>
+      <ul>
+        <li><strong>Enter Catalog Numbers</strong> by typing the catalog numbers into the text dialog,
+          separating multiple numbers with commas (100, 105, 152))</li>
+      </ul>
+      <blockquote>
+        <p><br>
+        </p>
+      </blockquote>
+      <ul>
+        <li>Enter a range of catalog numbers, with a slash as a separator for the range, for example: 12012-12020
+          <p>OR, if the catalog number includes a dash a slash can be used, for example: 2011-0001/2011-0010<br>
+            <br>
+            </p>
+        </li>
+        <li>
+          Select a <strong>record set</strong> from the list.&nbsp; If only one record set exists, it
+          will be used by default. &nbsp;This can also be accomplished by dragging and dropping the
+          record set onto the Information Request item in the sidebar.
+          <blockquote>
+            <p>
+              <strong><em>Note:</em></strong> If a non-loanable Preparation Type is selected a warning
+              dialog will appear informing the user that the chosen specimen(s) are not loanable.    </p>
+          </blockquote>
+        </li>
+      </ul>
+      <p>
+        Next, a dialog listing all preparations for each Catalog number will appear.    </p>
+      <p align="center">
+        <img height="257" src="../../images/loan_screen.png" width="305">    </p>
+      <p align="center" class="imgcaption">
+        Create Loan from Preparations    </p>
+      <p>
+        Each checkbox represents a Collection Object and is labeled with Catalog Number and
+        determination. Specimen counts reflect the number of specimens that are currently on
+        available to be loaned. An indication is also given if any additional specimens are
+        associated with previous open loans or gifts. In these cases the total number of available
+        specimens would be reduced by this number. The <img height="20" src=
+      "../../images/info_20x20.png" width="20">(information) button links to the loan or gift in
+        question for further information.    </p>
+      <ul>
+        <li><strong>Select specimens</strong> by typing the number of specimens of each preparation
+          being sent on loan into the dialog or use the arrow keys.&nbsp; If multiple preparations
+          for a single Collection Object are present, they will be listed together under the same
+          checkbox.&nbsp;All preparations can be selected at once by clicking the <em>Select All</em>
+          button.      </li>
+      </ul>
+      <p>
+        All preparations can be selected at once by clicking the <em>Select All</em> button.&nbsp;
+        The number of specimens available to be loaned is indicated next to the arrow keys to select
+        a number.&nbsp; An indication is also given if any additional specimens are associated with
+        previous open loans or gifts.&nbsp; In these cases the total number of available specimens
+        would be reduced by this number.&nbsp; The <img height="20" src="../../images/info_20x20.png"
+      width="20">(information) links to the loan or gift in question for further information.    </p>
+      <p>
+        Click the <em>OK</em> button to accept the preparations and progress to the Loan/Gift form
+        where all additional information pertaining to the Loan or Gift can be added.    </p>
+      <blockquote>
+        <h4><u>Gift/Loan Invoices</u> </h4>
+        <p>Once preparations have been added to the Loan or Gift, a <em>Generate Invoice on Save</em> check box becomes available on the form.&nbsp; If checked and the necessary query and Report
+          have been constructed, the Report associated with this Loan or Gift will be created
+          automatically once the <em>Save</em> button has been clicked.    </p>
+        <p>
+          A sample invoice for each Discipline is included with Specify and will print automatically
+          if a custom invoice has not been created. When creating a custom invoice in SPiReport save
+          the report/invoice as an 'invoice'. Once an invoice has been saved checking the <em>Generate
+            Invoice on Save</em> check box will display your invoice in a list and allow you to print it.    </p>
+      </blockquote>
+    </blockquote>
+  <p>&nbsp;    </p>
+    <h3>
+       <a name="int_return_loans" id="int_return_loans"></a>Returning Loans    </h3>
+    <blockquote>
+      <p> When returning loans, a Loan Return Prep record is created for each preparation loaned
+        out.&nbsp; There are three values associated with each Loan Return preparation: </p>
+      <blockquote>
+        <p>
+          <strong>Quantity</strong> - the number of each preparation loaned out.    </p>
+        <p>
+          <strong>Quantity Returned</strong> - the number of preparations returned.&nbsp; This may not
+          equal the quantity sent out in cases of partial returns and/or lost/damaged specimens not
+          returned (see resolved below). </p>
+        <p>
+          <strong>Quantity Resolved</strong> - used to increase the number resolved to correspond to the quantity loaned. This is used in  the case
+          where specimens are lost or damaged and are no longer associated with the collection.&nbsp; It us often helpful to use the remarks field  to describe the circumstances of this discrepancy.&nbsp;    </p>
+      </blockquote>
+      <p> For the loan to be closed, the quantity loaned must equal the quantity resolved.&nbsp; In
+        the case of a full return of a loan all three numbers would be identical for each
+        preparation. </p>
+      <p>
+        When returning all, or a large proportion of the items in a loan it is easiest to use the
+        <em>Return Loan</em> button at the bottom of the loan form.&nbsp; This method offers a Select
+        All feature for automatically returning all preparations.&nbsp; Clicking <em>Select All</em>
+        will make the quantity returned and quantity resolved equal the quantity sent out for each
+        preparation and automatically check the <em>Is Closed</em> checkbox in the loan, thereby
+        closing the loan.&nbsp; The <em>Return Loan</em> button will also change to <em>All
+          Returned</em>.&nbsp; If any of these numbers are altered at any stage, thereby reopening the
+        loan, this button will revert back to Return Loan.&nbsp; For partial returns, or when some
+        items are resolved but not returned, due to loss or damage, the quantity returned and
+        quantity resolved can be manually manipulated and remarks inserted. </p>
+      <p>
+        Loan Return Prep's can also be individually altered using the Loan Return Prep button <img
+      height="20" src="../../images/loan_return_prep_20x20.png" width="20">&nbsp;on the Loan
+        Preparation form. </p>
+      <blockquote>
+        <p>
+          <strong><em>Note:</em></strong>&nbsp; The quantity, quantity returned and quantity resolved
+          cannot be manually edited on the Loan Preparation form. </p>
+        <p>
+          <strong><em>Note:</em></strong>&nbsp; The <em>Is Closed</em> check box is editable only when
+          quantity, quantity returned and quantity resolved do not equal each other i.e. when the loan
+          is NOT closed.    </p>
+      </blockquote>
+    </blockquote>
+  <h3>&nbsp;    </h3>
+    <h3>
+       Loan w/o Preps    </h3>
+    <blockquote>
+      <p>
+        There may be instances when specimens are loaned before they are cataloged. To create a loan
+        that is not dependent on a Preparation Type choose the <em>Loan w/o Preps</em> button on the
+        side bar. These loans function in much the same way as the regular loans described above.    </p>
+    </blockquote>
+  <p>&nbsp;    </p>
+    <h3>
+       <strong><a name="int_info_request" id="int_info_request"></a>Information Request</strong>s    </h3>
+    <blockquote>
+      <p> Collection Managers are often called upon to share data records with users of the
+        collection, other collections or in house staff.&nbsp; In most cases this is accomplished by
+        attaching an Excel spreadsheet to an email message.&nbsp; The information shared is usually
+        in the form of Collection Objects. Specify 6 contains an automated function to handle this
+        type of request electronically. </p>
+      <p>
+        Click Information Request in the side bar to start the process.    </p>
+      <p> If any record sets have been saved, a dialog appears prompting the user to either Enter
+        Catalog Numbers or use an existing record set.&nbsp; The Record set method would be easiest
+        when using large sets of data. </p>
+      <ul>
+        <li><strong>Enter Catalog Numbers</strong> by typing catalog numbers into the text dialog,
+          separating multiple numbers with commas.      </li>
+        <li><br>
+        </li>
+        <li>
+          Select a <strong>record set</strong> from the list.&nbsp; If only one record set exists, it
+          will be used by default.&nbsp; This can also be accomplished by dragging and dropping the
+          record set onto the Information Request item in the sidebar. </li>
+      </ul>
+      <p> The Collection Objects will be added to the Information Request form.&nbsp; Once they are
+        added, the <em>Send Email on Save</em> check box becomes available on the form.&nbsp; If
+        checked and a) the recipient has an email address associated with their agent name in the
+        database and b) the necessary email settings have been entered in <em>Preferences &gt;
+        Email</em>, an email will automatically be sent to the designated recipient once the Save
+        button has been clicked.&nbsp; The attached Collection Objects will appear in the main
+        portion of the email and also attached as a CSV file. </p>
+      <p> Unlike queries, Information Requests are only saved on the side bar and not in the database
+        and are not searchable.&nbsp; Saved Information Requests listed on the side bars can be
+        deleted by dragging and dropping them onto the trash can.&nbsp; No record will be kept in the
+        database of an Information Request once it has been deleted. </p>
+      <p>
+        It is possible to send an information request via email at a later date or resend it if it
+        has been saved.    </p>
+      <ul>
+        <li>
+          Click on the <em>Information Request</em> button in the side bar to open it in the work
+          space. </li>
+        <li> Click the <img height="20" src="../../images/form_editor20x20.png" width="20"> (edit form)
+          button at the bottom of the work space to edit the Information Request. </li>
+        <li> Make a change to the Information Request (this could simply be retyping part of the date). </li>
+        <li> Check the <em>Send Email on Save</em> button. </li>
+        <li> Click the <em>Save</em> button. </li>
+      </ul>
+      <p>&nbsp;    </p>
+    </blockquote>
+<h3 class="style3">
+       <strong><a name="int_borrows" id="int_borrows"></a>Borrows</strong>    </h3>
+    <blockquote>
+      <p class="style2">
+        Specimens that are on loan from another collection can be tracked in Specify by creating a
+        Borrow. Borrows never become part of your collection and therefore the forms and data will
+        not be entered into any Collection Object fields or related fields. Borrows must be given an
+        Invoice Number.    </p>
+    </blockquote>
+  <p class="style2">&nbsp;    </p>
+    <h3 class="style3">
+       <strong><a name="int_exchange" id="int_exchange"></a>Exchange In / Exchange Out</strong>    </h3>
+    <blockquote>
+      <p class="style2">
+        The Exchange In / Exchange Out feature of Specify 6 is intended to give certain disciplines
+        the facility to track incoming and outgoing specimens against each other. They are not linked
+        to individual collection objects but allow the user to provide a general description of the
+        materials being exchanged. The agent sending the exchange and the agent cataloging the
+        exchange are the only fields that are required.    </p>
+    </blockquote>
+  <p class="style2">&nbsp;    </p>
+    <h3 class="style2">
+       <a name="repository_agreements" id="repository_agreements"></a>Repository Agreements    </h3>
+    <blockquote>
+      <p>
+        A repository agreement is similar to an accession but does not transfer ownership of the
+        specimens. This is most frequently entered into with countries that do not wish to lose claim
+        to their biodiversity but will allow museums to house their specimens and is, in some cases,
+        the only method of legally collecting in some countries. Repository agreements can entail
+        multiple accessions i.e. multiple field trips, and thus there is a one-to-many relationship
+        in the database between repository agreements and accessions and a method for linking many
+        accessions to a single repository agreement.    </p>
+      <p>
+        All associated agents and permitting information can be entered in a one-to-many
+        relationship within the repository agreement.    </p>
+    </blockquote>
+    <p>&nbsp;</p>
+<h3 class="style2">
+       <a name="deaccessions" id="deaccessions"></a>Deaccessions    </h3>
+    <blockquote>
+      <p class="style2">
+        Deaccessions are not implemented in the first release of Specify 6, but we are committed to
+        providing this capability and will be including it a future release.    </p>
+    </blockquote>
+  <p>&nbsp;    </p>
+    <p class="style2">&nbsp;    </p>
+    <p>&nbsp;    </p>
+  </body>
 </html>

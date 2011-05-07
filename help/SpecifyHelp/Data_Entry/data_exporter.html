@@ -1,51 +1,123 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
-<title>About Specify</title>
+  <head>
+    <meta content="text/html; charset=MacRoman" http-equiv="Content-Type">
+    <link type="text/css" href="../../main.css" rel="stylesheet" media="screen">
+    <meta content="Helen" name="generator">
 <style type="text/css">
 <!--
-.style1 {font-style: italic}
+.style1 {
+  font-style: italic;
+}
 -->
 </style>
-</head>
-
-
-<BODY BGCOLOR=#ffffff>
-<table width="100%" border="0" background="../images/topbar.png">
-  
-  <tr>
-    <td>&nbsp;</td>
-  </tr>
-</table>
-<h2><a name="data_exporter"></a>Data Exporter </h2>
-<p>The Data Exporter application is used to build, update and export data files for use by IPT. Before a data file can be created a 'map' must first be created using the Schema Mapping Editor inside Specify. For documentation explaining how to create a schema map please refer to the <a href="../QueryBuilder/web_publishing.html">Web Publishing</a>. </p>
-<p>The Data Exporter tool actually creates a table, or cache, in the database containing all relevant data based on the map that was created from inside Specify.&nbsp; This table of data then needs to be exported as a tab delimited text file for importing into IPT.&nbsp; </p>
-<p>The Data Exporter application is located in the bin directorydirectory within the Specify application directory, which stores the executable files for Specify. Double click<em> Exporter </em> (or select it from Start/Program Files/Specify on Windows) to launch the tool. Users are required to login using their  Specify Username and Password. </p>
-<p>The Data Exporter application opens as a three column table with action buttons.</p>
-<p align="center"><img src="../../images/export_tool.png" width="592" height="151" /></p>
-<ul type="disc">
-  <li>The 'Mapping' column of the table indicates      the name of both the mapping and table.</li>
-  <li>The 'Last Update' column lists the      date and time of the last update of the cache.</li>
-  <li>The 'Status' column indicates whether      the cache is out of date, and, if so, how many rows are out of date. The number of out of date rows includes the number of rows that have been      deleted from the database together with the number of rows that need to be      updated due to changes in the database and the number of new rows in the      database which must be added to the cache. This information reflects the      database contents at the time the exporter was launched; it will not      reflect changes to the database that occur while the exporter is running. </li>
-</ul>
-<p>&nbsp;</p>
-<p><strong>Available Actions</strong></p>
-<p><br />
-    <strong>Show SQL</strong> - Click this button for a mapping whose cache has been completed to generate a dialog showing an SQL select statement that can be copied and used when defining database connections to the cache for IPT or other data providers. </p>
-<p><br />
-  <em><strong>Note</strong></em>: the SQL is based on the current cache structure. If the cache needs to be rebuilt and mappings have been changed, the SQL statement generated will not reflect the changes until the cache is updated. </p>
-<p><em><br />
-</em><strong>Update/Build</strong> - This will update the cache.&nbsp;When the cache is built or updated it is writing to the database; therefore,  the username and password for the database is required before Specify can complete the task. </p>
-<p><br />
-  For caches that do not need to be built, only out-of-date rows are updated. This is significantly faster than an initial build which can take a long time.&nbsp; Updates are not allowed for mappings that are being edited or updated by another user; therefore, users should close all schema mappings before updating. </p>
-<p><br />
-  <strong>Export</strong> - This exports the current contents of the cache to a tab-delimited text file. </p>
-<p><em><br />
-    <strong>Note</strong>:</em> The CURRENT contents are exported, if the cache needs to be updated, you should update first if you want to export the latest data. <br />
-  </p>
-<p><em>Cancelling an Operation</em> - You can cancel an update or export by clicking the &lsquo;X&rsquo; button to close the application window. You will be asked to confirm the cancellation. If you cancel, you will need to start from the beginning the next time you perform the operation. </p>
-<p><span class="style1"><strong>Note</strong>:</span>&nbsp; If you cancel an update that required a rebuild, the pre-existing cache will have been deleted. </p>
-<p>&nbsp;</p>
-</BODY>
+    <title>About Specify</title>
+  </head>
+  <body bgcolor="#ffffff">
+    <table border="0" background="../images/topbar.png" width="100%">
+      <tr>
+        <td>&nbsp;
+          
+        </td>
+      </tr>
+    </table>
+    <h2>
+       <a name="data_exporter"></a>Data Exporter
+    </h2>
+    <p>
+       The Data Exporter application is used to build, update and export data files for use by IPT.
+      The term 'build' refers to the process Specify uses to load data into the skeleton, or schema, of a database. Before a data file can be built a 'schema map' must first be created using the Schema Mapping
+      Editor inside Specify. If you have not created a schema map you will need to close the Data Exporter tool , reopen Specify and create the schema map using the Schema Mapper tool. For documentation explaining how to create a schema map please refer
+      to  <a href="../QueryBuilder/web_publishing.html">Web Publishing</a>.
+    </p>
+    <p>
+       The Data Exporter tool actually creates a table, or cache, in the database containing all
+      relevant data based on the map that was created from inside Specify.&nbsp; This table of data
+      then needs to be exported from the Data Exporter tool as a tab delimited text file for importing into IPT.&nbsp;
+    </p>
+    <p>
+       The Data Exporter application is located in the bin directory within the Specify
+      application directory, which stores the executable files for Specify. Double click
+      <em>Exporter</em> (or select it from Start/Program Files/Specify on Windows) to launch the
+      tool. Users are required to login using their Specify Username and Password.
+    </p>
+    <p>
+       The Data Exporter application opens as a three-column table with action buttons.
+    </p>
+    <p align="center">
+       <img src="../../images/export_tool.png" height="151" width="592">
+    </p>
+    <ul type="disc">
+      <li>
+        The 'Mapping' column of the table indicates the name of both the mapping and table.      </li>
+      <li>
+        The 'Last Update' column lists the date and time of the last update of the cache.      </li>
+      <li>
+        The 'Status' column indicates whether the cache is out of date, and, if so, how many rows
+        are out of date. The number of out of date rows includes the number of rows that have been
+        deleted from the database together with the number of rows that need to be updated due to
+        changes in the database and the number of new rows in the database which must be added to
+        the cache. This information reflects the database contents at the time the exporter was
+        launched; it will not reflect changes to the database that occur while the exporter is
+        running.      </li>
+    </ul>
+<p>&nbsp;
+       
+    </p>
+    <p>
+       <strong>Available Actions</strong>
+    </p>
+    <blockquote>
+      <p>
+       <br>
+       <strong>Show SQL</strong> - Click this button for a mapping whose cache has been completed
+      to generate a dialog showing an SQL select statement that can be copied and used when
+      defining database connections to the cache for IPT or other data providers.
+      </p>
+      <blockquote>
+        <p>
+          <br>
+          <strong><em>Note</em></strong>: the SQL is based on the current cache structure. If the
+          cache needs to be rebuilt and mappings have been changed, the SQL statement generated will
+          not reflect the changes until the cache is updated.
+        </p>
+      </blockquote>
+      <p>
+        <em><br>
+         </em> <strong>Update/Build</strong> - This will update the cache.&nbsp;When the cache is
+        built or updated it is writing to the database; therefore, the username and password for the
+        database is required before Specify can complete the task. </p>
+      <blockquote>
+        <p>
+          <br>
+          For caches that do not need to be built, only out-of-date rows are updated. This is
+          significantly faster than an initial build which can take a long time.&nbsp; Updates are not
+          allowed for mappings that are being edited or updated by another user; therefore, users
+          should close all schema mappings before updating. </p>
+      </blockquote>
+      <p>
+       <br>
+       <strong>Export</strong> - This exports the current contents of the cache to a tab-delimited
+      text file.
+      </p>
+      <blockquote>
+        <p>
+          <em><br>
+          <strong>Note</strong>:</em> The CURRENT contents are exported, if the cache needs to be
+          updated, you should update first if you want to export the latest data.</p>
+        <p><br>
+        </p>
+      </blockquote>
+      <p>
+       <em>Cancelling an Operation</em> - You can cancel an update or export by clicking the ‘X’
+      button to close the application window. You will be asked to confirm the cancellation. If you
+      cancel, you will need to start from the beginning the next time you perform the operation. </p>
+      <blockquote>
+        <p>
+          <span class="style1"><strong>Note</strong>:</span>&nbsp; If you cancel an update that
+          required a rebuild, the pre-existing cache will have been deleted. </p>
+      </blockquote>
+      <p>&nbsp;      </p>
+    </blockquote>
+</body>
 </html>
