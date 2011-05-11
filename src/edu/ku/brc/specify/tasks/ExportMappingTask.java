@@ -36,6 +36,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.XPathException;
 
@@ -85,6 +86,8 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class ExportMappingTask extends QueryTask
 {
+    private static final Logger log  = Logger.getLogger(ExportMappingTask.class);
+    
 	protected SpExportSchema		exportSchema	= null;
 	protected SpExportSchemaMapping	schemaMapping	= null;
 	protected final AtomicBoolean	addingMapping	= new AtomicBoolean(false);
@@ -584,21 +587,48 @@ public class ExportMappingTask extends QueryTask
 	@Override
 	protected List<?> getQueriesForLoading(DataProviderSessionIFace session)
 	{
-		List<SpExportSchema> exportSchemas = getExportSchemas(session);
-		Vector<SpQuery> result = new Vector<SpQuery>();
-		for (SpExportSchema spExportSchema : exportSchemas)
-		{
-			for (SpExportSchemaMapping mapping : spExportSchema
-					.getSpExportSchemaMappings())
-			{
-				//XXX add condition after SpExportMapping is scoped to Collection
-				if (mapping.getCollectionMemberId().equals(AppContextMgr.getInstance().getClassObject(Collection.class).getId()))
-				{
-					result.add(mapping.getMappings().iterator().next()
-						.getQueryField().getQuery());
-				}
-			}
-		}
+	    Vector<SpQuery> result = new Vector<SpQuery>();
+
+	    AppContextMgr appConMgr = AppContextMgr.getInstance();
+	    if (appConMgr != null)
+	    {
+	        Collection currentCollection = appConMgr.getClassObject(Collection.class);
+	        if (currentCollection != null)
+	        {
+	            Integer collId = currentCollection.getId();
+	            if (collId != null)
+	            {
+	                List<SpExportSchema> exportSchemas = getExportSchemas(session);
+	                if (exportSchemas != null)
+	                {
+                		for (SpExportSchema spExportSchema : exportSchemas)
+                		{
+                			for (SpExportSchemaMapping mapping : spExportSchema.getSpExportSchemaMappings())
+                			{
+                				//XXX add condition after SpExportMapping is scoped to Collection
+                				if (mapping.getCollectionMemberId().equals(collId))
+                				{
+                					result.add(mapping.getMappings().iterator().next()
+                						.getQueryField().getQuery());
+                				}
+                			}
+                		}
+	                } else
+	                {
+	                    log.error("exportSchemas list is null");
+	                }
+	            } else
+	            {
+	                log.error("Collection Id is null");
+	            }
+	        } else
+	        {
+	            log.error("Collection is null");
+	        }
+	    } else
+	    {
+	        log.error("AppContextMgr is null");
+	    }
 		return result;
 	}
 
