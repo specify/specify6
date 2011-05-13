@@ -190,7 +190,14 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
      */
     public void setTitle()
     {
-        super.setTitle(getResourceString("SCHEMA_CONFIG") +" - " + SchemaI18NService.getCurrentLocale().getDisplayName());
+        if (schemaType == SpLocaleContainer.WORKBENCH_SCHEMA)
+        {
+        	super.setTitle(getResourceString("WBSCHEMA_CONFIG") +" - " + SchemaI18NService.getCurrentLocale().getDisplayName());
+        	
+        } else
+        {
+        	super.setTitle(getResourceString("SCHEMA_CONFIG") +" - " + SchemaI18NService.getCurrentLocale().getDisplayName());
+        }
     }
 
     /* (non-Javadoc)
