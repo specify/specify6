@@ -131,8 +131,17 @@ public class SummaryPanel extends BaseSetupPanel
             i++;
         }
         
-        table.setModel(new DefaultTableModel(valueObjs, new String[] {"Name", "Value"}));
-        printTable.setModel(new DefaultTableModel(pValueObjs, new String[] {"Name", "Value"}));
+        String nameStr = UIRegistry.getResourceString("Name");
+        String valueStr = UIRegistry.getResourceString("Value");
+        
+        DefaultTableModel model = new DefaultTableModel(valueObjs, new String[] {nameStr, valueStr})
+        {
+            @Override
+            public boolean isCellEditable(int row, int column) { return false; }
+            
+        };
+        table.setModel(model);
+        printTable.setModel(new DefaultTableModel(pValueObjs, new String[] {nameStr, valueStr}));
         
         UIHelper.makeTableHeadersCentered(table, false);
     }
