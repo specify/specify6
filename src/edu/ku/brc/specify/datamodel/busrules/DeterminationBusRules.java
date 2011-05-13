@@ -107,14 +107,13 @@ public class DeterminationBusRules extends BaseBusRules
     public void afterFillForm(final Object dataObj)
     {
         isBlockingChange = false;
+        determination    = null;
         
-        determination = null;
-        
-        if (formViewObj.getDataObj() instanceof Determination)
+        if (formViewObj != null && formViewObj.getDataObj() instanceof Determination)
         {
             determination = (Determination)formViewObj.getDataObj();
             
-            //if determination exists and is new (no key) then set current true if CO has no other dets
+            // if determination exists and is new (no key) then set current true if CO has no other dets
             Component currentComp = formViewObj.getControlByName("isCurrent");
             if (determination != null && currentComp != null)
             {
@@ -165,19 +164,20 @@ public class DeterminationBusRules extends BaseBusRules
                     ((ValCheckBox)currentComp).setValue(determination.getIsCurrent(), null);
                 }
             }
+            
             Component activeTax = formViewObj.getControlByName("preferredTaxon");
             if (activeTax != null)
             {
-                activeTax.setFocusable(false);
+                JTextField activeTaxTF = (JTextField)activeTax;
+                activeTaxTF.setFocusable(false);
                 if (determination != null && determination.getPreferredTaxon() != null)
                 {
-                    ((JTextField )activeTax).setText(determination.getPreferredTaxon().getFullName());
+                    activeTaxTF.setText(determination.getPreferredTaxon().getFullName());
                 } else
                 {
-                    ((JTextField )activeTax).setText("");
+                    activeTaxTF.setText("");
                 }
             }
-
             
             if (formViewObj.getAltView().getMode() != CreationMode.EDIT)
             {
@@ -190,14 +190,14 @@ public class DeterminationBusRules extends BaseBusRules
             Component nameUsageComp = formViewObj.getControlByName("nameUsage");
             if (nameUsageComp instanceof ValComboBox)
             {
-                //XXX this is probably not necessary anymore...
+                // XXX this is probably not necessary anymore...
                 if (!checkedBlankUsageItem)
                 {
                     boolean fnd = false;
                     
                     if (nameUsageComp instanceof ValComboBox)
                     {
-                        ValComboBox cbx = (ValComboBox) nameUsageComp;
+                        ValComboBox cbx = (ValComboBox)nameUsageComp;
                         if (cbx.getComboBox().getModel() instanceof PickListDBAdapterIFace)
                         {
                             PickListDBAdapterIFace items = (PickListDBAdapterIFace) cbx.getComboBox().getModel();
@@ -230,16 +230,12 @@ public class DeterminationBusRules extends BaseBusRules
             }
 
             final Component altNameComp = formViewObj.getControlByName("alternateName");
-           
-            if (altNameComp != null)
+            if (altNameComp != null && determination != null)
             {
-                if (determination != null)
-                {
-                    altNameComp.setEnabled(determination.getTaxon() == null);
-                }
+                altNameComp.setEnabled(determination.getTaxon() == null);
             }
             
-            if (chkbxCL == null)
+            if (currentComp != null && chkbxCL == null)
             {
                 chkbxCL = new ChangeListener()
                 {
@@ -262,13 +258,13 @@ public class DeterminationBusRules extends BaseBusRules
      */
     private void adjustIsCurrentCheckbox()
     {
-        if (!isBlockingChange)
+        if (!isBlockingChange && formViewObj != null && isCurrentCheckbox != null)
         {
             determination = (Determination)formViewObj.getDataObj();
             if (determination != null && 
                 isCurrentCheckbox.isSelected())
             {
-                log.debug("Current: "+determination.getId());
+                //log.debug("Current: "+determination.getId());
                 if (determination.getCollectionObject() != null) //co can be null for batch-re-identify
                 {
                 	for (Determination d : determination.getCollectionObject().getDeterminations())
