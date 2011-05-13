@@ -1107,14 +1107,8 @@ public class UploadTable implements Comparable<UploadTable>
     	{
     		return null;
     	}
-//    	Method[] meths = getTblClass().getMethods();
-//    	for (Method m : meths)
-//    	{
-//    		Class<?> c = m.getReturnType();
-//    		System.out.println(m.getName());
-//    		System.out.println(c);
-//    	}
     }
+    
     /**
      * @param child
      * @param parentRec

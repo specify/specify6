@@ -39,11 +39,14 @@ public class UploadInfoRenderable implements TableNameRendererIFace, Comparable<
     
     protected void refresh()
     {
-        for (UploadTable ut : myTables)
+        updatedCnt = 0;
+        createdCnt = 0;
+    	for (UploadTable ut : myTables)
         {
             SortedSet<UploadedRecordInfo> ups = ut.getUploadedRecs();
-        	createdCnt = ups.headSet(dummy).size();
-        	updatedCnt = ups.size() - createdCnt;
+            SortedSet<UploadedRecordInfo> updates = ups.headSet(dummy);
+        	createdCnt += updates.size();
+        	updatedCnt += ups.size() - updates.size();
         }
 
     }
