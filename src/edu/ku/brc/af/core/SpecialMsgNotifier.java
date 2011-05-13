@@ -21,6 +21,7 @@ package edu.ku.brc.af.core;
 
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -89,7 +90,14 @@ public class SpecialMsgNotifier
                 {
                     if (StringUtils.isNotEmpty(msg) && !msg.equals("NOMSG"))
                     {
-                        UIRegistry.showLocalizedMsg(msg); // This msg isn't a key, but use this to display it anyway.
+                        String header = msg.length() > 6 ? msg.substring(0, 7).toUpperCase() : "";
+                        if (header.startsWith("<HTML>"))
+                        {
+                            UIRegistry.showLocalizedError("NO_INTERNET");
+                        } else
+                        {
+                            UIRegistry.showError(JOptionPane.WARNING_MESSAGE, msg);
+                        }
                     }
                 }
                 

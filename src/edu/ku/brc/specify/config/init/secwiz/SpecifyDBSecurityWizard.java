@@ -198,13 +198,13 @@ public class SpecifyDBSecurityWizard extends JPanel
         
             props.put("fromwizard", "true");
             
-            dbPanel = new DatabasePanel(nextBtn, backBtn, "wizard_mysql_username", true);
+            dbPanel = new DatabasePanel(nextBtn, backBtn, "securitywiz_screen1", true);
             panels.add(dbPanel);
             HelpMgr.registerComponent(helpBtn, dbPanel.getHelpContext());
             
             MasterLoginPanel masterLoginPanel = new MasterLoginPanel("SA",
                     "ENTER_SA_INFO", 
-                    "wizard_master_username",
+                    "securitywiz_screen2",
                     new String[] { "SA_USERNAME", "SA_PASSWORD"}, 
                     new String[] { "saUserName", "saPassword"}, 
                     new Integer[] { 32, 32}, 
@@ -213,7 +213,7 @@ public class SpecifyDBSecurityWizard extends JPanel
             panels.add(masterLoginPanel);
             
             panels.add(new UserPanel("SECURITY", 
-                    "wizard_security_on",
+                    "securitywiz_screen3",
                     nextBtn, 
                     backBtn, 
                     true, 

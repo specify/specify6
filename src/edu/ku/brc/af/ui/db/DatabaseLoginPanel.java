@@ -1254,9 +1254,9 @@ public class DatabaseLoginPanel extends JTiledPanel
                             
                             CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
                             
-                        } else if (status == SchemaUpdateType.Success)
+                        } else if (status == SchemaUpdateType.Success || status == SchemaUpdateType.SuccessAppVer)
                         {
-                            UIRegistry.showLocalizedMsg(JOptionPane.QUESTION_MESSAGE, "INFORMATION", "SCHEMA_UP_OK");
+                            UIRegistry.showLocalizedMsg(JOptionPane.QUESTION_MESSAGE, "INFORMATION", status == SchemaUpdateType.SuccessAppVer ? "APPVER_UP_OK" : "SCHEMA_UP_OK");
                         }
                     }
                 }

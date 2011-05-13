@@ -834,7 +834,7 @@ public class BaseBusRules implements BusinessRulesIFace
             }
             sql += StringUtils.isNotEmpty(special) && useSpecial ? (" AND "+special) : "";
             
-            log.debug(sql);
+            //log.debug(sql);
             
             Integer cnt = BasicSQLUtils.getCount(sql);
             

@@ -394,7 +394,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             recVerNum++;
                             SpVersion.updateRecord(dbConn.getConnection(), appVerNum, dbVersion, recVerNum, spverId);
                         }
-                        return useSilentSuccess ? SchemaUpdateType.SuccessSilent : SchemaUpdateType.Success;
+                        boolean onlyAppVersion = !doSchemaUpdate && doUpdateAppVer;
+                        return useSilentSuccess ? SchemaUpdateType.SuccessSilent : onlyAppVersion ? SchemaUpdateType.SuccessAppVer : SchemaUpdateType.Success;
                         
                     } else
                     {

@@ -22,6 +22,7 @@ package edu.ku.brc.specify.datamodel;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -203,7 +204,7 @@ public class SpVersion extends DataModelObjBase implements java.io.Serializable
      * @param dbVersion
      * @return
      */
-    public static boolean createInitialRecord(final Connection conn, final String appVerNum, final String dbVersion)
+    private static boolean createInitialRecordInternal(final Connection conn, final String appVerNum, final String dbVersion)
     {
         // Create Version Record
         SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -213,7 +214,37 @@ public class SpVersion extends DataModelObjBase implements java.io.Serializable
                      dateTimeFormatter.format(now) + "', '" + dateTimeFormatter.format(now) + "', 1)";
         
         return BasicSQLUtils.update(conn, sql) == 1;
+    }
+    
+    /**
+     * @param conn
+     * @param appVerNum
+     * @param dbVersion
+     * @return
+     */
+    public static boolean createInitialRecord(final Connection conn, final String appVerNum, final String dbVersion)
+    {
+        int numRecords = BasicSQLUtils.getNumRecords(conn, "spversion");
+        if (numRecords == 0)
+        {
+            return createInitialRecordInternal(conn, appVerNum, dbVersion);
+        }
         
+        int recVerNum = 1;
+        int spverId   = 1;
+        Vector<Object[]> row = BasicSQLUtils.query(conn, "SELECT SpVersionID, Version FROM spversion ORDER BY SpVersionID ASC");
+        if (row != null && row.size() > 0)
+        {
+            Object[] r = row.get(0);
+            spverId   = (Integer)r[0];
+            recVerNum = ((Integer)r[1]) + 1;
+            BasicSQLUtils.update(conn, "DELETE FROM spversion WHERE SpVersionID > " + spverId);
+        } else
+        {
+            return createInitialRecordInternal(conn, appVerNum, dbVersion); // fail safe, should never happen
+        }
+        
+        return updateRecord(conn, appVerNum, appVerNum, recVerNum, spverId);
     }
 
     /**

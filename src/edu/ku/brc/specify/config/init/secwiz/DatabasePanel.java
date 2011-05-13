@@ -96,8 +96,6 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
  */
 public class DatabasePanel extends BaseSetupPanel
 {
-    private static final String HELP_CONTEXT = "securitywiz_screen2";
-
     private enum VerifyStatus {OK, CANCELLED, ERROR}
     
     protected final String            PROPNAME    = "PROPNAME";
@@ -133,7 +131,6 @@ public class DatabasePanel extends BaseSetupPanel
                          final boolean doSetDefaultValues)
     {
         super("DATABASE", helpContext, nextBtn, prevBtn);
-        this.helpContext = HELP_CONTEXT;
         
         this.doSetDefaultValues = doSetDefaultValues;
         

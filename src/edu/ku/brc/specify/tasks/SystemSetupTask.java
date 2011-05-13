@@ -1141,11 +1141,12 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             mid.setPosition(MenuItemDesc.Position.Bottom);
             menuItems.add(mid);
             
-            if (AppPreferences.getLocalPrefs().getBoolean("TYPESEARCH.ENABLE", false))
+            AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+            if (localPrefs.getBoolean("QCBX_EDITOR", false))
             {
 	            menuDesc = getResourceString(titleArg);
-	            titleArg = getI18NKey("TYPESEARCH_MENU"); 
-	            mneu     = getI18NKey("TYPESEARCH_MNEU"); 
+	            titleArg = getI18NKey("QCBXEDITOR_MENU"); 
+	            mneu     = getI18NKey("QCBXEDITOR_MNEU"); 
 	            mi = UIHelper.createLocalizedMenuItem(titleArg, mneu, titleArg, true, null);
 	            mi.addActionListener(new ActionListener()
 	            {

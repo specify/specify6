@@ -19,24 +19,9 @@
 */
 package edu.ku.brc.dbsupport;
 
-import java.awt.Frame;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.sql.SQLException;
 import java.util.Vector;
-
-import javax.swing.JLabel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.util.Pair;
 
 /**
  * Abstract class for setting application context. It is designed that each application should implement its own.<br>
@@ -67,7 +52,7 @@ public abstract class SchemaUpdateService
 {
     public static final String factoryName = "edu.ku.brc.af.core.db.SchmeaUpdateService"; //$NON-NLS-1$
     
-    public enum SchemaUpdateType {Success, SuccessSilent, Error, NotNeeded}
+    public enum SchemaUpdateType {Success, SuccessAppVer, SuccessSilent, Error, NotNeeded}
     
     public enum CONTEXT_STATUS {OK, Error, Ignore, Initial}
     
