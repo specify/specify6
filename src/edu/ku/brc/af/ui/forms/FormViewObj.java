@@ -151,6 +151,7 @@ import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.CommandAction;
@@ -2501,25 +2502,31 @@ public class FormViewObj implements Viewable,
     {
         for (Object obj : deletedItems)
         {
-            BusinessRulesIFace delBusRules = DBTableIdMgr.getInstance().getBusinessRule(obj);
-            // notify the business rules object that a deletion is going to happen
-            Object obj2 = localSession.merge(obj);
-            if (delBusRules != null)
+            if (!(obj instanceof DataModelObjBase) || ((DataModelObjBase)obj).getId() != null)
             {
-                obj2 = delBusRules.beforeDelete(obj2, localSession);
+            	BusinessRulesIFace delBusRules = DBTableIdMgr.getInstance().getBusinessRule(obj);
+            	// notify the business rules object that a deletion is going to happen
+            	Object obj2 = localSession.merge(obj);
+            	if (delBusRules != null)
+            	{
+            		obj2 = delBusRules.beforeDelete(obj2, localSession);
+            	}
+            	localSession.delete(obj2);
             }
-            localSession.delete(obj2);
         }
         for (Object obj : deletedItems)
         {
-            BusinessRulesIFace delBusRules = DBTableIdMgr.getInstance().getBusinessRule(obj);
-            // notify the business rules object that a deletion is going to be committed
-            if (delBusRules != null)
+            if (!(obj instanceof DataModelObjBase) || ((DataModelObjBase)obj).getId() != null)
             {
-                if (!delBusRules.beforeDeleteCommit(obj, localSession))
-                {
-                    throw new Exception("Business rules processing failed");
-                }
+            	BusinessRulesIFace delBusRules = DBTableIdMgr.getInstance().getBusinessRule(obj);
+            	// notify the business rules object that a deletion is going to be committed
+            	if (delBusRules != null)
+            	{
+            		if (!delBusRules.beforeDeleteCommit(obj, localSession))
+            		{
+            			throw new Exception("Business rules processing failed");
+            		}
+            	}
             }
         }
     }
