@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<head>
+<link href="../../main.css" rel="stylesheet" type="text/css" media="screen"></link>
+<title>Create Data Set from Record Set</title>
+</head>
+
+<body>
+<table width="100%" border="0" background="../../images/topbar.png">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<h2 class="index">Create Data Set from Record Set</h2>
+<p>New in Specify 6.3, users may now create a WorkBench data set based on an existing Specify record set. The data set can then be exported as an Excel spreadsheet.</p>
+<p>Before a record set can be converted to a data set a mapping must exist.  You can reuse an existing data set mapping, in which case you can go directly to <a href="../RecordSet/record_set.html#create">Create a Data Set from Record Set</a>. If a data set with a duplicate mapping does not exist then a mapping must be created by creating an empty data set.</p>
+<h3>Create a Mapping/Data Set</h3>
+<ol>
+  
+    <ol>
+      <li>Click the <img src="../../images/NewDataSet16x16.png" alt="new" width="16" height="16" /> <em>New Data Set</em> button on the side bar.</li>
+    
+    <blockquote>
+      <p align="center"><img src="../images/NewDataSet.png" alt="New Data Set"></p>
+      <p align="center" class="imgcaption">New Data Set</p>
+    </blockquote>
+    
+      <li>Click the <em>Create new Data Set mapping</em> button
+        <p>To choose  column headings for the new data set, select the <strong><em>Create new Data Set mapping</em></strong> button and click 'OK'. The Data Set Mapping Editor will appear:</p>
+        <p align="center"><img src="../images/DataSetMappingEditorClear.png" alt="Data Set Mapping Editor"></p>
+        <p align="center" class="imgcaption">Data Set Mapping Editor</p>
+        <p align="left">&nbsp;</p>
+        <p align="left">The Data Set Mapping Editor allows columns to be mapped, unmapped and reordered using the following buttons:</p>
+      </li>
+    
+  <table width="75%" border="1" cellspacing="1" cellpadding="6">
+        <tr>
+            <td width="8%"><img src="../images/Map16x16.png" alt="map" width="16" height="16"></td>
+          <td width="14%" class="index">Map</td>
+          <td width="78%">Adds the field to the column list.</td>
+        </tr>
+        <tr>
+            <td><img src="../images/Unmap16x16.png" alt="unmap" width="16" height="16"></td>
+          <td class="index">Unmap</td>
+          <td>Removes the field from the list of columns.</td>
+        </tr>
+        <tr>
+            <td><img src="../images/ReorderUp16x16.png" alt="reorderup" width="16" height="16"></td>
+          <td class="index">Reorder up</td>
+          <td>Moves the selected field up.</td>
+        </tr>
+        <tr>
+            <td><img src="../images/ReorderDown16x16.png" alt="reorderdown" width="16" height="16"></td>
+          <td class="index">Reorder down</td>
+          <td>Moves the selected field down.</td>
+        </tr>
+        </table>
+    <blockquote>
+      <p align="left">&nbsp; </p>
+      <p align="left">The WorkBench provides a list of  fields matching the Specify data model to use as column headings in the new data set. The list is organized by Data Types, sometimes referred to as Tables. </p>
+    </blockquote>
+    
+      <li>Add column headings</li>
+    </ol>
+    <blockquote>
+      <p>1) Select a Data Type. The available fields will appear in the 'Specify Fields' window. </p>
+      <p>2) Select a field.</p>
+      <p>3) Click the <img src="../images/Map16x16.png" alt="map" width="16" height="16"> (map) button.</p>
+    </blockquote>
+</ol>
+  
+  <blockquote>
+    <p>The new column heading will appear under both 'Specify Fields' and  'Data Set Columns' (as shown below).
+    </p>
+    <p align="left">A link icon, (<img src="../images/linked_right.png" alt="linked" width="32" height="16">), confirms that the Specify field is mapped to the Data Set column. </p>
+    <blockquote>
+      <p align="left"><em><strong>Note:</strong></em> A field may only map once. Specify fields that are mapped display a green check mark next to their name in the Specify field list confirming that they are in use. </p>
+      <p><em><strong>Note:</strong></em> When importing Taxon information only use the Taxon Only Table in the mapping editor. </p>
+      <p><em><strong>Note:</strong></em> The Agent table in the mapping editor may only be used for agent information. When uploading agent information associated with other tables use the appropriate table such as Cataloger, Determiner or Collector and their respective fields.</p>
+      <p align="left">&nbsp;</p>
+    </blockquote>
+    <p align="center"><img src="../images/DataSetMappingEditor2.png" alt="editor" ></p>
+    <p align="center" class="imgcaption">Data Set Mapping Editor with three columns added </p>
+    <p align="left">&nbsp;</p>
+    <p align="left">Continue adding fields/columns until the  'Data Set Columns' list is complete, then click  'OK'. </p>
+    <p align="left">Complete the new Data Set/Mapping by   naming  and describing it:</p>
+    <p align="center"><img src="../images/datasetproperties.png" alt="Data Set Properties"></p>
+    <p align="center" class="imgcaption">Data Set Properties </p>
+    <p>
+      </blockquote>
+    </p>
+  </blockquote>
+<p>&nbsp;</p>
+<h3><u><a name="create" id="create"></a></u>Create a Data Set from a Record Set</h3>
+<ol>
+  <ol>
+    <li>Click the <img src="../../images/NewDataSet16x16.png" alt="new" width="16" height="16" /> <strong><em>Create Data Set from Record Set</em></strong> button</li>
+    <li>Choose a record set from the dialog and click the <strong><em>OK</em></strong> button</li>
+  </ol>
+  <blockquote>
+    <p>The next dialog lists the available data sets. </p>
+  </blockquote>
+  <ol>
+    <li>Choose the data set/mapping that you require. </li>
+    <li>Click the OK button.</li>
+  </ol>
+  <blockquote>
+    <p>In the next dialog name the new data set. </p>
+    <p><em><strong>Note:</strong></em> Data contained in all records in the record set will be used to fill the data set columns. Where necessary all data in one-to-many relationships will be parsed into the relevant fields. It is important to include these necessary fields in the original mapping. E.g. if the records in the record set all have two collectors it is important to include columns for Collector 1 First Name, Last Name and Middle Initial as well as Collector 2 First Name, Last Name, Middle Initial to ensure that all relevant information is preserved for all records. </p>
+    <p><em><strong>Note:</strong></em> When the data set opens the validation for invalid fields will be turned on. If the data set contains catalog number they will be marked as invalid and highlighted in red because Specify recognizes them as duplicates. The validation can be turned off by unchecking the <em>Highlight Invalid Cells</em> checkbox in the validation panel at the bottom of the work space.</p>
+    <p align="center"><img src="../../images/validation_screen.png" alt="validation" width="562" height="31" /></p>
+  </blockquote>
+</ol>
+<blockquote>
+  <p align="center" class="imgcaption">Validation Panel </p>
+  <blockquote>
+    <p><em><strong>Note:</strong></em> The mapping of a data set  created from a record set may not be edited.</p>
+  </blockquote>
+</blockquote>
+<p class="index">&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>

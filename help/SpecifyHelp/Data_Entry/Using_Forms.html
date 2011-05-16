@@ -251,7 +251,7 @@
         <td valign="top" align="left">
           Opens a search dialog to search for a record. Fields for the table will be available to
           search, but this search is not inclusive of criteria; it treats all criteria
-          independently. For example; when searching for an agent 'John Smith', entering 'John'
+          independently.  For example; when searching for an agent 'John Smith', entering 'John'
           into the first name field and 'Smith' into the last name field will return results for
           all last names of 'Smith' and all first names of 'John' rather than limiting the search
         to only 'John Smith'.        </td>
@@ -259,8 +259,8 @@
       <tr>
         <td valign="top" align="left"><img src="../../images/stamp_20.png" width="20" height="20"></td>
         <td valign="top" align="left">Clone</td>
-        <td valign="top" align="left"><p>This tool is new in version 6.3 and newer. It is only available on the collection object form in the locality field by default. It will open a locality form with all the information for an existing locality. Changes can be made to the form and a new locality record will be created. This will not change the original record, it merely makes a clone of the original record. </p>
-        <p>The tool can be used on other forms and in other fields but requires an update to the applicable form; please contact the Specify team at <a href=
+        <td valign="top" align="left"><p>New in Specify 6.3! The clone tool is only available on the collection object form in the locality field by default. It is used to clone an existing record for editing and saving as a new record. It will open a locality form with all the information from the existing locality. Changes can be made to the form and a new locality record will be created. This will not change the original record, but merely makes a clone of the original record. </p>
+        <p>The tool can be implemented on other forms that include Query Combo Boxes but requires a redesign of the applicable form; please contact the Specify team at <a href=
       "mailto:specify@ku.edu">specify@ku.edu</a> for more information.</p></td>
     </tr>
       <tr>
@@ -776,50 +776,50 @@
     <p>&nbsp;</p>
       <h4><a name="series_entry" id="series_entry"><u>Series Data Entry</u></a></h4>
       <blockquote>
-        <p>Now available in Specify version 6.3 and newer! Series Data Entry allows users to create multiple collection objects, assign catalog numbers within a series and copy data into the new records with the click of a button. </p>
+        <p>Now available in Specify 6.3! Series Data Entry allows users to create multiple collection objects with consecutive catalog numbers and the same data with a single Save operation. </p>
         <p>To use Series Data Entry you must have the following:</p>
         <ul>
           <li>A catalog number that includes a numeric string that is an 'incrementor'</li>
-          <li>Collection Object forms that include Series Data Entry. These forms ship with version 6.3 for Entomology collections; however if you are an entomology collection and used Specify before version 6.3 the default forms will not replace your existing forms. If you are an entomology collection that used Specify prior to the 6.3 release or any other collection that would like to use Series Data Entry please contact our <a href="mailto:specify@ku.edu">Specify team</a> and they will be happy to edit your forms to include Series Data Entry!</li>
+          <li>For users creating a new database with version 6.3 Series Data Entry is included by default only for entomology. For all other disciplines it is turned off by default. For these and all existing databases contact the Specify team  <a href="mailto:specify@ku.edu">Specify team</a> to have this feature included on your forms.</li>
         </ul>
         <p>To use Series Data Entry:</p>
         <ol>
           <li>Turn off Auto Numbering by choosing <em>Data &gt; Auto Numbering</em> in the main menu.</li>
           <li>Configure Carry Forward by choosing <em>Data &gt; Configure Carry Forward</em> in the main menu.</li>
-        </ol>
+        
         <blockquote>
-          <p>A button will appear next to the catalog number field. </p>
+          <p>A right facing arrow button will appear next to the catalog number field. </p>
           <p align="center"><img src="../../images/batch_entry_arrow.png" width="245" height="30" align="center">      </p>
           <p align="center" class="imgcaption">Catalog Number field with an <em>Expand</em> button.      </p>
         </blockquote>
-        <ol>
+       
           <li>Click the button to expand the catalog number field. </li>
-        </ol>
+        
         <blockquote>
           <p>A second box will appear on the form.</p>
           <p align="center"><img src="../../images/batch_entry_numbers.png" width="346" height="33" align="center">        </p>
           <p align="center"><span class="imgcaption">Catalog Number fields for Series Batch Entry      </span>      </p>
         </blockquote>
-        <ol>
-          <li>Enter the starting number in the series into the first catalog number box and the ending number in the series into second catalog number box.</li>
-        </ol>
+        
+          <li>Enter the starting number in the series into the first catalog number box and the ending number in the series into second catalog number box. Make sure to follow the format for both numbers.</li>
+        
         <blockquote>
           <p> The series can not include more than 500 records.</p>
         </blockquote>
-        <ol>
+        
           <blockquote>
             <p><em><strong>Note:</strong></em> Series Data Entry has a 500 record limit.</p>
           </blockquote>
-          <li>Fill-in the data for the collection object that you wish to carry forward.</li>
+          <li>Complete the data for the first collection object that you wish to carry forward. Depending on how carry forward has been configured, all or part of the fields and tables selected in the series will be copied to all records in the series. </li>
           <li>Click the <em>Save</em> button.</li>
         </ol>
-        <p>Specify will create a record set of the collection objects that were created. The record set will be named with the first and last number in the series and appear on the side bar. </p>
+        <p>Specify automatically creates a record set of the collection objects that were created. The record set will be named with the first and last number in the series and appear on the side bar. </p>
         <p>To open the collection object records in the work space simply click on the record set located on the side bar.</p>
       </blockquote>
     <p>&nbsp;</p>
     <h4><a name="batch_determine" id="batch_determine"><u>Batch Identify</u></a></h4>
   <blockquote>
-        <p>New in version 6.3 and newer! Batch Identify allows users to create and/or update the taxon information for several collection objects at one time.</p>
+        <p>New in Specify 6.3! Batch Identify allows users to create and/or update the determination information for several collection objects at one time.</p>
         <p>If several collection objects will be updated it is recommended that you create a <a href="../RecordSet/record_set.html">record set</a> of the collection objects before launching Batch Identify.</p>
         <ol>
           <li>Choose <em>Data &gt; Batch Identify</em> in the main menu. </li>
@@ -830,13 +830,13 @@
         
           <li>Choose to either enter catalog numbers, separated by commas, or choose a record set. </li>
                 <blockquote>
-          <p>A taxon form will appear as well as a table listing the catalog numbers of the affected records, determined date, type status and current determination.</p>
+          <p>A determination form will appear as well as a table listing the catalog numbers of the affected records.</p>
         </blockquote>
         
-          <li>Fill in the appropriate information in the taxon form and click 'Save'. </li>
+          <li>Fill in the appropriate information in the determination form and click 'Save'. </li>
         </ol>
-        <p>A new determination will be created for each of the collection objects, it will also be the current determination. </p>
-      </blockquote>
+    <p>A new determination will be created for each of the collection objects and it will be made current. If no determination exists, a determination will be created. </p>
+    </blockquote>
     <p>&nbsp; </p>
   </blockquote>
   <h3>

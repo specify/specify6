@@ -15,10 +15,12 @@
 <tr><td width="32"><img src="../../images/backup.png" width="32" height="32" /></td>
 <td width="522"><h2>Using Backup and Restore</h2></td></tr></a>
 </table>
-<p>The Backup and Restore tool that ships with Specify  as a separate application allows IT personnel to backup and restore the database to the MySQL location on a server, or local disk. BackupAndRestore is located in the Specify application directory, in the <strong><em>bin</em></strong> directory, which stores the executable files for Specify. Double click<em> BackupAndRestore</em> to launch the tool. Users are required to login using their  MySQL Username and Password. </p>
-<p>Although BackupAndRestore is a separate tool the permissions for the tool are set in the Specify application and access is only given to users in a Manager or Administrators group.</p>
+<p>The Backup and Restore tool that ships with Specify  as a separate application allows IT personnel to backup and restore the database to the MySQL location on a server, or local disk. BackupAndRestore is located in the Specify application directory, in the <strong><em>bin</em></strong> subdirectory, which stores the executable files for Specify. Double click<em> BackupAndRestore</em> to launch the tool. Users are required to login using their  IT (MySQL) Username and Password. </p>
 <p>Backups can also be created in <em>Specify &gt; Preferences &gt; MySQL</em> on the Mac, or <em>Edit &gt; Preferences &gt; MySQL</em> on Windows, but the Restore function is only possible in the Backup and Restore tool.</p>
-<p>First, set MySQL information for the backup and restore function. These paths should only be edited by the MySQL administrator, or a designated person with the necessary privileges in Specify and MySQL.</p>
+<h3>Using Backup and Restore</h3>
+<blockquote>
+  <p>First, set MySQL information for the backup and restore function. These paths should only be edited by the MySQL administrator, or a designated person with the necessary privileges in Specify and MySQL.</p>
+
 <table width="100%" border="1" cellspacing="2" cellpadding="6">
   <tr>
     <td width="24%"><div align="left"><u><strong><a name="mysql_preference">MySQL Preference</a></strong></u></div></td>
@@ -29,8 +31,9 @@
     <td><div align="center" class="MichaelsChanges">
       <div align="left"><strong>mysqldump</strong></div>
     </div></td>
-    <td>Points Specify to the needed mysqldump (mysqldump.exe on Windows) file for backup purposes. This path will point to a server when accessing Specify from a server, and be local when Specify is run locally.</td>
-    <td>Click on the browse button and find the path to the command-line tools for MySQL.</td>
+    <td><p>Points Specify to the needed mysqldump (mysqldump.exe on Windows) file for backup purposes. This path will point to a server when accessing Specify from a server, and be local when Specify is run locally.</p>
+    <p><em>Note: </em>A typical storage place on a pc computer is on your Local Disk C:\Program Files\MySQL\MySQL Server 5.1\bin. A typical storage place on a Macintosh is in Users > {Username} > Downloads > MySQL.</p>    </td>
+    <td valign="top">Click on the browse button and find the path to the command-line tools for MySQL.</td>
   </tr>
   <tr>
     <td><div align="center" class="MichaelsChanges">
@@ -55,9 +58,11 @@
     <td>Click the <em>Restore</em> button.</td>
   </tr>
 </table>
-<p>The Backup and Restore functions are NOT limited to single collections, but  backup and restore the entire database. This is vital to understand when setting up an institutional backup and restore strategy.</p>
-<p>Collections that maintain separate databases in MySQL, within an institution, will create collection-specific backups. This type of arrangement will restore the specific, single collection database only.</p>
-<h2>&nbsp;</h2>
+
+  <p>The Backup and Restore functions are NOT limited to single collections, but  backup and restore the entire database. This is vital to understand when setting up an institutional backup and restore strategy.</p>
+  <p>Collections that maintain separate databases in MySQL, within an institution, will create collection-specific backups. This type of arrangement will restore the specific, single collection database only.</p>
+  <h2>&nbsp;</h2>
+</blockquote>
 <p>&nbsp;</p>
 </BODY>
 </html>

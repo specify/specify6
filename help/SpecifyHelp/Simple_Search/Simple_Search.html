@@ -1,121 +1,291 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
-<title>About Simple Search</title>
-</head>
+  <head>
+    <meta content="text/html; charset=MacRoman" http-equiv="Content-Type">
+    <link type="text/css" media="screen" href="../../main.css" rel="stylesheet">
+    <meta name="generator" content="Helen">
+    <title>About Simple Search</title>
+  </head>
+  <body bgcolor="#ffffff">
+    <table border="0" width="100%" background="../../images/topbar.png">
+      <tr>
+        <td>&nbsp;
+          
+        </td>
+      </tr>
+    </table>
+    <h2>
+       <strong>Simple Search</strong>
+    </h2>
+    <p>
+       <em>Simple Searches</em> have been pre-configured in Specify 6 from pre-indexed fields. The
+      purpose of the Simple Search is to eliminate the need to create a complex Query for commonly
+      executed searches.
+    </p>
+    <p>
+       Simple Search is not the Express Search tool found in Specify 5. The tables in Simple Search
+      do not need to be rebuilt in order to function, and Simple Search offers a broader range of
+      fields and table configurations. Simple Search also does not offer the same grid view as was
+      available in Express Search.
+    </p>
+    <p>
+       Simple Search can be configured to use the minimum number of fields needed for a search,
+      which will produce faster results.
+    </p>
+    <p>
+       Simple Search can also be configured to show results from indexed fields in other tables, or
+      <em>Related Searches</em>. For example; a search for an Agent name can display the name in
+      the Agent table, as well as all Determinations owned by that agent in the Determinations
+      table. At this time the Related Searches are already built into Specify and can only be
+      activated or deactivated.
+    </p>
+    <p>
+       To configure a more complicated search and choose from <em>all</em> the fields in Specify 6
+      use the Query tool. Please refer to <a href="../express_search/QueryBuilder.html">Query</a>.
+    </p>
+    <p>
+       Simple Search can be used by all users but can only be configured by users in a Full Access,
+      Manger or Administrator group. Full Access users can add or modify, but not delete.
+    </p>
+    <blockquote>
+      <p>
+        <strong><em>Note:</em></strong> Simple Search results work best when a wild card, or
+        asterisk, (*), is used.
+      </p>
+    </blockquote>
+<p>&nbsp;
+       
+    </p>
+    <h3>
+       <strong><a name="ss_execute" id="ss_execute"></a>Using Simple Search</strong>    </h3>
+<p>
+       Simple Search is located in the upper right corner of Specify 6. Click the <img height="16"
+      alt="" src="../../images/Down16x16.png" width="16">&nbsp;(down arrow) to display a menu of
+      available tables. For information about adding tables to the menu and configuring preferences
+      refer to <a href="../Simple_Search/Simple_Search_Config.html"><em>Configure Simple
+      Search</em></a>.
+    </p>
+    <h4>&nbsp;    </h4>
+    <blockquote>
+      <h4>
+        <u><strong>Execute a Simple Search:</strong></u> </h4>
+      <ol>
+        <li>
+          Either leave as <em>All</em> or choose a specific table from the drop down menu.
+          <em>All</em> will search all the tables that have been configured in <em>Simple Search
+            Configuration</em>. Choosing one table from the list will search that table first and then
+          all related tables.        </li>
+<br />
+        <li>
+          Type in either one or two words as search criteria.        </li>
+<br />
+        <li>
+          Press the Return key.    </li>
+      </ol>
+  </blockquote>
+<blockquote>
+      <h4>
+       <strong><a name="ss_cards" id="ss_cards"></a><u>Simple Search Wild Cards</u></strong>    </h4>
+      <blockquote>
+        <p>
+          More than one term can be used in a search specification, but the results will vary
+          depending on the use of wild cards and delimiters. For example, if the search string is
+          Clinton Lake, Simple Search results will include records which have either Clinton OR Lake in
+          any search field. Records which contain the phrase Clinton Lake in one field will also be
+          found.
+        </p>
+        <p> A wild cards and delimiter can be used in Simple Search criteria. An asterisk, (*), used as
+          a wild card allows the criteria to be found as part of a string. Single or double quote, ('
+          or "), delimiters allow two or more words to be searched as a string rather than separate
+          criteria. The wild card and delimiter can also be used together to further limit the search. </p>
+     
+      <table cellpadding="6" border="1" width="100%" cellspacing="2">
+      <tr>
+        <td valign="top" align="left" width="26%">
+          *Clinton        </td>
+        <td valign="top" align="left" width="74%">
+          Returns any string with Clinton at the end.        </td>
+      </tr>
+      <tr>
+        <td valign="top" align="left">
+          Clinton*        </td>
+        <td valign="top" align="left">
+          <p>
+             Returns any string that begins with Clinton.          </p>        </td>
+      </tr>
+      <tr>
+        <td valign="top" align="left">
+          *Clinton*        </td>
+        <td valign="top" align="left">
+          Returns any string that includes Clinton anywhere in the string.        </td>
+      </tr>
+      <tr>
+        <td valign="top" align="left">
+          *Clinton Lake*        </td>
+        <td valign="top" align="left">
+          <p>
+             Returns any string that begins with Lake or ends with Clinton.          </p>        </td>
+      </tr>
+      <tr>
+        <td valign="top" align="left">
+          "Clinton Lake" or 'Clinton Lake'        </td>
+        <td valign="top" align="left">
+          Returns any string where Clinton Lake is the entire string.        </td>
+      </tr>
+      <tr>
+        <td valign="top" align="left">
+          *"Clinton Lake"* or *'Clinton Lake'*        </td>
+        <td valign="top" align="left">
+          Returns any string that includes Clinton Lake anywhere in the string.        </td>
+      </tr>
+    </table>
 
-<BODY BGCOLOR=#ffffff>
-<table width="100%" border="0" background="../../images/topbar.png">
-  <tr>
-    <td>&nbsp;</td>
-  </tr>
-</table>
-<h2><strong>Simple Search</strong></h2>
-<p><em>Simple Searches </em>have been pre-configured in Specify 6 from pre-indexed fields. The purpose of the Simple Search is to eliminate the need to create a complex Query for commonly executed searches. </p>
-<p>Simple Search is not the Express Search tool found in Specify 5. The tables in Simple Search do not need to be rebuilt in order to function, and Simple Search offers a broader range of fields and table configurations. Simple Search also does not offer the same grid view as was available in Express Search.</p>
-<p>Simple Search can be configured to use the minimum number of fields needed for a search, which will produce faster results.</p>
-<p>Simple Search can also be configured to show results from indexed fields in other  tables, or <em>Related Searches</em>. For example; a search for an Agent name can display the name in the Agent table, as well as all Determinations owned by that agent in the Determinations table. At this time the Related Searches are already built into Specify and can only be activated or deactivated. </p>
-<p>To configure a more complicated search and choose from <em>all</em> the fields in Specify 6 use the Query tool. Please refer to <a href="../express_search/QueryBuilder.html">Query</a>.</p>
-<p>Simple Search can be used by all users but can only be configured by users in a Full Access, Manger or Administrator group. Full Access users can add or modify, but not delete.</p>
-<p><em><strong>Note:</strong></em> Simple Search results work best when a wild card, or asterisk, (*), is used.</p>
-<p>&nbsp;</p>
-<p><u><strong><a name="ss_execute" id="ss_execute"></a>Using Simple Search</strong></u></p>
-<p>Simple Search is located in the upper right corner of Specify 6. Click the <img src="../../images/Down16x16.png" alt="" width="16" height="16" /> (down arrow) to display a menu of available tables. For information about adding tables to the menu and configuring preferences refer to <em><a href="../express_search/Search.html">Configure Simple Search</a></em>. </p>
-<p>&nbsp;</p>
-<p><strong>Execute a Simple Search:</strong></p>
-<ol>
-  <li>Either leave as<em> All</em> or choose a specific table from the drop down menu. <em>All</em> will search all the tables that have been configured in <em>Simple Search Configuration</em>. Choosing one table from the list will search that table first and then all related tables.</li>
-  <br />
-  <li>Type in either one or two words as search criteria.</li><br />
-  <li>Press the Return key.</li>
-</ol>
-<p>&nbsp;</p>
-<p><strong><a name="ss_cards" id="ss_cards"></a>Simple Search Wild Cards</strong></p>
-<p>More than one term can be used in a search specification, but the results will vary depending on the use of wild cards and delimiters.  For example, if the search string is Clinton Lake, Simple Search results will include records which have either Clinton OR Lake in any search field.  Records which contain the phrase Clinton Lake in one field will also be found.</p>
-<p>A wild cards and delimiter can be used in Simple Search criteria. An asterisk, (*), used as a wild card allows the criteria to be found as part of a string. Single or double quote, (' or &quot;), delimiters allow two or more words to be searched as a string rather than separate criteria. The wild card and delimiter can also be used together to further limit the search.</p>
-<table width="100%" border="1" cellspacing="2" cellpadding="6">
-  <tr>
-    <td width="26%" align="left" valign="top">*Clinton</td>
-    <td width="74%" align="left" valign="top">Returns any string with Clinton at the end.</td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">Clinton*</td>
-    <td align="left" valign="top"><p>Returns any string that begins with Clinton.</p>    </td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">*Clinton*</td>
-    <td align="left" valign="top">Returns any string that includes Clinton anywhere in the string.</td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">*Clinton Lake*</td>
-    <td align="left" valign="top"><p>Returns any string that  begins with Lake or ends with Clinton.</p>
-    </td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">&quot;Clinton Lake&quot; or 'Clinton Lake'</td>
-    <td align="left" valign="top">Returns any string where Clinton Lake is the entire string.</td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">*&quot;Clinton Lake&quot;* or *'Clinton Lake'*</td>
-    <td align="left" valign="top">Returns any string that includes Clinton Lake anywhere in the string.</td>
-  </tr>
-</table>
-<p>&nbsp;</p>
-<p><em><strong>Criteria Notes:</strong></em></p>
-<p>Numbers are searched in both the number and string fields in the configured tables.</p>
-<p>When the criteria is a 4-digit number  between 1000 and 3000 and date fields are included in the search configuration, Simple Search will search  the year portion of all the date fields.</p>
-<p>When searching for a loan that uses a number scheme that includes a date plus a number, e.g. (2003-001), enter 2003* for the search criteria to find all 2003 results. </p>
-<p>Results are completely affected by the Simple Search Configuration. If results are not as expected check the configuration and make sure the desired fields are included in the Simple Search Configuration.</p>
-<p><strong><a name="ss_results" id="ss_results"></a>Simple Search Results</strong></p>
-<p>Results from the chosen primary table are designated with a blue (<img src="../../images/express_search_bar.png" width="20" height="20" />) header bar </p>
-<p>Results from related tables are designated with an aqua (<img src="../../images/express_search_related_bar.png" width="20" height="20" />) header bar </p>
-<p>Results can be viewed by clicking the <img src="../../images/express_search_expand.png" width="16" height="16" /> (Expand) button or double clicking the header bar.</p>
-<p>Results are displayed as a Grid. </p>
-<p>Click on the title bar at the top of the column to sort the column. Dates should be in a MM/dd/yyyy format to sort correctly.</p>
-<p>&nbsp;</p>
-<h4><strong>Using Simple Search Results</strong></h4>
-<p>Choose one, several or all the records using the methods below, then click  a button from the results bar.</p>
-<ul>
-  <li>Click a record to select a singe record.</li><br />
-  <li>Cntl (PC)  or Command (Mac) Click  to select or deselect several non-consecutive individual records.</li><br />
-  <li> Click the <em>Select All/Deselect All</em> button at the bottom of the results list to select all  records.</li><br />
-  <li>If no records are selected, all records will be used.</li>
-</ul>
-<p>&nbsp;</p>
-<table width="57%" border="1" cellspacing="2" cellpadding="6">
-  <tr>
-    <td width="16%" align="left" valign="top"><u><strong>Button</strong></u></td>
-    <td width="84%" align="left" valign="top"><u><strong>Function</strong></u></td>
-  </tr>
-  <tr>
-    <td align="left" valign="top"><img src="../../images/record_sets_new_20.png" width="20" height="20" /></td>
-    <td align="left" valign="top">Create a Record Set. Please refer to <a href="../record_set/record_sets.html">Record Set.</a></td>
-  </tr>
-  <tr>
-    <td align="left" valign="top"><img src="../../images/data_entry.png" alt="" width="20" height="20" /></td>
-    <td align="left" valign="top">Open records in  form view.</td>
-  </tr>
-  <tr>
-    <td align="left" valign="top"><img src="../../images/ExportExcelTemplate16x16.png" alt="" width="20" height="20" /></td>
-    <td align="left" valign="top">Export the grid to MS Excel.</td>
-  </tr>
-  <tr>
-    <td align="left" valign="top"><img src="../../images/printer.png" alt="" width="32" height="28" /></td>
-    <td align="left" valign="top">Print the results Grid.</td>
-  </tr>
-</table>
-<p>&nbsp;</p>
-<p>Search results can also be used to add records to an existing Record Set.</p>
-<p>Click the <img src="../../images/record_sets_dark_20.png" alt="record set" width="20" height="20" /> (Record Set) button at the bottom of the results window. The <em>Choose a Record Set</em> dialog will appear:</p>
-<ul>
-  <li>Select a Record Set name in the list and click the <em>OK</em> button to add the selected records to the existing Record Set.</li>
-  <br />
-  <li>Click the <em>New</em> button to create a new Record Set</li>
-  <br />
-  <li>Click <em>Cancel</em> to close the dialog. </li>
-</ul>
-<p>Or, select the records for the <img src="../../images/record_sets_dark_20.png" alt="record set" width="20" height="20" /> (Record Set) button to enable, then drag the button to an existing record set on the side bar to add the records to the existing record set. The existing record set and the new records must be from the same table to be compatible. As the button is dragged toward the side bar any existing record sets that can accept the new records will display a colored band.</p>
-<p>&nbsp;</p>
-</BODY>
+
+        <blockquote>
+          <p>
+            <strong><em>Criteria Notes:</em></strong>
+          </p>
+          <p>
+            Numbers are searched in both the number and string fields in the configured tables.
+          </p>
+          <p>
+            When the criteria is a 4-digit number between 1000 and 3000 and date fields are included in
+            the search configuration, Simple Search will search the year portion of all the date fields.
+          </p>
+          <p>
+            When searching for a loan that uses a number scheme that includes a date plus a number, e.g.
+            (2003-001), enter 2003* for the search criteria to find all 2003 results.
+          </p>
+          <p>
+            Results are completely affected by the Simple Search Configuration. If results are not as
+            expected check the configuration and make sure the desired fields are included in the Simple
+            Search Configuration.        </p>
+        </blockquote>
+        <p>&nbsp;</p>
+      </blockquote>
+    </blockquote>
+    <h3>
+       <strong><a name="ss_results" id="ss_results"></a>Simple Search Results</strong>    </h3>
+    <blockquote>
+      <p>
+        Results from the chosen primary table are designated with a blue (<img height="20" src=
+      "../../images/express_search_bar.png" width="20">) header bar
+      </p>
+      <p>
+        Results from related tables are designated with an aqua (<img height="20" src=
+      "../../images/express_search_related_bar.png" width="20">) header bar
+      </p>
+      <p>
+        Results can be viewed by clicking the <img height="16" src=
+      "../../images/express_search_expand.png" width="16">&nbsp;(Expand) button or double clicking
+        the header bar. </p>
+      <p>
+        Results are displayed as a Grid.
+      </p>
+      <p>
+        Click on the title bar at the top of the column to sort the column. Dates should be in a
+        MM/dd/yyyy format to sort correctly.
+      </p>
+    </blockquote>
+<p>&nbsp;
+       
+    </p>
+    <h3>
+       <strong>Using Simple Search Results</strong>    </h3>
+    <blockquote>
+      <p>
+        Choose one, several or all the records using the methods below, then click a button from the
+        results bar.
+      </p>
+      <ul>
+        <li>
+          Click a record to select a singe record.
+        </li>
+
+        <li>
+          Cntl (PC) or Command (Mac) Click to select or deselect several non-consecutive individual
+          records.
+        </li>
+
+        <li>
+          Click the <em>Select All/Deselect All</em> button at the bottom of the results list to
+          select all records.
+        </li>
+
+        <li>
+          If no records are selected, all records will be used.
+        </li>
+      </ul>
+
+   
+    <table cellpadding="6" border="1" width="57%" cellspacing="2">
+      <tr>
+        <td valign="top" align="left" width="16%">
+          <u><strong>Button</strong></u>        </td>
+        <td valign="top" align="left" width="84%">
+          <u><strong>Function</strong></u>        </td>
+      </tr>
+      <tr>
+        <td valign="top" align="left">
+          <img height="20" src="../../images/record_sets_new_20.png" width="20">        </td>
+        <td valign="top" align="left">
+          Create a Record Set. Please refer to <a href="../record_set/record_set.html">Record
+          Set.</a>        </td>
+      </tr>
+      <tr>
+        <td valign="top" align="left">
+          <img height="20" alt="" src="../../images/data_entry.png" width="20">        </td>
+        <td valign="top" align="left">
+          Open records in form view.        </td>
+      </tr>
+      <tr>
+        <td valign="top" align="left">
+          <img height="20" alt="" src="../../images/ExportExcelTemplate16x16.png" width="20">        </td>
+        <td valign="top" align="left">
+          Export the grid to MS Excel.        </td>
+      </tr>
+      <tr>
+        <td valign="top" align="left">
+          <img height="28" alt="" src="../../images/printer.png" width="32">        </td>
+        <td valign="top" align="left">
+          Print the results Grid.        </td>
+      </tr>
+    </table>
+    
+
+      <p>
+        Search results can also be used to add records to an existing Record Set.
+      </p>
+      <p>
+        Click the <img height="20" alt="record set" src="../../images/record_sets_dark_20.png"
+      width="20">&nbsp;(Record Set) button at the bottom of the results window. The <em>Choose a
+          Record Set</em> dialog will appear:
+      </p>
+      <ul>
+        <li>
+          Select a Record Set name in the list and click the <em>OK</em> button to add the selected
+          records to the existing Record Set.
+        </li>
+
+        <li>
+          Click the <em>New</em> button to create a new Record Set
+        </li>
+
+        <li>
+          Click <em>Cancel</em> to close the dialog.
+        </li>
+      </ul>
+      <p>
+        Or, select the records for the <img height="20" alt="record set" src=
+      "../../images/record_sets_dark_20.png" width="20">&nbsp;(Record Set) button to enable, then
+        drag the button to an existing record set on the side bar to add the records to the existing
+        record set. The existing record set and the new records must be from the same table to be
+        compatible. As the button is dragged toward the side bar any existing record sets that can
+        accept the new records will display a colored band. </p>
+  </blockquote>
+  
+<p>&nbsp;
+       
+    </p>
+  </body>
 </html>

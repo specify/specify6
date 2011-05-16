@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
+<title>Specify DB Security Wizard</title>
+<style type="text/css">
+<!--
+.style1 {
+	color: #FF0000;
+	font-weight: bold;
+}
+-->
+</style>
+</head>
+
+<BODY BGCOLOR=#ffffff>
+<table width="100%" border="0" background="../../images/topbar.png">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<br />
+<table border="0">
+<tr><td width="20"><img src="../../images/Tree_big.png" width="32" height="32" /></td>
+<td ><h2>Specify DB Security Wizard</h2></td></tr>
+</table>
+<p>New in Specify 6.3! If you are having difficulty logging into any of its utilities your first check should be to verify the username and password that Specify is using. The Security Wizard provides a quick and easy mechanism to check these. It also provides a mechanism to reset the Master username and password. If you have forgotten the Master username and password the Security Wizard will allow you to reset them.</p>
+<p>Types of Specify credentials include:</p>
+<ul>
+  <li> User username
+    and password</li>
+  <li> Master username
+    and  password</li>
+  <li> Master Key, (Encrypted username / password ) </li>
+  <li>IT username and IT password (used to gain access to the MySQL database manager)</li>
+</ul>
+<p>For more information regarding these login types please refer to the <a href="../Dialogs/Login.html">Specify Login</a> help page.</p>
+<p>The Security Wizard also  provides a summary of the databases and users that utilize the current Master credentials as well as a list of all Specify databases in your current database management system (MySQL).</p>
+<p>The Security Wizard is a separate application that ships with Specify. It is located in the Specify application directory, in the <strong><em>bin</em></strong> subdirectory, which stores the executable files for Specify. Double click<em> SpecifyDBSecurityWizard</em> to launch the tool.</p>
+<p>&nbsp;</p>
+<h3><a name="securitywiz_screen1" id="securitywiz_screen1"></a>Test IT credentials</h3>
+<p align="center"><img src="../../images/securitywizard_1.png" alt="screen 1" width="432" height="424" /></p>
+<p align="center" class="imgcaption">Test IT Username and Password</p>
+<blockquote>
+  <p>The initial screen verifies the IT username and password. The IT username and password refer to the credentials required to login into the MySQL database manager. It has full administrator privileges within the MySQL database manager.</p>
+  <ol>
+    <li>Type in the <em><strong>IT Username </strong>and<strong> Password</strong></em> in the appropriate boxes. </li>
+    <li>Type in the <em><strong>Host Name</strong></em>. The host name is the name of the computer that is running MySQL. This is either an IP Address  or name of the computer that is recognized by the server. When running MySQL on your local machine this is almost always 'localhost' or '127.0.0.1'.</li>
+    <li>Click on the <em><strong>Test IT Login</strong></em> button.</li>
+  
+  <blockquote>
+    <p><u>Correct IT Credentials</u></p>
+    <p>If your IT credentials are correct a message above the button will alert you that your <strong>Login test was successful</strong>.
+      </li>
+    </p>
+    <p><u>Incorrect IT Credentials</u></p>
+    <p>If your IT credentials are incorrect a red message will alert you that your <span class="style1">Login test was NOT successful.</span> You may try again by typing in different credentials and clicking the <em>Test IT Login</em> button. </p>
+    <p>The security wizard requires correct IT credentials in order to progress. If you are unable to identify your correct IT credentials you may go no further in the Security Wizard tool. There are also Specify features that require the IT credentials, including creating a new Discipline or Division and using the Backup and Restore tool.</p>
+  </blockquote>
+
+    <li>Click the <strong><em>Next</em></strong> button to proceed in the security wizard.
+      </p>
+    </li>
+  </ol>
+</blockquote>
+<p>&nbsp;</p>
+<h3><a name="securitywiz_screen2" id="securitywiz_screen2"></a>Test Master Username and Password</h3>
+<p align="center"><img src="../../images/securitywizard_2.png" alt="screen 1" width="432" height="424" /></p>
+<p align="center" class="imgcaption">Test Master Username and Password</p>
+<p>&nbsp;</p>
+<blockquote>
+  <p>This screen verifies the Master username and password. The Master credentials were created when the Specify Setup Wizard was run to create the Specify database or created by an IT administrator if a database was created from within MySQL rather than through the Specify Setup Wizard.</p>
+  <ol>
+    <li>Type in the Master credentials.</li>
+    <li>Click the <strong><em>Test Master Login</em></strong> button.</li>
+  
+  <blockquote>
+    <p><u>Correct Master Credentials</u></p>
+    <p>If the Master credentials are correct a message will alert you that your <strong>Login test was successful</strong>.</p>
+    <p><u>Incorrect Master Credentials</u></p>
+    <p>If the Master credentials are incorrect a message will alert you that your <span class="style1">Login test was NOT successful.</span>You may try again by typing in a different username and password and clicking the <em>Test Master Login</em> button.</p>
+    <p>A new button will appear. If you unsuccessful and wish to recreate the Master crecentials you can use the <em><strong>Reset your Master Username and Password </strong></em>button.</p>
+    <blockquote>
+      <p><span class="style1">Warning:</span> If you reset the Master username and password <strong>EVERY</strong> Master Key that was configured using the old Master credentials will need to be reconfigured. That means that every user for the database(s) will require a new Master Key to be reconfigured and sent to them. Users will be required to type in the new Master Key the next time they login to the Specify database!</p>
+    </blockquote>
+    <p><u><strong>Reset the Master Username and Password</strong></u></p>
+    <p>Click the Reset your Master Username and Password button to reset the Master credentials. A dialog will appear listing ALL the Specify databases available. It is important to note that this is a list of ALL the databases.</p>
+    <p align="center"><img src="../../images/securitywizard_4.png" width="183" height="255" /></p>
+    <p align="center" class="imgcaption">Specify Database List</p>
+    <blockquote>
+      <p>1) Choose the database(s) that will be reset to use the new Master username and password.</p>
+    </blockquote>
+    <p>Now you will need to reset the Master credentials. </p>
+    <p align="center"><img src="../../images/securitywizard_2.png" alt="screen 1" width="432" height="424" /></p>
+    <p align="center" class="imgcaption">Reset the Master using the Username and Password fields</p>
+    <p>&nbsp;</p>
+    <blockquote>2) Simply type the new Master username and password into the second screen.
+      <p>3) Click the <strong><em>Test Master Login</em></strong> button.  </p>
+    </blockquote>
+    <p></br>
+    </p>
+  </blockquote>
+  
+    <li>Click the <strong><em>Next</em></strong> button to continue in the Security Wizard.
+      </p>
+    </li>
+  </ol>
+</blockquote>
+<h3>&nbsp;</h3>
+<h3><a name="securitywiz_screen3" id="securitywiz_screen3"></a>Database and User Information</h3>
+<p align="center"><img src="../../images/securitywizard_3.png" width="433" height="353" /></p>
+<p align="center" class="imgcaption">Specify Databases and Users</p>
+<blockquote>
+  <p>The new screen displays three panels of information:</p>
+</blockquote>
+<ul>
+  <li>Accessible Databases (top left)</li>
+  <li>Inaccessible Databases (top right)</li>
+  <li>Users of 'Current Database' (bottom half)</li>
+</ul>
+<blockquote>
+  <p><strong>Accessible Databases</strong> is a list of all the databases that are accessible using the current Master username and password.</p>
+  <p>Select a database from the list to open a list of users for the database in the bottom panel (3).</p>
+  <p>Select a database from the list and click the <img src="../../images/Map16x16.png" alt="move" width="16" height="16" /> to remove it from the list of Accessible Databases and into the Inaccessible Databases list. </p>
+  <blockquote>
+    <p><em><strong>Note:</strong></em> The database(s) listed in the Accessible Databases list when the screen originally opens can not be removed from the list.</p>
+    <p><em><strong>Note:</strong></em> The Specify team does not recommend that a database be moved from the Accessible Databases panel (1) into the Inaccessible Databases panel (2). Databases moved in this way will not have their Master username and password and any attempt to login from Specify will fail until the Master is reset. Reset the master by opening the Specify DB Security Wizard and follow the steps in the Reset the Master Username and Password section above.</p>
+    <p>&nbsp;</p>
+  </blockquote>
+  <p><strong>Non-Accessible Databases</strong> gives a list of Specify databases that are not accessible using the current Master username and password.</p>
+  <p>Select a database from the list and click on the <img src="../../images/Unmap16x16.png" width="16" height="16" /> (move) button to replace the existing Master user for the database and replace it with the current Master user. </p>
+  <blockquote>
+    <p><span class="style1">Warning:</span> Moving a database from the Non-Accessible Databases panel to the Accessible Databases panel will reset the Master username and password for the database and <strong>EVERY</strong> user of the database will need to have a new Master Key reconfigured and sent to them. Users will be required to type in the new Master Key the next time they login to the Specify database!</p>
+  </blockquote>
+  <p>&nbsp;</p>
+  <p><strong>Users of Current Database'</strong> (the name of the current database will be the label for this panel) displays the users that have access to the currently selected database (in panel 1). If you have added any databases to panel 1 you will need to reconfigure the Master Key for each of the users before they can gain access to Specify. Or, if the Master credentials were reset for a database in the previous screen all the users for that database will need to have their Master Key reconfigured. This task can be completed using panel 3.  </p>
+  <blockquote>
+    <p><em><strong>Note:</strong></em> The Master Key can also be reconfigured from within the security tool in Specify as well during the login process. The user must know the Master username and password to reconfigure their Master Key during the login process. </p>
+  </blockquote>
+</blockquote>
+<h3>&nbsp;</h3>
+<h3>Reconfigure the Master Key for a User</h3>
+<blockquote>
+  <p>The the Master credentials will be reset for any databases that are moved from the Inaccessible Databases panel (2) into the Accessible Databases panel (1). The users that access the database will need to have a new Master Key configured and sent to them so they may login to Specify. </p>
+  <p>Be sure that the correct database is selected in Panel 1.</p>
+  <p>Click on the desired username to select the user. </p>
+  <p>Select all the text in the Password text box and delete it. At this time the column labeled 'Master Key' indicates that the Master Key is on the user's machine. Master key information is stored on the local machine and there is no way for this tool to retrieve this information and show it here; therefore, the Master Key must be reconfigured.</p>
+  <p>Type in a new password and	press the 'tab' key. </p>
+  <p>Click the <em><strong>Copy Master Key</strong></em> button at the bottom of this screen to copy the master key into the computers clipboard. You can then paste this into an email and send it to the user. The user will NOT be able to <a href="../Dialogs/Login.html#paste_master">login</a> without this new master key.</p>
+</blockquote>
+<p>&nbsp;</p>
+<h3>Other Buttons</h3>
+<blockquote>
+  <p>Click the <em><strong>Show Summary</strong></em> button to show a summary of all the users in the currently selected database as well as their user information.</p>
+  <p>Click the <em><strong>Print</strong></em> button to print a summary of all the users in the currently selected database as well as their user information.</p>
+</blockquote>
+<p>&nbsp;</p>
+<p>&nbsp;</p>

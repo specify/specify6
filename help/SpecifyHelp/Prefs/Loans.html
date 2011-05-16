@@ -1,63 +1,129 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
-<title>Email Preferences</title>
+  <head>
+    <meta content="text/html; charset=MacRoman" http-equiv="Content-Type">
+    <link type="text/css" media="screen" href="../../main.css" rel="stylesheet">
+    <meta name="generator" content="Helen">
+    <title>Email Preferences</title>
 </head>
-
-<BODY BGCOLOR=#ffffff>
-<table width="100%" border="0" background="../../images/topbar.png">
-  <tr>
-    <td>&nbsp;</td>
-  </tr>
-</table>
-<table border="0">
-<tr><td><img src="../../images/loan.png" width="32" height="32" /></td>
-<td><h2>Loans</h2></td></tr>
-</table>
-<p><a name="prefs_loan" id="prefs_loan"></a>Default settings for fields on the Loan form can be set in the Loan Preference. These will automatically fill in when creating a new Loan.</p>
-<ul>
-  <li class="MichaelsChanges">For Mac: Choose<em> Specify &gt; Preferences &gt; Loans. </em> </li>
-  <li class="MichaelsChanges">For Windows and Linux: Choose <em>Edit &gt; Preferences &gt; Loans</em>.</li>
-</ul>
-<p><strong>Due in Months</strong> can be set between one and 60 months. </p>
-<p><strong>Shipment Method</strong> choises are:</p>
-<ul>
-  <li>By Hand</li>
-  <li>DHL</li>
-  <li>Fed Ex</li>
-  <li>UPS</li>
-  <li>USPS</li>
-</ul>
-<p>Once a preference for Shipment Method is chosen it can be changed, but a default will always exist. </p>
-<p>The Shipment Method list is a <a href="../PickList/system_picklist.html">System Pick List </a>and can be edited. </p>
-<p><strong>Shipped By</strong> is a Query Combo Box to the Agent table. This allows data to be searched and chosen from the Agent table, not typed directly into the box. It is possible to type data directly into the box, but the box will not accept the data; the data must first be added to the table by clicking the <img src="../../images/add.png" alt="add" width="16" height="16"/> (add) button and creating a new record.</p>
-<p>Choose data from the list:</p>
-<ul>
-  <li>Type the first letter, or first few letters of the name  in the box, then either click on the <img src="../../images/Down16x16.png" alt="down" width="16" height="16"/> button or use the down-arrow key on the keyboard. A list of names starting with the typed letter(s) will appear. </li>
-  <li>If Specify can not find a match based on the typed letters then an <img src="../../images/add_form.png" alt="add" width="81" height="27"/> button will appear. Click the button or press the enter key to add a new record. </li>
-  <li>If the required name is not in the resulting list, either press the enter key when 'Add ...' is in focus, or click the <img src="../../images/add.png" alt="add" width="16" height="16"/> (add) button, to add a new record.</li>
-  <li>Pressing the esc (escape) key will cancel the list box.</li>
-</ul>
-<p><em><strong>Note:</strong></em> Type more letters into the box to reduce the results and  expedite the search. </p>
-<p>Search for existing data (these buttons are not available with keystroke entry):</p>
-<ul>
-  <li>Click on the <img src="../../images/Search-16x16.png" alt="search" width="16" height="16"/> (search) icon. A search dialog will appear. </li>
-  <li>Type in either the entire name or the first few letters of the search followed by an asterisk (*).</li>
-  <li>Select a record from the results. </li>
-</ul>
-<p>Enter a new record:</p>
-<ul>
-  <li>Click on the<img src="../../images/add.png" alt="add" width="16" height="16"/> (add) button and enter data into the resulting  dialog.</li>
-</ul>
-<p>Or edit an existing record:</p>
-<ul>
-  <li>Choose the record in the list.</li>
-  <li>Click the <img src="../../images/Edit-2-16x16.png" alt="edit" width="16" height="16"/> (edit) icon to open the table in an editable  dialog.</li>
-</ul>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-</BODY>
+  <body bgcolor="#ffffff">
+    <table border="0" width="100%" background="../../images/topbar.png">
+      <tr>
+        <td>&nbsp;
+          
+        </td>
+      </tr>
+    </table>
+    <table border="0">
+      <tr>
+        <td>
+          <img src="../../images/loan.png" width="32" height="32"> 
+        </td>
+        <td>
+          <h2>
+             Loans
+          </h2>
+        </td>
+      </tr>
+    </table>
+    <p>
+       <a name="prefs_loan" id="prefs_loan"></a>Default settings for fields on the Loan form can be
+      set in the Loan Preference. New loans will include the default values, which are editable.
+    </p>
+    <ul>
+      <li class="michaelschanges">
+        For Mac: Choose <em>Specify &gt; Preferences &gt; Loans.</em>      </li>
+      <li class="michaelschanges">
+        For Windows and Linux: Choose <em>Edit &gt; Preferences &gt; Loans</em>.      </li>
+    </ul>
+    <p>&nbsp;</p>
+    <p align="center"><img src="../../images/pref_loan.png" width="433" height="162" /> </p>
+    <p align="center" class="imgcaption">Loans Preference</p>
+    <p>&nbsp;</p>
+    <ul>
+      <li><strong>Due in Months</strong> can be set between one and 60 months.      </li><br />
+      <li>
+        <strong>Shipment Method</strong> choices are:
+        <ul>
+          <li> By Hand </li>
+          <li> DHL </li>
+          <li> Fed Ex </li>
+          <li> UPS </li>
+          <li> USPS </li>
+        </ul>
+      </li>
+      <p>
+        The Shipment Method list is a <a href="../PickList/system_picklist.html">System Pick
+          List</a> and can be edited using the pick list editor.      </p>
+      <li>
+        <strong>Shipped By</strong> is a Query Combo Box to the agent table. This allows data to be
+        searched and chosen from the agent table, not typed directly into the box. It is possible to
+        type data directly into the box, but the box will not accept the data; the data must first be
+        added to the table by clicking the <img height="16" alt="add" src="../../images/add.png"
+      width="16">&nbsp;(add) button and creating a new record. 
+        <blockquote>
+          <p>
+            <u>Search for an existing agent</u>      </p>
+          <blockquote>
+            <p>Using a Query Combo Box</p>
+            <ol>
+              <li>
+                Type the first letter, or first few letters of the name in the box, then either click on
+                the <img height="16" alt="down" src="../../images/Down16x16.png" width="16"> button or use
+                the down-arrow key on the keyboard. A list of agent matching the typed letter(s) will
+                appear. </li>
+            </ol>
+            <blockquote>
+              <p> If Specify can not find a match based on the typed letters then an <img height="27" alt=
+        "add" src="../../images/add_form.png" width="81"> button will appear. Click the button or
+                press the enter key to add a new record. </p>
+              <p> If the required name is not in the resulting list, either press the enter key when 'Add
+                ...' is in focus, or click the <img height="16" alt="add" src="../../images/add.png" width=
+        "16"> (add) button, to add a new record. </p>
+              <p> Pressing the esc (escape) key will cancel the list box.          </p>
+              <blockquote>
+                <p>
+                  <strong><em>Note:</em></strong> Type more letters into the box to reduce the results and
+                  expedite the search.            </p>
+              </blockquote>
+            </blockquote>
+            <p>
+              Using the <em>Search</em> button (these buttons are not available with keystroke entry):      </p>
+            <ol>
+              <li>
+                Click on the <img height="16" alt="search" src="../../images/Search-16x16.png" width="16"> (Search) button. A search dialog will appear. </li>
+              <li> Type in either the entire name or the first few letters of the search followed by an
+                asterisk (*). </li>
+              <li> Select a record from the results. </li>
+            </ol>
+          </blockquote>
+          <p>
+            <u>Add a new agent:</u>      </p>
+          <ol>
+            <li>
+              Click on the<img height="16" alt="add" src="../../images/add.png" width="16"> (add) button
+              and enter data into the resulting dialog.        </li>
+          </ol>
+          <p>&nbsp;      </p>
+          <p><u>Edit an existing agent record:      </u></p>
+          <ol>
+            <li> Choose a record from the list. </li>
+            <li> Click the <img height="16" alt="edit" src="../../images/Edit-2-16x16.png" width="16"> (edit) icon to open the table in an editable dialog. </li>
+          </ol>
+        </blockquote>
+      </li>
+    </ul>
+<p>&nbsp;
+       
+    </p>
+    <p>&nbsp;
+       
+    </p>
+    <p>&nbsp;
+       
+    </p>
+    <p>&nbsp;
+       
+    </p>
+  </body>
 </html>

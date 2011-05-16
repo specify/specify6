@@ -15,10 +15,8 @@
 <p><em><strong>Notes:</strong></em> </p>
 <ul>
   <li>Changes made to the data in the WorkBench will not be reflected in the original CSV file.</li>
-  <li> The WorkBench has a 2000 record maximum. Files that include more than 2000 records will not import. </li>
+  <li> The WorkBench has a 4000 record maximum. Files that include more than 4000 rows will not import. </li>
 </ul>
-<p align="center"><img src="../images/importerror.png" alt="Import Error"></p>
-<p align="center" class="imgcaption">Import Error </p>
 <p align="center" class="imgcaption">&nbsp;</p>
 <p>To begin, click on the Import Data action on the side bar and choose the import file in the file dialog. </p>
 <p>The following information dialog will open: </p>
@@ -97,7 +95,11 @@
   <li>Click the <img src="../images/Map16x16.png" alt="map"> (map) button.</li>
 </ol>
 <p>A <img src="../images/linked_right.png" alt="link"> (link) icon confirms that the column and field are the same heading. </p>
-<p><em><strong>Note:</strong></em> A field may only map once. Specify fields that are mapped display a green check mark next to their name in the Specify field list confirming that they are in use. </p>
+<blockquote>
+  <p><em><strong>Note:</strong></em> A field may only map once. Specify fields that are mapped display a green check mark next to their name in the Specify field list confirming that they are in use. </p>
+  <p><em><strong>Note:</strong></em> When importing Taxon information only use the Taxon Only Table in the mapping editor. </p>
+  <p><em><strong>Note:</strong></em> The Agent table in the mapping editor may only be used for agent information. When uploading agent information along with collection object information use the Cataloger Title, First Name, Middle Name and Last Name fields in the Collection Object table.</p>
+</blockquote>
 <p>&nbsp;</p>
 <p>When all the Columns are mapped and ordered correctly click the 'OK' button. </p>
 <p>Complete the import process by   naming  and describing the new Data Set:</p>
@@ -159,7 +161,11 @@
   <li>Click the <img src="../images/Map16x16.png" alt="map"> (map) button.</li>
 </ol>
 <p>A <img src="../images/linked_right.png" alt="link" > (link) icon confirms that the column and field are the same heading. </p>
-<p><em><strong>Note:</strong></em> A field may only map once. Specify fields that are mapped display a green check mark next to their name in the Specify field list confirming that they are in use. </p>
+<blockquote>
+  <p><em><strong>Note:</strong></em> A field may only map once. Specify fields that are mapped display a green check mark next to their name in the Specify field list confirming that they are in use. </p>
+  <p><em><strong>Note:</strong></em> When importing Taxon information only use the Taxon Only Table in the mapping editor. </p>
+  <p><em><strong>Note:</strong></em> The Agent table in the mapping editor may only be used for agent information. When uploading agent information along with collection object information use the Cataloger Title, First Name, Middle Name and Last Name fields in the Collection Object table.</p>
+</blockquote>
 <p>&nbsp;</p>
 <p>When all the columns are mapped and ordered correctly click the 'OK' button. </p>
 <p>Complete the import process by   naming  and describing the new Data Set:</p>
@@ -167,6 +173,11 @@
 <p align="center" class="imgcaption">Data Set Properties </p>
 <p align="left">&nbsp;</p>
 <p>To rename  columns headings, see <a href="FormEditing.html">Form Editing</a>. </p>
+<blockquote>
+  <p><em><strong>Note:</strong></em> When the data set opens the validation for invalid fields will be turned on.  The validation can be turned off by unchecking the <em>Highlight Invalid Cells</em> checkbox in the validation panel at the bottom of the work space.</p>
+</blockquote>
+<p align="center"><img src="../../images/validation_screen.png" alt="" width="562" height="31" /></p>
+<p align="center" class="imgcaption">Validation Panel </p>
 <p>&nbsp;</p>
 <h3>Bad Imports </h3>
 <p>CSV files that are corrupt or have not been saved correctly will not import correctly into the WorkBench. A bad file may appear in the Data Set Mapping Editor with partial or no column headings, or  display a warning at the bottom of the WorkBench window: </p>

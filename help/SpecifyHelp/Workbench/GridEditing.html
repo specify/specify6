@@ -57,6 +57,11 @@
     <td>Exports selected rows or all the rows to an MS Excel file. </td>
   </tr>  
   <tr>
+    <td><div align="center"><img src="../../images/validate_workbench_20.png" width="20" height="20"></div></td>
+    <td>Validate</td>
+    <td>Opens a validation panel at the bottom of the work space. </td>
+  </tr>
+  <tr>
     <td><div align="center"><img src="../../images/upload_data_20x20.gif" width="20" height="20"></div></td>
     <td><div align="left">Upload DataSet to Specify Database</div></td>
     <td><p><a href="upload.html">Uploads </a> the records into the Specify database.</p>    </td>
@@ -101,7 +106,11 @@
   <li>Press the &lt;esc&gt; or F2 button, or </li>
   <li>Press an arrow key, the &lt;tab&gt; key, or hit the &lt;return&gt; key to move to a different cell, or </li>
   <li>Click on a different cell.</li>
+  <li></li>
 </ul>
+<h3>Pick Lists</h3>
+<p>Cells that are mapped to fields formatted as pick lists in Specify are also available as pick lists in the WorkBench. Simply double click inside the cell and it will change to a pick list. Then click <img src="../../images/wb_picklist.png" alt="picklist" width="60" height="15" /> (an arrow) to open the pick list and choose a value.</p>
+<p>&nbsp;</p>
 <h3><a name="Carry_Forward"></a>Carry Forward</h3>
 <p><span class="index">Carry Forward</span> enables the value in one or more columns  to be 'carried forward', or copied to the next new row(s) of data. To select the columns to be carried forward click  the <img src="../images/CarryForward20x20.png" alt="Carry Forward"><span class="MichaelsChanges"> (carry forward) button. The following configuration window will open:  </span></p><span class="MichaelsChanges">
 <p align="center"><img src="../images/carryforwardscr.png" alt="Carry Forward"><br>
@@ -205,6 +214,28 @@
   <li>Click 'Replace All' to replace all search strings.   </li>
 </ol>
 <p>Note: The Find Panel is ONLY availble  in Grid Editing mode, it is not available when in Form Editing mode. </p>
+<p>&nbsp;</p>
+<h3>Column Sorting</h3>
+<p>Click on a Column Heading to sort the column. Click once to sort in ascending order (<img src="../../images/up.png" alt="up" width="16" height="16">). Click twice sort in descending order (<img src="../../images/down.png" width="16" height="16">). Click a third time to return to the previous order (stop the sort).</p>
+<p>&nbsp;</p>
+<h3>Auto Incrementing of Catalog Numbers</h3>
+<p>This feature is available in version 6.3 and older and is ONLY AVAILABLE in the Specify 6 WorkBench, not the stand alone, Mobile WorkBench. </p>
+<p>This feature is also ONLY available when the Catalog Number of the current collection in Specify is formatted to include a numeric section that is incremented.</p>
+</span>
+<ol>
+  <li><span class="MichaelsChanges">Open the Data Set in the Specify 6 WorkBench</span></li>
+  <li><span class="MichaelsChanges">If Catalog Number is not included as a data set column add it to the data set <a href="../Workbench/EditMapping.html">mapping</a>. </span></li>
+  <li><span class="MichaelsChanges">Add the starting number/format to the first cell you wish to auto increment. </span></li>
+  <li><span class="MichaelsChanges">Highlight the rest of the catalog number cells that you wish to auto increment, starting with the cell you just filled.</span></li>
+  <li><span class="MichaelsChanges">Right-mouse-click on any of the highlighted cells. A context menu will appear.</span></li>
+  <li><span class="MichaelsChanges">Choose <em><strong>Fill Down and Increment</strong></em> from the Context Menu.</span><span class="MichaelsChanges">
+  </span></li>
+</ol>
+<span class="MichaelsChanges"><p><em><strong>Note:</strong></em> The format of the starting catalog number must match the format for the catalog number in the current collection in Specify for the auto incrementing function to be included in the context menu. If the catalog number of the current collection in Specify does include an auto incremented number and  <em>Fill Down and Increment</em> is not included in the context menu choice check the catalog number format for the collection and enter a starting catalog number that is the correct format in the data set.</p>
+<p><em><strong>Note:</strong></em> When the data set is validated any catalog numbers that already exist in Specify will alert you with a red highlight and will not upload with the current catalog number.</p>
+<p>&nbsp;</p>
+<h3>Validating Data</h3>
+<p>See <a href="../Uploading/wb_uploader.html#uploader_validate">WorkBench Uploading</a>.</p>
 <p>&nbsp;</p>
 <h3>Grid Editing Examples</h3>
 <p>Delete a Record(s):</p>

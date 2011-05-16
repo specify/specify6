@@ -19,43 +19,33 @@
   <li>For Mac: Choose<em> Specify &gt; Preferences &gt; MySQL. </em> </li>
   <li>For Windows and Linux: Choose <em>Edit &gt; Preferences &gt; MySQL</em>.</li>
 </ul>
+<p align="center"><img src="../../images/pref_mysql.png" alt="MySQL" width="433" height="170" /></p>
+<p align="center" class="imgcaption">MySQL Preference</p>
+<p>The MySQL preference sets the pathway for the Specify backup files. The backup function can also be performed in this preference. Restore functions are performed using the BackupAndRestore tool, which is a separate tool located in the specify application directory within the subdirectory labeled <em>bin</em>.</p>
+<p>Users must be part of a manager group or higher to have access to the MySQL preference. </p>
 <p>Set MySQL information for the backup and restore function. These paths should only be edited by the MySQL administrator.</p>
-<table width="100%" border="0" cellspacing="2" cellpadding="6">
-  <tr>
-    <td width="22%" align="left" valign="top"><div align="left"><u><strong>MySQL Preference</strong></u></div></td>
-    <td width="45%" align="left" valign="top"><div align="left"><u><strong>Result</strong></u></div></td>
-    <td width="33%" align="left" valign="top"><div align="left"><u><strong>Action</strong></u></div></td>
-  </tr>
-  <tr>
-    <td align="left" valign="top"><div align="center" class="MichaelsChanges">
-      <div align="left"><strong>mysqldump</strong></div>
-    </div></td>
-    <td align="left" valign="top">Points Specify to the needed mysqldump (mysqldump.exe on Windows) file for backup purposes. This path will point to a server when accessing Specify from a server, and be local when Specify is run locally.</td>
-    <td align="left" valign="top">Click on the browse button and find the path to the command-line tools for MySQL.</td>
-  </tr>
-  <tr>
-    <td align="left" valign="top"><div align="center" class="MichaelsChanges">
-      <div align="left"><strong>mysql</strong></div>
-    </div></td>
-    <td align="left" valign="top">Points Specify to the needed mysql (mysql.exe on Windows) file for backup purposes.This path will point to a server when accessing Specify from a server, and be local when Specify is run locally.</td>
-    <td align="left" valign="top">Click on the browse button and find the path to the command-line tools for MySQL.</td>
-  </tr>
-  <tr>
-    <td align="left" valign="top"><div align="left"><strong>Backup Location</strong></div></td>
-    <td align="left" valign="top">Specify will write the backup file in the chosen location.</td>
-    <td align="left" valign="top">Click on the browse button and choose a path for backup file(s).</td>
-  </tr>
-  <tr>
-    <td align="left" valign="top"><div align="left"><strong>Backup (button)</strong></div></td>
-    <td align="left" valign="top">The entire database will be backed up to the specified location.</td>
-    <td align="left" valign="top">Click the <em>Backup</em> button.</td>
-  </tr>
-</table>
+<p>&nbsp;</p>
+<ul>
+  <li><strong>mysqldump </strong>- Points Specify to the needed mysqldump (mysqldump.exe on Windows) file for backup purposes. This path will point to a server when accessing Specify from a server, and be local when Specify is run locally. </p>
+  (Click on the browse button and find the path to the command-line tools for MySQL.)</li>
+</ul>
+<ul>
+  <li><strong>mysql</strong> - Points Specify to the needed mysql (mysql.exe on Windows) file for backup purposes.This path will point to a server when accessing Specify from a server, and be local when Specify is run locally. (Click on the browse button and find the path to the command-line tools for MySQL.)</li>
+</ul>
+<ul>
+  <li><strong>Backup Location</strong> - Specify will write the backup file in the chosen location. (Click on the browse button and choose a path for backup file(s).)</li>
+</ul>
+<ul>
+  <li><strong>Backup</strong> (button) - The entire database will be backed up to the specified location.</li>
+</ul>
+<p>&nbsp;</p>
 <p>The Backup function will back up the entire database; for this reason it requires  a high-level permission to use. In other words, if an institution uses one database for all collection<span class="MichaelsChanges">s in all disciplines, t</span>he backup function will backup all collections. This will be a huge file, and the backup function should be  implemented by a MySQL administrator. </p>
 <p>If collections within the museum maintain their own databases then the backup will be collection-specific. </p>
 <p>To Restore from a backup run the <a href="../restore/backup_restore.html">BackupAndRestore</a> Specify application found in the Specify Bin directory. </p>
 <p>Specify automatically checks for backups every 7 and 30 days. If a backup file is not found Specify gives a prompt to allow or decline a backup. </p>
-<p><em><strong>Note:</strong></em> Specify automatically includes the default MySQL locations for Mac OS X and Linux in the MySQL Preference text boxes, but MySQL locations for Windows  are user-specified and therefore will <span class="MichaelsChanges">need to be provided.</span></p>
+<blockquote>
+  <p><em><strong>Note:</strong></em> Specify automatically includes the default MySQL locations for Mac OS X and Linux in the MySQL Preference text boxes, but MySQL locations for Windows  are user-specified and therefore will <span class="MichaelsChanges">need to be provided.</span></p>
+</blockquote>
 <h2>&nbsp;</h2>
 <p>&nbsp;</p>
 </BODY>

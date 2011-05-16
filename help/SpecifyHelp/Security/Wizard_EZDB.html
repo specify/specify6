@@ -1,0 +1,393 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
+<title>Specify EZDB Setup Wizard</title>
+<style type="text/css">
+<!--
+.style1 {color: #990066}
+.style2 {color: #000000; }
+.style3 {
+	color: #990033
+}
+-->
+</style>
+</head>
+
+<body bgcolor="#ffffff">
+<table width="100%" border="0" background="../../images/topbar.png">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<table border="0">
+<tr><td width="32"><img src="../../images/ez_wizard_32.png" width="32" height="32" /></td>
+<td><h2>Specify EZDB Setup Wizard</h2>  </td></tr>
+</table>
+<p>&nbsp;</p>
+<p>Welcome to Specify EZDB! You have unpacked the power of Specify without the installation and maintenance requirement of MySQL. Specify EZDB includes embedded MySQL engine, and is intended for use by a single collection on a single workstation. If your project requires multiple collections then you will need to install the full version of Specify.</p>
+<blockquote>
+  <p><em><strong>Note:</strong></em> Specify EZDB can also be used to evaluate Specify. If you are using it for this purpose please contact the <a href=
+      "mailto:specify@ku.edu">Specify team</a>. They can provide you with a test database and the instructions needed to download and install it. </p>
+  <p><em><strong>Note:</strong></em> If you are using a test database to evaluate Specify and have received a test database DO NOT run the Specify EZDB Setup Wizard.</p>
+</blockquote>
+<p>The Specify EZDB Setup Wizard is required to customize the necessary components in the embedded MySQL for  Specify EZDB. It walks you through the creation of a database including:</p>
+<ul>
+  <li> Insertion of a schema within MySQL.</li><br />
+  <li>Creation of an administrative level  Specify user.</li><br />
+  <li>Initialization of the database structure. l not </li>
+</ul>
+<p>It also allows you to download  Taxon (optional) and Geography authority files.</p>
+<blockquote>
+  <p><em><strong>Note:</strong></em> Java SE Run-time Environment, i.e. JRE 1.6 (=6.0) or later must be installed on the workstation that will run Specify EZDB.</p>
+</blockquote>
+<blockquote><blockquote>&nbsp;</blockquote>
+</blockquote>
+<h3>Running the Specify EZDB Setup Wizard</h3>
+<p><u><strong>Database Information</strong></u></p>
+<p><a name="ezdb_mysql_username" id="ezdb_mysql_username"></a></p>
+<p align="center"><img src="../../images/ez_window1.png" /></p>
+<p align="center"><span class="imgcaption">Enter MySQL IT Username and Password</span></p>
+<p>&nbsp;</p>
+<blockquote>
+  <p>The first window allows you to  create your Specify database or verify that Specify can access a database you have installed. To create or verify a database, you must first complete the following information:</p>
+  <blockquote>
+    <p>Type in an  <strong>IT Username</strong> and <strong>IT Password</strong>. This will create an account with full administrator privileges within the embedded  MySQL database manager. This account will be used by the Specify Setup Wizard to create your Specify database and a Specify Master account (in the next window) in MySQL. </p>
+    <blockquote>
+      <p><em><strong>Note:</strong></em> Please make a note of the IT username and password. Other EZDB Tools associated with Specify EZDB require this IT username and password to run.</p>
+    </blockquote>
+    <p>The <strong>Database Name</strong> is pre-filled  with 'Specify' but can be changed by typing in a new name into the text box. Document the This is the database name used to log in once the Wizard is complete, be sure to make a note of the name. </p>
+    <p>The <strong>Host Name</strong> refers to the computer that you are using. Because you are only accessing the embedded MySQL on your local machine this should remain as 'localhost'.</p>
+    <p>&nbsp;</p>
+    <p><u>Create a Specify Database</u></p>
+    <p>When you click the <em>Create Specify Database</em> button Specify will connect to MySQL using the information you have entered and then create your Specify database and insert the Specify schema. </p>
+    <p><u>Advanced: Test IT Login</u></p>
+    <p>Use this button to verify that  Specify EZDB can access a database that you have installed.</p>
+  </blockquote>
+  <p>&nbsp;</p>
+  <p><u><strong>Specify Master Credentials</strong></u></p>
+</blockquote>
+<p align="center"><a name="ezdb_master_username" id="ezdb_master_username"></a></p>
+<p align="center"><img src="../../images/ez_window2.png"/></p>
+<p align="center"><span class="imgcaption">Create a Master Username and Password</span></p>
+<p>&nbsp;</p>
+<blockquote>
+  <p>The security system for Specify 6 uses both a &quot;Master&quot; username and password, which Specify uses to access  the MySQL Database, as well as a User username and password, which allows a user to run the Specify program. The Master account has SELECT, INSERT, UPDATE,  DELETE and TABLE LOCK privileges on data tables in your Specify database only and has no other MySQL privileges. Specify uses only one Master username and password for all users, but encrypts the Master password with the User information, creating an encrypted string. This allows the Master information to become unique for each user. </p>
+  <p>Specify EZDB uses the same Master username and password as the IT username and password in the first EZDB Wizard window. The username and password are filled-in for you and can not be changed.</p>
+  <blockquote>
+    <p><strong>Create the Master</strong></p>
+    <p>When you click the <em>Create Master User</em> button Specify will take a moment to create the Master account in the database. Once this account has been created you may not change the information on this screen, or  any previous screens.</p>
+    <p><strong>Advanced: Test the Master</strong></p>
+    <p>This button is not applicable to Specify EZDB</p>
+  </blockquote>
+  <p>&nbsp;</p>
+</blockquote>
+<p><a name="ezdb_security_on" id="ezdb_security_on"></a><strong><u>Security</u></strong></p>
+<p align="center"><img src="../../images/ez_window_security.png"/></p>
+<p align="center" class="imgcaption">Turn Security On/Off</p>
+<p align="left">&nbsp;</p>
+<blockquote>
+  <p align="left">Specify Security refers to the set of permissions and entitlements within Specify which gives users the rights to see certain data and to use particular functions. If your Specify database will never have more than one user, (you), then Security (i.e. permissions within Specify), can be turned off. This will give you total access to all Specify program functions and data. Specify will not check your credentials or limit your access to data or Specify components.</p>
+  <p align="left">It is not recommend that Specify EZDB be used with multiple users; therefore Security can be turned off. However, if you are using Specify EZDB to evaluate Specify and wish to also evaluate security then simply check the box to turn security on. Security can also be turned on inside the Specify EZDB application.</p>
+</blockquote>
+<p align="left">&nbsp;</p>
+<p align="left"><a name="ezdb_create_it_user" id="ezdb_create_it_user"></a><strong><u>Manager</u></strong></p>
+<p align="center"><img src="../../images/ez_window3.png"/></p>
+<p align="center"><span class="imgcaption">Create Specify Manager / Administrator</span></p>
+<p>&nbsp;</p>
+<blockquote>
+  <p>This account is the first Specify user account for your database, and is  created at the level of Manager, the highest  level in the  Specify permission model. The account usually represents the primary user, or administrator, of your collection database. An Administrator account will also be created within Specify using this information.    It is this username and password that will be used to log in to Specify for the first time, once the EZDB Setup Wizard is finished. At that time additional users can be added within Specify. </p>
+  <p>Protect the username and make the password strong. This Specify manager level information will  also be used to create a record in the Specify database for an &lsquo;Agent&rsquo; representing the same person. </p>
+</blockquote>
+<p>&nbsp;</p>
+<p><a name="ezdb_create_institution" id="ezdb_create_institution"></a><u><strong>Institution</strong></u></p>
+<p align="center"><img src="../../images/ez_window_inst.png"/></p>
+<p align="center"><span class="imgcaption">Create Institution and Enter Information</span></p>
+<p align="left">&nbsp;</p>
+<blockquote>
+  <p align="left">The Specify data management levels mimic  the common levels of hierarchy within institutions. Access to information and Specify tools are then set at the various levels both within the application and through the User Permissions. </p>
+  <p align="left">The Setup Wizard creates a single entry for each level of the hierarchy (Institution, Division, Discipline and Collection).  This setup window is the first step in that process. Each of the screens for creating these levels must be completed before the <em>Next</em> button will become enabled.</p>
+  <blockquote>
+    <p align="left">The <strong>Name</strong> should be the formal name for your institution. It is a field within the Specify database, is displayed on the Institution form, and can be queried and used in reports. </p>
+    <p align="left">The <strong>Code</strong> is typically an acronym, codon, abbreviation or short name for your institution (not your collection), if you don't know of one, put in a placeholder, this can be edited at a later date. Institution codes are often required for web services such as DiGIR/TAPIR.</p>
+    <p align="left">The <strong>Institution Address</strong> information, such as <strong>City</strong>, <strong>State</strong>, <strong>Country</strong>, <strong>Zip Code</strong> and <strong>Phone Number</strong>, is also added to fields within the Specify database and displayed on the Institution form and can be queried and used in reports.</p>
+  </blockquote>
+  <p align="left">&nbsp;</p>
+</blockquote>
+<p align="left"><a name="ezdb_choose_accession_level" id="ezdb_choose_accession_level"></a><u><strong>Accessions</strong></u></p>
+<p align="center"><img src="../../images/ez_window4.png"/></p>
+<p align="center" class="imgcaption">Choose Accession Level</p>
+<p align="left">&nbsp;</p>
+<blockquote>
+  <p align="left">Accessioning is the formal process by which a specimen or object is legally accepted and recorded as a museum item and differs from cataloging.  Some museums and herbaria have a formal accessioning process, some do not. If your institution does not use the concept of accessions (typically handled by a registrar or administrative curator), then leave this item unchecked and simply click the <em>Next</em> button to proceed to the next window.</p>
+  <p align="left">For organizations that do recognize accessions, the process usually entails documenting  proof of ownership (in the form of a signed deed of gift), and that the material was legally acquired (in the form of all associated permits - collecting, import and export). An accession usually covers an entire field trip and multiple catalog items could be included within a single accession.  For the institutions that use it, accessioning and its associated numbering system is usually set up as a standard museum-wide process, backed by policy.  </p>
+  <p align="left">The accession numbering scheme or sequence can either be recorded  at an Institution level for all collections (Globally) or at a Division level. Since it is recommended that Specify EZDB be used with a single collection this is typically managed globally. </p>
+  <blockquote>
+    <p align="left"><em><strong>Note:</strong></em> If you choose to manage your accessions globally you will be presented with the following window to choose a format. If you did not choose to manage your Accessions globally you will be presented with the window later in the Wizard process when you create a Collection.</p>
+  </blockquote>
+  <p align="left">&nbsp;</p>
+</blockquote>
+<div align="left" class="style3">
+  <h4><a name="ezdb_create_accession_number" id="ezdb_create_accession_number"></a><u><span class="style2"><strong>Accession Number Format</strong></span></u></h4>
+</div>
+<p align="center"><img src="../../images/ez_window5.png"/></p>
+<p align="center" class="imgcaption">Create Accession Number Format</p>
+<blockquote>
+  <p align="left">Accession Numbers may require a format or may simply use a number. Choose <em>None</em> to leave the Accession Number as a text field on the Accession form. Accession Number formats are not editable once data has been entered into this table in the database.</p>
+  <ul>
+    <li><strong align="left">Format</strong> offers several choices in the drop-down menu list:
+      <blockquote>
+        <p align="left"><strong>None</strong> is the default setting, which is a 60 character string field.</p>
+        <p align="left"><strong>Create</strong> allows you to create your own format. Choosing Create will open the Field Formatting Editor. Click <a href="../Security/Field_Format_Editor.html">HERE</a> for the Field Formatting Editor help page. </p>
+        <p align="left"><strong>Accession Number</strong> (2009-AA-###) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'AA' section of the format is alphanumeric and accepts both characters <em>a</em> through <em>z</em> and numbers.  The ### section of the format is a number that is automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off. This format offers two alphanumeric characters and three incremented numbers. </p>
+        <p align="left"><strong>AccessionNumberByYear</strong> (2009-AA-AAA) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'A' sections of the format are alphanumeric and accept both characters <em>a</em> through <em>z</em> and numbers. This format offers two alphanumeric sections, the first is two characters in length and the second is three characters in length.</p>
+        <p align="left"><strong>AccessionStringFormatter</strong> (AAAAAA) This is a single alphanumeric format that accepts characters <em>a</em> through <em>z</em> and numbers. The Accession number would be seven characters in length.</p>
+      </blockquote>
+    </li>
+    <li><strong>Pattern</strong> displays the pattern used to create each format (these are explained in further detail above).</li><br />
+
+    <li><strong>Is Auto Incremented</strong> displays a 'yes' if the format is automatically incremented.</li>
+  </ul>
+  <p align="left">&nbsp;</p>
+</blockquote>
+<p align="left"><a name="ezdb_configure_storage_tree" id="ezdb_configure_storage_tree"></a><u><strong>Storage Tree</strong></u></p>
+<p align="center"><img src="../../images/ez_window6.png"/></p>
+<p align="center" class="imgcaption">Configure the Storage Tree</p>
+<p align="left">&nbsp;</p>
+<blockquote>
+  <p align="left">Specify 6 visually presents some data  types in hierarchical tree displays. These data types include the Taxon, Geography, (Specimen) Storage, Chronostratigraphy and Lithostratigraphy tables. Each tree, visually displayed as heirarchical nodes, is backed up by a tree definition, listing all levels and allowing customization of these levels. The Levels must first be defined, then nodes can be added. The Setup Wizard offers a table  for each of the trees (Chronostratigraphy and Lithostratigraphy for paleo collections only) for creating  tree definitions, or levels. These can also be edited at a later date from within Specify. </p>
+  <p align="left">Nodes for the Storage tree can be added within the Specify application. The storage tree operates at the Institution level and is available and visible to all Collections, therefore, it is important to include the necessary levels for all collection.</p>
+  <ul>
+    <li>The <strong>Level</strong> column displays the available levels. This name can be edited from within Specify. Click the <em>Include</em> box to place the level in the tree. </li><br />
+ 
+    <li><strong>Include</strong> places the Level in the tree definition. Levels that are not included can not be Enforced or added to the Full Name.</li><br />
+ 
+    <li><strong align="left">Is Required</strong> is not editable, but an indication of the tree levels that are used by Specify as a system requirement. These are automatically added to the tree and can not be deleted on this screen or later from within Specify.</li><br />
+
+    <li><strong align="left">Is Enforced</strong> ensures that  the level can not be skipped when adding nodes at lower levels down the tree. Levels that are Required by the system are also Enforced by the system and can not be edited. </li><br />
+
+    <li><strong align="left">Is in Full Name</strong> includes the level when building a full name expression, which can be queried and used in reports. Create the full name by checking the desired boxes. this is the string that will be displayed in the storage field in the preparation table. <br />
+      <br />
+      <u>At least one level for Full Name must be checked before the <em>Next</em> button will become enabled.<br />
+      </u><br />
+    </li><br />
+    <li><strong align="left">Separator</strong> refers to the character that separates the levels when displaying the full name. This can be any single character, such as a comma (,) or a space. To make the separator a space simply double click inside the column and delete the comma, then press your spacebar once.</li><br />
+
+    <li><strong align="left">Full Name Order</strong> will reverse the full name as shown in the <strong>Full Name Example</strong>. </li><br />
+  </ul>
+</blockquote>
+<p>&nbsp;</p>
+<p><strong><u><a name="ezdb_create_inst" id="ezdb_create_inst"></a>Institution</u></strong></p>
+<p>&nbsp;</p>
+<p align="center"><img src="../../images/ez_window7.png"/></p>
+<p align="center" class="imgcaption">Create Institution and the Administrator</p>
+<p align="left">&nbsp;</p>
+<blockquote>
+  <p>Click the <em>Create Institution</em> button to create your institution and add you as Administrator in your Specify database. Once this information has been created you may not change it on any of the previous screens and the <em>Back</em> button will become disabled.</p>
+
+<p align="left">The Institution must be created before the <em>Next</em> button will become enabled.</p>
+<p align="left">&nbsp;</p>
+</blockquote>
+<p align="left"><a name="ezdb_enter_division" id="ezdb_enter_division"></a><strong><u>Division</u></strong></p>
+<p align="center"><img src="../../images/ez_window8.png"/></p>
+<p align="center" class="imgcaption">Create a Division</p>
+<blockquote>
+  <p align="left">This window is used to create a single Division within your institutional hierarchy. Additional divisions can be added later from within Specify.</p>
+  <p align="left">The <strong>Name</strong> will appear on the division form and  can be queried and used in reports. A division is used to collectively name similar collections e.g. the Divsion of Paleontology may include Vertebrate Paleontology, Invertebrate Paleontology and Paleobotany collections. The Name is a field within the Specify database and is displayed on the Division form. It can be edited, queried and used in reports. </p>
+  <p align="left">The <strong>Code</strong> can be a short name, acronym, codon or abbreviation. If your Division does not have a Code, put in a placeholder (this is a required field), this can be edited at a later date. Division codes are sometimes required for web services.</p>
+</blockquote>
+<p align="left">&nbsp;</p>
+<h4 align="left" class="style1"><a name="ezdb_choose_discipline_type" id="ezdb_choose_discipline_type"></a><span class="style2"><strong><u>Discipline</u></strong></span></h4>
+<p align="center" class="style1"><img src="../../images/ez_window9.png"/></p>
+<p align="center" class="imgcaption">Choose a Discipline Type</p>
+<p align="left">&nbsp;</p>
+<blockquote>
+  <p align="left">Choose a taxonomic <strong>Discipline Type</strong> from the drop-down menu. Specify uses this information to load the correct default data entry Forms, Trees and schema (tables and fields) based on the predefined disciplines within Specify. If your discipline type does not appear in the list, choose the closest discipline to yours based on taxonomic qualities.</p>
+  <p align="left">The <strong>Name</strong> is pre-filled with the discipline type name but can be any user specific variation of the Discipline Type by simply editing the pre-filled name. It can be edited, queried and used in reports. Additional Disciplines can be added from within Specify.</p>
+  <p align="left">&nbsp;</p>
+</blockquote>
+<h4><a name="ezdb_configure_taxon_tree" id="ezdb_configure_taxon_tree"></a><u>Taxon Tree</u></h4>
+<p align="center"><img src="../../images/ez_window10.png" width="430" height="328" /></p>
+<p align="center" class="imgcaption">Configure the Taxon Tree</p>
+<blockquote>
+  <p align="left">This table will create the tree definition for the Taxon tree. The Taxon tree operates at the Discipline level and will be used by all Collections within the Discipline you created in the last window. Nodes to the Taxon tree can be added later in the Wizard as well as from within Specify.</p>
+  <ul>
+    <li>The <strong>Level</strong> column displays the available levels. This name can be edited from within Specify. Click the <em>Include</em> box to place the Level in the tree. </li><br />
+ 
+
+  
+    <li><strong>Include</strong> places the Level in the tree definition. Levels that are not included can not be Enforced or added to the Full Name.</li><br />
+  
+
+ 
+    <li><strong align="left">Is Required</strong> is not editable, but an indication of the tree Levels that are used by Specify as a system requirement. These are automatically added to the tree and can not be deleted on this screen or later.</li><br />
+  
+
+
+    <li><strong align="left">Is Enforced</strong> ensures that  the Level can not be skipped when adding nodes lower down the tree.</li><br />
+ 
+
+
+    <li><strong align="left">Is in Full Name</strong> includes the level when building a full name expression for any associated Collection Objects (which appears in the Taxon Full Name field of the taxon table). The Full Name is also displayed in the Preferred Taxon field on the Determinations form and is useful when  running queries and reports when the full name is desired. The full name generally includes at least the binomial. Genus and Species fields together with any levels below species (if used). Create the full name by checking the desired boxes.<br />
+      <u><br />
+      At least one level for Full Name must be checked before the <em>Next</em> button will become enabled.<br />
+      </u><br />
+      <br />
+    </li>
+    <li><strong align="left">Separator</strong> refers to the character that separates the levels when displaying the full name. This can be any single character, such as a comma (,) or a space. To make the separator a space simply double click inside the column and delete the comma, then press your spacebar one time.</li>
+<br />
+
+    <li><strong align="left">Full Name Order</strong> will reverse the full name as shown in the <strong>Full Name Example</strong>. </li>
+  </ul>
+</blockquote>
+<p>&nbsp;</p>
+
+  <h4><a name="ezdb_preload_taxon" id="ezdb_preload_taxon"></a><u>Load Taxon Authority File</u><br />
+
+  </h4>
+<p>&nbsp;</p>
+<p align="center"><img src="../../images/ez_window11.png"/></p>
+<p align="center" class="imgcaption">Preload Taxon Records/Nodes</p>
+<blockquote>
+  <p>The Specify Wizard not only defines the Taxon tree but also allows pre-loading of an authority file for the discipline you are creating. <span class="style2">Authority files were created using data from the </span> Catalog of Life Project for some of the disciplines within Specify. If this window does not appear, there are no existing authority files for your chosen discipline. </p>
+  <p>If  you choose to load the data into your tree the Taxon tree  will be populated with hundreds of taxon nodes and all associated data. Then, when adding Collection Objects into your database you can simply choose a taxa from the Taxon field rather than adding each individually as needed.</p>
+  <p>Please note that loading the Taxon tree will also affect the tree definition. If you load the provided Taxon authority file for your discipline the accompanying tree definition may include Levels that were not defined by you in the previous window, but are necessary to include all the predefined Taxon information.</p>
+  <p>Additional discipline-specific trees can be loaded from within Specify at the time new disciplines are created.</p>
+  <blockquote>
+    <p>Click the <em>Choose</em> button for a list of taxon files for the discipline you are creating. Not all disciplines offer more than one taxon file. Once the taxon file is chosen, information will display in the <strong>Source</strong>, <strong>Coverage</strong> and <strong>Description</strong> fields for that file. </p>
+    <blockquote>
+      <p><em><strong>Note:</strong></em> Botany and Entomology authority files are partial due to the size of these files. For additional authority files please contact the <a href=
+      "mailto:specify@ku.edu">Specify team</a>.</p>
+    </blockquote>
+    <p>The<strong> Downloadable File</strong> section in this window allows you to choose taxon files from your hard drive. The Setup Wizard can only install files that were downloaded from the Specify website. The Specify team is currently in the process of creating more of these files.</p>
+  </blockquote>
+  <p>&nbsp;</p>
+</blockquote>
+<h4><a name="ezdb_configure_geography_tree" id="ezdb_configure_geography_tree"></a><u>Load Geography Authority File</u></h4>
+<p align="center"><img src="../../images/ez_window12.png"/></p>
+<p align="center" class="imgcaption">Configure and Load Geography Tree</p>
+<blockquote>
+  <p align="left"> The Geography tree operates at the Discipline level and  is used by all Collections within the Discipline. Nodes to the Geography tree can be added later in the Wizard as well as from within Specify</p>
+  <ul>
+    <li>The <strong>Level</strong> column displays the available levels. This name can be edited from within Specify. Click the <em>Include</em> box to place the level in the tree. </li>
+  </ul>
+
+  <ul>
+    <li><strong>Include</strong> places the Level in the tree definition. Levels that are not included can not be Enforced or added to the Full Name.</li>
+  </ul>
+
+  <ul>
+    <li><strong align="left">Is Required</strong> is not editable, but an indication of the tree levels that are used by Specify as a system requirement. These are automatically added to the tree and can not be deleted on this screen or later.</li>
+  </ul>
+
+  <ul>
+    <li><strong align="left">Is Enforced</strong> ensures that  the level can not be skipped when adding nodes lower down the tree.</li>
+  </ul>
+
+  <ul>
+    <li><strong align="left">Is in Full Name</strong> includes the level when building a full name expression, which can be queried and used in reports. Create the full name by checking the desired boxes.<br />
+      <br />
+      <u>At least one level for Full Name must be checked before the <em>Next</em> button will become enabled.<br />
+      </u><br />
+      <br />
+    </li>
+    <li><strong align="left">Separator</strong> refers to the character that separates the levels when displaying the full name. This can be any single character, such as a comma (,) or a space. To make the separator a space simply double click inside the column and delete the comma, then press your spacebar one time.</li>
+  </ul>
+
+  <ul>
+    <li><strong align="left">Full Name Order</strong> will reverse the full name as shown in the <strong>Full Name Example</strong>. </li>
+  </ul>
+
+  <p class="style2">The Wizard will automatically load data for the Geography tree, including Continents, Countries, and States throughout the world as well as Counties within the United States. Data for the Geography tree was  converted from the online website of the World Gazetteer. Unwanted or unncessary nodes can be deletedfrom within the Specify application at a later date if desired.</p>
+</blockquote>
+<p class="style2">&nbsp;</p>
+<p class="style2"><a name="ezdb_create_collection" id="ezdb_create_collection"></a><u><strong>Collection</strong></u></p>
+<p align="center" class="style2"><img src="../../images/ez_window13.png"/></p>
+<p align="center" class="imgcaption">Create a Collection</p>
+
+<blockquote>
+  <p align="left">Enter the <strong>Name</strong> and internationally recognized Collection <strong>Code</strong> to create a single Collection within the Discipline.  This is the name that will appear within Specify on the Collection form and can be queried and used in reports. </p>
+  <p align="left">The Code should be your standard collections community assigned code for your collection. This Code will be used in data exports and web interfaces in upcoming releases of Specify.</p>
+  <p align="left">Additional collections can be added from within Specify.</p>
+  <p align="left">&nbsp;</p>
+</blockquote>
+<h4 align="left"><a name="ezdb_create_catalog_number" id="ezdb_create_catalog_number"></a><u>Catalog Number</u></h4>
+<p align="center"><img src="../../images/ez_window14.png"/></p>
+<p align="center" class="imgcaption">Create a Catalog Number Format</p>
+<blockquote>
+  <p>Specify is able to accept data for  collection objects or observations without assigning a Catalog Number. But when Catalog Numbers are used, they must be unique for each lot, specimen or observation.  Most collections routinely assign catalog numbers to  incoming materials, perhaps as part of the accessioning process. These numbers may require a format with specific sections for data such as Institution Code and year or they may simply use an incrementing number.</p>
+  <p>Catalog Numbers can either be unique to each Collection, shared by several collections or be used throughout the Institution. The Catalog Number chosen at this time will not affect where it is used relative to other collections, this will be configured from within the Specify application. The Catalog Number format for this collection can not be edited once it is chosen.</p>
+  <p>Several formats are available from the drop-down menu list:</p>
+  <ul>
+    <li><strong align="left">Format</strong> offers several choices in the drop-down menu list:
+      <blockquote>
+        <p align="left"><strong>None</strong> is the default setting, which is a 60 character string field.</p>
+        <p align="left"><strong>Create</strong> allows you to create your own format. Choosing Create will open the Field Formatting Editor. Click <a href="../Security/Field_Format_Editor.html">HERE</a> for the Field Formatting Editor help page. </p>
+        <p><strong>CatalogNumber</strong> (2009-######) The year will appear automatically in the first section (2009) of the format, and can also be manually edited inside Specify. The '###' section of the format is a number that is six digits in length. This section can be automatically incremented when Auto Numbering is turned on in Specify or manually entered when Auto Numbering is turned off. These two sections are separated by a dash.</p>
+        <p><strong>CatalogNumberAlphaNumByYear</strong> (2009-######) The year will appear automatically in the first section (2009) of the format, and can also be manually edited from within Specify. The '###' section of the format is a number that is six digits in length. This section can be automatically incremented when Auto Numbering is turned on in Specify or manually entered when Auto Numbering is turned off. These two sections are separated by a dash.</p>
+        <p><strong>CatalogNumberNumeric</strong> (#########) This is a nine digit number that is automatically incremented  when Auto Numbering is turned on in Specify or manually entered when Auto Numbering is turned off.</p>
+        <p><strong>CatalogNumberString</strong> (XXXXXXXXXX) This is a ten digit string that can include numbers, alphabet or characters</p>
+        <p align="left">&nbsp;</p>
+      </blockquote>
+    </li>
+    <li><strong>Is Numeric</strong> will display a 'yes' if the format is numeric.</li>
+  </ul>
+  <blockquote>
+    <p><br>
+    </p>
+  </blockquote>
+  <ul>
+    <li><strong>Pattern</strong> displays the pattern used to create each format (these are explained in further detail above).</li>
+  </ul>
+  <blockquote>
+    <p><br>
+    </p>
+  </blockquote>
+  <ul>
+    <li><strong>Is Auto Incremented</strong> displays a 'yes' if the format is automatically incremented.</li>
+  </ul>
+  <blockquote>
+    <p><br>
+    </p>
+  </blockquote>
+  <p>Collections that do not use one specific format for their Catalog Number may wish to choose CatalogNumberString from the list, this will allow any format to be entered as long as they are all of the character length chosen. </p>
+</blockquote>
+<p>&nbsp;</p>
+<p>&nbsp; </p>
+<h4><u>Accessions</u></h4>
+<p align="center"><img src="../../images/ez_window5.png"/></p>
+<p align="center" class="imgcaption">Create an Accession Number Format</p>
+<blockquote>
+  <blockquote>
+    <p align="left"><strong><em>Note:</em></strong> If you chose to manage your Accessions globally you will have already chosen a format for your accession number and will not be presented with this window again.</p>
+  </blockquote>
+  <p align="left">Accession Numbers may require a format or may simply use a number. Choose <em>None</em> to leave the Accession Number as a text field on the Accession form. Accession Number formats are not editable once data has been entered in the database.</p>
+  <ul>
+    <li><strong align="left">Format</strong> offers several choices in the drop-down menu list:
+      <blockquote>
+        <p align="left"><strong>None</strong> is the default setting, which is a 60 character string field.</p>
+        <p align="left"><strong>Create</strong> allows you to create your own format. Choosing Create will open the Field Formatting Editor. Click <a href="../Security/Field_Format_Editor.html">HERE</a> for the Field Formatting Editor help page. </p>
+        <p align="left"><strong>Accession Number</strong> (2009-AA-###) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'AA' section of the format is alphanumeric and accepts both characters <em>a</em> through <em>z</em> and numbers.  The ### section of the format is a number that is automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off. This format offers two alphanumeric characters and three incremented numbers. </p>
+        <p align="left"><strong>AccessionNumberByYear</strong> (2009-AA-AAA) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'A' sections of the format are alphanumeric and accept both characters <em>a</em> through <em>z</em> and numbers. This format offers two alphanumeric sections, the first is two characters in length and the second is three characters in length.</p>
+        <p align="left"><strong>AccessionStringFormatter</strong> (AAAAAA) This is a single alphanumeric format that accepts characters <em>a</em> through <em>z</em> and numbers. The Accession number would be seven characters in length.</p>
+      </blockquote>
+    </li>
+    <li><strong>Pattern</strong> displays the pattern used to create each format (these are explained in further detail above).</li>
+  </ul>
+  <blockquote>
+    <p><br>
+    </p>
+  </blockquote>
+  <ul>
+    <li><strong>Is Auto Incremented</strong> displays a 'yes' if the format is automatically incremented.</li>
+  </ul>
+</blockquote>
+<h4 align="left"><a name="ezdb_summary" id="ezdb_summary"></a><u>Summary Window</u></h4>
+<p align="center"><img src="../../images/ez_window_complete.png"/></p>
+<p align="center" class="imgcaption">Summary Window</p>
+<blockquote>
+  <p align="left">Congratulations! You have finished the Specify EZDB Setup Wizard. This last screen displays all the data that has been created using the information provided in the preceding windows. If  edits are required simply click the <em>Back</em> button until the desired window displays and re-enter the information.</p>
+  <p align="left">Click the <em>Build Database</em> button to create a blank database with all the necessary components to begin using your collection. Then, select the Specify application from your menus and login with your newly created username and password.</p>
+</blockquote>
+</body>
+</html>

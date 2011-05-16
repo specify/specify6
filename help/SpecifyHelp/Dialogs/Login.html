@@ -1,49 +1,116 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
-<title>Starting Specify</title>
+  <head>
+    <meta content="text/html; charset=MacRoman" http-equiv="Content-Type">
+    <link type="text/css" media="screen" href="../../main.css" rel="stylesheet">
+    <meta name="generator" content="Helen">
+    <title>Specify Login</title>
 </head>
-
-<BODY BGCOLOR=#ffffff>
-<table width="100%" border="0" background="../images/topbar.png">
-  <tr>
-    <td>&nbsp;</td>
-  </tr>
-</table><br />
-<h2>Starting Specify</h2>
-  <p>When Specify is launched it automatically checks for updates and allows the user to choose to download and install the update, then provides a  login mechanism. </p>
-  <h3><img src="../../images/login.png"   alt=""/><a name="specify_login" id="specify_login"></a> Login to Specify</h3>
-  <p>The security for Specify 6 uses both a Master Username and Password, which accesses  the MySQL Database, as well as a User Username and Password, which in return gains access to the Specify application. Specify uses only one Master Username and Password for all users, but encrypts the Master password with the User information, creating an encrypted string. This allows the Master information to become unique for each user. </p>
-<p>In review, the following information is required to log in to Specify the first time.</p>
-<ul>
-    <li>User Username</li>
-    <li>User Password</li>
-    <li>Master Username</li>
-    <li>Master Password</li>
-    <li>Encryption Key, (Encrypted Username / Password )</li>
-</ul>
-<p>The login tool remembers the usernames and passwords of the last person to log in. It is important to note that the User Username and Password is stored on the users machine. This allows the Login tool to automatically fill in the Username, Password and encrypted Master. To log in to another machine the user will need their username and password and a valid Encryption Key, just as they did when logging in for the first time.</p>
-<p>For more information regarding the Specify 6 security model please refer to <a href="../security/db_security.html">Specify Security.</a></p>
-<p>The log in process includes dialog windows for entering both types of information. </p>
-<p><img src="../../images/login1a.png" width="360" height="146" /></p>
-<p>&nbsp;</p>
-  <p>Users with an existing Username and Password can simply log in using the correct fields. </p>
-  <p>Users that are logging in for the first time, or wish to login to a different database than they were previously using must  click the<img src="../../images/Forward16x16.png"  /><em>More Information</em> button.</p>
-<p><img src="../../images/login2a.png" width="360" height="230" /></p>
-<p>When the Specify  database is created using the Specify  Wizard the Database and Server information should be included in the dialog. If the Database and Server information does not appear in the dialog and you are running Specify on a local machine please consult your IT administrator. If  more than one Database and Server are available the dialog will list all the choices for both.</p>
-<p>If you are accessing a remote server, you will need to fill in the Database and Server name (this can be an IP address if the IP is 'Static'). </p>
-<p>Users needing to create their encrypted Master Username and Password should click the  <em>Configure Master Key ...</em> button.</p>
-<p><img src="../../images/login4.png" width="360" height="92" /></p>
-<p>The Master Source information refers to the location that the encryption is stored.</p>
-  <p>At this time Specify does not support obtaining an encryption key from a web service, so choose<em> Encryption key stored in local preferences.</em></p>
-<p>Encrypted Username / Password refers to the string that results when the Master Username and Password are Encrypted (using the User Username and Password). This can be created by the IT administrator when a new user is created in the Specify application, then given to the user, or it can be created by clicking the <em>Generate Master</em> ... button.</p>
-  <p><img src="../../images/login5.png" width="360" height="162" /></p>
-<p>Type in the information for both passwords and click the <em>Generate</em> button. The <em>Show Password</em> button can be used to turn off the encryption characters and show the actual textual information. </p>
-  <p><img src="../../images/login3.png" width="360" height="92" /></p>
-<p>The encrypted Master Username and Password now appears in the Encrypted box.</p>
-  <p><img src="../../images/login2.png" width="360" height="230" /></p>
-<p>&nbsp;</p>
-  <p>The first login dialog is now presented. Click the <em>Login</em> button to complete the process.</p>
+  <body bgcolor="#ffffff">
+    <table border="0" width="100%" background="../images/topbar.png">
+      <tr>
+        <td>&nbsp;
+          
+        </td>
+      </tr>
+    </table>
+    <p>
+      <br>
+    </p>
+    <h2>
+       <img src="../../images/login.png" alt=" security" /> Specify Login    </h2>
+<p>
+       When Specify is launched it automatically checks for updates and allows the user to choose
+      to download and install the update, then provides a login mechanism.
+    </p>
+    <h3><a name="specify_login" id="specify_login"></a>Types of Specify Logins</h3>
+    <blockquote>
+      <p>
+        The security for Specify 6 uses both a Master username and password, which gains access to the
+        MySQL Database, as well as a User username and password, which in return gains access to the
+        Specify application. Specify uses only one Master username and password for all users, but
+        encrypts the Master password with the User information, creating an encrypted string, or key. This
+        allows the Master information to become unique for each user.    </p>
+      <p>Some of the administrative tasks in Specify, such as creating new  disciplines or divisions, require an IT password. The IT password refers to the password used to login to the MySQL database manager. It has full administrator privileges within the MySQL database manager. Specify is accessing these priviledges when it creates these changes and therefore must login directly to MySQL. </p>
+      <p>
+        In review, there are four (4) different types of credentials in Specify:</p>
+      <ul>
+        <li> User username
+          and User password</li>
+        <li> Master username
+          and Master password</li>
+        <li> Master Key, (Encrypted username / password ) </li>
+        <li>IT username and IT password (used to gain access to the MySQL database manager) </li>
+      </ul>
+    </blockquote>
+    <h3>Starting Specify for the First Time</h3>
+    <blockquote>
+      <p>The very first time a user is required to login to Specify they will need to know their User username and  password as well as their Encryption Key. An Encryption Key can be created from within the Login tool; however, it requires that the user know the Master username and password to create a new key.</p>
+      <p>
+        The User credentials are stored on the users machine. This
+        allows the Login tool to automatically fill in the Username and Encryption Key for previous users. When opening Specify the username will be pre-filled with the username last user to open Specify. </p>
+      <p> If you are accessing Specify on a  new computer you will be required to fill in your User username and password as well as a valid
+        Encryption Key, just as you did when logging into Specify for the first time. </p>
+      <p>&nbsp;    </p>
+    </blockquote>
+    <h3>Specify Login</h3>
+    <blockquote>
+      <p>The log in process includes dialog windows for entering all types of login information.  </p>
+      <p align="center">
+        <img src="../../images/login1a.png" width="360" height="146">    </p>
+      <p align="center" class="imgcaption">Login Dialog</p>
+      <p>&nbsp; </p>
+      <p>
+        Users with an existing <strong>Username</strong> and <strong>Password</strong> can simply log in using the correct fields.      </p>
+      <p>
+        Users that are logging in for the first time, or wish to login to a different database than
+        they were previously using must click the<img src="../../images/Forward16x16.png"><strong><em>More
+          Information</em></strong> button.      </p>
+      <p align="center">
+        <img src="../../images/login2a.png" >    </p>
+      <p align="center" class="imgcaption">Expanded Login Dialog</p>
+      <p>
+        When the Specify database is created using the Specify Wizard the <strong><em>Database</em></strong> and <strong><em>Server</em></strong>  information should be included in the dialog. If the database and server information is not included in the dialog you may type them into the drop-down menu box. If you do not know the name of your database or server and you are running Specify on a local machine please consult your IT
+        administrator. If more than one database and server are available the dialog will list all
+        the choices for both.    </p>
+      <p>
+        If you are accessing a remote server, you will need to fill in the Database and Server name
+        (this can be an IP address if the IP is 'Static').    </p>
+      <p>Users wishing to configure their server and firewall to use a <strong>Port</strong> other than the default (3306) port may do so and type the new port number into the box provided. If your port has not been reconfigured for a specific port the default port is 3306.</p>
+      <p>
+        <a id="paste_master" name="paste_master"></a>Users needing to create their encrypted Master Key should click the
+        <strong><em>Configure Master Key ...</em></strong> button.      </p>
+      <p>&nbsp;</p>
+      <p align="center">
+        <img src="../../images/login4.png" width="360" height="92">    </p>
+      <p align="center" class="imgcaption">Dialog for creating the Encryption Key</p>
+      <p>
+        The Master Source information refers to the location that the encryption is stored.
+        At this time Specify does not support obtaining an encryption key from a web service, so
+        choose <em>Encryption key stored in local preferences.</em>      </p>
+      <p>
+        <em><strong>Encrypted Username / Password</strong></em> refers to the Encryption Key, or string that results when the Master username and
+        password are Encrypted using the User username and password. This can be created by the IT
+        administrator when a new user is created in the Specify application and then given to the user,
+        or it can be created by clicking the <em>Generate Master</em> ... button.    </p>
+      <p align="center">
+        <img src="../../images/login5.png" width="360" height="162">    </p>
+      <p align="center" class="imgcaption">Creating the Encryption Key</p>
+      <p>
+        Type in the information for both the User and Master credentials  click the <em>Generate</em> button. The
+        <em>Show Password</em> button can be used to turn off the encryption characters and show the
+        actual textual password information.    </p>
+      <p align="center">
+        <img src="../../images/login3.png" width="360" height="92">    </p>
+      <p>
+        The encrypted Master Username and Password now appears in the Encrypted box.      </p>
+      <p align="center">
+        <img src="../../images/login2.png">    </p>
+      <p align="center" class="imgcaption">Completed Login Dialog</p>
+      <p>&nbsp; </p>
+      <p>
+        The first login dialog is now presented. Click the <em>Login</em> button to complete the
+        process.      </p>
+    </blockquote>
 </body>
 </html>

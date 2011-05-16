@@ -6,6 +6,9 @@
 <style type="text/css">
 <!--
 ..style8 {font-size: xx-large}
+.style1 {color: #FF0000}
+.style4 {color: #0033FF}
+.style5 {color: #FF6633}
 -->
 </style>
 </head>
@@ -20,34 +23,198 @@
 <tr><td><img src="../../images/upload_data.gif" width="48" height="48" /></td>
 <td><h2>WorkBench Uploader</h2></td></tr>
 </table>
-<p>The WorkBench is both a stand alone tool and an integrate part of the Specify platform. The Upload function is only available in the Specify WorkBench, not the stand alone WorkBench. Data Sets created using the stand alone version will need to be exported and reimported into the (embedded) Specify 6 WorkBench  for uploading. The current version of the stand alone WorkBench is not able to export Data Sets along with their mapping information; therefore, data imported into the embedded Specify WorkBench from the stand alone WorkBench will need to be remapped.</p>
-<p>Data Sets in the Specify WorkBench can be uploaded into Specify 6 with the Uploader tool. This makes the uploader a fast and easy way to transfer data from an MS Excel or CSV file into Specify by first <a href="../Workbench/ImportData.html">importing</a> the data into the WorkBench. Before uploading the Data Set please note the following:</p>
+<p>The WorkBench is both a stand alone tool and an integrate part of the Specify platform. The Upload function is only available in the Specify WorkBench, not the stand alone WorkBench. Data sets created using the stand alone version will need to be exported and reimported into the (embedded) Specify 6 WorkBench  for uploading. The current version of the stand alone WorkBench is not able to export data sets along with their mapping information; therefore, data imported into the embedded Specify WorkBench from the stand alone WorkBench will need to be remapped.</p>
+<p>Data sets in the Specify WorkBench can be uploaded into Specify 6 with the Uploader tool. This makes the uploader a fast and easy way to transfer data from an MS Excel or CSV file into Specify by first <a href="../Workbench/ImportData.html">importing</a> the data into the WorkBench. </p>
+<p>When a data set is uploaded a record set in Specify will be created using the main table. The record set  will be named using the name of the data set as well as the date of the upload.</p>
+<p>Guest users are not allowed access to the Upload tool in the default Specify permissions.</p>
+<p>Before uploading the data set please note the following:</p>
 <ul>
-  <li>Check  Data Set mapping and verify that Data Set fields are being mapped to the correct fields in Specify 6. When importing MS Excel and CSV files the automapping does not always find the correct fields (especially when using latitude 1, Genus, Species and Author fields) and require some remapping.</li><br />
-  <li>Check existing data in Specify to verify that data being uploaded will not add a duplicate record because of a typo or abbreviation. One example is Geography. If you have run the Wizard and uploaded the Geography data the United States exists within the Geography table (and tree) as 'United States'. If your Data Set includes the United States as anything other than 'United States' (for example, 'US' or 'USA') the Upload function will create a new Geography record (and node on the Geography tree). </li><br />
+  <li>Check  the data set mapping and verify that data set fields are being mapped to the correct fields in Specify 6. When importing MS Excel and CSV files the automapping does not always find the correct fields (especially when using latitude 1, Genus, Species and Author fields) and may require some remapping.</li><br />
+  <li>Check existing data in Specify to verify that data being uploaded will not add a duplicate record because of a typo or abbreviation. One example is Geography. If you have run the Specify Setup Wizard and uploaded the Geography data the United States exists within the Geography table (and tree) as 'United States'. If your data set includes the United States as anything other than 'United States' (for example, 'US' or 'USA') the Upload function will create a new Geography record (and node on the Geography tree). </li><br />
   
-  <li>Columns in imported files that do not map to a specific Specify  field should be mapped to a Text or Number field. These fields will then need to be renamed accordingly within Specify to display correctly on forms and become searchable in queries. This can be accomplished by changing the field caption in the <a href="../SchemaConfig/schema_config.html#change_caption">Schema Configuration tool</a>. </li>
+  <li>Columns in imported files that do not map to a specific Specify  field should be mapped to an existing Text or Number field. These fields will then need to be renamed accordingly within Specify to display correctly on forms and become searchable in queries. This can be accomplished by changing the field caption in the <a href="../SchemaConfig/schema_config.html#change_caption">Schema Configuration tool</a>. These fields can also be renamed for use in future mappings using the WorkBench Schema Configuration tool</li>
   <br />
-  <li>The Data Set must have data in fields that are required by Specify 6. For example; if a Data Set column is mapped to a Taxon field in Specify,  all required Taxon fields, including enforced ranks, must be mapped and include data in the Data Set.</li>
+  <li>The data set must have data in fields that are required by Specify 6. For example; if a data set column is mapped to a Taxon field in Specify,  all <strong>required</strong> Taxon fields, including <strong>enforced</strong> ranks, must be mapped and include data in the data set.</li>
   <br />
   <li>At this time the Uploader does not update or change data in existing records, it only adds new records. </li><br />
   <li>Any Specify tabs that allow data to be written to the database must be closed when uploading from the WorkBench. In other words, while uploading no user in the Collection can edit Forms, Trees, Tree Definitions, System Configuration or the Schema Configuration. Specify will automatically close any open tabs after prompting the users.</li><br />
-  <li>In a multi-collection database the WorkBench is unable to verify the Data Sets for an appropriate collection. It is up to the user to ensure that the Data Set is being uploaded to the correct Collection.</li><br />
- <li> When uploading Data Sets with attachments only the Collection Object, Accession, Taxon, Locality and Collecting Event tables can accept attachments in the uploader. If one of these tables is not present in the mapping file for the data set an error message will display informing the user that the attachments can not be uploaded. Also, the uploaded attachment will be attached to the 'main' table that is present in the data set mapping. The uploader will look for main tables in this order; Collection Object, Accession, Taxon, Collecting Event and then Locality. </li><br/>
+  <li>In a multi-collection database the WorkBench is unable to verify the data sets for an appropriate collection. It is up to the user to ensure that the data set is being uploaded to the correct Collection.</li><br />
+ <li> When uploading data sets with attachments only the Collection Object, Accession, Taxon, Locality and Collecting Event tables can accept attachments in the uploader. If one of these tables is not present in the mapping file for the data set an error message will display informing the user that the attachments can not be uploaded. Also, the uploaded attachment will be attached to the 'main' table that is present in the data set mapping. The uploader will look for main tables in this order; Collection Object, Accession, Taxon, Collecting Event and then Locality. </li><br/>
  <li>The WorkBench has a limit of 2000 records that can be uploaded at one time. MS Excel files that include more than 2000 records can be separated using the <a href="../Uploading/splitter.html">Specify File Slicer</a> application that ships with Specify. </li>
 </ul>
 <p>&nbsp;</p>
-<p>Uploading is a complex process, requiring user input at each vital step. Each step  is explained in detail below. The default set of permissions that Specify ships with does not allow Guest users access to the Upload tool.</p>
-<p><strong>Upload a Data Set</strong></p>
+<h3><a name="uploader_validate" id="uploader_validate"></a>Validate Data</h3>
+<blockquote>
+  <p>New  in version 6.3 -- a data validation tool! The validation tool compares the  data in the data set  to the required fields and field formats of the Specify fields to which they are mapped. It also ensures that the related fields necessary to link multiple tables are not empty.</p>
+  <p>The first time a data set is opened the validation tool automatically checks for invalid values and highlights them. Thereafter, the WorkBench remembers the settings for the validate tool and will open a data set with its last settings.</p>
+  <p>A validation panel can be hidden and shown using the <img src="../../images/validate_workbench_20.png" alt="validate" width="20" height="20" /> (validation) icon. </p>
+  <p align="center"><img src="../../images/validation_screen.png" alt="validation screen"/></p>
+  <p align="center" class="imgcaption">Validation Panel</p>
+  <p>Check the <em><strong> Highlight Invalid Cells</strong></em>  to turn the validation off and on. This type of validation compares the values in each cell of the WorkBench with the values in Specify fields and highlights cells that contain invalid values in <span class="style1">red</span>. The number of invalid cells will be shown in the validation panel. </p>
+  <p>A tooltip is available within each cell that offers information about the invalid value. Simply hold the mouse over the invalid cell for the tooltip to appear. An example of an invalid value may be a date in an incorrect format or one that does not match the predetermined terms in a Specify Pick List. A more complete list of invalid values is offered in the <a href="#upload_requirement">Data Set Requirement</a> section of this document.</p>
+  <blockquote>
+    <p><em><strong>Note:</strong></em> The validation  tool can only check one level of hierarchical fields  per validation. Column headings that are mapped to trees will be validated from the top of the tree structure. For example; in the Geography tree  the validation  tool  will check the Continent field, then Country, then State, then County and finally City (your geography tree may have a different structure). If your data set contains new data in both country and state cells the validation  tool will only alert you to the new data in the Country cells.</p>
+    <p><em><strong>Note:</strong></em> The validate function will not clean up or detect bad (misspelt or incorrect) data. For example, it will upload any entry for 'genus' even if the data includes both genus and species information,   is not a valid name or is misspelt. These should however be highlighted as new data in yellow (see below). The user is responsible for establishing that the data is clean and correct. </p>
+  </blockquote>
+  <p>And / Or</p>
+  <p>Check the  <em><strong>Hightlight New Cells</strong></em> to turn the validation on and off. This type of validation  compares the data in each cell of the WorkBench with the data in Specify fields and highlights cells that contain new data in <span class="style5">orange</span>. These cells should be checked for spelling and other errors as this may be the only reason these are being highlighted. The number of new data cells will be shown in the validation panel. </p>
+  <p>An <span class="style4">blue</span> highlight indicates that multiple matches have been found in the database e.g. if there is a Fred Smith and Jack Smith in the database and you have Smith mapped to an Agent last name field with no first name the validation tool will not know whether Smith should be matched to Fred or Jack, or be a new Agent. </p>
+  <blockquote>
+    <p><em><strong>Note:</strong></em> The WorkBench does not compare the cells within the  against each other. Therefore, there may be times when multiple instances of the same new data occur in the dataset,  but the validation tool will count and display each cell as containing new data. For instance; if the county <em>Douglas</em> is not included in the Geography tree within Specify but is included in 36 data set records the validation tool will display the information  <em>36 New Cells</em>, even though <em>Douglas</em> is only one new term. </p>
+    <p><em><strong>Note:</strong></em> Validating new cells in large data sets can take some time. If it is necessary to cancel the Highlight New Cells function during a validation simply double click on the status bar. </p>
+  </blockquote>
+  <p>The buttons <img src="../../images/up.png" alt="up" width="16" height="16" /><img src="../../images/down.png" alt="down" width="16" height="16" /> (up and down) allow you to move between the Invalid or New cells only. You can navigate through each invalid cell using the up and down arrows.</p>
+  <blockquote>
+    <p>&nbsp;</p>
+  </blockquote>
+</blockquote>
+<p>&nbsp;</p>
+<h3><a name="upload_requirement" id="upload_requirement">Data Set Requirement Examples:</a><br />
+</h3>
+<blockquote>
+      <p><u>Catalog Number</u><br /></p>
+       <ul>
+         <li> Collecting Event and Taxon (not the Taxon Only table) data must be associated with a Catalog Number. </li>
+  </ul>
+     
+       <ul>
+         <li>The Catalog Number format in the data set must match the field format (including the length) for Catalog Number in Specify. </li>
+  </ul>
+       
+       <ul>
+         <li>Catalog Numbers that include a numeric sequence that is incremented in Specify can be left blank in the data set and will be created automatically when Uploading into Specify. The new numbers will begin their numbering sequence based on the last number in the database.</li>
+  </ul>
+      
+       <ul>
+         <li>Catalog Numbers that are not formatted as an incremented number must contain data to upload.</li>
+       </ul>
+       <blockquote>
+         <p><u>Accession</u><br />
+          </p>
+       </blockquote>
+       <ul>
+         <li>The format of the accession number in the data set must match the field format for Accession Number in Specify. </li>
+       </ul>
+       <blockquote>
+         <p><u><a name="lat_long_formats" id="lat_long_formats2"></a>Locality</u><br />
+          </p>
+       </blockquote>
+       <ul>
+         <li>The Latitude and Longitude must be in one of the accepted formats:</li>
+       </ul>
+       <blockquote>
+         <p>DD.DDDD (32.7619)<br />
+           DD MMMM (32. 45.714)<br />
+           DD MM SS.SS (32 45 42.84)<br />
+           DD.DDDD N/S/E/W (32.7619 N)<br />
+           DD MM.MM N/S/E/W (32 45.714 N)<br />
+           DD MM SS.SS N/S/E/W (32 45 42.84 N) </p>
+         <p> Formats can be changed using the <a href="../Workbench/LatLongConvert.html"> Lat/Long Converter</a>.</p>
+       </blockquote>
+       <ul>
+         <li>Double quotes must be used for seconds (not single quotes).</li>
+       </ul>
+       <blockquote>
+         <p><u>Taxon, Geography, Lithostratigraphy, Chronostratigraphy and Storage</u><br />
+         </p>
+       </blockquote>
+  <ul>
+         <li>All required ranks must be present. If the ranks below the lowest required rank are present in the data set and contain data then the lowest required rank must also contain data. If no data is present for ranks below the lowest required rank then it does not require data to upload.</li>
+  </ul>
+  
+       <ul>
+         <li> Tree levels (ranks) being uploaded must be present in the <a href="../Trees/editing_tree_def.html">Tree Definition</a> in Specify.</li>
+  </ul>
+
+       <ul>
+         <li>When uploading only Taxon data  (to add to the Taxon tree) use the mapping fields from the  Taxon Only data types (in the data set mapping).</li>
+  </ul>
+  
+       <ul>
+         <li>When uploading Taxon data along with other data the Genus, Species, Subspecies and Variety fields need to come from the Determinations data type (in the data set mapping).</li>
+  </ul>
+
+       <ul>
+         <li>If the highest rank in the data set does not match with a rank in the taxon tree new ranks will be created with the name of the data set being uploaded.<br />
+         </li>
+       </ul>
+  <p><u>Collection Objects, Accessions, Loan</u><br />
+  </p>
+  <ul>
+    <li>Any formats used in the data set must match the format specified for the mapped field in Specify. </li>
+    <li>Any preset values for Pick Lists in Specify must match the values (and format) in the data set or the data will not upload.</li>
+  </ul>
+  <p><u>Dates</u><br />
+      </p>
+  <ul>
+    <li>Dates can be in any format in the data set and will appear in Specify in the system preference format. </li>
+    <li>Partial Dates are only allowed for Collecting Event Start, Collecting Event End, Cataloged Date, Determination Date and Preparation Date in both the uploader and in the Specify database. Partial dates are uploaded in the US format (month, day, year) and allow zeros or dashes for unknown month or day. Any dashes or zeros for month or day are stored as '01' in the Specify database, which is used for search results. </li>
+  </ul>
+  <blockquote>
+    <p>00 --- 1968 (= 1968 in the form but 01 01 1968 in the database)<br />
+      00-----1968 (= 1968 in the form but 01/01/1968 in the database)<br />
+      00 00 1999  (= 1999 in the form but 01/01/1999 in the database)<br />
+      11.00.1989 (= 11/1989 in the form but 11/01/1989 in the database)<br />
+      00 11 1989 (this is invalid)<br />
+      11 12 1989 (= 11/12/1989 on the form and in the database)<br />
+      00/---/2000 (= 2000 in the form but 01/01/2000 in the database)<br />
+      00 00 04 (= 2004 in the form but 01/01/2004 in the database)<br />
+      00-00-04 (= 2004 in the form but 01/01/2004 in the database)<br />
+      04 00 04 (= 04/2004 in the form but 04/01/2004 in the database)<br />
+      04-00-04 (= 04/2004 in the form but 04/01/2004 in the database)<br />
+      1989/00/00 (= 1989 in the form but 01/01/1989 in the database)<br />
+      1999/01/00 (= 1999 in the form but 01/01/1999 in the database)<br />
+      1999 00 00 (= 1999 in the form but 01/01/1999 in the database)<br />
+      1999 02 00 (= 02/1999 in the form but 02/01/1989 in the database)</p>
+  </blockquote>
+  <ul>
+    <li>Valid separators are '.' (period), '/' (forward slash), ' ' (space), and '-' (dash).</li>
+  </ul>
+  <p><u>Preparations</u></p>
+  <blockquote>
+    <p>If the data set does not include a Prep Type field one will not be created automatically.</p>
+  </blockquote>
+  <p><u>Pick Lists</u></p>
+</blockquote>
+      <blockquote>
+<blockquote>
+     
+          <p> Columns in the WorkBench may be mapped to fields that are formatted as pick lists in Specify. In version 6.3 and older values from the data set can  be uploaded into an existing pick list. The format of the pick list will determine the requirement for the data being uploaded.</p>
+          <ul>
+          <li><strong>Read Only</strong> pick lists do not allow new values to be added throught the Uploader -- they must be added manually in the Pick List Editor. Values in the data set that do not match the values in the existing pick list can not be uploaded. Cells that do not match the predefined pick list values will highlight in red when validated. A tool tip will list the first 13 available pick list values for the field in Specify. To upload the record you must first add the pick list using the <a href="../PickLists/system_picklist.html">Pick List Editor</a> or edit the cell to include one of the available value options.</li>
+          <br />
+        
+      
+        
+          <li>An <strong>Entire Table</strong> pick list allows new terms to be added to the existing pick list. New values can be uploaded from the data set. When validated the cells containing new values will highlight in yellow.</li><br />
+       
+   
+       
+          <li>A <strong>Field From Table</strong> pick list allows new terms to be added to the existing pick list. New values can be uploaded from the data set. When validated the cells containing new values will highlight in yellow.</li><br />
+       
+    
+     
+      
+       
+          <li>A <strong>non-Read Only</strong> pick list allows the user to enter new values into the pick list from within the form. New values can be uploaded from the data set. When validated the cells containing new values will NOT hightlight in yellow.</li><br />
+        </ul>
+        
+    <p>Cells that are mapped to fields formatted as pick lists in Specify are also available as pick lists. Simply double click inside the cell and it will change to a pick list. Then click <img src="../../images/wb_picklist.png" width="60" height="15" /> (an arrow) to open the pick list and choose a value.</p>
+    <p>A tool tip will alert you to the first 13 pick list values for the field in Specify. Simply hold your mouse over the hightlighted cell to view the tooltip. </p>
+    <p>Also, double click on a cell to display a list of valid pick list values. You can then select one of the values from the list.</p>
+       
+      </blockquote>
+      </blockquote>
+<h3><strong>Upload a Data Set</strong></h3>
 <ol>
-  <li>Open a Data Set in the Specify 6 WorkBench. </li>
+  <li>Open a data set in the Specify 6 WorkBench. </li>
   <br />
 
   <li>Click the <img src="../../images/upload_data_20x20.gif" width="20" height="20" />(Upload) button found in the Workspace Item Bar. The WorkSpace will split to include the WorkBench Uploader. The WorkBench Uploader includes 3 areas:<br />
     <br />
-    <strong>Affected Tables</strong> lists the tables included in the Data Set file to be uploaded.<br />
+    <em><strong>Affected Tables</strong></em> lists the tables included in the data set file to be uploaded.<br />
     <br />
-    <strong>Messages</strong> is used by the Uploader to present progress and other information to the user.<br />
+    <em><strong>Messages</strong></em> is used by the Uploader to present progress and other information to the user.<br />
     <br />
     <strong>Buttons:</strong><br />
     <br /><ul><li>
@@ -59,8 +226,9 @@
     <br /><li>
     <u>Settings</u> configures the upload for matching records.</li>
     <br />
-    <br /><li>
-    <u>Close</u> the Uploader.</li>
+    <br />
+    <li>
+    <u>Close</u> will close the Uploader.</li>
     <br />
     </ul>
     
@@ -69,73 +237,18 @@
 
   <br />
   <br />
-  </li><li><a name="uploader_validate" id="uploader_validate"></a>Click the <em>Validate</em> button, this allows the Uploader to check for required fields and field formats within the Data Set to match them in the Specify schema.  It also ensures that the necessary related fields are present to link multiple tables. When validation errors are present the Uploader will split the <em>Messages</em> window showing validation errors in the top portion and general messages below as well as  a <em>View Report</em> button. Click the button to view and print a report of the validation errors. The Upload button will remain inactive until all validation errors have been corrected.
+  </li>
+  <li>If you have not used the Validation tool then click the <em>Validate</em> button to validate the data at this time. This allows the  data in the data set to be compared to the required fields and field formats in the Specify fields to which they are mapped.  It also ensures that the necessary related fields are present to link multiple tables. When validation errors are present the Uploader will split the <em>Messages</em> window showing validation errors in the top portion and general messages below as well as  a <em>View Report</em> button. Click the button to view and print a report of the validation errors. The Upload button will remain inactive until all validation errors have been corrected.
     Some errors may need to be fixed within the data set and require the user to exit the Uploader tool by clicking the <em>Close</em> button.<br />
     <br />
-    Examples of data set mapping requirements:<br />
-    
-    <table width="100%" border="0" cellspacing="2" cellpadding="6">
-      <tr>
-        <td><blockquote>
-          <p><u>Catalog Number</u><br />
-           Collecting Event and Taxon (not the Taxon Only table) data must be associated with a Catalog Number.          </p>
-          <p>The Catalog Number format in the Data Set must match the field format (including the length) for Catalog Number in Specify. </p>
-          <p>Catalog Numbers that are numeric only and auto incremented in Specify can be left blank in the Data Set and will be created automatically when Uploading into Specify. The new numbers will begin their numbering sequence based on the last number in the database.</p>
-          <p>Catalog Number that are not formatted as an incremented number must contain data to upload.</p>
-          <p><u>Accession</u><br />
-            The format of the accession number in the Data Set must match the field format for Accession Number in Specify.          </p>
-          <p><u><a name="lat_long_formats" id="lat_long_formats"></a>Locality</u><br />
-            The Latitude and Longitude must be in one of the accepted formats:</p>
-          <p>DD.DDDD (32.7619)<br />
-             DD MMMM (32. 45.714)<br />           
-             DD MM SS.SS (32 45 42.84)<br />
-             DD.DDDD N/S/E/W (32.7619 N)<br />
-             DD MM.MM N/S/E/W (32 45.714 N)<br />
-             DD MM SS.SS N/S/E/W (32 45 42.84 N)          </p>
-          <p> Formats can be changed using the <a href="../Workbench/LatLongConvert.html"> Lat/Long Converter</a>.</p>
-          <p>Double quotes must be used for seconds (not single quotes).</p>
-          <p><u>Taxon, Geography, Lithostratigraphy, Chronostratigraphy and Storage </u><br />
-            All required ranks must be present and contain data.</p>
-          <p><br />
-            Tree levels (ranks) being uploaded must be present in the <a href="../Trees/editing_tree_def.html">Tree Definition</a> in Specify.</p>
-          <p>When uploading only Taxon data  (to add to the Taxon tree) use the mapping fields from the  Taxon Only data types.</p>
-            <p>When uploading Taxon data along with other data the Genus, Species, Subspecies and Variety fields need to come from the Determinations data type (mapping).</p>
-            <p>If the highest rank in the Data Set does not match with a rank in the taxon tree new ranks will be created with the name of the Data Set being uploaded.<br />
-            </p>
-            <p><u>Collection Objects, Accessions, Loan</u><br />
-            Any formats used in the Data Set must match the format specified for the mapped field in Specify. </p>
-            <p>Any preset values for Pick Lists in Specify must match the values (and format) in the data set or the data will not upload.</p>
-            <p><u>Dates</u><br />Dates will upload using the format set in the Specify System Preferences. </p>
-            <p>Partial Dates are only allowed for Collecting Event Start, Collecting Event End, Cataloged Date, Determination Date and Preparation Date in both the uploader and in the Specify database. Partial dates are uploaded in the US format (month, day, year) and allow zeros or dashes for unknown month or day. Any dashes or zeros for month or day are stored as '01' in the Specify database, which is used for search results. </p>
-            <p>00 --- 1968 (= 1968 in the form but 01 01 1968 in the database)<br />
-              00-----1968 (= 1968 in the form but 01/01/1968 in the database)<br />
-              00 00 1999  (= 1999 in the form but 01/01/1999 in the database)<br />
-              11.00.1989 (= 11/1989 in the form but 11/01/1989 in the database)<br />
-              00 11 1989 (this is invalid)<br />
-              11 12 1989 (= 11/12/1989 on the form and in the database)<br />
-              00/---/2000 (= 2000 in the form but 01/01/2000 in the database)<br />
-              00 00 04 (= 2004 in the form but 01/01/2004 in the database)<br />
-              00-00-04 (= 2004 in the form but 01/01/2004 in the database)<br />
-              04 00 04 (= 04/2004 in the form but 04/01/2004 in the database)<br />
-              04-00-04 (= 04/2004 in the form but 04/01/2004 in the database)<br />
-              1989/00/00 (= 1989 in the form but 01/01/1989 in the database)<br />
-              1999/01/00 (= 1999 in the form but 01/01/1999 in the database)<br />
-              1999 00 00 (= 1999 in the form but 01/01/1999 in the database)<br />
-            1999 02 00 (= 02/1999 in the form but 02/01/1989 in the database)</p>
-            <p>Valid separators are '.' (period), '/' (forward slash), ' ' (space),and '-' (dash).</p>
-            <p>Preparations</p>
-            <p>If the Data Set does not include a Prep Type field one will not be created automatically (for disciplines that use </p>
-        </blockquote></td>
-      </tr>
-      </table>
-    <em><strong>Note:</strong></em> This function will not clean up or detect bad data. For example, it will upload any entry for 'genus' even if the data includes both genus and species information,  or is not a valid name. The user is responsible for establishing that the data is clean and correct.<br />
     <br />
   </li>
-  <li>Click the <em>Settings</em> button to configure the upload for processing matching records between the Data Set  and the Specify database. It is important to note that when only one record is found in the Data Set that matches a record in the Specify database, the Uploader does not create a new record, but will use the matched record for any related information. For example; when uploading a Collection Object with Collecting Event data the Collecting Event may already exist in Specify. The Uploader matches the Collecting Event data in the Data Set to the existing record in Specify, and does not add a new Collecting Event in Specify, but does create a link between the  Collection Object being uploaded and the existing Collecting Event in Specify.</li>
+  <li>Click the <em>Settings</em> button to configure the upload for processing matching records between the data set  and the Specify database. It is important to note that when only one record is found in the data set that matches a record in the Specify database, the Uploader does not create a new record, but will use the matched record for any related information. For example; when uploading a Collection Object with Collecting Event data the Collecting Event may already exist in Specify. The Uploader matches the Collecting Event data in the data set to the existing record in Specify, and does not add a new Collecting Event in Specify, but does create a link between the  Collection Object being uploaded and the existing Collecting Event in Specify.</li>
   <br />
-  <br /><strong>Tables</strong> lists the tables that are included in the upload.<br />
+  <br />
+<em><strong>Tables </strong></em>lists the tables that are included in the upload.<br />
     <br />
-    <strong>Match Action </strong>configures the Uploader response when more than one matching record is found.<br />
+<em><strong>Match Action </strong></em>configures the Uploader response when more than one matching record is found.<br />
     <br /><ul>
       <li>
     <u>Prompt</u> will display the matching records in a dialog and require the user to choose which of the matching records to use. A choice to add a new record is also provided.</li>
@@ -147,32 +260,39 @@
     <li><u>Pick First</u> will choose the first match found and not prompt the user. A message indicating these will appear in the message portion of the Uploader.</li>
     <br />
     <br />
-     <li><u>Skip Row</u> will skip the matching Data Set record.</li>
-     <li><u>Remember Choices </u>will treat the first record with matches exactly as a 'Prompt' above, but will remember the choice and automatically use it again when identical values are found for succeeding records.<br />
+     <li><u>Skip Row</u> will skip the matching data set record.</li>
+  </ul>
+     <p><em><strong>Remember Choices</strong></em> </u>will treat the first record with matches exactly as a 'Prompt' above, but will remember the choice and automatically use it again when identical values are found for succeeding records.<br />
        <br />
-       </li>
-    </ul>
-<br />
-    <strong>Match Empty Cells</strong> will search empty fields as part of the search criteria and require a match when set to <em>True</em> and disregard empty fields when set to <em>False</em>.<br />
-    <br /><br />
-  <li>Click Upload.  While the upload is processing, each Table in the Affected Tables window keeps a tally of the number of records updated. The individual records that are updated are listed in the Messages window. The Upload can be paused at any time by clicking the <em>Pause</em> button on the status bar, or stopped by clicking the <em>Pause</em> button and then the <em>Close</em> button. Click the <em>Upload</em> button to start the upload process again. Any uploaded records can be discarded by clicking the <em>Undo</em> button on the Workspace.  </li>
+      
+       <em><br />
+       <strong>Match Empty Cells</strong></em> will search empty fields as part of the search criteria and require a match when set to <em>True</em> and disregard empty fields when set to <em>False</em>.<br />
+       <br />
+       <br />
+        </p>
+  <li>Click Upload.  While the upload is processing, each Table in the <em>Affected Tables</em> window keeps a tally of the number of records updated. The individual records that are updated are listed in the Messages window. The Upload can be paused at any time by clicking the <em>Pause</em> button on the status bar, or stopped by clicking the <em>Pause</em> button and then the <em>Close</em> button. Click the <em>Upload</em> button to start the upload process again. Any uploaded records can be discarded by clicking the <em>Undo</em> button on the Workspace.  </li>
   <br />
   <li>Once the upload is complete the data is still not committed to the database. Both Query and Simple Searches can be used to examine the uploaded data before committing it. Records opened in a form from  the results window are only available to view  and can not be edited. Records in the results window can not be saved as Record Sets. The following buttons will be enabled on the Uploader:<br />
     <br />
-    <strong>View</strong> displays the uploaded records in a custom results page, indicating each table that is affected. These results can be printed, viewed in a form, or exported as an MS Excel file.<br />
+    <em><strong>View</strong></em> displays the uploaded records in a custom results page, indicating each table that is affected. These results can be printed, viewed in a form, or exported as an MS Excel file.<br />
     <br />
-    <strong>Undo</strong> removes all uploaded data from the database.<br />
+    <em><strong>Undo</strong></em> removes all uploaded data from the database.<br />
     <br />
-    <strong>Close</strong> will open a dialog to 
+    <em><strong>Close</strong></em> will open a dialog to 
     <br />
   </li>
   <br />
   <br />
-  <li>Click the Save button to commit the uploaded records to the database.</li>
+  <li>Click the Save button to commit the uploaded records to the database.
+    <blockquote>
+      <p><strong><em>Note:</em></strong> If a  tree rank is included in an upload that has not been included in the Tree Definition, Specify will use the name of the file to label the undefined node. </p>
+      <p><em><strong>Note:</strong></em> When latitude and longitude values are entered into the WorkBench,  the original value is captured into a hidden field to assist with format conversions. When  data is uploaded into Specify, data from these fields is copied into the Specify (Source) field and will display on the Locality form.</p>
+    </blockquote>
+  </li>
 </ol>
-<br />
-<p><strong><em>Note:</em></strong> If a  tree rank is included in an upload that has not been included in the Tree Definition, Specify will use the name of the file to label the undefined node. </p>
-<p><em><strong>Note:</strong></em> When latitude and longitude values are entered into the WorkBench,  the original value is captured into a hidden field to assist with format conversions. When  data is uploaded into Specify, data from these fields is copied into the Specify (Source) field and will display on the Locality form.</p>
+
+    </blockquote>
+</blockquote>
 <p>&nbsp;</p>
 </body>
 </html>
