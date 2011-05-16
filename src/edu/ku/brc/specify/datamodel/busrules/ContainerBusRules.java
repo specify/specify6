@@ -19,6 +19,11 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.queryForInts;
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.querySingleObj;
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+import static edu.ku.brc.ui.UIRegistry.showLocalizedError;
+
 import java.awt.Component;
 import java.util.Vector;
 
@@ -32,7 +37,6 @@ import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Container;
-import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rods
@@ -44,8 +48,6 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class ContainerBusRules extends BaseBusRules
 {
-    //private JButton containerTreeBtn = null;
-    
     private ValComboBoxFromQuery parentQCBX = null;
     
     /**
@@ -102,10 +104,10 @@ public class ContainerBusRules extends BaseBusRules
                             public void run()
                             {
                                 String sql = "SELECT Name FROM container WHERE ContainerID = ";
-                                final String currName      = BasicSQLUtils.querySingleObj(sql + currContainer.getId());
-                                final String newParentName = BasicSQLUtils.querySingleObj(sql + parent.getId());
+                                final String currName      = querySingleObj(sql + currContainer.getId());
+                                final String newParentName = querySingleObj(sql + parent.getId());
 
-                                UIRegistry.showLocalizedError("CONTAINER_BAD_PARENT", newParentName, currName);
+                                showLocalizedError("CONTAINER_BAD_PARENT", newParentName, currName);
                                 parentQCBX.setValue(null, null);
                             }
                         });
@@ -124,7 +126,7 @@ public class ContainerBusRules extends BaseBusRules
     private boolean searchContainerChildren(final Integer pId, final Integer currParentId)
     {
         String sql = "SELECT ContainerID FROM container WHERE ParentID = " + currParentId;
-        Vector<Integer> childrenIds = BasicSQLUtils.queryForInts(sql);
+        Vector<Integer> childrenIds = queryForInts(sql);
         for (Integer id : childrenIds)
         {
             if (pId.equals(id))
@@ -147,7 +149,48 @@ public class ContainerBusRules extends BaseBusRules
     {
         reasonList.clear();
         
-        if (!(dataObj instanceof Container))
+        if (dataObj instanceof Container)
+        {
+            Container container = (Container)dataObj;
+            if (container.getId() != null)
+            {
+                Container parent = container.getParent();
+                
+                for (Container child : container.getChildren())
+                {
+                    if (parent != null && parent.getId().equals(child.getId()))
+                    {
+                        reasonList.add(getLocalizedMessage("CONTAINER_PARENT_CHILD", child.getName(), container.getName()));
+                        return STATUS.Error;
+                    }
+                    
+                    if (container.getId().equals(child.getId()))
+                    {
+                        reasonList.add(getLocalizedMessage("CONTAINER_SELF_CHILD", container.getName()));
+                        return STATUS.Error;
+                    }
+                    
+                    // Look for cycles XXX -> ZZZ -> YYY -> XXX
+                    Integer id = container.getId();
+                    do
+                    {
+                        String  sql      = "SELECT ParentID FROM container WHERE ContainerID = " + id;
+                        Integer parentId = BasicSQLUtils.getCount(sql);
+                        if (parentId == null)
+                        {
+                            break;
+                        }
+                        
+                        if (parentId.equals(child.getId()))
+                        {
+                            reasonList.add(getLocalizedMessage("CONTAINER_CYCLE", child.getName()));
+                            return STATUS.Error;
+                        }
+                        id = parentId;
+                    } while (true);
+                }
+            }
+        } else
         {
             reasonList.add("Object is of wrong Class.");
             return STATUS.Error;

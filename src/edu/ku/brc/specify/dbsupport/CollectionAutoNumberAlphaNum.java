@@ -110,8 +110,7 @@ public class CollectionAutoNumberAlphaNum extends AutoNumberGeneric
             }
             
             String sql = QueryAdjusterForDomain.getInstance().adjustSQL(sb.toString());
-            
-            System.out.println(sql);
+            //System.out.println(sql);
             List<?> list = session.createQuery(sql).setMaxResults(1).list();
             if (list.size() == 1)
             {

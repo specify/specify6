@@ -126,6 +126,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
     
     private final int OVERALL_TOTAL = 18;
+    private static final String TINYINT4 = "TINYINT(4)";
     
     private static final String APP                     = "App";
     private static final String APP_REQ_EXIT            = "AppReqExit";
@@ -1013,12 +1014,15 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-----------------------------------------------------------------------------
                     // Add New Fields to Address
                     tblName = getTableTitleForFrame(Agent.getClassTableId());
-                    String[] addrCols = {"DateType", "TINYINT(4)", "Title", 
-                                         "DateOfBirthPrecision", "TINYINT(4)", "DateOfBirth", 
-                                         "DateOfDeathPrecision", "TINYINT(4)", "DateOfDeath"};
-                    if (!checkAndAddColumns(conn, databaseName, tblName, addrCols))
+                    if (!doesColumnExist(databaseName, tblName, "DateType"))
                     {
-                        return false;
+                        String[] addrCols = {"DateType", TINYINT4, "Title", 
+                                             "DateOfBirthPrecision", TINYINT4, "DateOfBirth", 
+                                             "DateOfDeathPrecision", TINYINT4, "DateOfDeath"};
+                        if (!checkAndAddColumns(conn, databaseName, tblName, addrCols))
+                        {
+                            return false;
+                        }
                     }
                     frame.incOverall();
 
@@ -1041,15 +1045,18 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-- LocalityDetail
                     //-----------------------------------------------------------------------------
                     tblName = getTableTitleForFrame(LocalityDetail.getClassTableId());
-                    String[] locDetCols = {"StartDepth",         "Double",      "Drainage", 
-                                           "StartDepthUnit",     "TINYINT(4)",  "StartDepth",
-                                           "StartDepthVerbatim", "VARCHAR(32)", "StartDepthUnit",
-                                           "EndDepth",           "Double",      "StartDepthVerbatim", 
-                                           "EndDepthUnit",       "TINYINT(4)",  "EndDepth",
-                                           "EndDepthVerbatim",   "VARCHAR(32)", "EndDepthUnit"};
-                    if (!checkAndAddColumns(conn, databaseName, tblName, locDetCols))
+                    if (!doesColumnExist(databaseName, tblName, "StartDepth"))
                     {
-                        return false;
+                        String[] locDetCols = {"StartDepth",         "Double",      "Drainage", 
+                                               "StartDepthUnit",     TINYINT4,  "StartDepth",
+                                               "StartDepthVerbatim", "VARCHAR(32)", "StartDepthUnit",
+                                               "EndDepth",           "Double",      "StartDepthVerbatim", 
+                                               "EndDepthUnit",       TINYINT4,  "EndDepth",
+                                               "EndDepthVerbatim",   "VARCHAR(32)", "EndDepthUnit"};
+                        if (!checkAndAddColumns(conn, databaseName, tblName, locDetCols))
+                        {
+                            return false;
+                        }
                     }
                     frame.incOverall();
 
@@ -1057,11 +1064,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-- Locality
                     //-----------------------------------------------------------------------------
                     tblName = getTableTitleForFrame(Locality.getClassTableId());
-                    String[] locCols = {"Text1", "VARCHAR(255)", "SrcLatLongUnit", 
-                                        "Text2", "VARCHAR(255)", "Text1"};
-                    if (!checkAndAddColumns(conn, databaseName, tblName, locCols))
+                    if (!doesColumnExist(databaseName, tblName, "Text1"))
                     {
-                        return false;
+                        String[] locCols = {"Text1", "VARCHAR(255)", "SrcLatLongUnit", 
+                                            "Text2", "VARCHAR(255)", "Text1"};
+                        if (!checkAndAddColumns(conn, databaseName, tblName, locCols))
+                        {
+                            return false;
+                        }
                     }
                     frame.incOverall();
 
@@ -1069,9 +1079,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-- CollectionObjectAttribute
                     //-----------------------------------------------------------------------------
                     tblName = getTableTitleForFrame(CollectionObjectAttribute.getClassTableId());
-                    if (!addColumn(conn, databaseName, tblName, "Text15",  "VARCHAR(64)", "Text14"))
+                    if (!doesColumnExist(databaseName, tblName, "Text15"))
                     {
-                        return false;
+                        if (!addColumn(conn, databaseName, tblName, "Text15",  "VARCHAR(64)", "Text14"))
+                        {
+                            return false;
+                        }
                     }
                     frame.incOverall();
 
@@ -1079,9 +1092,12 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-- PaleoContext
                     //-----------------------------------------------------------------------------
                     tblName = getTableTitleForFrame(PaleoContext.getClassTableId());
-                    if (!addColumn(conn, databaseName, tblName, "ChronosStratEndID",  "INT", "ChronosStratID"))
+                    if (!doesColumnExist(databaseName, tblName, "ChronosStratEndID"))
                     {
-                        return false;
+                        if (!addColumn(conn, databaseName, tblName, "ChronosStratEndID",  "INT", "ChronosStratID"))
+                        {
+                            return false;
+                        }
                     }
                     frame.incOverall();
 
@@ -1089,14 +1105,17 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-- Institution
                     //-----------------------------------------------------------------------------
                     tblName = getTableTitleForFrame(Institution.getClassTableId());
-                    String[] instCols = {"IsSingleGeographyTree",  "BIT(1)", "IsServerBased", 
-                                         "IsSharingLocalities",    "BIT(1)", "IsSingleGeographyTree"};
-                    if (checkAndAddColumns(conn, databaseName, tblName, instCols))
+                    if (!doesColumnExist(databaseName, tblName, "IsSingleGeographyTree"))
                     {
-                        update(conn, "UPDATE institution SET IsSingleGeographyTree=0, IsSharingLocalities=0");
-                    } else
-                    {
-                        return false;
+                        String[] instCols = {"IsSingleGeographyTree",  "BIT(1)", "IsServerBased", 
+                                             "IsSharingLocalities",    "BIT(1)", "IsSingleGeographyTree"};
+                        if (checkAndAddColumns(conn, databaseName, tblName, instCols))
+                        {
+                            update(conn, "UPDATE institution SET IsSingleGeographyTree=0, IsSharingLocalities=0");
+                        } else
+                        {
+                            return false;
+                        }
                     }
                     frame.incOverall();
 
@@ -1104,11 +1123,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-- GeologicTimePeriod
                     //-----------------------------------------------------------------------------
                     tblName = getTableTitleForFrame(GeologicTimePeriod.getClassTableId());
-                    String[] gtpCols = {"Text1", "VARCHAR(64)", "EndUncertainty", 
-                                        "Text2", "VARCHAR(64)", "Text1"};
-                    if (!checkAndAddColumns(conn, databaseName, tblName, gtpCols))
+                    if (!doesColumnExist(databaseName, tblName, "Text1"))
                     {
-                        return false;
+                        String[] gtpCols = {"Text1", "VARCHAR(64)", "EndUncertainty", 
+                                            "Text2", "VARCHAR(64)", "Text1"};
+                        if (!checkAndAddColumns(conn, databaseName, tblName, gtpCols))
+                        {
+                            return false;
+                        }
                     }
                     frame.incOverall();
 
@@ -1215,15 +1237,18 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     //-- ConservEvent
                     //-----------------------------------------------------------------------------
                     tblName = getTableTitleForFrame(ConservEvent.getClassTableId());
-                    String[] consrvEvCols = {"Text1",  "VARCHAR(64)", "Remarks",
-                                             "Text2",  "VARCHAR(64)", "Text1",
-                                             "Number1",  "INT(11)",   "Text2",
-                                             "Number2",  "INT(11)",   "Number1",
-                                             "YesNo1", "BIT(1)",      "Number2",
-                                             "YesNo2", "BIT(1)",      "YesNo1",};
-                    if (!checkAndAddColumns(conn, databaseName, tblName, consrvEvCols))
+                    if (!doesColumnExist(databaseName, tblName, "Text1"))
                     {
-                        return false;
+                        String[] consrvEvCols = {"Text1",  "VARCHAR(64)", "Remarks",
+                                                 "Text2",  "VARCHAR(64)", "Text1",
+                                                 "Number1",  "INT(11)",   "Text2",
+                                                 "Number2",  "INT(11)",   "Number1",
+                                                 "YesNo1", "BIT(1)",      "Number2",
+                                                 "YesNo2", "BIT(1)",      "YesNo1",};
+                        if (!checkAndAddColumns(conn, databaseName, tblName, consrvEvCols))
+                        {
+                            return false;
+                        }
                     }
                     frame.incOverall(); // #23
                     
@@ -1531,240 +1556,242 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 // Add this Original Mapping in
                 divToAgentToFixHash.put(firstDivId, firstAgentId);
                 
-                
-                //---------- accessionagent
-                sql = "SELECT aa.AccessionAgentID, aa.AgentID, a.DivisionID " +
-                      "FROM accessionagent aa INNER JOIN accession a ON aa.AccessionID = a.AccessionID ORDER BY aa.AgentID";
-                fixAgents(conn, sql, "accessionagent", "aa.AgentID", divToAgentToFixHash, inClause);
-                
-                //---------- addressofrecord (Accession, Borrow, ExchangeIn, EchangeOut, Gift, Loan, RepositoryAgreement)
-                
-                sql = "SELECT aa.AddressOfRecordID, aa.AgentID, a.DivisionID " +
-                "FROM addressofrecord aa INNER JOIN accession a ON aa.AddressOfRecordID = a.AddressOfRecordID ORDER BY aa.AgentID";
-                fixAgents(conn, sql, "addressofrecord", "aa.AgentID", divToAgentToFixHash, inClause);
-                
-                sql = "SELECT aa.AddressOfRecordID, aa.AgentID, ei.DivisionID " +
-                "FROM addressofrecord aa INNER JOIN exchangein ei ON aa.AddressOfRecordID = ei.AddressOfRecordID ORDER BY aa.AgentID";
-                fixAgents(conn, sql, "addressofrecord", "aa.AgentID", divToAgentToFixHash, inClause);
-                
-                sql = "SELECT aa.AddressOfRecordID, aa.AgentID, eo.DivisionID " +
-                "FROM addressofrecord aa INNER JOIN exchangeout eo ON aa.AddressOfRecordID = eo.AddressOfRecordID ORDER BY aa.AgentID";
-                fixAgents(conn, sql, "addressofrecord", "aa.AgentID", divToAgentToFixHash, inClause);
-                
-                sql = "SELECT aa.AddressOfRecordID, aa.AgentID, g.DivisionID " +
-                "FROM addressofrecord aa INNER JOIN gift g ON aa.AddressOfRecordID = g.AddressOfRecordID ORDER BY aa.AgentID";
-                fixAgents(conn, sql, "addressofrecord", "aa.AgentID", divToAgentToFixHash, inClause);
-                
-                sql = "SELECT aa.AddressOfRecordID, aa.AgentID, l.DivisionID " +
-                "FROM addressofrecord aa INNER JOIN loan l ON aa.AddressOfRecordID = l.AddressOfRecordID ";
-                fixAgents(conn, sql, "addressofrecord", "aa.AgentID", divToAgentToFixHash, inClause);
-                
-                sql = "SELECT aa.AddressOfRecordID, aa.AgentID, ra.DivisionID " +
-                "FROM addressofrecord aa INNER JOIN repositoryagreement ra ON aa.AddressOfRecordID = ra.AddressOfRecordID ";
-                fixAgents(conn, sql, "addressofrecord", "aa.AgentID", divToAgentToFixHash, inClause);
-                
-                //---------- agentgeography
-                sql = "SELECT ag.AgentGeographyID, ag.AgentID, dp.DivisionID " +
-                        "FROM agentgeography ag INNER JOIN geography g ON ag.GeographyID = g.GeographyID " +
-                        "INNER JOIN discipline dp ON g.GeographyTreeDefID = dp.GeographyTreeDefID ";
-                fixAgents(conn, sql, "agentgeography", "ag.AgentID", divToAgentToFixHash, inClause);
-
-                //---------- agentspecialty
-                // (Don't Need To)
-                
-                //---------- agentvariant
-                // (Don't Need To)
-                
-                //---------- appraisal
-                sql = "SELECT ap.AppraisalID, ap.AgentID, a.DivisionID " +
-                "FROM appraisal ap INNER JOIN accession a ON ap.AccessionID = a.AccessionID ";
-                fixAgents(conn, sql, "appraisal", "ap.AgentID", divToAgentToFixHash, inClause);
-                
-                sql = "SELECT ap.AppraisalID, ap.AgentID, dp.DivisionID " +
-                        "FROM appraisal ap INNER JOIN collectionobject co ON ap.AppraisalID = co.AppraisalID " +
-                        "INNER JOIN collection c ON co.CollectionID = c.UserGroupScopeId " +
-                        "INNER JOIN discipline dp ON c.DisciplineID = dp.UserGroupScopeId ";
-                fixAgents(conn, sql, "appraisal", "ap.AgentID", divToAgentToFixHash, inClause);
-                
-                //---------- author
-                // (Skipping for now - no way to know)
-                
-                //---------- borrowagent
-                sql = "SELECT ba.BorrowAgentID, ba.AgentID, dp.DivisionID FROM borrowagent ba " +
-                      "INNER JOIN collection c ON ba.CollectionMemberID = c.UserGroupScopeId " +
-                      "INNER JOIN discipline dp ON c.DisciplineID = dp.UserGroupScopeId ";
-                fixAgents(conn, sql, "borrowagent", "ba.AgentID", divToAgentToFixHash, inClause);
-
-                //---------- borrowreturnmaterial
-                sql = "SELECT brm.BorrowReturnMaterialID, brm.ReturnedByID, dp.DivisionID " +
-                "FROM borrowreturnmaterial brm INNER JOIN borrowmaterial bm ON brm.BorrowMaterialID = bm.BorrowMaterialID " +
-                "INNER JOIN collection c ON bm.CollectionMemberID = c.UserGroupScopeId " +
-                "INNER JOIN discipline dp ON c.DisciplineID = dp.UserGroupScopeId";
-                fixAgents(conn, sql, "borrowreturnmaterial", "brm.ReturnedByID", divToAgentToFixHash, inClause);
-
-                //---------- collectionobject
-                sql = "SELECT co.CollectionObjectID, co.CatalogerID, dp.DivisionID " +
-                "FROM collectionobject co INNER JOIN collection c ON co.CollectionID = c.UserGroupScopeId " +
-                "INNER JOIN discipline dp ON c.DisciplineID = dp.UserGroupScopeId";
-                fixAgents(conn, sql, "collectionobject", "co.CatalogerID", divToAgentToFixHash, inClause);
-
-                //---------- collector
-                sql = "SELECT CollectorID, AgentID, DivisionID FROM collector";
-                fixAgents(conn, sql, "collector", "AgentID", divToAgentToFixHash, inClause);
-
-                //---------- conservevent
-                // (Skipping for now - no way to know)
-                
-                //---------- deaccessionagent
-                // (Skipping for now - no way to know)
-                
-                //---------- determination
-                sql = "SELECT d.DeterminationID, d.DeterminerID, dp.DivisionID " +
-                "FROM determination d INNER JOIN collection c ON d.CollectionMemberID = c.UserGroupScopeId " +
-                "INNER JOIN discipline dp ON c.DisciplineID = dp.UserGroupScopeId";
-                fixAgents(conn, sql, "determination", "d.DeterminerID", divToAgentToFixHash, inClause);
-                
-                //---------- dnasequence
-                sql = "SELECT DnaSequenceID, dna.AgentID, dp.DivisionID " +
-                "FROM collection c INNER JOIN discipline dp ON c.DisciplineID = dp.UserGroupScopeId " +
-                "INNER JOIN dnasequence dna ON dna.CollectionMemberID = c.UserGroupScopeId";
-                fixAgents(conn, sql, "dnasequence", "dna.AgentID", divToAgentToFixHash, inClause);
-                
-                //---------- exchangein
-                sql = "SELECT ExchangeInID, CatalogedByID, DivisionID FROM exchangein";
-                fixAgents(conn, sql, "exchangein", "CatalogedByID", divToAgentToFixHash, inClause);
-                
-                //---------- exchangeout
-                sql = "SELECT ExchangeOutID, CatalogedByID, DivisionID FROM exchangeout";
-                fixAgents(conn, sql, "exchangeout", "CatalogedByID", divToAgentToFixHash, inClause);
-                
-                //---------- fieldnotebook
-                sql = "SELECT fn.FieldNotebookID, fn.AgentID, dp.DivisionID " +
-                "FROM fieldnotebook fn INNER JOIN discipline dp ON fn.DisciplineID = dp.UserGroupScopeId";
-                fixAgents(conn, sql, "fieldnotebook", "fn.AgentID", divToAgentToFixHash, inClause);
-                
-                //---------- fieldnotebookpageset
-                sql = "SELECT FieldNotebookPageSetID, fnps.AgentID, dp.DivisionID " +
-                "FROM fieldnotebookpageset fnps INNER JOIN discipline dp ON fnps.DisciplineID = dp.UserGroupScopeId";
-                fixAgents(conn, sql, "fieldnotebookpageset", "fnps.AgentID", divToAgentToFixHash, inClause);
-                
-                //---------- geocoorddetail
-                sql = "SELECT gd.GeoCoordDetailID, gd.AgentID, dp.DivisionID " +
-                "FROM geocoorddetail gd INNER JOIN locality l ON gd.LocalityID = l.LocalityID " +
-                "INNER JOIN discipline dp ON l.DisciplineID = dp.UserGroupScopeId";
-                fixAgents(conn, sql, "geocoorddetail", "gd.AgentID", divToAgentToFixHash, inClause);
-               
-                //---------- giftagent
-                sql = "SELECT ga.GiftAgentID, ga.AgentID, g.DivisionID, dp.DivisionID " +
-                "FROM giftagent ga INNER JOIN gift g ON ga.GiftID = g.GiftID " +
-                "INNER JOIN discipline dp ON g.DisciplineID = dp.UserGroupScopeId";
-                fixAgents(conn, sql, "giftagent", "ga.AgentID", divToAgentToFixHash, inClause);
-                
-                //---------- groupperson (Don't need to)
-
-                //---------- inforequest
-                sql = "SELECT ir.InfoRequestID, ir.AgentID, dp.DivisionID " +
-                "FROM inforequest ir INNER JOIN collection c ON ir.CollectionMemberID = c.UserGroupScopeId " +
-                "INNER JOIN discipline dp ON c.DisciplineID = dp.UserGroupScopeId";
-                fixAgents(conn, sql, "inforequest", "ir.AgentID", divToAgentToFixHash, inClause);
-                
-                //---------- loanagent
-                sql = "SELECT la.LoanAgentID, la.AgentID, l.DivisionID, dp.DivisionID " +
-                        "FROM loanagent la INNER JOIN loan l ON la.LoanID = l.LoanID " +
-                        "INNER JOIN discipline dp ON l.DisciplineID = dp.UserGroupScopeId";
-                fixAgents(conn, sql, "loanagent", "la.AgentID", divToAgentToFixHash, inClause);
-               
-                //---------- loanreturnpreparation
-                sql = "SELECT lrp.LoanReturnPreparationID, lrp.ReceivedByID, dp.DivisionID " +
-                "FROM loanreturnpreparation lrp INNER JOIN discipline dp ON lrp.DisciplineID = dp.UserGroupScopeId";
-                fixAgents(conn, sql, "loanreturnpreparation", "lrp.ReceivedByID", divToAgentToFixHash, inClause);
-                
-                //---------- permit (No way to know)
-
-                //---------- preparation
-                sql = "SELECT PreparationID, p.PreparedByID, dp.DivisionID " +
-                "FROM preparation p INNER JOIN collectionobject co ON p.CollectionObjectID = co.CollectionObjectID " +
-                "INNER JOIN collection c ON co.CollectionID = c.UserGroupScopeId " +
-                "INNER JOIN discipline dp ON c.DisciplineID = dp.UserGroupScopeId";
-                fixAgents(conn, sql, "preparation", "p.PreparedByID", divToAgentToFixHash, inClause);
-                
-                //---------- project (No way to know)
-
-                //---------- repositoryagreement
-                sql = "SELECT RepositoryAgreementID, AgentID, DivisionID FROM repositoryagreement";
-                fixAgents(conn, sql, "repositoryagreement", "AgentID", divToAgentToFixHash, inClause);
-
-                //---------- shipment
-                
-                sql = "SELECT s.ShipmentID, s.ShipperID, dp.DivisionID FROM shipment s INNER JOIN discipline dp ON s.DisciplineID = dp.UserGroupScopeId";
-                fixAgents(conn, sql, "shipment", "s.ShipperID", divToAgentToFixHash, inClause);
-                
-                sql = "SELECT s.ShipmentID, s.ShippedToID, dp.DivisionID FROM shipment s INNER JOIN discipline dp ON s.DisciplineID = dp.UserGroupScopeId";
-                fixAgents(conn, sql, "shipment", "s.ShippedToID", divToAgentToFixHash, inClause);
-                
-                sql = "SELECT s.ShipmentID, s.ShippedByID, dp.DivisionID FROM shipment s INNER JOIN discipline dp ON s.DisciplineID = dp.UserGroupScopeId";
-                fixAgents(conn, sql, "shipment", "s.ShippedByID", divToAgentToFixHash, inClause);
-                
-                //---------- AppResources
-                
-                sql = "SELECT ap.SpAppResourceDirID, ap.CreatedByAgentID, d.DivisionID FROM spappresourcedir AS ap " +
-                      "Inner Join discipline AS d ON ap.DisciplineID = d.UserGroupScopeId ";
-                fixAgents(conn, sql, "spappresourcedir", "ap.CreatedByAgentID", divToAgentToFixHash, inClause);
-                
-                sql = "SELECT ap.SpAppResourceDirID, ap.ModifiedByAgentID, d.DivisionID FROM spappresourcedir AS ap " +
-                      "Inner Join discipline AS d ON ap.DisciplineID = d.UserGroupScopeId ";
-                fixAgents(conn, sql, "spappresourcedir", "ap.ModifiedByAgentID", divToAgentToFixHash, inClause);
-                
-                sql = "SELECT r.SpAppResourceID, r.CreatedByAgentID, d.DivisionID FROM spappresource AS r " +
-                        "Inner Join spappresourcedir AS rd ON r.SpAppResourceDirID = rd.SpAppResourceDirID " +
-                        "Inner Join discipline AS d ON rd.DisciplineID = d.UserGroupScopeId ";
-                fixAgents(conn, sql, "spappresource", "r.CreatedByAgentID", divToAgentToFixHash, inClause);
-
-                sql = "SELECT r.SpAppResourceID, r.ModifiedByAgentID, d.DivisionID FROM spappresource AS r " +
-                        "Inner Join spappresourcedir AS rd ON r.SpAppResourceDirID = rd.SpAppResourceDirID " +
-                        "Inner Join discipline AS d ON rd.DisciplineID = d.UserGroupScopeId ";
-                fixAgents(conn, sql, "spappresource", "r.ModifiedByAgentID", divToAgentToFixHash, inClause);
-                
-                sql = "SELECT ada.SpAppResourceDataID, ada.CreatedByAgentID, d.DivisionID FROM spappresourcedata AS ada " +
-                        "Inner Join spappresource AS ar ON ada.SpAppResourceID = ar.SpAppResourceID " +
-                        "Inner Join spappresourcedir AS ad ON ar.SpAppResourceDirID = ad.SpAppResourceDirID " +
-                        "Inner Join discipline AS d ON ad.DisciplineID = d.UserGroupScopeId ";
-                fixAgents(conn, sql, "spappresourcedata", "ada.CreatedByAgentID", divToAgentToFixHash, inClause);
-                
-                sql = "SELECT ada.SpAppResourceDataID, ada.ModifiedByAgentID, d.DivisionID FROM spappresourcedata AS ada " +
-                        "Inner Join spappresource AS ar ON ada.SpAppResourceID = ar.SpAppResourceID " +
-                        "Inner Join spappresourcedir AS ad ON ar.SpAppResourceDirID = ad.SpAppResourceDirID " +
-                        "Inner Join discipline AS d ON ad.DisciplineID = d.UserGroupScopeId ";
-                fixAgents(conn, sql, "spappresourcedata", "ada.ModifiedByAgentID", divToAgentToFixHash, inClause);
-                
-                //---------- Now Check All CreatedBy and Modified By
-                fixAllTables(conn, firstAgentId, inClause, "CreatedByAgentID");
-                fixAllTables(conn, firstAgentId, inClause, "ModifiedByAgentID");
-                
-                deleteAgentRelationships(conn, "address", availAgents);
-                deleteAgentRelationships(conn, "agentvariant", availAgents);
-                deleteAgentRelationships(conn, "agentgeography", availAgents);
-                deleteAgentRelationships(conn, "agentspecialty", availAgents);
-                deleteAgentAttachments(conn, availAgents);
-                   
-                // At this point all the divisions for a SpecyUser now have an Agent,
-                // either an old one that was reused or a newly cloned one.
-                // We shouldn't have any left over Agents, but the list 'availAgents'
-                // will have any extra previous used Agents that need to be deleted.
-                BasicSQLUtils.setSkipTrackExceptions(true);
-                for (Integer agtId : availAgents)
+                if (availAgents.size() > 0)
                 {
-                    try
+                    //---------- accessionagent
+                    sql = "SELECT aa.AccessionAgentID, aa.AgentID, a.DivisionID " +
+                          "FROM accessionagent aa INNER JOIN accession a ON aa.AccessionID = a.AccessionID ORDER BY aa.AgentID";
+                    fixAgents(conn, sql, "accessionagent", "aa.AgentID", divToAgentToFixHash, inClause);
+                    
+                    //---------- addressofrecord (Accession, Borrow, ExchangeIn, EchangeOut, Gift, Loan, RepositoryAgreement)
+                    
+                    sql = "SELECT aa.AddressOfRecordID, aa.AgentID, a.DivisionID " +
+                    "FROM addressofrecord aa INNER JOIN accession a ON aa.AddressOfRecordID = a.AddressOfRecordID ORDER BY aa.AgentID";
+                    fixAgents(conn, sql, "addressofrecord", "aa.AgentID", divToAgentToFixHash, inClause);
+                    
+                    sql = "SELECT aa.AddressOfRecordID, aa.AgentID, ei.DivisionID " +
+                    "FROM addressofrecord aa INNER JOIN exchangein ei ON aa.AddressOfRecordID = ei.AddressOfRecordID ORDER BY aa.AgentID";
+                    fixAgents(conn, sql, "addressofrecord", "aa.AgentID", divToAgentToFixHash, inClause);
+                    
+                    sql = "SELECT aa.AddressOfRecordID, aa.AgentID, eo.DivisionID " +
+                    "FROM addressofrecord aa INNER JOIN exchangeout eo ON aa.AddressOfRecordID = eo.AddressOfRecordID ORDER BY aa.AgentID";
+                    fixAgents(conn, sql, "addressofrecord", "aa.AgentID", divToAgentToFixHash, inClause);
+                    
+                    sql = "SELECT aa.AddressOfRecordID, aa.AgentID, g.DivisionID " +
+                    "FROM addressofrecord aa INNER JOIN gift g ON aa.AddressOfRecordID = g.AddressOfRecordID ORDER BY aa.AgentID";
+                    fixAgents(conn, sql, "addressofrecord", "aa.AgentID", divToAgentToFixHash, inClause);
+                    
+                    sql = "SELECT aa.AddressOfRecordID, aa.AgentID, l.DivisionID " +
+                    "FROM addressofrecord aa INNER JOIN loan l ON aa.AddressOfRecordID = l.AddressOfRecordID ";
+                    fixAgents(conn, sql, "addressofrecord", "aa.AgentID", divToAgentToFixHash, inClause);
+                    
+                    sql = "SELECT aa.AddressOfRecordID, aa.AgentID, ra.DivisionID " +
+                    "FROM addressofrecord aa INNER JOIN repositoryagreement ra ON aa.AddressOfRecordID = ra.AddressOfRecordID ";
+                    fixAgents(conn, sql, "addressofrecord", "aa.AgentID", divToAgentToFixHash, inClause);
+                    
+                    //---------- agentgeography
+                    sql = "SELECT ag.AgentGeographyID, ag.AgentID, dp.DivisionID " +
+                            "FROM agentgeography ag INNER JOIN geography g ON ag.GeographyID = g.GeographyID " +
+                            "INNER JOIN discipline dp ON g.GeographyTreeDefID = dp.GeographyTreeDefID ";
+                    fixAgents(conn, sql, "agentgeography", "ag.AgentID", divToAgentToFixHash, inClause);
+    
+                    //---------- agentspecialty
+                    // (Don't Need To)
+                    
+                    //---------- agentvariant
+                    // (Don't Need To)
+                    
+                    //---------- appraisal
+                    sql = "SELECT ap.AppraisalID, ap.AgentID, a.DivisionID " +
+                    "FROM appraisal ap INNER JOIN accession a ON ap.AccessionID = a.AccessionID ";
+                    fixAgents(conn, sql, "appraisal", "ap.AgentID", divToAgentToFixHash, inClause);
+                    
+                    sql = "SELECT ap.AppraisalID, ap.AgentID, dp.DivisionID " +
+                            "FROM appraisal ap INNER JOIN collectionobject co ON ap.AppraisalID = co.AppraisalID " +
+                            "INNER JOIN collection c ON co.CollectionID = c.UserGroupScopeId " +
+                            "INNER JOIN discipline dp ON c.DisciplineID = dp.UserGroupScopeId ";
+                    fixAgents(conn, sql, "appraisal", "ap.AgentID", divToAgentToFixHash, inClause);
+                    
+                    //---------- author
+                    // (Skipping for now - no way to know)
+                    
+                    //---------- borrowagent
+                    sql = "SELECT ba.BorrowAgentID, ba.AgentID, dp.DivisionID FROM borrowagent ba " +
+                          "INNER JOIN collection c ON ba.CollectionMemberID = c.UserGroupScopeId " +
+                          "INNER JOIN discipline dp ON c.DisciplineID = dp.UserGroupScopeId ";
+                    fixAgents(conn, sql, "borrowagent", "ba.AgentID", divToAgentToFixHash, inClause);
+    
+                    //---------- borrowreturnmaterial
+                    sql = "SELECT brm.BorrowReturnMaterialID, brm.ReturnedByID, dp.DivisionID " +
+                    "FROM borrowreturnmaterial brm INNER JOIN borrowmaterial bm ON brm.BorrowMaterialID = bm.BorrowMaterialID " +
+                    "INNER JOIN collection c ON bm.CollectionMemberID = c.UserGroupScopeId " +
+                    "INNER JOIN discipline dp ON c.DisciplineID = dp.UserGroupScopeId";
+                    fixAgents(conn, sql, "borrowreturnmaterial", "brm.ReturnedByID", divToAgentToFixHash, inClause);
+    
+                    //---------- collectionobject
+                    sql = "SELECT co.CollectionObjectID, co.CatalogerID, dp.DivisionID " +
+                    "FROM collectionobject co INNER JOIN collection c ON co.CollectionID = c.UserGroupScopeId " +
+                    "INNER JOIN discipline dp ON c.DisciplineID = dp.UserGroupScopeId";
+                    fixAgents(conn, sql, "collectionobject", "co.CatalogerID", divToAgentToFixHash, inClause);
+    
+                    //---------- collector
+                    sql = "SELECT CollectorID, AgentID, DivisionID FROM collector";
+                    fixAgents(conn, sql, "collector", "AgentID", divToAgentToFixHash, inClause);
+    
+                    //---------- conservevent
+                    // (Skipping for now - no way to know)
+                    
+                    //---------- deaccessionagent
+                    // (Skipping for now - no way to know)
+                    
+                    //---------- determination
+                    sql = "SELECT d.DeterminationID, d.DeterminerID, dp.DivisionID " +
+                    "FROM determination d INNER JOIN collection c ON d.CollectionMemberID = c.UserGroupScopeId " +
+                    "INNER JOIN discipline dp ON c.DisciplineID = dp.UserGroupScopeId";
+                    fixAgents(conn, sql, "determination", "d.DeterminerID", divToAgentToFixHash, inClause);
+                    
+                    //---------- dnasequence
+                    sql = "SELECT DnaSequenceID, dna.AgentID, dp.DivisionID " +
+                    "FROM collection c INNER JOIN discipline dp ON c.DisciplineID = dp.UserGroupScopeId " +
+                    "INNER JOIN dnasequence dna ON dna.CollectionMemberID = c.UserGroupScopeId";
+                    fixAgents(conn, sql, "dnasequence", "dna.AgentID", divToAgentToFixHash, inClause);
+                    
+                    //---------- exchangein
+                    sql = "SELECT ExchangeInID, CatalogedByID, DivisionID FROM exchangein";
+                    fixAgents(conn, sql, "exchangein", "CatalogedByID", divToAgentToFixHash, inClause);
+                    
+                    //---------- exchangeout
+                    sql = "SELECT ExchangeOutID, CatalogedByID, DivisionID FROM exchangeout";
+                    fixAgents(conn, sql, "exchangeout", "CatalogedByID", divToAgentToFixHash, inClause);
+                    
+                    //---------- fieldnotebook
+                    sql = "SELECT fn.FieldNotebookID, fn.AgentID, dp.DivisionID " +
+                    "FROM fieldnotebook fn INNER JOIN discipline dp ON fn.DisciplineID = dp.UserGroupScopeId";
+                    fixAgents(conn, sql, "fieldnotebook", "fn.AgentID", divToAgentToFixHash, inClause);
+                    
+                    //---------- fieldnotebookpageset
+                    sql = "SELECT FieldNotebookPageSetID, fnps.AgentID, dp.DivisionID " +
+                    "FROM fieldnotebookpageset fnps INNER JOIN discipline dp ON fnps.DisciplineID = dp.UserGroupScopeId";
+                    fixAgents(conn, sql, "fieldnotebookpageset", "fnps.AgentID", divToAgentToFixHash, inClause);
+                    
+                    //---------- geocoorddetail
+                    sql = "SELECT gd.GeoCoordDetailID, gd.AgentID, dp.DivisionID " +
+                    "FROM geocoorddetail gd INNER JOIN locality l ON gd.LocalityID = l.LocalityID " +
+                    "INNER JOIN discipline dp ON l.DisciplineID = dp.UserGroupScopeId";
+                    fixAgents(conn, sql, "geocoorddetail", "gd.AgentID", divToAgentToFixHash, inClause);
+                   
+                    //---------- giftagent
+                    sql = "SELECT ga.GiftAgentID, ga.AgentID, g.DivisionID, dp.DivisionID " +
+                    "FROM giftagent ga INNER JOIN gift g ON ga.GiftID = g.GiftID " +
+                    "INNER JOIN discipline dp ON g.DisciplineID = dp.UserGroupScopeId";
+                    fixAgents(conn, sql, "giftagent", "ga.AgentID", divToAgentToFixHash, inClause);
+                    
+                    //---------- groupperson (Don't need to)
+    
+                    //---------- inforequest
+                    sql = "SELECT ir.InfoRequestID, ir.AgentID, dp.DivisionID " +
+                    "FROM inforequest ir INNER JOIN collection c ON ir.CollectionMemberID = c.UserGroupScopeId " +
+                    "INNER JOIN discipline dp ON c.DisciplineID = dp.UserGroupScopeId";
+                    fixAgents(conn, sql, "inforequest", "ir.AgentID", divToAgentToFixHash, inClause);
+                    
+                    //---------- loanagent
+                    sql = "SELECT la.LoanAgentID, la.AgentID, l.DivisionID, dp.DivisionID " +
+                            "FROM loanagent la INNER JOIN loan l ON la.LoanID = l.LoanID " +
+                            "INNER JOIN discipline dp ON l.DisciplineID = dp.UserGroupScopeId";
+                    fixAgents(conn, sql, "loanagent", "la.AgentID", divToAgentToFixHash, inClause);
+                   
+                    //---------- loanreturnpreparation
+                    sql = "SELECT lrp.LoanReturnPreparationID, lrp.ReceivedByID, dp.DivisionID " +
+                    "FROM loanreturnpreparation lrp INNER JOIN discipline dp ON lrp.DisciplineID = dp.UserGroupScopeId";
+                    fixAgents(conn, sql, "loanreturnpreparation", "lrp.ReceivedByID", divToAgentToFixHash, inClause);
+                    
+                    //---------- permit (No way to know)
+    
+                    //---------- preparation
+                    sql = "SELECT PreparationID, p.PreparedByID, dp.DivisionID " +
+                    "FROM preparation p INNER JOIN collectionobject co ON p.CollectionObjectID = co.CollectionObjectID " +
+                    "INNER JOIN collection c ON co.CollectionID = c.UserGroupScopeId " +
+                    "INNER JOIN discipline dp ON c.DisciplineID = dp.UserGroupScopeId";
+                    fixAgents(conn, sql, "preparation", "p.PreparedByID", divToAgentToFixHash, inClause);
+                    
+                    //---------- project (No way to know)
+    
+                    //---------- repositoryagreement
+                    sql = "SELECT RepositoryAgreementID, AgentID, DivisionID FROM repositoryagreement";
+                    fixAgents(conn, sql, "repositoryagreement", "AgentID", divToAgentToFixHash, inClause);
+    
+                    //---------- shipment
+                    
+                    sql = "SELECT s.ShipmentID, s.ShipperID, dp.DivisionID FROM shipment s INNER JOIN discipline dp ON s.DisciplineID = dp.UserGroupScopeId";
+                    fixAgents(conn, sql, "shipment", "s.ShipperID", divToAgentToFixHash, inClause);
+                    
+                    sql = "SELECT s.ShipmentID, s.ShippedToID, dp.DivisionID FROM shipment s INNER JOIN discipline dp ON s.DisciplineID = dp.UserGroupScopeId";
+                    fixAgents(conn, sql, "shipment", "s.ShippedToID", divToAgentToFixHash, inClause);
+                    
+                    sql = "SELECT s.ShipmentID, s.ShippedByID, dp.DivisionID FROM shipment s INNER JOIN discipline dp ON s.DisciplineID = dp.UserGroupScopeId";
+                    fixAgents(conn, sql, "shipment", "s.ShippedByID", divToAgentToFixHash, inClause);
+                    
+                    //---------- AppResources
+                    
+                    sql = "SELECT ap.SpAppResourceDirID, ap.CreatedByAgentID, d.DivisionID FROM spappresourcedir AS ap " +
+                          "Inner Join discipline AS d ON ap.DisciplineID = d.UserGroupScopeId ";
+                    fixAgents(conn, sql, "spappresourcedir", "ap.CreatedByAgentID", divToAgentToFixHash, inClause);
+                    
+                    sql = "SELECT ap.SpAppResourceDirID, ap.ModifiedByAgentID, d.DivisionID FROM spappresourcedir AS ap " +
+                          "Inner Join discipline AS d ON ap.DisciplineID = d.UserGroupScopeId ";
+                    fixAgents(conn, sql, "spappresourcedir", "ap.ModifiedByAgentID", divToAgentToFixHash, inClause);
+                    
+                    sql = "SELECT r.SpAppResourceID, r.CreatedByAgentID, d.DivisionID FROM spappresource AS r " +
+                            "Inner Join spappresourcedir AS rd ON r.SpAppResourceDirID = rd.SpAppResourceDirID " +
+                            "Inner Join discipline AS d ON rd.DisciplineID = d.UserGroupScopeId ";
+                    fixAgents(conn, sql, "spappresource", "r.CreatedByAgentID", divToAgentToFixHash, inClause);
+    
+                    sql = "SELECT r.SpAppResourceID, r.ModifiedByAgentID, d.DivisionID FROM spappresource AS r " +
+                            "Inner Join spappresourcedir AS rd ON r.SpAppResourceDirID = rd.SpAppResourceDirID " +
+                            "Inner Join discipline AS d ON rd.DisciplineID = d.UserGroupScopeId ";
+                    fixAgents(conn, sql, "spappresource", "r.ModifiedByAgentID", divToAgentToFixHash, inClause);
+                    
+                    sql = "SELECT ada.SpAppResourceDataID, ada.CreatedByAgentID, d.DivisionID FROM spappresourcedata AS ada " +
+                            "Inner Join spappresource AS ar ON ada.SpAppResourceID = ar.SpAppResourceID " +
+                            "Inner Join spappresourcedir AS ad ON ar.SpAppResourceDirID = ad.SpAppResourceDirID " +
+                            "Inner Join discipline AS d ON ad.DisciplineID = d.UserGroupScopeId ";
+                    fixAgents(conn, sql, "spappresourcedata", "ada.CreatedByAgentID", divToAgentToFixHash, inClause);
+                    
+                    sql = "SELECT ada.SpAppResourceDataID, ada.ModifiedByAgentID, d.DivisionID FROM spappresourcedata AS ada " +
+                            "Inner Join spappresource AS ar ON ada.SpAppResourceID = ar.SpAppResourceID " +
+                            "Inner Join spappresourcedir AS ad ON ar.SpAppResourceDirID = ad.SpAppResourceDirID " +
+                            "Inner Join discipline AS d ON ad.DisciplineID = d.UserGroupScopeId ";
+                    fixAgents(conn, sql, "spappresourcedata", "ada.ModifiedByAgentID", divToAgentToFixHash, inClause);
+                    
+                    //---------- Now Check All CreatedBy and Modified By
+                    fixAllTables(conn, firstAgentId, inClause, "CreatedByAgentID");
+                    fixAllTables(conn, firstAgentId, inClause, "ModifiedByAgentID");
+                    
+                    deleteAgentRelationships(conn, "address", availAgents);
+                    deleteAgentRelationships(conn, "agentvariant", availAgents);
+                    deleteAgentRelationships(conn, "agentgeography", availAgents);
+                    deleteAgentRelationships(conn, "agentspecialty", availAgents);
+                    deleteAgentAttachments(conn, availAgents);
+                       
+                    // At this point all the divisions for a SpecyUser now have an Agent,
+                    // either an old one that was reused or a newly cloned one.
+                    // We shouldn't have any left over Agents, but the list 'availAgents'
+                    // will have any extra previous used Agents that need to be deleted.
+                    BasicSQLUtils.setSkipTrackExceptions(true);
+                    for (Integer agtId : availAgents)
                     {
-                        System.out.println("Delete Agent: "+ agtId);
-                        update(conn, "DELETE FROM agent WHERE AgentID = "+agtId);
-                        
-                    } catch (Exception ex)
-                    {
-                        UIRegistry.showError("There was error deleting Agent ID %d.\nPlease write this number down and report this error immediately to the Specify team.");
+                        try
+                        {
+                            System.out.println("Delete Agent: "+ agtId);
+                            update(conn, "DELETE FROM agent WHERE AgentID = "+agtId);
+                            
+                        } catch (Exception ex)
+                        {
+                            UIRegistry.showError("There was error deleting Agent ID %d.\nPlease write this number down and report this error immediately to the Specify team.");
+                        }
                     }
+                    BasicSQLUtils.setSkipTrackExceptions(false);
                 }
-                BasicSQLUtils.setSkipTrackExceptions(false);
             }
             
         } catch (Exception ex)
@@ -1846,7 +1873,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             if (ti.getRelationshipByName(relName) != null)
             {
                 String sql = String.format("SELECT COUNT(*) FROM %s %s", ti.getName(), fullInClause);
-                //log.debug(sql);
+                log.debug(sql);
                 int total = BasicSQLUtils.getCountAsInt(sql);
                 if (total > 0)
                 {
@@ -2607,14 +2634,15 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     {
         if (!doesColumnExist(dbName, tableName, colName))
         {
-            String  fmtSQL = String.format(updateSQL, tableName, colName);
-            int     rv     = update(conn, fmtSQL);
-            if (rv == 0 && updateSQL.trim().toLowerCase().startsWith("alter table"))
+            String  fmtSQL     = String.format(updateSQL, tableName, colName);
+            int     rv         = update(conn, fmtSQL);
+            boolean isAlterTbl = updateSQL.trim().toLowerCase().startsWith("alter table");
+            if (rv == 0 && isAlterTbl)
             {
                 return true;
             }
             
-            if (rv != 1)
+            if (rv != 1 && !isAlterTbl)
             {
                 log.error(fmtSQL);
                 errMsgList.add(String.format("Error adding column '%s' to table '%s'", colName, tableName));

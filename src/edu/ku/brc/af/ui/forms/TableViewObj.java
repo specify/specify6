@@ -355,13 +355,7 @@ public class TableViewObj implements Viewable,
                                 if (deleteButton.isEnabled())
                                 {
                                     deleteButton.setEnabled(false);
-                                    try
-                                    {
-                                        deleteRow(table.getSelectedRow());
-                                    } finally
-                                    {
-                                        deleteButton.setEnabled(true);
-                                    }
+                                    deleteRow(table.getSelectedRow());
                                 }
                             }
                         });
@@ -385,6 +379,7 @@ public class TableViewObj implements Viewable,
                             }
                             
                             searchButton = UIHelper.createIconBtnTT(addSearch ? "SearchAdd" : "Search", IconManager.IconSize.Std16, srchTTStr, false, new ActionListener() {
+                                @Override
                                 public void actionPerformed(ActionEvent e)
                                 {
                                     if (searchButton.isEnabled())
@@ -704,10 +699,12 @@ public class TableViewObj implements Viewable,
                                 rsController.setIndex(len-1, false);
                             }
                             model.fireDataChanged();
-                            tellMultiViewOfChange();
-                            if (formValidator != null)
+                            
+                            if (addSearch && mvParent != null && 
+                                mvParent.getTopLevel().getCurrentValidator() != null)
                             {
-                                formValidator.validateRoot();
+                                mvParent.getTopLevel().getCurrentValidator().setHasChanged(true);
+                                mvParent.getTopLevel().getCurrentValidator().validateForm();
                             }
                             
                             newObjsList.addAll(newDataObjects);

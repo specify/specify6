@@ -1256,7 +1256,8 @@ public class DatabaseLoginPanel extends JTiledPanel
                             
                         } else if (status == SchemaUpdateType.Success || status == SchemaUpdateType.SuccessAppVer)
                         {
-                            UIRegistry.showLocalizedMsg(JOptionPane.QUESTION_MESSAGE, "INFORMATION", status == SchemaUpdateType.SuccessAppVer ? "APPVER_UP_OK" : "SCHEMA_UP_OK");
+                            String arg = status == SchemaUpdateType.SuccessAppVer ? UIRegistry.getAppVersion() : "";
+                            UIRegistry.showLocalizedMsg(JOptionPane.QUESTION_MESSAGE, "INFORMATION", status == SchemaUpdateType.SuccessAppVer ? "APPVER_UP_OK" : "SCHEMA_UP_OK", arg);
                         }
                     }
                 }
