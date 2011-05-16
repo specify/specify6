@@ -70,10 +70,10 @@ public class DropDialog extends CustomDialog
      * @throws HeadlessException
      */
     public DropDialog(final Frame frame, final boolean isMoveOK,
-			final boolean isSynOK, final boolean isMergeOK, final String droppedFullName,
-			final String droppedOnFullName, final String synDescKey, final String moveDescKey, final String mergeDescKey) throws HeadlessException
+			final boolean isSynOK, final boolean isMergeOK, final String droppedName,
+			final String droppedOnName, final String synDescKey, final String moveDescKey, final String mergeDescKey) throws HeadlessException
 	{
-		super(frame, UIRegistry.getResourceString("DropDlg.DlgTitle"), true, OKCANCEL, buildContentPanel(isMoveOK, isSynOK, isMergeOK, droppedFullName, droppedOnFullName,
+		super(frame, UIRegistry.getResourceString("DropDlg.DlgTitle"), true, OKCANCEL, buildContentPanel(isMoveOK, isSynOK, isMergeOK, droppedName, droppedOnName,
 				synDescKey, moveDescKey, mergeDescKey));
 		this.isMoveOK = isMoveOK;
 		this.isSynOK = isSynOK;
@@ -118,18 +118,19 @@ public class DropDialog extends CustomDialog
     	if (option == moveOption)
     	{
             return String.format(getResourceString(moveDescKey),
-           		 droppedName, droppedOnName);			
+           		 droppedName, droppedOnName, droppedName, droppedName, droppedName);			
     	}
     	if (option == synOption)
     	{
     		return String.format(getResourceString(synDescKey),
-    				droppedName, droppedOnName, droppedOnName, droppedName);
+    				droppedName, droppedOnName, droppedOnName, droppedName, droppedOnName, droppedName, droppedOnName);
     		//return "syn it and all that that implies";
     	}
     	if (option == mergeOption)
     	{
           return String.format(getResourceString(mergeDescKey),
-        		 droppedName, droppedOnName);			
+        		 droppedName, droppedOnName, droppedName, droppedOnName, droppedName, droppedOnName, droppedOnName, droppedOnName,
+        		 droppedName, droppedOnName, droppedName, droppedOnName, droppedOnName, droppedName, droppedOnName);			
     	}
     	return "";
     }
@@ -203,11 +204,11 @@ public class DropDialog extends CustomDialog
 		switch (option) 
 		{
 		case moveOption:
-			return "move_node";
+			return "Trees_Reparent";
 		case synOption:
-			return "synonymize_node";
+			return "Trees_Synonymize";
 		case mergeOption:
-			return "merge_node";
+			return "Trees_Merge";
 		default:
 			return "drag_drop";
 		}
@@ -219,7 +220,7 @@ public class DropDialog extends CustomDialog
      * @return
      */
     protected static Component buildContentPanel(final boolean isMoveOK, final boolean isSynOK, 
-    		final boolean isMergeOK, final String droppedFullName, final String droppedOnFullName,
+    		final boolean isMergeOK, final String droppedName, final String droppedOnName,
     		final String synDescKey, final String moveDescKey, final String mergeDescKey)
     {
     	int numOptions = 0;
@@ -245,15 +246,15 @@ public class DropDialog extends CustomDialog
         {
         	if (options[opt])
         	{
-        		JLabel actLbl = createLabel(getOptionText(opt, droppedFullName, droppedOnFullName));
+        		JLabel actLbl = createLabel(getOptionText(opt, droppedName, droppedOnName));
         		final int optNo = opt;
         		ActionListener al = new ActionListener() {
 
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-//						UIRegistry.displayInfoMsgDlgLocalized("<html>" + getOptionInfo(optNo, droppedFullName, droppedOnFullName,
+//						UIRegistry.displayInfoMsgDlgLocalized("<html>" + getOptionInfo(optNo, droppedName, droppedOnName,
 //								moveDescKey, synDescKey, mergeDescKey) + "</html>");
-						JTextArea ta = new JTextArea(getOptionInfo(optNo, droppedFullName, droppedOnFullName, moveDescKey, synDescKey, mergeDescKey));
+						JTextArea ta = new JTextArea(getOptionInfo(optNo, droppedName, droppedOnName, moveDescKey, synDescKey, mergeDescKey));
 						ta.setLineWrap(true);
 						ta.setWrapStyleWord(true);
 						CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), UIRegistry.getResourceString("DropDlg.TreeActionDetailTitle"), true, 

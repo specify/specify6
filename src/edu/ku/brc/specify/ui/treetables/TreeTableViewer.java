@@ -93,6 +93,10 @@ import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.UIValidator;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Geography;
+import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
+import edu.ku.brc.specify.datamodel.LithoStrat;
+import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
@@ -2185,6 +2189,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     	{
     		return "TreeTableViewer.SynonymizeTextTaxon";
     	}
+    	if (treeDef.getNodeClass().equals(Geography.class))
+    	{
+    		return "TreeTableViewer.SynonymizeTextGeography";
+    	}
     	return "TreeTableViewer.SynonymizeText";
     }
   
@@ -2193,6 +2201,22 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     	if (treeDef.getNodeClass().equals(Taxon.class))
     	{
     		return "TreeTableViewer.MergeTextTaxon";
+    	}
+    	if (treeDef.getNodeClass().equals(Geography.class))
+    	{
+    		return "TreeTableViewer.MergeTextGeography";
+    	}
+    	if (treeDef.getNodeClass().equals(GeologicTimePeriod.class))
+    	{
+    		return "TreeTableViewer.MergeTextGeologicTimePeriod";
+    	}
+    	if (treeDef.getNodeClass().equals(LithoStrat.class))
+    	{
+    		return "TreeTableViewer.MergeTextLithoStrat";
+    	}
+    	if (treeDef.getNodeClass().equals(Storage.class))
+    	{
+    		return "TreeTableViewer.MergeTextStorage";
     	}
     	return "TreeTableViewer.MergeText";
     }
@@ -2203,6 +2227,23 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     	{
     		return "TreeTableViewer.MoveTextTaxon";
     	}
+    	if (treeDef.getNodeClass().equals(Geography.class))
+    	{
+    		return "TreeTableViewer.MoveTextGeography";
+    	}
+    	if (treeDef.getNodeClass().equals(GeologicTimePeriod.class))
+    	{
+    		return "TreeTableViewer.MoveTextGeologicTimePeriod";
+    	}
+    	if (treeDef.getNodeClass().equals(LithoStrat.class))
+    	{
+    		return "TreeTableViewer.MoveTextLithoStrat";
+    	}
+    	if (treeDef.getNodeClass().equals(Storage.class))
+    	{
+    		return "TreeTableViewer.MoveTextStorage";
+    	}
+    	
     	return "TreeTableViewer.MoveText";
     }
 //    /**
@@ -2390,8 +2431,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 //            }
 //            pb.setDefaultDialogBorder();
             DropDialog dlg = new DropDialog((Frame)UIRegistry.getTopWindow(), 
-                                                isMoveOK, isSynonymizeOK, isMergeOK, draggedRecord.getFullName(),
-                                                droppedOnNode.getFullName(), getMoveTextKey(), getSynonymizeTextKey(), getMergeTextKey());
+                                                isMoveOK, isSynonymizeOK, isMergeOK, draggedRecord.getName(),
+                                                droppedOnNode.getName(), getMoveTextKey(), getSynonymizeTextKey(), getMergeTextKey());
             dlg.createUI();
 //            if (treeDef.getNodeClass().equals(Taxon.class))
 //            {
