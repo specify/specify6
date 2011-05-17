@@ -1066,20 +1066,21 @@ public class ResourceImportExportDlg extends CustomDialog
                 	dir.getSpPersistedAppResources().add(appRes);
                 	appRes.setSpAppResourceDir(dir);
                 	
-                    session.saveOrUpdate(dir);
-                    session.saveOrUpdate(appRes);
-                	
                 	if (report.getReportObject() != null && report.getReportObject().getId() == null)
                 	{
                 		session.saveOrUpdate(report.getReportObject());
                 	}
+                    session.saveOrUpdate(dir);
+                    session.saveOrUpdate(appRes);
                 	session.saveOrUpdate(report);
+                	
                 	session.commit();
                 	
                 } catch (Exception ex)
                 {
                     session.rollback();
-                    ex.printStackTrace();
+                    //ex.printStackTrace();
+                    throw ex;
                     
                 } finally
                 {
