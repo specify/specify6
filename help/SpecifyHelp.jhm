@@ -123,7 +123,9 @@
    <mapID target="WorkbenchWorkingWithImages" url="SpecifyHelp/Workbench/WorkingWithImages.html"/>
    <mapID target="Stats" url="SpecifyHelp/Statistics/Statistics.html"/>
    <mapID target="Load" url="SpecifyHelp/Security/loading.html"/> 
-   <mapID target="PrefsLoan" url="SpecifyHelp/Prefs/Loans.html"/> 
+   <mapID target="PrefsLoan" url="SpecifyHelp/Prefs/Loans.html"/>
+   <mapID target="PrefsGeolocate" url="SpecifyHelp/Prefs/Geolocate.html"/>
+   <mapID target="PrefsNetwork" url="SpecifyHelp/Prefs/Network.html"/> 
    <mapID target="slicer" url="SpecifyHelp/Uploading/splitter.html"/>
    <mapID target="PrefsLSID" url="SpecifyHelp/Prefs/lsid.html"/> 
    <mapID target="export_data" url="SpecifyHelp/QueryBuilder/third_party.html"/>
