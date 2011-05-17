@@ -17,7 +17,7 @@
    <mapID target="Simple_Search" url="SpecifyHelp/Simple_Search/Simple_Search.html"/>
    <mapID target="Express_Search" url="SpecifyHelp/Simple_Search/Simple_Search.html"/>
    <mapID target="About" url="SpecifyHelp/Intro/about.html"/>
-   <mapID target="Startup" url="SpecifyHelp/Intro/about.html"/>
+   <mapID target="Startup" url="SpecifyHelp/Intro/welcome.html"/>
    <mapID target="Update" url="SpecifyHelp/Intro/updating.html"/>
    <mapID target="Inst_Hier" url="SpecifyHelp/Configuration/institution_hierarchy.html"/>
    <mapID target="Permissions" url="SpecifyHelp/Security/permissions.html"/>
@@ -131,6 +131,8 @@
    <mapID target="security_wiz1" url="SpecifyHelp/Security/Security_Wizard.html"/>
    <mapID target="wb_schema_config" url="SpecifyHelp/Uploading/workbench_schema_config.html"/>
    <mapID target="wb_recordset" url="SpecifyHelp/Workbench/CreateDSfromRS.html"/>
+   <mapID target="ezdb_wizard" url="SpecifyHelp/Security/Wizard_EZDB.html"/>
+   <mapID target="wizard" url="SpecifyHelp/Security/Wizard.html"/>   
 
 
 <!-- Index Bookmarks -->
@@ -142,7 +144,7 @@
    <mapID target="Sample_Queries" url="SpecifyHelp/Intro/about.html#sample_resources"/>
    <mapID target="Sample_Reports" url="SpecifyHelp/Intro/about.html#sample_resources"/>
    <mapID target="Sample_Labels" url="SpecifyHelp/Intro/about.html#sample_resources"/>
-   <mapID target="Using_Help" url="SpecifyHelp/Intro/about.html#using_help"/>
+   <mapID target="Using_Help" url="SpecifyHelp/Intro/welcome.html#using_help"/>
    <mapID target="Registration" url="SpecifyHelp/Intro/welcome.html#registration"/>
    <mapID target="Services" url="SpecifyHelp/Intro/welcome.html#services"/>
    <mapID target="PHUI" url="SpecifyHelp/Intro/welcome.html#phui"/>
@@ -283,7 +285,6 @@
    <mapID target="DataObjAggEditor" url="SpecifyHelp/SchemaConfig/schema_config.html#aggregation"/>
    <mapID target="Security_On" url="SpecifyHelp/Security/permissions.html#security_on"/>
    <mapID target="Record_Delete" url="SpecifyHelp/Data_Entry/using_forms.html#delete_record"/> 
-   <mapID target="wizard" url="SpecifyHelp/Security/Wizard.html"/>   
    <mapID target="wizard_mysql_username" url="SpecifyHelp/Security/Wizard.html#mysql_username"/>   
    <mapID target="wizard_master_username" url="SpecifyHelp/Security/Wizard.html#master_username"/>   
    <mapID target="wizard_security_on" url="SpecifyHelp/Security/Wizard.html#security_on"/>
@@ -316,5 +317,21 @@
    <mapID target="login_master" url="SpecifyHelp/login.html#login_master"/>
    <mapID target="security_wiz2" url="SpecifyHelp/Security/Security_Wizard.html#securitywiz_screen2"/>
    <mapID target="security_wiz3" url="SpecifyHelp/Security/Security_Wizard.html#securitywiz_screen3"/>
-   <mapID target="security_wizreset" url="SpecifyHelp/Security/Security_Wizard.html#reset_master"/>                
+   <mapID target="security_wizreset" url="SpecifyHelp/Security/Security_Wizard.html#reset_master"/> 
+   <mapID target="ezdb_wizard_mysql_username" url="SpecifyHelp/Security/Wizard.html#mysql_username"/>   
+   <mapID target="ezdb_wizard_master_username" url="SpecifyHelp/Security/Wizard.html#master_username"/>   
+   <mapID target="ezdb_wizard_security_on" url="SpecifyHelp/Security/Wizard.html#security_on"/>
+   <mapID target="ezdb_wizard_create_it_user" url="SpecifyHelp/Security/Wizard.html#create_it_user"/>
+   <mapID target="ezdb_wizard_create_institution" url="SpecifyHelp/Security/Wizard.html#create_institution"/>    
+   <mapID target="ezdb_wizard_choose_accession_level" url="SpecifyHelp/Security/Wizard.html#choose_accession_level"/>    
+   <mapID target="ezdb_wizard_create_accession_number" url="SpecifyHelp/Security/Wizard.html#create_accession_number"/>    
+   <mapID target="ezdb_wizard_configure_storage_tree" url="SpecifyHelp/Security/Wizard.html#configure_storage_tree"/>   
+   <mapID target="ezdb_wizard_enter_division" url="SpecifyHelp/Security/Wizard.html#enter_division"/>    
+   <mapID target="ezdb_wizard_choose_discipline_type" url="SpecifyHelp/Security/Wizard.html#choose_discipline_type"/>    
+   <mapID target="ezdb_wizard_configure_taxon_tree" url="SpecifyHelp/Security/Wizard.html#configure_taxon_tree"/>
+   <mapID target="ezdb_wizard_preload_taxon" url="SpecifyHelp/Security/Wizard.html#preload_taxon"/>   
+   <mapID target="ezdb_wizard_configure_geography_tree" url="SpecifyHelp/Security/Wizard.html#configure_geography_tree"/>   
+   <mapID target="ezdb_wizard_create_catalog_number" url="SpecifyHelp/Security/Wizard.html#create_catalog_number"/> 
+   <mapID target="ezdb_wizard_create_collection" url="SpecifyHelp/Security/Wizard.html#create_collection"/>    
+   <mapID target="ezdb_wizard_summary" url="SpecifyHelp/Security/Wizard.html#summary"/>               
 </map>

@@ -16,26 +16,30 @@
       <tocitem text="Statistics" target="Statistics"/>
       <tocitem text="Search" target="Search"/>
 -->
-          <tocitem text="About Specify" target="About">
-            <tocitem text="Overview" target="About"/>
-            <tocitem text="Using Help" target="Using_Help"/>
-          </tocitem>
-          
+                
           <tocitem text="Welcome to Specify" target="Welcome">
             <tocitem text="Registration" target="Registration"/>
             <tocitem text="Services and Support" target="Services"/>
             <tocitem text="Usage and Usability Statistics" target="PHUI"/>
             <tocitem text="Updating" target="Updating"/>
+            <tocitem text="Using Specify Help" target="Using_Help"/>
             <tocitem text="Contact Information" target="Contact_Information"/>
           </tocitem>
-          
-          <tocitem text="Specify Setup Wizard" target="wizard">
-            <tocitem text="Field Format Editor" target="field_format"/>
+  
+  
+  <!--        
+          <tocitem text="About Specify" target="About">
+            <tocitem text="Overview" target="About"/>
+            <tocitem text="Using Help" target="Using_Help"/>
           </tocitem>
+          
+-->
+          
+          
 
           
           
-          <tocitem text="Starting Specify" target="starting"/>
+          <tocitem text="Login to Specify" target="starting"/>
           
 <!--
              <tocitem text="Login to Specify" target="Login"/>
@@ -95,8 +99,10 @@
           <tocitem text="Introduction to Specify" target="Intro">
             <tocitem text="Components in Specify" target="Intro"/>
             <tocitem text="Change Collection" target="intro_Changle_Collection"/>
-          </tocitem>  
-          <tocitem text="Statistics" target="Stats"/>
+          </tocitem> 
+          
+           
+      <tocitem text="Statistics" target="Stats"/>
 
           
           <tocitem text="Using Forms in Specify" target="Using_Forms">
@@ -208,13 +214,24 @@
             <tocitem text="Import/Export Forms and Reports" target="Import"/>
            </tocitem>
 
-          </tocitem>
+
           
           <tocitem text="Exporting Data" target="export_data">
             <tocitem text="Web Publishing" target="web_publishing"/>
             <tocitem text="Schema Mapping" target="schema_mapping"/>
             <tocitem text="Data Exporter App" target="data_exporter"/>
-          </tocitem>  
+          </tocitem> 
+          
+          
+            <tocitem text="Separate Specify Applications" target="export_data">
+            <tocitem text="Specify Setup Wizard" target="wizard">
+                <tocitem text="Field Format Editor" target="field_format"/>
+             </tocitem>
+            <tocitem text="Specify EZDB Setup Wizard" target="ezdb_wizard"/>
+            <tocitem text="Data Exporter" target="schema_tool"/>
+            <tocitem text="File Splitter" target="slicer"/>
+            <tocitem text="Security Wizard" target="security_wiz1"/>
+          </tocitem> 
           
     
           
