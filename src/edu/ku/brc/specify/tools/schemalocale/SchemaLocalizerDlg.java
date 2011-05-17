@@ -131,7 +131,14 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         this.schemaType = schemaType;
         this.tableMgr   = tableMgr;
         
-        helpContext = "SL_HELP_CONTEXT";
+        if (schemaType == SpLocaleContainer.WORKBENCH_SCHEMA)
+        {
+        	helpContext = "wb_schema_config";
+        
+        } else
+        {
+        	helpContext = "SL_HELP_CONTEXT";
+        }
     }
 
 
