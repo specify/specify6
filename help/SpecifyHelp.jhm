@@ -128,6 +128,9 @@
    <mapID target="PrefsLSID" url="SpecifyHelp/Prefs/lsid.html"/> 
    <mapID target="export_data" url="SpecifyHelp/QueryBuilder/third_party.html"/>
    <mapID target="schema_tool" url="SpecifyHelp/QueryBuilder/data_exporter.html"/>
+   <mapID target="security_wiz1" url="SpecifyHelp/Security/Security_Wizard.html"/>
+   <mapID target="wb_schema_config" url="SpecifyHelp/Uploading/workbench_schema_config.html"/>
+   <mapID target="wb_recordset" url="SpecifyHelp/Workbench/CreateDSfromRS.html"/>
 
 
 <!-- Index Bookmarks -->
@@ -159,6 +162,8 @@
    <mapID target="Forms_Unique_Boxes" url="SpecifyHelp/Data_Entry/Using_Forms.html#forms_unique_boxes"/>
    <mapID target="Forms_Field_Uses" url="SpecifyHelp/Data_Entry/Using_Forms.html#forms_field_uses"/>
    <mapID target="Forms_Tools" url="SpecifyHelp/Data_Entry/Using_Forms.html#forms_tools"/>
+   <mapID target="Forms_Series_Entry" url="SpecifyHelp/Data_Entry/Using_Forms.html#series_entry"/>
+   <mapID target="Forms_Batch_Determine" url="SpecifyHelp/Data_Entry/Using_Forms.html#batch_determine"/>
    <mapID target="Carry_Forward" url="SpecifyHelp/Data_Entry/Using_Forms.html#carry_forward"/>
    <mapID target="Keyboard_Functions" url="SpecifyHelp/Data_Entry/Using_Forms.html#keyboard_functions"/>
    <mapID target="Auto_Numbering" url="SpecifyHelp/Data_Entry/Using_Forms.html#auto_numbering"/>
@@ -186,9 +191,10 @@
    <mapID target="Trees_Expand" url="SpecifyHelp/Trees/Trees_About.html#trees_expand"/>
    <mapID target="Trees_Toolbar" url="SpecifyHelp/Trees/Trees_About.html#trees_toolbar"/>
    <mapID target="Trees_Drag" url="SpecifyHelp/Trees/Trees_About.html#drag_drop"/>
-   <mapID target="Trees_Reparent" url="SpecifyHelp/Trees/Trees_About.html#drag_drop"/>
-   <mapID target="Trees_Synonymize" url="SpecifyHelp/Trees/Trees_About.html#drag_drop"/>
+   <mapID target="Trees_Reparent" url="SpecifyHelp/Trees/Trees_About.html#move_node"/>
+   <mapID target="Trees_Synonymize" url="SpecifyHelp/Trees/Trees_About.html#synonymize_node "/>
    <mapID target="Trees_Counts" url="SpecifyHelp/Trees/Trees_About.html#trees_counts"/>
+   <mapID target="Trees_Merge" url="SpecifyHelp/Trees/Trees_About.html#merge_node"/>
    <mapID target="Trees_More" url="SpecifyHelp/Trees/Trees_About.html#trees_more"/>
    <mapID target="Trees_Find" url="SpecifyHelp/Trees/Trees_About.html#trees_find"/>
    <mapID target="Trees_Title" url="SpecifyHelp/Trees/editing_tree_def.html#tree_title"/>
@@ -265,7 +271,8 @@
    <mapID target="SC_table_format" url="SpecifyHelp/SchemaConfig/schema_config.html#display_format"/>
    <mapID target="SC_hide_table" url="SpecifyHelp/SchemaConfig/schema_config.html#hide_table"/>
    <mapID target="SC_field_description" url="SpecifyHelp/SchemaConfig/schema_config.html#field_description"/>   
-   <mapID target="SC_aggregate" url="SpecifyHelp/SchemaConfig/schema_config.html#aggregation"/>  
+   <mapID target="SC_aggregate" url="SpecifyHelp/SchemaConfig/schema_config.html#aggregation"/>
+   <mapID target="SC_required_field" url="SpecifyHelp/SchemaConfig/schema_config.html#required_field"/>    
    <mapID target="SC_field_format" url="SpecifyHelp/SchemaConfig/schema_config.html#field_format"/> 
    <mapID target="UIFieldFmtListEditor" url="SpecifyHelp/SchemaConfig/schema_config.html#field_format_list"/>
    <mapID target="UIFieldFmtEditor" url="SpecifyHelp/SchemaConfig/schema_config.html#create_field_format"/>
@@ -305,5 +312,9 @@
    <mapID target="guid" url="SpecifyHelp/Prefs/lsid.html#guid"/>
    <mapID target="automatic_lsid" url="SpecifyHelp/Prefs/lsid.html#automatic_lsid"/>
    <mapID target="world_wind" url="SpecifyHelp/Data_Entry/Data_Entry.html#world_wind"/>
-   <mapID target="third_party" url="SpecifyHelp/QueryBuilder/third_party.html#third_party"/>                    
+   <mapID target="third_party" url="SpecifyHelp/QueryBuilder/third_party.html#third_party"/>
+   <mapID target="login_master" url="SpecifyHelp/login.html#login_master"/>
+   <mapID target="security_wiz2" url="SpecifyHelp/Security/Security_Wizard.html#securitywiz_screen2"/>
+   <mapID target="security_wiz3" url="SpecifyHelp/Security/Security_Wizard.html#securitywiz_screen3"/>
+   <mapID target="security_wizreset" url="SpecifyHelp/Security/Security_Wizard.html#reset_master"/>                
 </map>

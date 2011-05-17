@@ -3,7 +3,7 @@
   PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp TOC Version 1.0//EN"
          "http://java.sun.com/products/javahelp/toc_1_0.dtd">
 <toc version="1.0">
-    <tocitem text="Specify" target="About">
+    <tocitem text="Specify" target="Welcome">
 <!--
       <tocitem text="Configuring a Database" target="ConfiguringDatabase"/>
       <tocitem text="Logging In" target="login"/>
@@ -29,7 +29,7 @@
             <tocitem text="Contact Information" target="Contact_Information"/>
           </tocitem>
           
-          <tocitem text="Specify Setup Wizard" target="Welcome">
+          <tocitem text="Specify Setup Wizard" target="wizard">
             <tocitem text="Field Format Editor" target="field_format"/>
           </tocitem>
 
@@ -52,13 +52,28 @@
                    <tocitem text="Field Format Editor" target="field_format"/>
                  </tocitem>
                  <tocitem text="Editing System Pick Lists" target="System_Picklist" />
+                 <tocitem text="User Defined Pick Lists" target="User_Pick_List"/>  
                  <tocitem text="Editing Preparation Type" target="Prep_Type" />
               </tocitem>
               <tocitem text="Adding Users and Setting Permissions" target="Permissions">
                 <tocitem text="Adding Users" target="Add_User"/>
                 <tocitem text="Setting User Permissions" target="Set_Permissions"/>
               </tocitem>
-             <tocitem text="Editing the Schema Configuration" target="Schema_Config" />
+             <tocitem text="Editing the Schema Configuration" target="Schema_Config">
+               <tocitem text="Change Captions" target="SC_caption"/>
+               <tocitem text="Hide Unused Tables/Fields" target="SC_hide_table"/>
+               <tocitem text="Edit Usage Notes" target="SC_field_description"/>
+               <tocitem text="Format a Table" target="SC_table_format"/>
+               <tocitem text="Aggregate a Table" target="SC_aggregate"/>
+               <tocitem text="Required Fields" target="SC_required_field"/>
+               <tocitem text="Format a Field" target="SC_field_format"/>
+             </tocitem>  
+             <tocitem text="Web Links" target="WEBLNK_EDITOR">
+               <tocitem text="Global Web Links" target="Web_Global"/>
+               <tocitem text="Field Web Links" target="Web_Field"/>
+               <tocitem text="New Field Web Links" target="Web_New_Field"/>
+               <tocitem text="URL Web Links" target="Web_URL"/>
+             </tocitem>
              <tocitem text="Using Backup and Restore" target="Backup_Restore" />
           </tocitem>
     
@@ -79,6 +94,7 @@
           
           <tocitem text="Introduction to Specify" target="Intro">
             <tocitem text="Components in Specify" target="Intro"/>
+            <tocitem text="Change Collection" target="intro_Changle_Collection"/>
           </tocitem>  
           <tocitem text="Statistics" target="Stats"/>
 
@@ -92,6 +108,8 @@
                     <tocitem text="Carry Forward" target="Carry_Forward"/>
                     <tocitem text="Auto Numbering" target="Auto_Numbering"/>
                     <tocitem text="Using Bar Codes" target="Barcodes"/>
+                    <tocitem text="Series Data Entry" target="Forms_Series_Entry"/>
+                    <tocitem text="Batch Identify" target="Forms_Batch_Determine"/>
                     <tocitem text="How Editing Affects Related Records" target="Editing_Related_Records"/>
               <tocitem text="Data Forms" target="Data_Entry">
                 <tocitem text="Side Bar Configuration" target="Data_Entry_Sidebar"/>
@@ -122,7 +140,8 @@
                 <tocitem text="Building Trees" target="Trees_Build"/>
                 <tocitem text="Using Trees" target="Trees_Using"/>
                 <tocitem text="Move a Node" target="Trees_Reparent"/>
-                <tocitem text="Synonymize Node" target="SYNONIMIZE_NODE"/>
+                <tocitem text="Synonymize Node" target="Trees_Synonymize"/>
+                <tocitem text="Synonymize Node" target="Trees_Merge"/>
                 <tocitem text="Collection Object Counts" target="Trees_Counts"/>
                 <tocitem text="More Options" target="Trees_More"/>
                 <tocitem text="Find" target="Trees_Find"/>
@@ -187,20 +206,14 @@
               
           <tocitem text="Importing and Exporting Resources" target="Import_Intro">
             <tocitem text="Import/Export Forms and Reports" target="Import"/>
-            <tocitem text="User Defined Pick Lists" target="User_Pick_List"/>
-            <tocitem text="Web Links" target="WEBLNK_EDITOR">
-              <tocitem text="Global Web Links" target="Web_Global"/>
-              <tocitem text="Field Web Links" target="Web_Field"/>
-              <tocitem text="New Field Web Links" target="Web_New_Field"/>
-              <tocitem text="URL Web Links" target="Web_URL"/>
-            </tocitem>
+           </tocitem>
 
           </tocitem>
           
           <tocitem text="Exporting Data" target="export_data">
             <tocitem text="Web Publishing" target="web_publishing"/>
             <tocitem text="Schema Mapping" target="schema_mapping"/>
-            <tocitem text="Data Exporter App" target="schema_tool"/>
+            <tocitem text="Data Exporter App" target="data_exporter"/>
           </tocitem>  
           
     
@@ -219,6 +232,7 @@
     -->
             <tocitem text="Data Sets" target="WorkbenchDataSetOverview">
                 <tocitem text="New Data Set" target="WorkbenchNewDataSet"/>
+                <tocitem text="Create from Record Set" target="wb_recordset"/>
                 <tocitem text="Import Data" target="WorkbenchImportData">
                     <tocitem text="CSV Import" target="WorkbenchImportCSV"/>
                     <tocitem text="MS Excel Import" target="WorkbenchImportXLS"/>
@@ -249,6 +263,7 @@
           </tocitem>
           <tocitem text="WorkBench Uploader" target="uploading"/>
           <tocitem text="Specify File Slicer" target="slicer"/>
+          <tocitem text="WorkBench Schema Configuration" target="wb_schema_config"/>
       </tocitem>
         
     </tocitem>
