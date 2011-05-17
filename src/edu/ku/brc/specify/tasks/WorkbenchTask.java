@@ -3855,7 +3855,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         				ChooseFromListDlg.OK_BTN | ChooseFromListDlg.CANCEL_BTN | ChooseFromListDlg.HELP_BTN, 
         				choices);
         		wbtdlg.setHelpContext("wb_recordset");
-        		//wbtdlg.
         		wbtdlg.setVisible(true);
         		if (!wbtdlg.isCancelled())
         		{
