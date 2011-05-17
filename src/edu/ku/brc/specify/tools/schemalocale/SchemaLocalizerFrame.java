@@ -184,6 +184,10 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         schemaLocPanel = new SchemaLocalizerPanel(null, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, webLinkMgrCache, schemaType);
         schemaLocPanel.setLocalizableIO(localizableIO);
         schemaLocPanel.setStatusBar(statusBar);
+        
+        boolean useDisciplines = AppPreferences.getLocalPrefs().getBoolean("SCHEMA_DISP", false);
+        schemaLocPanel.setUseDisciplines(useDisciplines);
+        
         // rods - for now 
         //schemaLocPanel.setIncludeHiddenUI(true);
         schemaLocPanel.buildUI();
