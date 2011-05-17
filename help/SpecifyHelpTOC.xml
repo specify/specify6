@@ -97,8 +97,8 @@
           
           
           <tocitem text="Introduction to Specify" target="Intro">
-            <tocitem text="Components in Specify" target="Intro"/>
-            <tocitem text="Change Collection" target="intro_Changle_Collection"/>
+            <tocitem text="Components in Specify" target="intro_components"/>
+            <tocitem text="Change Collection" target="intro_Change_Collection"/>
           </tocitem> 
           
            
@@ -147,7 +147,7 @@
                 <tocitem text="Using Trees" target="Trees_Using"/>
                 <tocitem text="Move a Node" target="Trees_Reparent"/>
                 <tocitem text="Synonymize Node" target="Trees_Synonymize"/>
-                <tocitem text="Synonymize Node" target="Trees_Merge"/>
+                <tocitem text="Merge Node" target="Trees_Merge"/>
                 <tocitem text="Collection Object Counts" target="Trees_Counts"/>
                 <tocitem text="More Options" target="Trees_More"/>
                 <tocitem text="Find" target="Trees_Find"/>
@@ -219,7 +219,7 @@
           <tocitem text="Exporting Data" target="export_data">
             <tocitem text="Web Publishing" target="web_publishing"/>
             <tocitem text="Schema Mapping" target="schema_mapping"/>
-            <tocitem text="Data Exporter App" target="data_exporter"/>
+            <tocitem text="Data Exporter Application" target="schema_tool"/>
           </tocitem> 
           
           

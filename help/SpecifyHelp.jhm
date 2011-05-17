@@ -24,7 +24,7 @@
    <mapID target="WorkbenchBasicLabel" url="SpecifyHelp/Workbench/BasicLabel.html"/>
    <mapID target="CHANGE_PWD" url="SpecifyHelp/Dialogs/change_password.html"/>
    <mapID target="WorkbenchChart" url="SpecifyHelp/Workbench/Chart.html"/>
-   <mapID target="ChooseRecordSet" url="SpecifyHelp/Interactions/ChooseRecordSet.html"/>
+   <mapID target="ChooseRecordSet" url="SpecifyHelp/Dialogs/choose_record_set.html"/>
    <mapID target="SystemSetup" url="SpecifyHelp/Configuration/system_setup.html"/>
    <mapID target="Simple_Search_Config" url="SpecifyHelp/Simple_Search/Simple_Search_Config.html"/>
    <mapID target="Number_Formats" url="SpecifyHelp/Intro/number_formats.html"/>
@@ -129,7 +129,7 @@
    <mapID target="export_data" url="SpecifyHelp/QueryBuilder/third_party.html"/>
    <mapID target="schema_tool" url="SpecifyHelp/QueryBuilder/data_exporter.html"/>
    <mapID target="security_wiz1" url="SpecifyHelp/Security/Security_Wizard.html"/>
-   <mapID target="wb_schema_config" url="SpecifyHelp/Uploading/workbench_schema_config.html"/>
+   <mapID target="wb_schema_config" url="SpecifyHelp/SchemaConfig/workbench_schema_config.html"/>
    <mapID target="wb_recordset" url="SpecifyHelp/Workbench/CreateDSfromRS.html"/>
    <mapID target="ezdb_wizard" url="SpecifyHelp/Security/Wizard_EZDB.html"/>
    <mapID target="wizard" url="SpecifyHelp/Security/Wizard.html"/>   
