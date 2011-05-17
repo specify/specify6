@@ -296,6 +296,10 @@ public class BuildSampleDatabase
     private static int SUBSPECIES_LSID        = 7;
     private static int SUBSPECIES_COMMON_NAME = 8;
     
+    private static String SHOW                = "show";
+    private static String NAME                = "name";
+    private static String RANK                = "rank";
+    
     protected Hashtable<String, Integer> taxonExtraColsIndexes = new Hashtable<String, Integer>();
     protected Hashtable<String, Integer> taxonIndexes          = new Hashtable<String, Integer>();
 
@@ -4870,8 +4874,8 @@ public class BuildSampleDatabase
         Element root = XMLHelper.readFileToDOM4J(domFile);
         for (Element node : (List<Element>)root.selectNodes("/tree/treedef/level"))
         {
-            String  name       = getAttr(node, "name", null);
-            int     rankId     = getAttr(node, "rank", 0);
+            String  name       = getAttr(node, NAME, null);
+            int     rankId     = getAttr(node, RANK, 0);
             boolean infullname = getAttr(node, "infullname", false);
             boolean isEnforced = getAttr(node,  "enforced", false);
             
@@ -4948,8 +4952,8 @@ public class BuildSampleDatabase
                                 final Element root,
                                 final Storage parent)
     {
-        String name   = getAttr(root, "name", null);
-        int    rankId = getAttr(root, "rank", 0);
+        String name   = getAttr(root, NAME, null);
+        int    rankId = getAttr(root, RANK, 0);
         
         Storage storage = new Storage();
         storage.initialize();
@@ -4985,8 +4989,8 @@ public class BuildSampleDatabase
         {
             for (Element node : (List<Element>)root.selectNodes("/tree/treedef/level"))
             {
-                String  name       = getAttr(node, "name", null);
-                int     rankId     = getAttr(node, "rank", 0);
+                String  name       = getAttr(node, NAME, null);
+                int     rankId     = getAttr(node, RANK, 0);
                 boolean infullname = getAttr(node, "infullname", false);
                 boolean isEnforced = getAttr(node,  "enforced", false);
                 
@@ -5057,9 +5061,9 @@ public class BuildSampleDatabase
                                 final Element          root,
                                 final Taxon            parent)
     {
-        String name   = getAttr(root, "name",   null);
+        String name   = getAttr(root, NAME,   null);
         String common = getAttr(root, "common", null);
-        int    rankId = getAttr(root, "rank",   0);
+        int    rankId = getAttr(root, RANK,   0);
         
         Taxon taxon = new Taxon();
         taxon.initialize();
@@ -5299,7 +5303,7 @@ public class BuildSampleDatabase
         xstream.omitField(PrepType.class, "preparations");
         xstream.omitField(PrepType.class, "attributeDefs");
         
-        xstream.useAttributeFor(PrepType.class, "name");
+        xstream.useAttributeFor(PrepType.class, NAME);
         xstream.useAttributeFor(PrepType.class, "isLoanable");
         
         xstream.aliasAttribute("isloanable",  "isLoanable");
@@ -8697,96 +8701,122 @@ public class BuildSampleDatabase
                 ex.printStackTrace();
             }*/
             
-            Element root = XMLHelper.readDOMFromConfigDir(dirName + showFieldsFileName);
-            if (root != null)
+            DataProviderSessionIFace localSession = null;
+            try
             {
-                List<?> tables = root.selectNodes("/tables/table");
-                for (Iterator<?> iter = tables.iterator(); iter.hasNext(); )
+                localSession = DataProviderFactory.getInstance().createSession();
+
+            
+                Element root = XMLHelper.readDOMFromConfigDir(dirName + showFieldsFileName);
+                if (root != null)
                 {
-                    Element table = (Element)iter.next();
-                    String  tName = XMLHelper.getAttr(table, "name", null);
-                    if (StringUtils.isNotEmpty(tName))
+                    List<?> tables = root.selectNodes("/tables/table");
+                    for (Iterator<?> iter = tables.iterator(); iter.hasNext(); )
                     {
-                        DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoByTableName(tName.toLowerCase());
-                        if (tbl != null)
+                        Element table    = (Element)iter.next();
+                        String  tName    = XMLHelper.getAttr(table, NAME, null);
+                        boolean isShwTbl = XMLHelper.getAttr(table, SHOW, true);
+                        String  doSetTbl = XMLHelper.getAttr(table, SHOW, null);
+                        
+                        if (StringUtils.isNotEmpty(tName))
                         {
-                            List<?> fields = table.selectNodes("field");
-                            for (Iterator<?> fIter = fields.iterator(); fIter.hasNext(); )
+                            DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoByTableName(tName.toLowerCase());
+                            if (tbl != null)
                             {
-                                Element fieldEl = (Element)fIter.next();
-                                String  fName   = XMLHelper.getAttr(fieldEl, "name", null);
-                                if (StringUtils.isNotEmpty(fName))
+                                if (StringUtils.isNotEmpty(doSetTbl))
                                 {
-                                    DBFieldInfo fld = tbl.getFieldByName(fName);
-                                    if (fld != null)
+                                    setFieldVisible(localSession, tbl.getName(), null, discipline, isShwTbl);
+                                }
+                                
+                                List<?> fields = table.selectNodes("field");
+                                for (Iterator<?> fIter = fields.iterator(); fIter.hasNext(); )
+                                {
+                                    Element fieldEl = (Element)fIter.next();
+                                    String  fName   = XMLHelper.getAttr(fieldEl, NAME, null);
+                                    boolean isShown = XMLHelper.getAttr(fieldEl, SHOW, true);
+                                    if (StringUtils.isNotEmpty(fName))
                                     {
-                                        setFieldVisible(tbl.getName(), fld.getName(), discipline);
-                                    } else
-                                    {
-                                        showError("show_list.xml in ["+disciplineDirName+"] for table name ["+tName+"] has bad field name["+fName+"]");
+                                        DBFieldInfo fld = tbl.getFieldByName(fName);
+                                        if (fld != null)
+                                        {
+                                            setFieldVisible(localSession, tbl.getName(), fld.getName(), discipline, isShown);
+                                        } else
+                                        {
+                                            showError("show_list.xml in ["+disciplineDirName+"] for table name ["+tName+"] has bad field name["+fName+"]");
+                                        }
                                     }
                                 }
+                            } else
+                            {
+                                showError("show_list.xml in ["+disciplineDirName+"] has bad table name ["+tName+"]");
                             }
-                        } else
-                        {
-                            showError("show_list.xml in ["+disciplineDirName+"] has bad table name ["+tName+"]");
                         }
-                    }
-                }   
+                    }   
+                }
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
+                
+            } finally 
+            {
+                if (localSession != null)
+                {
+                    localSession.close();
+                }
             }
         }
     }
     
     /**
      * Looks up a table/field and sets it to be visible.
+     * @param localSession
      * @param tableName the table name
      * @param fieldName the field name
+     * @param discipline
+     * @param isShown
+     * @throws Exception 
      */
-    protected static void setFieldVisible(final String     tableName, 
+    protected static void setFieldVisible(final DataProviderSessionIFace localSession,
+                                          final String     tableName, 
                                           final String     fieldName,
-                                          final Discipline discipline)
+                                          final Discipline discipline,
+                                          final boolean    isShown) throws Exception
     {
-        DataProviderSessionIFace localSession = null;
-        try
+        String sql = "FROM SpLocaleContainer as sp INNER JOIN sp.discipline as d WHERE sp.name = '" + tableName + "' AND d.id = "+discipline.getId();
+        //System.err.println(sql);
+        Object[] cols = (Object[])localSession.getData(sql);
+        if (cols != null && cols.length > 0)
         {
-            localSession = DataProviderFactory.getInstance().createSession();
-            String sql = "FROM SpLocaleContainer as sp INNER JOIN sp.discipline as d WHERE sp.name = '" + tableName + "' AND d.id = "+discipline.getId();
-            //System.err.println(sql);
-            Object[] cols = (Object[])localSession.getData(sql);
-            if (cols != null && cols.length > 0)
+            SpLocaleContainer container = (SpLocaleContainer)cols[0];
+            if (container != null)
             {
-                SpLocaleContainer container = (SpLocaleContainer)cols[0];
-                if (container != null)
+                if (fieldName == null)
+                {
+                    container.setIsHidden(!isShown);
+                    localSession.beginTransaction();
+                    localSession.save(container);
+                    localSession.commit();
+                    localSession.flush();
+                } else
                 {
                     for (SpLocaleContainerItem item : container.getItems())
                     {
                         //System.out.println(fieldName+" "+ item.getName());
                         if (item.getName().equals(fieldName))
                         {
-                            item.setIsHidden(false);
+                            item.setIsHidden(!isShown);
                             localSession.beginTransaction();
                             localSession.save(item);
                             localSession.commit();
                             localSession.flush();
-                            return;
                         }
                     }
                 }
-            } else
-            {
-                System.err.println("Couldn't find Table ["+tableName+"] for discipline["+discipline.getId()+"]");
             }
-        } catch (Exception ex)
+        } else
         {
-            ex.printStackTrace();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
-            
-        } finally 
-        {
-            if (localSession != null)
-            {
-                localSession.close();
-            }
+            System.err.println("Couldn't find Table ["+tableName+"] for discipline["+discipline.getId()+"]");
         }
     }
     

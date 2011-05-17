@@ -1,25 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tables>
+
 	<table name="Accession">
 		<field name="timestampModified"/>
 	</table>
+    
+    <table name="CollectionObject">
+        <field name="timestampModified"/>
+    </table>
 	
 	<table name="Deaccession">
-		<field name="timestampModified"/>
-	</table>
-	
-	<table name="CollectionObject">
 		<field name="timestampModified"/>
 	</table>
 	
 	<table name="Determination">
 		<field name="yesNo1"/>
 	</table>
-	
+	    
+    <table name="PaleoContext" show="false"/>
+    
+    <table name="RepositoryAgreement">
+        <field name="timeStampModified"/>
+    </table>
+    
 	<table name="Shipment">
 		<field name="numberOfPackages"/>
 	</table>
-	<table name="RepositoryAgreement">
-		<field name="timeStampModified"/>
-	</table>
+	
 </tables>
