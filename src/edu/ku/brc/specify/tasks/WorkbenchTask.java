@@ -3842,6 +3842,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     	//Choose a recordset if the action is not a rs drop
     	Vector<Integer> tblIds = new Vector<Integer>();
     	ChooseRecordSetDlg dlg = new ChooseRecordSetDlg(tblIds);
+    	dlg.setHelpContext("wb_recordset");
         dlg.setVisible(true); // modal (waits for answer here)
         if (!dlg.isCancelled())
         {
@@ -3850,7 +3851,11 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         	if (choices.size() > 0)
         	{
         		ChooseFromListDlg<WorkbenchTemplate> wbtdlg = new ChooseFromListDlg<WorkbenchTemplate>((Frame )UIRegistry.getTopWindow(), 
-        				UIRegistry.getResourceString("WB_CHOOSE_EXPORT_WB_TITLE"), choices);
+        				UIRegistry.getResourceString("WB_CHOOSE_EXPORT_WB_TITLE"), 
+        				ChooseFromListDlg.OK_BTN | ChooseFromListDlg.CANCEL_BTN | ChooseFromListDlg.HELP_BTN, 
+        				choices);
+        		wbtdlg.setHelpContext("wb_recordset");
+        		//wbtdlg.
         		wbtdlg.setVisible(true);
         		if (!wbtdlg.isCancelled())
         		{
