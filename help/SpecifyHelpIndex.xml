@@ -9,9 +9,12 @@
 	<indexitem text="Add Division" mergetype="javax.help.SortMerge" />
 	<indexitem text="Auto Numbering" target="GE" mergetype="javax.help.SortMerge" />
 	<indexitem text="Backup and Restore tool" target="Backup_Restore" mergetype="javax.help.SortMerge" />
+	<indexitem text="Batch Identify" target="Forms_Batch_Determine" mergetype="javax.help.SortMerge" />
 	<indexitem text="Carry Forward" target="Carry_Forward" mergetype="javax.help.SortMerge" />
+	<indexitem text="Change Collection" target="intro_Change_Collection" mergetype="javax.help.SortMerge" />
+	<indexitem text="Change Collections" target="intro_Change_Collection" mergetype="javax.help.SortMerge" />
 	<indexitem text="Change Password" target="CHANGE_PWD" mergetype="javax.help.SortMerge" />
-	<indexitem text="Components in Specify" target="Intro" mergetype="javax.help.SortMerge" />
+	<indexitem text="Components in Specify" target="intro_components" mergetype="javax.help.SortMerge" />
 	<indexitem text="Configuration Tool Overview" target="Config_Overview" mergetype="javax.help.SortMerge" />
 	<indexitem text="Data forms" target="Data_Entry" mergetype="javax.help.SortMerge">
 		<indexitem text="Agent form" target="Data_Entry_Agent" mergetype="javax.help.SortMerge" />
@@ -41,6 +44,7 @@
 	<indexitem text="GEOLocate" target="BioGeo" mergetype="javax.help.SortMerge" />
 	<indexitem text="Georeferencing" target="BioGeo" mergetype="javax.help.SortMerge" />
 	<indexitem text="Google Earth" target="GE" mergetype="javax.help.SortMerge" />
+	<indexitem text="Help" target="Using_Help" mergetype="javax.help.SortMerge" />
 	<indexitem text="Import / Export tool" target="Import" mergetype="javax.help.SortMerge" />
 	<indexitem text="Institutional Hierarchy" target="Inst_Hier" mergetype="javax.help.SortMerge">
 		<indexitem text="Add Collection" target="Add_Collection" mergetype="javax.help.SortMerge" />
@@ -59,9 +63,22 @@
 		<indexitem text="Return Loans" target="Int_Return_Loans" mergetype="javax.help.SortMerge" />
 	</indexitem>
 	<indexitem text="Introduction to Specify" target="Intro" mergetype="javax.help.SortMerge" />
+	<indexitem text="Life Science Identifier (LSID)" target="automatic_lsid" mergetype="javax.help.SortMerge" />
 	<indexitem text="Loan/Gift_Catalog Number Dialog" target="AskForCatNumbers" mergetype="javax.help.SortMerge" />
 	<indexitem text="Loan/Gift _ Choose Record Set" target="ChooseRecordSet" mergetype="javax.help.SortMerge" />
 	<indexitem text="Login Process" target="Login" mergetype="javax.help.SortMerge" />
+	<indexitem text="Master Key" mergetype="javax.help.SortMerge">
+		<indexitem text="Using During Login" target="login_master" mergetype="javax.help.SortMerge" />
+		<indexitem text="Verifying and Resetting" target="security_wiz1" mergetype="javax.help.SortMerge" />
+	</indexitem>
+	<indexitem text="Pick List" mergetype="javax.help.SortMerge">
+		<indexitem text="System Pick List" target="Pick_List" mergetype="javax.help.SortMerge" />
+		<indexitem text="User Defined Pick List" target="User_Pick_List" />
+	</indexitem>
+	<indexitem text="Pick Lists" mergetype="javax.help.SortMerge">
+		<indexitem text="System Pick List" target="Pick_List" mergetype="javax.help.SortMerge" />
+		<indexitem text="User Defined" target="User_Pick_List" mergetype="javax.help.SortMerge" />
+	</indexitem>
 	<indexitem text="Plugins" target="Plugins" mergetype="javax.help.SortMerge">
 		<indexitem text="GEOLocate" target="BioGeo" mergetype="javax.help.SortMerge" />
 		<indexitem text="Google Earth" target="GE" mergetype="javax.help.SortMerge" />
@@ -70,8 +87,11 @@
 		<indexitem text="Backup (MySQL)" target="PrefsMySQL" mergetype="javax.help.SortMerge" />
 		<indexitem text="Email" target="PrefsEMail" mergetype="javax.help.SortMerge" />
 		<indexitem text="Formatting" target="PrefsFormatting" mergetype="javax.help.SortMerge" />
+		<indexitem text="GEOLocate" target="PrefsGeolocate" mergetype="javax.help.SortMerge" />
 		<indexitem text="Google Earth" target="PrefsGoogleEarth" mergetype="javax.help.SortMerge" />
+		<indexitem text="Loans" target="PrefsLoan" mergetype="javax.help.SortMerge" />
 		<indexitem text="Login" target="PrefsLogin" mergetype="javax.help.SortMerge" />
+		<indexitem text="Network" target="PrefsNetwork" mergetype="javax.help.SortMerge" />
 		<indexitem text="System" target="PrefsSystem" mergetype="javax.help.SortMerge" />
 		<indexitem text="Tree" target="PrefsTree" mergetype="javax.help.SortMerge" />
 	</indexitem>
@@ -97,32 +117,33 @@
 	</indexitem>
 	<indexitem text="Registration" target="Registration" mergetype="javax.help.SortMerge" />
 	<indexitem text="Reports" target="Reports" mergetype="javax.help.SortMerge">
+		<indexitem text="Printing" target="RepRunSettings" mergetype="javax.help.SortMerge" />
 		<indexitem text="Run" target="RepRunSettings" mergetype="javax.help.SortMerge" />
 		<indexitem text="Run Report settings" target="RunReportSettings" mergetype="javax.help.SortMerge" />
 		<indexitem text="Side Bar" mergetype="javax.help.SortMerge" />
-		<indexitem text="Printing" target="RepRunSettings" mergetype="javax.help.SortMerge" />
 	</indexitem>
 	<indexitem text="Restore" target="Restore" mergetype="javax.help.SortMerge" />
 	<indexitem text="Schema Configuration Tool" target="Schema_Config" mergetype="javax.help.SortMerge">
+		<indexitem text="Change Caption" target="SC_caption" mergetype="javax.help.SortMerge" />
 		<indexitem text="Choose Table Aggregation format" target="DOA_LIST_EDITOR" mergetype="javax.help.SortMerge" />
 		<indexitem text="Choose Table Format" target="DOF_LIST_EDITOR" mergetype="javax.help.SortMerge" />
-		<indexitem text="Table Aggregation Editor" target="DOA_EDITOR" mergetype="javax.help.SortMerge" />
-		<indexitem text="Table Format Editor" target="DOF_EDITOR" mergetype="javax.help.SortMerge" />
-		<indexitem text="Change Caption" target="SC_caption" mergetype="javax.help.SortMerge" />
 		<indexitem text="Edit Table / Field Description" target="SC_field_description" mergetype="javax.help.SortMerge" />
 		<indexitem text="Format a Field" target="SC_field_format" mergetype="javax.help.SortMerge" />
 		<indexitem text="Hide Table / Field" target="SC_hide_table" mergetype="javax.help.SortMerge" />
+		<indexitem text="Table Aggregation Editor" target="DOA_EDITOR" mergetype="javax.help.SortMerge" />
+		<indexitem text="Table Format Editor" target="DOF_EDITOR" mergetype="javax.help.SortMerge" />
 	</indexitem>
 	<indexitem text="Security Summary" target="SECURITY_SUMMARY" mergetype="javax.help.SortMerge" />
+	<indexitem text="Series Data Entry" target="Forms_Series_Entry" mergetype="javax.help.SortMerge" />
 	<indexitem text="Services" target="Services" mergetype="javax.help.SortMerge" />
 	<indexitem text="Simple Search" target="SS" mergetype="javax.help.SortMerge">
 		<indexitem text="Configure Related Tables" target="ESConfigRelatedTables" mergetype="javax.help.SortMerge" />
-		<indexitem text="Execute a Simple Search" target="SS_Execute" mergetype="javax.help.SortMerge" />
-		<indexitem text="Wild Cards" target="SS_Cards" mergetype="javax.help.SortMerge" />
-		<indexitem text="Results" target="SS_Results" mergetype="javax.help.SortMerge" />
 		<indexitem text="Configure Results Ordering" target="ESConfigResultsOrdering" mergetype="javax.help.SortMerge" />
 		<indexitem text="Configure Search Fields" target="ESConfigSearchFields" mergetype="javax.help.SortMerge" />
+		<indexitem text="Execute a Simple Search" target="SS_Execute" mergetype="javax.help.SortMerge" />
+		<indexitem text="Results" target="SS_Results" mergetype="javax.help.SortMerge" />
 		<indexitem text="Results Page" target="ESTellMeMore" mergetype="javax.help.SortMerge" />
+		<indexitem text="Wild Cards" target="SS_Cards" mergetype="javax.help.SortMerge" />
 	</indexitem>
 	<indexitem text="Specify Contact Information" target="Contact_Information" mergetype="javax.help.SortMerge" />
 	<indexitem text="SpecifyiReport" target="iReport" mergetype="javax.help.SortMerge">
@@ -135,41 +156,75 @@
 		<indexitem text="Save" target="IR_Save" mergetype="javax.help.SortMerge" />
 		<indexitem text="Tasks" target="IR_Tasks" mergetype="javax.help.SortMerge" />
 	</indexitem>
-	<indexitem text="User Permissions" target="Permissions" mergetype="javax.help.SortMerge" />
+	<indexitem text="Specify Tools" mergetype="javax.help.SortMerge">
+		<indexitem text="Auto Numbering" target="Auto_Numbering" mergetype="javax.help.SortMerge" />
+		<indexitem text="Carry Forward" target="Carry_Forward" mergetype="javax.help.SortMerge" />
+		<indexitem text="Configuration" target="Config_Overview" mergetype="javax.help.SortMerge" />
+		<indexitem text="Form / Report Import and Export" target="Import_Intro" mergetype="javax.help.SortMerge" />
+		<indexitem text="Forms" target="Using_Forms" mergetype="javax.help.SortMerge" />
+		<indexitem text="Plugins" target="Plugins" mergetype="javax.help.SortMerge" />
+		<indexitem text="Query" target="QB" mergetype="javax.help.SortMerge" />
+		<indexitem text="Reports" target="Reports" mergetype="javax.help.SortMerge" />
+		<indexitem text="Schema Configuration" target="Schema_Config" />
+		<indexitem text="Security" target="Permissions" mergetype="javax.help.SortMerge" />
+		<indexitem text="Statistics" target="Statistics" />
+		<indexitem text="Trees" target="Trees_About" mergetype="javax.help.SortMerge" />
+		<indexitem text="User Preferences" target="PreferencesOverview" mergetype="javax.help.SortMerge" />
+	</indexitem>
+	<indexitem text="Stand Alone Applications">
+		<indexitem text="Backup and Restore" target="Backup_Restore" mergetype="javax.help.SortMerge" />
+		<indexitem text="Data Exporter" target="schema_tool" mergetype="javax.help.SortMerge" />
+		<indexitem text="File Slicer" target="slicer" mergetype="javax.help.SortMerge" />
+		<indexitem text="Security Wizard" target="security_wiz1" mergetype="javax.help.SortMerge" />
+		<indexitem text="Setup Wizard" target="wizard" mergetype="javax.help.SortMerge" />
+		<indexitem text="Specify iReport" target="iReport" mergetype="javax.help.SortMerge" />
+	</indexitem>
 	<indexitem text="Statistics" target="Statistics" />
+	<indexitem text="System Setup" target="SystemSetup" mergetype="javax.help.SortMerge" />
 	<indexitem text="Trees" target="Trees_About" mergetype="javax.help.SortMerge">
 		<indexitem text="Building Ranks" target="Trees_Build" mergetype="javax.help.SortMerge" />
 		<indexitem text="Collection Ojbect Counts" target="Trees_Counts" mergetype="javax.help.SortMerge" />
-		<indexitem text="Synonymize " target="Trees_Drag" mergetype="javax.help.SortMerge" />
-		<indexitem text="Move Node" target="Trees_Drag" mergetype="javax.help.SortMerge" />
+		<indexitem text="Context Menu" target="Trees_More" mergetype="javax.help.SortMerge" />
 		<indexitem text="Expand" target="Trees_Expand" mergetype="javax.help.SortMerge" />
 		<indexitem text="Find tool" target="Trees_Find" mergetype="javax.help.SortMerge" />
-		<indexitem text="Context Menu" target="Trees_More" mergetype="javax.help.SortMerge" />
+		<indexitem text="Merge" target="Trees_Merge" mergetype="javax.help.SortMerge" />
+		<indexitem text="Move Node" target="Trees_Drag" mergetype="javax.help.SortMerge" />
+		<indexitem text="Synonymize " target="Trees_Drag" mergetype="javax.help.SortMerge" />
 		<indexitem text="Terminology" target="Trees_Terms" mergetype="javax.help.SortMerge" />
 		<indexitem text="Tools" target="Trees_Tools" mergetype="javax.help.SortMerge" />
 		<indexitem text="Using" target="Trees_Using" mergetype="javax.help.SortMerge" />
 	</indexitem>
-	<indexitem text="Pick Lists" mergetype="javax.help.SortMerge">
-		<indexitem text="System Pick List" target="Pick_List" mergetype="javax.help.SortMerge" />
-		<indexitem text="User Defined" target="User_Pick_List" mergetype="javax.help.SortMerge" />
+	<indexitem text="UI Components" target="intro_components" mergetype="javax.help.SortMerge">
+		<indexitem text="Menu Bar" target="intro_menu_bar" mergetype="javax.help.SortMerge" />
+		<indexitem text="Side Bar" target="intro_side_bar" mergetype="javax.help.SortMerge" />
+		<indexitem text="Status Bar" target="intro_status_bar" mergetype="javax.help.SortMerge" />
+		<indexitem text="Tab Bar" target="intro_tab_bar" mergetype="javax.help.SortMerge" />
+		<indexitem text="Task Bar" target="intro_task_bar" mergetype="javax.help.SortMerge" />
+		<indexitem text="Trash Can" target="intro_trash_can" mergetype="javax.help.SortMerge" />
+		<indexitem text="Work Space" target="intro_work_space" mergetype="javax.help.SortMerge" />
 	</indexitem>
-	<indexitem text="System Setup" target="SystemSetup" mergetype="javax.help.SortMerge" />
-	<indexitem text="Help" target="Using_Help" mergetype="javax.help.SortMerge" />
+	<indexitem text="Uploading data from the WorkBench" target="uploading" mergetype="javax.help.SortMerge" />
+	<indexitem text="User Permissions" target="Permissions" mergetype="javax.help.SortMerge" />
+	<indexitem text="Verifying Data through the WorkBench" target="validate" />
+	<indexitem text="Verifying IT/Master Credentials" target="security_wiz1" />
+	<indexitem text="Web Publishing" target="third_party" mergetype="javax.help.SortMerge" />
 	<indexitem text="Welcome" target="Welcome" mergetype="javax.help.SortMerge" />
 	<indexitem text="WorkBench in Specify 6" target="Workbench" mergetype="javax.help.SortMerge">
-		<indexitem text="GEOLocate" target="WorkbenchBGM" mergetype="javax.help.SortMerge" />
 		<indexitem text="Basic Label" target="WorkbenchBasicLabel" mergetype="javax.help.SortMerge" />
-		<indexitem text="Chart" target="WorkbenchChart" mergetype="javax.help.SortMerge" />
-		<indexitem text="Data Sets" target="WorkbenchDataSetOverview" mergetype="javax.help.SortMerge" />
-		<indexitem text="Data Set Properties" target="WorkbenchDataSetProperties" mergetype="javax.help.SortMerge" />
-		<indexitem text="Data Set Summary" target="WorkbenchDataSetSummary" mergetype="javax.help.SortMerge" />
-		<indexitem text="Edit Data Set Mapping" target="WorkbenchEditMapping" mergetype="javax.help.SortMerge" />
-		<indexitem text="Exporting Data" target="WorkbenchExportData" mergetype="javax.help.SortMerge" />
-		<indexitem text="Exporting Data Set" target="WorkbenchExportDataSet" mergetype="javax.help.SortMerge" />
-		<indexitem text="Export Excel Template" target="WorkbenchExportExcelTemplate" mergetype="javax.help.SortMerge" />
-		<indexitem text="Form Editing" target="WorkbenchFormEditing" mergetype="javax.help.SortMerge" />
 		<indexitem text="Carry Forward" target="WorkbenchFormEditingCF" mergetype="javax.help.SortMerge" />
+		<indexitem text="Chart" target="WorkbenchChart" mergetype="javax.help.SortMerge" />
+		<indexitem text="Data Set Properties" target="WorkbenchDataSetProperties" mergetype="javax.help.SortMerge" />
+		<indexitem text="Data Sets" target="WorkbenchDataSetOverview" mergetype="javax.help.SortMerge" />
+		<indexitem text="Data Set Summary" target="WorkbenchDataSetSummary" mergetype="javax.help.SortMerge" />
+		<indexitem text="Data Uploading" target="uploading" mergetype="javax.help.SortMerge" />
+		<indexitem text="Edit Data Set Mapping" target="WorkbenchEditMapping" mergetype="javax.help.SortMerge" />
+		<indexitem text="Export Excel Template" target="WorkbenchExportExcelTemplate" mergetype="javax.help.SortMerge" />
+		<indexitem text="Exporting Data" target="WorkbenchExportData" mergetype="javax.help.SortMerge" />
+		<indexitem text="Exporting data from Specify" target="wb_recordset" mergetype="javax.help.SortMerge" />
+		<indexitem text="Exporting Data Set" target="WorkbenchExportDataSet" mergetype="javax.help.SortMerge" />
 		<indexitem text="Formats" target="WorkbenchFormats" mergetype="javax.help.SortMerge" />
+		<indexitem text="Form Editing" target="WorkbenchFormEditing" mergetype="javax.help.SortMerge" />
+		<indexitem text="GEOLocate" target="WorkbenchBGM" mergetype="javax.help.SortMerge" />
 		<indexitem text="Google Earth" target="WorkbenchGoogleEarth" mergetype="javax.help.SortMerge" />
 		<indexitem text="Grid Editing" target="WorkbenchGridEditing" mergetype="javax.help.SortMerge" />
 		<indexitem text="Import CSV" target="WorkbenchImportCSV" mergetype="javax.help.SortMerge" />
@@ -183,31 +238,5 @@
 		<indexitem text="Special Tools" target="WorkbenchSpecialTools" mergetype="javax.help.SortMerge" />
 		<indexitem text="Top 10" target="WorkbenchTop10" mergetype="javax.help.SortMerge" />
 		<indexitem text="Working with Images" target="WorkbenchWorkingWithImages" mergetype="javax.help.SortMerge" />
-		<indexitem text="Data Uploading" target="uploading" mergetype="javax.help.SortMerge" />
-	</indexitem>
-	<indexitem text="Uploading data from the WorkBench" target="uploading" mergetype="javax.help.SortMerge" />
-	<indexitem text="Change Collections" target="intro_Change_Collection" mergetype="javax.help.SortMerge" />
-	<indexitem text="UI Components" target="intro_components" mergetype="javax.help.SortMerge">
-		<indexitem text="Menu Bar" target="intro_menu_bar" mergetype="javax.help.SortMerge" />
-		<indexitem text="Trash Can" target="intro_trash_can" mergetype="javax.help.SortMerge" />
-		<indexitem text="Side Bar" target="intro_side_bar" mergetype="javax.help.SortMerge" />
-		<indexitem text="Status Bar" target="intro_status_bar" mergetype="javax.help.SortMerge" />
-		<indexitem text="Task Bar" target="intro_task_bar" mergetype="javax.help.SortMerge" />
-		<indexitem text="Work Space" target="intro_work_space" mergetype="javax.help.SortMerge" />
-	</indexitem>
-	<indexitem text="Specify Tools" mergetype="javax.help.SortMerge">
-		<indexitem text="Forms" target="Using_Forms" mergetype="javax.help.SortMerge" />
-		<indexitem text="Trees" target="Trees_About" mergetype="javax.help.SortMerge" />
-		<indexitem text="Reports" target="Reports" mergetype="javax.help.SortMerge" />
-		<indexitem text="Statistics" target="Statistics" />
-		<indexitem text="Query" target="QB" mergetype="javax.help.SortMerge" />
-		<indexitem text="Plugins" target="Plugins" mergetype="javax.help.SortMerge" />
-		<indexitem text="Form / Report Import and Export" target="Import_Intro" mergetype="javax.help.SortMerge" />
-		<indexitem text="Security" target="Permissions" mergetype="javax.help.SortMerge" />
-		<indexitem text="User Preferences" target="PreferencesOverview" mergetype="javax.help.SortMerge" />
-		<indexitem text="Carry Forward" target="Carry_Forward" mergetype="javax.help.SortMerge" />
-		<indexitem text="Auto Numbering" target="Auto_Numbering" mergetype="javax.help.SortMerge" />
-		<indexitem text="Configuration" target="Config_Overview" mergetype="javax.help.SortMerge" />
-		<indexitem text="Schema Configuration" target="Schema_Config" />
 	</indexitem>
 </index>
