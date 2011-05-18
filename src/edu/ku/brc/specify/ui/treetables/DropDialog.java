@@ -327,6 +327,7 @@ public class DropDialog extends CustomDialog
 	@Override
 	protected void createButtons()
 	{
+        setHelpContext("Trees_Drag");
 		super.createButtons();
         if ((whichBtns & MERGE_BTN) == MERGE_BTN)
         {
@@ -339,7 +340,6 @@ public class DropDialog extends CustomDialog
                 }
             });
         }
-        setHelpContext("drag_drop");
         setCloseOnApplyClk(applyBtn != null);
 	}
 
