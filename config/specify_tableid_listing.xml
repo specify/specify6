@@ -153,11 +153,15 @@
         <table name="edu.ku.brc.specify.datamodel.ExchangeIn" abbrev="exi" id="39" searchable="true">
             <businessrule>edu.ku.brc.specify.datamodel.busrules.ExchangeInBusRules</businessrule>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.ExchangeInPrep" abbrev="exip" id="140" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.ExchangeInPrep" abbrev="exip" id="140" searchable="true">
+            <display view="ExchangeInPrep" newobjdlg="ExchangeInPrepDisplay"/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.ExchangeOut" abbrev="exo" id="40" searchable="true">
             <businessrule>edu.ku.brc.specify.datamodel.busrules.ExchangeOutBusRules</businessrule>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.ExchangeOutPrep" abbrev="exop" id="141" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.ExchangeOutPrep" abbrev="exop" id="141" searchable="true">
+            <display view="ExchangeOutPrep" newobjdlg="ExchangeOutPrepDisplay"/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.Exsiccata" abbrev="exsic" id="89" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.ExsiccataItem" abbrev="exsicit" id="104" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.FieldNotebook" abbrev="fnb" id="83" searchable="true">

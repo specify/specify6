@@ -1305,6 +1305,7 @@
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false" save="false"/>
     </table>
     <table classname="edu.ku.brc.specify.datamodel.ExchangeInPrep" table="exchangeinprep" tableid="140" searchable="true" abbrv="exip">
+       <display view="ExchangeInPrep" newobjdlg="ExchangeInPrepDisplay"/>
       <field column="Comments" name="comments" type="text" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="DescriptionOfMaterial" name="descriptionOfMaterial" type="java.lang.String" length="255" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="Number1" name="number1" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
@@ -1351,6 +1352,7 @@
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Shipment" relationshipname="shipments" othersidename="exchangeOut" updatable="false" required="false" save="true"/>
     </table>
     <table classname="edu.ku.brc.specify.datamodel.ExchangeOutPrep" table="exchangeoutprep" tableid="141" searchable="true" abbrv="exop">
+       <display view="ExchangeOutPrep" newobjdlg="ExchangeOutPrepDisplay"/>
       <field column="Comments" name="comments" type="text" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="DescriptionOfMaterial" name="descriptionOfMaterial" type="java.lang.String" length="255" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="Number1" name="number1" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>

@@ -50,6 +50,8 @@
     <dialog type="display" view="ContainerBrief"     name="ContainerDisplay"         class="edu.ku.brc.specify.datamodel.Container" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Determination"      name="DeterminationDisplay"     class="edu.ku.brc.specify.datamodel.Determination" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Division"           name="DivisionDisplay"          class="edu.ku.brc.specify.datamodel.Division" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ExchangeInPrep"     name="ExchangeInPrepDisplay"    class="edu.ku.brc.specify.datamodel.ExchangeInPrep" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ExchangeOutPrep"    name="ExchangeOutPrepDisplay"    class="edu.ku.brc.specify.datamodel.ExchangeOutPrep" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="FieldNotebookPage"  name="FieldNotebookPageDisplay" class="edu.ku.brc.specify.datamodel.FieldNotebookPage" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="ChronosStrat"       name="ChronosStratDisplay"      class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Geography"          name="GeographyDisplay"         class="edu.ku.brc.specify.datamodel.Geography" helpcontext="CBXQViewEdit"/>

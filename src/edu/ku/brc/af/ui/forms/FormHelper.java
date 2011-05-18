@@ -613,7 +613,7 @@ public final class FormHelper
             return dialog;
         }
         // else
-        log.error("The Default Form Name is empty for Object type ["+dataObj.getClass().getName()+"]");
+        log.error("The Default Form Name is empty for Object type ["+dataObj.getClass().getName()+"] (Check the 'newobjdlg' value in the 'display' node in the file specify_tableid_listing.xml (and specify_datamodel.xml))");
         
         return null;
     }

@@ -438,6 +438,18 @@
             </altviews>
         </view>
         
+        <view name="ExchangeInPrep"
+            class="edu.ku.brc.specify.datamodel.ExchangeInPrep"
+            >
+            <desc><![CDATA[Exchange In display form]]></desc>
+            <altviews>
+                <altview name="ExchangeInPrep Table View" viewdef="ExchangeInPrep Table" mode="view"/>
+                <altview name="ExchangeInPrep Table Edit" viewdef="ExchangeInPrep Table" mode="edit"/>
+                <altview name="ExchangeInPrep View" viewdef="ExchangeInPrep" mode="view" default="true"/>
+                <altview name="ExchangeInPrep Edit" viewdef="ExchangeInPrep" mode="edit"/>
+            </altviews>
+        </view>
+                
         <view name="ExchangeOut"
             class="edu.ku.brc.specify.datamodel.ExchangeOut"
             >
@@ -445,6 +457,18 @@
             <altviews>
                 <altview name="ExchangeOut View" viewdef="ExchangeOut" mode="view" default="true"/>
                 <altview name="ExchangeOut Edit" viewdef="ExchangeOut" mode="edit"/>
+            </altviews>
+        </view>
+        
+        <view name="ExchangeOutPrep"
+            class="edu.ku.brc.specify.datamodel.ExchangeOutPrep"
+            >
+            <desc><![CDATA[Exchange Out display form]]></desc>
+            <altviews>
+                <altview name="ExchangeOutPrep Table View" viewdef="ExchangeOutPrep Table" mode="view"/>
+                <altview name="ExchangeOutPrep Table Edit" viewdef="ExchangeOutPrep Table" mode="edit"/>
+                <altview name="ExchangeOutPrep View" viewdef="ExchangeOutPrep" mode="view" default="true"/>
+                <altview name="ExchangeOutPrep Edit" viewdef="ExchangeOutPrep" mode="edit"/>
             </altviews>
         </view>
         
@@ -2852,7 +2876,10 @@
                 <row>
                     <cell type="subview" id="6" name="addressOfRecord" viewname="AddressOfRecord" colspan="13"/>
                 </row>
-                <!--<row>
+                <!-- <row>
+                     <cell type="subview" viewname="ExchangeInPrep" id="10" name="exchangeInPreps" defaulttype="table" colspan="13" rows="4"/>
+                </row>
+                <row>
                     <cell type="label" labelfor="dom"/>
                     <cell type="field" id="dom" name="descriptionOfMaterial" uitype="text" colspan="10"/>
                 </row>
@@ -2892,7 +2919,70 @@
                 </row>-->
             </rows>
         </viewdef>
-
+        
+        <viewdef
+            type="formtable"
+            name="ExchangeInPrep Table"
+            class="edu.ku.brc.specify.datamodel.ExchangeInPrep"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Preparation subform table for Collection Object form.]]></desc>
+            <definition>ExchangeInPrep</definition>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="ExchangeInPrep"
+            class="edu.ku.brc.specify.datamodel.ExchangeInPrep"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[Loan viewing form.]]></desc>
+            
+            <columnDef>105px,2px,105px,5px,130px,2px,115px,5px,125px,2px,101px,15px,120px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,137px,5px,135px,2px,130px,5px,133px,2px,81px,15px,155px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,151px,5px,155px,2px,145px,5px,155px,2px,95px,20px,165px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),15px,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="2" label="Preparation Type"/>
+                    <cell type="field" id="2" name="preparation.prepType.name" uitype="dsptextfield" readonly="true"/>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="quantity" uitype="spinner" initialize="max=5000"/>
+                    <cell type="label" labelfor="t1"/>
+                    <cell type="field" id="t1" name="text1" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="descriptionOfMaterial" uitype="text" colspan="11"/>
+                </row>
+                <!--<row>
+                    <cell type="label" labelfor="n1"/>
+                    <cell type="field" id="n1" name="number1" uitype="text"/>
+                    <cell type="label" labelfor="t2"/>
+                    <cell type="field" id="t2" name="text2" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="comm"/>
+                    <cell type="field" id="comm" name="comments" uitype="textareabrief" rows="2" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="9"/>
+                    <cell type="field" id="9" name="createdByAgent" uitype="label" readonly="true" uifieldformatter="Agent"/>
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true" uifieldformatter="Agent"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="11"/>
+                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true"/>
+                    <cell type="label" labelfor="12"/>
+                    <cell type="field" id="12" name="timestampCreated" uitype="label" readonly="true"/>
+                </row>-->
+            </rows>
+        </viewdef>
+        
         <viewdef
             type="form"
             name="ExchangeOut"
@@ -2932,6 +3022,9 @@
                 <row>
                     <cell type="subview" id="8" name="shipments" viewname="Shipment" colspan="13"/>
                 </row>
+                <!-- <row>
+                     <cell type="subview" viewname="ExchangeOutPrep" id="10" name="exchangeOutPreps" defaulttype="table" colspan="13" rows="4"/>
+                </row>
                 <!--<row>
                     <cell type="label" labelfor="dom"/>
                     <cell type="field" id="dom" name="descriptionOfMaterial" uitype="text" colspan="10"/>
@@ -2972,7 +3065,72 @@
                 </row>-->
             </rows>
         </viewdef>
-
+        
+        <viewdef
+            type="formtable"
+            name="ExchangeOutPrep Table"
+            class="edu.ku.brc.specify.datamodel.ExchangeOutPrep"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Preparation subform table for Collection Object form.]]></desc>
+            <definition>ExchangeOutPrep</definition>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="ExchangeOutPrep"
+            class="edu.ku.brc.specify.datamodel.ExchangeOutPrep"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[Loan viewing form.]]></desc>
+            
+            <columnDef>105px,2px,105px,5px,130px,2px,115px,5px,125px,2px,101px,15px,120px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,137px,5px,135px,2px,130px,5px,133px,2px,81px,15px,155px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,151px,5px,155px,2px,145px,5px,155px,2px,95px,20px,165px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g(2),15px,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="9"/>
+                    <cell type="field" id="9" name="preparation.collectionObject.catalogNumber" uitype="text" readonly="true"/>
+                    <cell type="label" labelfor="2" label="Preparation Type"/>
+                    <cell type="field" id="2" name="preparation.prepType.name" uitype="dsptextfield" readonly="true"/>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="quantity" uitype="spinner" initialize="max=5000"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="descriptionOfMaterial" uitype="text" colspan="11"/>
+                </row>
+                <!--<row>
+                    <cell type="label" labelfor="n1"/>
+                    <cell type="field" id="n1" name="number1" uitype="text"/>
+                    <cell type="label" labelfor="t1"/>
+                    <cell type="field" id="t1" name="text1" uitype="text"/>
+                    <cell type="label" labelfor="t2"/>
+                    <cell type="field" id="t2" name="text2" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="comm"/>
+                    <cell type="field" id="comm" name="comments" uitype="textareabrief" rows="2" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="9"/>
+                    <cell type="field" id="9" name="createdByAgent" uitype="label" readonly="true" uifieldformatter="Agent"/>
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true" uifieldformatter="Agent"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="11"/>
+                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true"/>
+                    <cell type="label" labelfor="12"/>
+                    <cell type="field" id="12" name="timestampCreated" uitype="label" readonly="true"/>
+                </row>-->
+            </rows>
+        </viewdef>
+        
         <viewdef 
             type="form" 
             name="FieldNotebook" 
@@ -4992,7 +5150,7 @@
             <desc><![CDATA[Form For Treatment Event]]></desc>
             
             <columnDef>100px,2px,138px,5px,115px,2px,143px,5px,110px,2px,205px,0px,15px,p:g</columnDef>
-            <columnDef os="lnx">15px,2px,155px,5px,135px,2px,155px,5px,136px,2px,205px,0px,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,155px,5px,135px,2px,155px,5px,136px,2px,205px,0px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,170px,5px,155px,2px,170px,5px,150px,2px,239px,0px,15px,p:g</columnDef>
             <columnDef os="exp">p,2px,p:g(2),5px:g,p,2px,p:g(2),5px:g,p,2px,p:g,0px,p,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
@@ -5558,7 +5716,7 @@
                     <cell type="field" id="5" name="description" uitype="textareabrief" rows="2" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="separator" label="ABCD Schema Fields (Optional)" colspan="5"/>
+                    <cell type="separator" label="ABCD Schema Fields (Optional)" colspan="8"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="8"/>
