@@ -3025,7 +3025,7 @@
                 <!-- <row>
                      <cell type="subview" viewname="ExchangeOutPrep" id="10" name="exchangeOutPreps" defaulttype="table" colspan="13" rows="4"/>
                 </row>
-                <!--<row>
+                <row>
                     <cell type="label" labelfor="dom"/>
                     <cell type="field" id="dom" name="descriptionOfMaterial" uitype="text" colspan="10"/>
                 </row>
