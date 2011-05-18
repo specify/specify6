@@ -293,7 +293,15 @@ public class MultiView extends JPanel
         
         if (mvParent == null && ViewLoader.isDoFieldVerification())
         {
-            ViewLoader.displayFieldVerInfo();
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    ViewLoader.displayFieldVerInfo();
+                }
+            });
+           
         }
     }
 

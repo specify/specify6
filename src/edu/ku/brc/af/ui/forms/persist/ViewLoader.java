@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
+import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
@@ -48,7 +49,12 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableChildIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -106,6 +112,7 @@ public class ViewLoader
     protected static DBTableInfo           fldVerTableInfo     = null;
     protected static FormViewDef           fldVerFormViewDef   = null;
     protected static String                colDefType          = null;
+    protected static CustomFrame           verifyDlg           = null;
     
     protected FieldVerifyTableModel        fldVerTableModel    = null;
     
@@ -713,26 +720,7 @@ public class ViewLoader
                         StringUtils.isNotEmpty(cellId) && 
                         !cellName.equals("this"))
                     {
-                        if (fldVerTableInfo.getFieldByName(cellName) == null)
-                        {
-                            if (fldVerTableInfo.getRelationshipByName(cellName) == null)
-                            {
-                                String msg = " ViewSet["+instance.viewSetName+"]\n ViewDef["+fldVerFormViewDef.getName()+"]\n The cell name ["+cellName+"] for cell with Id ["+cellId+"] is not a field\n in Data Object["+fldVerTableInfo.getName()+"]\n on Row ["+rowNumber+"]";
-                                if (!isTreeClass)
-                                {
-                                    //if (!StringUtils.contains(cellName, "."))
-                                    //{
-                                        //JOptionPane.showMessageDialog(null, msg, "Cell Name Error", JOptionPane.ERROR_MESSAGE);
-                                        instance.fldVerTableModel.addRow(instance.viewSetName, fldVerFormViewDef.getName(), cellId, cellName, Integer.toString(rowNumber));
-                                        
-                                    //} else
-                                    //{
-                                    //    log.debug("Couldn't verify field name ["+cellName+"] is contains '.' notation.");
-                                    //}
-                                }
-                                log.error(msg);
-                            }
-                        }
+                        processFieldVerify(cellName, cellId, rowNumber);
                     }
 
                     switch (cellType)
@@ -1103,6 +1091,72 @@ public class ViewLoader
             }
         }
     }
+    
+    /**
+     * @param cellName
+     * @param cellId
+     * @param rowNumber
+     */
+    private static void processFieldVerify(final String cellName, final String cellId, final int rowNumber)
+    {
+        try
+        {
+            boolean isOK = false;
+            if (StringUtils.contains(cellName, '.'))
+            {
+                DBTableInfo tblInfo = fldVerTableInfo;
+                String[] fieldNames = StringUtils.split(cellName, ".");
+                for (int i=0;i<fieldNames.length-1;i++)
+                {
+                    String type = null;
+                    DBTableChildIFace child = tblInfo.getItemByName(fieldNames[i]);
+                    if (child instanceof DBFieldInfo)
+                    {
+                        DBFieldInfo fldInfo = (DBFieldInfo)child;
+                        type = fldInfo.getType();
+                        if (type != null)
+                        {
+                            DBTableInfo tInfo = DBTableIdMgr.getInstance().getByClassName(type);
+                            tblInfo = tInfo != null ? tInfo : tblInfo;
+                        }
+                        isOK = tblInfo.getItemByName(fieldNames[fieldNames.length-1]) != null;
+                        
+                    } else if (child instanceof DBRelationshipInfo)
+                    {
+                        DBRelationshipInfo relInfo = (DBRelationshipInfo)child;
+                        type = relInfo.getDataClass().getName();
+                        if (type != null)
+                        {
+                            tblInfo = DBTableIdMgr.getInstance().getByClassName(type);
+                        }
+                    }
+                    //System.out.println(type);
+                }
+                
+                if (tblInfo != null)
+                {
+                    isOK = tblInfo.getItemByName(fieldNames[fieldNames.length-1]) != null;
+                }
+            } else
+            {
+                isOK = fldVerTableInfo.getItemByName(cellName) != null;
+            }
+            
+            if (!isOK)
+            {
+                String msg = " ViewSet["+instance.viewSetName+"]\n ViewDef["+fldVerFormViewDef.getName()+"]\n The cell name ["+cellName+"] for cell with Id ["+cellId+"] is not a field\n in Data Object["+fldVerTableInfo.getName()+"]\n on Row ["+rowNumber+"]";
+                if (!isTreeClass)
+                {
+                    instance.fldVerTableModel.addRow(instance.viewSetName, fldVerFormViewDef.getName(), cellId, cellName, Integer.toString(rowNumber));
+                }
+                log.error(msg);
+            }
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+        }
+    }
    
     /**
      * @param element the DOM element for building the form
@@ -1446,19 +1500,51 @@ public class ViewLoader
         }
     }
     
+    /**
+     * Di
+     */
     public static void displayFieldVerInfo()
     {
+        if (verifyDlg != null)
+        {
+            verifyDlg.setVisible(false);
+            verifyDlg.dispose();
+            verifyDlg = null;
+        }
+        
+        System.err.println("------------- "+(instance.fldVerTableModel != null ? instance.fldVerTableModel.getRowCount() : "null"));
+        
         if (instance.fldVerTableModel != null && instance.fldVerTableModel.getRowCount() > 0)
         {
-            JTable table = new JTable(instance.fldVerTableModel);
+            JLabel lbl = UIHelper.createLabel("<html><i>(Some of fields are special buttons or labal names. Review them to make sure you have not <br>mis-named any of the fields you are working with.)");
+            
+            final JTable table = new JTable(instance.fldVerTableModel);
             UIHelper.calcColumnWidths(table);
             
-            JScrollPane sp = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            CustomFrame dlg = new CustomFrame("Field Errors : "+instance.fldVerTableModel.getRowCount(), CustomFrame.OK_BTN, sp);
-            dlg.setOkLabel(getResourceString("CLOSE"));
-            dlg.createUI();
-            dlg.setSize(500, 500);
-            dlg.setVisible(true);
+            CellConstraints cc = new CellConstraints();
+            JScrollPane     sp = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g,4px,p"));
+            pb.add(sp, cc.xy(1, 1));
+            pb.add(lbl, cc.xy(1, 3));
+            pb.setDefaultDialogBorder();
+            
+            verifyDlg = new CustomFrame("Field Names on Form, but not in Database : "+instance.fldVerTableModel.getRowCount(), CustomFrame.OK_BTN, pb.getPanel())
+            {
+                @Override
+                protected void okButtonPressed()
+                {
+                    super.okButtonPressed();
+                    
+                    table.setModel(new DefaultTableModel());
+                    
+                    dispose();
+                    
+                    verifyDlg = null;
+                }
+            };
+            verifyDlg.setOkLabel(getResourceString("CLOSE"));
+            verifyDlg.createUI();
+            verifyDlg.setVisible(true);
         }
     }
     
