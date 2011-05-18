@@ -257,6 +257,7 @@ public class DropDialog extends CustomDialog
 						JTextArea ta = new JTextArea(getOptionInfo(optNo, droppedName, droppedOnName, moveDescKey, synDescKey, mergeDescKey));
 						ta.setLineWrap(true);
 						ta.setWrapStyleWord(true);
+						ta.setEditable(false);
 						CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), UIRegistry.getResourceString("DropDlg.TreeActionDetailTitle"), true, 
 								CustomDialog.OKHELP, ta, CustomDialog.OK_BTN);
 						cd.setHelpContext(getInfoDlgHelpContext(optNo));
