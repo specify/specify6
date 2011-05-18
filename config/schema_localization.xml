@@ -1415,7 +1415,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="name" type="java.lang.String" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="name" type="java.lang.String" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">
@@ -1450,7 +1450,7 @@
         </names>
         <descs/>
       </desc>
-      <desc name="remarks" isHidden="true" isUIFormatter="false" isRequired="false">
+      <desc name="remarks" isHidden="false" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <names>
           <str language="en">

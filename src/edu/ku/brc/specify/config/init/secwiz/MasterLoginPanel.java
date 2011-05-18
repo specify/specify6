@@ -323,7 +323,8 @@ public class MasterLoginPanel extends GenericFormPanel
         
         ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)UIRegistry.getTopWindow(), "SEC_SELECT_DBS", 
                                                                                 "SEC_SELECT_DBS_DESC", dbList, 
-                                                                                CustomDialog.OKCANCEL, ToggleButtonChooserPanel.Type.Checkbox);
+                                                                                CustomDialog.OKCANCELHELP, ToggleButtonChooserPanel.Type.Checkbox);
+        dlg.setHelpContext("security_wizreset");
         dlg.setAddSelectAll(true);
         dlg.setUseScrollPane(true);
         dlg.createUI();

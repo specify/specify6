@@ -624,6 +624,7 @@ public class UserAndMasterPasswordMgr
         final CustomDialog dlg = new CustomDialog((Frame)null, getResourceString("MASTER_INFO_TITLE"), 
                                                   true, CustomDialog.OKCANCELAPPLYHELP, pb.getPanel());
         dlg.setOkLabel(getResourceString("GENERATE_KEY"));
+        dlg.setHelpContext("MASTERPWD_GEN");
         dlg.setApplyLabel(showPwdLabel);
 
         dlg.createUI();
